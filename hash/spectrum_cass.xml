@@ -3562,7 +3562,7 @@ license:CC0
 		<year>1983</year>
 		<publisher>AWA Software</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="17857">
+			<dataarea name="cass" size="17901">
 				<rom name="beetlemania.tzx" size="17901" crc="ff1139a9" sha1="4efafa00f861c18df6b5361673ec5bfd726c53aa"/>
 			</dataarea>
 		</part>
@@ -6728,7 +6728,7 @@ license:CC0
 		<year>1987</year>
 		<publisher>Codemasters</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="48857">
+			<dataarea name="cass" size="48885">
 				<rom name="dizzy - the ultimate cartoon adventure.tzx" size="48885" crc="80f651f4" sha1="accaa7d5adb2c8823e58ab4f22e22cc771d56db9"/>
 			</dataarea>
 		</part>
@@ -34979,19 +34979,19 @@ license:CC0
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<feature name="part_id" value="Smash Tape 24 - Side 2 (WonderBoy level data)"/>
-			<dataarea name="cass" size="142865"> <!-- identical to image in ys48sp::cass2 -->
+			<dataarea name="cass" size="29555"> <!-- identical to image in ys48sp::cass2 -->
 				<rom name="your sinclair (issue 48) - tape 1 - side 2.tzx" size="29555" crc="55c8583e" sha1="c6ffe2e41e37feee97dd8501ed99b23df4518cb7"/>
 			</dataarea>
 		</part>
 		<part name="cass3" interface="spectrum_cass">
 			<feature name="part_id" value="Tape 2 - Side 1 (Thing, Riding the Rapids)"/>
-			<dataarea name="cass" size="95273">
+			<dataarea name="cass" size="95276">
 				<rom name="your sinclair (issue 48) - tape 2 - side 1.tzx" size="95276" crc="c7a7bed5" sha1="d3800e1d9471df9d5e33153a2c416aeb46388388"/>
 			</dataarea>
 		</part>
 		<part name="cass4" interface="spectrum_cass">
 			<feature name="part_id" value="Tape 2 - Side 2 (Heroes of Karn, Shark Your Sinclair Demo)"/>
-			<dataarea name="cass" size="95208">
+			<dataarea name="cass" size="95211">
 				<rom name="your sinclair (issue 48) - tape 2 - side 2.tzx" size="95211" crc="2fb98fc4" sha1="a77b6025b9435d27427fb6e77d1c1dfe14e45891"/>
 			</dataarea>
 		</part>
@@ -35010,19 +35010,19 @@ license:CC0
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<feature name="part_id" value="Smash Tape 24 - Side 2 (Wonder Boy level data)"/>
-			<dataarea name="cass" size="142865"> <!-- identical to image in ys48::cass2 -->
+			<dataarea name="cass" size="29555"> <!-- identical to image in ys48::cass2 -->
 				<rom name="your sinclair (issue 48) - tape 1 - side 2.tzx" size="29555" crc="55c8583e" sha1="c6ffe2e41e37feee97dd8501ed99b23df4518cb7"/>
 			</dataarea>
 		</part>
 		<part name="cass3" interface="spectrum_cass">
 			<feature name="part_id" value="Smash Tape 25 Special Edition - Side 1 (Heroes of Karn, Forest at World's End, Warlord)"/>
-			<dataarea name="cass" size="143664">
+			<dataarea name="cass" size="143670">
 				<rom name="your sinclair (issue 48) - tape 2 - special edition - side 1.tzx" size="143670" crc="237aa578" sha1="37b8cab069903f050074445118af8acaacdce76c"/>
 			</dataarea>
 		</part>
 		<part name="cass4" interface="spectrum_cass">
 			<feature name="part_id" value="Smash Tape 25 Special Edition - Side 2 (Anfractuos, Riding the Rapids, Thing, Shark Sinclair User Demo)"/>
-			<dataarea name="cass" size="189985">
+			<dataarea name="cass" size="189994">
 				<rom name="your sinclair (issue 48) - tape 2 - special edition - side 2.tzx" size="189994" crc="301d2108" sha1="a32cbf27bc4927808a81eb575a4e42b11ea1fd77"/>
 			</dataarea>
 		</part>

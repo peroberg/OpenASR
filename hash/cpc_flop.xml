@@ -280323,7 +280323,7 @@ Shortnames are chosen to "preview" the content:
 		<year>1989</year>
 		<publisher>Activision</publisher>
 		<part name="flop1" interface="floppy_3">
-			<dataarea name="flop" size="63488">
+			<dataarea name="flop" size="199680">
 				<rom name="altered beast (nongoodcpc).dsk" size="199680" crc="877d621c" sha1="ff7ed8403c879062f44708eada63a8dea669d48c"/>
 			</dataarea>
 		</part>
