@@ -98,7 +98,7 @@ is shared by a lot of sets... is it a generic boot disk?
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="184322">
-				<rom name="bootdisk (no$cpc) (nongoodcpc).dsk" size="184322" crc="92f39de9" sha1="623bf1dc8075dfddbc6d9603fe78c3820b1024a9"/>
+				<rom name="bootdisk (no_cpc) (nongoodcpc).dsk" size="184322" crc="92f39de9" sha1="623bf1dc8075dfddbc6d9603fe78c3820b1024a9"/>
 			</dataarea>
 		</part>
 	</software>
@@ -380,7 +380,7 @@ is shared by a lot of sets... is it a generic boot disk?
 		<info name="usage" value="Launch with RUN&quot;1943" />
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="1943 - the battle of midway (1988)(go!)[cr exocet].dsk" size="194816" crc="a3c421d8" sha1="c3b1ad4b5dd9a3694fe77551d4912f502455817b"/>
+				<rom name="1943 - the battle of midway (1988)(go)[cr exocet].dsk" size="194816" crc="a3c421d8" sha1="c3b1ad4b5dd9a3694fe77551d4912f502455817b"/>
 			</dataarea>
 		</part>
 	</software>
@@ -1362,7 +1362,7 @@ is shared by a lot of sets... is it a generic boot disk?
 		<info name="usage" value="Launch with RUN&quot;DISC" />
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="aaargh! (s) (1988) [original].dsk" size="194816" crc="45ede8ec" sha1="f6f7f0f3456bb0804bf520c17d532c8eca9132ab"/>
+				<rom name="aaargh (s) (1988) [original].dsk" size="194816" crc="45ede8ec" sha1="f6f7f0f3456bb0804bf520c17d532c8eca9132ab"/>
 			</dataarea>
 		</part>
 	</software>
@@ -1376,7 +1376,7 @@ is shared by a lot of sets... is it a generic boot disk?
 		<info name="usage" value="Launch with RUN&quot;AAARGHAP" />
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="aaargh! (s) (1988).dsk" size="194816" crc="f9990e91" sha1="c1680d2400c2526c3e4c52f39bfae6c4ab228936"/>
+				<rom name="aaargh (s) (1988).dsk" size="194816" crc="f9990e91" sha1="c1680d2400c2526c3e4c52f39bfae6c4ab228936"/>
 			</dataarea>
 		</part>
 	</software>
@@ -2622,7 +2622,7 @@ is shared by a lot of sets... is it a generic boot disk?
 		<info name="usage" value="Launch with RUN&quot;AHHH" />
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="ahhh!!! laser malfunction (uk) (1985).dsk" size="194816" crc="ec7a64d2" sha1="e54a6b009e782fb5bcbf8cd9a08fb34cab1fc81e"/>
+				<rom name="ahhh laser malfunction (uk) (1985).dsk" size="194816" crc="ec7a64d2" sha1="e54a6b009e782fb5bcbf8cd9a08fb34cab1fc81e"/>
 			</dataarea>
 		</part>
 	</software>
@@ -6027,7 +6027,7 @@ is shared by a lot of sets... is it a generic boot disk?
 		<info name="usage" value="Launch with RUN&quot;BOULOT" />
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="au boulot ! (f) (1990) [lmc] [cpc].dsk" size="194816" crc="26f65844" sha1="1d31a63274b191893567af7dfcf54b918f01615c"/>
+				<rom name="au boulot  (f) (1990) [lmc] [cpc].dsk" size="194816" crc="26f65844" sha1="1d31a63274b191893567af7dfcf54b918f01615c"/>
 			</dataarea>
 		</part>
 	</software>
@@ -7656,7 +7656,7 @@ stick to CPC-Power disks, when available)
 		<info name="usage" value="Launch with RUN&quot;AHB" />
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="ah bod!! (uk) (1985) [computing with the amstrad].dsk" size="194816" crc="4e1c5a34" sha1="dfbe53e2a8b076b71c53ceb20cc83cae7abfc895"/>
+				<rom name="ah bod (uk) (1985) [computing with the amstrad].dsk" size="194816" crc="4e1c5a34" sha1="dfbe53e2a8b076b71c53ceb20cc83cae7abfc895"/>
 			</dataarea>
 		</part>
 	</software>
@@ -10866,7 +10866,7 @@ stick to CPC-Power disks, when available)
 		<publisher>Ocean</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="batman the movie #3 ! (nongoodcpc).dsk" size="194816" crc="b5eb835c" sha1="f2505b0d9c492dc68ada495498f3f20379093452"/>
+				<rom name="batman the movie #3  (nongoodcpc).dsk" size="194816" crc="b5eb835c" sha1="f2505b0d9c492dc68ada495498f3f20379093452"/>
 			</dataarea>
 		</part>
 	</software>
@@ -11698,7 +11698,7 @@ stick to CPC-Power disks, when available)
 		<publisher>U.S. Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="beach-head ii - the dictator strikes back! (1986)(us gold).dsk" size="194816" crc="a3981e55" sha1="7990e00dbb4d41fa0d8872e984be540ce6bfdef2"/>
+				<rom name="beach-head ii - the dictator strikes back (1986)(us gold).dsk" size="194816" crc="a3981e55" sha1="7990e00dbb4d41fa0d8872e984be540ce6bfdef2"/>
 			</dataarea>
 		</part>
 	</software>
@@ -11842,7 +11842,7 @@ stick to CPC-Power disks, when available)
 		<publisher>U.S. Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="bedlam (1988)(go!)[cr mc spe].dsk" size="194816" crc="4e5ac025" sha1="143f89b28deb80672e6e1ea96195a35d1beffd63"/>
+				<rom name="bedlam (1988)(go)[cr mc spe].dsk" size="194816" crc="4e5ac025" sha1="143f89b28deb80672e6e1ea96195a35d1beffd63"/>
 			</dataarea>
 		</part>
 	</software>
@@ -13012,7 +13012,7 @@ stick to CPC-Power disks, when available)
 		<publisher>GO!</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="bionic commando (1988)(go!).dsk" size="194816" crc="4d447eb4" sha1="d0721579cbfa75a94f8117a31a3069db5c08d096"/>
+				<rom name="bionic commando (1988)(go).dsk" size="194816" crc="4d447eb4" sha1="d0721579cbfa75a94f8117a31a3069db5c08d096"/>
 			</dataarea>
 		</part>
 	</software>
@@ -13072,7 +13072,7 @@ stick to CPC-Power disks, when available)
 		<publisher>GO!</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="bionic commando (1988)(go!)[cr xor][t +2 xor].dsk" size="194816" crc="7c559f79" sha1="668d4138ad8a82436c94c78a86ec3fe1483c1015"/>
+				<rom name="bionic commando (1988)(go)[cr xor][t +2 xor].dsk" size="194816" crc="7c559f79" sha1="668d4138ad8a82436c94c78a86ec3fe1483c1015"/>
 			</dataarea>
 		</part>
 	</software>
@@ -14682,7 +14682,7 @@ stick to CPC-Power disks, when available)
 		<publisher>Infogrames</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="197120">
-				<rom name="bob morane espacio ! (nongoodcpc).dsk" size="197120" crc="2e081c9c" sha1="5b79f3375c841486ee28e844a61975ce738ffef2"/>
+				<rom name="bob morane espacio  (nongoodcpc).dsk" size="197120" crc="2e081c9c" sha1="5b79f3375c841486ee28e844a61975ce738ffef2"/>
 			</dataarea>
 		</part>
 	</software>
@@ -15071,7 +15071,7 @@ stick to CPC-Power disks, when available)
 		<publisher>Atlantis Software</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="boinggg! (uk) (1988).dsk" size="194816" crc="762cc177" sha1="50bcb12d26fc658aa0f6a31f3defc94b146f1130"/>
+				<rom name="boinggg (uk) (1988).dsk" size="194816" crc="762cc177" sha1="50bcb12d26fc658aa0f6a31f3defc94b146f1130"/>
 			</dataarea>
 		</part>
 	</software>
@@ -15095,7 +15095,7 @@ stick to CPC-Power disks, when available)
 		<publisher>Atlantis Software</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="boinggg! (uk) (19xx) [a1] (goodcpc).dsk" size="194816" crc="6adccb9e" sha1="68b051d68ebc8f92182cc8a23819bd1250398485"/>
+				<rom name="boinggg (uk) (19xx) [a1] (goodcpc).dsk" size="194816" crc="6adccb9e" sha1="68b051d68ebc8f92182cc8a23819bd1250398485"/>
 			</dataarea>
 		</part>
 	</software>
@@ -15107,7 +15107,7 @@ stick to CPC-Power disks, when available)
 		<publisher>Atlantis Software</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="boinggg! (uk) (19xx) (goodcpc).dsk" size="194816" crc="c78387a0" sha1="269f474b495974e7c86020cf44235733aab5085d"/>
+				<rom name="boinggg (uk) (19xx) (goodcpc).dsk" size="194816" crc="c78387a0" sha1="269f474b495974e7c86020cf44235733aab5085d"/>
 			</dataarea>
 		</part>
 	</software>
@@ -15263,7 +15263,7 @@ stick to CPC-Power disks, when available)
 		<publisher>Elite Systems</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="bomb jack ii ! (nongoodcpc).dsk" size="194816" crc="a3ae60c4" sha1="2ba8cecddf715b1ad757c369920319a0c0f23b9f"/>
+				<rom name="bomb jack ii  (nongoodcpc).dsk" size="194816" crc="a3ae60c4" sha1="2ba8cecddf715b1ad757c369920319a0c0f23b9f"/>
 			</dataarea>
 		</part>
 	</software>
@@ -16120,7 +16120,7 @@ stick to CPC-Power disks, when available)
 		<publisher>GO!</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="bravestarr (1987)(go!)[cr mc spe].dsk" size="194816" crc="5834d89c" sha1="d2ac69ef8db04d16d4854fb4903f6ec76e2446d1"/>
+				<rom name="bravestarr (1987)(go)[cr mc spe].dsk" size="194816" crc="5834d89c" sha1="d2ac69ef8db04d16d4854fb4903f6ec76e2446d1"/>
 			</dataarea>
 		</part>
 	</software>
@@ -16132,7 +16132,7 @@ stick to CPC-Power disks, when available)
 		<publisher>GO!</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="bravestarr (1987)(go!)[cr mc spe][a].dsk" size="194816" crc="d085dc3a" sha1="8c93f2e6efa59bac94235f8477217c5f6a2b5c31"/>
+				<rom name="bravestarr (1987)(go)[cr mc spe][a].dsk" size="194816" crc="d085dc3a" sha1="8c93f2e6efa59bac94235f8477217c5f6a2b5c31"/>
 			</dataarea>
 		</part>
 	</software>
@@ -17535,7 +17535,7 @@ stick to CPC-Power disks, when available)
 		<publisher>Entertainment USA</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="bump, set, spike! (1986)(entertainment usa).dsk" size="194816" crc="f443a41b" sha1="306dc864f89cfb7bbc5ff48c0855f7820fae9966"/>
+				<rom name="bump, set, spike (1986)(entertainment usa).dsk" size="194816" crc="f443a41b" sha1="306dc864f89cfb7bbc5ff48c0855f7820fae9966"/>
 			</dataarea>
 		</part>
 	</software>
@@ -18576,7 +18576,7 @@ stick to CPC-Power disks, when available)
 		<publisher>GO!</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="captain america - defies the doom tube (1988)(go!).dsk" size="194816" crc="d68c919d" sha1="c48f16154e541f4b0f52ca6f61dbc810622f88cf"/>
+				<rom name="captain america - defies the doom tube (1988)(go).dsk" size="194816" crc="d68c919d" sha1="c48f16154e541f4b0f52ca6f61dbc810622f88cf"/>
 			</dataarea>
 		</part>
 	</software>
@@ -18588,7 +18588,7 @@ stick to CPC-Power disks, when available)
 		<publisher>GO!</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="captain america - defies the doom tube (1988)(go!)[cr mc spe].dsk" size="194816" crc="2db5d808" sha1="5fb886f3f9a1eb94a854d20f7d81b92c973fa5c5"/>
+				<rom name="captain america - defies the doom tube (1988)(go)[cr mc spe].dsk" size="194816" crc="2db5d808" sha1="5fb886f3f9a1eb94a854d20f7d81b92c973fa5c5"/>
 			</dataarea>
 		</part>
 	</software>
@@ -23676,7 +23676,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="betiled! (uk) (2009) [original].dsk" size="194816" crc="3dfd5551" sha1="63c43de1eab5d74dc53c34ddd99b3ebfacbd9188"/>
+				<rom name="betiled (uk) (2009) [original].dsk" size="194816" crc="3dfd5551" sha1="63c43de1eab5d74dc53c34ddd99b3ebfacbd9188"/>
 			</dataarea>
 		</part>
 	</software>
@@ -24184,7 +24184,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="bo! (g) (128k) (1994) (version basic 1.1) (pd).dsk" size="194816" crc="eb9c2347" sha1="b53b2eba6912003e4cc1b81499bb1aa111822ff7"/>
+				<rom name="bo (g) (128k) (1994) (version basic 1.1) (pd).dsk" size="194816" crc="eb9c2347" sha1="b53b2eba6912003e4cc1b81499bb1aa111822ff7"/>
 			</dataarea>
 		</part>
 	</software>
@@ -25658,7 +25658,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="catch it! (g) (1989) [pc amstrad international].dsk" size="194816" crc="313543f2" sha1="990f7530e44dcdc07b8a84df3d96e511e3c11825"/>
+				<rom name="catch it (g) (1989) [pc amstrad international].dsk" size="194816" crc="313543f2" sha1="990f7530e44dcdc07b8a84df3d96e511e3c11825"/>
 			</dataarea>
 		</part>
 	</software>
@@ -28011,7 +28011,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="crash! (uk) (1991).dsk" size="194816" crc="ab988af2" sha1="1bbb23fd0e3f5f04162fb5f9c1d2146ab9e3e677"/>
+				<rom name="crash (uk) (1991).dsk" size="194816" crc="ab988af2" sha1="1bbb23fd0e3f5f04162fb5f9c1d2146ab9e3e677"/>
 			</dataarea>
 		</part>
 	</software>
@@ -30794,7 +30794,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="demon attack ! (uk) (64k) (1986).dsk" size="194816" crc="ceb4e6ff" sha1="513187f67f119daf44cf608898bd268dfe32d3da"/>
+				<rom name="demon attack  (uk) (64k) (1986).dsk" size="194816" crc="ceb4e6ff" sha1="513187f67f119daf44cf608898bd268dfe32d3da"/>
 			</dataarea>
 		</part>
 	</software>
@@ -31653,7 +31653,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="dizzy ! - amstrad action special edtion (uk) (1987).dsk" size="194816" crc="ad71fbf2" sha1="57ea62f2a7220caacc9b8239f3e4c5d3143a7a01"/>
+				<rom name="dizzy  - amstrad action special edtion (uk) (1987).dsk" size="194816" crc="ad71fbf2" sha1="57ea62f2a7220caacc9b8239f3e4c5d3143a7a01"/>
 			</dataarea>
 		</part>
 	</software>
@@ -32448,12 +32448,12 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="dr. doom's revenge! (uk,f,g,s) (face a) (1989) [original].dsk" size="194816" crc="ae1827c7" sha1="9e0c42ffa7380ea7c0b1ddf79266217d3aaff8b7"/>
+				<rom name="dr. doom's revenge (uk,f,g,s) (face a) (1989) [original].dsk" size="194816" crc="ae1827c7" sha1="9e0c42ffa7380ea7c0b1ddf79266217d3aaff8b7"/>
 			</dataarea>
 		</part>
 		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="dr. doom's revenge! (uk,f,g,s) (face b) (1989) [original].dsk" size="194816" crc="e4f3e20c" sha1="9369857bad0020d3b4577be8b2a286b1697f4f5a"/>
+				<rom name="dr. doom's revenge (uk,f,g,s) (face b) (1989) [original].dsk" size="194816" crc="e4f3e20c" sha1="9369857bad0020d3b4577be8b2a286b1697f4f5a"/>
 			</dataarea>
 		</part>
 	</software>
@@ -32465,12 +32465,12 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="dr. doom's revenge! (uk,f,g,s) (face a) (1989).dsk" size="194816" crc="88d233b6" sha1="402686b20e1197664ffb2da2cde63c4d0309b15e"/>
+				<rom name="dr. doom's revenge (uk,f,g,s) (face a) (1989).dsk" size="194816" crc="88d233b6" sha1="402686b20e1197664ffb2da2cde63c4d0309b15e"/>
 			</dataarea>
 		</part>
 		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="dr. doom's revenge! (uk,f,g,s) (face b) (1989).dsk" size="194816" crc="e4e6c290" sha1="2684eb5a3bf36346a111f548980f38384c492344"/>
+				<rom name="dr. doom's revenge (uk,f,g,s) (face b) (1989).dsk" size="194816" crc="e4e6c290" sha1="2684eb5a3bf36346a111f548980f38384c492344"/>
 			</dataarea>
 		</part>
 	</software>
@@ -34757,7 +34757,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="escape! (uk) (1985).dsk" size="194816" crc="002eeb53" sha1="774ee991394818a38869b6434c4a637655255bdf"/>
+				<rom name="escape (uk) (1985).dsk" size="194816" crc="002eeb53" sha1="774ee991394818a38869b6434c4a637655255bdf"/>
 			</dataarea>
 		</part>
 	</software>
@@ -35284,7 +35284,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="execution ! (uk) (1985).dsk" size="194816" crc="909d29b5" sha1="15a869227986de8df0e7eb49604ae28bea22e483"/>
+				<rom name="execution  (uk) (1985).dsk" size="194816" crc="909d29b5" sha1="15a869227986de8df0e7eb49604ae28bea22e483"/>
 			</dataarea>
 		</part>
 	</software>
@@ -36333,7 +36333,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204544">
-				<rom name="fire! (uk) (1990) (cpm) [original].dsk" size="204544" crc="89b59cab" sha1="9915f1ec6e2dfbb95fe47f340d012716d19eb68b"/>
+				<rom name="fire (uk) (1990) (cpm) [original].dsk" size="204544" crc="89b59cab" sha1="9915f1ec6e2dfbb95fe47f340d012716d19eb68b"/>
 			</dataarea>
 		</part>
 	</software>
@@ -36345,7 +36345,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="fire! (uk) (1990).dsk" size="194816" crc="6b388807" sha1="463c2c013bcc78aa5dab9a0e33d7a5ea3e249f89"/>
+				<rom name="fire (uk) (1990).dsk" size="194816" crc="6b388807" sha1="463c2c013bcc78aa5dab9a0e33d7a5ea3e249f89"/>
 			</dataarea>
 		</part>
 	</software>
@@ -39573,7 +39573,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="189952">
-				<rom name="get me to the church on time! (uk) (128k) (19xx) (cpm) (version 6128).dsk" size="189952" crc="700d683f" sha1="7a03990eb715172352b46d7d83de14d7c898ecef"/>
+				<rom name="get me to the church on time (uk) (128k) (19xx) (cpm) (version 6128).dsk" size="189952" crc="700d683f" sha1="7a03990eb715172352b46d7d83de14d7c898ecef"/>
 			</dataarea>
 		</part>
 	</software>
@@ -41152,7 +41152,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="grue-knapped! (uk) (1990).dsk" size="194816" crc="adbe7b9e" sha1="dc0491c5d1fd15a82530654e9e74e943bf78be3f"/>
+				<rom name="grue-knapped (uk) (1990).dsk" size="194816" crc="adbe7b9e" sha1="dc0491c5d1fd15a82530654e9e74e943bf78be3f"/>
 			</dataarea>
 		</part>
 	</software>
@@ -43289,12 +43289,12 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204544">
-				<rom name="hopital danger! (f) (face a) (1989) (pd).dsk" size="204544" crc="e51b354c" sha1="43ce45b43dc879037cf16e0d75c2b5a2d7042b2f"/>
+				<rom name="hopital danger (f) (face a) (1989) (pd).dsk" size="204544" crc="e51b354c" sha1="43ce45b43dc879037cf16e0d75c2b5a2d7042b2f"/>
 			</dataarea>
 		</part>
 		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="215296">
-				<rom name="hopital danger! (f) (face b) (1989) (pd).dsk" size="215296" crc="e7e5cfcf" sha1="76595db5be6fa8bb3eed7d07052570112c6e8936"/>
+				<rom name="hopital danger (f) (face b) (1989) (pd).dsk" size="215296" crc="e7e5cfcf" sha1="76595db5be6fa8bb3eed7d07052570112c6e8936"/>
 			</dataarea>
 		</part>
 	</software>
@@ -44867,12 +44867,12 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="ingrid's back! (uk) (128k) (face a) (1988).dsk" size="194816" crc="7e268c28" sha1="b853033992e0f13b8ce5d1d030ba92f9fce4afcd"/>
+				<rom name="ingrid's back (uk) (128k) (face a) (1988).dsk" size="194816" crc="7e268c28" sha1="b853033992e0f13b8ce5d1d030ba92f9fce4afcd"/>
 			</dataarea>
 		</part>
 		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="ingrid's back! (uk) (128k) (face b) (1988).dsk" size="194816" crc="a8c6adff" sha1="2e5f36a31a6eff7ff68d0105c28a03d7ba08133d"/>
+				<rom name="ingrid's back (uk) (128k) (face b) (1988).dsk" size="194816" crc="a8c6adff" sha1="2e5f36a31a6eff7ff68d0105c28a03d7ba08133d"/>
 			</dataarea>
 		</part>
 	</software>
@@ -44884,12 +44884,12 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="195635">
-				<rom name="ingrid's back! (uk) (128k) (face a) (1989) [original].dsk" size="195635" crc="b3a3c17d" sha1="022ce7450ced2dc3e92fae9afbba6261ba04a756"/>
+				<rom name="ingrid's back (uk) (128k) (face a) (1989) [original].dsk" size="195635" crc="b3a3c17d" sha1="022ce7450ced2dc3e92fae9afbba6261ba04a756"/>
 			</dataarea>
 		</part>
 		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="195635">
-				<rom name="ingrid's back! (uk) (128k) (face b) (1989) [original].dsk" size="195635" crc="d8c0eefb" sha1="e0e15d68d357ed40c6dd0aae61811ce2b82e0dac"/>
+				<rom name="ingrid's back (uk) (128k) (face b) (1989) [original].dsk" size="195635" crc="d8c0eefb" sha1="e0e15d68d357ed40c6dd0aae61811ce2b82e0dac"/>
 			</dataarea>
 		</part>
 	</software>
@@ -47991,7 +47991,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="kwah! (uk) (1986).dsk" size="194816" crc="3f42516a" sha1="b49d765f6a0636ec47847ab567eb75c1c691eb65"/>
+				<rom name="kwah (uk) (1986).dsk" size="194816" crc="3f42516a" sha1="b49d765f6a0636ec47847ab567eb75c1c691eb65"/>
 			</dataarea>
 		</part>
 	</software>
@@ -59517,7 +59517,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="nova! (uk) (1987).dsk" size="194816" crc="c23de604" sha1="aa8b8e1384107dd4d2436211c1be6730f0f66f88"/>
+				<rom name="nova (uk) (1987).dsk" size="194816" crc="c23de604" sha1="aa8b8e1384107dd4d2436211c1be6730f0f66f88"/>
 			</dataarea>
 		</part>
 	</software>
@@ -60731,7 +60731,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="191232">
-				<rom name="osprey! (uk) (1984) [original].dsk" size="191232" crc="ed1754bf" sha1="d43972049e87e6d44904a7b779a2f4a73f4926fa"/>
+				<rom name="osprey (uk) (1984) [original].dsk" size="191232" crc="ed1754bf" sha1="d43972049e87e6d44904a7b779a2f4a73f4926fa"/>
 			</dataarea>
 		</part>
 	</software>
@@ -60743,7 +60743,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="osprey! (uk) (1984).dsk" size="194816" crc="d60aa37f" sha1="0a1e20833efd7321d5dafc93d2f32664e7c1ce3f"/>
+				<rom name="osprey (uk) (1984).dsk" size="194816" crc="d60aa37f" sha1="0a1e20833efd7321d5dafc93d2f32664e7c1ce3f"/>
 			</dataarea>
 		</part>
 	</software>
@@ -62271,7 +62271,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="petrole, petrole ! (f) (1985) [super jeux amstrad - 50 programmes de jeux en basic].dsk" size="194816" crc="48b3a1ca" sha1="109d53204f78a142f76e11237477ca40420bd6b4"/>
+				<rom name="petrole, petrole  (f) (1985) [super jeux amstrad - 50 programmes de jeux en basic].dsk" size="194816" crc="48b3a1ca" sha1="109d53204f78a142f76e11237477ca40420bd6b4"/>
 			</dataarea>
 		</part>
 	</software>
@@ -62870,7 +62870,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="pipe crazy! (f) (19xx) [lmc].dsk" size="194816" crc="1580b2b3" sha1="be283cbfa52ebb13b77ba1b50a791ce093752b04"/>
+				<rom name="pipe crazy (f) (19xx) [lmc].dsk" size="194816" crc="1580b2b3" sha1="be283cbfa52ebb13b77ba1b50a791ce093752b04"/>
 			</dataarea>
 		</part>
 	</software>
@@ -65840,7 +65840,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="raid !!! (uk) (1985) [amsoft] [original].dsk" size="194816" crc="9084dc76" sha1="33453cc853cd80c545710f013e3f68dfd6aec689"/>
+				<rom name="raid  (uk) (1985) [amsoft] [original].dsk" size="194816" crc="9084dc76" sha1="33453cc853cd80c545710f013e3f68dfd6aec689"/>
 			</dataarea>
 		</part>
 	</software>
@@ -65852,7 +65852,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="raid !!! (uk) (1985) [u.s.gold].dsk" size="194816" crc="4d3cdcce" sha1="1d8ac6e608ad9a3d758834d77aa8888b362f1d7a"/>
+				<rom name="raid  (uk) (1985) [u.s.gold].dsk" size="194816" crc="4d3cdcce" sha1="1d8ac6e608ad9a3d758834d77aa8888b362f1d7a"/>
 			</dataarea>
 		</part>
 	</software>
@@ -66467,7 +66467,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="realm ! (uk) (1985).dsk" size="194816" crc="1f000249" sha1="60c7a03f27459764360f6c5b7be92d4bd247ad62"/>
+				<rom name="realm  (uk) (1985).dsk" size="194816" crc="1f000249" sha1="60c7a03f27459764360f6c5b7be92d4bd247ad62"/>
 			</dataarea>
 		</part>
 	</software>
@@ -67929,7 +67929,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="robot ron meets the ice monsters! (uk) (1986) (pd).dsk" size="194816" crc="d568a799" sha1="170b9df3db9275ecc4609b283fc806d29aff4bff"/>
+				<rom name="robot ron meets the ice monsters (uk) (1986) (pd).dsk" size="194816" crc="d568a799" sha1="170b9df3db9275ecc4609b283fc806d29aff4bff"/>
 			</dataarea>
 		</part>
 	</software>
@@ -68336,7 +68336,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="roland ahoy! (uk) (1984) [original].dsk" size="194816" crc="99baf9f9" sha1="56b60da13ea05cc86c6aae350d18a7507297731d"/>
+				<rom name="roland ahoy (uk) (1984) [original].dsk" size="194816" crc="99baf9f9" sha1="56b60da13ea05cc86c6aae350d18a7507297731d"/>
 			</dataarea>
 		</part>
 	</software>
@@ -68348,7 +68348,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="roland ahoy! (uk) (1984).dsk" size="194816" crc="bde62934" sha1="b39b27b1dfccbb6e6e0f20fa14bd1e70b3fbdc0f"/>
+				<rom name="roland ahoy (uk) (1984).dsk" size="194816" crc="bde62934" sha1="b39b27b1dfccbb6e6e0f20fa14bd1e70b3fbdc0f"/>
 			</dataarea>
 		</part>
 	</software>
@@ -69013,7 +69013,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194560">
-				<rom name="rygar - let's fight !!! (uk) (1987) [original] (weak sectors).dsk" size="194560" crc="d8c402e4" sha1="cfc9caa29e14375e7a5ed58f4ebc4f3c7614a69c"/>
+				<rom name="rygar - let's fight  (uk) (1987) [original] (weak sectors).dsk" size="194560" crc="d8c402e4" sha1="cfc9caa29e14375e7a5ed58f4ebc4f3c7614a69c"/>
 			</dataarea>
 		</part>
 	</software>
@@ -69025,7 +69025,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="rygar - let's fight !!! (uk) (1987) [original].dsk" size="194816" crc="a0810a49" sha1="cc2d119668e2899cd5829b9e159a2fecaad264ae"/>
+				<rom name="rygar - let's fight  (uk) (1987) [original].dsk" size="194816" crc="a0810a49" sha1="cc2d119668e2899cd5829b9e159a2fecaad264ae"/>
 			</dataarea>
 		</part>
 	</software>
@@ -69037,7 +69037,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="rygar - let's fight !!! (uk) (1987).dsk" size="194816" crc="e7edf5df" sha1="d16c18a55f3dcb5a7712eb3bf2ef9a0e6cfd1f51"/>
+				<rom name="rygar - let's fight  (uk) (1987).dsk" size="194816" crc="e7edf5df" sha1="d16c18a55f3dcb5a7712eb3bf2ef9a0e6cfd1f51"/>
 			</dataarea>
 		</part>
 	</software>
@@ -69725,7 +69725,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="save santa ! (uk) (1987) (pd).dsk" size="194816" crc="3a662e08" sha1="4c2014087e1400c2e9d9d0834e7a28b6d8ecfaf4"/>
+				<rom name="save santa  (uk) (1987) (pd).dsk" size="194816" crc="3a662e08" sha1="4c2014087e1400c2e9d9d0834e7a28b6d8ecfaf4"/>
 			</dataarea>
 		</part>
 	</software>
@@ -72487,7 +72487,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="snap! (uk) (1986).dsk" size="194816" crc="da9bc0e7" sha1="970659de151335ec4e88b24c05621882f052f037"/>
+				<rom name="snap (uk) (1986).dsk" size="194816" crc="da9bc0e7" sha1="970659de151335ec4e88b24c05621882f052f037"/>
 			</dataarea>
 		</part>
 	</software>
@@ -72511,7 +72511,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="snoball in hell! (uk) (1989).dsk" size="194816" crc="96a001ea" sha1="8aa1e48ae1e5d2152dcf08da353b84d6be194f34"/>
+				<rom name="snoball in hell (uk) (1989).dsk" size="194816" crc="96a001ea" sha1="8aa1e48ae1e5d2152dcf08da353b84d6be194f34"/>
 			</dataarea>
 		</part>
 	</software>
@@ -72607,7 +72607,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="snow plough! (uk) (1986).dsk" size="194816" crc="ca16efb2" sha1="da6f9211a9ce571880ede1a63418b300b139d586"/>
+				<rom name="snow plough (uk) (1986).dsk" size="194816" crc="ca16efb2" sha1="da6f9211a9ce571880ede1a63418b300b139d586"/>
 			</dataarea>
 		</part>
 	</software>
@@ -73387,7 +73387,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="sos 100% (f) (1988) [amstrad cent pour cent].dsk" size="194816" crc="953bf28b" sha1="a0f0684265f364111efc4de7e3dabfe02c2aa8bf"/>
+				<rom name="sos 100 (f) (1988) [amstrad cent pour cent].dsk" size="194816" crc="953bf28b" sha1="a0f0684265f364111efc4de7e3dabfe02c2aa8bf"/>
 			</dataarea>
 		</part>
 	</software>
@@ -74742,7 +74742,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="splatch! (uk) (1985) [amstrad computer user].dsk" size="194816" crc="4abedd1c" sha1="7de28f2b9321cda7d4207a75eb45cf0a0bcb230f"/>
+				<rom name="splatch (uk) (1985) [amstrad computer user].dsk" size="194816" crc="4abedd1c" sha1="7de28f2b9321cda7d4207a75eb45cf0a0bcb230f"/>
 			</dataarea>
 		</part>
 	</software>
@@ -77874,7 +77874,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="super seymour saves the planet!! (uk) (1991).dsk" size="194816" crc="3d779784" sha1="782542378bbd483e32b2f591025cdf51e6332855"/>
+				<rom name="super seymour saves the planet (uk) (1991).dsk" size="194816" crc="3d779784" sha1="782542378bbd483e32b2f591025cdf51e6332855"/>
 			</dataarea>
 		</part>
 	</software>
@@ -83672,7 +83672,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="think! (uk) (1985).dsk" size="194816" crc="fd7753c8" sha1="6ee3f5bec3175d0d6d6ab3cb3e0f92a869519034"/>
+				<rom name="think (uk) (1985).dsk" size="194816" crc="fd7753c8" sha1="6ee3f5bec3175d0d6d6ab3cb3e0f92a869519034"/>
 			</dataarea>
 		</part>
 	</software>
@@ -85548,7 +85548,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="trench attack! (uk) (1985) [amstrad computer user].dsk" size="194816" crc="4ffe61a0" sha1="81e8af231dc2d17faa92874ebfa5326ca7cb0126"/>
+				<rom name="trench attack (uk) (1985) [amstrad computer user].dsk" size="194816" crc="4ffe61a0" sha1="81e8af231dc2d17faa92874ebfa5326ca7cb0126"/>
 			</dataarea>
 		</part>
 	</software>
@@ -93150,7 +93150,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="au voleur !! (f) (1989) [micro mag] [lmc] [utilitaire].dsk" size="194816" crc="129878af" sha1="696d3320f785f150d05d3d0b0f5c58eab1bc4142"/>
+				<rom name="au voleur  (f) (1989) [micro mag] [lmc] [utilitaire].dsk" size="194816" crc="129878af" sha1="696d3320f785f150d05d3d0b0f5c58eab1bc4142"/>
 			</dataarea>
 		</part>
 	</software>
@@ -95977,7 +95977,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="droles de caracteres! (f) (1985) [tilt] [utilitaire].dsk" size="194816" crc="283db134" sha1="e015ef79b96f5449156e2898b0da630075f97910"/>
+				<rom name="droles de caracteres (f) (1985) [tilt] [utilitaire].dsk" size="194816" crc="283db134" sha1="e015ef79b96f5449156e2898b0da630075f97910"/>
 			</dataarea>
 		</part>
 	</software>
@@ -100072,7 +100072,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="outch! noter (uk) (1996) (pd) [utilitaire].dsk" size="194816" crc="30a5af94" sha1="2458a20d97f04e54a636350ac8f5e0fb02ce0fd5"/>
+				<rom name="outch noter (uk) (1996) (pd) [utilitaire].dsk" size="194816" crc="30a5af94" sha1="2458a20d97f04e54a636350ac8f5e0fb02ce0fd5"/>
 			</dataarea>
 		</part>
 	</software>
@@ -104747,7 +104747,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="bo ! (g).dsk" size="194816" crc="6f5d9917" sha1="10da5d189be62974637171a39522930eded91f76"/>
+				<rom name="bo  (g).dsk" size="194816" crc="6f5d9917" sha1="10da5d189be62974637171a39522930eded91f76"/>
 			</dataarea>
 		</part>
 	</software>
@@ -105744,7 +105744,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="205399">
-				<rom name="fire ! (e).dsk" size="205399" crc="70384b3f" sha1="eb48375f8746a037316e6c4a00bdc4175865edfb"/>
+				<rom name="fire  (e).dsk" size="205399" crc="70384b3f" sha1="eb48375f8746a037316e6c4a00bdc4175865edfb"/>
 			</dataarea>
 		</part>
 	</software>
@@ -105998,7 +105998,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="220581">
-				<rom name="gary lineker's hot shot ! (e).dsk" size="220581" crc="63814104" sha1="edca598bdf58dbd459f73eb5e7e77c8eff39e657"/>
+				<rom name="gary lineker's hot shot  (e).dsk" size="220581" crc="63814104" sha1="edca598bdf58dbd459f73eb5e7e77c8eff39e657"/>
 			</dataarea>
 		</part>
 	</software>
@@ -106130,7 +106130,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="89344">
-				<rom name="get dexter ! (e).dsk" size="89344" crc="4b6eb1a7" sha1="c1f931053742edc76b6350f630eb6bf18a7d5f78"/>
+				<rom name="get dexter  (e).dsk" size="89344" crc="4b6eb1a7" sha1="c1f931053742edc76b6350f630eb6bf18a7d5f78"/>
 			</dataarea>
 		</part>
 	</software>
@@ -108440,7 +108440,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="192037">
-				<rom name="osprey ! (e).dsk" size="192037" crc="5d58351a" sha1="b3aa19e399fc671019b11f0d56385aaaa7fab5fc"/>
+				<rom name="osprey  (e).dsk" size="192037" crc="5d58351a" sha1="b3aa19e399fc671019b11f0d56385aaaa7fab5fc"/>
 			</dataarea>
 		</part>
 	</software>
@@ -108704,7 +108704,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="202565">
-				<rom name="pirates ! (f) - disk 1a.dsk" size="202565" crc="8c84c0c3" sha1="cb81e8a6f229dafbd23045416a2c7560ad380fc2"/>
+				<rom name="pirates  (f) - disk 1a.dsk" size="202565" crc="8c84c0c3" sha1="cb81e8a6f229dafbd23045416a2c7560ad380fc2"/>
 			</dataarea>
 		</part>
 	</software>
@@ -108716,7 +108716,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="195635">
-				<rom name="pirates ! (f) - disk 1b.dsk" size="195635" crc="f1d02218" sha1="e23ebe66e522e1728efdf8d45964fee7272b5fff"/>
+				<rom name="pirates  (f) - disk 1b.dsk" size="195635" crc="f1d02218" sha1="e23ebe66e522e1728efdf8d45964fee7272b5fff"/>
 			</dataarea>
 		</part>
 	</software>
@@ -108992,7 +108992,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="raid !!! (e).dsk" size="194816" crc="4d3ea6e7" sha1="7064f3d0b383be351ce329df614b306d786d119d"/>
+				<rom name="raid  (e).dsk" size="194816" crc="4d3ea6e7" sha1="7064f3d0b383be351ce329df614b306d786d119d"/>
 			</dataarea>
 		</part>
 	</software>
@@ -109652,7 +109652,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="195328">
-				<rom name="speech ! (e).dsk" size="195328" crc="7b77af01" sha1="a6be87d268005ba93a3252605f3d59fde86619ad"/>
+				<rom name="speech  (e).dsk" size="195328" crc="7b77af01" sha1="a6be87d268005ba93a3252605f3d59fde86619ad"/>
 			</dataarea>
 		</part>
 	</software>
@@ -111659,7 +111659,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="blip! (1989)(silverbird software).dsk" size="194816" crc="6920ca8f" sha1="0f4428e4613c9e907e706a177965c188034003ba"/>
+				<rom name="blip (1989)(silverbird software).dsk" size="194816" crc="6920ca8f" sha1="0f4428e4613c9e907e706a177965c188034003ba"/>
 			</dataarea>
 		</part>
 	</software>
@@ -111743,7 +111743,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="bo! (1994)(brdl)(de).dsk" size="194816" crc="14d527f6" sha1="13cd6692cb63033bea334a7f41114077796c2607"/>
+				<rom name="bo (1994)(brdl)(de).dsk" size="194816" crc="14d527f6" sha1="13cd6692cb63033bea334a7f41114077796c2607"/>
 			</dataarea>
 		</part>
 	</software>
@@ -115199,7 +115199,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="danger mouse in making whoopee! (1985)(creative sparks).dsk" size="194816" crc="2fe8c03c" sha1="bebe286f55148ebd6bf1924089881ead7c4525ef"/>
+				<rom name="danger mouse in making whoopee (1985)(creative sparks).dsk" size="194816" crc="2fe8c03c" sha1="bebe286f55148ebd6bf1924089881ead7c4525ef"/>
 			</dataarea>
 		</part>
 	</software>
@@ -115235,7 +115235,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="danger! adventurer at work! (1991)(wow software).dsk" size="194816" crc="46c67bbd" sha1="8941476b20942dc002f8a558d651e015b7dd0f51"/>
+				<rom name="danger adventurer at work (1991)(wow software).dsk" size="194816" crc="46c67bbd" sha1="8941476b20942dc002f8a558d651e015b7dd0f51"/>
 			</dataarea>
 		</part>
 	</software>
@@ -122159,7 +122159,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="gary lineker's hot-shot! (1988)(gremlin graphics software).dsk" size="194816" crc="c8657d30" sha1="7a81ed28043d0f49ec010db2c88b4d918a31bfd0"/>
+				<rom name="gary lineker's hot-shot (1988)(gremlin graphics software).dsk" size="194816" crc="c8657d30" sha1="7a81ed28043d0f49ec010db2c88b4d918a31bfd0"/>
 			</dataarea>
 		</part>
 	</software>
@@ -124127,7 +124127,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="gunsmoke (1987)(go!)[cr nps][t +2 nps].dsk" size="194816" crc="10b71d21" sha1="da7d775230998fa9333b7e8eba8803307d7b24f8"/>
+				<rom name="gunsmoke (1987)(go)[cr nps][t +2 nps].dsk" size="194816" crc="10b71d21" sha1="da7d775230998fa9333b7e8eba8803307d7b24f8"/>
 			</dataarea>
 		</part>
 	</software>
@@ -124511,7 +124511,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="harrier attack! (1984)(durell software - amsoft).dsk" size="194816" crc="79fbcc59" sha1="0b5c5d557312f768046ada6953d3355f7b6bd0d8"/>
+				<rom name="harrier attack (1984)(durell software - amsoft).dsk" size="194816" crc="79fbcc59" sha1="0b5c5d557312f768046ada6953d3355f7b6bd0d8"/>
 			</dataarea>
 		</part>
 	</software>
@@ -124523,7 +124523,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="harrier attack! (1984)(durell software - amsoft)[a].dsk" size="194816" crc="2ddc9956" sha1="185b95eb8a51d2de1ba41f94b23366bee25d0d6c"/>
+				<rom name="harrier attack (1984)(durell software - amsoft)[a].dsk" size="194816" crc="2ddc9956" sha1="185b95eb8a51d2de1ba41f94b23366bee25d0d6c"/>
 			</dataarea>
 		</part>
 	</software>
@@ -126275,7 +126275,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="impact! (1988)(audiogenic software)(es).dsk" size="194816" crc="63269440" sha1="32d33623313bdf30e912b159d2cfb8a5c8741a36"/>
+				<rom name="impact (1988)(audiogenic software)(es).dsk" size="194816" crc="63269440" sha1="32d33623313bdf30e912b159d2cfb8a5c8741a36"/>
 			</dataarea>
 		</part>
 	</software>
@@ -126287,7 +126287,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="impact! (1988)(audiogenic software).dsk" size="194816" crc="1dfb196b" sha1="91c9bd25801a78061925e67569cd8fe1534eded1"/>
+				<rom name="impact (1988)(audiogenic software).dsk" size="194816" crc="1dfb196b" sha1="91c9bd25801a78061925e67569cd8fe1534eded1"/>
 			</dataarea>
 		</part>
 	</software>
@@ -126299,7 +126299,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="impact! (1988)(audiogenic software)[t].dsk" size="194816" crc="21d246e2" sha1="b1dc68b8a87c94c2976d816d0327b5576c500c86"/>
+				<rom name="impact (1988)(audiogenic software)[t].dsk" size="194816" crc="21d246e2" sha1="b1dc68b8a87c94c2976d816d0327b5576c500c86"/>
 			</dataarea>
 		</part>
 	</software>
@@ -129409,7 +129409,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="219648">
-				<rom name="l.e.d. storm (1988)(go!).dsk" size="219648" crc="137b5f84" sha1="b2ecdaa0a4eb050171ecee7ddd1bbed8e40b2ea8"/>
+				<rom name="l.e.d. storm (1988)(go).dsk" size="219648" crc="137b5f84" sha1="b2ecdaa0a4eb050171ecee7ddd1bbed8e40b2ea8"/>
 			</dataarea>
 		</part>
 	</software>
@@ -129421,7 +129421,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="l.e.d. storm (1988)(go!)[cr gpa][t gpa].dsk" size="194816" crc="46ee8e01" sha1="46d74c2b423ab0abf32f7267ad87557fd294885a"/>
+				<rom name="l.e.d. storm (1988)(go)[cr gpa][t gpa].dsk" size="194816" crc="46ee8e01" sha1="46d74c2b423ab0abf32f7267ad87557fd294885a"/>
 			</dataarea>
 		</part>
 	</software>
@@ -129746,7 +129746,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="lazer tag (1987)(go!)[cr mc spe].dsk" size="194816" crc="3b9d24a9" sha1="54e6fd6f1530ddaba3830e59fcdfdc4bcbac4bef"/>
+				<rom name="lazer tag (1987)(go)[cr mc spe].dsk" size="194816" crc="3b9d24a9" sha1="54e6fd6f1530ddaba3830e59fcdfdc4bcbac4bef"/>
 			</dataarea>
 		</part>
 	</software>
@@ -129758,7 +129758,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="lazer tag (1987)(go!)[t].dsk" size="194816" crc="7c7bfffe" sha1="b825357784709e75b0e2fed551c1665024273abd"/>
+				<rom name="lazer tag (1987)(go)[t].dsk" size="194816" crc="7c7bfffe" sha1="b825357784709e75b0e2fed551c1665024273abd"/>
 			</dataarea>
 		</part>
 	</software>
@@ -135890,7 +135890,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="oh mummy!! (1984)(amsoft)(es).dsk" size="194816" crc="7c714b05" sha1="3b3b2522553caed5b7ed0797d2629c440cf32347"/>
+				<rom name="oh mummy (1984)(amsoft)(es).dsk" size="194816" crc="7c714b05" sha1="3b3b2522553caed5b7ed0797d2629c440cf32347"/>
 			</dataarea>
 		</part>
 	</software>
@@ -135902,7 +135902,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="oh mummy!! (1984)(amsoft)(es)[a].dsk" size="194816" crc="31716ab1" sha1="9719c73a0fb987db33e070394beb79bb98382d7e"/>
+				<rom name="oh mummy (1984)(amsoft)(es)[a].dsk" size="194816" crc="31716ab1" sha1="9719c73a0fb987db33e070394beb79bb98382d7e"/>
 			</dataarea>
 		</part>
 	</software>
@@ -135914,7 +135914,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="oh mummy!! (1984)(amsoft).dsk" size="194816" crc="f877cc81" sha1="9a500d019fb35d9598a3db4ec0cfb2abe9ee7774"/>
+				<rom name="oh mummy (1984)(amsoft).dsk" size="194816" crc="f877cc81" sha1="9a500d019fb35d9598a3db4ec0cfb2abe9ee7774"/>
 			</dataarea>
 		</part>
 	</software>
@@ -135926,7 +135926,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="oh mummy!! (1984)(amsoft)[a].dsk" size="194816" crc="30501bf9" sha1="965f1b76c999732436ea5f834e8360e252f35787"/>
+				<rom name="oh mummy (1984)(amsoft)[a].dsk" size="194816" crc="30501bf9" sha1="965f1b76c999732436ea5f834e8360e252f35787"/>
 			</dataarea>
 		</part>
 	</software>
@@ -135938,7 +135938,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="oink! - piggy tales (1987)(crl group).dsk" size="194816" crc="bbd3676f" sha1="95468fedc75f8c84a62aa9271bda5350a661f85e"/>
+				<rom name="oink - piggy tales (1987)(crl group).dsk" size="194816" crc="bbd3676f" sha1="95468fedc75f8c84a62aa9271bda5350a661f85e"/>
 			</dataarea>
 		</part>
 	</software>
@@ -137870,7 +137870,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="pipe crazy! (19xx)(c. moullec).dsk" size="194816" crc="2b84ad42" sha1="17ea78fd7206ab510d12b008921960211aa976f3"/>
+				<rom name="pipe crazy (19xx)(c. moullec).dsk" size="194816" crc="2b84ad42" sha1="17ea78fd7206ab510d12b008921960211aa976f3"/>
 			</dataarea>
 		</part>
 	</software>
@@ -140390,7 +140390,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="ramparts (1988)(go!)[cr mc spe].dsk" size="194816" crc="d348469d" sha1="95d0432f7d95aaebf3ebf159811971fdd58cbe2e"/>
+				<rom name="ramparts (1988)(go)[cr mc spe].dsk" size="194816" crc="d348469d" sha1="95d0432f7d95aaebf3ebf159811971fdd58cbe2e"/>
 			</dataarea>
 		</part>
 	</software>
@@ -140726,7 +140726,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="redhawk ii - kwah! (1986)(melbourne house).dsk" size="194816" crc="d4897cac" sha1="0c479793dd5c638d555b251d097b9dac489ed278"/>
+				<rom name="redhawk ii - kwah (1986)(melbourne house).dsk" size="194816" crc="d4897cac" sha1="0c479793dd5c638d555b251d097b9dac489ed278"/>
 			</dataarea>
 		</part>
 	</software>
@@ -141938,7 +141938,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="roland ahoy! (1984)(amsoft).dsk" size="194816" crc="ddcf4a74" sha1="4c0509ce86eb4c9831a35443a7bad7b2abd341f5"/>
+				<rom name="roland ahoy (1984)(amsoft).dsk" size="194816" crc="ddcf4a74" sha1="4c0509ce86eb4c9831a35443a7bad7b2abd341f5"/>
 			</dataarea>
 		</part>
 	</software>
@@ -143630,7 +143630,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="serpentino! (1987)(p. erieau)(fr).dsk" size="194816" crc="02ec7cdf" sha1="c71f506ad0ee1711b655775157eba5d90f6f6d1f"/>
+				<rom name="serpentino (1987)(p. erieau)(fr).dsk" size="194816" crc="02ec7cdf" sha1="c71f506ad0ee1711b655775157eba5d90f6f6d1f"/>
 			</dataarea>
 		</part>
 	</software>
@@ -143678,7 +143678,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="seymour - take one! (1991)(codemasters - amstrad action magazine).dsk" size="194816" crc="35290124" sha1="7f4ed39f75b7ca50c571311197a8a3665e148400"/>
+				<rom name="seymour - take one (1991)(codemasters - amstrad action magazine).dsk" size="194816" crc="35290124" sha1="7f4ed39f75b7ca50c571311197a8a3665e148400"/>
 			</dataarea>
 		</part>
 	</software>
@@ -144266,7 +144266,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="side arms (1988)(go!).dsk" size="194816" crc="9eedb241" sha1="a7704656e0e459d2f79a6b1b1996b497b85fa8ce"/>
+				<rom name="side arms (1988)(go).dsk" size="194816" crc="9eedb241" sha1="a7704656e0e459d2f79a6b1b1996b497b85fa8ce"/>
 			</dataarea>
 		</part>
 	</software>
@@ -145082,7 +145082,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="snodgits! (1985)(creative sparks).dsk" size="194816" crc="698cad67" sha1="5e14c2f1f39e988c8979e2bd6fb71e1c9a882256"/>
+				<rom name="snodgits (1985)(creative sparks).dsk" size="194816" crc="698cad67" sha1="5e14c2f1f39e988c8979e2bd6fb71e1c9a882256"/>
 			</dataarea>
 		</part>
 	</software>
@@ -145430,7 +145430,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="sos 100% (1988)(alain massoumipour)(fr).dsk" size="194816" crc="248982ff" sha1="fbfdfd00adc9284af5ca9bf50268d3834d8cde13"/>
+				<rom name="sos 100 (1988)(alain massoumipour)(fr).dsk" size="194816" crc="248982ff" sha1="fbfdfd00adc9284af5ca9bf50268d3834d8cde13"/>
 			</dataarea>
 		</part>
 	</software>
@@ -146390,7 +146390,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="splat! (1985)(incentive software - amsoft).dsk" size="194816" crc="91bf741f" sha1="de8a13b36546c5f36644055f084151ae22ee4ef1"/>
+				<rom name="splat (1985)(incentive software - amsoft).dsk" size="194816" crc="91bf741f" sha1="de8a13b36546c5f36644055f084151ae22ee4ef1"/>
 			</dataarea>
 		</part>
 	</software>
@@ -146402,7 +146402,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="splatch! (1985)(robosoft)[t +3].dsk" size="194816" crc="3cec289e" sha1="5ccfdcb2f4b8e1988a53643e4cb7b2fffb1b552f"/>
+				<rom name="splatch (1985)(robosoft)[t +3].dsk" size="194816" crc="3cec289e" sha1="5ccfdcb2f4b8e1988a53643e4cb7b2fffb1b552f"/>
 			</dataarea>
 		</part>
 	</software>
@@ -146618,7 +146618,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="spy vs spy iii - arctic antics (1988)(databyte)[cr max of cbs!].dsk" size="194816" crc="d57c7d90" sha1="c9df36ac80992da4070e0b569c25f088a03e68d6"/>
+				<rom name="spy vs spy iii - arctic antics (1988)(databyte)[cr max of cbs].dsk" size="194816" crc="d57c7d90" sha1="c9df36ac80992da4070e0b569c25f088a03e68d6"/>
 			</dataarea>
 		</part>
 	</software>
@@ -147554,7 +147554,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="street fighter (1988)(go!).dsk" size="194816" crc="c160cee0" sha1="b69298978861bd756d8f50d71cc943d966adf96f"/>
+				<rom name="street fighter (1988)(go).dsk" size="194816" crc="c160cee0" sha1="b69298978861bd756d8f50d71cc943d966adf96f"/>
 			</dataarea>
 		</part>
 	</software>
@@ -147566,7 +147566,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="street fighter (1988)(go!)[cr tb crackers][t tb crackers].dsk" size="194816" crc="003578de" sha1="243b871f037cdead2e4ede41f5e7c8db478fbba5"/>
+				<rom name="street fighter (1988)(go)[cr tb crackers][t tb crackers].dsk" size="194816" crc="003578de" sha1="243b871f037cdead2e4ede41f5e7c8db478fbba5"/>
 			</dataarea>
 		</part>
 	</software>
@@ -147758,7 +147758,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="strike! (1987)(mastertronic added dimension).dsk" size="194816" crc="f01ff461" sha1="2f044243cd901251de24b50f8e0aaa09fe0f677c"/>
+				<rom name="strike (1987)(mastertronic added dimension).dsk" size="194816" crc="f01ff461" sha1="2f044243cd901251de24b50f8e0aaa09fe0f677c"/>
 			</dataarea>
 		</part>
 	</software>
@@ -150458,7 +150458,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="thing! (1988)(players software).dsk" size="194816" crc="1b36e2bd" sha1="19c5dea9d93cfb1f288ac35bf225ec4fc3b7c03c"/>
+				<rom name="thing (1988)(players software).dsk" size="194816" crc="1b36e2bd" sha1="19c5dea9d93cfb1f288ac35bf225ec4fc3b7c03c"/>
 			</dataarea>
 		</part>
 	</software>
@@ -150470,7 +150470,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="thing! (1988)(players software)[a].dsk" size="194816" crc="ee9cf878" sha1="e5b45be94099ceb2d89cee510688374b2df173f7"/>
+				<rom name="thing (1988)(players software)[a].dsk" size="194816" crc="ee9cf878" sha1="e5b45be94099ceb2d89cee510688374b2df173f7"/>
 			</dataarea>
 		</part>
 	</software>
@@ -150494,7 +150494,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="think! (1985)(ariolasoft uk).dsk" size="194816" crc="d0d60cd0" sha1="e3ffd64d9a0d90e44cb035709631349cd1818908"/>
+				<rom name="think (1985)(ariolasoft uk).dsk" size="194816" crc="d0d60cd0" sha1="e3ffd64d9a0d90e44cb035709631349cd1818908"/>
 			</dataarea>
 		</part>
 	</software>
@@ -150830,7 +150830,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="tiger road (1988)(go!).dsk" size="194816" crc="336c9e95" sha1="c548c58c5f9e531ef2933965012b938041ea608a"/>
+				<rom name="tiger road (1988)(go).dsk" size="194816" crc="336c9e95" sha1="c548c58c5f9e531ef2933965012b938041ea608a"/>
 			</dataarea>
 		</part>
 	</software>
@@ -150842,7 +150842,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="214272">
-				<rom name="tiger road (1988)(go!)[a].dsk" size="214272" crc="95d76428" sha1="034c7c75ee5712ec1e3f9c0d1ecbd2a0664f8004"/>
+				<rom name="tiger road (1988)(go)[a].dsk" size="214272" crc="95d76428" sha1="034c7c75ee5712ec1e3f9c0d1ecbd2a0664f8004"/>
 			</dataarea>
 		</part>
 	</software>
@@ -151862,7 +151862,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="trantor - the last stormtrooper (1987)(go!).dsk" size="194816" crc="79c98e49" sha1="16cd4e5fcae3927583f8a5579f2d77eaf57cf97f"/>
+				<rom name="trantor - the last stormtrooper (1987)(go).dsk" size="194816" crc="79c98e49" sha1="16cd4e5fcae3927583f8a5579f2d77eaf57cf97f"/>
 			</dataarea>
 		</part>
 	</software>
@@ -154874,7 +154874,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="wizard warz (1988)(go!).dsk" size="194816" crc="60590357" sha1="f3e95ed73b1efd3875574bac6d27d72630452326"/>
+				<rom name="wizard warz (1988)(go).dsk" size="194816" crc="60590357" sha1="f3e95ed73b1efd3875574bac6d27d72630452326"/>
 			</dataarea>
 		</part>
 	</software>
@@ -155666,7 +155666,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="yabba dabba doo! (1985)(quicksilva).dsk" size="194816" crc="0e571f4d" sha1="1b0aca1b6147cdeca175c6148ddbf7116865df79"/>
+				<rom name="yabba dabba doo (1985)(quicksilva).dsk" size="194816" crc="0e571f4d" sha1="1b0aca1b6147cdeca175c6148ddbf7116865df79"/>
 			</dataarea>
 		</part>
 	</software>
@@ -155678,7 +155678,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="yabba dabba doo! (1985)(quicksilva)[a].dsk" size="194816" crc="feb038be" sha1="4c6788dffc78c52d193a639dbc98a7ada04d92e3"/>
+				<rom name="yabba dabba doo (1985)(quicksilva)[a].dsk" size="194816" crc="feb038be" sha1="4c6788dffc78c52d193a639dbc98a7ada04d92e3"/>
 			</dataarea>
 		</part>
 	</software>
@@ -158095,7 +158095,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204544">
-				<rom name="cbs! demo iii (uk) (19xx) (pd) (goodcpc).dsk" size="204544" crc="dcdb8b28" sha1="5b4548b0b82509cffcf12330872cbd8b7fb91b09"/>
+				<rom name="cbs demo iii (uk) (19xx) (pd) (goodcpc).dsk" size="204544" crc="dcdb8b28" sha1="5b4548b0b82509cffcf12330872cbd8b7fb91b09"/>
 			</dataarea>
 		</part>
 	</software>
@@ -163783,7 +163783,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="fast food! (uk) (19xx) (goodcpc).dsk" size="194816" crc="adf0a97a" sha1="ee6ff1c93e3ab88d0f90e257cc4657ecd2d840fb"/>
+				<rom name="fast food (uk) (19xx) (goodcpc).dsk" size="194816" crc="adf0a97a" sha1="ee6ff1c93e3ab88d0f90e257cc4657ecd2d840fb"/>
 			</dataarea>
 		</part>
 	</software>
@@ -166171,7 +166171,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194304">
-				<rom name="gold hits (disk 1 of 2) (beach head 2 &amp; raid!) [a1] (goodcpc).dsk" size="194304" crc="90ee57da" sha1="4627f84eb77aa10153a648c48950038d89229829"/>
+				<rom name="gold hits (disk 1 of 2) (beach head 2 &amp; raid) [a1] (goodcpc).dsk" size="194304" crc="90ee57da" sha1="4627f84eb77aa10153a648c48950038d89229829"/>
 			</dataarea>
 		</part>
 	</software>
@@ -176131,7 +176131,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="normal kombat! (uk) (1994) (pd) (goodcpc).dsk" size="194816" crc="73def8a5" sha1="b372b9bd1dba4092dd35ae7d6e796640c37b1122"/>
+				<rom name="normal kombat (uk) (1994) (pd) (goodcpc).dsk" size="194816" crc="73def8a5" sha1="b372b9bd1dba4092dd35ae7d6e796640c37b1122"/>
 			</dataarea>
 		</part>
 	</software>
@@ -176239,7 +176239,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="nova! (uk) (19xx) (goodcpc).dsk" size="194816" crc="fdd2aaf2" sha1="0c3235afc287cd7558b00961b29f1a16a67b6be0"/>
+				<rom name="nova (uk) (19xx) (goodcpc).dsk" size="194816" crc="fdd2aaf2" sha1="0c3235afc287cd7558b00961b29f1a16a67b6be0"/>
 			</dataarea>
 		</part>
 	</software>
@@ -180547,7 +180547,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="raid !!! (uk) (19xx) [h1] (goodcpc).dsk" size="194816" crc="eb14bf33" sha1="71e6f3f9e05d9017fe9f2bc4ff46f26f640a23db"/>
+				<rom name="raid  (uk) (19xx) [h1] (goodcpc).dsk" size="194816" crc="eb14bf33" sha1="71e6f3f9e05d9017fe9f2bc4ff46f26f640a23db"/>
 			</dataarea>
 		</part>
 	</software>
@@ -184567,7 +184567,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="sos100% (f) (19xx) (pd) (goodcpc).dsk" size="194816" crc="54f3172a" sha1="d8d865e870114ddd7ddd1e48c501ec26b82a3679"/>
+				<rom name="sos100 (f) (19xx) (pd) (goodcpc).dsk" size="194816" crc="54f3172a" sha1="d8d865e870114ddd7ddd1e48c501ec26b82a3679"/>
 			</dataarea>
 		</part>
 	</software>
@@ -185071,7 +185071,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="splatch! (uk) (1985) (goodcpc).dsk" size="194816" crc="db5b3035" sha1="b001a53bc982a1c7059d2a624029593570576e31"/>
+				<rom name="splatch (uk) (1985) (goodcpc).dsk" size="194816" crc="db5b3035" sha1="b001a53bc982a1c7059d2a624029593570576e31"/>
 			</dataarea>
 		</part>
 	</software>
@@ -185131,7 +185131,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204544">
-				<rom name="sprite demo &amp; trash! overscan megademo (uk) (1989) (pd) (goodcpc).dsk" size="204544" crc="64db1546" sha1="bb71545e7a9d2b8d8908352c90d4fb3d9e5f9251"/>
+				<rom name="sprite demo &amp; trash overscan megademo (uk) (1989) (pd) (goodcpc).dsk" size="204544" crc="64db1546" sha1="bb71545e7a9d2b8d8908352c90d4fb3d9e5f9251"/>
 			</dataarea>
 		</part>
 	</software>
@@ -185215,7 +185215,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="squash! (f) (2000) (goodcpc).dsk" size="194816" crc="768542a6" sha1="589535eab8624b0c0ad3c0f4145c881eceae0c8e"/>
+				<rom name="squash (f) (2000) (goodcpc).dsk" size="194816" crc="768542a6" sha1="589535eab8624b0c0ad3c0f4145c881eceae0c8e"/>
 			</dataarea>
 		</part>
 	</software>
@@ -192552,7 +192552,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="big copiers ii! (nongoodcpc).dsk" size="194816" crc="00fccb64" sha1="1c589121c35888be4f7404d4dd6303907f7374f7"/>
+				<rom name="big copiers ii (nongoodcpc).dsk" size="194816" crc="00fccb64" sha1="1c589121c35888be4f7404d4dd6303907f7374f7"/>
 			</dataarea>
 		</part>
 	</software>
@@ -193608,7 +193608,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="189696">
-				<rom name="cherry paint !! (no funciona con caprice) (nongoodcpc).dsk" size="189696" crc="ce3fd4dd" sha1="8c92b4aebcbac18422c520357c0fa2f3a24911fa"/>
+				<rom name="cherry paint  (no funciona con caprice) (nongoodcpc).dsk" size="189696" crc="ce3fd4dd" sha1="8c92b4aebcbac18422c520357c0fa2f3a24911fa"/>
 			</dataarea>
 		</part>
 	</software>
@@ -195720,7 +195720,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="203520">
-				<rom name="def com 1! (nongoodcpc).dsk" size="203520" crc="823df69e" sha1="4d3c0f722f0586383d11c9cd340b34ada27f131f"/>
+				<rom name="def com 1 (nongoodcpc).dsk" size="203520" crc="823df69e" sha1="4d3c0f722f0586383d11c9cd340b34ada27f131f"/>
 			</dataarea>
 		</part>
 	</software>
@@ -196332,7 +196332,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="179968">
-				<rom name="discology 2.0 (francais) #8! (nongoodcpc).dsk" size="179968" crc="4d87c916" sha1="bb99d9cc3b2519eb306a3207fdf4ce85853639f6"/>
+				<rom name="discology 2.0 (francais) #8 (nongoodcpc).dsk" size="179968" crc="4d87c916" sha1="bb99d9cc3b2519eb306a3207fdf4ce85853639f6"/>
 			</dataarea>
 		</part>
 	</software>
@@ -196380,7 +196380,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="179968">
-				<rom name="discology 3.0 (castellano - b.hacker) ! (nongoodcpc).dsk" size="179968" crc="dcccbbe6" sha1="9dde0d26e11ec73ff9f147aa1b8101d09f4ca3a4"/>
+				<rom name="discology 3.0 (castellano - b.hacker)  (nongoodcpc).dsk" size="179968" crc="dcccbbe6" sha1="9dde0d26e11ec73ff9f147aa1b8101d09f4ca3a4"/>
 			</dataarea>
 		</part>
 	</software>
@@ -197100,7 +197100,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="192768">
-				<rom name="documentos #005! (nongoodcpc).dsk" size="192768" crc="4293de7b" sha1="43e2c03d3edd8d2c57002fbcef5c8b660f53a28c"/>
+				<rom name="documentos #005 (nongoodcpc).dsk" size="192768" crc="4293de7b" sha1="43e2c03d3edd8d2c57002fbcef5c8b660f53a28c"/>
 			</dataarea>
 		</part>
 	</software>
@@ -197460,7 +197460,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="dr. doom's revenge (2 de 2) ! (nongoodcpc).dsk" size="194816" crc="ad6ec653" sha1="7c6e680d3d5d9511b4351c2357e808ef5749255a"/>
+				<rom name="dr. doom's revenge (2 de 2)  (nongoodcpc).dsk" size="194816" crc="ad6ec653" sha1="7c6e680d3d5d9511b4351c2357e808ef5749255a"/>
 			</dataarea>
 		</part>
 	</software>
@@ -197472,7 +197472,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="dr. doom's revenge! (side a) (nongoodcpc).dsk" size="194816" crc="e9007e61" sha1="a674e18a933aa1947184d18600005c4f22d0b7f0"/>
+				<rom name="dr. doom's revenge (side a) (nongoodcpc).dsk" size="194816" crc="e9007e61" sha1="a674e18a933aa1947184d18600005c4f22d0b7f0"/>
 			</dataarea>
 		</part>
 	</software>
@@ -197484,7 +197484,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="dr. doom's revenge! (side b) (nongoodcpc).dsk" size="194816" crc="9193cba2" sha1="51b0179811e8b4dc9f317a8b4c1278ca29c3c1e2"/>
+				<rom name="dr. doom's revenge (side b) (nongoodcpc).dsk" size="194816" crc="9193cba2" sha1="51b0179811e8b4dc9f317a8b4c1278ca29c3c1e2"/>
 			</dataarea>
 		</part>
 	</software>
@@ -197640,7 +197640,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="dr. graph 1.0 (2 de 2) #3 ! (nongoodcpc).dsk" size="194816" crc="33d2dc5d" sha1="e19e5d00c2d7c8969b5d6f494795b4367648694a"/>
+				<rom name="dr. graph 1.0 (2 de 2) #3  (nongoodcpc).dsk" size="194816" crc="33d2dc5d" sha1="e19e5d00c2d7c8969b5d6f494795b4367648694a"/>
 			</dataarea>
 		</part>
 	</software>
@@ -200892,7 +200892,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="green beret ! (nongoodcpc).dsk" size="194816" crc="d1b71224" sha1="1f91e91062851f1f5c5f49b8e67e1e2c3be8754f"/>
+				<rom name="green beret  (nongoodcpc).dsk" size="194816" crc="d1b71224" sha1="1f91e91062851f1f5c5f49b8e67e1e2c3be8754f"/>
 			</dataarea>
 		</part>
 	</software>
@@ -201096,7 +201096,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204544">
-				<rom name="guten tag! #2 (1996)(tag!)(de) (nongoodcpc).dsk" size="204544" crc="996b6be4" sha1="5aaab27db15e5cd6c137a5b67640d1b724841f8b"/>
+				<rom name="guten tag #2 (1996)(tag)(de) (nongoodcpc).dsk" size="204544" crc="996b6be4" sha1="5aaab27db15e5cd6c137a5b67640d1b724841f8b"/>
 			</dataarea>
 		</part>
 	</software>
@@ -201720,7 +201720,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="hisoft pascal ! (nongoodcpc).dsk" size="194816" crc="26b717c3" sha1="2c52d3591c1883a2646d4272571e3be8707c38c5"/>
+				<rom name="hisoft pascal  (nongoodcpc).dsk" size="194816" crc="26b717c3" sha1="2c52d3591c1883a2646d4272571e3be8707c38c5"/>
 			</dataarea>
 		</part>
 	</software>
@@ -201852,7 +201852,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="174336">
-				<rom name="hostages (2 de 2) ! (nongoodcpc).dsk" size="174336" crc="c10be468" sha1="626a349182f00a7f43369debdd024aac0a3a6a82"/>
+				<rom name="hostages (2 de 2)  (nongoodcpc).dsk" size="174336" crc="c10be468" sha1="626a349182f00a7f43369debdd024aac0a3a6a82"/>
 			</dataarea>
 		</part>
 	</software>
@@ -203820,7 +203820,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="199680">
-				<rom name="ledger &amp; lottery selector &amp; smart 2 &amp; tufdus 2.1 ! (nongoodcpc).dsk" size="199680" crc="90818178" sha1="9e3778b4505f89e76f6c3cd8e8782043aad217e8"/>
+				<rom name="ledger &amp; lottery selector &amp; smart 2 &amp; tufdus 2.1  (nongoodcpc).dsk" size="199680" crc="90818178" sha1="9e3778b4505f89e76f6c3cd8e8782043aad217e8"/>
 			</dataarea>
 		</part>
 	</software>
@@ -203868,7 +203868,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="226048">
-				<rom name="lemmings ! (nongoodcpc).dsk" size="226048" crc="c8d6d5fa" sha1="2f35979700c0b8ba6f12e3cb97e37729419f6b2e"/>
+				<rom name="lemmings  (nongoodcpc).dsk" size="226048" crc="c8d6d5fa" sha1="2f35979700c0b8ba6f12e3cb97e37729419f6b2e"/>
 			</dataarea>
 		</part>
 	</software>
@@ -207960,7 +207960,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="184322">
-				<rom name="myrampos (no$cpc) (nongoodcpc).dsk" size="184322" crc="6f0edd73" sha1="39f77bdc3fcdac5e6904cd65d503fe6baf05304f"/>
+				<rom name="myrampos (no_cpc) (nongoodcpc).dsk" size="184322" crc="6f0edd73" sha1="39f77bdc3fcdac5e6904cd65d503fe6baf05304f"/>
 			</dataarea>
 		</part>
 	</software>
@@ -210324,7 +210324,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="199680">
-				<rom name="pirates! (1 de 2) (nongoodcpc).dsk" size="199680" crc="4a1d28f5" sha1="ccd232d8119f3f79451c689b719fbf69a5fbf821"/>
+				<rom name="pirates (1 de 2) (nongoodcpc).dsk" size="199680" crc="4a1d28f5" sha1="ccd232d8119f3f79451c689b719fbf69a5fbf821"/>
 			</dataarea>
 		</part>
 	</software>
@@ -210336,7 +210336,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="pirates! (2 de 2) (nongoodcpc).dsk" size="194816" crc="c5b7058b" sha1="2450a9801b698952fe5ad8591218d85ba23ece4a"/>
+				<rom name="pirates (2 de 2) (nongoodcpc).dsk" size="194816" crc="c5b7058b" sha1="2450a9801b698952fe5ad8591218d85ba23ece4a"/>
 			</dataarea>
 		</part>
 	</software>
@@ -210564,7 +210564,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="147968">
-				<rom name="poder oscuro, el! (nongoodcpc).dsk" size="147968" crc="3bce59ee" sha1="f31b86554721aeab7c99b99cafc3f5cc94b7ba8c"/>
+				<rom name="poder oscuro, el (nongoodcpc).dsk" size="147968" crc="3bce59ee" sha1="f31b86554721aeab7c99b99cafc3f5cc94b7ba8c"/>
 			</dataarea>
 		</part>
 	</software>
@@ -211176,7 +211176,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="192768">
-				<rom name="protext !! (nongoodcpc).dsk" size="192768" crc="fd4ecc2e" sha1="c08860ff02e01e16d4c265b061b996b15ab3e07a"/>
+				<rom name="protext  (nongoodcpc).dsk" size="192768" crc="fd4ecc2e" sha1="c08860ff02e01e16d4c265b061b996b15ab3e07a"/>
 			</dataarea>
 		</part>
 	</software>
@@ -211824,7 +211824,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194304">
-				<rom name="rbi 2 baseball ! (nongoodcpc).dsk" size="194304" crc="c0288fd4" sha1="01558f23dcc30c84aac83e4263652eddd09791e6"/>
+				<rom name="rbi 2 baseball  (nongoodcpc).dsk" size="194304" crc="c0288fd4" sha1="01558f23dcc30c84aac83e4263652eddd09791e6"/>
 			</dataarea>
 		</part>
 	</software>
@@ -212316,7 +212316,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="rick dangerous ii #2 ! (nongoodcpc).dsk" size="194816" crc="2d3440f9" sha1="ed8cd3a4f72af4799ce55e717aa3f6a5e460319d"/>
+				<rom name="rick dangerous ii #2  (nongoodcpc).dsk" size="194816" crc="2d3440f9" sha1="ed8cd3a4f72af4799ce55e717aa3f6a5e460319d"/>
 			</dataarea>
 		</part>
 	</software>
@@ -212592,7 +212592,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="roland ahoy!, the duct (nongoodcpc).dsk" size="194816" crc="4d1ba1ba" sha1="029cb673fd87041ae5af69d6e5baafb19f775fdd"/>
+				<rom name="roland ahoy, the duct (nongoodcpc).dsk" size="194816" crc="4d1ba1ba" sha1="029cb673fd87041ae5af69d6e5baafb19f775fdd"/>
 			</dataarea>
 		</part>
 	</software>
@@ -212604,7 +212604,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="roland ahoy! (nongoodcpc).dsk" size="194816" crc="1eb23dcf" sha1="49795c11722d8795baa253b6b54116c95477b052"/>
+				<rom name="roland ahoy (nongoodcpc).dsk" size="194816" crc="1eb23dcf" sha1="49795c11722d8795baa253b6b54116c95477b052"/>
 			</dataarea>
 		</part>
 	</software>
@@ -212820,7 +212820,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="saboteur! (durell software) (1985) (slim standard jewel case) (nongoodcpc).dsk" size="194816" crc="1b738cb0" sha1="782bdf233c0164865534b19370af0d4957560b03"/>
+				<rom name="saboteur (durell software) (1985) (slim standard jewel case) (nongoodcpc).dsk" size="194816" crc="1b738cb0" sha1="782bdf233c0164865534b19370af0d4957560b03"/>
 			</dataarea>
 		</part>
 	</software>
@@ -213636,7 +213636,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="shaun's adventure ! (nongoodcpc).dsk" size="194816" crc="341be4d1" sha1="f59da4e8905af956503b6c2b0ab6eeaa74e798cc"/>
+				<rom name="shaun's adventure  (nongoodcpc).dsk" size="194816" crc="341be4d1" sha1="f59da4e8905af956503b6c2b0ab6eeaa74e798cc"/>
 			</dataarea>
 		</part>
 	</software>
@@ -214164,7 +214164,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="197120">
-				<rom name="sistema micropress (1 de 2) ! (nongoodcpc).dsk" size="197120" crc="53e0228b" sha1="60e84ff16ba615c0350bf9981c36977c0bf3282c"/>
+				<rom name="sistema micropress (1 de 2)  (nongoodcpc).dsk" size="197120" crc="53e0228b" sha1="60e84ff16ba615c0350bf9981c36977c0bf3282c"/>
 			</dataarea>
 		</part>
 	</software>
@@ -215172,7 +215172,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="stop press - demos ! (nongoodcpc).dsk" size="194816" crc="63fdc41d" sha1="aa9e0b4b8f1bc2f33badde3f8524314244b4f7c8"/>
+				<rom name="stop press - demos  (nongoodcpc).dsk" size="194816" crc="63fdc41d" sha1="aa9e0b4b8f1bc2f33badde3f8524314244b4f7c8"/>
 			</dataarea>
 		</part>
 	</software>
@@ -217176,7 +217176,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="total recall! (nongoodcpc).dsk" size="194816" crc="d75eb97c" sha1="856a1a8fe4162b2ced1a6823185b84ff88e36d8d"/>
+				<rom name="total recall (nongoodcpc).dsk" size="194816" crc="d75eb97c" sha1="856a1a8fe4162b2ced1a6823185b84ff88e36d8d"/>
 			</dataarea>
 		</part>
 	</software>
@@ -217956,7 +217956,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="193792">
-				<rom name="ultra sound ! (nongoodcpc).dsk" size="193792" crc="b347f31b" sha1="08d0c718f16ce45fbbec704a1f2ccebabe18af20"/>
+				<rom name="ultra sound  (nongoodcpc).dsk" size="193792" crc="b347f31b" sha1="08d0c718f16ce45fbbec704a1f2ccebabe18af20"/>
 			</dataarea>
 		</part>
 	</software>
@@ -218052,7 +218052,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="224512">
-				<rom name="viaje al centro de la tierra #3 ! (nongoodcpc).dsk" size="224512" crc="589c485b" sha1="8e5ff4c047205cde0878419eb7f6040046ef20b3"/>
+				<rom name="viaje al centro de la tierra #3  (nongoodcpc).dsk" size="224512" crc="589c485b" sha1="8e5ff4c047205cde0878419eb7f6040046ef20b3"/>
 			</dataarea>
 		</part>
 	</software>
@@ -218568,7 +218568,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194560">
-				<rom name="world class leaderboard (1 de 2) ! (nongoodcpc).dsk" size="194560" crc="35014adf" sha1="8524ec055f4e6484c2ccf72d7e6e184c793b8d95"/>
+				<rom name="world class leaderboard (1 de 2)  (nongoodcpc).dsk" size="194560" crc="35014adf" sha1="8524ec055f4e6484c2ccf72d7e6e184c793b8d95"/>
 			</dataarea>
 		</part>
 	</software>
@@ -218604,7 +218604,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="world class leaderboard (2 de 2) ! (nongoodcpc).dsk" size="194816" crc="fb3e3cd4" sha1="647a41b90d4f90f6a6635a28031774f01d60a2c8"/>
+				<rom name="world class leaderboard (2 de 2)  (nongoodcpc).dsk" size="194816" crc="fb3e3cd4" sha1="647a41b90d4f90f6a6635a28031774f01d60a2c8"/>
 			</dataarea>
 		</part>
 	</software>
@@ -218628,7 +218628,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194560">
-				<rom name="world games (1 de 2) ! (nongoodcpc).dsk" size="194560" crc="68fe27fb" sha1="b672c75f56d804d57b747ded84fd4470b61ae299"/>
+				<rom name="world games (1 de 2)  (nongoodcpc).dsk" size="194560" crc="68fe27fb" sha1="b672c75f56d804d57b747ded84fd4470b61ae299"/>
 			</dataarea>
 		</part>
 	</software>
@@ -218868,7 +218868,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="247552">
-				<rom name="xyphoes fantasy (1 de 2) ! (nongoodcpc).dsk" size="247552" crc="cf39c2ff" sha1="762f760d89db59a50cfa1cab5f1c3e5ca72103c7"/>
+				<rom name="xyphoes fantasy (1 de 2)  (nongoodcpc).dsk" size="247552" crc="cf39c2ff" sha1="762f760d89db59a50cfa1cab5f1c3e5ca72103c7"/>
 			</dataarea>
 		</part>
 	</software>
@@ -227740,12 +227740,12 @@ stick to CPC-Power disks, when available)
 		<publisher>Star Games</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="174848">
-				<rom name="4 amtix! accolades (uk) (face a) (1986) (cpm) [original] [compilation].dsk" size="174848" crc="c2f0426c" sha1="f3ba4095e0dc3f5e5c43da2fdd70649ba4515a64"/>
+				<rom name="4 amtix accolades (uk) (face a) (1986) (cpm) [original] [compilation].dsk" size="174848" crc="c2f0426c" sha1="f3ba4095e0dc3f5e5c43da2fdd70649ba4515a64"/>
 			</dataarea>
 		</part>
 		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="174848">
-				<rom name="4 amtix! accolades (uk) (face b) (1986) (cpm) [original] [compilation].dsk" size="174848" crc="0b36f117" sha1="f4b4ba4f206e0d42d2b1785f16793345784452ff"/>
+				<rom name="4 amtix accolades (uk) (face b) (1986) (cpm) [original] [compilation].dsk" size="174848" crc="0b36f117" sha1="f4b4ba4f206e0d42d2b1785f16793345784452ff"/>
 			</dataarea>
 		</part>
 	</software>
@@ -229098,42 +229098,42 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="cheat mode ii the revenge! (uk) (1990) (001-063) [amstrad action] [compilation].dsk" size="194816" crc="8b3cc612" sha1="49a451bf155cd0d1c5320b7bee82b3728bfe74ed"/>
+				<rom name="cheat mode ii the revenge (uk) (1990) (001-063) [amstrad action] [compilation].dsk" size="194816" crc="8b3cc612" sha1="49a451bf155cd0d1c5320b7bee82b3728bfe74ed"/>
 			</dataarea>
 		</part>
 		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="cheat mode ii the revenge! (uk) (1990) (064-127) [amstrad action] [compilation].dsk" size="194816" crc="f280053d" sha1="8029519481fdfdb08c7ea36ed8ceb840f948db53"/>
+				<rom name="cheat mode ii the revenge (uk) (1990) (064-127) [amstrad action] [compilation].dsk" size="194816" crc="f280053d" sha1="8029519481fdfdb08c7ea36ed8ceb840f948db53"/>
 			</dataarea>
 		</part>
 		<part name="flop3" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="cheat mode ii the revenge! (uk) (1990) (128-160) [amstrad action] [compilation].dsk" size="194816" crc="e55f449e" sha1="3acb07dbf1abfdce944b3f52c45c47b8b9694f2f"/>
+				<rom name="cheat mode ii the revenge (uk) (1990) (128-160) [amstrad action] [compilation].dsk" size="194816" crc="e55f449e" sha1="3acb07dbf1abfdce944b3f52c45c47b8b9694f2f"/>
 			</dataarea>
 		</part>
 		<part name="flop4" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="cheat mode ii the revenge! (uk) (1990) (161-224) [amstrad action] [compilation].dsk" size="194816" crc="dae8544b" sha1="21d980e06472087ecdd4c0ffd39b02fe0a4f0060"/>
+				<rom name="cheat mode ii the revenge (uk) (1990) (161-224) [amstrad action] [compilation].dsk" size="194816" crc="dae8544b" sha1="21d980e06472087ecdd4c0ffd39b02fe0a4f0060"/>
 			</dataarea>
 		</part>
 		<part name="flop5" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="cheat mode ii the revenge! (uk) (1990) (225-288) [amstrad action] [compilation].dsk" size="194816" crc="5b63b7df" sha1="bc3bc19831bb6eccb4254c6a6f9284a89535f498"/>
+				<rom name="cheat mode ii the revenge (uk) (1990) (225-288) [amstrad action] [compilation].dsk" size="194816" crc="5b63b7df" sha1="bc3bc19831bb6eccb4254c6a6f9284a89535f498"/>
 			</dataarea>
 		</part>
 		<part name="flop6" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="cheat mode ii the revenge! (uk) (1990) (289-308) [amstrad action] [compilation].dsk" size="194816" crc="32a84e6f" sha1="ba33efea5b3a9606a5c208562924acba4f1f9380"/>
+				<rom name="cheat mode ii the revenge (uk) (1990) (289-308) [amstrad action] [compilation].dsk" size="194816" crc="32a84e6f" sha1="ba33efea5b3a9606a5c208562924acba4f1f9380"/>
 			</dataarea>
 		</part>
 		<part name="flop7" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="cheat mode ii the revenge! (uk) (1990) (309-348) [amstrad action] [compilation].dsk" size="194816" crc="a0239294" sha1="aefdc15bad82235ea679debb819f0044a2c37d8b"/>
+				<rom name="cheat mode ii the revenge (uk) (1990) (309-348) [amstrad action] [compilation].dsk" size="194816" crc="a0239294" sha1="aefdc15bad82235ea679debb819f0044a2c37d8b"/>
 			</dataarea>
 		</part>
 		<part name="flop8" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="cheat mode ii the revenge! (uk) (1990) (349-388) [amstrad action] [compilation].dsk" size="194816" crc="2c27b621" sha1="aea09b9d05f14bb480ea3c1091bbe26d86c7edb2"/>
+				<rom name="cheat mode ii the revenge (uk) (1990) (349-388) [amstrad action] [compilation].dsk" size="194816" crc="2c27b621" sha1="aea09b9d05f14bb480ea3c1091bbe26d86c7edb2"/>
 			</dataarea>
 		</part>
 	</software>
@@ -231381,22 +231381,22 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="184589">
-				<rom name="go! (f) (face 1a) (1992) (1. turbo cup) [original] [compilation].dsk" size="184589" crc="ad17f71f" sha1="c54a9678df5a1d56ac5e165327e4698f265855b1"/>
+				<rom name="go (f) (face 1a) (1992) (1. turbo cup) [original] [compilation].dsk" size="184589" crc="ad17f71f" sha1="c54a9678df5a1d56ac5e165327e4698f265855b1"/>
 			</dataarea>
 		</part>
 		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="208384">
-				<rom name="go! (f) (face 1b) (1992) (2. harricana - raid international motoneige) [original] (gaps).dsk" size="208384" crc="0611d9a8" sha1="410fd91335aca69275ad37d16691238b372363b9"/>
+				<rom name="go (f) (face 1b) (1992) (2. harricana - raid international motoneige) [original] (gaps).dsk" size="208384" crc="0611d9a8" sha1="410fd91335aca69275ad37d16691238b372363b9"/>
 			</dataarea>
 		</part>
 		<part name="flop3" interface="floppy_3">
 			<dataarea name="flop" size="209223">
-				<rom name="go! (f) (face 2a) (1992) (3. out board) [original] [compilation] (gaps).dsk" size="209223" crc="0d65779d" sha1="c2f7824e9cac769101a95570d5aa709650dac970"/>
+				<rom name="go (f) (face 2a) (1992) (3. out board) [original] [compilation] (gaps).dsk" size="209223" crc="0d65779d" sha1="c2f7824e9cac769101a95570d5aa709650dac970"/>
 			</dataarea>
 		</part>
 		<part name="flop4" interface="floppy_3">
 			<dataarea name="flop" size="195328">
-				<rom name="go! (f) (face 2b) (128k) (1992) (4. toyota celica) [original] [compilation].dsk" size="195328" crc="aed138cc" sha1="1e876cb09f5322148ea97ec30eef93122020a628"/>
+				<rom name="go (f) (face 2b) (128k) (1992) (4. toyota celica) [original] [compilation].dsk" size="195328" crc="aed138cc" sha1="1e876cb09f5322148ea97ec30eef93122020a628"/>
 			</dataarea>
 		</part>
 	</software>
@@ -231916,12 +231916,12 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="327424">
-				<rom name="les a 100% d'or (f) (face a) (1989) [original] [compilation].dsk" size="327424" crc="7836ed2e" sha1="ec399dd83dd2fdc85566d10e905bd66a59468c5d"/>
+				<rom name="les a 100 d'or (f) (face a) (1989) [original] [compilation].dsk" size="327424" crc="7836ed2e" sha1="ec399dd83dd2fdc85566d10e905bd66a59468c5d"/>
 			</dataarea>
 		</part>
 		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="334592">
-				<rom name="les a 100% d'or (f) (face b) (1989) [original] [compilation].dsk" size="334592" crc="98ec4000" sha1="f585031cc6b17e1b4d1f564b378dc9b217b3a26e"/>
+				<rom name="les a 100 d'or (f) (face b) (1989) [original] [compilation].dsk" size="334592" crc="98ec4000" sha1="f585031cc6b17e1b4d1f564b378dc9b217b3a26e"/>
 			</dataarea>
 		</part>
 	</software>
@@ -232119,7 +232119,7 @@ stick to CPC-Power disks, when available)
 		</part>
 		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="194560">
-				<rom name="les geants de l'arcade (uk) (face 2a) (1988) (3. rygar - let's fight !!!) [original] [compilation].dsk" size="194560" crc="65de348b" sha1="c078d7b307793a3a4e507924c871e0d564713817"/>
+				<rom name="les geants de l'arcade (uk) (face 2a) (1988) (3. rygar - let's fight) [original] [compilation].dsk" size="194560" crc="65de348b" sha1="c078d7b307793a3a4e507924c871e0d564713817"/>
 			</dataarea>
 		</part>
 		<part name="flop3" interface="floppy_3">
@@ -249579,7 +249579,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204544">
-				<rom name="guten tag! #1 (g) (1995) (pd) (goodcpc).dsk" size="204544" crc="d992ff4a" sha1="5cf605b232ea3a920a5b748aaae04977640f614c"/>
+				<rom name="guten tag #1 (g) (1995) (pd) (goodcpc).dsk" size="204544" crc="d992ff4a" sha1="5cf605b232ea3a920a5b748aaae04977640f614c"/>
 			</dataarea>
 		</part>
 	</software>
@@ -249591,7 +249591,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204544">
-				<rom name="guten tag! #2 (g) (19xx) (pd) (goodcpc).dsk" size="204544" crc="b0ef7d78" sha1="f7d54ea952ce2becce7c9f0dec7c13c8b21de8ca"/>
+				<rom name="guten tag #2 (g) (19xx) (pd) (goodcpc).dsk" size="204544" crc="b0ef7d78" sha1="f7d54ea952ce2becce7c9f0dec7c13c8b21de8ca"/>
 			</dataarea>
 		</part>
 	</software>
@@ -249603,7 +249603,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204544">
-				<rom name="guten tag! #3 (g) (19xx) (pd) [a1] (goodcpc).dsk" size="204544" crc="d723434c" sha1="aceaa0b792e03919d98585d7a3714d14af378d1c"/>
+				<rom name="guten tag #3 (g) (19xx) (pd) [a1] (goodcpc).dsk" size="204544" crc="d723434c" sha1="aceaa0b792e03919d98585d7a3714d14af378d1c"/>
 			</dataarea>
 		</part>
 	</software>
@@ -249615,7 +249615,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204544">
-				<rom name="guten tag! #3 (g) (19xx) (pd) (goodcpc).dsk" size="204544" crc="64e81809" sha1="5fe37836b677d9863b90356a8736b586e61f8d28"/>
+				<rom name="guten tag #3 (g) (19xx) (pd) (goodcpc).dsk" size="204544" crc="64e81809" sha1="5fe37836b677d9863b90356a8736b586e61f8d28"/>
 			</dataarea>
 		</part>
 	</software>
@@ -249627,7 +249627,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204544">
-				<rom name="guten tag! #4 (g) (1996) (pd) [a1] (goodcpc).dsk" size="204544" crc="c3ed2630" sha1="7924ec1f38f19b60d1d878b97b3c69cf62c64f59"/>
+				<rom name="guten tag #4 (g) (1996) (pd) [a1] (goodcpc).dsk" size="204544" crc="c3ed2630" sha1="7924ec1f38f19b60d1d878b97b3c69cf62c64f59"/>
 			</dataarea>
 		</part>
 	</software>
@@ -249639,7 +249639,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204544">
-				<rom name="guten tag! #4 (g) (1996) (pd) (goodcpc).dsk" size="204544" crc="97f0e5e0" sha1="c55cb1ebf524e9eac9e626ffc2d09ae1e87b8da2"/>
+				<rom name="guten tag #4 (g) (1996) (pd) (goodcpc).dsk" size="204544" crc="97f0e5e0" sha1="c55cb1ebf524e9eac9e626ffc2d09ae1e87b8da2"/>
 			</dataarea>
 		</part>
 	</software>
@@ -249651,7 +249651,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204032">
-				<rom name="guten tag! #5 (g) (1997) (pd) (goodcpc).dsk" size="204032" crc="0fb10904" sha1="eb9ea874af037ac9b2487e376327e9fc0be7a7fd"/>
+				<rom name="guten tag #5 (g) (1997) (pd) (goodcpc).dsk" size="204032" crc="0fb10904" sha1="eb9ea874af037ac9b2487e376327e9fc0be7a7fd"/>
 			</dataarea>
 		</part>
 	</software>
@@ -249663,7 +249663,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204544">
-				<rom name="guten tag! #6 (g) (1997) (pd) [a1] (goodcpc).dsk" size="204544" crc="c02e4d09" sha1="060e29a9572fb07393ecbac561dbcef41691f28b"/>
+				<rom name="guten tag #6 (g) (1997) (pd) [a1] (goodcpc).dsk" size="204544" crc="c02e4d09" sha1="060e29a9572fb07393ecbac561dbcef41691f28b"/>
 			</dataarea>
 		</part>
 	</software>
@@ -249675,7 +249675,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="199680">
-				<rom name="guten tag! #6 (g) (1997) (pd) [a2] (goodcpc).dsk" size="199680" crc="8f12b827" sha1="80d18e2795446160586c3650c75e1ff6f3573955"/>
+				<rom name="guten tag #6 (g) (1997) (pd) [a2] (goodcpc).dsk" size="199680" crc="8f12b827" sha1="80d18e2795446160586c3650c75e1ff6f3573955"/>
 			</dataarea>
 		</part>
 	</software>
@@ -249687,7 +249687,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204544">
-				<rom name="guten tag! #6 (g) (1997) (pd) (goodcpc).dsk" size="204544" crc="315a83b2" sha1="21f3553695ac862c229f7c8f936e2b8db273cd88"/>
+				<rom name="guten tag #6 (g) (1997) (pd) (goodcpc).dsk" size="204544" crc="315a83b2" sha1="21f3553695ac862c229f7c8f936e2b8db273cd88"/>
 			</dataarea>
 		</part>
 	</software>
@@ -249699,7 +249699,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204544">
-				<rom name="guten tag! #6.5 (g) (1997) (pd) [a1] (goodcpc).dsk" size="204544" crc="b15a9846" sha1="229608607c1df50f7ad4ca1182f36f70411565fd"/>
+				<rom name="guten tag #6.5 (g) (1997) (pd) [a1] (goodcpc).dsk" size="204544" crc="b15a9846" sha1="229608607c1df50f7ad4ca1182f36f70411565fd"/>
 			</dataarea>
 		</part>
 	</software>
@@ -249711,7 +249711,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204544">
-				<rom name="guten tag! #6.5 (g) (1997) (pd) (goodcpc).dsk" size="204544" crc="c8c101a6" sha1="8464c6b1b5e45844c1f2dc308bcd21a9fc888bdf"/>
+				<rom name="guten tag #6.5 (g) (1997) (pd) (goodcpc).dsk" size="204544" crc="c8c101a6" sha1="8464c6b1b5e45844c1f2dc308bcd21a9fc888bdf"/>
 			</dataarea>
 		</part>
 	</software>
@@ -253051,7 +253051,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="180224">
-				<rom name="180! &amp; destructo &amp; speed king &amp; zub (nongoodcpc).dsk" size="180224" crc="168b8453" sha1="409e033d0be8a3b1028460ec52f574f0c3ce1fb1"/>
+				<rom name="180 &amp; destructo &amp; speed king &amp; zub (nongoodcpc).dsk" size="180224" crc="168b8453" sha1="409e033d0be8a3b1028460ec52f574f0c3ce1fb1"/>
 			</dataarea>
 		</part>
 	</software>
@@ -254047,7 +254047,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="abu simbel &amp; la armadura secreta de antiriad &amp; army moves ! (nongoodcpc).dsk" size="194816" crc="0217b74e" sha1="501baac6a3b0c654cab8f17b7e75bbfad13d7405"/>
+				<rom name="abu simbel &amp; la armadura secreta de antiriad &amp; army moves  (nongoodcpc).dsk" size="194816" crc="0217b74e" sha1="501baac6a3b0c654cab8f17b7e75bbfad13d7405"/>
 			</dataarea>
 		</part>
 	</software>
@@ -254155,7 +254155,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="acey-ducy &amp; bomber &amp; bustout &amp; cricket (aka howzat!) &amp; 200x6 file database &amp; dominoes &amp; hangman &amp; metcon &amp; raffles &amp; tasword &amp; telly tennis &amp; tictac (nongoodcpc).dsk" size="194816" crc="b0b83c4a" sha1="11ff01d0d86b6d498665d23bf9cdaf12d96008a3"/>
+				<rom name="acey-ducy &amp; bomber &amp; bustout &amp; cricket (aka howzat) &amp; 200x6 file database &amp; dominoes &amp; hangman &amp; metcon &amp; raffles &amp; tasword &amp; telly tennis &amp; tictac (nongoodcpc).dsk" size="194816" crc="b0b83c4a" sha1="11ff01d0d86b6d498665d23bf9cdaf12d96008a3"/>
 			</dataarea>
 		</part>
 	</software>
@@ -254275,7 +254275,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="ahhh! &amp; calendario perpetuo &amp; highway encounter &amp; mapgame &amp; spellbound (nongoodcpc).dsk" size="194816" crc="1819dc25" sha1="896a3a41fa95e7b6061e866d8398caaf494ad7af"/>
+				<rom name="ahhh &amp; calendario perpetuo &amp; highway encounter &amp; mapgame &amp; spellbound (nongoodcpc).dsk" size="194816" crc="1819dc25" sha1="896a3a41fa95e7b6061e866d8398caaf494ad7af"/>
 			</dataarea>
 		</part>
 	</software>
@@ -255380,7 +255380,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204544">
-				<rom name="amthello &amp; graf spee &amp; binky &amp; carnival shootout &amp; space base &amp; karl's treasure &amp; tron &amp; space trucker &amp; tune &amp; test &amp; aventuras de arnold !! (nongoodcpc).dsk" size="204544" crc="3862f574" sha1="1e45dd0a7d7dfdfabb40ff1bfc49fcfdb4e0b31c"/>
+				<rom name="amthello &amp; graf spee &amp; binky &amp; carnival shootout &amp; space base &amp; karl's treasure &amp; tron &amp; space trucker &amp; tune &amp; test &amp; aventuras de arnold  (nongoodcpc).dsk" size="204544" crc="3862f574" sha1="1e45dd0a7d7dfdfabb40ff1bfc49fcfdb4e0b31c"/>
 			</dataarea>
 		</part>
 	</software>
@@ -255560,7 +255560,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="arkanoid &amp; protec &amp; ranarama &amp; target renegade ! (nongoodcpc).dsk" size="194816" crc="7cce0914" sha1="59486f8fc79f2a30416cc938ef81e0c7c77f7d15"/>
+				<rom name="arkanoid &amp; protec &amp; ranarama &amp; target renegade  (nongoodcpc).dsk" size="194816" crc="7cce0914" sha1="59486f8fc79f2a30416cc938ef81e0c7c77f7d15"/>
 			</dataarea>
 		</part>
 	</software>
@@ -255848,7 +255848,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204544">
-				<rom name="aspar gp master &amp; cosa nostra &amp; livingstone supongo ! (nongoodcpc).dsk" size="204544" crc="d095638a" sha1="7e2fd88effeb0398879463e7898dd64a80eedf77"/>
+				<rom name="aspar gp master &amp; cosa nostra &amp; livingstone supongo  (nongoodcpc).dsk" size="204544" crc="d095638a" sha1="7e2fd88effeb0398879463e7898dd64a80eedf77"/>
 			</dataarea>
 		</part>
 	</software>
@@ -255968,7 +255968,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204032">
-				<rom name="atc heathrow &amp; defend or die &amp; roland goes digging &amp; grand prix driver &amp; quack a jack! &amp; oh mummy &amp; match point !! (nongoodcpc).dsk" size="204032" crc="bc5dfa98" sha1="6870fa69fd1d4ee6be3194ba7c70a5feb81f4ebf"/>
+				<rom name="atc heathrow &amp; defend or die &amp; roland goes digging &amp; grand prix driver &amp; quack a jack &amp; oh mummy &amp; match point  (nongoodcpc).dsk" size="204032" crc="bc5dfa98" sha1="6870fa69fd1d4ee6be3194ba7c70a5feb81f4ebf"/>
 			</dataarea>
 		</part>
 	</software>
@@ -255980,7 +255980,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204544">
-				<rom name="atf &amp; combat school (hacked) ! (nongoodcpc).dsk" size="204544" crc="09487529" sha1="826f24757e27b6cdb90cb82191ea15004e346bb8"/>
+				<rom name="atf &amp; combat school (hacked)  (nongoodcpc).dsk" size="204544" crc="09487529" sha1="826f24757e27b6cdb90cb82191ea15004e346bb8"/>
 			</dataarea>
 		</part>
 	</software>
@@ -256052,7 +256052,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204544">
-				<rom name="avenger &amp; glass &amp; thanatos ! (nongoodcpc).dsk" size="204544" crc="86f5e3b5" sha1="72ebf8f5bfd810382176744f0cf5f279f25e5733"/>
+				<rom name="avenger &amp; glass &amp; thanatos  (nongoodcpc).dsk" size="204544" crc="86f5e3b5" sha1="72ebf8f5bfd810382176744f0cf5f279f25e5733"/>
 			</dataarea>
 		</part>
 	</software>
@@ -257048,7 +257048,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="bomb jack &amp; defend or die &amp; ikari warriors! (nongoodcpc).dsk" size="194816" crc="5b25765c" sha1="4a842aee8e42c3aeb3ee24ae240a7b89798e75f4"/>
+				<rom name="bomb jack &amp; defend or die &amp; ikari warriors (nongoodcpc).dsk" size="194816" crc="5b25765c" sha1="4a842aee8e42c3aeb3ee24ae240a7b89798e75f4"/>
 			</dataarea>
 		</part>
 	</software>
@@ -257768,7 +257768,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="cad-3d &amp; discmaster 1.0 &amp; rutina volcadora de pantallas ! (nongoodcpc).dsk" size="194816" crc="ab3ccec7" sha1="f56f2e40d4963d658f4190400606da04fc91cbd6"/>
+				<rom name="cad-3d &amp; discmaster 1.0 &amp; rutina volcadora de pantallas  (nongoodcpc).dsk" size="194816" crc="ab3ccec7" sha1="f56f2e40d4963d658f4190400606da04fc91cbd6"/>
 			</dataarea>
 		</part>
 	</software>
@@ -258020,7 +258020,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="190208">
-				<rom name="cherry paint &amp; tank busters !! (no funciona con caprice32) (nongoodcpc).dsk" size="190208" crc="daca70b2" sha1="ab6482a20f1649a396a806005915650a0c699197"/>
+				<rom name="cherry paint &amp; tank busters  (no funciona con caprice32) (nongoodcpc).dsk" size="190208" crc="daca70b2" sha1="ab6482a20f1649a396a806005915650a0c699197"/>
 			</dataarea>
 		</part>
 	</software>
@@ -259016,7 +259016,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204544">
-				<rom name="crazy cars 2 &amp; knight lore &amp; willy wino ! (nongoodcpc).dsk" size="204544" crc="3cbb70bc" sha1="861c227f02cfdccff4681d89571446730f527346"/>
+				<rom name="crazy cars 2 &amp; knight lore &amp; willy wino  (nongoodcpc).dsk" size="204544" crc="3cbb70bc" sha1="861c227f02cfdccff4681d89571446730f527346"/>
 			</dataarea>
 		</part>
 	</software>
@@ -260432,7 +260432,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="203520">
-				<rom name="druid &amp; dustin &amp; pulsator! (nongoodcpc).dsk" size="203520" crc="fb74bf82" sha1="8f26a0c50e3896f418477365fbbd1b9bc56f0f93"/>
+				<rom name="druid &amp; dustin &amp; pulsator (nongoodcpc).dsk" size="203520" crc="fb74bf82" sha1="8f26a0c50e3896f418477365fbbd1b9bc56f0f93"/>
 			</dataarea>
 		</part>
 	</software>
@@ -260696,7 +260696,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="el gerente &amp; sorcery (castellano) &amp; risky business &amp; spindizzy ! (nongoodcpc).dsk" size="194816" crc="0a73eddd" sha1="cb0509b02ae3726936ea83370b1caf4a3ce5581a"/>
+				<rom name="el gerente &amp; sorcery (castellano) &amp; risky business &amp; spindizzy  (nongoodcpc).dsk" size="194816" crc="0a73eddd" sha1="cb0509b02ae3726936ea83370b1caf4a3ce5581a"/>
 			</dataarea>
 		</part>
 	</software>
@@ -260713,14 +260713,14 @@ stick to CPC-Power disks, when available)
 		</part>
 	</software>
 
-	<!-- Identifying El Tute (CPC464) &amp; Gilligan's Gold &amp; Roland in the Caves &amp; Spannerman &amp; Ah Bod!! &amp; Mr Wong's Loopy Laundry &amp; Programas Basic (nongoodcpc).dsk... -->
+	<!-- Identifying El Tute (CPC464) &amp; Gilligan's Gold &amp; Roland in the Caves &amp; Spannerman &amp; Ah Bod &amp; Mr Wong's Loopy Laundry &amp; Programas Basic (nongoodcpc).dsk... -->
 	<software name="eltutecp" supported="no">
-		<description>El Tute (CPC464) &amp; Gilligan's Gold &amp; Roland in the Caves &amp; Spannerman &amp; Ah Bod!! &amp; Mr Wong's Loopy Laundry &amp; Programas Basic</description>
+		<description>El Tute (CPC464) &amp; Gilligan's Gold &amp; Roland in the Caves &amp; Spannerman &amp; Ah Bod &amp; Mr Wong's Loopy Laundry &amp; Programas Basic</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="el tute (cpc464) &amp; gilligan's gold &amp; roland in the caves &amp; spannerman &amp; ah bod!! &amp; mr wong's loopy laundry &amp; programas basic (nongoodcpc).dsk" size="194816" crc="40abbbc5" sha1="1d5fa65ca649d1a886ea0b1e35e332b75bf791a3"/>
+				<rom name="el tute (cpc464) &amp; gilligan's gold &amp; roland in the caves &amp; spannerman &amp; ah bod &amp; mr wong's loopy laundry &amp; programas basic (nongoodcpc).dsk" size="194816" crc="40abbbc5" sha1="1d5fa65ca649d1a886ea0b1e35e332b75bf791a3"/>
 			</dataarea>
 		</part>
 	</software>
@@ -260804,7 +260804,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="end zone &amp; puzzle &amp; rygar (hacked) &amp; solomon's key! (nongoodcpc).dsk" size="194816" crc="aee2654a" sha1="558690c98da77bcec52cfeb227009a67795f78d4"/>
+				<rom name="end zone &amp; puzzle &amp; rygar (hacked) &amp; solomon's key (nongoodcpc).dsk" size="194816" crc="aee2654a" sha1="558690c98da77bcec52cfeb227009a67795f78d4"/>
 			</dataarea>
 		</part>
 	</software>
@@ -261884,7 +261884,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194304">
-				<rom name="fruity frank &amp; ficheros sueltos ! (nongoodcpc).dsk" size="194304" crc="de9658c3" sha1="3e1ba03ccc3e3d47a6d3d16575e69af0b1949c0e"/>
+				<rom name="fruity frank &amp; ficheros sueltos  (nongoodcpc).dsk" size="194304" crc="de9658c3" sha1="3e1ba03ccc3e3d47a6d3d16575e69af0b1949c0e"/>
 			</dataarea>
 		</part>
 	</software>
@@ -262088,7 +262088,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="geografia universal! &amp; knight rider (nongoodcpc).dsk" size="194816" crc="87d9914d" sha1="694bdcd3ba84170d079b2d11e4cd4a1a845742f9"/>
+				<rom name="geografia universal &amp; knight rider (nongoodcpc).dsk" size="194816" crc="87d9914d" sha1="694bdcd3ba84170d079b2d11e4cd4a1a845742f9"/>
 			</dataarea>
 		</part>
 	</software>
@@ -262100,7 +262100,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="gestie de una biblioteca &amp; fichero juegos &amp; sellos &amp; easydraw &amp; dibujos &amp; teclado-3 &amp; programas en basic ! (nongoodcpc).dsk" size="194816" crc="6a63d85d" sha1="7b240de0b31265ec7e19df6bdbc2dedde91fe71b"/>
+				<rom name="gestie de una biblioteca &amp; fichero juegos &amp; sellos &amp; easydraw &amp; dibujos &amp; teclado-3 &amp; programas en basic  (nongoodcpc).dsk" size="194816" crc="6a63d85d" sha1="7b240de0b31265ec7e19df6bdbc2dedde91fe71b"/>
 			</dataarea>
 		</part>
 	</software>
@@ -262688,7 +262688,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194304">
-				<rom name="harrier attack &amp; bomb jack &amp; bobsleigh ! (nongoodcpc).dsk" size="194304" crc="d651af6c" sha1="639cb364d3a0d9b7665363d66d1ecf3b632c5431"/>
+				<rom name="harrier attack &amp; bomb jack &amp; bobsleigh  (nongoodcpc).dsk" size="194304" crc="d651af6c" sha1="639cb364d3a0d9b7665363d66d1ecf3b632c5431"/>
 			</dataarea>
 		</part>
 	</software>
@@ -263000,7 +263000,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="ikari warriors &amp; kung-fu master &amp; manic miner &amp; commando (hacked) ! (nongoodcpc).dsk" size="194816" crc="0cf29743" sha1="7783442fc6497f87e45dc31925454c757c247469"/>
+				<rom name="ikari warriors &amp; kung-fu master &amp; manic miner &amp; commando (hacked)  (nongoodcpc).dsk" size="194816" crc="0cf29743" sha1="7783442fc6497f87e45dc31925454c757c247469"/>
 			</dataarea>
 		</part>
 	</software>
@@ -266456,7 +266456,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204544">
-				<rom name="oh mummy! (hacked) &amp; crazy shot (nongoodcpc).dsk" size="204544" crc="81f4bac2" sha1="3ce376a663f1c6d05cc4554e75924ba12b50fcc6"/>
+				<rom name="oh mummy (hacked) &amp; crazy shot (nongoodcpc).dsk" size="204544" crc="81f4bac2" sha1="3ce376a663f1c6d05cc4554e75924ba12b50fcc6"/>
 			</dataarea>
 		</part>
 	</software>
@@ -266984,7 +266984,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="pack regalo indescomp #06 ! (nongoodcpc).dsk" size="194816" crc="63428e7e" sha1="29de5e6da4c1f147732abbc8096c1fc83571f482"/>
+				<rom name="pack regalo indescomp #06  (nongoodcpc).dsk" size="194816" crc="63428e7e" sha1="29de5e6da4c1f147732abbc8096c1fc83571f482"/>
 			</dataarea>
 		</part>
 	</software>
@@ -267380,7 +267380,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="ping pong &amp; hyper sports ! (nongoodcpc).dsk" size="194816" crc="875c6d5e" sha1="9b94df6196fc2e70b0ddd81cf9f87a15996008f0"/>
+				<rom name="ping pong &amp; hyper sports  (nongoodcpc).dsk" size="194816" crc="875c6d5e" sha1="9b94df6196fc2e70b0ddd81cf9f87a15996008f0"/>
 			</dataarea>
 		</part>
 	</software>
@@ -268592,7 +268592,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="203520">
-				<rom name="space hawks &amp; masterchess &amp; masica maestro &amp; atc schiphol &amp; home runner &amp; roland in the caves &amp; spannerman &amp; codename mat !! (nongoodcpc).dsk" size="203520" crc="6a748025" sha1="3efa14b749380344085b1150712a14af247240fd"/>
+				<rom name="space hawks &amp; masterchess &amp; masica maestro &amp; atc schiphol &amp; home runner &amp; roland in the caves &amp; spannerman &amp; codename mat  (nongoodcpc).dsk" size="203520" crc="6a748025" sha1="3efa14b749380344085b1150712a14af247240fd"/>
 			</dataarea>
 		</part>
 	</software>
@@ -269624,7 +269624,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="victory road &amp; wec le mans! (nongoodcpc).dsk" size="194816" crc="6a21f5a9" sha1="52a56921294a5bef2c5f6c1fbbb9da47fd6b1c6e"/>
+				<rom name="victory road &amp; wec le mans (nongoodcpc).dsk" size="194816" crc="6a21f5a9" sha1="52a56921294a5bef2c5f6c1fbbb9da47fd6b1c6e"/>
 			</dataarea>
 		</part>
 	</software>
@@ -275276,7 +275276,7 @@ Shortnames are chosen to "preview" the content:
 		<publisher>Go! ~ Capcom</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="1943 - the battle of midway (1988)(go!)[cr xor][t xor].dsk" size="194816" crc="fd5a6d36" sha1="8f4770c28b9a5b13587e3a59b0730f38c3e8d854"/>
+				<rom name="1943 - the battle of midway (1988)(go)[cr xor][t xor].dsk" size="194816" crc="fd5a6d36" sha1="8f4770c28b9a5b13587e3a59b0730f38c3e8d854"/>
 			</dataarea>
 		</part>
 	</software>
@@ -276978,7 +276978,7 @@ Shortnames are chosen to "preview" the content:
 		<publisher>Melbourne House</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="aaargh! (1 de 2) (nongoodcpc).dsk" size="194816" crc="e712615f" sha1="a23d588038d6c34f6ea86089ef1f1a84e6f1664b"/>
+				<rom name="aaargh (1 de 2) (nongoodcpc).dsk" size="194816" crc="e712615f" sha1="a23d588038d6c34f6ea86089ef1f1a84e6f1664b"/>
 			</dataarea>
 		</part>
 	</software>
@@ -276991,7 +276991,7 @@ Shortnames are chosen to "preview" the content:
 		<publisher>Melbourne House</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="aaargh! (2 de 2) (nongoodcpc).dsk" size="194816" crc="aa533452" sha1="cddb2e146d645a50ff25ab6c93f5cfc688d68501"/>
+				<rom name="aaargh (2 de 2) (nongoodcpc).dsk" size="194816" crc="aa533452" sha1="cddb2e146d645a50ff25ab6c93f5cfc688d68501"/>
 			</dataarea>
 		</part>
 	</software>
@@ -277027,7 +277027,7 @@ Shortnames are chosen to "preview" the content:
 		<publisher>Melbourne House</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="aaargh! (1989)(melbourne house)(es)[cr the spanish hacker][t the spanish hacker].dsk" size="194816" crc="8706c284" sha1="4f2ecc12753bb5f97b3669da443af5d3bd0b665d"/>
+				<rom name="aaargh (1989)(melbourne house)(es)[cr the spanish hacker][t the spanish hacker].dsk" size="194816" crc="8706c284" sha1="4f2ecc12753bb5f97b3669da443af5d3bd0b665d"/>
 			</dataarea>
 		</part>
 	</software>
@@ -277039,7 +277039,7 @@ Shortnames are chosen to "preview" the content:
 		<publisher>Melbourne House</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="aaargh! (s) (1988) [a1] (goodcpc).dsk" size="194816" crc="561c4b20" sha1="cb395f399ebe74a06c48545ee07acd0404438227"/>
+				<rom name="aaargh (s) (1988) [a1] (goodcpc).dsk" size="194816" crc="561c4b20" sha1="cb395f399ebe74a06c48545ee07acd0404438227"/>
 			</dataarea>
 		</part>
 	</software>
@@ -277051,7 +277051,7 @@ Shortnames are chosen to "preview" the content:
 		<publisher>Melbourne House</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="aaargh! (1989)(melbourne house)(es)[t].dsk" size="194816" crc="e662ab04" sha1="830db2047bc18aee96eb75793ad46c5afeb91d3a"/>
+				<rom name="aaargh (1989)(melbourne house)(es)[t].dsk" size="194816" crc="e662ab04" sha1="830db2047bc18aee96eb75793ad46c5afeb91d3a"/>
 			</dataarea>
 		</part>
 	</software>
@@ -279201,7 +279201,7 @@ Shortnames are chosen to "preview" the content:
 		<info name="usage" value="Launch with RUN&quot;AHHH" />
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="ahhh!! (1985)(crl group).dsk" size="194816" crc="0aa657f2" sha1="438b668a6be166196730a5aa7da72108d7c2bb48"/>
+				<rom name="ahhh (1985)(crl group).dsk" size="194816" crc="0aa657f2" sha1="438b668a6be166196730a5aa7da72108d7c2bb48"/>
 			</dataarea>
 		</part>
 	</software>
@@ -279214,7 +279214,7 @@ Shortnames are chosen to "preview" the content:
 		<info name="usage" value="Launch with RUN&quot;AHHH" />
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="ahhh!! (1985)(crl group)[a].dsk" size="194816" crc="15ebc7f0" sha1="3cb572c2a3a4457ca96edfd8dc7e23049934603b"/>
+				<rom name="ahhh (1985)(crl group)[a].dsk" size="194816" crc="15ebc7f0" sha1="3cb572c2a3a4457ca96edfd8dc7e23049934603b"/>
 			</dataarea>
 		</part>
 	</software>
@@ -287293,7 +287293,7 @@ Shortnames are chosen to "preview" the content:
 		<info name="usage" value="Launch with RUN&quot;AHBOT!!" />
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="ah bod!! (f) (1985) [computing with the amstrad].dsk" size="194816" crc="d408a0e0" sha1="d6d5fc14981731e9f9269a897754267385297e05"/>
+				<rom name="ah bod (f) (1985) [computing with the amstrad].dsk" size="194816" crc="d408a0e0" sha1="d6d5fc14981731e9f9269a897754267385297e05"/>
 			</dataarea>
 		</part>
 	</software>

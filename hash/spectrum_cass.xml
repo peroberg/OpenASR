@@ -4317,7 +4317,7 @@ license:CC0
 		<publisher>Computer Emuzone</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="60341">
-				<rom name="betiled! english.tzx" size="60341" crc="ec578401" sha1="fb162ebcd9982a5bb091801a60fdc0de78aa6f57"/>
+				<rom name="betiled english.tzx" size="60341" crc="ec578401" sha1="fb162ebcd9982a5bb091801a60fdc0de78aa6f57"/>
 			</dataarea>
 		</part>
 	</software>
@@ -4328,7 +4328,7 @@ license:CC0
 		<publisher>Computer Emuzone</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="60396">
-				<rom name="betiled! espanol.tzx" size="60396" crc="8eabeb69" sha1="d7eeeda47f9b11b65155d95620794e212b8d783f"/>
+				<rom name="betiled espanol.tzx" size="60396" crc="8eabeb69" sha1="d7eeeda47f9b11b65155d95620794e212b8d783f"/>
 			</dataarea>
 		</part>
 	</software>
@@ -4339,7 +4339,7 @@ license:CC0
 		<publisher>Computer Emuzone</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="57988">
-				<rom name="betiled! (physical version).tzx" size="57988" crc="d0222d97" sha1="f0975efbf3d6c46fbeaea6f6716e0c9f9a00f188"/>
+				<rom name="betiled (physical version).tzx" size="57988" crc="d0222d97" sha1="f0975efbf3d6c46fbeaea6f6716e0c9f9a00f188"/>
 			</dataarea>
 		</part>
 	</software>
@@ -4614,7 +4614,7 @@ license:CC0
 		<publisher>Stonechat Productions</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="23224">
-				<rom name="bauble blast!.tap" size="23224" crc="960feae7" sha1="c8a1b2c860dd5529d8e431d064ebe0bc91b2b1ca"/>
+				<rom name="bauble blast.tap" size="23224" crc="960feae7" sha1="c8a1b2c860dd5529d8e431d064ebe0bc91b2b1ca"/>
 			</dataarea>
 		</part>
 	</software>
@@ -6269,7 +6269,7 @@ license:CC0
 		<publisher>Stonechat Productions</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="35283">
-				<rom name="chrimblast!.tap" size="35283" crc="d75d2a9b" sha1="7d56837b89e77797d4685bdc066509d2614951cb"/>
+				<rom name="chrimblast.tap" size="35283" crc="d75d2a9b" sha1="7d56837b89e77797d4685bdc066509d2614951cb"/>
 			</dataarea>
 		</part>
 	</software>
@@ -6700,7 +6700,7 @@ license:CC0
 		<publisher>BaSe1 PrOdUcTiOnZ</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="118898">
-				<rom name="clopit!.tap" size="118898" crc="9e3341c2" sha1="c89f6925665e85eff35d125dff547b18502d0822"/>
+				<rom name="clopit.tap" size="118898" crc="9e3341c2" sha1="c89f6925665e85eff35d125dff547b18502d0822"/>
 			</dataarea>
 		</part>
 	</software>
@@ -7099,7 +7099,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="199269">
-				<rom name="dr. doom_s revenge!.tzx" size="199269" crc="a709a041" sha1="e6370b1f4dfc6411e12214511e08977bef701a74"/>
+				<rom name="dr. doom_s revenge.tzx" size="199269" crc="a709a041" sha1="e6370b1f4dfc6411e12214511e08977bef701a74"/>
 			</dataarea>
 		</part>
 	</software>
@@ -8731,7 +8731,7 @@ license:CC0
 		<publisher>Impulze</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="42800">
-				<rom name="edd the duck!.tzx" size="42800" crc="f59b161d" sha1="88b432515a963125b1b7f17f97287bbb53d1861a"/>
+				<rom name="edd the duck.tzx" size="42800" crc="f59b161d" sha1="88b432515a963125b1b7f17f97287bbb53d1861a"/>
 			</dataarea>
 		</part>
 	</software>
@@ -8742,7 +8742,7 @@ license:CC0
 		<publisher>Impulze / Zeppelin Games</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="42959">
-				<rom name="edd the duck! (zeppelin).tzx" size="42959" crc="7798008f" sha1="7795f01c2fdb2a9df18b86dce4bafd406b248682"/>
+				<rom name="edd the duck (zeppelin).tzx" size="42959" crc="7798008f" sha1="7795f01c2fdb2a9df18b86dce4bafd406b248682"/>
 			</dataarea>
 		</part>
 	</software>
@@ -9369,7 +9369,7 @@ license:CC0
 		<publisher>Cronosoft</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="39251">
-				<rom name="farmer jack in harvest havoc! - cronosoft demo.tzx" size="39251" crc="76c2da1d" sha1="2fff6e46819f7b6b154de52cd19b7de2b836ead5"/>
+				<rom name="farmer jack in harvest havoc - cronosoft demo.tzx" size="39251" crc="76c2da1d" sha1="2fff6e46819f7b6b154de52cd19b7de2b836ead5"/>
 			</dataarea>
 		</part>
 	</software>
@@ -9380,7 +9380,7 @@ license:CC0
 		<publisher>Cronosoft</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48469">
-				<rom name="farmer jack and the hedge monkeys!.tzx" size="48469" crc="f2e26207" sha1="1884180b42794b5b0fae4ccd95ee9cee44e44ae2"/>
+				<rom name="farmer jack and the hedge monkeys.tzx" size="48469" crc="f2e26207" sha1="1884180b42794b5b0fae4ccd95ee9cee44e44ae2"/>
 			</dataarea>
 		</part>
 	</software>
@@ -11894,7 +11894,7 @@ license:CC0
 		<publisher>Activision Inc / Hello! Games</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="46420">
-				<rom name="howard the duck (hello! games).tzx" size="46420" crc="92b0628c" sha1="4f7b35a73849d3c2682107f5b53d202d5516df9c"/>
+				<rom name="howard the duck (hello games).tzx" size="46420" crc="92b0628c" sha1="4f7b35a73849d3c2682107f5b53d202d5516df9c"/>
 			</dataarea>
 		</part>
 	</software>
@@ -14296,12 +14296,12 @@ license:CC0
 		<publisher>Penguin Books Ltd</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="21326">
-				<rom name="besieged! - side a.tzx" size="21326" crc="b78e320c" sha1="bc47b3c8f7a0a0feef209014e27d8d0e43409796"/>
+				<rom name="besieged - side a.tzx" size="21326" crc="b78e320c" sha1="bc47b3c8f7a0a0feef209014e27d8d0e43409796"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="11237">
-				<rom name="besieged! - side b.tzx" size="11237" crc="973988db" sha1="e5b2976a0e02f4c31f17a30d28f1ffa4011ac41a"/>
+				<rom name="besieged - side b.tzx" size="11237" crc="973988db" sha1="e5b2976a0e02f4c31f17a30d28f1ffa4011ac41a"/>
 			</dataarea>
 		</part>
 	</software>
@@ -17516,7 +17516,7 @@ license:CC0
 		<publisher>Adrian Singh</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="59653">
-				<rom name="mrdo!.tap" size="59653" crc="e3983c0e" sha1="9e15631cfae83ff6125db2b1bf078eae2e32a6cc"/>
+				<rom name="mrdo.tap" size="59653" crc="e3983c0e" sha1="9e15631cfae83ff6125db2b1bf078eae2e32a6cc"/>
 			</dataarea>
 		</part>
 	</software>
@@ -23488,7 +23488,7 @@ license:CC0
 		<publisher>Steve Westwood</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="15881"> <!-- identical to image in 'dblhoror::cass2' -->
-				<rom name="stake out!.tzx" size="15881" crc="a2ea0fa4" sha1="d88cd8753d214c53fc61f5ab93529974c82b8f48"/>
+				<rom name="stake out.tzx" size="15881" crc="a2ea0fa4" sha1="d88cd8753d214c53fc61f5ab93529974c82b8f48"/>
 			</dataarea>
 		</part>
 	</software>
@@ -28684,7 +28684,7 @@ license:CC0
 		<publisher>Quicksilva Ltd</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="49339">
-				<rom name="yabba dabba dooo!.tzx" size="49339" crc="08cd5f38" sha1="4cdc30ab679aa192dec2ee7b585ac2be6a23239d"/>
+				<rom name="yabba dabba dooo.tzx" size="49339" crc="08cd5f38" sha1="4cdc30ab679aa192dec2ee7b585ac2be6a23239d"/>
 			</dataarea>
 		</part>
 	</software>
@@ -28695,7 +28695,7 @@ license:CC0
 		<publisher>Quicksilva Ltd / Bug-Byte</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="49464">
-				<rom name="yabba dabba dooo! (bug-byte).tzx" size="49464" crc="510998fa" sha1="8ea2dbe5df06bb4cf180504e92d492c73facd170"/>
+				<rom name="yabba dabba dooo (bug-byte).tzx" size="49464" crc="510998fa" sha1="8ea2dbe5df06bb4cf180504e92d492c73facd170"/>
 			</dataarea>
 		</part>
 	</software>
@@ -30522,7 +30522,7 @@ license:CC0
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="15881"> <!-- identical to image in 'stakeout' -->
-				<rom name="double the horror - stake out!.tzx" size="15881" crc="a2ea0fa4" sha1="d88cd8753d214c53fc61f5ab93529974c82b8f48"/>
+				<rom name="double the horror - stake out.tzx" size="15881" crc="a2ea0fa4" sha1="d88cd8753d214c53fc61f5ab93529974c82b8f48"/>
 			</dataarea>
 		</part>
 	</software>
@@ -38206,7 +38206,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="15858">
-				<rom name="a,b,c...lift-off!.tzx" size="15858" crc="4b6bec01" sha1="5a7048c63f0592cd55d385f84a069c9608807165"/>
+				<rom name="a,b,c...lift-off.tzx" size="15858" crc="4b6bec01" sha1="5a7048c63f0592cd55d385f84a069c9608807165"/>
 			</dataarea>
 		</part>
 	</software>
@@ -38250,12 +38250,12 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="45930">
-				<rom name="aaargh! - side 1.tzx" size="45930" crc="27a372dd" sha1="2506d19086a24e4f66ad981722c31014e2c3d1f5"/>
+				<rom name="aaargh - side 1.tzx" size="45930" crc="27a372dd" sha1="2506d19086a24e4f66ad981722c31014e2c3d1f5"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="69401">
-				<rom name="aaargh! - side 2.tzx" size="69401" crc="3e7be10d" sha1="a79e879549acb1710a159bb58cc227f4fa7b5ba5"/>
+				<rom name="aaargh - side 2.tzx" size="69401" crc="3e7be10d" sha1="a79e879549acb1710a159bb58cc227f4fa7b5ba5"/>
 			</dataarea>
 		</part>
 	</software>
@@ -39570,7 +39570,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="45515">
-				<rom name="ahhh!!!.tzx" size="45515" crc="6783e2ee" sha1="12e11fed29160e8ed075d7a27826e52be3ace57e"/>
+				<rom name="ahhh.tzx" size="45515" crc="6783e2ee" sha1="12e11fed29160e8ed075d7a27826e52be3ace57e"/>
 			</dataarea>
 		</part>
 	</software>
@@ -42085,7 +42085,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48444">
-				<rom name="ashkeron!.tzx" size="48444" crc="0cd92182" sha1="cfa447d58054c59907773db94a8d126172e034bd"/>
+				<rom name="ashkeron.tzx" size="48444" crc="0cd92182" sha1="cfa447d58054c59907773db94a8d126172e034bd"/>
 			</dataarea>
 		</part>
 	</software>
@@ -42805,7 +42805,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="32203">
-				<rom name="aunt velma_s coming to tea! (zenobi).tzx" size="32203" crc="fbed7ce2" sha1="66436839dd1239f11f388af9098c374f8f5f681f"/>
+				<rom name="aunt velma_s coming to tea (zenobi).tzx" size="32203" crc="fbed7ce2" sha1="66436839dd1239f11f388af9098c374f8f5f681f"/>
 			</dataarea>
 		</part>
 	</software>
@@ -42816,7 +42816,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="25204">
-				<rom name="aunt velma_s coming to tea! - alternate.tzx" size="25204" crc="5910e832" sha1="b05bf76b3308b8389ef9a64bab756222d09b2778"/>
+				<rom name="aunt velma_s coming to tea - alternate.tzx" size="25204" crc="5910e832" sha1="b05bf76b3308b8389ef9a64bab756222d09b2778"/>
 			</dataarea>
 		</part>
 	</software>
@@ -45152,7 +45152,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="119082">
-				<rom name="bedlam (go!).tzx" size="119082" crc="a731299d" sha1="ab8573a1bf7dfb14d8938f96da64888c8703ceac"/>
+				<rom name="bedlam (go).tzx" size="119082" crc="a731299d" sha1="ab8573a1bf7dfb14d8938f96da64888c8703ceac"/>
 			</dataarea>
 		</part>
 	</software>
@@ -45683,7 +45683,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="56202">
-				<rom name="big trouble!.tzx" size="56202" crc="c93b1e95" sha1="8e5caeb44a2abb220c87a630ed84ed553767d2b5"/>
+				<rom name="big trouble.tzx" size="56202" crc="c93b1e95" sha1="8e5caeb44a2abb220c87a630ed84ed553767d2b5"/>
 			</dataarea>
 		</part>
 	</software>
@@ -48627,7 +48627,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="35851">
-				<rom name="buzz off!.tzx" size="35851" crc="22431e98" sha1="8381eb3825ecf9ec0b95aec9c0fe9d8c99ddb7f3"/>
+				<rom name="buzz off.tzx" size="35851" crc="22431e98" sha1="8381eb3825ecf9ec0b95aec9c0fe9d8c99ddb7f3"/>
 			</dataarea>
 		</part>
 	</software>
@@ -52156,7 +52156,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="32795">
-				<rom name="chomp!.tzx" size="32795" crc="ab34a3c3" sha1="26180189ee8e28b27c97cc23545b0eb4b39fc9d3"/>
+				<rom name="chomp.tzx" size="32795" crc="ab34a3c3" sha1="26180189ee8e28b27c97cc23545b0eb4b39fc9d3"/>
 			</dataarea>
 		</part>
 	</software>
@@ -55283,7 +55283,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="27491">
-				<rom name="cover up!.tzx" size="27491" crc="b985150c" sha1="f434460e3229c02ad74d93885d71b7cd8293926c"/>
+				<rom name="cover up.tzx" size="27491" crc="b985150c" sha1="f434460e3229c02ad74d93885d71b7cd8293926c"/>
 			</dataarea>
 		</part>
 	</software>
@@ -55408,7 +55408,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="42141">
-				<rom name="crack it! towers.tzx" size="42141" crc="de0d1467" sha1="4df54e8e57cc4ead7d74ecd39967dee41f1195f6"/>
+				<rom name="crack it towers.tzx" size="42141" crc="de0d1467" sha1="4df54e8e57cc4ead7d74ecd39967dee41f1195f6"/>
 			</dataarea>
 		</part>
 	</software>
@@ -60349,12 +60349,12 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="45654">
-				<rom name="diablo! (zenobi) - alternate - side a.tzx" size="45654" crc="d3ea6a7b" sha1="ff67a82b07102d3a60e04e411e8185a386735857"/>
+				<rom name="diablo (zenobi) - alternate - side a.tzx" size="45654" crc="d3ea6a7b" sha1="ff67a82b07102d3a60e04e411e8185a386735857"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="91241">
-				<rom name="diablo! (zenobi) - alternate - side b.tzx" size="91241" crc="c64ff7ae" sha1="9abc17c884dd47775384f4c96c02fc8b057d4f71"/>
+				<rom name="diablo (zenobi) - alternate - side b.tzx" size="91241" crc="c64ff7ae" sha1="9abc17c884dd47775384f4c96c02fc8b057d4f71"/>
 			</dataarea>
 		</part>
 	</software>
@@ -60365,7 +60365,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="160422">
-				<rom name="diablo! (zenobi).tzx" size="160422" crc="61dba8c0" sha1="e8636878c5039f4794f9b0924edd5878b5220ca3"/>
+				<rom name="diablo (zenobi).tzx" size="160422" crc="61dba8c0" sha1="e8636878c5039f4794f9b0924edd5878b5220ca3"/>
 			</dataarea>
 		</part>
 	</software>
@@ -60376,17 +60376,17 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="114697">
-				<rom name="diablo! - 128k - alternate - part 1.tzx" size="114697" crc="208a2b9f" sha1="30e0d340b7d018216cb35eb674564d076cfb3930"/>
+				<rom name="diablo - 128k - alternate - part 1.tzx" size="114697" crc="208a2b9f" sha1="30e0d340b7d018216cb35eb674564d076cfb3930"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="104457">
-				<rom name="diablo! - 128k - alternate - part 2.tzx" size="104457" crc="502650e5" sha1="e605940790098b01bafd0c7534c6599157a4fae9"/>
+				<rom name="diablo - 128k - alternate - part 2.tzx" size="104457" crc="502650e5" sha1="e605940790098b01bafd0c7534c6599157a4fae9"/>
 			</dataarea>
 		</part>
 		<part name="cass3" interface="spectrum_cass">
 			<dataarea name="cass" size="105066">
-				<rom name="diablo! - 128k - alternate - part 3.tzx" size="105066" crc="24de2705" sha1="bb4ddc2bc06e6b9835b6ea904cf7447535fbecee"/>
+				<rom name="diablo - 128k - alternate - part 3.tzx" size="105066" crc="24de2705" sha1="bb4ddc2bc06e6b9835b6ea904cf7447535fbecee"/>
 			</dataarea>
 		</part>
 	</software>
@@ -60397,17 +60397,17 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="114697">
-				<rom name="diablo! - 128k - part 1.tzx" size="114697" crc="b935f527" sha1="462fb2f8837db66f537170fb0036da0f4e9b4495"/>
+				<rom name="diablo - 128k - part 1.tzx" size="114697" crc="b935f527" sha1="462fb2f8837db66f537170fb0036da0f4e9b4495"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="104459">
-				<rom name="diablo! - 128k - part 2.tzx" size="104459" crc="3f6ba223" sha1="b071b09527be8642267b5c89eb3329c8db60f176"/>
+				<rom name="diablo - 128k - part 2.tzx" size="104459" crc="3f6ba223" sha1="b071b09527be8642267b5c89eb3329c8db60f176"/>
 			</dataarea>
 		</part>
 		<part name="cass3" interface="spectrum_cass">
 			<dataarea name="cass" size="105066">
-				<rom name="diablo! - 128k - part 3.tzx" size="105066" crc="07b46d2a" sha1="8b6ce043ff2c6959c2dadc6fb3d2ea7ac4623729"/>
+				<rom name="diablo - 128k - part 3.tzx" size="105066" crc="07b46d2a" sha1="8b6ce043ff2c6959c2dadc6fb3d2ea7ac4623729"/>
 			</dataarea>
 		</part>
 	</software>
@@ -60418,12 +60418,12 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="45364">
-				<rom name="diablo! - 48k - alternate - side a.tzx" size="45364" crc="2e8469a1" sha1="9c459b3852f840ee6deb866bebe31dc343e6c98d"/>
+				<rom name="diablo - 48k - alternate - side a.tzx" size="45364" crc="2e8469a1" sha1="9c459b3852f840ee6deb866bebe31dc343e6c98d"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="90815">
-				<rom name="diablo! - 48k - alternate - side b.tzx" size="90815" crc="f7be9e85" sha1="d9af0764d8dd0fe901138862f730a77a2869d7a1"/>
+				<rom name="diablo - 48k - alternate - side b.tzx" size="90815" crc="f7be9e85" sha1="d9af0764d8dd0fe901138862f730a77a2869d7a1"/>
 			</dataarea>
 		</part>
 	</software>
@@ -60434,7 +60434,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="158631">
-				<rom name="diablo! - 48k.tzx" size="158631" crc="18cfa1d1" sha1="e402e25546d58ba0fabd399118822ce9bc8d5260"/>
+				<rom name="diablo - 48k.tzx" size="158631" crc="18cfa1d1" sha1="e402e25546d58ba0fabd399118822ce9bc8d5260"/>
 			</dataarea>
 		</part>
 	</software>
@@ -61330,7 +61330,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="46230">
-				<rom name="doc croc_s outrageous adventures!.tzx" size="46230" crc="ba4010de" sha1="aead7cdf95993e55cadd3405ba505bcd118dea46"/>
+				<rom name="doc croc_s outrageous adventures.tzx" size="46230" crc="ba4010de" sha1="aead7cdf95993e55cadd3405ba505bcd118dea46"/>
 			</dataarea>
 		</part>
 	</software>
@@ -65098,7 +65098,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48624">
-				<rom name="emlyn hughes international soccer (touch down!).tzx" size="48624" crc="163c4a0e" sha1="6f90ed54432f5f8a4e78f18ed7947db658e3797d"/>
+				<rom name="emlyn hughes international soccer (touch down).tzx" size="48624" crc="163c4a0e" sha1="6f90ed54432f5f8a4e78f18ed7947db658e3797d"/>
 			</dataarea>
 		</part>
 	</software>
@@ -66471,12 +66471,12 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="264778">
-				<rom name="eureka! - side 1.tzx" size="264778" crc="9d9a0e8c" sha1="b99628dec60efa462793a374949cec5ed104f5be"/>
+				<rom name="eureka - side 1.tzx" size="264778" crc="9d9a0e8c" sha1="b99628dec60efa462793a374949cec5ed104f5be"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="176532">
-				<rom name="eureka! - side 2.tzx" size="176532" crc="0733566e" sha1="882eb2d7951234ea932a8cb15ac3ffccac3ec962"/>
+				<rom name="eureka - side 2.tzx" size="176532" crc="0733566e" sha1="882eb2d7951234ea932a8cb15ac3ffccac3ec962"/>
 			</dataarea>
 		</part>
 	</software>
@@ -66487,12 +66487,12 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="264937">
-				<rom name="eureka! - side 1 - french.tzx" size="264937" crc="15c9907d" sha1="74001de94e8e79cb56ca9eb323319ed72f227781"/>
+				<rom name="eureka - side 1 - french.tzx" size="264937" crc="15c9907d" sha1="74001de94e8e79cb56ca9eb323319ed72f227781"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="176681">
-				<rom name="eureka! - side 2 - french.tzx" size="176681" crc="344dc824" sha1="1bf84e3cbb2ec2d358e3931caa572742da086b31"/>
+				<rom name="eureka - side 2 - french.tzx" size="176681" crc="344dc824" sha1="1bf84e3cbb2ec2d358e3931caa572742da086b31"/>
 			</dataarea>
 		</part>
 	</software>
@@ -66503,7 +66503,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="176704">
-				<rom name="eureka! - side 2 - french - bugfixed.tzx" size="176704" crc="d19405e6" sha1="e7b722c3535f08109b677dc9e4f42d98e6ffbed1"/>
+				<rom name="eureka - side 2 - french - bugfixed.tzx" size="176704" crc="d19405e6" sha1="e7b722c3535f08109b677dc9e4f42d98e6ffbed1"/>
 			</dataarea>
 		</part>
 	</software>
@@ -72649,7 +72649,7 @@ license:CC0
 		<publisher>Gremlin Graphics Software Ltd</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48098">
-				<rom name="gary lineker_s hot shot!.tzx" size="48098" crc="35305d89" sha1="796ff6f73d8f1e038b71517529c7ecd712cfb309"/>
+				<rom name="gary lineker_s hot shot.tzx" size="48098" crc="35305d89" sha1="796ff6f73d8f1e038b71517529c7ecd712cfb309"/>
 			</dataarea>
 		</part>
 	</software>
@@ -72660,7 +72660,7 @@ license:CC0
 		<publisher>Gremlin Graphics Software Ltd / Kixx</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48098">
-				<rom name="gary lineker_s hot shot! (kixx).tzx" size="48098" crc="7b622d37" sha1="1fe32ec427b5299d0b52c03d10025744c31620b5"/>
+				<rom name="gary lineker_s hot shot (kixx).tzx" size="48098" crc="7b622d37" sha1="1fe32ec427b5299d0b52c03d10025744c31620b5"/>
 			</dataarea>
 		</part>
 	</software>
@@ -73625,7 +73625,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="25492">
-				<rom name="go bear go!.tzx" size="25492" crc="3e3f482a" sha1="2ae777e9d142516b72277bc5000cd8f7f0c8d95b"/>
+				<rom name="go bear go.tzx" size="25492" crc="3e3f482a" sha1="2ae777e9d142516b72277bc5000cd8f7f0c8d95b"/>
 			</dataarea>
 		</part>
 	</software>
@@ -74335,7 +74335,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="37881">
-				<rom name="grabbed by the ghoulies! (fsf) - alternate.tzx" size="37881" crc="b1ed1e3a" sha1="7b8d9f522850a5c33fb64de9a090761c157bd132"/>
+				<rom name="grabbed by the ghoulies (fsf) - alternate.tzx" size="37881" crc="b1ed1e3a" sha1="7b8d9f522850a5c33fb64de9a090761c157bd132"/>
 			</dataarea>
 		</part>
 	</software>
@@ -74346,7 +74346,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="36931">
-				<rom name="grabbed by the ghoulies! (fsf).tzx" size="36931" crc="7da9e209" sha1="9b612bacf78d5a2e9898b6db8b67742c15687fb5"/>
+				<rom name="grabbed by the ghoulies (fsf).tzx" size="36931" crc="7da9e209" sha1="9b612bacf78d5a2e9898b6db8b67742c15687fb5"/>
 			</dataarea>
 		</part>
 	</software>
@@ -80345,7 +80345,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48442">
-				<rom name="i will survive!.tzx" size="48442" crc="d282c775" sha1="edbadb7abb16c5f6aab2a7253a3c9cff6cb459a2"/>
+				<rom name="i will survive.tzx" size="48442" crc="d282c775" sha1="edbadb7abb16c5f6aab2a7253a3c9cff6cb459a2"/>
 			</dataarea>
 		</part>
 	</software>
@@ -81159,32 +81159,32 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="41893">
-				<rom name="ingrid_s back! - tape 1 - side 1.tzx" size="41893" crc="54ae5554" sha1="50bd783f8590838b6352038424ebaa66538ad979"/>
+				<rom name="ingrid_s back - tape 1 - side 1.tzx" size="41893" crc="54ae5554" sha1="50bd783f8590838b6352038424ebaa66538ad979"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="52532">
-				<rom name="ingrid_s back! - tape 1 - side 2.tzx" size="52532" crc="2aa82df7" sha1="cadb3bb82aecf7869a78c77ebf379ccc1efe66c7"/>
+				<rom name="ingrid_s back - tape 1 - side 2.tzx" size="52532" crc="2aa82df7" sha1="cadb3bb82aecf7869a78c77ebf379ccc1efe66c7"/>
 			</dataarea>
 		</part>
 		<part name="cass3" interface="spectrum_cass">
 			<dataarea name="cass" size="41893">
-				<rom name="ingrid_s back! - tape 2 - side 1.tzx" size="41893" crc="77364ab9" sha1="0fc527755eef0034ddace8b835ca59350ddb02b6"/>
+				<rom name="ingrid_s back - tape 2 - side 1.tzx" size="41893" crc="77364ab9" sha1="0fc527755eef0034ddace8b835ca59350ddb02b6"/>
 			</dataarea>
 		</part>
 		<part name="cass4" interface="spectrum_cass">
 			<dataarea name="cass" size="54327">
-				<rom name="ingrid_s back! - tape 2 - side 2.tzx" size="54327" crc="8b2d678a" sha1="441d5f6b903b3ec3c749945bb448efe61d11b6a6"/>
+				<rom name="ingrid_s back - tape 2 - side 2.tzx" size="54327" crc="8b2d678a" sha1="441d5f6b903b3ec3c749945bb448efe61d11b6a6"/>
 			</dataarea>
 		</part>
 		<part name="cass5" interface="spectrum_cass">
 			<dataarea name="cass" size="41893">
-				<rom name="ingrid_s back! - tape 3 - side 1.tzx" size="41893" crc="50078468" sha1="582723b9d038f3dfc3f2adca410cd30cd81522d5"/>
+				<rom name="ingrid_s back - tape 3 - side 1.tzx" size="41893" crc="50078468" sha1="582723b9d038f3dfc3f2adca410cd30cd81522d5"/>
 			</dataarea>
 		</part>
 		<part name="cass6" interface="spectrum_cass">
 			<dataarea name="cass" size="53143">
-				<rom name="ingrid_s back! - tape 3 - side 2.tzx" size="53143" crc="790bbc76" sha1="d4af37c2faa4e56f05835c115ff57ddb27983b74"/>
+				<rom name="ingrid_s back - tape 3 - side 2.tzx" size="53143" crc="790bbc76" sha1="d4af37c2faa4e56f05835c115ff57ddb27983b74"/>
 			</dataarea>
 		</part>
 	</software>
@@ -82127,7 +82127,7 @@ license:CC0
 		<publisher>Crystal Computing</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="29317">
-				<rom name="invasion of the body snatchas!.tzx" size="29317" crc="03439c32" sha1="526388b5160c719555744ccb327ebabcdaec328e"/>
+				<rom name="invasion of the body snatchas.tzx" size="29317" crc="03439c32" sha1="526388b5160c719555744ccb327ebabcdaec328e"/>
 			</dataarea>
 		</part>
 	</software>
@@ -82138,7 +82138,7 @@ license:CC0
 		<publisher>Crystal Computing</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="29507">
-				<rom name="invasion of the body snatchas! - alternate.tzx" size="29507" crc="bc74ff68" sha1="91331581cd8cfa09862b49bc7251c765282425ed"/>
+				<rom name="invasion of the body snatchas - alternate.tzx" size="29507" crc="bc74ff68" sha1="91331581cd8cfa09862b49bc7251c765282425ed"/>
 			</dataarea>
 		</part>
 	</software>
@@ -82555,7 +82555,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="15430">
-				<rom name="it_s the wooluf!.tzx" size="15430" crc="36cdf522" sha1="14169255f3f0436a29bc439654f4fcde679859f3"/>
+				<rom name="it_s the wooluf.tzx" size="15430" crc="36cdf522" sha1="14169255f3f0436a29bc439654f4fcde679859f3"/>
 			</dataarea>
 		</part>
 	</software>
@@ -83687,7 +83687,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="42797">
-				<rom name="jet set willy - join the jet-set!.tzx" size="42797" crc="01cbc48d" sha1="7d014bbab7a0d71634850870f360c4742259cd2a"/>
+				<rom name="jet set willy - join the jet-set.tzx" size="42797" crc="01cbc48d" sha1="7d014bbab7a0d71634850870f360c4742259cd2a"/>
 			</dataarea>
 		</part>
 	</software>
@@ -83830,7 +83830,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="32914">
-				<rom name="jet set willy - monstrum!.tzx" size="32914" crc="e409abad" sha1="d8d542745cfe72121edf2f79142cdd2aa280dbfc"/>
+				<rom name="jet set willy - monstrum.tzx" size="32914" crc="e409abad" sha1="d8d542745cfe72121edf2f79142cdd2aa280dbfc"/>
 			</dataarea>
 		</part>
 	</software>
@@ -84252,7 +84252,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="119010">
-				<rom name="jet set willy 64 - the drunken master!!! - special edition.tzx" size="119010" crc="97a9d420" sha1="58e0403ee578e0791d8c38cf2361cfc1fc8cd2fd"/>
+				<rom name="jet set willy 64 - the drunken master - special edition.tzx" size="119010" crc="97a9d420" sha1="58e0403ee578e0791d8c38cf2361cfc1fc8cd2fd"/>
 			</dataarea>
 		</part>
 	</software>
@@ -87151,7 +87151,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48846">
-				<rom name="kwah!.tzx" size="48846" crc="2eec143b" sha1="86427eae4b3752b1f96693a404666d949b16872e"/>
+				<rom name="kwah.tzx" size="48846" crc="2eec143b" sha1="86427eae4b3752b1f96693a404666d949b16872e"/>
 			</dataarea>
 		</part>
 	</software>
@@ -93488,7 +93488,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="46055">
-				<rom name="marooned!.tzx" size="46055" crc="012b23d6" sha1="bad9ce0eea090b8a91b5b7b162839dde30e54bb8"/>
+				<rom name="marooned.tzx" size="46055" crc="012b23d6" sha1="bad9ce0eea090b8a91b5b7b162839dde30e54bb8"/>
 			</dataarea>
 		</part>
 	</software>
@@ -96420,12 +96420,12 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="5852">
-				<rom name="mind that hole! - side 1.tzx" size="5852" crc="498827fb" sha1="c7467eb50e228d11d8639974b9406497c18d70a6"/>
+				<rom name="mind that hole - side 1.tzx" size="5852" crc="498827fb" sha1="c7467eb50e228d11d8639974b9406497c18d70a6"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="6195">
-				<rom name="mind that hole! - side 2.tzx" size="6195" crc="1f6511fb" sha1="b27f1088d3e36be87ce19cedd7fd45c4b14d96cd"/>
+				<rom name="mind that hole - side 2.tzx" size="6195" crc="1f6511fb" sha1="b27f1088d3e36be87ce19cedd7fd45c4b14d96cd"/>
 			</dataarea>
 		</part>
 	</software>
@@ -97911,7 +97911,7 @@ license:CC0
 		<publisher>Kerian UK Ltd</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="32727">
-				<rom name="motorcycle crazy!.tzx" size="32727" crc="457d5557" sha1="25cd826acd30893928d8f64781111e8bc683b4dd"/>
+				<rom name="motorcycle crazy.tzx" size="32727" crc="457d5557" sha1="25cd826acd30893928d8f64781111e8bc683b4dd"/>
 			</dataarea>
 		</part>
 	</software>
@@ -97922,7 +97922,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="32993">
-				<rom name="motorcycle crazy! - alternate.tzx" size="32993" crc="86de0788" sha1="8a0c73837f152749e271f87e30764094ca686c29"/>
+				<rom name="motorcycle crazy - alternate.tzx" size="32993" crc="86de0788" sha1="8a0c73837f152749e271f87e30764094ca686c29"/>
 			</dataarea>
 		</part>
 	</software>
@@ -101192,7 +101192,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="49333">
-				<rom name="nightmare!.tzx" size="49333" crc="80d0ea17" sha1="fcb26a9f0343748c898af60b635d0f26d74c6a05"/>
+				<rom name="nightmare.tzx" size="49333" crc="80d0ea17" sha1="fcb26a9f0343748c898af60b635d0f26d74c6a05"/>
 			</dataarea>
 		</part>
 	</software>
@@ -103062,12 +103062,12 @@ license:CC0
 		<publisher>Zenobi Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="38541">
-				<rom name="one of our wombats is missing! - side 1.tzx" size="38541" crc="249b8403" sha1="4826db705c3e9ef2839b5db62f46697ae5b484c4"/>
+				<rom name="one of our wombats is missing - side 1.tzx" size="38541" crc="249b8403" sha1="4826db705c3e9ef2839b5db62f46697ae5b484c4"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="67239">
-				<rom name="one of our wombats is missing! - side 2.tzx" size="67239" crc="bd70197d" sha1="0ea2423bb0094b35fdf6b1847fdbdfd34405e1ca"/>
+				<rom name="one of our wombats is missing - side 2.tzx" size="67239" crc="bd70197d" sha1="0ea2423bb0094b35fdf6b1847fdbdfd34405e1ca"/>
 			</dataarea>
 		</part>
 	</software>
@@ -103111,7 +103111,7 @@ license:CC0
 		<publisher>The Big Apple Entertainment Company</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="27158">
-				<rom name="oops!.tzx" size="27158" crc="f016453f" sha1="310b53aee898dce01a54baa8aba1afae8965d580"/>
+				<rom name="oops.tzx" size="27158" crc="f016453f" sha1="310b53aee898dce01a54baa8aba1afae8965d580"/>
 			</dataarea>
 		</part>
 	</software>
@@ -103705,7 +103705,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="40359">
-				<rom name="otan alerta!.tzx" size="40359" crc="c37ae8ea" sha1="47bd1baa5c2bf6218bd219a82c313903c4d19f7a"/>
+				<rom name="otan alerta.tzx" size="40359" crc="c37ae8ea" sha1="47bd1baa5c2bf6218bd219a82c313903c4d19f7a"/>
 			</dataarea>
 		</part>
 	</software>
@@ -105655,7 +105655,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="36833">
-				<rom name="personal computer whirled! (electric storm).tzx" size="36833" crc="1d53fcb2" sha1="1d7e04c3bb59f4a2d04efa0e8156049a97e4d287"/>
+				<rom name="personal computer whirled (electric storm).tzx" size="36833" crc="1d53fcb2" sha1="1d7e04c3bb59f4a2d04efa0e8156049a97e4d287"/>
 			</dataarea>
 		</part>
 	</software>
@@ -105666,7 +105666,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="39165">
-				<rom name="personal computer whirled! (zenobi).tzx" size="39165" crc="33353519" sha1="10be56ce280795e2068de10a080b82cb6d97a04b"/>
+				<rom name="personal computer whirled (zenobi).tzx" size="39165" crc="33353519" sha1="10be56ce280795e2068de10a080b82cb6d97a04b"/>
 			</dataarea>
 		</part>
 	</software>
@@ -105677,7 +105677,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="35683">
-				<rom name="personal computer whirled!.tzx" size="35683" crc="aa836795" sha1="74c47f9fa77da1e3b5c0920bd445c2c9ffb5014a"/>
+				<rom name="personal computer whirled.tzx" size="35683" crc="aa836795" sha1="74c47f9fa77da1e3b5c0920bd445c2c9ffb5014a"/>
 			</dataarea>
 		</part>
 	</software>
@@ -106574,7 +106574,7 @@ license:CC0
 		<publisher>Empire Software / Touch Down!</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="33375">
-				<rom name="pipe mania (touch down!).tzx" size="33375" crc="1a3b77a7" sha1="e88dbb66c4bab1d5c1a4026ca99672527e851862"/>
+				<rom name="pipe mania (touch down).tzx" size="33375" crc="1a3b77a7" sha1="e88dbb66c4bab1d5c1a4026ca99672527e851862"/>
 			</dataarea>
 		</part>
 	</software>
@@ -109559,7 +109559,7 @@ license:CC0
 		<publisher>The Guild</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48037">
-				<rom name="puzzled!.tzx" size="48037" crc="55552ea8" sha1="f1af7464fe309e5565bc22c64976c11ebfa96dca"/>
+				<rom name="puzzled.tzx" size="48037" crc="55552ea8" sha1="f1af7464fe309e5565bc22c64976c11ebfa96dca"/>
 			</dataarea>
 		</part>
 	</software>
@@ -109570,7 +109570,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48037">
-				<rom name="puzzled! (adventure workshop).tzx" size="48037" crc="b749ced8" sha1="dc5baa904ecd83ef858f0cfa56166f297098fe66"/>
+				<rom name="puzzled (adventure workshop).tzx" size="48037" crc="b749ced8" sha1="dc5baa904ecd83ef858f0cfa56166f297098fe66"/>
 			</dataarea>
 		</part>
 	</software>
@@ -115199,7 +115199,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="110753">
-				<rom name="run, bronwynn, run! (adventure probe).tzx" size="110753" crc="8e6b7a12" sha1="f631d959ebfe736b54fc8df7dbb5d9bfb382c7c3"/>
+				<rom name="run, bronwynn, run (adventure probe).tzx" size="110753" crc="8e6b7a12" sha1="f631d959ebfe736b54fc8df7dbb5d9bfb382c7c3"/>
 			</dataarea>
 		</part>
 	</software>
@@ -115210,12 +115210,12 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="74142">
-				<rom name="run, bronwynn, run! - alternate - side 1.tzx" size="74142" crc="eb6508bd" sha1="6909784bf78b354b49b6c501bd05580842fc08c7"/>
+				<rom name="run, bronwynn, run - alternate - side 1.tzx" size="74142" crc="eb6508bd" sha1="6909784bf78b354b49b6c501bd05580842fc08c7"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="37062">
-				<rom name="run, bronwynn, run! - alternate - side 2.tzx" size="37062" crc="58da9fc0" sha1="0a66144149b7620b626bc3256240f498aebb2435"/>
+				<rom name="run, bronwynn, run - alternate - side 2.tzx" size="37062" crc="58da9fc0" sha1="0a66144149b7620b626bc3256240f498aebb2435"/>
 			</dataarea>
 		</part>
 	</software>
@@ -115226,12 +115226,12 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="74226">
-				<rom name="run, bronwynn, run! - side 1.tzx" size="74226" crc="470f3203" sha1="628d3443b14e180dce556d83791a57f3444124f6"/>
+				<rom name="run, bronwynn, run - side 1.tzx" size="74226" crc="470f3203" sha1="628d3443b14e180dce556d83791a57f3444124f6"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="37104">
-				<rom name="run, bronwynn, run! - side 2.tzx" size="37104" crc="d681fa21" sha1="397840584b6a8cc59eb227f5cc1e7faecebeb552"/>
+				<rom name="run, bronwynn, run - side 2.tzx" size="37104" crc="d681fa21" sha1="397840584b6a8cc59eb227f5cc1e7faecebeb552"/>
 			</dataarea>
 		</part>
 	</software>
@@ -117133,7 +117133,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="31187">
-				<rom name="screen$ snatcha.tzx" size="31187" crc="d616261a" sha1="2fc04c5dfb0833d279ada1e859a754f5bafcca87"/>
+				<rom name="screens snatcha.tzx" size="31187" crc="d616261a" sha1="2fc04c5dfb0833d279ada1e859a754f5bafcca87"/>
 			</dataarea>
 		</part>
 	</software>
@@ -117680,7 +117680,7 @@ license:CC0
 		<publisher>Global Games</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="104478">
-				<rom name="set up!.tzx" size="104478" crc="2b2d146b" sha1="b71fe740ccc7a5e7d2cc1b4b0275f578b499d26f"/>
+				<rom name="set up.tzx" size="104478" crc="2b2d146b" sha1="b71fe740ccc7a5e7d2cc1b4b0275f578b499d26f"/>
 			</dataarea>
 		</part>
 	</software>
@@ -117691,7 +117691,7 @@ license:CC0
 		<publisher>Global Games</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="104487">
-				<rom name="set up! - debugged.tzx" size="104487" crc="d1999050" sha1="cadf3292b6a730f0373bea7cfc8381d4c741157d"/>
+				<rom name="set up - debugged.tzx" size="104487" crc="d1999050" sha1="cadf3292b6a730f0373bea7cfc8381d4c741157d"/>
 			</dataarea>
 		</part>
 	</software>
@@ -120008,7 +120008,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="43629">
-				<rom name="smash out! (system 4).tzx" size="43629" crc="fdf6bc1d" sha1="abef46aa1b341548d4ce59a7024806c98998ad0a"/>
+				<rom name="smash out (system 4).tzx" size="43629" crc="fdf6bc1d" sha1="abef46aa1b341548d4ce59a7024806c98998ad0a"/>
 			</dataarea>
 		</part>
 	</software>
@@ -120019,7 +120019,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="43517">
-				<rom name="smash out!.tzx" size="43517" crc="821e1a25" sha1="df0af696dae8a13e36551295086bbef6bd7574eb"/>
+				<rom name="smash out.tzx" size="43517" crc="821e1a25" sha1="df0af696dae8a13e36551295086bbef6bd7574eb"/>
 			</dataarea>
 		</part>
 	</software>
@@ -120409,7 +120409,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="16812">
-				<rom name="snow joke!.tzx" size="16812" crc="a9215629" sha1="317db751d6804f64e736bf2630d946a82da2e773"/>
+				<rom name="snow joke.tzx" size="16812" crc="a9215629" sha1="317db751d6804f64e736bf2630d946a82da2e773"/>
 			</dataarea>
 		</part>
 	</software>
@@ -122507,7 +122507,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="40416">
-				<rom name="specdicul! - v2.tzx" size="40416" crc="1717cc69" sha1="31e9a31edfec5ae1a48a84faad43a433af1c81d3"/>
+				<rom name="specdicul - v2.tzx" size="40416" crc="1717cc69" sha1="31e9a31edfec5ae1a48a84faad43a433af1c81d3"/>
 			</dataarea>
 		</part>
 	</software>
@@ -122518,7 +122518,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="40455">
-				<rom name="specdicul! - v5.tzx" size="40455" crc="b5ade2fb" sha1="e4946b52360e831bdf6a6dd4dd2ec3d4e064f661"/>
+				<rom name="specdicul - v5.tzx" size="40455" crc="b5ade2fb" sha1="e4946b52360e831bdf6a6dd4dd2ec3d4e064f661"/>
 			</dataarea>
 		</part>
 	</software>
@@ -124351,7 +124351,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="36290">
-				<rom name="splat! (alternative).tzx" size="36290" crc="2c56bd0b" sha1="6b59ac4d2040c6489dbdbb8e65f796f36178139b"/>
+				<rom name="splat (alternative).tzx" size="36290" crc="2c56bd0b" sha1="6b59ac4d2040c6489dbdbb8e65f796f36178139b"/>
 			</dataarea>
 		</part>
 	</software>
@@ -124362,7 +124362,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="49615">
-				<rom name="splat! - release 1 - alternate.tzx" size="49615" crc="e3213e8e" sha1="4ff387c687f467d3211c7bcdc5536c9f3b12e5d3"/>
+				<rom name="splat - release 1 - alternate.tzx" size="49615" crc="e3213e8e" sha1="4ff387c687f467d3211c7bcdc5536c9f3b12e5d3"/>
 			</dataarea>
 		</part>
 	</software>
@@ -124373,7 +124373,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="49567">
-				<rom name="splat! - release 1.tzx" size="49567" crc="2e49af53" sha1="c2f8eb60e540121365da44bf53fee4e78c4dbcf5"/>
+				<rom name="splat - release 1.tzx" size="49567" crc="2e49af53" sha1="c2f8eb60e540121365da44bf53fee4e78c4dbcf5"/>
 			</dataarea>
 		</part>
 	</software>
@@ -124384,7 +124384,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="50811">
-				<rom name="splat! - release 2 - alternate.tzx" size="50811" crc="2cf19db5" sha1="47580ec7c089bceaac97037fa8364ce596106f7f"/>
+				<rom name="splat - release 2 - alternate.tzx" size="50811" crc="2cf19db5" sha1="47580ec7c089bceaac97037fa8364ce596106f7f"/>
 			</dataarea>
 		</part>
 	</software>
@@ -124395,7 +124395,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="50787">
-				<rom name="splat! - release 2.tzx" size="50787" crc="503abfa1" sha1="de80aafcfc8fa64d708536014f724bd9c1429de0"/>
+				<rom name="splat - release 2.tzx" size="50787" crc="503abfa1" sha1="de80aafcfc8fa64d708536014f724bd9c1429de0"/>
 			</dataarea>
 		</part>
 	</software>
@@ -128354,7 +128354,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="100922">
-				<rom name="swat!.tzx" size="100922" crc="0f997973" sha1="cc46dadc41dd2ad87f407200f663c30ac9770ee1"/>
+				<rom name="swat.tzx" size="100922" crc="0f997973" sha1="cc46dadc41dd2ad87f407200f663c30ac9770ee1"/>
 			</dataarea>
 		</part>
 	</software>
@@ -130613,7 +130613,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="9331">
-				<rom name="taxi!.tzx" size="9331" crc="86f371e5" sha1="fc122d6456f2d35ca6ca6e47c42d6ed185f5e6a8"/>
+				<rom name="taxi.tzx" size="9331" crc="86f371e5" sha1="fc122d6456f2d35ca6ca6e47c42d6ed185f5e6a8"/>
 			</dataarea>
 		</part>
 	</software>
@@ -131210,7 +131210,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48668">
-				<rom name="terrormolinos!.tzx" size="48668" crc="7578d0bd" sha1="ddb621b7fe6505ad900e17c721ac6833d0ad2bac"/>
+				<rom name="terrormolinos.tzx" size="48668" crc="7578d0bd" sha1="ddb621b7fe6505ad900e17c721ac6833d0ad2bac"/>
 			</dataarea>
 		</part>
 	</software>
@@ -131407,7 +131407,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="41743">
-				<rom name="th!mble.tzx" size="41743" crc="81492555" sha1="dea9c16e747b02b4334a29a2e96fe105e3aac7c6"/>
+				<rom name="th_mble.tzx" size="41743" crc="81492555" sha1="dea9c16e747b02b4334a29a2e96fe105e3aac7c6"/>
 			</dataarea>
 		</part>
 	</software>
@@ -132401,7 +132401,7 @@ license:CC0
 		<publisher>Ariolasoft UK Ltd</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="44320">
-				<rom name="think!.tzx" size="44320" crc="948df554" sha1="05bbe731a6a6e832d049019e595f98b9dd277f5f"/>
+				<rom name="think.tzx" size="44320" crc="948df554" sha1="05bbe731a6a6e832d049019e595f98b9dd277f5f"/>
 			</dataarea>
 		</part>
 	</software>
@@ -132412,7 +132412,7 @@ license:CC0
 		<publisher>Ariolasoft UK Ltd / Firebird</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="44320">
-				<rom name="think! (firebird).tzx" size="44320" crc="6de787ef" sha1="17da563ec2f14fdbf1b1ca3f1b065cbb0188ec9a"/>
+				<rom name="think (firebird).tzx" size="44320" crc="6de787ef" sha1="17da563ec2f14fdbf1b1ca3f1b065cbb0188ec9a"/>
 			</dataarea>
 		</part>
 	</software>
@@ -136427,7 +136427,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48217">
-				<rom name="ugh!.tzx" size="48217" crc="b00ee756" sha1="6db26757d30caa9adbfd6135b640b8fe4b6b7f45"/>
+				<rom name="ugh.tzx" size="48217" crc="b00ee756" sha1="6db26757d30caa9adbfd6135b640b8fe4b6b7f45"/>
 			</dataarea>
 		</part>
 	</software>
@@ -136438,7 +136438,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48217">
-				<rom name="ugh! - bugfix.tzx" size="48217" crc="e791de3c" sha1="6e44342210da5a7b3012f8988675c391ec0b8af6"/>
+				<rom name="ugh - bugfix.tzx" size="48217" crc="e791de3c" sha1="6e44342210da5a7b3012f8988675c391ec0b8af6"/>
 			</dataarea>
 		</part>
 	</software>
@@ -136992,12 +136992,12 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="133486">
-				<rom name="the vindicator! - 128k (the hit squad).tzx" size="133486" crc="062b508a" sha1="7d653da994666f40b920b0428887f497c25cd9ff"/>
+				<rom name="the vindicator - 128k (the hit squad).tzx" size="133486" crc="062b508a" sha1="7d653da994666f40b920b0428887f497c25cd9ff"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="129039">
-				<rom name="the vindicator! - 48k (the hit squad).tzx" size="129039" crc="fd5974b7" sha1="1d73f848684a7434081219c932867abb5894b0d0"/>
+				<rom name="the vindicator - 48k (the hit squad).tzx" size="129039" crc="fd5974b7" sha1="1d73f848684a7434081219c932867abb5894b0d0"/>
 			</dataarea>
 		</part>
 	</software>
@@ -137008,12 +137008,12 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="133558">
-				<rom name="the vindicator! - 128k.tzx" size="133558" crc="441fcefb" sha1="779b314c4086a6e734f81eb531b6021bbcd99fda"/>
+				<rom name="the vindicator - 128k.tzx" size="133558" crc="441fcefb" sha1="779b314c4086a6e734f81eb531b6021bbcd99fda"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="129117">
-				<rom name="the vindicator! - 48k.tzx" size="129117" crc="5e26684c" sha1="0cd819b29e3805beffe4f62ab482b1a2869dffe2"/>
+				<rom name="the vindicator - 48k.tzx" size="129117" crc="5e26684c" sha1="0cd819b29e3805beffe4f62ab482b1a2869dffe2"/>
 			</dataarea>
 		</part>
 	</software>
@@ -139069,7 +139069,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="37423">
-				<rom name="the worx!.tzx" size="37423" crc="7fa65947" sha1="20853838d37af452324d8c24fce2cd6093eb8c21"/>
+				<rom name="the worx.tzx" size="37423" crc="7fa65947" sha1="20853838d37af452324d8c24fce2cd6093eb8c21"/>
 			</dataarea>
 		</part>
 	</software>
@@ -139880,7 +139880,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="34658">
-				<rom name="wham! the music box.tzx" size="34658" crc="04ca28b7" sha1="3f627b223d3a8784867ca62852a2db741bb00026"/>
+				<rom name="wham the music box.tzx" size="34658" crc="04ca28b7" sha1="3f627b223d3a8784867ca62852a2db741bb00026"/>
 			</dataarea>
 		</part>
 	</software>
@@ -143608,7 +143608,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="35968">
-				<rom name="zut alors!.tzx" size="35968" crc="0b96a3d3" sha1="cabaa939195b4264a4676ecaa0f9a3313921ca95"/>
+				<rom name="zut alors.tzx" size="35968" crc="0b96a3d3" sha1="cabaa939195b4264a4676ecaa0f9a3313921ca95"/>
 			</dataarea>
 		</part>
 	</software>
@@ -149131,12 +149131,12 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="58992">
-				<rom name="delbert_s hamster-wheel of fortune! - side 1.tzx" size="58992" crc="2cd21c37" sha1="04b84be3d14404d5524091e399c4c31cf7d696a8"/>
+				<rom name="delbert_s hamster-wheel of fortune - side 1.tzx" size="58992" crc="2cd21c37" sha1="04b84be3d14404d5524091e399c4c31cf7d696a8"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="51672">
-				<rom name="delbert_s hamster-wheel of fortune! - side 2.tzx" size="51672" crc="23ddd47b" sha1="58c48045fbd59a47766c55c1adc7844ab14c7ce7"/>
+				<rom name="delbert_s hamster-wheel of fortune - side 2.tzx" size="51672" crc="23ddd47b" sha1="58c48045fbd59a47766c55c1adc7844ab14c7ce7"/>
 			</dataarea>
 		</part>
 	</software>
@@ -150815,32 +150815,32 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="345366">
-				<rom name="games crazy! - alternative world games.tzx" size="345366" crc="4c2e6050" sha1="4d1e81dec056c0f86bd4ae5d1046df4d3697ba40"/>
+				<rom name="games crazy - alternative world games.tzx" size="345366" crc="4c2e6050" sha1="4d1e81dec056c0f86bd4ae5d1046df4d3697ba40"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="93946">
-				<rom name="games crazy! - california games - side 1.tzx" size="93946" crc="fe29443f" sha1="8afdcaa8b6c34c30c836ad31dbd4bbcba0d3dde0"/>
+				<rom name="games crazy - california games - side 1.tzx" size="93946" crc="fe29443f" sha1="8afdcaa8b6c34c30c836ad31dbd4bbcba0d3dde0"/>
 			</dataarea>
 		</part>
 		<part name="cass3" interface="spectrum_cass">
 			<dataarea name="cass" size="82390">
-				<rom name="games crazy! - california games - side 2.tzx" size="82390" crc="486b0418" sha1="1118ac07f4603809f0fed7a539c49778adc605a0"/>
+				<rom name="games crazy - california games - side 2.tzx" size="82390" crc="486b0418" sha1="1118ac07f4603809f0fed7a539c49778adc605a0"/>
 			</dataarea>
 		</part>
 		<part name="cass4" interface="spectrum_cass">
 			<dataarea name="cass" size="104388">
-				<rom name="games crazy! - galactic games - side 1.tzx" size="104388" crc="84760b25" sha1="fda7aba32749e394278002fc0a7152db9fb9d614"/>
+				<rom name="games crazy - galactic games - side 1.tzx" size="104388" crc="84760b25" sha1="fda7aba32749e394278002fc0a7152db9fb9d614"/>
 			</dataarea>
 		</part>
 		<part name="cass5" interface="spectrum_cass">
 			<dataarea name="cass" size="83464">
-				<rom name="games crazy! - galactic games - side 2.tzx" size="83464" crc="ad19209b" sha1="3ba0d37c1d45c0b57ecf924d576a3f8bc93e9c5c"/>
+				<rom name="games crazy - galactic games - side 2.tzx" size="83464" crc="ad19209b" sha1="3ba0d37c1d45c0b57ecf924d576a3f8bc93e9c5c"/>
 			</dataarea>
 		</part>
 		<part name="cass6" interface="spectrum_cass">
 			<dataarea name="cass" size="179629">
-				<rom name="games crazy! - supersports.tzx" size="179629" crc="b997b7e7" sha1="220a7cd997ea4715b4d27cbd4d331dcf1877120e"/>
+				<rom name="games crazy - supersports.tzx" size="179629" crc="b997b7e7" sha1="220a7cd997ea4715b4d27cbd4d331dcf1877120e"/>
 			</dataarea>
 		</part>
 	</software>
@@ -151461,12 +151461,12 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="40134">
-				<rom name="grabbed by the ghoulies _ personal computer whirled! - side 1.tzx" size="40134" crc="77742606" sha1="635690fbc1e4938c5fc01d6303b944cd877552a1"/>
+				<rom name="grabbed by the ghoulies _ personal computer whirled - side 1.tzx" size="40134" crc="77742606" sha1="635690fbc1e4938c5fc01d6303b944cd877552a1"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="36833">
-				<rom name="grabbed by the ghoulies _ personal computer whirled! - side 2.tzx" size="36833" crc="158c1f54" sha1="8f3165833b8955395738e60168d3293208446ec7"/>
+				<rom name="grabbed by the ghoulies _ personal computer whirled - side 2.tzx" size="36833" crc="158c1f54" sha1="8f3165833b8955395738e60168d3293208446ec7"/>
 			</dataarea>
 		</part>
 	</software>
@@ -155413,17 +155413,17 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="77324">
-				<rom name="shake! (issue 04) - side 1.tzx" size="77324" crc="9c6e4cb3" sha1="8f910e3e2b17dafdb7ced4cbf27442165bfdfbea"/>
+				<rom name="shake (issue 04) - side 1.tzx" size="77324" crc="9c6e4cb3" sha1="8f910e3e2b17dafdb7ced4cbf27442165bfdfbea"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="9385899">
-				<rom name="shake! (issue 04) - side 2.mp3" size="9385899" crc="ae522b65" sha1="10144c83a00be1b14b68d6faa7fdbecb4fcf3cad"/>
+				<rom name="shake (issue 04) - side 2.mp3" size="9385899" crc="ae522b65" sha1="10144c83a00be1b14b68d6faa7fdbecb4fcf3cad"/>
 			</dataarea>
 		</part>
 		<part name="cass3" interface="spectrum_cass">
 			<dataarea name="cass" size="6999">
-				<rom name="shake! (issue 04) - side 2 spectrum.tzx" size="6999" crc="a0d67fa7" sha1="529863c8ad3a26ad92ab1692285b93e1706a9cf6"/>
+				<rom name="shake (issue 04) - side 2 spectrum.tzx" size="6999" crc="a0d67fa7" sha1="529863c8ad3a26ad92ab1692285b93e1706a9cf6"/>
 			</dataarea>
 		</part>
 	</software>
@@ -155434,7 +155434,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="92686">
-				<rom name="shake! (issue 10).tzx" size="92686" crc="7d18ba64" sha1="28d0364a01a58b631c21c1e0a5e7a323ff097f14"/>
+				<rom name="shake (issue 10).tzx" size="92686" crc="7d18ba64" sha1="28d0364a01a58b631c21c1e0a5e7a323ff097f14"/>
 			</dataarea>
 		</part>
 	</software>
