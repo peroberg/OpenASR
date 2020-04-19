@@ -262402,7 +262402,7 @@ license:CC0
 		<part name="003" interface="vgm_quik">
 			<feature name="part_id" value="03 - faster!.vgz" />
 			<dataarea name="quik" size="10970">
-				<rom name="03 - faster!.vgz" size="10970" crc="1e81dc75" sha1="566fe84221494680678d96c2fd446742dda69a9e" offset="0" />
+				<rom name="03 - faster.vgz" size="10970" crc="1e81dc75" sha1="566fe84221494680678d96c2fd446742dda69a9e" offset="0" />
 			</dataarea>
 		</part>
 		<part name="004" interface="vgm_quik">
@@ -274757,7 +274757,7 @@ license:CC0
 		<part name="002" interface="vgm_quik">
 			<feature name="part_id" value="02 - yatta!!.vgz" />
 			<dataarea name="quik" size="23934">
-				<rom name="02 - yatta!!.vgz" size="23934" crc="1a3a02a8" sha1="c401007266868159c516ebb0dfe464ac9299a5b2" offset="0" />
+				<rom name="02 - yatta.vgz" size="23934" crc="1a3a02a8" sha1="c401007266868159c516ebb0dfe464ac9299a5b2" offset="0" />
 			</dataarea>
 		</part>
 		<part name="003" interface="vgm_quik">
@@ -274823,7 +274823,7 @@ license:CC0
 		<part name="013" interface="vgm_quik">
 			<feature name="part_id" value="13 - palace yarimashitazo!.vgz" />
 			<dataarea name="quik" size="12766">
-				<rom name="13 - palace yarimashitazo!.vgz" size="12766" crc="e9bf7ce2" sha1="237683f1b355328343338595ea75dcf4e22b3a59" offset="0" />
+				<rom name="13 - palace yarimashitazo.vgz" size="12766" crc="e9bf7ce2" sha1="237683f1b355328343338595ea75dcf4e22b3a59" offset="0" />
 			</dataarea>
 		</part>
 		<part name="014" interface="vgm_quik">
@@ -282396,7 +282396,7 @@ license:CC0
 		<part name="002" interface="vgm_quik">
 			<feature name="part_id" value="02 - fight rent-a-hero!!.vgz" />
 			<dataarea name="quik" size="98618">
-				<rom name="02 - fight rent-a-hero!!.vgz" size="98618" crc="891444d2" sha1="de3c138cf17b46518f4fec06031c2540fff1a559" offset="0" />
+				<rom name="02 - fight rent-a-hero.vgz" size="98618" crc="891444d2" sha1="de3c138cf17b46518f4fec06031c2540fff1a559" offset="0" />
 			</dataarea>
 		</part>
 		<part name="003" interface="vgm_quik">
@@ -282438,7 +282438,7 @@ license:CC0
 		<part name="009" interface="vgm_quik">
 			<feature name="part_id" value="09 - it's just that oira is zakokyara!.vgz" />
 			<dataarea name="quik" size="1770">
-				<rom name="09 - it's just that oira is zakokyara!.vgz" size="1770" crc="109cad48" sha1="71406246b0babb9dda15c29b985d1e1674e2c53e" offset="0" />
+				<rom name="09 - it's just that oira is zakokyara.vgz" size="1770" crc="109cad48" sha1="71406246b0babb9dda15c29b985d1e1674e2c53e" offset="0" />
 			</dataarea>
 		</part>
 		<part name="010" interface="vgm_quik">
@@ -282474,13 +282474,13 @@ license:CC0
 		<part name="015" interface="vgm_quik">
 			<feature name="part_id" value="15 - incident! rent-a-hero.vgz" />
 			<dataarea name="quik" size="109462">
-				<rom name="15 - incident! rent-a-hero.vgz" size="109462" crc="625f3367" sha1="05724b007c0e6a4d5470955b56df238cafa1d996" offset="0" />
+				<rom name="15 - incident rent-a-hero.vgz" size="109462" crc="625f3367" sha1="05724b007c0e6a4d5470955b56df238cafa1d996" offset="0" />
 			</dataarea>
 		</part>
 		<part name="016" interface="vgm_quik">
 			<feature name="part_id" value="16 - everyone, thank you!.vgz" />
 			<dataarea name="quik" size="36240">
-				<rom name="16 - everyone, thank you!.vgz" size="36240" crc="d0e0a674" sha1="824b9d61ce87167febf4979285a2cb2f174c59b6" offset="0" />
+				<rom name="16 - everyone, thank you.vgz" size="36240" crc="d0e0a674" sha1="824b9d61ce87167febf4979285a2cb2f174c59b6" offset="0" />
 			</dataarea>
 		</part>
 		<part name="017" interface="vgm_quik">
@@ -286889,7 +286889,7 @@ license:CC0
 		<part name="004" interface="vgm_quik">
 			<feature name="part_id" value="04 - hassou!.vgz" />
 			<dataarea name="quik" size="59324">
-				<rom name="04 - hassou!.vgz" size="59324" crc="7db2b4e0" sha1="19230006be1d95152f6a8cf925d172890940c979" offset="0" />
+				<rom name="04 - hassou.vgz" size="59324" crc="7db2b4e0" sha1="19230006be1d95152f6a8cf925d172890940c979" offset="0" />
 			</dataarea>
 		</part>
 		<part name="005" interface="vgm_quik">
@@ -287027,7 +287027,7 @@ license:CC0
 		<part name="027" interface="vgm_quik">
 			<feature name="part_id" value="27 - hassou! (beta).vgz" />
 			<dataarea name="quik" size="73064">
-				<rom name="27 - hassou! (beta).vgz" size="73064" crc="4d1284bc" sha1="09a79781bd2cbcdf28267965ea11cd908b0e09a7" offset="0" />
+				<rom name="27 - hassou (beta).vgz" size="73064" crc="4d1284bc" sha1="09a79781bd2cbcdf28267965ea11cd908b0e09a7" offset="0" />
 			</dataarea>
 		</part>
 		<part name="028" interface="vgm_quik">
@@ -288806,7 +288806,7 @@ license:CC0
 		<part name="021" interface="vgm_quik">
 			<feature name="part_id" value="21 - no way!.vgz" />
 			<dataarea name="quik" size="16533">
-				<rom name="21 - no way!.vgz" size="16533" crc="0b7d6ee3" sha1="0a45fdc957aab09935a28d8196f71f8090dc639c" offset="0" />
+				<rom name="21 - no way.vgz" size="16533" crc="0b7d6ee3" sha1="0a45fdc957aab09935a28d8196f71f8090dc639c" offset="0" />
 			</dataarea>
 		</part>
 		<part name="022" interface="vgm_quik">
@@ -302291,7 +302291,7 @@ license:CC0
 		<part name="008" interface="vgm_quik">
 			<feature name="part_id" value="08 - danger!! danger!! (stage 2b).vgz" />
 			<dataarea name="quik" size="21110">
-				<rom name="08 - danger!! danger!! (stage 2b).vgz" size="21110" crc="73ee0e3d" sha1="583a249a63121227ad2051ae6178ae3971d42695" offset="0" />
+				<rom name="08 - danger danger (stage 2b).vgz" size="21110" crc="73ee0e3d" sha1="583a249a63121227ad2051ae6178ae3971d42695" offset="0" />
 			</dataarea>
 		</part>
 		<part name="009" interface="vgm_quik">
@@ -302327,7 +302327,7 @@ license:CC0
 		<part name="014" interface="vgm_quik">
 			<feature name="part_id" value="14 - where! (stage 4b).vgz" />
 			<dataarea name="quik" size="25723">
-				<rom name="14 - where! (stage 4b).vgz" size="25723" crc="03d72dd8" sha1="878f89b1a63543081e360a4f2eb3941ac0d946b1" offset="0" />
+				<rom name="14 - where (stage 4b).vgz" size="25723" crc="03d72dd8" sha1="878f89b1a63543081e360a4f2eb3941ac0d946b1" offset="0" />
 			</dataarea>
 		</part>
 		<part name="015" interface="vgm_quik">
@@ -312719,7 +312719,7 @@ license:CC0
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 - here comes yogi!.vgz" />
 			<dataarea name="quik" size="24655">
-				<rom name="01 - here comes yogi!.vgz" size="24655" crc="7e5909d7" sha1="2617ed839124a47cd324a377133f1041c89fcec1" offset="0" />
+				<rom name="01 - here comes yogi.vgz" size="24655" crc="7e5909d7" sha1="2617ed839124a47cd324a377133f1041c89fcec1" offset="0" />
 			</dataarea>
 		</part>
 		<part name="002" interface="vgm_quik">
