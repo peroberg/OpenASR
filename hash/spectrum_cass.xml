@@ -93494,12 +93494,12 @@ license:CC0
 	</software>
 
 	<software name="marooned_a" cloneof="marooned">
-		<description>Marooned</description>
+		<description>Marooned! (alt)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="43913">
-				<rom name="marooned.tzx" size="43913" crc="3855bf40" sha1="7d3eb0d2aa24efc0133db5ab57165dc9e2532646"/>
+				<rom name="marooned_alt.tzx" size="43913" crc="3855bf40" sha1="7d3eb0d2aa24efc0133db5ab57165dc9e2532646"/>
 			</dataarea>
 		</part>
 	</software>

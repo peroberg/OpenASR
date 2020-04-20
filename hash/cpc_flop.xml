@@ -217176,7 +217176,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="total recall (nongoodcpc).dsk" size="194816" crc="d75eb97c" sha1="856a1a8fe4162b2ced1a6823185b84ff88e36d8d"/>
+				<rom name="total recall_01 (nongoodcpc).dsk" size="194816" crc="d75eb97c" sha1="856a1a8fe4162b2ced1a6823185b84ff88e36d8d"/>
 			</dataarea>
 		</part>
 	</software>
@@ -217188,7 +217188,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="total recall (nongoodcpc).dsk" size="194816" crc="05078fab" sha1="8cc5cfee8d21ca2976b1164a37f1cf15a08815d5"/>
+				<rom name="total recall_02 (nongoodcpc).dsk" size="194816" crc="05078fab" sha1="8cc5cfee8d21ca2976b1164a37f1cf15a08815d5"/>
 			</dataarea>
 		</part>
 	</software>
