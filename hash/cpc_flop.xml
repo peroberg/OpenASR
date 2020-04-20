@@ -232644,12 +232644,12 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="155904">
-				<rom name="micro club - beach volley, adidas championship tie break (uk) (face a) (1991) (spain retail version) [original] [compilation].dsk" size="155904" crc="92463266" sha1="d502ebdd7bd2217cc7760e23f5bf7e65e028acb5"/>
+				<rom name="micro club - beach volley, adidas championship tie break (uk) (face a) (spain retail version) [original] [compilation].dsk" size="155904" crc="92463266" sha1="d502ebdd7bd2217cc7760e23f5bf7e65e028acb5"/>
 			</dataarea>
 		</part>
 		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="78080">
-				<rom name="micro club - beach volley, adidas championship tie break (uk) (face b) (1991) (cpm) (spain retail version) [original] [compilation].dsk" size="78080" crc="cb77ca38" sha1="6ec24a066a44e60dba3173834695c3bdc5957896"/>
+				<rom name="micro club - beach volley, adidas championship tie break (uk) (face b) (spain retail version) [original] [compilation].dsk" size="78080" crc="cb77ca38" sha1="6ec24a066a44e60dba3173834695c3bdc5957896"/>
 			</dataarea>
 		</part>
 	</software>
@@ -232661,12 +232661,12 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="242944">
-				<rom name="micro club - bubble bobble, super wonderboy in monster land (uk) (face a) (1991) (spain retail version) [original] [compilation].dsk" size="242944" crc="ded3f709" sha1="dea0c1276ab82052d09dd449c5c27f734e63ee2a"/>
+				<rom name="micro club - bubble bobble, super wonderboy in monster land (uk) (face a) (spain retail version) [original] [compilation].dsk" size="242944" crc="ded3f709" sha1="dea0c1276ab82052d09dd449c5c27f734e63ee2a"/>
 			</dataarea>
 		</part>
 		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="146176">
-				<rom name="micro club - bubble bobble, super wonderboy in monster land (uk) (face b) (1991) (spain retail version) [original] [compilation].dsk" size="146176" crc="25b1f6e9" sha1="429f41168fe001203607f5218156946c128df655"/>
+				<rom name="micro club - bubble bobble, super wonderboy in monster land (uk) (face b) spain retail version) [original] [compilation].dsk" size="146176" crc="25b1f6e9" sha1="429f41168fe001203607f5218156946c128df655"/>
 			</dataarea>
 		</part>
 	</software>
@@ -233519,12 +233519,12 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="pick 'n' mix - cloud 99, dr jekyll and mr hyde, phoenix, violator of voodoo (uk) (128k) (face a) (1993) [original] [compilation].dsk" size="194816" crc="35556222" sha1="a4f2a712496e859c1536399a9a69e76deb7c65b9"/>
+				<rom name="pick 'n' mix - cloud 99, dr jekyll and mr hyde, phoenix, violator of voodoo (uk) (128k) (face a) [original] [compilation].dsk" size="194816" crc="35556222" sha1="a4f2a712496e859c1536399a9a69e76deb7c65b9"/>
 			</dataarea>
 		</part>
 		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="pick 'n' mix - cloud 99, dr jekyll and mr hyde, phoenix, violator of voodoo (uk) (128k) (face b) (1993) [original] [compilation].dsk" size="194816" crc="e4571c42" sha1="ee59eb860224ce566ef4ccded6ea10133b240073"/>
+				<rom name="pick 'n' mix - cloud 99, dr jekyll and mr hyde, phoenix, violator of voodoo (uk) (128k) (face b) [original] [compilation].dsk" size="194816" crc="e4571c42" sha1="ee59eb860224ce566ef4ccded6ea10133b240073"/>
 			</dataarea>
 		</part>
 	</software>
@@ -233541,7 +233541,7 @@ stick to CPC-Power disks, when available)
 		</part>
 		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="pick 'n' mix - the black fountain, sharpe's deeds... (uk) (128k) (face b) (19xx) (cpm) (version 6128) [original] [compilation].dsk" size="194816" crc="00213afa" sha1="b73c757472334ea266f3dea7ac4711278c1625aa"/>
+				<rom name="pick 'n' mix - the black fountain, sharpe's deeds... (uk) (128k) (face b) (cpm) (version 6128) [original] [compilation].dsk" size="194816" crc="00213afa" sha1="b73c757472334ea266f3dea7ac4711278c1625aa"/>
 			</dataarea>
 		</part>
 	</software>
@@ -253195,7 +253195,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="21 &amp; 3 en raya &amp; ahogado &amp; kinkey &amp; el pantano &amp; laberinto loco &amp; marie celeste &amp; parejas &amp; pico loco &amp; fighter pilot &amp; silent service &amp; skippy &amp; star trek &amp; timba &amp; yo acuso (nongoodcpc).dsk" size="194816" crc="3cf5c5af" sha1="427bd4fb36e6c0953d0c253842beb20760e1d44f"/>
+				<rom name="21 &amp; 3 en raya (nongoodcpc).dsk" size="194816" crc="3cf5c5af" sha1="427bd4fb36e6c0953d0c253842beb20760e1d44f"/>
 			</dataarea>
 		</part>
 	</software>
@@ -253699,7 +253699,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="3d 4 en raya &amp; space trucker &amp; base lunar alfa &amp; cargamento espacial &amp; frutties &amp; santas grotty &amp; egg blitz &amp; smaley vs grumpis &amp; space base (nongoodcpc).dsk" size="194816" crc="e26b7ec4" sha1="c8ec7e38e82fe4c94206d3dec01c7212dec999be"/>
+				<rom name="3d 4 en raya &amp; (nongoodcpc).dsk" size="194816" crc="e26b7ec4" sha1="c8ec7e38e82fe4c94206d3dec01c7212dec999be"/>
 			</dataarea>
 		</part>
 	</software>
@@ -253855,7 +253855,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="3d voice chess (castellano) &amp; airwolf &amp; erbert &amp; guia de telaifonos &amp; caterpillar &amp; mr wong's loopy laundry &amp; profile &amp; samantha fox (nongoodcpc).dsk" size="194816" crc="885fbae2" sha1="580e433c17a2c526105ed18fa40a01c22f484148"/>
+				<rom name="3d voice chess (castellano) (nongoodcpc).dsk" size="194816" crc="885fbae2" sha1="580e433c17a2c526105ed18fa40a01c22f484148"/>
 			</dataarea>
 		</part>
 	</software>
@@ -254035,7 +254035,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="abecedario &amp; amdraw i &amp; centre court &amp; codename mat &amp; fruit machine &amp; don leoncio pierdepalabras &amp; snake &amp; 3d starstrike &amp; trap'em (nongoodcpc).dsk" size="194816" crc="bff0d15d" sha1="2533d3585127df3bba2ed1cce82dbdf86b2fd928"/>
+				<rom name="abecedario (nongoodcpc).dsk" size="194816" crc="bff0d15d" sha1="2533d3585127df3bba2ed1cce82dbdf86b2fd928"/>
 			</dataarea>
 		</part>
 	</software>
@@ -254155,7 +254155,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="acey-ducy &amp; bomber &amp; bustout &amp; cricket (aka howzat) &amp; 200x6 file database &amp; dominoes &amp; hangman &amp; metcon &amp; raffles &amp; tasword &amp; telly tennis &amp; tictac (nongoodcpc).dsk" size="194816" crc="b0b83c4a" sha1="11ff01d0d86b6d498665d23bf9cdaf12d96008a3"/>
+				<rom name="acey-ducy (nongoodcpc).dsk" size="194816" crc="b0b83c4a" sha1="11ff01d0d86b6d498665d23bf9cdaf12d96008a3"/>
 			</dataarea>
 		</part>
 	</software>
@@ -254239,7 +254239,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="agenda &amp; submarino experimental neptuno &amp; conversor binario-hexadecimal &amp; dieta &amp; o'thelo &amp; puzzle abc &amp; q-h &amp; yaht (nongoodcpc).dsk" size="194816" crc="9d1cda9e" sha1="f8b32235ca6d6f00b99ba40fc33223b4d38eafb0"/>
+				<rom name="agenda &amp; submarino experimental neptuno (nongoodcpc).dsk" size="194816" crc="9d1cda9e" sha1="f8b32235ca6d6f00b99ba40fc33223b4d38eafb0"/>
 			</dataarea>
 		</part>
 	</software>
@@ -254312,7 +254312,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="airwolf &amp; commando &amp; harrier attack &amp; el coche fantastico (knight rider) &amp; los picapiedra (the flintstones - yabba dabba doo) (nongoodcpc).dsk" size="194816" crc="33c4dfb7" sha1="ec20e277bc60ec99b33dd3468706f5f9838cf6d3"/>
+				<rom name="airwolf &amp; commando &amp; harrier attack (nongoodcpc).dsk" size="194816" crc="33c4dfb7" sha1="ec20e277bc60ec99b33dd3468706f5f9838cf6d3"/>
 			</dataarea>
 		</part>
 	</software>
@@ -254648,7 +254648,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="amsaisie &amp; astrologie chinoise &amp; lunaire &amp; database &amp; dietetique &amp; fenetrad &amp; fractal's tree &amp; gestion de disquette &amp; graphologie &amp; listage &amp; scriptor &amp; viewtext &amp; varios (nongoodcpc).dsk" size="194816" crc="55998140" sha1="5bff5da90fee3924d8f0e5f42644f40bfb8c5b82"/>
+				<rom name="amsaisie &amp; astrologie chinoise &amp; lunaire &amp; (nongoodcpc).dsk" size="194816" crc="55998140" sha1="5bff5da90fee3924d8f0e5f42644f40bfb8c5b82"/>
 			</dataarea>
 		</part>
 	</software>
@@ -254684,7 +254684,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="amsdisk &amp; discology 2.0 (francais) &amp; discovery 1 &amp; fichero amstrad &amp; trojan lightpen &amp; protec &amp; screen designer (nongoodcpc).dsk" size="194816" crc="6e01c62d" sha1="ed803fce52084070a53934e79fb2f2aca9613e95"/>
+				<rom name="amsdisk &amp; discology 2.0 (francais) &amp; discovery 1 &amp; (nongoodcpc).dsk" size="194816" crc="6e01c62d" sha1="ed803fce52084070a53934e79fb2f2aca9613e95"/>
 			</dataarea>
 		</part>
 	</software>
@@ -254876,7 +254876,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="amster &amp; amthello &amp; bombas &amp; bombardero &amp; dibujar es facil &amp; carnival shootout &amp; esgrima elaictrico &amp; space base &amp; guante blanco &amp; poseide &amp; presupuesto &amp; rebotes &amp; tenis &amp; test &amp; space trucker &amp; tumba &amp; tune(2) (nongoodcpc).dsk" size="194816" crc="af9cdcf1" sha1="6c25d2d1b387bffb09c848768363beb3a1a9456b"/>
+				<rom name="amster &amp; amthello &amp; bombas &amp; bombardero &amp; (nongoodcpc).dsk" size="194816" crc="af9cdcf1" sha1="6c25d2d1b387bffb09c848768363beb3a1a9456b"/>
 			</dataarea>
 		</part>
 	</software>
@@ -255380,7 +255380,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204544">
-				<rom name="amthello &amp; graf spee &amp; binky &amp; carnival shootout &amp; space base &amp; karl's treasure &amp; tron &amp; space trucker &amp; tune &amp; test &amp; aventuras de arnold  (nongoodcpc).dsk" size="204544" crc="3862f574" sha1="1e45dd0a7d7dfdfabb40ff1bfc49fcfdb4e0b31c"/>
+				<rom name="amthello &amp; graf spee &amp; binky &amp; (nongoodcpc).dsk" size="204544" crc="3862f574" sha1="1e45dd0a7d7dfdfabb40ff1bfc49fcfdb4e0b31c"/>
 			</dataarea>
 		</part>
 	</software>
@@ -255416,7 +255416,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="argo-navis &amp; barcos &amp; combiloto-2 &amp; le mans &amp; micro fruits &amp; minilisp 2.0 &amp; submarino &amp; ataque terrorista &amp; programas basic (nongoodcpc).dsk" size="194816" crc="ad74d748" sha1="e570da50cc0ed4206a504b508ba388d4bba408b0"/>
+				<rom name="argo-navis &amp; barcos &amp; combiloto-2 &amp; (nongoodcpc).dsk" size="194816" crc="ad74d748" sha1="e570da50cc0ed4206a504b508ba388d4bba408b0"/>
 			</dataarea>
 		</part>
 	</software>
@@ -255812,7 +255812,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="asalto &amp; fighter pilot &amp; el laberinto del sultan &amp; oh mummy &amp; misie poseide &amp; la plaga galactica &amp; pinball wizard (nongoodcpc).dsk" size="194816" crc="45b9cba9" sha1="0fa803e38967cc54f6e7c8762d3e0432634179d3"/>
+				<rom name="asalto &amp; fighter pilot &amp; el laberinto del sultan &amp; (nongoodcpc).dsk" size="194816" crc="45b9cba9" sha1="0fa803e38967cc54f6e7c8762d3e0432634179d3"/>
 			</dataarea>
 		</part>
 	</software>
@@ -255824,7 +255824,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="ascii &amp; azerty &amp; budgest &amp; calculs financiers &amp; cassacass &amp; catalogue disque &amp; crazy 3.0 &amp; etik disk &amp; easy file &amp; hardcopy &amp; medor &amp; sectory plus &amp; varios (nongoodcpc).dsk" size="194816" crc="e3eb512a" sha1="c2e9f4c806da0eeefc42834591371f1491858e97"/>
+				<rom name="ascii &amp; azerty &amp; budgest &amp; varios (nongoodcpc).dsk" size="194816" crc="e3eb512a" sha1="c2e9f4c806da0eeefc42834591371f1491858e97"/>
 			</dataarea>
 		</part>
 	</software>
@@ -255968,7 +255968,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204032">
-				<rom name="atc heathrow &amp; defend or die &amp; roland goes digging &amp; grand prix driver &amp; quack a jack &amp; oh mummy &amp; match point  (nongoodcpc).dsk" size="204032" crc="bc5dfa98" sha1="6870fa69fd1d4ee6be3194ba7c70a5feb81f4ebf"/>
+				<rom name="atc heathrow &amp; defend or die &amp; roland goes digging &amp; (nongoodcpc).dsk" size="204032" crc="bc5dfa98" sha1="6870fa69fd1d4ee6be3194ba7c70a5feb81f4ebf"/>
 			</dataarea>
 		</part>
 	</software>
@@ -256892,7 +256892,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="blokker &amp; chuckie egg &amp; english vocabulary &amp; goliath (abraxas) &amp; jet set willy &amp; karl's treasure &amp; konami's ping pong (nongoodcpc).dsk" size="194816" crc="c436973f" sha1="7d173e9c51211d6c5fff839162355cad039963d6"/>
+				<rom name="blokker &amp; chuckie egg &amp; english vocabulary &amp; (nongoodcpc).dsk" size="194816" crc="c436973f" sha1="7d173e9c51211d6c5fff839162355cad039963d6"/>
 			</dataarea>
 		</part>
 	</software>
@@ -257252,7 +257252,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="bombardero &amp; bombas &amp; cinco iguales &amp; esgrima &amp; encontrar la bomba &amp; pastor &amp; poseide &amp; rebotes &amp; ping pong &amp; willy wino's stag night (nongoodcpc).dsk" size="194816" crc="9c7869e4" sha1="b800846892635fed8716ee450a98a393d94ea556"/>
+				<rom name="bombardero &amp; bombas &amp; cinco iguales &amp; (nongoodcpc).dsk" size="194816" crc="9c7869e4" sha1="b800846892635fed8716ee450a98a393d94ea556"/>
 			</dataarea>
 		</part>
 	</software>
@@ -257324,7 +257324,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="193280">
-				<rom name="bonzo meddler &amp; recibo comunidad &amp; dictado &amp; discovery 1 &amp; factura &amp; acme file copier &amp; format &amp; cadigos de impresora &amp; manager discos &amp; mena discos &amp; oddjob &amp; dform (nongoodcpc).dsk" size="193280" crc="1ad1bd11" sha1="fe620680beb84e5a21ec9010e9cc9c409231eb24"/>
+				<rom name="bonzo meddler &amp; recibo comunidad &amp; dictado &amp; (nongoodcpc).dsk" size="193280" crc="1ad1bd11" sha1="fe620680beb84e5a21ec9010e9cc9c409231eb24"/>
 			</dataarea>
 		</part>
 	</software>
@@ -257804,7 +257804,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="209408">
-				<rom name="calendario de biorritmos &amp; generador de caracteres &amp; contabilidad general &amp; hacker disc &amp; doodledisc &amp; sintetizador de voz &amp; disc poker (nongoodcpc).dsk" size="209408" crc="f8c1cf60" sha1="411b96fba8deea1d3dc2cb1825939d9a1adc606b"/>
+				<rom name="calendario de biorritmos &amp; generador de caracteres &amp; (nongoodcpc).dsk" size="209408" crc="f8c1cf60" sha1="411b96fba8deea1d3dc2cb1825939d9a1adc606b"/>
 			</dataarea>
 		</part>
 	</software>
@@ -257828,7 +257828,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="camelot warriors &amp; strike force harrier &amp; formula 1 &amp; fruit machine &amp; galactic plague &amp; la rana &amp; tomy en el slalom (nongoodcpc).dsk" size="194816" crc="e948a2d6" sha1="5b957fcf7fe67a9e24e092e4dfc7ff2c2c2129a5"/>
+				<rom name="camelot warriors &amp; strike force harrier &amp; formula 1 &amp; (nongoodcpc).dsk" size="194816" crc="e948a2d6" sha1="5b957fcf7fe67a9e24e092e4dfc7ff2c2c2129a5"/>
 			</dataarea>
 		</part>
 	</software>
@@ -258164,7 +258164,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="circuitos elaictricos &amp; contabilidad general &amp; fantastic voyage &amp; fases lunares &amp; fisica &amp; provincias de espaaa &amp; programas basic (nongoodcpc).dsk" size="194816" crc="eb0304e6" sha1="da4e674a79085a428b34ca82ea9c2cf01f9ded41"/>
+				<rom name="circuitos elaictricos &amp; contabilidad general &amp; fantastic voyage &amp; (nongoodcpc).dsk" size="194816" crc="eb0304e6" sha1="da4e674a79085a428b34ca82ea9c2cf01f9ded41"/>
 			</dataarea>
 		</part>
 	</software>
@@ -258404,7 +258404,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="combat lynx &amp; smaley vs. grumpis &amp; englebert &amp; juggler &amp; frutties &amp; space eggs &amp; otelo &amp; house of usher &amp; rebotes &amp; reinado &amp; snake &amp; tragaperras &amp; trap'em &amp; tron (nongoodcpc).dsk" size="194816" crc="1a19a35a" sha1="264f8c181acaf90384550eeec67cbe6b41157dab"/>
+				<rom name="combat lynx &amp; smaley vs. grumpis &amp; (nongoodcpc).dsk" size="194816" crc="1a19a35a" sha1="264f8c181acaf90384550eeec67cbe6b41157dab"/>
 			</dataarea>
 		</part>
 	</software>
@@ -259460,7 +259460,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="deflektor (dalromi) &amp; match day ii (real zaragoza vs real madrid) &amp; rick dangerous &amp; art studio &amp; programas basic (nongoodcpc).dsk" size="194816" crc="2016e0a8" sha1="a9f73dfbb91c27ce6e880ee8aa43cc55cadab83d"/>
+				<rom name="deflektor (dalromi) &amp; match day ii (real zaragoza vs real madrid) &amp; (nongoodcpc).dsk" size="194816" crc="2016e0a8" sha1="a9f73dfbb91c27ce6e880ee8aa43cc55cadab83d"/>
 			</dataarea>
 		</part>
 	</software>
@@ -260720,7 +260720,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="el tute (cpc464) &amp; gilligan's gold &amp; roland in the caves &amp; spannerman &amp; ah bod &amp; mr wong's loopy laundry &amp; programas basic (nongoodcpc).dsk" size="194816" crc="40abbbc5" sha1="1d5fa65ca649d1a886ea0b1e35e332b75bf791a3"/>
+				<rom name="el tute (cpc464) &amp; gilligan's gold &amp; roland in the caves &amp; (nongoodcpc).dsk" size="194816" crc="40abbbc5" sha1="1d5fa65ca649d1a886ea0b1e35e332b75bf791a3"/>
 			</dataarea>
 		</part>
 	</software>
@@ -261524,7 +261524,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="fighter pilot &amp; silent service &amp; programas basic (ahogado, kinkey, el pantano, marie celeste, pico loco, skippy, star trek, yo acuso, etc) (nongoodcpc).dsk" size="194816" crc="fc2031f3" sha1="f8c09d674f9be7571f3a6ad258824dffad4b2760"/>
+				<rom name="fighter pilot &amp; silent service &amp; programas basic (nongoodcpc).dsk" size="194816" crc="fc2031f3" sha1="f8c09d674f9be7571f3a6ad258824dffad4b2760"/>
 			</dataarea>
 		</part>
 	</software>
@@ -264524,7 +264524,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="la batalla de inglaterra (castellano) &amp; biorritmos &amp; damas &amp; graf spee (inglais) &amp; masica maestro &amp; quimica qls (nongoodcpc).dsk" size="194816" crc="0267b6d0" sha1="81fa33fc7c17afb28e02658becd0b8d408d3981c"/>
+				<rom name="la batalla de inglaterra (castellano) &amp; biorritmos &amp; damas &amp; (nongoodcpc).dsk" size="194816" crc="0267b6d0" sha1="81fa33fc7c17afb28e02658becd0b8d408d3981c"/>
 			</dataarea>
 		</part>
 	</software>
@@ -267512,7 +267512,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="primitiva &amp; mach-4 &amp; tron &amp; digger &amp; batalla naval &amp; trench &amp; cedric &amp; crash &amp; misie suicida &amp; mad adder &amp; el pensador &amp; stranded &amp; programas basic (nongoodcpc).dsk" size="194816" crc="5eec2c19" sha1="054314b3b57606863b3bcc3c74ced019bb11be04"/>
+				<rom name="primitiva &amp; mach-4 &amp; tron &amp; (nongoodcpc).dsk" size="194816" crc="5eec2c19" sha1="054314b3b57606863b3bcc3c74ced019bb11be04"/>
 			</dataarea>
 		</part>
 	</software>
@@ -267536,7 +267536,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="procesador de arpegios &amp; cultez &amp; el poeta &amp; explosie &amp; loquilandia &amp; loster &amp; panic &amp; ping-ball &amp; adivinar el refran &amp; tutor de morse &amp; video poker &amp; programas en basic (nongoodcpc).dsk" size="194816" crc="c51d0271" sha1="ff4e2e113988937cc691b2fa3944b96e8bb30755"/>
+				<rom name="procesador de arpegios &amp; cultez &amp; el poeta &amp; (nongoodcpc).dsk" size="194816" crc="c51d0271" sha1="ff4e2e113988937cc691b2fa3944b96e8bb30755"/>
 			</dataarea>
 		</part>
 	</software>
@@ -268592,7 +268592,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="203520">
-				<rom name="space hawks &amp; masterchess &amp; masica maestro &amp; atc schiphol &amp; home runner &amp; roland in the caves &amp; spannerman &amp; codename mat  (nongoodcpc).dsk" size="203520" crc="6a748025" sha1="3efa14b749380344085b1150712a14af247240fd"/>
+				<rom name="space hawks &amp; masterchess &amp; masica maestro &amp; (nongoodcpc).dsk" size="203520" crc="6a748025" sha1="3efa14b749380344085b1150712a14af247240fd"/>
 			</dataarea>
 		</part>
 	</software>
@@ -268724,7 +268724,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="star dodger &amp; space-hockey &amp; minehunt &amp; pacman (basic) &amp; pong &amp; day at the races &amp; light cycles &amp; tracker &amp; trucking &amp; warzone (nongoodcpc).dsk" size="194816" crc="e7f8e81e" sha1="366a99c27c6035745dca619806ecd3dbb8283911"/>
+				<rom name="star dodger &amp; space-hockey &amp; minehunt &amp; (nongoodcpc).dsk" size="194816" crc="e7f8e81e" sha1="366a99c27c6035745dca619806ecd3dbb8283911"/>
 			</dataarea>
 		</part>
 	</software>
@@ -269732,7 +269732,7 @@ stick to CPC-Power disks, when available)
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
-				<rom name="winter sports (1 de 2) &amp; copie protec &amp; ambulancia-edificio &amp; manic miner &amp; provincias de espaaa &amp; speed king &amp; 3d starstrike (nongoodcpc).dsk" size="194816" crc="2b8442e9" sha1="b4c654608e7b04e1fdb747b37731cb84d184ccd0"/>
+				<rom name="winter sports (1 de 2) &amp; copie protec &amp; ambulancia-edificio &amp; (nongoodcpc).dsk" size="194816" crc="2b8442e9" sha1="b4c654608e7b04e1fdb747b37731cb84d184ccd0"/>
 			</dataarea>
 		</part>
 	</software>
