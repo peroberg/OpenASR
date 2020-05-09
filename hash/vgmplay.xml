@@ -313074,9 +313074,6 @@ license:CC0
 		</part>
 	</software>
 
-
-
-
 <!-- Project 2612 VGM Archives located at http://project2612.org/list.php
      Update April 7, 2020 - 13 new entries -->
 
@@ -314205,6 +314202,440 @@ license:CC0
 			<feature name="part_id" value="13 - bonus message.vgz" />
 			<dataarea name="quik" size="2167">
 				<rom name="13 - bonus message.vgz" size="2167" crc="ffb51cc7" sha1="959a0ccea981db69b028506c3c8dfc72c3524ce6" offset="0" />
+			</dataarea>
+		</part>
+	</software>
+
+	<!-- Project 2612 VGM Archives located at http://project2612.org/list.php
+     Update May 2, 2020 - 5 new entries -->
+
+ 	<software name="joemont2_md">
+		<description>Joe Montana II - Sports Talk Football (GEN/MD)</description>
+		<year>1991</year>
+		<publisher>Sega</publisher>
+		<info name="cores" value="SN76496, YM2612"/>
+		<part name="001" interface="vgm_quik">
+			<feature name="part_id" value="01 - main theme.vgz" />
+			<dataarea name="quik" size="1572973">
+				<rom name="01 - main theme.vgz" size="1572973" crc="b3572679" sha1="3c63848bc10e1f344d64905f5d14753d6c14b63a" offset="0" />
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="lotust_md">
+		<description>Lotus Turbo Challenge (GEN/MD)</description>
+		<year>1992</year>
+		<publisher>Gremlin Graphics Software Ltd.</publisher>
+		<info name="cores" value="SN76496, YM2612"/>
+		<part name="001" interface="vgm_quik">
+			<feature name="part_id" value="01 - title theme.vgz" />
+			<dataarea name="quik" size="719245">
+				<rom name="01 - title theme.vgz" size="719245" crc="c53d07ef" sha1="044371167bd48c5ff94f60848eec7364e28cf890" offset="0" />
+			</dataarea>
+		</part>
+		<part name="002" interface="vgm_quik">
+			<feature name="part_id" value="02 - forest.vgz" />
+			<dataarea name="quik" size="87473">
+				<rom name="02 - forest.vgz" size="87473" crc="40565839" sha1="ca8e57471b99d0636da1b416efd0bae462800f81" offset="0" />
+			</dataarea>
+		</part>
+		<part name="003" interface="vgm_quik">
+			<feature name="part_id" value="03 - night.vgz" />
+			<dataarea name="quik" size="127484">
+				<rom name="03 - night.vgz" size="127484" crc="7c07ef2f" sha1="dd9f080f21296bb583e50dfc9702916d1794165a" offset="0" />
+			</dataarea>
+		</part>
+		<part name="004" interface="vgm_quik">
+			<feature name="part_id" value="04 - fog.vgz" />
+			<dataarea name="quik" size="18374">
+				<rom name="04 - fog.vgz" size="18374" crc="1b11cac4" sha1="9b6d0fa2f0f29d17a1ce798d4fac59fdc38a8fb9" offset="0" />
+			</dataarea>
+		</part>
+		<part name="005" interface="vgm_quik">
+			<feature name="part_id" value="05 - snow.vgz" />
+			<dataarea name="quik" size="6512">
+				<rom name="05 - snow.vgz" size="6512" crc="851ff91c" sha1="37050143b22ccaa6de9a2963ce59c711cf6ab400" offset="0" />
+			</dataarea>
+		</part>
+		<part name="006" interface="vgm_quik">
+			<feature name="part_id" value="06 - desert.vgz" />
+			<dataarea name="quik" size="56566">
+				<rom name="06 - desert.vgz" size="56566" crc="090d3910" sha1="614436c539e89922f9276f0ed80e9b961a8e9593" offset="0" />
+			</dataarea>
+		</part>
+		<part name="007" interface="vgm_quik">
+			<feature name="part_id" value="07 - interstate.vgz" />
+			<dataarea name="quik" size="6490">
+				<rom name="07 - interstate.vgz" size="6490" crc="23bf85b4" sha1="e71dd11b0499d1ceff1eb650b62c738bc6c29501" offset="0" />
+			</dataarea>
+		</part>
+		<part name="008" interface="vgm_quik">
+			<feature name="part_id" value="08 - marsh.vgz" />
+			<dataarea name="quik" size="69098">
+				<rom name="08 - marsh.vgz" size="69098" crc="54e2e2fb" sha1="222d4567add14996a2fe33ba796cbd5885408d8c" offset="0" />
+			</dataarea>
+		</part>
+		<part name="009" interface="vgm_quik">
+			<feature name="part_id" value="09 - storm.vgz" />
+			<dataarea name="quik" size="68157">
+				<rom name="09 - storm.vgz" size="68157" crc="3257c4fd" sha1="68e287840435d30a711b7698b1343095b72eaaa2" offset="0" />
+			</dataarea>
+		</part>
+		<part name="010" interface="vgm_quik">
+			<feature name="part_id" value="10 - ending.vgz" />
+			<dataarea name="quik" size="664924">
+				<rom name="10 - ending.vgz" size="664924" crc="09841b94" sha1="e33b52a3a214972bb216cf768887245dce93a9d8" offset="0" />
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="madden95_md">
+		<description>Madden NFL '95 (GEN/MD)</description>
+		<year>1994</year>
+		<publisher>Electronic Arts</publisher>
+		<info name="cores" value="SN76496, YM2612"/>
+		<part name="001" interface="vgm_quik">
+			<feature name="part_id" value="01 - ea sports.vgz" />
+			<dataarea name="quik" size="70299">
+				<rom name="01 - ea sports.vgz" size="70299" crc="5ae906c3" sha1="1a331babeff7fc732a746a884ea649a03577966c" offset="0" />
+			</dataarea>
+		</part>
+		<part name="002" interface="vgm_quik">
+			<feature name="part_id" value="02 - welcome.vgz" />
+			<dataarea name="quik" size="52680">
+				<rom name="02 - welcome.vgz" size="52680" crc="e267a10f" sha1="25401c69be28a1964b7968140d4cee285172f480" offset="0" />
+			</dataarea>
+		</part>
+		<part name="003" interface="vgm_quik">
+			<feature name="part_id" value="03 - nfl on fox (game setup).vgz" />
+			<dataarea name="quik" size="1633451">
+				<rom name="03 - nfl on fox (game setup).vgz" size="1633451" crc="e6bb5c3d" sha1="d281f0953956e2a2e5367b1e8e24f9e798f258eb" offset="0" />
+			</dataarea>
+		</part>
+		<part name="004" interface="vgm_quik">
+			<feature name="part_id" value="04 - game start.vgz" />
+			<dataarea name="quik" size="2285567">
+				<rom name="04 - game start.vgz" size="2285567" crc="74c25daf" sha1="6c40dcf2d5b1b6b82c279d6600775ad5e1a61bd2" offset="0" />
+			</dataarea>
+		</part>
+		<part name="005" interface="vgm_quik">
+			<feature name="part_id" value="05 - pause menu.vgz" />
+			<dataarea name="quik" size="1128631">
+				<rom name="05 - pause menu.vgz" size="1128631" crc="d74bf85a" sha1="38be59a3c9dc04076474270bacb18cb022c6016a" offset="0" />
+			</dataarea>
+		</part>
+		<part name="006" interface="vgm_quik">
+			<feature name="part_id" value="06 - playoff tree.vgz" />
+			<dataarea name="quik" size="1599500">
+				<rom name="06 - playoff tree.vgz" size="1599500" crc="0a37d690" sha1="abcad460c51f8f8e6bec8a8fe78b56d224281ddd" offset="0" />
+			</dataarea>
+		</part>
+		<part name="007" interface="vgm_quik">
+			<feature name="part_id" value="07 - you won.vgz" />
+			<dataarea name="quik" size="588879">
+				<rom name="07 - you won.vgz" size="588879" crc="8f2027d3" sha1="c763a0098b24841d174346b54f07ec02ab63ac63" offset="0" />
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="teddyboy_md">
+		<description>Teddy Boy Blues (GEN/MD)</description>
+		<year>1992</year>
+		<publisher>Sega</publisher>
+		<info name="cores" value="SN76496, YM2612"/>
+		<part name="001" interface="vgm_quik">
+			<feature name="part_id" value="01 - title theme.vgz" />
+			<dataarea name="quik" size="7649">
+				<rom name="01 - title theme.vgz" size="7649" crc="fd01f50a" sha1="e77cc1e94a143700af1eee3604d5766501099a26" offset="0" />
+			</dataarea>
+		</part>
+		<part name="002" interface="vgm_quik">
+			<feature name="part_id" value="02 - bgm 1.vgz" />
+			<dataarea name="quik" size="17868">
+				<rom name="02 - bgm 1.vgz" size="17868" crc="75c872c0" sha1="5950fa5f41ccc78a42e8e53a3232e4580b973b9f" offset="0" />
+			</dataarea>
+		</part>
+		<part name="003" interface="vgm_quik">
+			<feature name="part_id" value="03 - bgm 2.vgz" />
+			<dataarea name="quik" size="20856">
+				<rom name="03 - bgm 2.vgz" size="20856" crc="a6c24a7d" sha1="1283064246fbad8e1a9c516b66e0b50fed290453" offset="0" />
+			</dataarea>
+		</part>
+		<part name="004" interface="vgm_quik">
+			<feature name="part_id" value="04 - round clear.vgz" />
+			<dataarea name="quik" size="2953">
+				<rom name="04 - round clear.vgz" size="2953" crc="97d32b54" sha1="ff33193d1f58cdc75b84a51eeec2052950abfe7a" offset="0" />
+			</dataarea>
+		</part>
+		<part name="005" interface="vgm_quik">
+			<feature name="part_id" value="05 - bonus round.vgz" />
+			<dataarea name="quik" size="10779">
+				<rom name="05 - bonus round.vgz" size="10779" crc="9792d536" sha1="ebec8506f6445d1b042ad6e55f3d260ac1dcfe87" offset="0" />
+			</dataarea>
+		</part>
+		<part name="006" interface="vgm_quik">
+			<feature name="part_id" value="06 - bonus clear.vgz" />
+			<dataarea name="quik" size="2421">
+				<rom name="06 - bonus clear.vgz" size="2421" crc="2c147774" sha1="60cec9be8ce176b06a368e90b7850c400fb6ab9c" offset="0" />
+			</dataarea>
+		</part>
+		<part name="007" interface="vgm_quik">
+			<feature name="part_id" value="07 - game over.vgz" />
+			<dataarea name="quik" size="2732">
+				<rom name="07 - game over.vgz" size="2732" crc="e796d745" sha1="5fcd75243bb3c10f7cef4af0f5595e4d89d640c3" offset="0" />
+			</dataarea>
+		</part>
+		<part name="008" interface="vgm_quik">
+			<feature name="part_id" value="08 - ranking.vgz" />
+			<dataarea name="quik" size="7519">
+				<rom name="08 - ranking.vgz" size="7519" crc="a14bd81e" sha1="2ab52b6e95ad13c1e44ec669f5efa526a0b20d4e" offset="0" />
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="uruseiya_md">
+		<description>Urusei Yatsura - Dear My Friends (Sega CD) (GEN/MD)</description>
+		<year>1994</year>
+		<publisher>Game Arts Co., Ltd.</publisher>
+		<info name="cores" value="SN76496, YM2612"/>
+		<part name="001" interface="vgm_quik">
+			<feature name="part_id" value="01 - title.vgz" />
+			<dataarea name="quik" size="69366">
+				<rom name="01 - title.vgz" size="69366" crc="02c5f7f7" sha1="a1a7c4822ba03394e2d6f4d6870c164fc80488ff" offset="0" />
+			</dataarea>
+		</part>
+		<part name="002" interface="vgm_quik">
+			<feature name="part_id" value="02 - intro 1.vgz" />
+			<dataarea name="quik" size="89092">
+				<rom name="02 - intro 1.vgz" size="89092" crc="89354535" sha1="88d1f733582a80e8bba38d5cd004421abca91bc6" offset="0" />
+			</dataarea>
+		</part>
+		<part name="003" interface="vgm_quik">
+			<feature name="part_id" value="03 - ataru.vgz" />
+			<dataarea name="quik" size="81237">
+				<rom name="03 - ataru.vgz" size="81237" crc="4c5c16d0" sha1="3f788d9f06bee41fdc666c359dd1921adecc4ed5" offset="0" />
+			</dataarea>
+		</part>
+		<part name="004" interface="vgm_quik">
+			<feature name="part_id" value="04 - tomobiki.vgz" />
+			<dataarea name="quik" size="116057">
+				<rom name="04 - tomobiki.vgz" size="116057" crc="25328acf" sha1="16a6be97f8f238d9d6ca889ef32858c9810fcd99" offset="0" />
+			</dataarea>
+		</part>
+		<part name="005" interface="vgm_quik">
+			<feature name="part_id" value="05 - ran.vgz" />
+			<dataarea name="quik" size="111691">
+				<rom name="05 - ran.vgz" size="111691" crc="2cb86244" sha1="526273098e800dc94d8d64c5283776882f037cd2" offset="0" />
+			</dataarea>
+		</part>
+		<part name="006" interface="vgm_quik">
+			<feature name="part_id" value="06 - school.vgz" />
+			<dataarea name="quik" size="139602">
+				<rom name="06 - school.vgz" size="139602" crc="3e520ebd" sha1="80b6443add96de1a02c05fe89ffa0f027e2fe872" offset="0" />
+			</dataarea>
+		</part>
+		<part name="007" interface="vgm_quik">
+			<feature name="part_id" value="07 - ryu.vgz" />
+			<dataarea name="quik" size="65098">
+				<rom name="07 - ryu.vgz" size="65098" crc="e31176a9" sha1="ae74f112023af1d9c62a290b13f76645f9d41890" offset="0" />
+			</dataarea>
+		</part>
+		<part name="008" interface="vgm_quik">
+			<feature name="part_id" value="08 - mendou.vgz" />
+			<dataarea name="quik" size="95557">
+				<rom name="08 - mendou.vgz" size="95557" crc="496eeb61" sha1="bd6809b30e97668406b800e5aa59d3b883bec8b6" offset="0" />
+			</dataarea>
+		</part>
+		<part name="009" interface="vgm_quik">
+			<feature name="part_id" value="09 - calamity.vgz" />
+			<dataarea name="quik" size="57610">
+				<rom name="09 - calamity.vgz" size="57610" crc="d24d73db" sha1="9f0873345aa5bbbf217a4cbc14ea0e26c4c935f5" offset="0" />
+			</dataarea>
+		</part>
+		<part name="010" interface="vgm_quik">
+			<feature name="part_id" value="10 - mendou 2.vgz" />
+			<dataarea name="quik" size="80842">
+				<rom name="10 - mendou 2.vgz" size="80842" crc="1cb16579" sha1="9ccd6af831f82e1446d2211d79976c0a07144c3f" offset="0" />
+			</dataarea>
+		</part>
+		<part name="011" interface="vgm_quik">
+			<feature name="part_id" value="11 - park.vgz" />
+			<dataarea name="quik" size="151110">
+				<rom name="11 - park.vgz" size="151110" crc="230c0595" sha1="8a437a4bd23a30149bbee3fe84e2942b482bc853" offset="0" />
+			</dataarea>
+		</part>
+		<part name="012" interface="vgm_quik">
+			<feature name="part_id" value="12 - temple.vgz" />
+			<dataarea name="quik" size="138891">
+				<rom name="12 - temple.vgz" size="138891" crc="c6d2e759" sha1="ebbb8adc38ad0a1b233181ec48d91d70461a2676" offset="0" />
+			</dataarea>
+		</part>
+		<part name="013" interface="vgm_quik">
+			<feature name="part_id" value="13 - funfair.vgz" />
+			<dataarea name="quik" size="83274">
+				<rom name="13 - funfair.vgz" size="83274" crc="1d8ed67c" sha1="75824a39f43e0abc7aed07047a7066fbba136150" offset="0" />
+			</dataarea>
+		</part>
+		<part name="014" interface="vgm_quik">
+			<feature name="part_id" value="14 - destruction.vgz" />
+			<dataarea name="quik" size="75749">
+				<rom name="14 - destruction.vgz" size="75749" crc="35b68552" sha1="2d98bbcd215ff70fe7b540e90099acea9a0871a4" offset="0" />
+			</dataarea>
+		</part>
+		<part name="015" interface="vgm_quik">
+			<feature name="part_id" value="15 - mendou slow.vgz" />
+			<dataarea name="quik" size="68245">
+				<rom name="15 - mendou slow.vgz" size="68245" crc="7ad2c10c" sha1="a6512eabfc480ae389c81486dab41096617b7d5b" offset="0" />
+			</dataarea>
+		</part>
+		<part name="016" interface="vgm_quik">
+			<feature name="part_id" value="16 - subspace2.vgz" />
+			<dataarea name="quik" size="101027">
+				<rom name="16 - subspace2.vgz" size="101027" crc="3cf0f706" sha1="1fcf955102691f4a89b8edbb6b0f5be7d718587f" offset="0" />
+			</dataarea>
+		</part>
+		<part name="017" interface="vgm_quik">
+			<feature name="part_id" value="17 - subspace4.vgz" />
+			<dataarea name="quik" size="134001">
+				<rom name="17 - subspace4.vgz" size="134001" crc="b2f9343d" sha1="7df9df6f9441f10a2dd560fc7bc570b5df954e45" offset="0" />
+			</dataarea>
+		</part>
+		<part name="018" interface="vgm_quik">
+			<feature name="part_id" value="18 - danger.vgz" />
+			<dataarea name="quik" size="72784">
+				<rom name="18 - danger.vgz" size="72784" crc="37c39fd9" sha1="11b1d327f39538a9b440caaf977c118d8bd2e941" offset="0" />
+			</dataarea>
+		</part>
+		<part name="019" interface="vgm_quik">
+			<feature name="part_id" value="19 - cutscene 1a.vgz" />
+			<dataarea name="quik" size="68017">
+				<rom name="19 - cutscene 1a.vgz" size="68017" crc="65640428" sha1="3f7234e2e88c8190b5123741bd81d9ab5a9dc461" offset="0" />
+			</dataarea>
+		</part>
+		<part name="020" interface="vgm_quik">
+			<feature name="part_id" value="20 - cutscene 4.vgz" />
+			<dataarea name="quik" size="109993">
+				<rom name="20 - cutscene 4.vgz" size="109993" crc="d14ff10b" sha1="ca687de3a0a5bfddc24a1f5cff8d2e3f58450da8" offset="0" />
+			</dataarea>
+		</part>
+		<part name="021" interface="vgm_quik">
+			<feature name="part_id" value="21 - cutscene 7a.vgz" />
+			<dataarea name="quik" size="54081">
+				<rom name="21 - cutscene 7a.vgz" size="54081" crc="b71f2709" sha1="6b6df178d9730c49bc620ca815c1c13eea428038" offset="0" />
+			</dataarea>
+		</part>
+		<part name="022" interface="vgm_quik">
+			<feature name="part_id" value="22 - cutscene 7b.vgz" />
+			<dataarea name="quik" size="117350">
+				<rom name="22 - cutscene 7b.vgz" size="117350" crc="14e62acf" sha1="0f733b5604b2001fc7f179a8becb840ade6dd360" offset="0" />
+			</dataarea>
+		</part>
+		<part name="023" interface="vgm_quik">
+			<feature name="part_id" value="23 - cutscene 7c.vgz" />
+			<dataarea name="quik" size="75096">
+				<rom name="23 - cutscene 7c.vgz" size="75096" crc="f8639ff7" sha1="6692d457107bca6802be5ee4922e2dba54c503ae" offset="0" />
+			</dataarea>
+		</part>
+		<part name="024" interface="vgm_quik">
+			<feature name="part_id" value="24 - cutscene 8b.vgz" />
+			<dataarea name="quik" size="77382">
+				<rom name="24 - cutscene 8b.vgz" size="77382" crc="73d888de" sha1="78e9dbe51e5088efb932a169788d3abb3deb56c6" offset="0" />
+			</dataarea>
+		</part>
+		<part name="025" interface="vgm_quik">
+			<feature name="part_id" value="25 - cutscene 8c.vgz" />
+			<dataarea name="quik" size="33654">
+				<rom name="25 - cutscene 8c.vgz" size="33654" crc="ff16102a" sha1="48bfe597b6df4e521f409d17e307d6632cc510d5" offset="0" />
+			</dataarea>
+		</part>
+		<part name="026" interface="vgm_quik">
+			<feature name="part_id" value="26 - cutscene 11.vgz" />
+			<dataarea name="quik" size="72651">
+				<rom name="26 - cutscene 11.vgz" size="72651" crc="0a09c972" sha1="9c492ac7ee0ab3ca534d83b240bc26e6e14fdfc9" offset="0" />
+			</dataarea>
+		</part>
+		<part name="027" interface="vgm_quik">
+			<feature name="part_id" value="27 - cutscene 15 (alternate loop).vgz" />
+			<dataarea name="quik" size="174156">
+				<rom name="27 - cutscene 15 (alternate loop).vgz" size="174156" crc="cdaf950e" sha1="16ae31fb1c186cda4e524f07a4b5763cd6185cfd" offset="0" />
+			</dataarea>
+		</part>
+		<part name="028" interface="vgm_quik">
+			<feature name="part_id" value="27 - cutscene 15.vgz" />
+			<dataarea name="quik" size="68007">
+				<rom name="27 - cutscene 15.vgz" size="68007" crc="226bdaad" sha1="7cbe38c7c413eaa5628a9c507e32629347cbd6fe" offset="0" />
+			</dataarea>
+		</part>
+		<part name="029" interface="vgm_quik">
+			<feature name="part_id" value="28 - cutscene 16a.vgz" />
+			<dataarea name="quik" size="69652">
+				<rom name="28 - cutscene 16a.vgz" size="69652" crc="1a2034bd" sha1="25140168bb103b77450fb147d794f6dfeab56332" offset="0" />
+			</dataarea>
+		</part>
+		<part name="030" interface="vgm_quik">
+			<feature name="part_id" value="29 - cutscene 16b.vgz" />
+			<dataarea name="quik" size="100208">
+				<rom name="29 - cutscene 16b.vgz" size="100208" crc="e9614a99" sha1="fd6d09077510ce3de25b7a1442f6793a9b5e1577" offset="0" />
+			</dataarea>
+		</part>
+		<part name="031" interface="vgm_quik">
+			<feature name="part_id" value="30 - slideshow.vgz" />
+			<dataarea name="quik" size="48301">
+				<rom name="30 - slideshow.vgz" size="48301" crc="adcdaa2a" sha1="8bb6a5e1412574aa123c6c52564c1ef57afeb213" offset="0" />
+			</dataarea>
+		</part>
+		<part name="032" interface="vgm_quik">
+			<feature name="part_id" value="31 - subspace fighter infinity nitro (menu).vgz" />
+			<dataarea name="quik" size="74709">
+				<rom name="31 - subspace fighter infinity nitro (menu).vgz" size="74709" crc="a4f02550" sha1="3f74fa1123fc8c4fabfe8e90dbade0a08b809203" offset="0" />
+			</dataarea>
+		</part>
+		<part name="033" interface="vgm_quik">
+			<feature name="part_id" value="32 - subspace fighter infinity nitro (arena).vgz" />
+			<dataarea name="quik" size="89431">
+				<rom name="32 - subspace fighter infinity nitro (arena).vgz" size="89431" crc="c09ec976" sha1="1d2558e207defbbd01947adad23135e8dc8ec020" offset="0" />
+			</dataarea>
+		</part>
+		<part name="034" interface="vgm_quik">
+			<feature name="part_id" value="33 - subspace fighter infinity nitro (end).vgz" />
+			<dataarea name="quik" size="33473">
+				<rom name="33 - subspace fighter infinity nitro (end).vgz" size="33473" crc="b147fd88" sha1="6d50d69bc22fb326171f8e58e537502e02023f54" offset="0" />
+			</dataarea>
+		</part>
+		<part name="035" interface="vgm_quik">
+			<feature name="part_id" value="34 - maximum speed (menu).vgz" />
+			<dataarea name="quik" size="86681">
+				<rom name="34 - maximum speed (menu).vgz" size="86681" crc="ab55c3d7" sha1="7a13e8a823cbc82e9a8cfaf6b6c602eef83fa9ed" offset="0" />
+			</dataarea>
+		</part>
+		<part name="036" interface="vgm_quik">
+			<feature name="part_id" value="35 - maximum speed (level).vgz" />
+			<dataarea name="quik" size="76688">
+				<rom name="35 - maximum speed (level).vgz" size="76688" crc="91bbec09" sha1="5f8b753628523443c157923d0987b4e7d223d43c" offset="0" />
+			</dataarea>
+		</part>
+		<part name="037" interface="vgm_quik">
+			<feature name="part_id" value="36 - maximum speed (end).vgz" />
+			<dataarea name="quik" size="47101">
+				<rom name="36 - maximum speed (end).vgz" size="47101" crc="842690ea" sha1="0fedeb6f6565b01e84c626c8685fabb13130116e" offset="0" />
+			</dataarea>
+		</part>
+		<part name="038" interface="vgm_quik">
+			<feature name="part_id" value="37 - happy kotatsuneko episode 2 (menu).vgz" />
+			<dataarea name="quik" size="80263">
+				<rom name="37 - happy kotatsuneko episode 2 (menu).vgz" size="80263" crc="6006f24f" sha1="0dffdfe9b4d4bea1dd1e1739ed03c6a39b2f5abe" offset="0" />
+			</dataarea>
+		</part>
+		<part name="039" interface="vgm_quik">
+			<feature name="part_id" value="38 - happy kotatsuneko episode 2 (level).vgz" />
+			<dataarea name="quik" size="178449">
+				<rom name="38 - happy kotatsuneko episode 2 (level).vgz" size="178449" crc="2de6c0f7" sha1="b7b82960f631256a9f08a873167f9d121d7f241e" offset="0" />
+			</dataarea>
+		</part>
+		<part name="040" interface="vgm_quik">
+			<feature name="part_id" value="39 - happy kotatsuneko episode 2 (end).vgz" />
+			<dataarea name="quik" size="74699">
+				<rom name="39 - happy kotatsuneko episode 2 (end).vgz" size="74699" crc="8d7f2ddf" sha1="b07298ba43b96add6754d239028ac24f1810fb5a" offset="0" />
 			</dataarea>
 		</part>
 	</software>
