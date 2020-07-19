@@ -70245,23 +70245,11 @@ stick to CPC-Power disks, when available)
 		</part>
 	</software>
 
-	<!-- Identifying Secret Agent - Sly Spy (UK) (1990).zip... --> <!-- CPC Power -->
-	<software name="secretag" supported="no">
-		<description>Secret Agent - Sly Spy (UK)</description>
-		<year>1990</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="flop1" interface="floppy_3">
-			<dataarea name="flop" size="194816">
-				<rom name="secret agent - sly spy (uk) (1990).dsk" size="194816" crc="3ec4f163" sha1="a41969d5bd1f8b19938a831376d9948bf5504fe9"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<!-- Identifying Secret Agent - Sly Spy (UK) (2 faces) (1990) (Spain retail version) [Original].zip... --> <!-- CPC Power -->
-	<software name="secretag01" cloneof="secretag" supported="no">
+	<software name="slyspy" supported="yes">
 		<description>Secret Agent - Sly Spy (UK) (2 faces) (Spain retail version) [Original]</description>
 		<year>1990</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Erbe</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="secret agent - sly spy (uk) (face a) (1990) (spain retail version) [original].dsk" size="194816" crc="ad8ad3cd" sha1="de09630051d2dea575b2febc17be785f45a6faeb"/>
@@ -70275,10 +70263,11 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Secret Agent - Sly Spy (UK) (2 faces) (1990) (UK retail version) [Original] (Weak Sectors).zip... --> <!-- CPC Power -->
-	<software name="secretag02" cloneof="secretag" supported="no">
+	<!-- does not load - Incorrect layout on track 1 head 0, expected_size=105000, current_size=134400 -->
+	<software name="slyspy01" cloneof="slyspy" supported="no">
 		<description>Secret Agent - Sly Spy (UK) (2 faces) (UK retail version) [Original] (Weak Sectors)</description>
 		<year>1990</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Ocean Software</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="72837">
 				<rom name="secret agent - sly spy (uk) (face a) (1990) (uk retail version) [original] (weak sectors).dsk" size="72837" crc="006979b0" sha1="c366fea55b22398fa76314c9e54b9ff4b1a344f6"/>
@@ -70287,6 +70276,18 @@ stick to CPC-Power disks, when available)
 		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="200755">
 				<rom name="secret agent - sly spy (uk) (face b) (1990) (uk retail version) [original] (weak sectors).dsk" size="200755" crc="a26f639a" sha1="9fff6bfe1ce8cd0247529b65993d0408faa02999"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<!-- Identifying Secret Agent - Sly Spy (UK) (1990).zip... --> <!-- CPC Power -->
+	<software name="slyspy07" cloneof="slyspy" supported="yes">
+		<description>Secret Agent - Sly Spy (UK)</description>
+		<year>1990</year>
+		<publisher>&lt;unknown&gt;</publisher>
+		<part name="flop1" interface="floppy_3">
+			<dataarea name="flop" size="194816">
+				<rom name="secret agent - sly spy (uk) (1990).dsk" size="194816" crc="3ec4f163" sha1="a41969d5bd1f8b19938a831376d9948bf5504fe9"/>
 			</dataarea>
 		</part>
 	</software>
@@ -144896,8 +144897,9 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Sly Spy - Secret Agent (1990)(Ocean Software)(Disk 1 of 2).dsk... --> <!-- Mostly GoodCPC -->
-	<software name="slyspyse" supported="no">
-		<description>Sly Spy - Secret Agent (Ocean Software)(Disk 1 of 2)</description>
+	<!-- No music on title screen -->
+	<software name="slyspy02" cloneof="slyspy" supported="yes">
+		<description>Sly Spy - Secret Agent (Ocean Software)</description>
 		<year>1990</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
@@ -144905,14 +144907,7 @@ stick to CPC-Power disks, when available)
 				<rom name="sly spy - secret agent (1990)(ocean software)(disk 1 of 2).dsk" size="194816" crc="829c3108" sha1="a3b223d26fa98d1e16f92737621b2b6b63d3c5bc"/>
 			</dataarea>
 		</part>
-	</software>
-
-	<!-- Identifying Sly Spy - Secret Agent (1990)(Ocean Software)(Disk 2 of 2).dsk... --> <!-- Mostly GoodCPC -->
-	<software name="slyspyse01" cloneof="slyspyse" supported="no">
-		<description>Sly Spy - Secret Agent (Ocean Software)(Disk 2 of 2)</description>
-		<year>1990</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="flop1" interface="floppy_3">
+		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="sly spy - secret agent (1990)(ocean software)(disk 2 of 2).dsk" size="194816" crc="bd06d9d5" sha1="317257889f1fcb4e7f99287ad3241f8641b10d2f"/>
 			</dataarea>
@@ -144920,7 +144915,8 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Sly Spy - Secret Agent (1990)(Ocean Software)[cr XOR][t +2 XOR].dsk... --> <!-- Mostly GoodCPC -->
-	<software name="slyspyse02" cloneof="slyspyse" supported="no">
+	<!-- Some cutscenes have glitched graphics (normal for this hack?) -->
+	<software name="slyspy03" cloneof="slyspy" supported="yes">
 		<description>Sly Spy - Secret Agent (Ocean Software)[cr XOR][t +2 XOR]</description>
 		<year>1990</year>
 		<publisher>&lt;unknown&gt;</publisher>
@@ -183025,9 +183021,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Secret Agent (UK) (19xx) [t1].dsk... --> <!-- GoodCPC -->
-	<software name="secretag03" cloneof="secretag" supported="no">
+	<!-- does not load - too many tracks (double-sided floppy image? -->
+	<software name="slyspy04" cloneof="slyspy" supported="no">
 		<description>Secret Agent (UK) [t1]</description>
-		<year>19??</year>
+		<year>1990</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="296960">
@@ -184128,9 +184125,9 @@ stick to CPC-Power disks, when available)
 		</part>
 	</software>
 
-	<!-- Identifying Sly Spy - Secret Agent (UK) (1990) (Disk 1 of 2) [a1].dsk... --> <!-- GoodCPC -->
-	<software name="slyspyse03" cloneof="slyspyse" supported="no">
-		<description>Sly Spy - Secret Agent (UK) (Disk 1 of 2) [a1]</description>
+	<!-- Identifying Sly Spy - Secret Agent (UK) (1990) [a1].dsk... --> <!-- GoodCPC -->
+	<software name="slyspy05" cloneof="slyspy" supported="yes">
+		<description>Sly Spy - Secret Agent (UK) [a1]</description>
 		<year>1990</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
@@ -184138,14 +184135,7 @@ stick to CPC-Power disks, when available)
 				<rom name="sly spy - secret agent (uk) (1990) (disk 1 of 2) [a1] (goodcpc).dsk" size="204544" crc="c123f14d" sha1="9ea706a4ab10011d0ee4d1347b7bde54aa4c5e32"/>
 			</dataarea>
 		</part>
-	</software>
-
-	<!-- Identifying Sly Spy - Secret Agent (UK) (1990) (Disk 2 of 2) [a1].dsk... --> <!-- GoodCPC -->
-	<software name="slyspyse04" cloneof="slyspyse" supported="no">
-		<description>Sly Spy - Secret Agent (UK) (Disk 2 of 2) [a1]</description>
-		<year>1990</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="flop1" interface="floppy_3">
+		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="sly spy - secret agent (uk) (1990) (disk 2 of 2) [a1] (goodcpc).dsk" size="194816" crc="1179ce0b" sha1="899ec70ae49f0dd1aa1731142c9691a2a66941f9"/>
 			</dataarea>
@@ -214374,23 +214364,16 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Sly Spy - Secret Agent (1 de 2) (nongoodcpc).dsk... --> <!-- NonGoodCPC -->
-	<software name="slyspyse05" cloneof="slyspyse" supported="no">
-		<description>Sly Spy - Secret Agent (1 de 2)</description>
-		<year>19??</year>
+	<software name="slyspy06" cloneof="slyspy" supported="yes">
+		<description>Sly Spy - Secret Agent (NonGoodCPC)</description>
+		<year>1990</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="sly spy - secret agent (1 de 2) (nongoodcpc).dsk" size="194816" crc="d78556f8" sha1="b2529c705f0fba2f9155f0a8c8d98fe5bd143600"/>
 			</dataarea>
 		</part>
-	</software>
-
-	<!-- Identifying Sly Spy - Secret Agent (2 de 2) (nongoodcpc).dsk... --> <!-- NonGoodCPC -->
-	<software name="slyspyse06" cloneof="slyspyse" supported="no">
-		<description>Sly Spy - Secret Agent (2 de 2)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="flop1" interface="floppy_3">
+		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="sly spy - secret agent (2 de 2) (nongoodcpc).dsk" size="194816" crc="65723a81" sha1="1d5b162080cf5ac0e404486a2ae7d185cdb48e7a"/>
 			</dataarea>
