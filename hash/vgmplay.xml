@@ -238362,7 +238362,7 @@ license:CC0
 
 	<software name="mc_fcya1_nes">
 		<description>Famicom Yarou Vol. 1 (NES)</description>
-		<year>unkn</year>
+		<year>????</year>
 		<publisher>unknown</publisher>
 		<info name="cores" value="NES APU (N2A03)"/>
 		<part name="001" interface="vgm_quik">
