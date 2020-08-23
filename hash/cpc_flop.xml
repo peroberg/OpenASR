@@ -83900,6 +83900,7 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Thunderbirds (UK) (1988).zip... --> <!-- CPC Power -->
+	<!-- double-sided disk image, not supported -->
 	<software name="thunderb" supported="no">
 		<description>Thunderbirds (UK)</description>
 		<year>1988</year>
@@ -83912,7 +83913,7 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Thunderbirds (UK) (2 faces) (1988) (CPM) [Original].zip... --> <!-- CPC Power -->
-	<software name="thunderb01" cloneof="thunderb" supported="no">
+	<software name="thunderb01" cloneof="thunderb" supported="yes">
 		<description>Thunderbirds (UK) (2 faces) (CPM) [Original]</description>
 		<year>1988</year>
 		<publisher>&lt;unknown&gt;</publisher>
@@ -110199,9 +110200,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Thunder Blade (E).dsk... --> <!-- CPC Base -->
-	<software name="thunderb02" cloneof="thunderb" supported="no">
+	<!-- runs, but with graphical issues -->
+	<software name="thndrbld" supported="no">
 		<description>Thunder Blade (Euro)</description>
-		<year>19??</year>
+		<year>1988</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="219648">
@@ -110211,23 +110213,16 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Thunderbirds (E) - Disk 1A.dsk... --> <!-- CPC Base -->
-	<software name="thunderb03" cloneof="thunderb" supported="no">
-		<description>Thunderbirds (Euro) - Disk 1A</description>
-		<year>19??</year>
+	<software name="thunderb02" cloneof="thunderb" supported="yes">
+		<description>Thunderbirds (Euro)</description>
+		<year>1989</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="176099">
 				<rom name="thunderbirds (e) - disk 1a.dsk" size="176099" crc="aa05e457" sha1="81d093354050984ce46b2a6c379541fc87d8d5bf"/>
 			</dataarea>
 		</part>
-	</software>
-
-	<!-- Identifying Thunderbirds (E) - Disk 1B.dsk... --> <!-- CPC Base -->
-	<software name="thunderb04" cloneof="thunderb" supported="no">
-		<description>Thunderbirds (Euro) - Disk 1B</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="flop1" interface="floppy_3">
+		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="175075">
 				<rom name="thunderbirds (e) - disk 1b.dsk" size="175075" crc="fbebccf7" sha1="d6d401880a3b95f9236626219b83e95257a10a98"/>
 			</dataarea>
@@ -150628,10 +150623,11 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Thunder Blade (1988)(US Gold).dsk... --> <!-- Mostly GoodCPC -->
-	<software name="thunderb05" cloneof="thunderb" supported="no">
+	<!-- graphical issues -->
+	<software name="thndrbld01" cloneof="thndrbld" supported="no">
 		<description>Thunder Blade (US Gold)</description>
 		<year>1988</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="219648">
 				<rom name="thunder blade (1988)(us gold).dsk" size="219648" crc="a1787b04" sha1="4c4f2c4928da0cfd03684147e0b40045966bc89a"/>
@@ -150640,10 +150636,11 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Thunder Blade (1988)(US Gold)[a].dsk... --> <!-- Mostly GoodCPC -->
-	<software name="thunderb06" cloneof="thunderb" supported="no">
+	<!-- disk image has 45 tracks, doesn't load -->
+	<software name="thndrbld02" cloneof="thndrbld" supported="no">
 		<description>Thunder Blade (US Gold)[a]</description>
 		<year>1988</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="219648">
 				<rom name="thunder blade (1988)(us gold)[a].dsk" size="219648" crc="8883f148" sha1="5a94a3d886ac6c382f90129cb0310888d60ce94f"/>
@@ -150652,10 +150649,11 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Thunder Blade (1988)(US Gold)[cr Mc Spe][t Mc Spe].dsk... --> <!-- Mostly GoodCPC -->
-	<software name="thunderb07" cloneof="thunderb" supported="no">
+	<!-- graphical issues -->
+	<software name="thndrbld03" cloneof="thndrbld" supported="no">
 		<description>Thunder Blade (US Gold)[cr Mc Spe][t Mc Spe]</description>
 		<year>1988</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="thunder blade (1988)(us gold)[cr mc spe][t mc spe].dsk" size="194816" crc="4a57197f" sha1="3a49b94d42050a5f92214da6ae47e8cbe13900ed"/>
@@ -150664,10 +150662,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Thunder Blade (1988)(US Gold)[cr Mc Spe][t Mc Spe][a].dsk... --> <!-- Mostly GoodCPC -->
-	<software name="thunderb08" cloneof="thunderb" supported="no">
+	<software name="thndrbld04" cloneof="thndrbld" supported="no">
 		<description>Thunder Blade (US Gold)[cr Mc Spe][t Mc Spe][a]</description>
 		<year>1988</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="thunder blade (1988)(us gold)[cr mc spe][t mc spe][a].dsk" size="194816" crc="a293c9eb" sha1="52b4c0f0f1e9abe3d6874fef5f7c32203b422ccc"/>
@@ -150676,10 +150674,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Thunder Burner (1991)(Loriciels)[cr XOR][t XOR].dsk... --> <!-- Mostly GoodCPC -->
-	<software name="thunderb09" cloneof="thunderb" supported="no">
+	<software name="thndrbrn" supported="yes">
 		<description>Thunder Burner (Loriciels)[cr XOR][t XOR]</description>
 		<year>1991</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Loriciel</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="thunder burner (1991)(loriciels)[cr xor][t xor].dsk" size="194816" crc="111f3e7b" sha1="3159d601ada9fff08bebac347043c424584427d2"/>
@@ -150688,10 +150686,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Thunder Burner (1991)(Loriciels)[cr XOR][t XOR][a].dsk... --> <!-- Mostly GoodCPC -->
-	<software name="thunderb0a" cloneof="thunderb" supported="no">
+	<software name="thndrbrn01" cloneof="thndrbrn" supported="yes">
 		<description>Thunder Burner (Loriciels)[cr XOR][t XOR][a]</description>
 		<year>1991</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Loriciel</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="thunder burner (1991)(loriciels)[cr xor][t xor][a].dsk" size="194816" crc="fda28291" sha1="f0339413a96b35eb82ae70e4f0594f1d938a5139"/>
@@ -150736,23 +150734,16 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Thunderbirds (1989)(Grandslam Entertainments)(Disk 1 of 2)[cr Jupiter].dsk... --> <!-- Mostly GoodCPC -->
-	<software name="thunderb05a" cloneof="thunderb" supported="no">
-		<description>Thunderbirds (Grandslam Entertainments)(Disk 1 of 2)[cr Jupiter]</description>
+	<software name="thunderb03" cloneof="thunderb" supported="yes">
+		<description>Thunderbirds (Grandslam Entertainments)[cr Jupiter]</description>
 		<year>1989</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Grandslam Entertainments</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="thunderbirds (1989)(grandslam entertainments)(disk 1 of 2)[cr jupiter].dsk" size="194816" crc="effc186c" sha1="de5d26d64ff580ae105e54cf02c56a3218251db9"/>
 			</dataarea>
 		</part>
-	</software>
-
-	<!-- Identifying Thunderbirds (1989)(Grandslam Entertainments)(Disk 2 of 2)[cr Jupiter].dsk... --> <!-- Mostly GoodCPC -->
-	<software name="thunderb06a" cloneof="thunderb" supported="no">
-		<description>Thunderbirds (Grandslam Entertainments)(Disk 2 of 2)[cr Jupiter]</description>
-		<year>1989</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="flop1" interface="floppy_3">
+		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="thunderbirds (1989)(grandslam entertainments)(disk 2 of 2)[cr jupiter].dsk" size="194816" crc="a12a6470" sha1="fe4d0ba162d5162288efa88985481204de8d9590"/>
 			</dataarea>
@@ -187791,10 +187782,11 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Thunder Blade (UK) (1988) [a1].dsk... --> <!-- GoodCPC -->
-	<software name="thunderb0ba" cloneof="thunderb" supported="no">
+	<!-- graphical issues -->
+	<software name="thndrbld05" cloneof="thndrbld" supported="no">
 		<description>Thunder Blade (UK) [a1]</description>
 		<year>1988</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="thunder blade (uk) (1988) [a1] (goodcpc).dsk" size="194816" crc="b668cf4e" sha1="68bcca7acfb8632b4bb5b615667af09d84dee7e8"/>
@@ -187803,10 +187795,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Thunder Burner (UK) (1991) [t1].dsk... --> <!-- GoodCPC -->
-	<software name="thunderb0ca" cloneof="thunderb" supported="no">
+	<software name="thndrbrn02" cloneof="thndrbrn" supported="yes">
 		<description>Thunder Burner (UK) [t1]</description>
 		<year>1991</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Loriciel</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="thunder burner (uk) (1991) [t1] (goodcpc).dsk" size="194816" crc="5032c57a" sha1="f3184bed410875d5fe3ebd471bc77c8ef84a59bd"/>
@@ -187827,47 +187819,34 @@ stick to CPC-Power disks, when available)
 	</software>-->
 
 	<!-- Identifying Thunderbirds (UK) (1988) (Disk 1 of 2) [a1].dsk... --> <!-- GoodCPC -->
-	<software name="thunderb0b" cloneof="thunderb" supported="no">
-		<description>Thunderbirds (UK) (Disk 1 of 2) [a1]</description>
+	<!-- both disk images have 61 tracks (double sided images?), doesn't load -->
+	<software name="thunderb04" cloneof="thunderb" supported="no">
+		<description>Thunderbirds (UK) [a1]</description>
 		<year>1988</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Grandslam Entertainments</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="292096">
 				<rom name="thunderbirds (uk) (1988) (disk 1 of 2) [a1] (goodcpc).dsk" size="292096" crc="d9593e6a" sha1="45fe3dd30405f03ac46d5b5c274083d3da47feaf"/>
 			</dataarea>
 		</part>
-	</software>
-
-	<!-- Identifying Thunderbirds (UK) (1988) (Disk 1 of 2) [a2].dsk... --> <!-- GoodCPC -->
-	<software name="thunderb0c" cloneof="thunderb" supported="no">
-		<description>Thunderbirds (UK) (Disk 1 of 2) [a2]</description>
-		<year>1988</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="flop1" interface="floppy_3">
-			<dataarea name="flop" size="174336">
-				<rom name="thunderbirds (uk) (1988) (disk 1 of 2) [a2] (goodcpc).dsk" size="174336" crc="aab281db" sha1="9e00e179b72fd58131c178d72734edca8d39eb93"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<!-- Identifying Thunderbirds (UK) (1988) (Disk 2 of 2) [a1].dsk... --> <!-- GoodCPC -->
-	<software name="thunderb0d" cloneof="thunderb" supported="no">
-		<description>Thunderbirds (UK) (Disk 2 of 2) [a1]</description>
-		<year>1988</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="flop1" interface="floppy_3">
+		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="292096">
 				<rom name="thunderbirds (uk) (1988) (disk 2 of 2) [a1] (goodcpc).dsk" size="292096" crc="ffd46ff7" sha1="3aa72635b6a71c200f2572f80311de3d7fdaeab1"/>
 			</dataarea>
 		</part>
 	</software>
 
-	<!-- Identifying Thunderbirds (UK) (1988) (Disk 2 of 2) [a2].dsk... --> <!-- GoodCPC -->
-	<software name="thunderb0e" cloneof="thunderb" supported="no">
-		<description>Thunderbirds (UK) (Disk 2 of 2) [a2]</description>
+	<!-- Identifying Thunderbirds (UK) (1988) (Disk 1 of 2) [a2].dsk... --> <!-- GoodCPC -->
+	<software name="thunderb05" cloneof="thunderb" supported="yes">
+		<description>Thunderbirds (UK) [a2]</description>
 		<year>1988</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Grandslam Entertainments</publisher>
 		<part name="flop1" interface="floppy_3">
+			<dataarea name="flop" size="174336">
+				<rom name="thunderbirds (uk) (1988) (disk 1 of 2) [a2] (goodcpc).dsk" size="174336" crc="aab281db" sha1="9e00e179b72fd58131c178d72734edca8d39eb93"/>
+			</dataarea>
+		</part>
+		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="174336">
 				<rom name="thunderbirds (uk) (1988) (disk 2 of 2) [a2] (goodcpc).dsk" size="174336" crc="713270b6" sha1="bab9f1b9c4adeb8396f568b8763b24c009f00326"/>
 			</dataarea>
@@ -187875,10 +187854,11 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Thunderbirds (UK) (1988) [t1].dsk... --> <!-- GoodCPC -->
-	<software name="thunderb0f" cloneof="thunderb" supported="no">
+	<!-- double sided disk image, doesn't load -->
+	<software name="thunderb06" cloneof="thunderb" supported="no">
 		<description>Thunderbirds (UK) [t1]</description>
 		<year>1988</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Grandslam Entertainments</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="292096">
 				<rom name="thunderbirds (uk) (1988) [t1] (goodcpc).dsk" size="292096" crc="e387c225" sha1="f50cbb80d84492dbeccc1795503796c346cef2e2"/>
@@ -216721,23 +216701,17 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Thunder Burner (Cara A) (nongoodcpc).dsk... --> <!-- NonGoodCPC -->
-	<software name="thunderb10" cloneof="thunderb" supported="no">
-		<description>Thunder Burner (Cara A)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<!-- game locks up when you collide with terrain, which doesn't seem to happen in other versions of this game.  Protection in track 43, perhaps? -->
+	<software name="thndrbrn03" cloneof="thndrbrn" supported="no">
+		<description>Thunder Burner (Spain)</description>
+		<year>1991</year>
+		<publisher>Proein Softline / Loriciel</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="199680">
 				<rom name="thunder burner (cara a) (nongoodcpc).dsk" size="199680" crc="aa1cdd53" sha1="895ef623b8d5364a83712d53d0fa054437ba928a"/>
 			</dataarea>
 		</part>
-	</software>
-
-	<!-- Identifying Thunder Burner (Cara B) (nongoodcpc).dsk... --> <!-- NonGoodCPC -->
-	<software name="thunderb11" cloneof="thunderb" supported="no">
-		<description>Thunder Burner (Cara B)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="flop1" interface="floppy_3">
+		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="9984">
 				<rom name="thunder burner (cara b) (nongoodcpc).dsk" size="9984" crc="df053bfb" sha1="e760195a9549de81499420720b64f657ed384db3"/>
 			</dataarea>
