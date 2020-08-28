@@ -44459,10 +44459,11 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones And The Fate Of Atlantis (UK) (2 faces) (1993) [Original].zip... --> <!-- CPC Power -->
-	<software name="indianaj" supported="no">
+	<!-- Incorrect layout on track 1 head 0, doesn't load -->
+	<software name="indyfate" supported="no">
 		<description>Indiana Jones and the Fate of Atlantis (UK) (2 faces) [Original]</description>
 		<year>1993</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="343552">
 				<rom name="indiana jones and the fate of atlantis (uk) (face a) (1993) [original].dsk" size="343552" crc="751d765a" sha1="e1f6164599de4c2da12f8ae3359e0b6431289de8"/>
@@ -44476,10 +44477,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones And The Fate Of Atlantis (UK) (2 faces) (1993).zip... --> <!-- CPC Power -->
-	<software name="indianaj01" cloneof="indianaj" supported="no">
+	<software name="indyfate01" cloneof="indyfate" supported="yes">
 		<description>Indiana Jones and the Fate of Atlantis (UK) (2 faces)</description>
 		<year>1993</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="indiana jones and the fate of atlantis (uk) (face a) (1993).dsk" size="194816" crc="f4e12234" sha1="ffff92addc22d55c89ff5429d2600bd23b0f650c"/>
@@ -44493,10 +44494,11 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones And The Last Crusade (UK) (1989) (v1) [Original].zip... --> <!-- CPC Power -->
-	<software name="indianaj02" cloneof="indianaj" supported="no">
+	<!-- Disk 1 has 45 tracks, doesn't load -->
+	<software name="indycrus" supported="no">
 		<description>Indiana Jones and the Last Crusade (UK) (v1) [Original]</description>
 		<year>1989</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="214016">
 				<rom name="indiana jones and the last crusade (uk) (1989) (v1) [original].dsk" size="214016" crc="98a90b12" sha1="7c9ad6e92fe1d59c18f8109658222ae09096ad0f"/>
@@ -44510,10 +44512,11 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones And The Last Crusade (UK) (1989) (v2) [Original].zip... --> <!-- CPC Power -->
-	<software name="indianaj03" cloneof="indianaj" supported="no">
+	<!-- Incorrect layour on track 1 head 0, doesn't load -->
+	<software name="indycrus01" cloneof="indycrus" supported="no">
 		<description>Indiana Jones and the Last Crusade (UK) (v2) [Original]</description>
 		<year>1989</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="335104">
 				<rom name="indiana jones and the last crusade (uk) (1989) (v2) [original].dsk" size="335104" crc="c30a1b9d" sha1="95733aff4efb74a5c0dec382410c475d11f15916"/>
@@ -44522,10 +44525,11 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones And The Last Crusade (UK) (1989).zip... --> <!-- CPC Power -->
-	<software name="indianaj04" cloneof="indianaj" supported="no">
+	<!-- Disk image has 60 tracks, likely double-sided image -->
+	<software name="indycrus02" cloneof="indycrus" supported="no">
 		<description>Indiana Jones and the Last Crusade (UK)</description>
 		<year>1989</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="292096">
 				<rom name="indiana jones and the last crusade (uk) (1989).dsk" size="292096" crc="16c81077" sha1="a586a9adc266aae41a3678c1793894d997c3ac2d"/>
@@ -44534,10 +44538,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones And The Temple Of Doom (UK) (1987) [Original].zip... --> <!-- CPC Power -->
-	<software name="indianaj05" cloneof="indianaj" supported="no">
+	<software name="indytemp" supported="yes">
 		<description>Indiana Jones and the Temple of Doom (UK) [Original]</description>
 		<year>1987</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="indiana jones and the temple of doom (uk) (1987) [original].dsk" size="194816" crc="28bc4e43" sha1="f47e3060b9d62de442218db5a7e7cd59de500f63"/>
@@ -44546,10 +44550,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones And The Temple Of Doom (UK) (1987).zip... --> <!-- CPC Power -->
-	<software name="indianaj06" cloneof="indianaj" supported="no">
+	<software name="indytemp01" cloneof="indytemp" supported="yes">
 		<description>Indiana Jones and the Temple of Doom (UK)</description>
 		<year>1987</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204544">
 				<rom name="indiana jones and the temple of doom (uk) (1987).dsk" size="204544" crc="4c1cbcc7" sha1="3b7aa379806e4f7a1e77a29fdc53c19ccadca866"/>
@@ -106726,7 +106730,7 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones and the Temple of Doom (E).dsk... --> <!-- CPC Base -->
-	<software name="indianaj08" cloneof="indianaj" supported="no">
+	<software name="indytemp02" cloneof="indytemp" supported="yes">
 		<description>Indiana Jones and the Temple of Doom (Euro)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
@@ -126409,23 +126413,16 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones and the Fate of Atlantis (1993)(US Gold)(Disk 1 of 2)[cr XOR][t XOR].dsk... --> <!-- Mostly GoodCPC -->
-	<software name="indianaj09" cloneof="indianaj" supported="no">
-		<description>Indiana Jones and the Fate of Atlantis (US Gold)(Disk 1 of 2)[cr XOR][t XOR]</description>
+	<software name="indyfate02" cloneof="indyfate" supported="yes">
+		<description>Indiana Jones and the Fate of Atlantis (US Gold)[cr XOR][t XOR]</description>
 		<year>1993</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="indiana jones and the fate of atlantis (1993)(us gold)(disk 1 of 2)[cr xor][t xor].dsk" size="194816" crc="e7716f6d" sha1="7d3707d554f11a32da26f71113f101e6e6bf4f6a"/>
 			</dataarea>
 		</part>
-	</software>
-
-	<!-- Identifying Indiana Jones and the Fate of Atlantis (1993)(US Gold)(Disk 2 of 2)[cr XOR][t XOR].dsk... --> <!-- Mostly GoodCPC -->
-	<software name="indianaj0a" cloneof="indianaj" supported="no">
-		<description>Indiana Jones and the Fate of Atlantis (US Gold)(Disk 2 of 2)[cr XOR][t XOR]</description>
-		<year>1993</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="flop1" interface="floppy_3">
+		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="indiana jones and the fate of atlantis (1993)(us gold)(disk 2 of 2)[cr xor][t xor].dsk" size="194816" crc="2b76e8e5" sha1="6ee33e5a9b907fc21e0719804113a88e043c1040"/>
 			</dataarea>
@@ -126433,23 +126430,16 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones and the Last Crusade (1989)(US Gold)(Disk 1 of 2)[cr CACH][t CACH].dsk... --> <!-- Mostly GoodCPC -->
-	<software name="indianaj0b" cloneof="indianaj" supported="no">
-		<description>Indiana Jones and the Last Crusade (US Gold)(Disk 1 of 2)[cr CACH][t CACH]</description>
+	<software name="indycrus03" cloneof="indycrus" supported="yes">
+		<description>Indiana Jones and the Last Crusade (US Gold)[cr CACH][t CACH]</description>
 		<year>1989</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="199680">
 				<rom name="indiana jones and the last crusade (1989)(us gold)(disk 1 of 2)[cr cach][t cach].dsk" size="199680" crc="02e4fae3" sha1="d5ef210567a1d41972dff720c4a571f89a25d3c8"/>
 			</dataarea>
 		</part>
-	</software>
-
-	<!-- Identifying Indiana Jones and the Last Crusade (1989)(US Gold)(Disk 2 of 2)[cr CACH][t CACH].dsk... --> <!-- Mostly GoodCPC -->
-	<software name="indianaj0c" cloneof="indianaj" supported="no">
-		<description>Indiana Jones and the Last Crusade (US Gold)(Disk 2 of 2)[cr CACH][t CACH]</description>
-		<year>1989</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="flop1" interface="floppy_3">
+		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="199680">
 				<rom name="indiana jones and the last crusade (1989)(us gold)(disk 2 of 2)[cr cach][t cach].dsk" size="199680" crc="c058d106" sha1="9b9931b49d931f508ea7418d88db7ec72e9ec6ce"/>
 			</dataarea>
@@ -126457,10 +126447,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones and the Last Crusade (1989)(US Gold).dsk... --> <!-- Mostly GoodCPC -->
-	<software name="indianaj0d" cloneof="indianaj" supported="no">
+	<software name="indycrus04" cloneof="indycrus" supported="yes">
 		<description>Indiana Jones and the Last Crusade (US Gold)</description>
 		<year>1989</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="214016">
 				<rom name="indiana jones and the last crusade (1989)(us gold).dsk" size="214016" crc="14f2907b" sha1="515032c83b3bfba76b6e3ee4efa6d85298a87214"/>
@@ -126469,10 +126459,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones and the Last Crusade (1989)(US Gold)[cr XOR][t +2 XOR].dsk... --> <!-- Mostly GoodCPC -->
-	<software name="indianaj0e" cloneof="indianaj" supported="no">
+	<software name="indycrus05" cloneof="indycrus" supported="yes">
 		<description>Indiana Jones and the Last Crusade (US Gold)[cr XOR][t +2 XOR]</description>
 		<year>1989</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="indiana jones and the last crusade (1989)(us gold)[cr xor][t +2 xor].dsk" size="194816" crc="dbc9a699" sha1="d73f87ed952e38bc387886226a5d320aa8da53a0"/>
@@ -126481,10 +126471,11 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones and the Temple of Doom (1985)(US Gold)[a].dsk... --> <!-- Mostly GoodCPC -->
-	<software name="indianaj0f" cloneof="indianaj" supported="no">
+	<!-- image has 45 tracks, doesn't load -->
+	<software name="indytemp03" cloneof="indytemp" supported="no">
 		<description>Indiana Jones and the Temple of Doom (US Gold)[a]</description>
 		<year>1985</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="indiana jones and the temple of doom (1985)(us gold)[a].dsk" size="194816" crc="983d68b7" sha1="975db62e8f57babfdff65edfd4b9405ddde01b59"/>
@@ -126493,10 +126484,11 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones and the Temple of Doom (1985)(US Gold)[cr NPS][t NPS].dsk... --> <!-- Mostly GoodCPC -->
-	<software name="indianaj10" cloneof="indianaj" supported="no">
+	<!-- minor graphical issues in cracktro, game is playable, but it restarts after the first minecraft stage -->
+	<software name="indytemp04" cloneof="indytemp" supported="no">
 		<description>Indiana Jones and the Temple of Doom (US Gold)[cr NPS][t NPS]</description>
 		<year>1985</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="indiana jones and the temple of doom (1985)(us gold)[cr nps][t nps].dsk" size="194816" crc="0404ef4d" sha1="b1b34d3b06fc9f727470ce6b548dd2c4879d2e40"/>
@@ -168636,46 +168628,48 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones and the Fate of Atlantis (UK) (1991) (Disk 1 of 2) [a1].dsk... --> <!-- GoodCPC -->
-	<software name="indianaj11" cloneof="indianaj" supported="no">
-		<description>Indiana Jones and the Fate of Atlantis (UK) (Disk 1 of 2) [a1]</description>
+	<!-- contains various games -->
+	<software name="indyfate03" cloneof="indyfate" supported="yes">
+		<description>Indiana Jones and the Fate of Atlantis (UK) [a1]</description>
 		<year>1991</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="204544">
 				<rom name="indiana jones and the fate of atlantis (uk) (1991) (disk 1 of 2) [a1] (goodcpc).dsk" size="204544" crc="9d15bd23" sha1="8bb49822d6dcd0502345a303be999cc1ebd74669"/>
 			</dataarea>
 		</part>
-	</software>
-
-	<!-- Identifying Indiana Jones and the Fate of Atlantis (UK) (1991) (Disk 1 of 2).dsk... --> <!-- GoodCPC -->
-	<software name="indianaj12" cloneof="indianaj" supported="no">
-		<description>Indiana Jones and the Fate of Atlantis (UK) (Disk 1 of 2)</description>
-		<year>1991</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="flop1" interface="floppy_3">
-			<dataarea name="flop" size="194816">
-				<rom name="indiana jones and the fate of atlantis (uk) (1991) (disk 1 of 2) (goodcpc).dsk" size="194816" crc="8249e4e5" sha1="1562251fb1780e1b6a0d700224569af4929fa9bd"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<!-- Identifying Indiana Jones and the Fate of Atlantis (UK) (1991) (Disk 2 of 2) [a1].dsk... --> <!-- GoodCPC -->
-	<software name="indianaj13" cloneof="indianaj" supported="no">
-		<description>Indiana Jones and the Fate of Atlantis (UK) (Disk 2 of 2) [a1]</description>
-		<year>1991</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="flop1" interface="floppy_3">
+		<part name="flop2" interface="floppy_3">
 			<dataarea name="flop" size="204544">
 				<rom name="indiana jones and the fate of atlantis (uk) (1991) (disk 2 of 2) [a1] (goodcpc).dsk" size="204544" crc="33c4c67e" sha1="d9f3eabd2722e7e20a3b79a6a5e1fd55f25dd4f1"/>
 			</dataarea>
 		</part>
 	</software>
 
-	<!-- Identifying Indiana Jones and the Fate of Atlantis (UK) (1991) (Disk 2 of 2) [t2].dsk... --> <!-- GoodCPC -->
-	<software name="indianaj14" cloneof="indianaj" supported="no">
-		<description>Indiana Jones and the Fate of Atlantis (UK) (Disk 2 of 2) [t2]</description>
+	<!-- Identifying Indiana Jones and the Fate of Atlantis (UK) (1991) (Disk 1 of 2).dsk... --> <!-- GoodCPC -->
+	<software name="indyfate04" cloneof="indyfate" supported="yes">
+		<description>Indiana Jones and the Fate of Atlantis (UK)</description>
 		<year>1991</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
+		<part name="flop1" interface="floppy_3">
+			<dataarea name="flop" size="194816">
+				<rom name="indiana jones and the fate of atlantis (uk) (1991) (disk 1 of 2) (goodcpc).dsk" size="194816" crc="8249e4e5" sha1="1562251fb1780e1b6a0d700224569af4929fa9bd"/>
+			</dataarea>
+		</part>
+		<part name="flop2" interface="floppy_3">
+			<dataarea name="flop" size="194816">
+				<rom name="indiana jones and the fate of atlantis (uk) (1991) (disk 2 of 2) (goodcpc).dsk" size="194816" crc="c98e0c74" sha1="aa29259373c7db3866e224773d4ff5808be5e033"/>
+			</dataarea>
+		</part>
+	</software>
+
+
+
+	<!-- Identifying Indiana Jones and the Fate of Atlantis (UK) (1991) (Disk 2 of 2).dsk... --> <!-- GoodCPC -->
+	<!-- stray image -->
+	<software name="indyfate05" cloneof="indyfate" supported="no">
+		<description>Indiana Jones and the Fate of Atlantis (UK) [t2] (Disk 2)</description>
+		<year>1991</year>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="292096">
 				<rom name="indiana jones and the fate of atlantis (uk) (1991) (disk 2 of 2) [t2] (goodcpc).dsk" size="292096" crc="0fcdecdc" sha1="25aa2998f0f7f29746828d0278fef8820f32891a"/>
@@ -168683,23 +168677,12 @@ stick to CPC-Power disks, when available)
 		</part>
 	</software>
 
-	<!-- Identifying Indiana Jones and the Fate of Atlantis (UK) (1991) (Disk 2 of 2).dsk... --> <!-- GoodCPC -->
-	<software name="indianaj15" cloneof="indianaj" supported="no">
-		<description>Indiana Jones and the Fate of Atlantis (UK) (Disk 2 of 2)</description>
-		<year>1991</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="flop1" interface="floppy_3">
-			<dataarea name="flop" size="194816">
-				<rom name="indiana jones and the fate of atlantis (uk) (1991) (disk 2 of 2) (goodcpc).dsk" size="194816" crc="c98e0c74" sha1="aa29259373c7db3866e224773d4ff5808be5e033"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<!-- Identifying Indiana Jones and the Last Crusade (UK) (1989) (Disk 1 of 2) [t1].dsk... --> <!-- GoodCPC -->
-	<software name="indianaj16" cloneof="indianaj" supported="no">
+	<!-- image has 60 tracks, doesn't load, double sided? -->
+	<software name="indycrus06" cloneof="indycrus" supported="no">
 		<description>Indiana Jones and the Last Crusade (UK) (Disk 1 of 2) [t1]</description>
 		<year>1989</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="292096">
 				<rom name="indiana jones and the last crusade (uk) (1989) (disk 1 of 2) [t1] (goodcpc).dsk" size="292096" crc="6fe470ad" sha1="b33153f592a4395775c3e0f2baf94c164a668598"/>
@@ -168708,10 +168691,11 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones and the Last Crusade (UK) (1989) [a1].dsk... --> <!-- GoodCPC -->
-	<software name="indianaj17" cloneof="indianaj" supported="no">
+	<!-- missing a disk image? -->
+	<software name="indycrus07" cloneof="indycrus" supported="yes">
 		<description>Indiana Jones and the Last Crusade (UK) [a1]</description>
 		<year>1989</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="215296">
 				<rom name="indiana jones and the last crusade (uk) (1989) [a1] (goodcpc).dsk" size="215296" crc="28680f2c" sha1="b8cb0990411b9a28930362149195002f9a9cae1b"/>
@@ -168720,10 +168704,11 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones and the Last Crusade (UK) (1989) [a2].dsk... --> <!-- GoodCPC -->
-	<software name="indianaj18" cloneof="indianaj" supported="no">
+	<!-- Image has 80 tracks, doesn't load, probably double-sided -->
+	<software name="indycrus08" cloneof="indycrus" supported="no">
 		<description>Indiana Jones and the Last Crusade (UK) [a2]</description>
 		<year>1989</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="248832">
 				<rom name="indiana jones and the last crusade (uk) (1989) [a2] (goodcpc).dsk" size="248832" crc="0e2a4b9c" sha1="d81480c5a244142b6111fd4abadb8b947792cb67"/>
@@ -168732,10 +168717,11 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones and the Last Crusade (UK) (1989) [t2].dsk... --> <!-- GoodCPC -->
-	<software name="indianaj19" cloneof="indianaj" supported="no">
+	<!-- Indy keeps dying immediately -->
+	<software name="indycrus09" cloneof="indycrus" supported="no">
 		<description>Indiana Jones and the Last Crusade (UK) [t2]</description>
 		<year>1989</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="indiana jones and the last crusade (uk) (1989) [t2] (goodcpc).dsk" size="194816" crc="dfc1e768" sha1="834639cdf7939525b77d435f974c3f6a87784625"/>
@@ -168744,10 +168730,11 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones and the Temple of Doom (UK) (1987) [a1].dsk... --> <!-- GoodCPC -->
-	<software name="indianaj1a" cloneof="indianaj" supported="no">
+	<!-- Segfault on load -->
+	<software name="indytemp05" cloneof="indytemp" supported="no">
 		<description>Indiana Jones and the Temple of Doom (UK) [a1]</description>
 		<year>1987</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="indiana jones and the temple of doom (uk) (1987) [a1] (goodcpc).dsk" size="194816" crc="9cd656d7" sha1="3e74100977021c3da0792a759a6f35598fd0c552"/>
@@ -168756,10 +168743,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones and the Temple of Doom (UK) (1987) [h1].dsk... --> <!-- GoodCPC -->
-	<software name="indianaj11a" cloneof="indianaj" supported="no">
+	<software name="indytemp06" cloneof="indytemp" supported="yes">
 		<description>Indiana Jones and the Temple of Doom (UK) [h1]</description>
 		<year>1987</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="indiana jones and the temple of doom (uk) (1987) [h1] (goodcpc).dsk" size="194816" crc="6700a95b" sha1="4a7b693eeb8c8e79b7798528c3a253da92c3983b"/>
@@ -202176,10 +202163,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones and the Last Crusade #1 (nongoodcpc).dsk... --> <!-- NonGoodCPC -->
-	<software name="indianaj1b" cloneof="indianaj" supported="no">
+	<software name="indycrus10" cloneof="indycrus" supported="yes">
 		<description>Indiana Jones and the Last Crusade #1</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="208640">
 				<rom name="indiana jones and the last crusade #1 (nongoodcpc).dsk" size="208640" crc="784c50f2" sha1="0b3c6c414f36c6530babe88d2f9e9cbf79730d51"/>
@@ -202188,10 +202175,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones and the Last Crusade #2 (nongoodcpc).dsk... --> <!-- NonGoodCPC -->
-	<software name="indianaj1c" cloneof="indianaj" supported="no">
+	<software name="indycrus11" cloneof="indycrus" supported="yes">
 		<description>Indiana Jones and the Last Crusade #2</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="214016">
 				<rom name="indiana jones and the last crusade #2 (nongoodcpc).dsk" size="214016" crc="eee69238" sha1="e54a2d712b3f84da92db0756c2c5a8d053008c07"/>
@@ -202200,10 +202187,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones and the Last Crusade #3 (nongoodcpc).dsk... --> <!-- NonGoodCPC -->
-	<software name="indianaj1d" cloneof="indianaj" supported="no">
+	<software name="indycrus12" cloneof="indycrus" supported="yes">
 		<description>Indiana Jones and the Last Crusade #3</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="208640">
 				<rom name="indiana jones and the last crusade #3 (nongoodcpc).dsk" size="208640" crc="015550e2" sha1="ebb37e5367fe1ad366b3f7f1bdbaa6785542f419"/>
@@ -202212,10 +202199,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones and the Last Crusade #5 (nongoodcpc).dsk... --> <!-- NonGoodCPC -->
-	<software name="indianaj1e" cloneof="indianaj" supported="no">
+	<software name="indycrus13" cloneof="indycrus" supported="yes">
 		<description>Indiana Jones and the Last Crusade #5</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="214016">
 				<rom name="indiana jones and the last crusade #5 (nongoodcpc).dsk" size="214016" crc="aeb7b6d4" sha1="68aa156562de2f88aa997e3b48994409133883f6"/>
@@ -202224,10 +202211,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones and the Last Crusade (nongoodcpc).dsk... --> <!-- NonGoodCPC -->
-	<software name="indianaj1f" cloneof="indianaj" supported="no">
+	<software name="indycrus14" cloneof="indycrus" supported="yes">
 		<description>Indiana Jones and the Last Crusade</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="248832">
 				<rom name="indiana jones and the last crusade (nongoodcpc).dsk" size="248832" crc="e64164c8" sha1="61d345c3e3cb43acf88d5ee4b0d5d1196d23b521"/>
@@ -202236,7 +202223,8 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones and the Temple of Doom &amp; Dan Dare (nongoodcpc).dsk... --> <!-- NonGoodCPC -->
-	<software name="indianaj20" cloneof="indianaj" supported="no">
+	<!-- run"disk" to run Indy, run"dandare" to run Dan Dare -->
+	<software name="indytempdan" cloneof="indytemp" supported="yes">
 		<description>Indiana Jones and the Temple of Doom &amp; Dan Dare</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
@@ -202248,10 +202236,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones and the Temple of Doom (nongoodcpc).dsk... --> <!-- NonGoodCPC -->
-	<software name="indianaj21" cloneof="indianaj" supported="no">
+	<software name="indytemp07" cloneof="indytemp" supported="yes">
 		<description>Indiana Jones and the Temple of Doom</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1987</year>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="indiana jones and the temple of doom (nongoodcpc).dsk" size="194816" crc="731258d1" sha1="4384510a68da6be62333b62786bef50ccba69e59"/>
@@ -202260,10 +202248,11 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones y la ultima Cruzada #1 (nongoodcpc).dsk... --> <!-- NonGoodCPC -->
-	<software name="indianaj22" cloneof="indianaj" supported="no">
+	<!-- Image has 45 tracks, doesn't load -->
+	<software name="indycrus15" cloneof="indycrus" supported="no">
 		<description>Indiana Jones y la ultima Cruzada #1</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>Erbe / US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="214016">
 				<rom name="indiana jones y la ultima cruzada #1 (nongoodcpc).dsk" size="214016" crc="681ca92c" sha1="edd27c50061f2adc308b6c1732f87ed303fbf34d"/>
@@ -202272,10 +202261,11 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones y la ultima Cruzada #2 (nongoodcpc).dsk... --> <!-- NonGoodCPC -->
-	<software name="indianaj23" cloneof="indianaj" supported="no">
+	<!-- Image has 45 tracks, doesn't load -->
+	<software name="indycrus16" cloneof="indycrus" supported="no">
 		<description>Indiana Jones y la ultima Cruzada #2</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>Erbe / US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="214016">
 				<rom name="indiana jones y la ultima cruzada #2 (nongoodcpc).dsk" size="214016" crc="ecbde054" sha1="0f533dd2cdd07a4729fa56c29072edafbd82f580"/>
@@ -202284,10 +202274,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones (nongoodcpc).dsk... --> <!-- NonGoodCPC -->
-	<software name="indianaj24" cloneof="indianaj" supported="no">
+	<software name="indytemp08" cloneof="indytemp" supported="yes">
 		<description>Indiana Jones</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="indiana jones (nongoodcpc).dsk" size="194816" crc="8ec73c07" sha1="9ca70480e4e0f1da7ef037819a125bc263e2f30e"/>
@@ -202296,10 +202286,11 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana_Jones_2-The_Temple_of_Doom__CHANY-NPS (nongoodcpc).dsk... --> <!-- NonGoodCPC -->
-	<software name="indianaj25" cloneof="indianaj" supported="no">
+	<!-- game restarts after first minecart stage -->
+	<software name="indytemp09" cloneof="indytemp" supported="yes">
 		<description>Indiana_Jones_2-The_Temple_of_Doom__CHANY-NPS</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1987</year>
+		<publisher>US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="indiana_jones_2-the_temple_of_doom__chany-nps (nongoodcpc).dsk" size="194816" crc="d90cf653" sha1="ba74d1e5fc53067128580b1ce695dc9b6958a313"/>
@@ -231619,10 +231610,11 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Indiana Jones And The Temple Of Doom + Rygar (UK) (2 faces) (1988) [Original] [COMPILATION].zip... -->
-	<software name="indianaj07" cloneof="indianaj" supported="no">
-		<description>Indiana Jones and the Temple of Doom + Rygar (UK) (2 faces) [Original] [COMPILATION]</description>
-		<year>1988</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<!-- Side B image has 45 tracks, doesn't load, Side A (indytemp) works perfectly fine -->
+	<software name="indytemp10" cloneof="indytemp" supported="no">
+		<description>2 por 1 - Indiana Jones and the Temple of Doom + Rygar (Spain) (2 faces) [Original] [COMPILATION]</description>
+		<year>19??</year>
+		<publisher>Erbe / US Gold</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="141312">
 				<rom name="indiana jones and the temple of doom + rygar (uk) (face a) (1988) [original] [compilation].dsk" size="141312" crc="d21536b1" sha1="ab13b5e11827cfe53e4da11608d16d58771edf1b"/>
