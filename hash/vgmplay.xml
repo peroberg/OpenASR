@@ -345947,4 +345947,19 @@ license:CC0
 		</part>
 	</software>
 
+
+<!-- Demonstrations and Miscellaneous VGMs -->
+
+	<software name="d_titov2_md">
+		<description>Overdrive 2 (Megadrive Demo)</description>
+		<year>2017</year>
+		<publisher>Titan</publisher>
+		<info name="cores" value="SN76496, YM2612"/>
+		<part name="001" interface="vgm_quik">
+			<feature name="part_id" value="overdrive2.vgm" />
+			<dataarea name="quik" size="3590051">
+				<rom name="overdrive2.vgm" size="3590051" crc="0afbf930" sha1="3d703cfb9513c3edfc61276c1819ab5eb12b43b6" offset="0" />
+			</dataarea>
+		</part>
+	</software>
 </softwarelist>
