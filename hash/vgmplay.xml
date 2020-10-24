@@ -92146,7 +92146,7 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="konagc1_scc">
+	<software name="konagcbhtm_scc">
 		<description>Title Memory (MSX, SCC)</description>
 		<year>1989</year>
 		<publisher>Konami</publisher>
@@ -246112,7 +246112,359 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
+<!-- vgmrips.net update - October 23, 2020 - 8 Entries -->
+
+	<software name="ddribble_pc">
+		<description>Double Dribble (IBM PC AT)</description>
+		<year>1990</year>
+		<publisher>Konami</publisher>
+		<info name="cores" value="YM3812"/>
+		<part name="001" interface="vgm_quik">
+			<feature name="part_id" value="01 usa anthem.vgz" />
+			<dataarea name="quik" size="1610">
+				<rom name="01 usa anthem.vgz" size="1610" crc="0bc304b2" sha1="7d26b044adbabea0244949a73e197ad099f4d5e7" offset="0" />
+			</dataarea>
+		</part>
+		<part name="002" interface="vgm_quik">
+			<feature name="part_id" value="02 options.vgz" />
+			<dataarea name="quik" size="1396">
+				<rom name="02 options.vgz" size="1396" crc="043b962d" sha1="e4b7f6737889ebe8a093c6b5a8b568d2ab09f076" offset="0" />
+			</dataarea>
+		</part>
+		<part name="003" interface="vgm_quik">
+			<feature name="part_id" value="03 half time.vgz" />
+			<dataarea name="quik" size="2746">
+				<rom name="03 half time.vgz" size="2746" crc="cd532ebb" sha1="1603f1615aa98a0a0775f0ff47e0ff3d105e3caa" offset="0" />
+			</dataarea>
+		</part>
+		<part name="004" interface="vgm_quik">
+			<feature name="part_id" value="04 game set.vgz" />
+			<dataarea name="quik" size="2591">
+				<rom name="04 game set.vgz" size="2591" crc="d89b1338" sha1="136f21ab85e46eb8d06192fdc5c6b869b68b2e89" offset="0" />
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="duckamze_nes">
+		<description>Duck Maze (NES)</description>
+		<year>1987</year>
+		<publisher>Bit Corporation (TW) / HES Interactive (AU) / Dismac (BR)</publisher>
+		<info name="cores" value="NES APU (N2A03)"/>
+		<part name="001" interface="vgm_quik">
+			<feature name="part_id" value="01 main bgm.vgz" />
+			<dataarea name="quik" size="1878">
+				<rom name="01 main bgm.vgz" size="1878" crc="f4c13528" sha1="c3074befb11c25f32d9c585590fbfd5b917c2cda" offset="0" />
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="elevator_88">
+		<description>Elevator Action (NEC PC-8801)</description>
+		<year>1986</year>
+		<publisher>Nidecom Carry</publisher>
+		<info name="cores" value="YM2203"/>
+		<part name="001" interface="vgm_quik">
+			<feature name="part_id" value="01 main bgm 1.vgz" />
+			<dataarea name="quik" size="911">
+				<rom name="01 main bgm 1.vgz" size="911" crc="2a9f2118" sha1="a1ed43b052214a5b288d5badc36e457fcd1f532a" offset="0" />
+			</dataarea>
+		</part>
+		<part name="002" interface="vgm_quik">
+			<feature name="part_id" value="02 main bgm 2.vgz" />
+			<dataarea name="quik" size="903">
+				<rom name="02 main bgm 2.vgz" size="903" crc="42ce561b" sha1="d165970178e803819a2b773d49919b79a48446b0" offset="0" />
+			</dataarea>
+		</part>
+		<part name="003" interface="vgm_quik">
+			<feature name="part_id" value="03 main bgm 3.vgz" />
+			<dataarea name="quik" size="912">
+				<rom name="03 main bgm 3.vgz" size="912" crc="cfa492b4" sha1="06c2ed967a8fd5811b7d5d503cb5fa1efec27d64" offset="0" />
+			</dataarea>
+		</part>
+		<part name="004" interface="vgm_quik">
+			<feature name="part_id" value="04 main bgm 4.vgz" />
+			<dataarea name="quik" size="914">
+				<rom name="04 main bgm 4.vgz" size="914" crc="fc21f7c9" sha1="bfae705a4a4e0b8c30c34e90023d1e8f81a85c3c" offset="0" />
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="f1douch_msx2o">
+		<description>F1 Douchuuki (MSX2, OPLL)</description>
+		<year>1990</year>
+		<publisher>Namco</publisher>
+		<info name="cores" value="YM2413"/>
+		<part name="001" interface="vgm_quik">
+			<feature name="part_id" value="01 title screen.vgz" />
+			<dataarea name="quik" size="1156">
+				<rom name="01 title screen.vgz" size="1156" crc="aed03290" sha1="896066debff6a300cdce94a00a37a597ac61143c" offset="0" />
+			</dataarea>
+		</part>
+		<part name="002" interface="vgm_quik">
+			<feature name="part_id" value="02 name entry.vgz" />
+			<dataarea name="quik" size="1348">
+				<rom name="02 name entry.vgz" size="1348" crc="1decfbfe" sha1="ac21b6fffe32ddf248f835d07494ce59302fca39" offset="0" />
+			</dataarea>
+		</part>
+		<part name="003" interface="vgm_quik">
+			<feature name="part_id" value="03 car select.vgz" />
+			<dataarea name="quik" size="1280">
+				<rom name="03 car select.vgz" size="1280" crc="38314ad4" sha1="172679bec2708ce2b37b4196086ff383464b1fda" offset="0" />
+			</dataarea>
+		</part>
+		<part name="004" interface="vgm_quik">
+			<feature name="part_id" value="04 driver info.vgz" />
+			<dataarea name="quik" size="1874">
+				<rom name="04 driver info.vgz" size="1874" crc="ee8e834c" sha1="9d7b007e761455d80710b63409466626e65118b0" offset="0" />
+			</dataarea>
+		</part>
+		<part name="005" interface="vgm_quik">
+			<feature name="part_id" value="05 setting.vgz" />
+			<dataarea name="quik" size="1574">
+				<rom name="05 setting.vgz" size="1574" crc="7007ec27" sha1="8e325a09ccf8e4d1fc2d89c68eaadd3b7578f57d" offset="0" />
+			</dataarea>
+		</part>
+		<part name="006" interface="vgm_quik">
+			<feature name="part_id" value="06 unknown.vgz" />
+			<dataarea name="quik" size="1384">
+				<rom name="06 unknown.vgz" size="1384" crc="f90c9e4a" sha1="c59d391fc291cc09e00ceab6b2627a9de8504dbc" offset="0" />
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="f1douch_msx2">
+		<description>F1 Douchuuki (MSX2, PSG)</description>
+		<year>1990</year>
+		<publisher>Namco</publisher>
+		<info name="cores" value="AY-3-8910A"/>
+		<part name="001" interface="vgm_quik">
+			<feature name="part_id" value="01 title screen.vgz" />
+			<dataarea name="quik" size="917">
+				<rom name="01 title screen.vgz" size="917" crc="e2a9dbc9" sha1="837212c6bbd8647bebf33dea998266786709d20a" offset="0" />
+			</dataarea>
+		</part>
+		<part name="002" interface="vgm_quik">
+			<feature name="part_id" value="02 name entry.vgz" />
+			<dataarea name="quik" size="1351">
+				<rom name="02 name entry.vgz" size="1351" crc="ba0ce4a4" sha1="854b3e0ff882e3ed26901f42549c0afb1feb69d6" offset="0" />
+			</dataarea>
+		</part>
+		<part name="003" interface="vgm_quik">
+			<feature name="part_id" value="03 car select.vgz" />
+			<dataarea name="quik" size="1414">
+				<rom name="03 car select.vgz" size="1414" crc="338c5c88" sha1="89003191085274a3864c24d36b2d95c13fa1eb7d" offset="0" />
+			</dataarea>
+		</part>
+		<part name="004" interface="vgm_quik">
+			<feature name="part_id" value="04 driver info.vgz" />
+			<dataarea name="quik" size="2075">
+				<rom name="04 driver info.vgz" size="2075" crc="f81eb594" sha1="ecf2aadae4c13a65c0453b6c1a95c73f1a02af9f" offset="0" />
+			</dataarea>
+		</part>
+		<part name="005" interface="vgm_quik">
+			<feature name="part_id" value="05 setting.vgz" />
+			<dataarea name="quik" size="1608">
+				<rom name="05 setting.vgz" size="1608" crc="07949645" sha1="5cfffb006e0c9b05744f97cc7b2374772bc8b136" offset="0" />
+			</dataarea>
+		</part>
+		<part name="006" interface="vgm_quik">
+			<feature name="part_id" value="06 unknown.vgz" />
+			<dataarea name="quik" size="1313">
+				<rom name="06 unknown.vgz" size="1313" crc="d2d8dc0c" sha1="070a57ad6fd0c9eab1fc59480b5705f5ff7ecdf4" offset="0" />
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="firedrgn_den">
+		<description>Fire Dragon (Dendy)</description>
+		<year>19??</year>
+		<publisher>Gamtec / BIC / JungleTac (Dragon Fire) / Inventor (Dragon) / Trump Grand (Shunting)</publisher>
+		<info name="cores" value="NES APU (N2A03)"/>
+		<part name="001" interface="vgm_quik">
+			<feature name="part_id" value="01 title screen.vgz" />
+			<dataarea name="quik" size="1722">
+				<rom name="01 title screen.vgz" size="1722" crc="8a73cbc1" sha1="38501a21cfcbe8bb915a2fe201e0aa2d76889432" offset="0" />
+			</dataarea>
+		</part>
+		<part name="002" interface="vgm_quik">
+			<feature name="part_id" value="02 bgm 1.vgz" />
+			<dataarea name="quik" size="1710">
+				<rom name="02 bgm 1.vgz" size="1710" crc="4025ec74" sha1="8185bc41add11c804cd43b9457935f8480a10a16" offset="0" />
+			</dataarea>
+		</part>
+		<part name="003" interface="vgm_quik">
+			<feature name="part_id" value="03 bgm 2.vgz" />
+			<dataarea name="quik" size="1233">
+				<rom name="03 bgm 2.vgz" size="1233" crc="01a2d068" sha1="5269534a6eed528614653fa216dc4d0dcbb6dfd5" offset="0" />
+			</dataarea>
+		</part>
+		<part name="004" interface="vgm_quik">
+			<feature name="part_id" value="04 game over.vgz" />
+			<dataarea name="quik" size="1237">
+				<rom name="04 game over.vgz" size="1237" crc="f0077171" sha1="18658021440e813e2d965a4f0262de413ebef7c6" offset="0" />
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="pang">
+		<description>Pang (Mitchell)</description>
+		<year>1989</year>
+		<publisher>Mitchell (J / World) / Capcom (U)</publisher>
+		<info name="cores" value="YM2413"/>
+		<part name="001" interface="vgm_quik">
+			<feature name="part_id" value="01 [sfx] credit.vgz" />
+			<dataarea name="quik" size="368">
+				<rom name="01 [sfx] credit.vgz" size="368" crc="f7e64390" sha1="5973051108687a7883e5397cb0583dc6121e71b0" offset="0" />
+			</dataarea>
+		</part>
+		<part name="002" interface="vgm_quik">
+			<feature name="part_id" value="02 stage 01-03 (mt. fuji).vgz" />
+			<dataarea name="quik" size="4880">
+				<rom name="02 stage 01-03 (mt. fuji).vgz" size="4880" crc="3d1a84d1" sha1="8460a0dc748e38419c32118f4b0130bf836fff97" offset="0" />
+			</dataarea>
+		</part>
+		<part name="003" interface="vgm_quik">
+			<feature name="part_id" value="03 stage 04-06 (mt. keirin (guilin)).vgz" />
+			<dataarea name="quik" size="4137">
+				<rom name="03 stage 04-06 (mt. keirin (guilin)).vgz" size="4137" crc="434af04b" sha1="a5e691aa65f3263a2de1866bf0b9e5796e4646b0" offset="0" />
+			</dataarea>
+		</part>
+		<part name="004" interface="vgm_quik">
+			<feature name="part_id" value="04 stage 07-09 (emerald temple (wat phra kaew)), stage 40-42 (new york).vgz" />
+			<dataarea name="quik" size="4833">
+				<rom name="04 stage 07-09 (emerald temple (wat phra kaew)), stage 40-42 (new york).vgz" size="4833" crc="37997676" sha1="738466a35107829866b1a3515ccf16a57269594e" offset="0" />
+			</dataarea>
+		</part>
+		<part name="005" interface="vgm_quik">
+			<feature name="part_id" value="05 stage 10-12 (angkor wat), stage 31-33 (athens).vgz" />
+			<dataarea name="quik" size="4354">
+				<rom name="05 stage 10-12 (angkor wat), stage 31-33 (athens).vgz" size="4354" crc="a7661719" sha1="03b537e6d11bc7a9001c1182a11c4c069a379c30" offset="0" />
+			</dataarea>
+		</part>
+		<part name="006" interface="vgm_quik">
+			<feature name="part_id" value="06 stage 13-15 (australia (ayers rock)), stage 37-39 (kenya (nairobi)).vgz" />
+			<dataarea name="quik" size="5039">
+				<rom name="06 stage 13-15 (australia (ayers rock)), stage 37-39 (kenya (nairobi)).vgz" size="5039" crc="46106b1d" sha1="e3311556947d93c1c57df73ca7273ed11b96348a" offset="0" />
+			</dataarea>
+		</part>
+		<part name="007" interface="vgm_quik">
+			<feature name="part_id" value="07 stage cleared.vgz" />
+			<dataarea name="quik" size="1159">
+				<rom name="07 stage cleared.vgz" size="1159" crc="60ed7e70" sha1="65a1b9b3a057bee185f79d2a0049b460856fea32" offset="0" />
+			</dataarea>
+		</part>
+		<part name="008" interface="vgm_quik">
+			<feature name="part_id" value="08 stage 16-18 (taj mahal), stage 34-36 (egypt (pyramid)).vgz" />
+			<dataarea name="quik" size="4501">
+				<rom name="08 stage 16-18 (taj mahal), stage 34-36 (egypt (pyramid)).vgz" size="4501" crc="91833eac" sha1="9db3ed99c147470de6200c17ac337a7283aafa1f" offset="0" />
+			</dataarea>
+		</part>
+		<part name="009" interface="vgm_quik">
+			<feature name="part_id" value="09 stage 19-21 (leningrad (st. petersburg)), stage 46-48 (antarctica).vgz" />
+			<dataarea name="quik" size="3382">
+				<rom name="09 stage 19-21 (leningrad (st. petersburg)), stage 46-48 (antarctica).vgz" size="3382" crc="80515519" sha1="eeb59e099647fe133ac921693b3ffe3a12313815" offset="0" />
+			</dataarea>
+		</part>
+		<part name="010" interface="vgm_quik">
+			<feature name="part_id" value="10 stage 22-24 (paris).vgz" />
+			<dataarea name="quik" size="3201">
+				<rom name="10 stage 22-24 (paris).vgz" size="3201" crc="f1b327b1" sha1="4161a4d93cdf6730aeac40c434d723d893cb2372" offset="0" />
+			</dataarea>
+		</part>
+		<part name="011" interface="vgm_quik">
+			<feature name="part_id" value="11 stage 25-27 (london), stage 43-45 (maya).vgz" />
+			<dataarea name="quik" size="3322">
+				<rom name="11 stage 25-27 (london), stage 43-45 (maya).vgz" size="3322" crc="72278180" sha1="a42a22b2486b7b127bcaf6942e66e2fbd2331835" offset="0" />
+			</dataarea>
+		</part>
+		<part name="012" interface="vgm_quik">
+			<feature name="part_id" value="12 stage 28-30 (barcelona), stage 49-50 (easter island).vgz" />
+			<dataarea name="quik" size="4362">
+				<rom name="12 stage 28-30 (barcelona), stage 49-50 (easter island).vgz" size="4362" crc="5572413f" sha1="a234dbd1adc76b35483f600830f265cf12e0cbec" offset="0" />
+			</dataarea>
+		</part>
+		<part name="013" interface="vgm_quik">
+			<feature name="part_id" value="13 ending (all stage cleared).vgz" />
+			<dataarea name="quik" size="4677">
+				<rom name="13 ending (all stage cleared).vgz" size="4677" crc="7b84f95c" sha1="ddc6590706255ef6f08907c7d85befd1b398a9f9" offset="0" />
+			</dataarea>
+		</part>
+		<part name="014" interface="vgm_quik">
+			<feature name="part_id" value="14 hurry up ! (level 1).vgz" />
+			<dataarea name="quik" size="2230">
+				<rom name="14 hurry up (level 1).vgz" size="2230" crc="7e876d5c" sha1="c5bd50d28e9fd479f6016155b62469bda25911a8" offset="0" />
+			</dataarea>
+		</part>
+		<part name="015" interface="vgm_quik">
+			<feature name="part_id" value="15 hurry up !! (level 2).vgz" />
+			<dataarea name="quik" size="1932">
+				<rom name="15 hurry up (level 2).vgz" size="1932" crc="b2f8598c" sha1="7b9897ceff2be93468fbd493b266cf06738db307" offset="0" />
+			</dataarea>
+		</part>
+		<part name="016" interface="vgm_quik">
+			<feature name="part_id" value="16 [sfx] missed.vgz" />
+			<dataarea name="quik" size="464">
+				<rom name="16 [sfx] missed.vgz" size="464" crc="94b480b2" sha1="96b50ae373a37262f0eea9f2be127215a046c640" offset="0" />
+			</dataarea>
+		</part>
+		<part name="017" interface="vgm_quik">
+			<feature name="part_id" value="17 continue.vgz" />
+			<dataarea name="quik" size="1628">
+				<rom name="17 continue.vgz" size="1628" crc="21c74aad" sha1="a6a050ee250c5643100c3edac5c5e4beda9aa2e6" offset="0" />
+			</dataarea>
+		</part>
+		<part name="018" interface="vgm_quik">
+			<feature name="part_id" value="18 name entry.vgz" />
+			<dataarea name="quik" size="3151">
+				<rom name="18 name entry.vgz" size="3151" crc="c27dcec6" sha1="c7b995ddae10e6b53f18d4a073c8ebfa9b57178d" offset="0" />
+			</dataarea>
+		</part>
+		<part name="019" interface="vgm_quik">
+			<feature name="part_id" value="19 game over.vgz" />
+			<dataarea name="quik" size="800">
+				<rom name="19 game over.vgz" size="800" crc="3489a728" sha1="d064b05611ddf25c2e01f9c768e112f8c2057413" offset="0" />
+			</dataarea>
+		</part>
+		<part name="020" interface="vgm_quik">
+			<feature name="part_id" value="20 unused #1.vgz" />
+			<dataarea name="quik" size="1989">
+				<rom name="20 unused #1.vgz" size="1989" crc="f0950cc5" sha1="c32651fd95320a66c41a4338199b6ec3636cac78" offset="0" />
+			</dataarea>
+		</part>
+		<part name="021" interface="vgm_quik">
+			<feature name="part_id" value="21 unused #2.vgz" />
+			<dataarea name="quik" size="950">
+				<rom name="21 unused #2.vgz" size="950" crc="2b67902d" sha1="720203b17d74a020d1d5da2a1872b64604bb2ae0" offset="0" />
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="xrock_pc">
+		<description>X Rock (IBM PC AT)</description>
+		<year>1990</year>
+		<publisher>Soft-World</publisher>
+		<info name="cores" value="Adlib (OPL2/YM3812)"/>
+		<part name="001" interface="vgm_quik">
+			<feature name="part_id" value="01 intro.vgz" />
+			<dataarea name="quik" size="2213">
+				<rom name="01 intro.vgz" size="2213" crc="dc50198e" sha1="436be8d9e203cad17e9bbbbfa60e12690f3e6b84" offset="0" />
+			</dataarea>
+		</part>
+		<part name="002" interface="vgm_quik">
+			<feature name="part_id" value="02 ingame bgm.vgz" />
+			<dataarea name="quik" size="979">
+				<rom name="02 ingame bgm.vgz" size="979" crc="9d8707de" sha1="a3a034166ea4ba89dae49b08f0588da10a8ce082" offset="0" />
+			</dataarea>
+		</part>
+		<part name="003" interface="vgm_quik">
+			<feature name="part_id" value="03 level completed.vgz" />
+			<dataarea name="quik" size="642">
+				<rom name="03 level completed.vgz" size="642" crc="3755e59d" sha1="6f42da13fb48789c9c4c452e4b7750177127b4ce" offset="0" />
+			</dataarea>
+		</part>
+	</software>
+
 
 <!-- Project 2612 VGM Archives located at http://project2612.org/list.php
      Also https://archive.org/details/Project2612CompleteArchive20180623681Sets.7z -->
