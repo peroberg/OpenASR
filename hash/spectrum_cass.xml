@@ -5060,8 +5060,8 @@ license:CC0
 	<!-- NC128 -->
 	<software name="cnquest">
 		<description>Con-Quest</description>
-		<year>19??</year>
-		<publisher>Mastertronic / Neptune</publisher>
+		<year>1986</year>
+		<publisher>Mastertronic Added Dimension</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48633">
 				<rom name="con-quest.tzx" size="48633" crc="b04ec95b" sha1="3efe8fb60fd752c57dc487e914bf6bd44ecc8faf"/>
@@ -39374,8 +39374,8 @@ license:CC0
 
 	<software name="afterthe">
 		<description>After The War</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>Dinamic Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="51684">
 				<rom name="after the war - side a.tzx" size="51684" crc="2d07670b" sha1="f35549745fcf35dfd40f8e66a5c405b4aa6d0939"/>
@@ -112857,8 +112857,8 @@ license:CC0
 
 	<software name="rwarrior">
 		<description>Return Of The Warrior</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1984</year>
+		<publisher>Larsoft</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="22993">
 				<rom name="return of the warrior.tzx" size="22993" crc="0476863c" sha1="0feaa18814757b18f94ed246bb43d066e2879732"/>
@@ -112868,8 +112868,8 @@ license:CC0
 
 	<software name="rwitchl">
 		<description>Return Of The Witch Lord</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1991</year>
+		<publisher>Gremlin Graphics Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="105971">
 				<rom name="return of the witch lord - side 1.tzx" size="105971" crc="ce90c8ab" sha1="81df97e582eb921a321a6c15b5d9ecefcbdc6460"/>
@@ -112883,9 +112883,9 @@ license:CC0
 	</software>
 
 	<software name="rwitchld" cloneof="rwitchl">
-		<description>Return Of The Witch Lord (Dro Soft)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Return Of The Witch Lord (Dro Soft re-release)</description>
+		<year>1991</year>
+		<publisher>Dro Soft</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="106012">
 				<rom name="return of the witch lord (dro soft).tzx" size="106012" crc="56f2cf41" sha1="1ea72d0fa33c3aa8a4a110cf171286c3eb5db76a"/>
@@ -112895,8 +112895,8 @@ license:CC0
 
 	<software name="reteartha" cloneof="retearth">
 		<description>Return To Earth (set 2)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1982</year>
+		<publisher>Saturnsoft</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="8362">
 				<rom name="return to earth - alternate.tzx" size="8362" crc="24f8442e" sha1="a0e81b14576bed612b8e56b0373b6e99ec38aacb"/>
@@ -112906,8 +112906,8 @@ license:CC0
 
 	<software name="retearth">
 		<description>Return To Earth</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1982</year>
+		<publisher>Saturnsoft</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="8583">
 				<rom name="return to earth.tzx" size="8583" crc="c60378fa" sha1="dffbc25467a398d87a74d377a0f5203c7cbfc8f6"/>
@@ -112917,8 +112917,8 @@ license:CC0
 
 	<software name="reteden">
 		<description>Return To Eden</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1984</year>
+		<publisher>Level 9 Computing</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="42538">
 				<rom name="return to eden.tzx" size="42538" crc="91a05d92" sha1="46fe06fbb35133c9b83931f2fca375914da48e43"/>
@@ -112928,8 +112928,8 @@ license:CC0
 
 	<software name="retithabf" cloneof="retitha">
 		<description>Return To Ithaca (bugfix)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1985</year>
+		<publisher>Atlantis Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47996">
 				<rom name="return to ithaca - bugfix.tzx" size="47996" crc="24d46b49" sha1="ddecb2fccdb5c937ce7bec8c3f34abb1f2f41b7b"/>
@@ -112939,8 +112939,8 @@ license:CC0
 
 	<software name="retitha">
 		<description>Return To Ithaca</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1985</year>
+		<publisher>Atlantis Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47703">
 				<rom name="return to ithaca.tzx" size="47703" crc="2b153c8d" sha1="dc176e108a4d1480a847d6720696ecf119e953e2"/>
@@ -112950,8 +112950,8 @@ license:CC0
 
 	<software name="retoz">
 		<description>Return To Oz</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1986</year>
+		<publisher>U.S. Gold</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="51302">
 				<rom name="return to oz.tzx" size="51302" crc="b9583b38" sha1="5fd0a8894a76d6fa72ebb52a9547ea3be8443832"/>
@@ -112961,8 +112961,8 @@ license:CC0
 
 	<software name="reveal">
 		<description>Reveal</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>Mastertronic</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="26095">
 				<rom name="reveal.tzx" size="26095" crc="3624fea1" sha1="fc5bec47d0b3d544a88d0d974e24fc0c8a62fb76"/>
@@ -113288,8 +113288,8 @@ license:CC0
 
 	<software name="rider">
 		<description>Rider</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1984</year>
+		<publisher>Virgin Games</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="18201">
 				<rom name="rider.tzx" size="18201" crc="7a100efe" sha1="d398e73834f4307c7e4517266d236099d5be3760"/>
@@ -113299,8 +113299,8 @@ license:CC0
 
 	<software name="ridingth">
 		<description>Riding The Rapids</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1987</year>
+		<publisher>Players Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47889">
 				<rom name="riding the rapids.tzx" size="47889" crc="7d8b5f50" sha1="d9d9f9396e6344b27aebdefa7f8bff62d1ded086"/>
@@ -113348,8 +113348,8 @@ license:CC0
 
 	<software name="rikthero">
 		<description>Rik The Roadie</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1988</year>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="30770">
 				<rom name="rik the roadie.tzx" size="30770" crc="f5cdf6e7" sha1="c82d31f7fd2c40b45b95f683a9fbbb3919168510"/>
@@ -134212,8 +134212,8 @@ license:CC0
 
 	<software name="trace">
 		<description>Trace</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1983</year>
+		<publisher>Texgate Computers</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="1607">
 				<rom name="trace.tzx" size="1607" crc="33344514" sha1="36e49f6d662d8b945703b0e47eab7157eac18b94"/>
@@ -134222,9 +134222,9 @@ license:CC0
 	</software>
 
 	<software name="trackand">
-		<description>Track And Field</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Track and Field</description>
+		<year>1988</year>
+		<publisher>Ocean</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="37860">
 				<rom name="track and field.tzx" size="37860" crc="a7a25aa3" sha1="df560bdbf8b079385abec0b1fd5db340c51c2ce0"/>
@@ -143566,8 +143566,8 @@ license:CC0
 
 	<software name="zoot">
 		<description>Zoot</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1985</year>
+		<publisher>Bug-Byte Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="49579">
 				<rom name="zoot.tzx" size="49579" crc="d6296c29" sha1="da74e6790ec1dd6660a64bd412572bf2de2e6700"/>
