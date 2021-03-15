@@ -59634,8 +59634,8 @@ license:CC0
 
 	<software name="deltawin">
 		<description>Delta Wing</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1984</year>
+		<publisher>Creative Sparks</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="48188">
 				<rom name="delta wing - 1 player.tzx" size="48188" crc="ad2a8c11" sha1="1afd5483280fadce5c893f8931590de8cd8f8fe4"/>
@@ -59649,9 +59649,9 @@ license:CC0
 	</software>
 
 	<software name="deltawin_a" cloneof="deltawin">
-		<description>Delta Wing (MAD)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Delta Wing (Mastertronic Added Dimension)</description>
+		<year>1986</year>
+		<publisher>Mastertronic Added Dimension</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="51174">
 				<rom name="delta wing - 1 player (mad).tzx" size="51174" crc="0bac83a9" sha1="380ed17df8223a15001f3a0ce30f014839c9807f"/>
@@ -116506,8 +116506,8 @@ license:CC0
 
 	<software name="savage">
 		<description>Savage</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1988</year>
+		<publisher>Firebird Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="198029">
 				<rom name="savage.tzx" size="198029" crc="9e0c2232" sha1="0ada2401da3ab1f566cb46cba2560658331a6d89"/>
@@ -124272,25 +124272,25 @@ license:CC0
 	</software>
 
 	<software name="spitting">
-		<description>Spitting Image (Erbe)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Spitting Image</description>
+		<year>1988</year>
+		<publisher>Domark Ltd</publisher>
 		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="37942">
-				<rom name="spitting image - side 1 (erbe).tzx" size="37942" crc="5ec9f1d7" sha1="45c5f9667c6e5a53e3b834b03d6dcc87678d67c7"/>
+			<dataarea name="cass" size="37955">
+				<rom name="spitting image - side 1.tzx" size="37955" crc="2105ddcc" sha1="81b87b00007e10d6785244ac579fdebe5afac07a"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="60319">
-				<rom name="spitting image - side 2 (erbe).tzx" size="60319" crc="e0f6bb71" sha1="3104b49fa2054fec699a3b711fd9c65bfa3ff331"/>
+			<dataarea name="cass" size="60347">
+				<rom name="spitting image - side 2.tzx" size="60347" crc="d7d9925d" sha1="0160dd98c3f3f55501aefe9b7209c350b3cfdbcc"/>
 			</dataarea>
 		</part>
 	</software>
 
 	<software name="spitting_a" cloneof="spitting">
 		<description>Spitting Image (The Hit Squad)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1991</year>
+		<publisher>The Hit Squad</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="37870">
 				<rom name="spitting image - side 1 (the hit squad).tzx" size="37870" crc="b04156da" sha1="0d70dbfec584e79f89fcb6fcb7fa37316ece85fc"/>
@@ -124304,17 +124304,17 @@ license:CC0
 	</software>
 
 	<software name="spitting_b" cloneof="spitting">
-		<description>Spitting Image</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Spitting Image (Erbe)</description>
+		<year>1989</year>
+		<publisher>Erbe Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="37955">
-				<rom name="spitting image - side 1.tzx" size="37955" crc="2105ddcc" sha1="81b87b00007e10d6785244ac579fdebe5afac07a"/>
+			<dataarea name="cass" size="37942">
+				<rom name="spitting image - side 1 (erbe).tzx" size="37942" crc="5ec9f1d7" sha1="45c5f9667c6e5a53e3b834b03d6dcc87678d67c7"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="60347">
-				<rom name="spitting image - side 2.tzx" size="60347" crc="d7d9925d" sha1="0160dd98c3f3f55501aefe9b7209c350b3cfdbcc"/>
+			<dataarea name="cass" size="60319">
+				<rom name="spitting image - side 2 (erbe).tzx" size="60319" crc="e0f6bb71" sha1="3104b49fa2054fec699a3b711fd9c65bfa3ff331"/>
 			</dataarea>
 		</part>
 	</software>
