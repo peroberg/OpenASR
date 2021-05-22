@@ -41464,7 +41464,7 @@ license:CC0
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="37335">
+			<dataarea name="cass" size="44618">
 				<rom name="APB - Side 2 (Erbe).tzx" size="44618" crc="9d04ad5f" sha1="7bb149f4805488072fccad7794e32fa6b0ecab75"/>
 			</dataarea>
 		</part>
