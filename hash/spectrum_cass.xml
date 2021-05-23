@@ -2670,7 +2670,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="bruceleek" cloneof="brucelee">
 		<description>Bruce Lee (set 10, Erbe)</description>
 		<year>1988</year>
@@ -21450,7 +21450,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="rbislandb" cloneof="rbisland">
 		<description>Rainbow Islands (Erbe, small case)</description>
 		<year>1990</year>
@@ -42324,7 +42324,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="aspargpma" cloneof="aspargpm">
 		<description>Aspar - GP Master (set 2)</description>
 		<year>1989</year>
@@ -54579,7 +54579,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="continen_c" cloneof="continen">
 		<description>Continental Circus (Mastertronic Plus)</description>
 		<year>1989</year>
@@ -74876,7 +74876,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="gpcirca" cloneof="gpcirc">
 		<description>Grand Prix Circuit (Dro Soft)</description>
 		<year>1990</year>
@@ -85746,7 +85746,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="perigosn" cloneof="jungletr">
 		<description>Perigos na Selva</description>
 		<year>1983</year>
@@ -105851,7 +105851,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="penetratb" cloneof="penetrat">
 		<description>Penetrator (Investronica)</description>
 		<year>1983</year>
