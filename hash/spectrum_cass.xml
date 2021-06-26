@@ -536,7 +536,7 @@ license:CC0
 	<software name="altbeastm" cloneof="altbeast">
 		<description>Altered Beast (set 2, MCM)</description>
 		<year>1989</year>
-		<publisher>MCM</publisher>
+		<publisher>MCM Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="46970">
 				<rom name="altered beast - alternate - side 1 (mcm).tzx" size="46970" crc="1d13d6ad" sha1="5f15b8034d838dfe7daf30c728cb34a4d05cc307"/>
@@ -1010,7 +1010,7 @@ license:CC0
 	<software name="aburnerm" cloneof="aburner">
 		<description>Afterburner (MCM)</description>
 		<year>1988</year>
-		<publisher>MCM</publisher>
+		<publisher>MCM Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="49560">
 				<rom name="afterburner - side 1 (mcm).tzx" size="49560" crc="be7113ce" sha1="0dc5b5b48687e8a0a892a89e1ef29a13c1ca9f49"/>
@@ -3049,7 +3049,7 @@ license:CC0
 	<software name="btlca" cloneof="btlc">
 		<description>Big Trouble In Little China (set 2, Alternative)</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="51766">
 				<rom name="big trouble in little china (alternative).tzx" size="51766" crc="ac0b5aaf" sha1="d41d49fe5b623a96abbde43c9fbb5a8319b6ad5b"/>
@@ -3060,7 +3060,7 @@ license:CC0
 	<software name="btlcb" cloneof="btlc">
 		<description>Big Trouble In Little China (set 3, Alternative)</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="51766">
 				<rom name="big trouble in little china (alternative, alt).tzx" size="51766" crc="9b17895c" sha1="c73ba75141b646195ca002f80beaf12da57dc141"/>
@@ -5303,11 +5303,10 @@ license:CC0
 		</part>
 	</software>
 
-
 	<software name="cybernoi">
 		<description>Cybernoid</description>
 		<year>1988</year>
-		<publisher>Hewson Consultants Ltd</publisher>
+		<publisher>Hewson Consultants</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="45094">
 				<rom name="cybernoid.tzx" size="45094" crc="5aaff50e" sha1="d0cd015bf78acf009e6f0184bcccfa5f9e8a0ec8"/>
@@ -5318,7 +5317,7 @@ license:CC0
 	<software name="cybernoie" cloneof="cybernoi">
 		<description>Cybernoid (Erbe)</description>
 		<year>1988</year>
-		<publisher>Hewson Consultants Ltd / Erbe</publisher>
+		<publisher>Erbe Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="45225">
 				<rom name="cybernoid (erbe).tzx" size="45225" crc="3cf5236b" sha1="ebfd1abac026ae045fa03f5ebc49aee8506d69cc"/>
@@ -5329,7 +5328,7 @@ license:CC0
 	<software name="cybernoik" cloneof="cybernoi">
 		<description>Cybernoid (Kixx)</description>
 		<year>1988</year>
-		<publisher>Hewson Consultants Ltd / Kixx</publisher>
+		<publisher>Kixx</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="45094">
 				<rom name="cybernoid (kixx).tzx" size="45094" crc="cf772b11" sha1="0a640dd40d9a4cef70202b1c024bca3bad34af88"/>
@@ -5348,11 +5347,10 @@ license:CC0
 		</part>
 	</software>
 
-
 	<software name="cyberno2">
 		<description>Cybernoid II - The Revenge</description>
 		<year>1988</year>
-		<publisher>Hewson Consultants Ltd</publisher>
+		<publisher>Hewson Consultants</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="48160">
 				<rom name="cybernoid 2 - side 1.tzx" size="48160" crc="f74c34e4" sha1="0b2d634d5f5514141dcae43e59e5591a8c872e95"/>
@@ -5365,10 +5363,10 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="cyberno2e" cloneof="cyberno2">
+	<software name="cyberno2a" cloneof="cyberno2">
 		<description>Cybernoid II - The Revenge (Erbe)</description>
 		<year>1988</year>
-		<publisher>Hewson Consultants Ltd / Erbe</publisher>
+		<publisher>Erbe Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="48018">
 				<rom name="cybernoid 2 - side a (erbe).tzx" size="48018" crc="f54dd53e" sha1="388444eac7b17235c3da322aa2be07e8fe8a2127"/>
@@ -5377,6 +5375,22 @@ license:CC0
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="48023">
 				<rom name="cybernoid 2 - side b (erbe).tzx" size="48023" crc="636298a5" sha1="219a7a5e60fb1cde7f9985ca8883c4cd9820764e"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="cyberno2b" cloneof="cyberno2">
+		<description>Cybernoid II - The Revenge (IBSA)</description>
+		<year>1988</year>
+		<publisher>IBSA</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="48138">
+				<rom name="Cybernoid 2 - Side 1 (IBSA - Serie Leyenda).tzx" size="48138" crc="0d8d13ce" sha1="8f3e745d4209997a6b820900dfabfb4c7ec9820b"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="48143">
+				<rom name="Cybernoid 2 - Side 2 (IBSA - Serie Leyenda).tzx" size="48143" crc="32d5f47f" sha1="3cc7fadc5cdfd26c0cc8ac10d72ac51581aae924"/>
 			</dataarea>
 		</part>
 	</software>
@@ -5788,7 +5802,7 @@ license:CC0
 	<software name="cavedoom">
 		<description>The Caves Of Doom</description>
 		<year>1985</year>
-		<publisher>Mastertronic Ltd</publisher>
+		<publisher>Mastertronic</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47577">
 				<rom name="the caves of doom.tzx" size="47577" crc="85885480" sha1="6a3926c0ffc76a5247120fef6036c092c49462f3"/>
@@ -8120,39 +8134,34 @@ license:CC0
 	</software>
 
 	<software name="dandare">
-		<description>Dan Dare (set 1)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Dan Dare - Pilot of the Future</description>
+		<year>1986</year>
+		<publisher>Virgin Games</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="47916">
-				<rom name="dan dare.tzx" size="47916" crc="572ed0c1" sha1="89a9c7c0cd544455a254a7fcceb098afdc630c84"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="dandarer" cloneof="dandare">
-		<description>Dan Dare (set 2, Ricochet)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="47172">
-				<rom name="dan dare (ricochet).tzx" size="47172" crc="816edc9d" sha1="82cf5e52d1b59c9b0788bd516c362904cefb9fc8"/>
+			<dataarea name="cass" size="47829">
+				<rom name="dan dare.tzx" size="47829" crc="4ba0eae6" sha1="b32656d215896ade4664689d97c99ce8783ef800"/>
 			</dataarea>
 		</part>
 	</software>
 
 	<software name="dandarea" cloneof="dandare">
-		<description>Dan Dare</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="48048">
-				<rom name="dan dare - side 1_tzx120.tzx" size="48048" crc="2d247b40" sha1="d8d5107f247b87c8833f4d21ec4f75dd6668e4eb"/>
+		<description>Dan Dare - Pilot of the Future (Dro Soft)</description>
+		<year>1988</year>
+		<publisher>Dro Soft</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="47262">
+				<rom name="dan dare (dro soft).tzx" size="47262" crc="a05af7fc" sha1="4820e4413fd5360384e3bd57b6711d98566be395"/>
 			</dataarea>
 		</part>
-		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="48048">
-				<rom name="dan dare - side 2_tzx120.tzx" size="48048" crc="d2b98e80" sha1="94172b28b2ac9597d71b63e4e1706b5953f4b770"/>
+	</software>
+
+	<software name="dandareb" cloneof="dandare">
+		<description>Dan Dare - Pilot of the Future (Ricochet)</description>
+		<year>1986</year>
+		<publisher>Ricochet</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="47172">
+				<rom name="dan dare (ricochet).tzx" size="47172" crc="816edc9d" sha1="82cf5e52d1b59c9b0788bd516c362904cefb9fc8"/>
 			</dataarea>
 		</part>
 	</software>
@@ -8168,9 +8177,8 @@ license:CC0
 		</part>
 	</software>
 
-
 	<software name="dandare2">
-		<description>Dan Dare II - Mekon's Revenge (set 1)</description>
+		<description>Dan Dare II - Mekon's Revenge</description>
 		<year>1988</year>
 		<publisher>Virgin Games</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -8181,9 +8189,9 @@ license:CC0
 	</software>
 
 	<software name="dandare2r" cloneof="dandare2">
-		<description>Dan Dare II - Mekon's Revenge (set 2, Ricochet)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Dan Dare II - Mekon's Revenge (Ricochet)</description>
+		<year>1988</year>
+		<publisher>Ricochet</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="46380">
 				<rom name="dan dare ii - mekon_s revenge (ricochet).tzx" size="46380" crc="2d314173" sha1="66972a921853e6ae1d89863d4eca6cb71c76ac09"/>
@@ -8192,12 +8200,24 @@ license:CC0
 	</software>
 
 	<software name="dandare2a" cloneof="dandare2">
-		<description>Dan Dare II - Mekon's Revenge (set 3)</description>
+		<description>Dan Dare II - Mekon's Revenge (alt)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="57333">
 				<rom name="dan dare 2 - mekon_s revenge_tzx120.tzx" size="57333" crc="a30c62f6" sha1="5b20197d12686341be313c4e48b108d2840b7cdd"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<!-- within "Sinclair User issue 74: Megatape 3 -->
+	<software name="dandare2su">
+		<description>Dan Dare II - SU Edition</description>
+		<year>1988</year>
+		<publisher>Sinclair User</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="39199">
+				<rom name="dandare2su.tzx" size="39199" crc="5fdc4f5e" sha1="419ec4b6467a4ccaa5e53773aa5daafb0d7861cc"/>
 			</dataarea>
 		</part>
 	</software>
@@ -8209,6 +8229,17 @@ license:CC0
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="54101">
 				<rom name="dan dare iii - the escape.tzx" size="54101" crc="109800e3" sha1="889e0195f2574731dc64743bcb5d0de037193a78"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="dandare3a">
+		<description>Dan Dare III - The Escape (Dro Soft)</description>
+		<year>1990</year>
+		<publisher>Dro Soft</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="47853">
+				<rom name="dan dare III - the escape (dro soft).tzx" size="47853" crc="1ce06c1f" sha1="0f4d8686cd9fd2be2e3711a27be45e0378f4a4af"/>
 			</dataarea>
 		</part>
 	</software>
@@ -8788,7 +8819,7 @@ license:CC0
 	<software name="exolon">
 		<description>Exolon</description>
 		<year>1987</year>
-		<publisher>Hewson Consultants Ltd</publisher>
+		<publisher>Hewson Consultants</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="42882">
 				<rom name="exolon.tzx" size="42882" crc="d248fb50" sha1="8947961a2a7ea27461e6dd1366ee464059d2090f"/>
@@ -8799,7 +8830,7 @@ license:CC0
 	<software name="exolonnd" cloneof="exolon">
 		<description>Exolon (Non-Playing Version)</description>
 		<year>1987</year>
-		<publisher>Hewson Consultants Ltd</publisher>
+		<publisher>Hewson Consultants</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="37813">
 				<rom name="exolon - non-playing version.tzx" size="37813" crc="8664535b" sha1="05264774063992f0d3c5451682f579767aaea667"/>
@@ -8969,7 +9000,7 @@ license:CC0
 	<software name="empfight">
 		<description>The Empire Fights Back</description>
 		<year>1985</year>
-		<publisher>Mastertronic Ltd</publisher>
+		<publisher>Mastertronic</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="38935">
 				<rom name="the empire fights back.tzx" size="38935" crc="d723b5cb" sha1="19eb7a2f76972c4ee7a5d4595f7f799876669880"/>
@@ -9393,13 +9424,10 @@ license:CC0
 		</part>
 	</software>
 
-
-
-
 	<software name="firelord">
 		<description>Firelord</description>
 		<year>1986</year>
-		<publisher>Hewson Consultants Ltd</publisher>
+		<publisher>Hewson Consultants</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="49867">
 				<rom name="firelord.tzx" size="49867" crc="324ba32a" sha1="088e50ee9add33f3069e74e6a55eda48bfa33311"/>
@@ -9408,9 +9436,9 @@ license:CC0
 	</software>
 
 	<software name="firelorda" cloneof="firelord">
-		<description>Firelord (set 2)</description>
+		<description>Firelord (alt)</description>
 		<year>1986</year>
-		<publisher>Hewson Consultants Ltd</publisher>
+		<publisher>Hewson Consultants</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="49980">
 				<rom name="firelord - alternate - side 1.tzx" size="49980" crc="13076f18" sha1="e5400a4e6b42f1922d175acee5f75cae81622a19"/>
@@ -9423,10 +9451,10 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="firelordpp" cloneof="firelord">
-		<description>Firelord (set 3, Players Premier)</description>
+	<software name="firelordb" cloneof="firelord">
+		<description>Firelord (Players Software)</description>
 		<year>1986</year>
-		<publisher>Hewson Consultants Ltd / Players Premier</publisher>
+		<publisher>Players Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="50023">
 				<rom name="firelord (players premier).tzx" size="50023" crc="3cac6d0b" sha1="949f43a227cd84b02e440cd17fc84081937e7100"/>
@@ -9434,13 +9462,24 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="firelorder" cloneof="firelord">
-		<description>Firelord (set 4, Erbe - Serie Leyenda)</description>
+	<software name="firelordc" cloneof="firelord">
+		<description>Firelord (IBSA - Serie Leyenda)</description>
 		<year>1986</year>
-		<publisher>Hewson Consultants Ltd / Erbe</publisher>
+		<publisher>IBSA</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="51042">
 				<rom name="firelord (erbe - serie leyenda).tzx" size="51042" crc="ddc5e185" sha1="45d96c684f042c67e133513d04a516782b44ed7f"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="firelordd" cloneof="firelord">
+		<description>Firelord (Erbe)</description>
+		<year>1986</year>
+		<publisher>Erbe Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="51151">
+				<rom name="firelord (erbe).tzx" size="51151" crc="adfe088f" sha1="811b9e1796f8612b020bd4430d7a0be8123717c1"/>
 			</dataarea>
 		</part>
 	</software>
@@ -9569,7 +9608,7 @@ license:CC0
 	<software name="fbomberm" cloneof="fbomber">
 		<description>Fighter Bomber (MCM)</description>
 		<year>1990</year>
-		<publisher>MCM</publisher>
+		<publisher>MCM Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="50412">
 				<rom name="fighter bomber - side 1 (mcm).tzx" size="50412" crc="f4758c50" sha1="c7f97a348465cdfd27f9b1b51aef320b0e882836"/>
@@ -10461,7 +10500,7 @@ license:CC0
 
 	<software name="gauntlet">
 		<description>Gauntlet</description>
-		<year>1987</year>
+		<year>1986</year>
 		<publisher>U.S. Gold</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Side 1"/>
@@ -10479,8 +10518,8 @@ license:CC0
 
 	<software name="gauntletk" cloneof="gauntlet">
 		<description>Gauntlet (Kixx)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1987</year>
+		<publisher>Kixx</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Side 1"/>
 			<dataarea name="cass" size="55036">
@@ -10496,9 +10535,9 @@ license:CC0
 	</software>
 
 	<software name="gauntlete" cloneof="gauntlet">
-		<description>Gauntlet (Small Case, Erbe)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Gauntlet (Erbe, small case)</description>
+		<year>1988</year>
+		<publisher>Erbe Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Side 1"/>
 			<dataarea name="cass" size="54963">
@@ -10818,7 +10857,7 @@ license:CC0
 	<software name="cazafan2" cloneof="ghobust2">
 		<description>Ghostbusters II (set 1, Cazafantasmas II, MCM)</description>
 		<year>1989</year>
-		<publisher>MCM</publisher>
+		<publisher>MCM Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="139744">
 				<rom name="cazafantasmas ii (mcm).tzx" size="139744" crc="a767e682" sha1="bc9a102911090a865f5fc660b99c384773a423e7"/>
@@ -10829,7 +10868,7 @@ license:CC0
 	<software name="cazafan2a" cloneof="ghobust2">
 		<description>Ghostbusters II (set 2, Cazafantasmas II, MCM)</description>
 		<year>1989</year>
-		<publisher>MCM</publisher>
+		<publisher>MCM Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="139748">
 				<rom name="cazafantasmas ii (mcm) (alt).tzx" size="139748" crc="0558909a" sha1="143866f9bf70cb747ad7e67a745986684130ae60"/>
@@ -11025,7 +11064,7 @@ license:CC0
 	<software name="realgbm" cloneof="realgb">
 		<description>The Real Ghostbusters (MCM)</description>
 		<year>1989</year>
-		<publisher>MCM</publisher>
+		<publisher>MCM Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="39819">
 				<rom name="the real ghostbusters - side 1 (mcm).tzx" size="39819" crc="0830a816" sha1="44373e45860347b09a6b8b8d4cecb5f6688b5749"/>
@@ -11092,7 +11131,7 @@ license:CC0
 	<software name="gforcem" cloneof="gforce">
 		<description>Galaxy Force (MCM)</description>
 		<year>1989</year>
-		<publisher>MCM</publisher>
+		<publisher>MCM Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="40669">
 				<rom name="galaxy force - side 1 (mcm).tzx" size="40669" crc="d723f7c7" sha1="83221e203483a051802ed493ba7c60bea63a62bd"/>
@@ -11544,7 +11583,7 @@ license:CC0
 	</software>
 
 	<software name="gberet">
-		<description>Green Beret (set 1)</description>
+		<description>Green Beret</description>
 		<year>1986</year>
 		<publisher>Imagine Software</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -11554,21 +11593,10 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="gbereths" cloneof="gberet">
-		<description>Green Beret (set 2, The Hit Squad)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="52620">
-				<rom name="green beret (the hit squad).tzx" size="52620" crc="39afa212" sha1="5d3685d87485321a57b2ec3e2cfed303c64aa384"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="gbereter" cloneof="gberet">
-		<description>Green Beret (set 3, Erbe, small case)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="gbereta" cloneof="gberet">
+		<description>Green Beret (Erbe, small case)</description>
+		<year>1986</year>
+		<publisher>Erbe Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="56528">
 				<rom name="green beret - small case (erbe).tzx" size="56528" crc="4acd711d" sha1="881519b3151b2e8f3c941bdba37bfe568c4f5f50"/>
@@ -11576,7 +11604,29 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="gbereta" cloneof="gberet">
+	<software name="gberetb" cloneof="gberet">
+		<description>Green Beret (Erbe, medium case)</description>
+		<year>1986</year>
+		<publisher>Erbe Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="56335">
+				<rom name="green beret (erbe).tzx" size="56335" crc="80dddfaa" sha1="7e74ca0794b4cfc940b2ae734a138af0dd550900"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="gberetc" cloneof="gberet">
+		<description>Green Beret (The Hit Squad)</description>
+		<year>1989</year>
+		<publisher>The Hit Squad</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="52620">
+				<rom name="green beret (the hit squad).tzx" size="52620" crc="39afa212" sha1="5d3685d87485321a57b2ec3e2cfed303c64aa384"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="gberetd" cloneof="gberet">
 		<description>Green Beret (set 4)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
@@ -14700,7 +14750,7 @@ license:CC0
 	<software name="kikstrt2">
 		<description>Kikstart 2</description>
 		<year>1988</year>
-		<publisher>Mastertronic Ltd</publisher>
+		<publisher>Mastertronic</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="39716">
 				<rom name="kikstart 2.tzx" size="39716" crc="332d99c6" sha1="0d58e485a2a4fcdb0cb4be0cf072c19e8030115a"/>
@@ -16279,7 +16329,7 @@ license:CC0
 	<software name="mazemani">
 		<description>Maze Mania</description>
 		<year>1989</year>
-		<publisher>Hewson Consultants Ltd</publisher>
+		<publisher>Hewson Consultants</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="45015">
 				<rom name="mazemania.tzx" size="45015" crc="4b108a50" sha1="5d3fbf03ac2c05a6170def8def246dec77b52a31"/>
@@ -16802,7 +16852,7 @@ license:CC0
 	<software name="milkrace">
 		<description>Milk Race</description>
 		<year>1987</year>
-		<publisher>Mastertronic Ltd</publisher>
+		<publisher>Mastertronic</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="42979">
 				<rom name="milk race.tzx" size="42979" crc="0f7a291e" sha1="b07f4ea77455d616ba8ed853c79d522fe7970b33"/>
@@ -16874,7 +16924,7 @@ license:CC0
 	<software name="motrbmad">
 		<description>Motorbike Madness</description>
 		<year>1988</year>
-		<publisher>Mastertronic Ltd</publisher>
+		<publisher>Mastertronic</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="68818">
 				<rom name="motorbike madness - side a.tzx" size="68818" crc="03c50a77" sha1="8283d9c6f38751342f926ac68944846189141f33"/>
@@ -17134,7 +17184,7 @@ license:CC0
 	</software>
 
 	<software name="mrheli"> <!-- shows loading in 48k mode -->
-		<description>Mr Heli</description>
+		<description>Mr. Heli</description>
 		<year>1989</year>
 		<publisher>Firebird Software</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -17145,7 +17195,7 @@ license:CC0
 	</software>
 
 	<software name="mrhelilsh" cloneof="mrheli">
-		<description>Mr Heli (loading screen hack, version 1)</description>
+		<description>Mr. Heli (loading screen hack, version 1)</description>
 		<year>19??</year>
 		<publisher>hack</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -17156,7 +17206,7 @@ license:CC0
 	</software>
 
 	<software name="mrhelilsha" cloneof="mrheli">
-		<description>Mr Heli (loading screen hack, version 2)</description>
+		<description>Mr. Heli (loading screen hack, version 2)</description>
 		<year>19??</year>
 		<publisher>hack</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -17166,9 +17216,8 @@ license:CC0
 		</part>
 	</software>
 
-
 	<software name="marblecs"> <!-- construction kit on both sides -->
-		<description>Marble Madness Construction Set</description>
+		<description>Marble Madness: The Construction Set</description>
 		<year>1986</year>
 		<publisher>Melbourne House</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -17183,8 +17232,19 @@ license:CC0
 		</part>
 	</software>
 
+	<software name="marblecsd" cloneof="marblecs"> <!-- has regular construction kit version followed by deluxe -->
+		<description>Marble Madness (Dro Soft)</description>
+		<year>1988</year>
+		<publisher>Melbourne House / Dro Soft</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="69880">
+				<rom name="marble madness (dro soft).tzx" size="69880" crc="385f54ab" sha1="2e817578d542b3235321f1a5ddaf406cd4b73879"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="marbledx">
-		<description>Marble Madness Deluxe Edition</description>
+		<description>Marble Madness DeLuxe Edition - The Game</description>
 		<year>1986</year>
 		<publisher>Melbourne House</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -17199,18 +17259,7 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="marblecsd" cloneof="marbledx"> <!-- has regular construction kit version followed by deluxe -->
-		<description>Marble Madness (Dro Soft)</description>
-		<year>1986</year>
-		<publisher>Melbourne House / Dro Soft</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="69880">
-				<rom name="marble madness (dro soft).tzx" size="69880" crc="385f54ab" sha1="2e817578d542b3235321f1a5ddaf406cd4b73879"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="miamiv">
+	<software name="miamivc">
 		<description>Miami Vice</description>
 		<year>1986</year>
 		<publisher>Ocean</publisher>
@@ -17221,18 +17270,7 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="miamivhs" cloneof="miamiv">
-		<description>Miami Vice (The Hit Squad)</description>
-		<year>1986</year>
-		<publisher>The Hit Squad</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="55982">
-				<rom name="miami vice (the hit squad).tzx" size="55982" crc="b82b5364" sha1="0e434062c646a93364cb2ac077316571af582059"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="miamiver" cloneof="miamiv">
+	<software name="miamivca" cloneof="miamivc">
 		<description>Miami Vice (Erbe)</description>
 		<year>1986</year>
 		<publisher>Erbe Software</publisher>
@@ -17243,7 +17281,29 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="miamivic">
+	<software name="miamivcb" cloneof="miamivc">
+		<description>Miami Vice (IBSA)</description>
+		<year>1986</year>
+		<publisher>IBSA</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="51275">
+				<rom name="Miami Vice (Erbe - Serie Leyenda).tzx" size="51275" crc="be10cadc" sha1="91b17ac62e03604ad3b6188461748ee6ddd22fd5"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="miamivcc" cloneof="miamivc">
+		<description>Miami Vice (The Hit Squad)</description>
+		<year>1989</year>
+		<publisher>The Hit Squad</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="55982">
+				<rom name="miami vice (the hit squad).tzx" size="55982" crc="b82b5364" sha1="0e434062c646a93364cb2ac077316571af582059"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="miamivcd" cloneof="miamivc">
 		<description>Miami Vice (bugfix)</description>
 		<year>1986</year>
 		<publisher>hack</publisher>
@@ -19719,7 +19779,7 @@ license:CC0
 	<software name="pod">
 		<description>P.O.D. (Proof Of Destruction)</description>
 		<year>1988</year>
-		<publisher>Mastertronic Ltd</publisher>
+		<publisher>Mastertronic</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="25205">
 				<rom name="proof of destruction.tzx" size="25205" crc="538bce25" sha1="aac2c1506dc0dcecc68717c6c8e5c951b268b490"/>
@@ -19879,7 +19939,7 @@ license:CC0
 	<software name="pyracurs">
 		<description>Pyracurse</description>
 		<year>1986</year>
-		<publisher>Hewson Consultants Ltd</publisher>
+		<publisher>Hewson Consultants</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="48123">
 				<rom name="pyracurse - side 1.tzx" size="48123" crc="870fe741" sha1="57b16cc90c2a6988ae3807f3fd2f411299d6016e"/>
@@ -20019,7 +20079,7 @@ license:CC0
 	<software name="pred2m" cloneof="pred2">
 		<description>Predator 2 (MCM)</description>
 		<year>1991</year>
-		<publisher>MCM</publisher>
+		<publisher>MCM Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="25020">
 				<rom name="predator 2 - side 1 (mcm).tzx" size="25020" crc="bb99e7a5" sha1="bbb6ff31dd3608b66f654f10476f0ad8d4e88bbc"/>
@@ -21109,10 +21169,21 @@ license:CC0
 	<software name="quazatrn">
 		<description>Quazatron</description>
 		<year>1986</year>
-		<publisher>Hewson Consultants Ltd</publisher>
+		<publisher>Hewson Consultants</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="32319">
 				<rom name="quazatron.tzx" size="32319" crc="bc5b7c09" sha1="32721d0f4d1f550dd765b424a93622e638d1daac"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="quazatrna" cloneof="quazatrn">
+		<description>Quazatron (Erbe)</description>
+		<year>1986</year>
+		<publisher>Erbe Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="33681">
+				<rom name="quazatron (erbe).tzx" size="33681" crc="4d8227e1" sha1="0736df88c0643a3c06a0ec4a4fdeb2d653ebe2bb"/>
 			</dataarea>
 		</part>
 	</software>
@@ -21966,7 +22037,7 @@ license:CC0
 	</software>
 
 	<software name="retthing"> <!-- is meant to have a version of halls of the things on the b-side? (unless that's the hallthngd set? -->
-		<description>Return Of The Things</description>
+		<description>Return of the Things</description>
 		<year>1984</year>
 		<publisher>Design Design Software</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -21977,7 +22048,7 @@ license:CC0
 	</software>
 
 	<software name="jedi">
-		<description>Return Of The Jedi</description>
+		<description>Return of the Jedi</description>
 		<year>1989</year>
 		<publisher>Domark</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -21988,9 +22059,9 @@ license:CC0
 	</software>
 
 	<software name="jedie" cloneof="jedi">
-		<description>Return Of The Jedi (Erbe)</description>
+		<description>Return of the Jedi (Erbe)</description>
 		<year>1989</year>
-		<publisher>Domark Ltd / Erbe</publisher>
+		<publisher>Erbe Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="40845">
 				<rom name="return of the jedi (erbe).tzx" size="40845" crc="09b517d7" sha1="ebb1cdefff41c80dcf4ce685de5f8d40aeea1961"/>
@@ -21999,8 +22070,8 @@ license:CC0
 	</software>
 
 	<software name="jedihs" cloneof="jedi">
-		<description>Return Of The Jedi (The Hit Squad)</description>
-		<year>1989</year>
+		<description>Return of the Jedi (The Hit Squad)</description>
+		<year>1991</year>
 		<publisher>The Hit Squad</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="40761">
@@ -22010,7 +22081,7 @@ license:CC0
 	</software>
 
 	<software name="jedidsb">
-		<description>Return Of The Jedi - Death Star Battle</description>
+		<description>Return of the Jedi - Death Star Battle</description>
 		<year>1984</year>
 		<publisher>Parker Software</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -22021,7 +22092,7 @@ license:CC0
 	</software>
 
 	<software name="jedidsbp2" cloneof="jedidsb">
-		<description>Return Of The Jedi - Death Star Battle (prototype 2)</description>
+		<description>Return of the Jedi - Death Star Battle (prototype 2)</description>
 		<year>1984</year>
 		<publisher>Parker Software</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -22032,7 +22103,7 @@ license:CC0
 	</software>
 
 	<software name="jedidsbp1" cloneof="jedidsb">
-		<description>Return Of The Jedi - Death Star Battle (prototype 1)</description>
+		<description>Return of the Jedi - Death Star Battle (prototype 1)</description>
 		<year>1984</year>
 		<publisher>Parker Software</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -22342,7 +22413,7 @@ license:CC0
 
 	<software name="rambo">
 		<description>Rambo (set 1)</description>
-		<year>1985</year>
+		<year>1986</year>
 		<publisher>Ocean</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="45769">
@@ -22353,7 +22424,7 @@ license:CC0
 
 	<software name="rambohs" cloneof="rambo">
 		<description>Rambo (set 2, The Hit Squad)</description>
-		<year>1985</year>
+		<year>1989</year>
 		<publisher>The Hit Squad</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="52533">
@@ -22364,7 +22435,7 @@ license:CC0
 
 	<software name="ramboer" cloneof="rambo">
 		<description>Rambo (set 3, Erbe)</description>
-		<year>1985</year>
+		<year>1986</year>
 		<publisher>Erbe Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="50517">
@@ -22374,9 +22445,9 @@ license:CC0
 	</software>
 
 	<software name="ramboera" cloneof="rambo">
-		<description>Rambo (set 4, Erbe - Serie Leyenda)</description>
-		<year>1985</year>
-		<publisher>Erbe Software</publisher>
+		<description>Rambo (set 4, IBSA/Erbe - Serie Leyenda)</description>
+		<year>1988</year>
+		<publisher>IBSA/Erbe Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="50667">
 				<rom name="rambo (erbe - serie leyenda).tzx" size="50667" crc="0e99b603" sha1="1ec3407f1897855b1a3d8e09784e359cff4572dc"/>
@@ -23236,7 +23307,7 @@ license:CC0
 	<!-- NC128 -->
 	<software name="srobinh">
 		<description>Super Robin Hood</description>
-		<year>19??</year>
+		<year>1987</year>
 		<publisher>Code Masters</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48229">
@@ -24000,8 +24071,8 @@ license:CC0
 
 	<software name="skooldaza" cloneof="skooldaz">
 		<description>Skool Daze (Alternative)</description>
-		<year>1984</year>
-		<publisher>Microsphere / Alternative</publisher>
+		<year>1987</year>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="49276">
 				<rom name="skool daze (alternative).tzx" size="49276" crc="bf8e30d4" sha1="341e89287fa21491c593ef4869e4229c8d48d73a"/>
@@ -24012,7 +24083,7 @@ license:CC0
 	<software name="skooldazb" cloneof="skooldaz">
 		<description>Skool Daze (2.99 Classics)</description>
 		<year>1984</year>
-		<publisher>Microsphere / 2.99 Classics</publisher>
+		<publisher>2.99 Classics</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="82544">
 				<rom name="skool daze (2.99).tzx" size="82544" crc="06989347" sha1="a18eaa77c656943099defbb57aec386a79c97c44"/>
@@ -24435,9 +24506,9 @@ license:CC0
 	</software>
 
 	<software name="scubdive">
-		<description>Scuba Dive (set 1)</description>
+		<description>Scuba Dive</description>
 		<year>1983</year>
-		<publisher>Durell Software Ltd</publisher>
+		<publisher>Durell Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="39502">
 				<rom name="scuba dive.tzx" size="39502" crc="140c219c" sha1="cb84c1ea0a89b1cec9eb518f1bbcb35faa4ee668"/>
@@ -24446,9 +24517,9 @@ license:CC0
 	</software>
 
 	<software name="scubdivea" cloneof="scubdive">
-		<description>Scuba Dive (set 2, 2.99 Classics)</description>
-		<year>1983</year>
-		<publisher>Durell Software Ltd / 2.99 Classics</publisher>
+		<description>Scuba Dive (2.99 Classics)</description>
+		<year>1986</year>
+		<publisher>2.99 Classics</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="39502">
 				<rom name="scuba dive (299).tzx" size="39502" crc="54464fee" sha1="0828c078438086da73b783765220e965a861712b"/>
@@ -24456,10 +24527,21 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="scubdiveo" cloneof="scubdive">
-		<description>Scuba Dive (set 3, Orion)</description>
+	<software name="scubdiveb" cloneof="scubdive">
+		<description>Scuba Dive (GTS)</description>
 		<year>1983</year>
-		<publisher>Durell Software Ltd / Orion</publisher>
+		<publisher>Grupo de Trabajo Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="39627">
+				<rom name="scuba dive (gts).tzx" size="39627" crc="db02a759" sha1="74ecc4920ced740ad2a729b705dee3896601683e"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="scubdivec" cloneof="scubdive">
+		<description>Scuba Dive (Orion)</description>
+		<year>1983</year>
+		<publisher>Orion</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="39502">
 				<rom name="scuba dive (orion).tzx" size="39502" crc="ae4b1a35" sha1="f8e07f0875a3060823e2c72fef98c787c2976474"/>
@@ -24467,10 +24549,10 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="scubdives" cloneof="scubdive">
-		<description>Scuba Dive (set 4, Spectrum Vision)</description>
+	<software name="scubdived" cloneof="scubdive">
+		<description>Scuba Dive (Spectrum Vision)</description>
 		<year>1983</year>
-		<publisher>Durell Software Ltd / Spectrum Vision</publisher>
+		<publisher>Spectrum Vision</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="39502">
 				<rom name="scuba dive (spectrum vision).tzx" size="39502" crc="85ed5258" sha1="6d2b4dcd0a208f652d521294f2880fafad68511a"/>
@@ -24837,7 +24919,7 @@ license:CC0
 	<software name="sosmast">
 		<description>S.O.S.</description>
 		<year>1986</year>
-		<publisher>Mastertronic Ltd</publisher>
+		<publisher>Mastertronic</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="35173">
 				<rom name="sos.tzx" size="35173" crc="43dc412c" sha1="7ea2397f8b7beb134865305f1f4bf0e2bb3ff793"/>
@@ -24969,7 +25051,7 @@ license:CC0
 	<software name="saboteur">
 		<description>Saboteur (set 1)</description>
 		<year>1985</year>
-		<publisher>Durell Software Ltd</publisher>
+		<publisher>Durell Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="49291">
 				<rom name="saboteur - side 1.tzx" size="49291" crc="3f1d0ec8" sha1="1ed393ea933d75a01e5a5831ee0190f023ab283e"/>
@@ -24985,7 +25067,7 @@ license:CC0
 	<software name="saboteurer" cloneof="saboteur">
 		<description>Saboteur (set 2, Erbe - Serie Leyenda)</description>
 		<year>1985</year>
-		<publisher>Durell Software Ltd</publisher>
+		<publisher>Durell Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="50546">
 				<rom name="saboteur - side 1 (erbe - serie leyenda).tzx" size="50546" crc="1fc7b82d" sha1="1ec2698f01905628952fe706d94665884e858c2a"/>
@@ -25001,7 +25083,7 @@ license:CC0
 	<software name="saboteuren" cloneof="saboteur">
 		<description>Saboteur (set 3, Encore)</description>
 		<year>1985</year>
-		<publisher>Durell Software Ltd</publisher>
+		<publisher>Durell Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47943">
 				<rom name="saboteur (encore).tzx" size="47943" crc="5e712fdc" sha1="20b1f15326e3a26fde989c97f7e259503e1cd750"/>
@@ -25012,7 +25094,7 @@ license:CC0
 	<software name="saboteurena" cloneof="saboteur">
 		<description>Saboteur (set 4, Encore)</description>
 		<year>1985</year>
-		<publisher>Durell Software Ltd</publisher>
+		<publisher>Durell Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47776">
 				<rom name="saboteur (encore) - alternate.tzx" size="47776" crc="784c0588" sha1="bc85e09f3ceb6d0318d0aa691d7bc6b43099ac54"/>
@@ -25047,7 +25129,7 @@ license:CC0
 	<software name="saboteu2">
 		<description>Saboteur II - Avenging Angel (set 1)</description>
 		<year>1987</year>
-		<publisher>Durell Software Ltd</publisher>
+		<publisher>Durell Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="50334">
 				<rom name="saboteur ii - avenging angel - 128k.tzx" size="50334" crc="faba784f" sha1="137b3e0343dd099a3d6c4bed30723e2e9ddb7127"/>
@@ -28305,7 +28387,7 @@ license:CC0
 	<software name="werewolv">
 		<description>Werewolves Of London</description>
 		<year>1989</year>
-		<publisher>Mastertronic Ltd</publisher>
+		<publisher>Mastertronic</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47380">
 				<rom name="werewolves of london.tzx" size="47380" crc="0dc9c1b7" sha1="f216f3bafd3d58b9e08b712d1d39450d5eeba3f8"/>
@@ -37220,23 +37302,23 @@ license:CC0
 	</software>
 
 	<software name="3dspacew">
+		<description>3D Space Wars</description>
+		<year>1983</year>
+		<publisher>Hewson Consultants</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="8387">
+				<rom name="3d space wars.tzx" size="8387" crc="95c444e4" sha1="a97efd1e820b2bf5ef4c82ae01c23f3da3d1138e"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="3dspacewa" cloneof="3dspacew">
 		<description>3D Space Wars (Riko Data)</description>
 		<year>1983</year>
 		<publisher>Riko Data</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="8218">
 				<rom name="3d space wars (riko data).tzx" size="8218" crc="c53ec455" sha1="acbb72d261d36348d99495e7e89fb83a84b5764a"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="3dspacew_a" cloneof="3dspacew">
-		<description>3D Space Wars</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="8387">
-				<rom name="3d space wars.tzx" size="8387" crc="95c444e4" sha1="a97efd1e820b2bf5ef4c82ae01c23f3da3d1138e"/>
 			</dataarea>
 		</part>
 	</software>
@@ -38569,7 +38651,7 @@ license:CC0
 	<software name="abusimbe_a" cloneof="abusimbe">
 		<description>Abu Simbel Profanation (Gremlin)</description>
 		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Gremlin Graphics Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47438">
 				<rom name="abu simbel profanation (gremlin).tzx" size="47438" crc="a2660f5f" sha1="fb5db32e5b6141024a356cc2b8c9e740132ffd9a"/>
@@ -38578,23 +38660,45 @@ license:CC0
 	</software>
 
 	<software name="abusimbe_b" cloneof="abusimbe">
-		<description>Abu Simbel Profanation - Medium Case</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Abu Simbel Profanation (medium case, 1st release)</description>
+		<year>1985</year>
+		<publisher>Dinamic Software</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="47650">
-				<rom name="abu simbel profanation - medium case.tzx" size="47650" crc="8c6bd274" sha1="ab7a209c59c86655c039189418020c0f6f782227"/>
+			<dataarea name="cass" size="47587">
+				<rom name="abu simbel profanation - medium case - 1st release.tzx" size="47587" crc="464a2ca9" sha1="970ce1753a526c3ecb3ebe577ab86cf8b6ed3161"/>
 			</dataarea>
 		</part>
 	</software>
 
 	<software name="abusimbe_c" cloneof="abusimbe">
-		<description>Abu Simbel Profanation</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Abu Simbel Profanation (medium case)</description>
+		<year>1985</year>
+		<publisher>Dinamic Software</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="46585">
-				<rom name="abu simbel profanation.tzx" size="46585" crc="e19e5d9a" sha1="61c77e0cbb94567d3237a88a25451e10055df653"/>
+			<dataarea name="cass" size="46615">
+				<rom name="abu simbel profanation - medium case.tzx" size="46615" crc="7b87ed9c" sha1="de2d48eb7deb0db301df967d842fff43e1c3f542"/>
+			</dataarea>
+		</part>
+	</software>
+	
+	<software name="abusimbe_d" cloneof="abusimbe">
+		<description>Abu Simbel Profanation (small case, alt)</description>
+		<year>1985</year>
+		<publisher>Dinamic Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="46420">
+				<rom name="abu simbel profanation.tzx" size="46420" crc="d88e2adf" sha1="ad60e8f616e385d4be807198869b5d72be7a49c5"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="abusimbe_e" cloneof="abusimbe">
+		<description>Abu Simbel Profanation (small case)</description>
+		<year>1985</year>
+		<publisher>Dinamic Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="47770">
+				<rom name="abu simbel profanation - small case.tzx" size="47770" crc="18f4da25" sha1="ca65a6303ee1eefe0d61d8e1f69fa449f8f62b7f"/>
 			</dataarea>
 		</part>
 	</software>
@@ -39599,7 +39703,7 @@ license:CC0
 	<software name="aftermat">
 		<description>Aftermath (Alternative) - Bugfix</description>
 		<year>1988</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="31335">
 				<rom name="aftermath (alternative) - bugfix.tzx" size="31335" crc="57b43a4e" sha1="95ba20db60206cd3d9dbc741ffc710c006bed71b"/>
@@ -44323,23 +44427,23 @@ license:CC0
 	</software>
 
 	<software name="badlands">
+		<description>Badlands</description>
+		<year>1990</year>
+		<publisher>Domark</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="51654">
+				<rom name="badlands.tzx" size="51654" crc="df1f24a2" sha1="33639bc3345d20fdd02a6009593c38b023d23729"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="badlands_a" cloneof="badlands">
 		<description>Badlands (The Hit Squad)</description>
 		<year>1990</year>
 		<publisher>The Hit Squad</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="51532">
 				<rom name="badlands (the hit squad).tzx" size="51532" crc="8a8dd6b2" sha1="43a57bcef879f100e95b42278839cf08fe491b48"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="badlands_a" cloneof="badlands">
-		<description>Badlands</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="51654">
-				<rom name="badlands.tzx" size="51654" crc="df1f24a2" sha1="33639bc3345d20fdd02a6009593c38b023d23729"/>
 			</dataarea>
 		</part>
 	</software>
@@ -44468,7 +44572,7 @@ license:CC0
 	<software name="bangersm">
 		<description>Bangers &amp; Mash</description>
 		<year>1992</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="74672">
 				<rom name="bangers _ mash.tzx" size="74672" crc="18360d9d" sha1="aa4e6be5b9fc9483f5d21861cca606ad87f393e4"/>
@@ -44624,7 +44728,7 @@ license:CC0
 	<software name="bargainb">
 		<description>Bargain Basement (Alternative)</description>
 		<year>1986</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="42642">
 				<rom name="bargain basement (alternative).tzx" size="42642" crc="903edb85" sha1="12882d61e99cf296eb28d0e794029e76ba70a3fd"/>
@@ -46987,7 +47091,7 @@ license:CC0
 	<software name="bmxninja">
 		<description>BMX Ninja (Alternative)</description>
 		<year>1988</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="57443">
 				<rom name="bmx ninja (alternative).tzx" size="57443" crc="6c6c75d7" sha1="3cedf1f0d6aa0fbc63fd1f426e653111750ab940"/>
@@ -49200,7 +49304,7 @@ license:CC0
 	<software name="thebigsl">
 		<description>The Big Sleaze (Alternative)</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="92137">
 				<rom name="the big sleaze (alternative) - side 1.tzx" size="92137" crc="6a141f99" sha1="a043c39ed6581795cc1b3e805542642082d7f712"/>
@@ -52478,12 +52582,12 @@ license:CC0
 	</software>
 
 	<software name="choyleef">
-		<description>Choy Lee Fut Kung Fu Warrior</description>
+		<description>Choy-Lee-Fut Kung-Fu Warrior</description>
 		<year>1990</year>
 		<publisher>Positive</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="48948">
-				<rom name="choy lee fut kung fu warrior.tzx" size="48948" crc="9bddac08" sha1="fac0f8a633e49cf84c5226e3d9e5eeab9f4c1bd0"/>
+			<dataarea name="cass" size="48978">
+				<rom name="choy-lee-fut kung-fu warrior.tzx" size="48978" crc="e1fa6d81" sha1="4ee3b62a3d1ffc8f66a9a9dd3f30d6a18eb78bb5"/>
 			</dataarea>
 		</part>
 	</software>
@@ -53885,7 +53989,7 @@ license:CC0
 	<software name="combatzo">
 		<description>Combat Zone (Alternative)</description>
 		<year>1988</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="54366">
 				<rom name="combat zone (alternative).tzx" size="54366" crc="f9e28851" sha1="75930fc2a315f736fc68ef95e2b245c04ec0220c"/>
@@ -54336,7 +54440,7 @@ license:CC0
 	<software name="confuzio">
 		<description>Confuzion (Alternative)</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="40703">
 				<rom name="confuzion (alternative).tzx" size="40703" crc="92f3ca12" sha1="d1be479d611c5fc8b0fad52981cdd61d969c14f7"/>
@@ -55305,7 +55409,7 @@ license:CC0
 	<software name="countduc">
 		<description>Count Duckula II</description>
 		<year>1992</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="97164">
 				<rom name="count duckula ii - 128k.tzx" size="97164" crc="52e73530" sha1="cdf1c6681f087904da0c120c6be52da7918b1405"/>
@@ -57867,7 +57971,7 @@ license:CC0
 	<software name="thecolou">
 		<description>The Colour Of Magic (Alternative)</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="96791">
 				<rom name="the colour of magic (alternative) - side 1.tzx" size="96791" crc="617866d5" sha1="646dea5090ea8e2b580e62a08e902a25e237be51"/>
@@ -58232,7 +58336,7 @@ license:CC0
 	<software name="sherwood">
 		<description>The Curse Of Sherwood</description>
 		<year>1987</year>
-		<publisher>Mastertronic Ltd</publisher>
+		<publisher>Mastertronic</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="41682">
 				<rom name="the curse of sherwood.tzx" size="41682" crc="14017404" sha1="2c8f0c56bf1e83dcc9b1913080d22f5aef8602e6"/>
@@ -59341,7 +59445,7 @@ license:CC0
 	<software name="deathbef">
 		<description>Death Before Dishonour</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="36489">
 				<rom name="death before dishonour.tzx" size="36489" crc="5bb86933" sha1="adb18aa85b626ddb8fa43c48ccd5d055ebfba55a"/>
@@ -59823,8 +59927,30 @@ license:CC0
 		</part>
 	</software>
 
+	<software name="defcrown">
+		<description>Defender of the Crown (alternative)</description>
+		<year>1989</year>
+		<publisher>The Cat</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="62972">
+				<rom name="DefenderoftheCrown (full).tzx" size="62972" crc="9ab4d044" sha1="9ab0f571ccdd23aaa5eae29f93ab5b77e1a3a92b"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="defcrowna" cloneof="defcrown">
+		<description>Defender of the Crown</description>
+		<year>1989</year>
+		<publisher>The Cat</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="62972">
+				<rom name="defendcr.tzx" size="62972" crc="d010d9fd" sha1="2efddf9ef8b6eeb68fe74d160808179cc05f7704"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="defender">
-		<description>Defenders Of The Earth</description>
+		<description>Defenders of the Earth</description>
 		<year>1990</year>
 		<publisher>Enigma Variations</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -59840,7 +59966,7 @@ license:CC0
 	</software>
 
 	<software name="defender_b" cloneof="defender">
-		<description>Defenders Of The Earth (Hi-Tec)</description>
+		<description>Defenders of the Earth (Hi-Tec)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -62045,7 +62171,7 @@ license:CC0
 	<software name="doombase">
 		<description>Doombase (Alternative)</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="38375">
 				<rom name="doombase (alternative).tzx" size="38375" crc="4c35cf49" sha1="fe67aa8871ab37983a950ff9da5ff55f8b9f64a1"/>
@@ -62171,7 +62297,7 @@ license:CC0
 	<software name="doubleda">
 		<description>Double Dare</description>
 		<year>1991</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="96185">
 				<rom name="double dare.tzx" size="96185" crc="3dc7203a" sha1="9602bfa547e4be057a5a47fbba96fe6d8c204862"/>
@@ -63148,7 +63274,7 @@ license:CC0
 	<software name="druidsmo">
 		<description>Druids Moon</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="64857">
 				<rom name="druids moon.tzx" size="64857" crc="8a98341f" sha1="eb85ae0e4f63a018c18b0d648b98222a052f4b40"/>
@@ -64630,6 +64756,39 @@ license:CC0
 		</part>
 	</software>
 
+	<software name="eddieedwa" cloneof="eddieedw">
+		<description>Eddie Edwards' Super Ski (Erbe)</description>
+		<year>1989</year>
+		<publisher>Erbe Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="66934">
+				<rom name="super ski (erbe).tzx" size="66934" crc="4fe90289" sha1="961ecfb469c9e3d48db96c375e6abc1b94c08279"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="eddieedwb" cloneof="eddieedw">
+		<description>Eddie Edwards' Super Ski (Players Premier)</description>
+		<year>1989</year>
+		<publisher>Players Premier</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="50296">
+				<rom name="super ski.tzx" size="50296" crc="0be97526" sha1="71d103a1702d09d26bffbdfc4ba3a69d118e3336"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="eddieedwc" cloneof="eddieedw">
+		<description>Eddie Edwards' Super Ski (Players Premier, alt)</description>
+		<year>1989</year>
+		<publisher>Players Premier</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="67574">
+				<rom name="super ski challenge.tzx" size="67574" crc="421ef949" sha1="c0d9e2436e7a97ffc2d2aa05a889c4d738a169f0"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="eddiekid">
 		<description>Eddie Kidd Jump Challenge (Ricochet)</description>
 		<year>1984</year>
@@ -65015,7 +65174,7 @@ license:CC0
 	<software name="electra9">
 		<description>Electra 9000</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="9774">
 				<rom name="electra 9000 - side 1.tzx" size="9774" crc="b56e720f" sha1="1747480c87f12c6ba5717b9c8387497f7f4b9c3a"/>
@@ -65867,7 +66026,7 @@ license:CC0
 	<software name="endzone">
 		<description>Endzone</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47886">
 				<rom name="endzone.tzx" size="47886" crc="ba761b8a" sha1="a37919d0eb2f8ec833cde08dcac66d27fb55ca4e"/>
@@ -67202,7 +67361,7 @@ license:CC0
 	<software name="excalibu">
 		<description>Excalibur - Sword Of Kings (set 2)</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48491">
 				<rom name="excalibur - sword of kings - alternate.tzx" size="48491" crc="9c5b0d14" sha1="21d610187ccf90efaffc6a203052c2f2f6bfaeca"/>
@@ -68511,23 +68670,23 @@ license:CC0
 	</software>
 
 	<software name="fernande">
+		<description>Fernandez Must Die</description>
+		<year>1988</year>
+		<publisher>Image Works</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="47762">
+				<rom name="fernandez must die.tzx" size="47762" crc="34a6a01f" sha1="08c98fd1b675c6d551fe5c8ef7ab29e21ba4446d"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="fernande_a" cloneof="fernande">
 		<description>Fernandez Must Die (MCM)</description>
 		<year>1988</year>
 		<publisher>MCM Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="46778">
 				<rom name="fernandez must die (mcm).tzx" size="46778" crc="57aa3fc4" sha1="cd253520fe598f3c70d28cfcfdf18ca634041e81"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="fernande_a" cloneof="fernande">
-		<description>Fernandez Must Die</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="47762">
-				<rom name="fernandez must die.tzx" size="47762" crc="34a6a01f" sha1="08c98fd1b675c6d551fe5c8ef7ab29e21ba4446d"/>
 			</dataarea>
 		</part>
 	</software>
@@ -68935,7 +69094,7 @@ license:CC0
 	<software name="firemans">
 		<description>Fireman Sam</description>
 		<year>1992</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="48508">
 				<rom name="fireman sam - side 1.tzx" size="48508" crc="81c8764c" sha1="b59abccc1c822ad327cd14dd72ca7a3def3f3f4f"/>
@@ -68951,7 +69110,7 @@ license:CC0
 	<software name="firestor">
 		<description>Firestorm (Alternative)</description>
 		<year>1986</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="43484">
 				<rom name="firestorm (alternative).tzx" size="43484" crc="e773bcd0" sha1="2cb5d3c61d715777a35f3507ada7edc821b5b87b"/>
@@ -70030,7 +70189,7 @@ license:CC0
 	<software name="forgoldo">
 		<description>For Gold Or Glory (set 2)</description>
 		<year>1988</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="39673">
 				<rom name="for gold or glory - alternate.tzx" size="39673" crc="dc4ad3ac" sha1="90b5c77341b2eac1cee9b9c7fc91f16ed883ec05"/>
@@ -73110,8 +73269,8 @@ license:CC0
 	</software>
 
 	<software name="gauntl2">
-		<description>Gauntlet II (set 1)</description>
-		<year>1988</year>
+		<description>Gauntlet II</description>
+		<year>1987</year>
 		<publisher>U.S. Gold</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="55066">
@@ -73126,9 +73285,9 @@ license:CC0
 	</software>
 
 	<software name="gauntl2a" cloneof="gauntl2">
-		<description>Gauntlet II (set 2, Erbe)</description>
+		<description>Gauntlet II (Erbe, small case)</description>
 		<year>1988</year>
-		<publisher>U.S. Gold / Erbe</publisher>
+		<publisher>Erbe Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="55043">
 				<rom name="gauntlet 2 - side 1 (erbe).tzx" size="55043" crc="f9ac52dc" sha1="d739d469edd9b0d6e88e7d178fa4c7818b666a83"/>
@@ -73142,9 +73301,9 @@ license:CC0
 	</software>
 
 	<software name="gauntl2b" cloneof="gauntl2">
-		<description>Gauntlet II (set 3, Kixx)</description>
+		<description>Gauntlet II (Kixx)</description>
 		<year>1988</year>
-		<publisher>U.S. Gold Ltd / Kixx</publisher>
+		<publisher>Kixx</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="54978">
 				<rom name="gauntlet ii (kixx) - side 1.tzx" size="54978" crc="9f3ef739" sha1="319ad838ad79ecf1bd83e475e32bc0375bef44e1"/>
@@ -73158,7 +73317,7 @@ license:CC0
 	</software>
 
 	<software name="gauntl2c" cloneof="gauntl2">
-		<description>Gauntlet II (set 4, faulty release)</description>
+		<description>Gauntlet II (faulty release)</description>
 		<year>1988</year>
 		<publisher>U.S. Gold</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -73174,7 +73333,7 @@ license:CC0
 	</software>
 
 	<software name="gauntl3">
-		<description>Gauntlet III (set 1)</description>
+		<description>Gauntlet III: The Final Quest</description>
 		<year>1991</year>
 		<publisher>U.S. Gold</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -73190,9 +73349,9 @@ license:CC0
 	</software>
 
 	<software name="gauntl3a" cloneof="gauntl3">
-		<description>Gauntlet III (set 2, Erbe)</description>
+		<description>Gauntlet III: The Final Quest (Erbe)</description>
 		<year>1991</year>
-		<publisher>U.S. Gold / Erbe</publisher>
+		<publisher>Erbe Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="125791">
 				<rom name="gauntlet 3 - side 1 (erbe).tzx" size="125791" crc="f75560cd" sha1="a069218d010cfc0756fecdc84307ec15b11d2c60"/>
@@ -74737,7 +74896,7 @@ license:CC0
 	<software name="grahamgo">
 		<description>Graham Gooch's Test Cricket (Alternative)</description>
 		<year>1986</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48678">
 				<rom name="graham gooch_s test cricket (alternative).tzx" size="48678" crc="5524b906" sha1="e02d4dd8a9cff0d94268d3d76de466bbed02e0aa"/>
@@ -75689,8 +75848,8 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="guerrill">
-		<description>Guerrilla War</description>
+	<software name="guerrwar">
+		<description>Guerrilla War: Hail the Heroes</description>
 		<year>1988</year>
 		<publisher>Imagine Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -75701,6 +75860,22 @@ license:CC0
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="80976">
 				<rom name="guerrilla war - side 2.tzx" size="80976" crc="7cd291ae" sha1="ebd1848e07338705cfeb31b45ebbf8318a5940ca"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="guerrwara" cloneof="guerrwar">
+		<description>Guerrilla War: Hail the Heroes (Erbe)</description>
+		<year>1988</year>
+		<publisher>Erbe Software</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="149525">
+				<rom name="Guerrilla War - Side 1 (Erbe).tzx" size="149525" crc="6c2899ee" sha1="74145dc5fd39b194eb694c6a58817d97d5646e4a"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="81059">
+				<rom name="Guerrilla War - Side 2 (Erbe).tzx" size="81059" crc="d445749f" sha1="cab82eaa0ec97a82ed75acb95a619efdf2827c0c"/>
 			</dataarea>
 		</part>
 	</software>
@@ -75785,7 +75960,7 @@ license:CC0
 	<software name="gunrunnr">
 		<description>Gunrunner (set 1)</description>
 		<year>1987</year>
-		<publisher>Hewson Consultants Ltd</publisher>
+		<publisher>Hewson Consultants</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47174">
 				<rom name="gunrunner.tzx" size="47174" crc="9b47871f" sha1="bbf5cdb1a46a504007e52379fe01edbd06c02d0c"/>
@@ -75807,7 +75982,7 @@ license:CC0
 	<software name="gunrunnrb" cloneof="gunrunnr">
 		<description>Gunrunner (set 3, Erbe)</description>
 		<year>1987</year>
-		<publisher>Hewson Consultants Ltd / Erbe</publisher>
+		<publisher>Erbe Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="46969">
 				<rom name="gunrunner (erbe).tzx" size="46969" crc="beb27dd2" sha1="7cb6d0e5376aa598ad287f8fc6fd235b229c4fd7"/>
@@ -75818,7 +75993,7 @@ license:CC0
 	<software name="gunrunnrc" cloneof="gunrunnr">
 		<description>Gunrunner (set 4, Erbe - Serie Leyenda)</description>
 		<year>1987</year>
-		<publisher>Hewson Consultants Ltd / Erbe</publisher>
+		<publisher>Erbe Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47021">
 				<rom name="gunrunner (erbe - serie leyenda).tzx" size="47021" crc="f5854161" sha1="6aa53265cb68281903c5920bd4c575787b402b59"/>
@@ -77707,7 +77882,7 @@ license:CC0
 	<software name="heathrow">
 		<description>Heathrow Air Traffic Control</description>
 		<year>1983</year>
-		<publisher>Hewson Consultants Ltd</publisher>
+		<publisher>Hewson Consultants</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="8852">
 				<rom name="heathrow air traffic control.tzx" size="8852" crc="95e1cdeb" sha1="76a67097b16791a29515f5da00e91b40df03058a"/>
@@ -77718,7 +77893,7 @@ license:CC0
 	<software name="heathrwi">
 		<description>Heathrow International Air Traffic Control</description>
 		<year>1984</year>
-		<publisher>Hewson Consultants Ltd</publisher>
+		<publisher>Hewson Consultants</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="12894">
 				<rom name="heathrow international air traffic control - side a.tzx" size="12894" crc="0f6ea2ae" sha1="d60218caa1e244858a22af4b700d74244d7dbc5a"/>
@@ -80152,7 +80327,7 @@ license:CC0
 	<software name="hysteria">
 		<description>Hysteria (Alternative)</description>
 		<year>1989</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47452">
 				<rom name="hysteria (alternative).tzx" size="47452" crc="63a70e92" sha1="4f96f4d73bd2ed1b2d4fc2eb959984768bea64d9"/>
@@ -81386,7 +81561,7 @@ license:CC0
 	<software name="indoorso">
 		<description>Indoor Soccer (Alternative)</description>
 		<year>1986</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="37011">
 				<rom name="indoor soccer (alternative).tzx" size="37011" crc="b026e729" sha1="155c77d23be24618579170ebb56a21a023b5fd31"/>
@@ -86362,7 +86537,7 @@ license:CC0
 	<software name="kentucky">
 		<description>Kentucky Racing</description>
 		<year>1991</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="43382">
 				<rom name="kentucky racing.tzx" size="43382" crc="7f12db4e" sha1="e6c67640f1cfa5144e793425a7b228a858f874da"/>
@@ -89633,7 +89808,7 @@ license:CC0
 	<software name="lifeterm">
 		<description>Lifeterm (Alternative)</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="41624">
 				<rom name="lifeterm (alternative).tzx" size="41624" crc="63e282b6" sha1="37390ddd1871917a2ab093b0ec3b85e363788f4b"/>
@@ -92362,7 +92537,7 @@ license:CC0
 	<software name="madflunk">
 		<description>Mad Flunky (Alternative)</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="44635">
 				<rom name="mad flunky (alternative).tzx" size="44635" crc="ce84e265" sha1="c33ba9cff50bc90aec98874850f2e25a60be7eaa"/>
@@ -95739,7 +95914,7 @@ license:CC0
 	<software name="metalyxa">
 		<description>Metalyx (Alternative)</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="37726">
 				<rom name="metalyx (alternative).tzx" size="37726" crc="cfadc6a8" sha1="aefdf4e91e3303c9d2ac58762ba19f4ab666e00a"/>
@@ -97459,6 +97634,28 @@ license:CC0
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="8609">
 				<rom name="molar maul.tzx" size="8609" crc="9f3d6bd7" sha1="27cf4d599aa94a12bf7d8581c75d815cb296c1db"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="molarmaua" cloneof="molarmau">
+		<description>Molar Maul (Microbyte)</description>
+		<year>1983</year>
+		<publisher>Microbyte</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="8727">
+				<rom name="molar maul (microbyte).tzx" size="8727" crc="a45be80f" sha1="28c70319a8f025b8a457079332877f3a0a0f028c"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="molarmaub" cloneof="molarmau">
+		<description>Cárie</description>
+		<year>1983</year>
+		<publisher>Timex Portugal</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="15378">
+				<rom name="carie.tzx" size="15378" crc="79fd5b06" sha1="25df798f48cd0b15a4e409bfe700ac4011e21924"/>
 			</dataarea>
 		</part>
 	</software>
@@ -100015,7 +100212,7 @@ license:CC0
 	<software name="mythm" cloneof="myth">
 		<description>Myth - History in the Making (MCM)</description>
 		<year>1989</year>
-		<publisher>MCM</publisher>
+		<publisher>MCM Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="195782">
 				<rom name="myth - side 1 (mcm).tzx" size="195782" crc="1089e515" sha1="226ddd98ba365901341aaa564f9241a614a075ae"/>
@@ -102730,7 +102927,7 @@ license:CC0
 	<software name="oceanrac">
 		<description>Ocean Racer (Alternative)</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="51429">
 				<rom name="ocean racer (alternative).tzx" size="51429" crc="3c1e077d" sha1="e3ee9a4bdf50dfe1a5eaed2eb7fec96ad99827cc"/>
@@ -102949,7 +103146,7 @@ license:CC0
 	<software name="oinkalte">
 		<description>Oink (Alternative)</description>
 		<year>1988</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="72105">
 				<rom name="oink (alternative).tzx" size="72105" crc="1b7f0358" sha1="f1822760a3d439cd84018d6486616739d8a92e32"/>
@@ -103450,7 +103647,7 @@ license:CC0
 	<software name="oneman">
 		<description>One Man And His Droid (set 1)</description>
 		<year>1985</year>
-		<publisher>Mastertronic Ltd</publisher>
+		<publisher>Mastertronic</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="24896">
 				<rom name="one man and his droid.tzx" size="24896" crc="30a7998c" sha1="1e2e074568da00cf2b604109592a604f0e355634"/>
@@ -103461,7 +103658,7 @@ license:CC0
 	<software name="onemana" cloneof="oneman">
 		<description>One Man And His Droid (set 2)</description>
 		<year>1985</year>
-		<publisher>Mastertronic Ltd</publisher>
+		<publisher>Mastertronic</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="25004">
 				<rom name="one man and his droid - alternate.tzx" size="25004" crc="bce4231e" sha1="dd1236f4ceabc79b0965824494ae2117d0ee0aaf"/>
@@ -104696,7 +104893,7 @@ license:CC0
 	<software name="theoffic">
 		<description>The Official Father Christmas (Alternative)</description>
 		<year>1989</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="43809">
 				<rom name="the official father christmas (alternative).tzx" size="43809" crc="92212491" sha1="2fa0f80b6b267994969b942f19c425f9a8504e00"/>
@@ -104756,6 +104953,17 @@ license:CC0
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="54537">
 				<rom name="pac-mania.tzx" size="54537" crc="1cfd94b3" sha1="9a2e95599dbf429f5888416cdd2a05ff16958b91"/>
+			</dataarea>
+		</part>
+	</software>
+	
+	<software name="pacmaniaa" cloneof="pacmania">
+		<description>Pac-Mania (MCM)</description>
+		<year>1988</year>
+		<publisher>MCM Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="54656">
+				<rom name="pac-mania (mcm).tzx" size="54656" crc="374b91f5" sha1="df193cce9e2da8a82e63526e4b5fa8ced7a8df63"/>
 			</dataarea>
 		</part>
 	</software>
@@ -106994,6 +107202,28 @@ license:CC0
 		</part>
 	</software>
 
+	<software name="pinkpanta" cloneof="pinkpant">
+		<description>Pink Panther (Dro Soft, double case)</description>
+		<year>1988</year>
+		<publisher>Dro Soft</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="96735">
+				<rom name="pink panther - double case (dro soft).tzx" size="96735" crc="a268a8f8" sha1="6224b9d53d56409a809fc8d50af2673ef7969cb3"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="pinkpantb" cloneof="pinkpant">
+		<description>Pink Panther (Dro Soft, small case)</description>
+		<year>1988</year>
+		<publisher>Dro Soft</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="96553">
+				<rom name="pink panther (dro soft).tzx" size="96553" crc="e54ba130" sha1="f445b3fd4fbef34f9fd7306acb9f210b0a967c94"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="pioneer">
 		<description>Pioneer</description>
 		<year>1984</year>
@@ -107006,7 +107236,7 @@ license:CC0
 	</software>
 
 	<software name="pipmania">
-		<description>Pipe Mania (set 1)</description>
+		<description>Pipe Mania</description>
 		<year>1990</year>
 		<publisher>Empire Software</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -107017,9 +107247,9 @@ license:CC0
 	</software>
 
 	<software name="pipmaniaa" cloneof="pipmania">
-		<description>Pipe Mania (set 2, Proein)</description>
+		<description>Pipe Mania (Proein)</description>
 		<year>1990</year>
-		<publisher>Empire Software / Proein</publisher>
+		<publisher>Proein</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="33540">
 				<rom name="pipe mania (proein).tzx" size="33540" crc="39339bfb" sha1="85fdde8c117f6ccafecc7176fe213ab6c9cb6926"/>
@@ -107028,9 +107258,9 @@ license:CC0
 	</software>
 
 	<software name="pipmaniab" cloneof="pipmania">
-		<description>Pipe Mania (set 3, Touch Down!)</description>
+		<description>Pipe Mania (Touch Down!)</description>
 		<year>1990</year>
-		<publisher>Empire Software / Touch Down!</publisher>
+		<publisher>Touch Down!</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="33375">
 				<rom name="pipe mania (touch down).tzx" size="33375" crc="1a3b77a7" sha1="e88dbb66c4bab1d5c1a4026ca99672527e851862"/>
@@ -107041,7 +107271,7 @@ license:CC0
 	<software name="pippo">
 		<description>Pippo</description>
 		<year>1986</year>
-		<publisher>Mastertronic Ltd</publisher>
+		<publisher>Mastertronic</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="42667">
 				<rom name="pippo.tzx" size="42667" crc="486ec0c2" sha1="7c73f024f6ee3870144a1013165181d966f1476b"/>
@@ -108097,7 +108327,7 @@ license:CC0
 	<software name="popeyeal">
 		<description>Popeye (Alternative)</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="35032">
 				<rom name="popeye (alternative).tzx" size="35032" crc="13b6a8d6" sha1="766b402c5d489017de4340b6829618d5b14df606"/>
@@ -108152,7 +108382,7 @@ license:CC0
 	<software name="popeye2">
 		<description>Popeye 2</description>
 		<year>1991</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="70691">
 				<rom name="popeye 2.tzx" size="70691" crc="b53c7da1" sha1="6293e34d29391c7a425a6db3b8d45a9e8b470e2b"/>
@@ -108163,7 +108393,7 @@ license:CC0
 	<software name="popeye3w">
 		<description>Popeye 3 - Wrestle Crazy</description>
 		<year>1992</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="55720">
 				<rom name="popeye 3 - wrestle crazy - game.tzx" size="55720" crc="bf25d8d7" sha1="e1ef57432c2f6ce1724e41f03d66320341af783a"/>
@@ -108250,7 +108480,7 @@ license:CC0
 	<software name="postpat">
 		<description>Postman Pat</description>
 		<year>1989</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="54468">
 				<rom name="postman pat.tzx" size="54468" crc="ffb278f5" sha1="b76d5e9ec4fff8e656392dce5ae60cee61e5d43f"/>
@@ -108272,7 +108502,7 @@ license:CC0
 	<software name="postpat2">
 		<description>Postman Pat 2</description>
 		<year>1989</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="55752">
 				<rom name="postman pat 2.tzx" size="55752" crc="118e0b00" sha1="57d7a0ceaa2c7e82caa0c1febb0251d6ddcb5f36"/>
@@ -108283,7 +108513,7 @@ license:CC0
 	<software name="postpat3">
 		<description>Postman Pat 3</description>
 		<year>1992</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="38028">
 				<rom name="postman pat 3.tzx" size="38028" crc="01641239" sha1="f51783f0662015f97c83271a3fe9024e55f38dfd"/>
@@ -108885,7 +109115,7 @@ license:CC0
 	<software name="promount">
 		<description>Pro Mountain Bike Simulator</description>
 		<year>1989</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="51301">
 				<rom name="pro mountain bike simulator.tzx" size="51301" crc="40de6be4" sha1="28442cbb05255daa3270b21b18497c17eebcf7f3"/>
@@ -109845,7 +110075,7 @@ license:CC0
 	<software name="punchand">
 		<description>Punch And Judy</description>
 		<year>1989</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="50779">
 				<rom name="punch and judy.tzx" size="50779" crc="f73c928f" sha1="85731c985fd215adb401e22a1f945c5aac8af77c"/>
@@ -110929,7 +111159,7 @@ license:CC0
 	</software>
 
 	<software name="questfor">
-		<description>Quest For Eternity</description>
+		<description>Quest for Eternity</description>
 		<year>1984</year>
 		<publisher>Mind Games</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -110939,8 +111169,8 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="questfor_a" cloneof="questfor">
-		<description>Quest For The Crystal Gloworm</description>
+	<software name="questcg">
+		<description>Quest for the Crystal Gloworm</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -110950,10 +111180,10 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="questfor_b" cloneof="questfor">
-		<description>Quest For The Holy Grant Cheque</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="questhgc">
+		<description>Quest for the Holy Grant Cheque</description>
+		<year>1985</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="35791">
 				<rom name="quest for the holy grant cheque.tzx" size="35791" crc="1c183e9c" sha1="255190df468b60989d3db88c18aa4326eac73e04"/>
@@ -110961,21 +111191,10 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="questfor_c" cloneof="questfor">
-		<description>Quest For The Holy Joystick (GI Games)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="43527">
-				<rom name="quest for the holy joystick (gi games).tzx" size="43527" crc="1923abf0" sha1="a773c0363535336aefc6360d003a7c07622151e0"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="questfor_d" cloneof="questfor">
+	<software name="questhj">
 		<description>Quest For The Holy Joystick</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1984</year>
+		<publisher>Delta 4 Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="40964">
 				<rom name="quest for the holy joystick.tzx" size="40964" crc="42dedf92" sha1="7a8fae27eda5a3f3b01b269f55d17078ab6f1ccc"/>
@@ -110983,10 +111202,21 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="questfor_e" cloneof="questfor">
-		<description>Quest For The Holy Something (set 2)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="questhja" cloneof="questhj">
+		<description>Quest for the Holy Joystick (G.I. Games)</description>
+		<year>1991</year>
+		<publisher>G.I. Games</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="43527">
+				<rom name="quest for the holy joystick (gi games).tzx" size="43527" crc="1923abf0" sha1="a773c0363535336aefc6360d003a7c07622151e0"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="questsom">
+		<description>Quest for the Holy Something (alt)</description>
+		<year>1992</year>
+		<publisher>Zenobi Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="48226">
 				<rom name="quest for the holy something - alternate - part 1.tzx" size="48226" crc="2a1431b2" sha1="07f16b544a554a5b1509d7697fac8c0bca377e4b"/>
@@ -110999,10 +111229,10 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="questfor_g" cloneof="questfor">
-		<description>Quest For The Holy Something</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="questsoma" cloneof="questsom">
+		<description>Quest for the Holy Something</description>
+		<year>1992</year>
+		<publisher>Zenobi Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="48226">
 				<rom name="quest for the holy something - part 1.tzx" size="48226" crc="ece5eeee" sha1="d2872a4e66c626cd1c8bffd5cd425bba318f8eca"/>
@@ -111011,6 +111241,22 @@ license:CC0
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="48226">
 				<rom name="quest for the holy something - part 2.tzx" size="48226" crc="3d7caa3c" sha1="774af95def61822d48019c293daa17a4824b9062"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="questsomb" cloneof="questsom">
+		<description>Quest for the Holy Something (alt 2)</description>
+		<year>1992</year>
+		<publisher>Zenobi Software</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="43887">
+				<rom name="the quest for the holy something - part 1.tzx" size="43887" crc="fe4eb6ee" sha1="5491fb2d9d12baa3d1014a61e0637eab6a70efd7"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="41342">
+				<rom name="the quest for the holy something - part 2.tzx" size="41342" crc="cfadcfdb" sha1="83411da48d9773a6b2bcf51891c1fbca49e72471"/>
 			</dataarea>
 		</part>
 	</software>
@@ -112084,9 +112330,20 @@ license:CC0
 	</software>
 
 	<software name="rallydri">
+		<description>Rally Driver</description>
+		<year>1984</year>
+		<publisher>Hill MacGibbon</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="51296">
+				<rom name="rally driver.tzx" size="51296" crc="06280955" sha1="a1a9df15a5b3cd9ab59b75a15d15a7ca8562ab62"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="rallydria" cloneof="rallydri">
 		<description>Rally Driver (Alternative)</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="39682">
 				<rom name="rally driver (alternative).tzx" size="39682" crc="a79cf6a2" sha1="d1fb2762cb608a00051659f80399a5d94b20216c"/>
@@ -112094,24 +112351,13 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="rallydri_a" cloneof="rallydri">
+	<software name="rallydrv">
 		<description>Rally Driver (Micro Mart)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1984</year>
+		<publisher>Micro-Mart</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="24610">
 				<rom name="rally driver (micro mart).tzx" size="24610" crc="66f100c1" sha1="a07c8bd14cb39cd1d3f237bbed3476d21fa3b871"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="rallydri_b" cloneof="rallydri">
-		<description>Rally Driver</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="51296">
-				<rom name="rally driver.tzx" size="51296" crc="06280955" sha1="a1a9df15a5b3cd9ab59b75a15d15a7ca8562ab62"/>
 			</dataarea>
 		</part>
 	</software>
@@ -112155,6 +112401,22 @@ license:CC0
 	</software>
 
 	<software name="ramboiii">
+		<description>Rambo III</description>
+		<year>1988</year>
+		<publisher>Ocean</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="101485">
+				<rom name="rambo iii - side a.tzx" size="101485" crc="0112fe34" sha1="6a553d567967481bcad01d6c22fd5631967d86cf"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="77207">
+				<rom name="rambo iii - side b.tzx" size="77207" crc="993b16fa" sha1="459520b8bfdc999ba204d4197c98292e1321877b"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="ramboiii_a" cloneof="ramboiii">
 		<description>Rambo III (Ablex)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
@@ -112171,7 +112433,7 @@ license:CC0
 	</software>
 
 	<software name="ramboiii_b" cloneof="ramboiii">
-		<description>Rambo III (Erbe) (set 2)</description>
+		<description>Rambo III (Erbe, set 1)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -112183,8 +112445,8 @@ license:CC0
 
 	<software name="ramboiii_c" cloneof="ramboiii">
 		<description>Rambo III (The Hit Squad)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1991</year>
+		<publisher>The Hit Squad</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="100834">
 				<rom name="rambo iii (the hit squad) - side 1.tzx" size="100834" crc="b59e6a8b" sha1="220d082f4323b73920c5917a6597475374ea0ccb"/>
@@ -112198,9 +112460,9 @@ license:CC0
 	</software>
 
 	<software name="ramboiii_e" cloneof="ramboiii">
-		<description>Rambo III (Erbe) (set 1)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Rambo III (Erbe, set 2)</description>
+		<year>1988</year>
+		<publisher>Erbe Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="95490">
 				<rom name="rambo iii - side 1 (erbe).tzx" size="95490" crc="4292e9d6" sha1="2c883b66db601b6dcefe0f2a5e27c49e0436a413"/>
@@ -112209,22 +112471,6 @@ license:CC0
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="77157">
 				<rom name="rambo iii - side 2 (erbe).tzx" size="77157" crc="bfab4283" sha1="28184ae2558198bc74a68dc2f4d3b0befda77179"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="ramboiii_g" cloneof="ramboiii">
-		<description>Rambo III</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="101485">
-				<rom name="rambo iii - side a.tzx" size="101485" crc="0112fe34" sha1="6a553d567967481bcad01d6c22fd5631967d86cf"/>
-			</dataarea>
-		</part>
-		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="77207">
-				<rom name="rambo iii - side b.tzx" size="77207" crc="993b16fa" sha1="459520b8bfdc999ba204d4197c98292e1321877b"/>
 			</dataarea>
 		</part>
 	</software>
@@ -112846,7 +113092,7 @@ license:CC0
 	<software name="reckless">
 		<description>Reckless Rufus</description>
 		<year>1992</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="55023">
 				<rom name="reckless rufus.tzx" size="55023" crc="f647a946" sha1="1690c236fadcb17a0e285361da593250a0af9cb7"/>
@@ -112889,7 +113135,7 @@ license:CC0
 	<software name="redarrow">
 		<description>Red Arrows (Alternative)</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="44738">
 				<rom name="red arrows (alternative).tzx" size="44738" crc="8c1a616e" sha1="50054d3a589efdc95a29ac0c4ae4e96c1e132f7e"/>
@@ -113241,7 +113487,7 @@ license:CC0
 	<software name="rescuema">
 		<description>Rescue (Mastertronic)</description>
 		<year>1987</year>
-		<publisher>Mastertronic Ltd</publisher>
+		<publisher>Mastertronic</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="49149">
 				<rom name="rescue (mastertronic).tzx" size="49149" crc="3a8a9782" sha1="a8982cf54ab27a6037c9771ef900827517f60b9c"/>
@@ -113414,7 +113660,7 @@ license:CC0
 	</software>
 
 	<software name="revengeo">
-		<description>Revenge Of Chaos</description>
+		<description>Revenge of Chaos</description>
 		<year>1990</year>
 		<publisher>The Guild</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -113424,21 +113670,10 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="revengeo_a" cloneof="revengeo">
-		<description>Revenge Of The C5 (Zafiro)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="47802">
-				<rom name="revenge of the c5 (zafiro).tzx" size="47802" crc="e3027a2d" sha1="854d87a8169cfd5e7d1103a0fb809a54dffe2418"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="revengeo_b" cloneof="revengeo">
-		<description>Revenge Of The C5</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="revengc5">
+		<description>Revenge of the C5</description>
+		<year>1985</year>
+		<publisher>Atlantis Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47772">
 				<rom name="revenge of the c5.tzx" size="47772" crc="913bdaf9" sha1="220edfa68a50fca27db44e437e891dbb23d031c6"/>
@@ -113446,10 +113681,21 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="revengeo_c" cloneof="revengeo">
-		<description>Revenge Of The Killer Tomatoes</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="revengc5a" cloneof="revengc5">
+		<description>Revenge of the C5 (Zafiro)</description>
+		<year>1987</year>
+		<publisher>Z Cobra</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="47802">
+				<rom name="revenge of the c5 (zafiro).tzx" size="47802" crc="e3027a2d" sha1="854d87a8169cfd5e7d1103a0fb809a54dffe2418"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="revengkt">
+		<description>Revenge of the Killer Tomatoes</description>
+		<year>1984</year>
+		<publisher>Visions Software Factory</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="21156">
 				<rom name="revenge of the killer tomatoes.tzx" size="21156" crc="29906dfa" sha1="f07b6e680c44ec330163ef5e83b6c4e4c7383f85"/>
@@ -113457,21 +113703,10 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="revengeo_d" cloneof="revengeo">
-		<description>Revenge Of The Space Pirates (Adventure Probe)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="73769">
-				<rom name="revenge of the space pirates (adventure probe).tzx" size="73769" crc="359ca3c7" sha1="9e1e3080f982452f1a2efccae18830d6399ea9dd"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="revengeo_e" cloneof="revengeo">
-		<description>Revenge Of The Space Pirates</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="revengsp">
+		<description>Revenge of the Space Pirates</description>
+		<year>1994</year>
+		<publisher>FSF Adventures</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="73767">
 				<rom name="revenge of the space pirates - side 1.tzx" size="73767" crc="5b8ab934" sha1="80e5d19c965e477aa0e346c1c97cb1be81c62549"/>
@@ -113480,6 +113715,17 @@ license:CC0
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="73771">
 				<rom name="revenge of the space pirates - side 2.tzx" size="73771" crc="ad14c401" sha1="fe037e73055821baadcd3e19fba7f9128be99ba3"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="revengspa" cloneof="revengsp">
+		<description>Revenge of the Space Pirates (Adventure Probe)</description>
+		<year>1994</year>
+		<publisher>Adventure Probe Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="73769">
+				<rom name="revenge of the space pirates (adventure probe).tzx" size="73769" crc="359ca3c7" sha1="9e1e3080f982452f1a2efccae18830d6399ea9dd"/>
 			</dataarea>
 		</part>
 	</software>
@@ -113644,7 +113890,7 @@ license:CC0
 	<software name="revolver">
 		<description>Revolver</description>
 		<year>1988</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="42816">
 				<rom name="revolver.tzx" size="42816" crc="6e2eef95" sha1="b22afb7cc37d9b316a86c48360f4923130868098"/>
@@ -113891,7 +114137,7 @@ license:CC0
 	<software name="riverres">
 		<description>River Rescue (Alternative)</description>
 		<year>1984</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="17147">
 				<rom name="river rescue (alternative).tzx" size="17147" crc="225d2b07" sha1="a1df72f529df65b185f3ba4086b5b48ebcd1bf40"/>
@@ -114346,7 +114592,7 @@ license:CC0
 	</software>
 
 	<software name="robocop">
-		<description>Robocop (set 1)</description>
+		<description>Robocop</description>
 		<year>1988</year>
 		<publisher>Ocean</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -114361,21 +114607,10 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="robocoper" cloneof="robocop">
-		<description>Robocop (set 2, Erbe - Musical 1)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="102256">
-				<rom name="robocop (erbe - musical 1).tzx" size="102256" crc="77c39f3a" sha1="1d961e4fcaa5377acafe0297b8d80114a509a5f8"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="robocopera" cloneof="robocop">
+	<software name="robocopa" cloneof="robocop">
 		<description>Robocop (Erbe)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1988</year>
+		<publisher>Erbe Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="102147">
 				<rom name="robocop (erbe).tzx" size="102147" crc="462d2851" sha1="a666bdf126ecd8df411069e5e9153346bb1c504d"/>
@@ -114383,10 +114618,21 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="robocophs" cloneof="robocop">
+	<software name="robocopb" cloneof="robocop">
+		<description>Robocop (Musical 1)</description>
+		<year>1988</year>
+		<publisher>Musical 1</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="102256">
+				<rom name="robocop (erbe - musical 1).tzx" size="102256" crc="77c39f3a" sha1="1d961e4fcaa5377acafe0297b8d80114a509a5f8"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="robocopc" cloneof="robocop">
 		<description>Robocop (The Hit Squad)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1991</year>
+		<publisher>The Hit Squad</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="108398">
 				<rom name="robocop - side 1 (the hit squad).tzx" size="108398" crc="4f091ace" sha1="87d23b0549feca117c663c7e9bd697002c49408c"/>
@@ -114399,9 +114645,18 @@ license:CC0
 		</part>
 	</software>
 
-
-
 	<software name="robocop2">
+		<description>Robocop 2 (spectrum +2)</description>
+		<year>1990</year>
+		<publisher>Ocean</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="124552">
+				<rom name="robocop 2 +2.tzx" size="124552" crc="8391a4ae" sha1="e5a3d294e0fc198c8697553b7462d8354e2ac72d"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="robocop2a" cloneof="robocop2">
 		<description>Robocop 2 (Erbe)</description>
 		<year>1990</year>
 		<publisher>Erbe Software</publisher>
@@ -114412,21 +114667,10 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="robocop2_a" cloneof="robocop2">
-		<description>Robocop 2 +2</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="124552">
-				<rom name="robocop 2 +2.tzx" size="124552" crc="8391a4ae" sha1="e5a3d294e0fc198c8697553b7462d8354e2ac72d"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="robocop2_b" cloneof="robocop2">
+	<software name="robocop2b" cloneof="robocop2">
 		<description>Robocop 2</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1990</year>
+		<publisher>Ocean</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="124552">
 				<rom name="robocop 2.tzx" size="124552" crc="e51fc385" sha1="575e067f493600c1efa59a45e9f4e2f5dfb9a2bb"/>
@@ -114434,7 +114678,16 @@ license:CC0
 		</part>
 	</software>
 
-
+	<software name="robocop2c" cloneof="robocop2">
+		<description>Robocop 2 (Erbe, small case)</description>
+		<year>1990</year>
+		<publisher>Erbe Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="127215">
+				<rom name="robocop 2 - small case (erbe).tzx" size="127215" crc="3a1e50c1" sha1="e0c4d4a8baf0c83a7e1020b0f5973fa2cc5aaf29"/>
+			</dataarea>
+		</part>
+	</software>
 
 	<software name="robocop3">
 		<description>Robocop 3</description>
@@ -114447,10 +114700,10 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="robocop3er" cloneof="robocop3">
+	<software name="robocop3a" cloneof="robocop3">
 		<description>Robocop 3 (Erbe)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1992</year>
+		<publisher>Erbe Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="114116">
 				<rom name="robocop 3 (erbe).tzx" size="114116" crc="74e24ab6" sha1="299b802ddebed183d15fcb7b9ec6f3dca3581966"/>
@@ -115447,7 +115700,7 @@ license:CC0
 	<software name="rugbybos">
 		<description>Rugby Boss</description>
 		<year>1989</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="28893">
 				<rom name="rugby boss.tzx" size="28893" crc="e1282be3" sha1="ed95906f3c1165346cabc6ad1985bc39d50c0bbe"/>
@@ -115568,7 +115821,7 @@ license:CC0
 	<software name="runforgo">
 		<description>Run For Gold (Alternative)</description>
 		<year>1985</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="51210">
 				<rom name="run for gold (alternative).tzx" size="51210" crc="3228454b" sha1="b0a9d5ed83515656b7519d63492b183711534174"/>
@@ -115873,7 +116126,7 @@ license:CC0
 	<software name="thereals">
 		<description>The Real Stunt Experts (Alternative)</description>
 		<year>1989</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="75174">
 				<rom name="the real stunt experts (alternative).tzx" size="75174" crc="f32052d3" sha1="64a81ad884bf5e1511c7f7680480cd34537b6cbf"/>
@@ -117769,7 +118022,7 @@ license:CC0
 	<software name="seasurfe">
 		<description>Sea Surfer</description>
 		<year>1986</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="34282">
 				<rom name="sea surfer - side 1.tzx" size="34282" crc="421189a7" sha1="f00f26b727b120228d8ec44dec96c8eab4399f23"/>
@@ -120345,7 +120598,7 @@ license:CC0
 	<software name="slug">
 		<description>Slug</description>
 		<year>1988</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="46098">
 				<rom name="slug.tzx" size="46098" crc="5aae0833" sha1="2402ba4e271dcd6d253fb05033a5419cccc8d090"/>
@@ -120503,7 +120756,7 @@ license:CC0
 	<software name="smasheda">
 		<description>SMASHED (set 2)</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="41629">
 				<rom name="smashed - alternate.tzx" size="41629" crc="a7566f39" sha1="dd1e288111b5dec636c266ab3fc4a589523abf6f"/>
@@ -120514,7 +120767,7 @@ license:CC0
 	<software name="smashed">
 		<description>SMASHED</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="41769">
 				<rom name="smashed.tzx" size="41769" crc="2720ffff" sha1="9b0cbe9d8e154d9cf39b7ab32c173b2b701c1306"/>
@@ -121050,7 +121303,7 @@ license:CC0
 	<software name="soccerch">
 		<description>Soccer Challenge</description>
 		<year>1990</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="46752">
 				<rom name="soccer challenge.tzx" size="46752" crc="d8e653ac" sha1="e4f162347f14d4c70d415dfd5552e245228d4d88"/>
@@ -121546,7 +121799,40 @@ license:CC0
 	</software>
 
 	<software name="soldiero">
-		<description>Soldier Of Fortune (MCM)</description>
+		<description>Soldier of Fortune (release 3)</description>
+		<year>1988</year>
+		<publisher>Firebird Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="54344">
+				<rom name="soldier of fortune - release 3.tzx" size="54344" crc="12a5397c" sha1="e626d5349135cf40725837d3e2221ee4058f6ef5"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="soldiero_a" cloneof="soldiero">
+		<description>Soldier of Fortune (release 1)</description>
+		<year>1988</year>
+		<publisher>Firebird Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="54207">
+				<rom name="soldier of fortune - release 1.tzx" size="54207" crc="2ae541f5" sha1="b7a7e34d4f4942023e07d3f74491ebd29190fa39"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="soldiero_b" cloneof="soldiero">
+		<description>Soldier of Fortune (release 2)</description>
+		<year>1988</year>
+		<publisher>Firebird Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="54309">
+				<rom name="soldier of fortune - release 2.tzx" size="54309" crc="ee1b8b3d" sha1="0f0a477b4c0cc7ce63ed2b8853f4f88ea419b96c"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="soldiero_c" cloneof="soldiero">
+		<description>Soldier of Fortune (MCM)</description>
 		<year>1988</year>
 		<publisher>MCM Software</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -121556,86 +121842,10 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="soldiero_a" cloneof="soldiero">
-		<description>Soldier Of Fortune - Release 1</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="54207">
-				<rom name="soldier of fortune - release 1.tzx" size="54207" crc="2ae541f5" sha1="b7a7e34d4f4942023e07d3f74491ebd29190fa39"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="soldiero_b" cloneof="soldiero">
-		<description>Soldier Of Fortune - Release 2</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="54309">
-				<rom name="soldier of fortune - release 2.tzx" size="54309" crc="ee1b8b3d" sha1="0f0a477b4c0cc7ce63ed2b8853f4f88ea419b96c"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="soldiero_c" cloneof="soldiero">
-		<description>Soldier Of Fortune - Release 3</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="54590">
-				<rom name="soldier of fortune - release 3 - side 1.tzx" size="54590" crc="b9879a0f" sha1="44e88bb7dd0dcb5b6b383efcf4cb276df8c2ddf1"/>
-			</dataarea>
-		</part>
-		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="54529">
-				<rom name="soldier of fortune - release 3 - side 2.tzx" size="54529" crc="d92c15ad" sha1="a58439ab43c92e51fb7f65afe59c1874399647ba"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="soldiero_e" cloneof="soldiero">
-		<description>Soldier Of Light (Dro Soft)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="53355">
-				<rom name="soldier of light (dro soft).tzx" size="53355" crc="d7d8b8eb" sha1="6dd4c0cb8a0e4f98c0bf98a2bc433d45966b7999"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="soldiero_f" cloneof="soldiero">
-		<description>Soldier Of Light (RAD)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="53431">
-				<rom name="soldier of light (rad).tzx" size="53431" crc="49fd9437" sha1="3e253fd9af6b4b27407c6d43c3f7ff8f9c69f9a7"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="soldiero_g" cloneof="soldiero">
-		<description>Soldier Of Light (set 2) (Dro Soft)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="45749">
-				<rom name="soldier of light - alternate - side 1 (dro soft).tzx" size="45749" crc="ea3c88bb" sha1="7bf6ba2cf72ce111961d19d7a5d0a4a39c97e706"/>
-			</dataarea>
-		</part>
-		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="16123">
-				<rom name="soldier of light - alternate - side 2 (dro soft).tzx" size="16123" crc="a8f52bd6" sha1="192c54e22afce9bba51b0d4dea0f8b0bad600784"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="soldiero_i" cloneof="soldiero">
-		<description>Soldier Of Light</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="soldlight">
+		<description>Soldier of Light</description>
+		<year>1988</year>
+		<publisher>ACE Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="53300">
 				<rom name="soldier of light - side 1.tzx" size="53300" crc="f40365d0" sha1="324cdd67cc2c7046e038089e37a3348f59bc0c42"/>
@@ -121648,8 +121858,46 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="soldiero_k" cloneof="soldiero">
-		<description>Soldier Of Light (alt)</description>
+	<software name="soldlighta" cloneof="soldlight">
+		<description>Soldier of Light (Dro Soft)</description>
+		<year>1988</year>
+		<publisher>Dro Soft</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="53355">
+				<rom name="soldier of light (dro soft).tzx" size="53355" crc="d7d8b8eb" sha1="6dd4c0cb8a0e4f98c0bf98a2bc433d45966b7999"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="soldlightb" cloneof="soldlight">
+		<description>Soldier of Light (Dro Soft, alt)</description>
+		<year>1988</year>
+		<publisher>Dro Soft</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="45749">
+				<rom name="soldier of light - alternate - side 1 (dro soft).tzx" size="45749" crc="ea3c88bb" sha1="7bf6ba2cf72ce111961d19d7a5d0a4a39c97e706"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="16123">
+				<rom name="soldier of light - alternate - side 2 (dro soft).tzx" size="16123" crc="a8f52bd6" sha1="192c54e22afce9bba51b0d4dea0f8b0bad600784"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="soldlightc" cloneof="soldlight">
+		<description>Soldier of Light (RAD)</description>
+		<year>1988</year>
+		<publisher>RAD</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="53431">
+				<rom name="soldier of light (rad).tzx" size="53431" crc="49fd9437" sha1="3e253fd9af6b4b27407c6d43c3f7ff8f9c69f9a7"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="soldlightd" cloneof="soldlight">
+		<description>Soldier of Light (alt)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -121788,7 +122036,7 @@ license:CC0
 	<software name="sootyand">
 		<description>Sooty And Sweep</description>
 		<year>1990</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47426">
 				<rom name="sooty and sweep.tzx" size="47426" crc="de5e85cb" sha1="e59dbfede01ec59327cefa4cd09df3ad2f40b90a"/>
@@ -124813,7 +125061,7 @@ license:CC0
 	<software name="splatalt">
 		<description>Splat! (Alternative)</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="36290">
 				<rom name="splat (alternative).tzx" size="36290" crc="2c56bd0b" sha1="6b59ac4d2040c6489dbdbb8e65f796f36178139b"/>
@@ -125519,7 +125767,7 @@ license:CC0
 	<software name="starpaws">
 		<description>Star Paws (Alternative)</description>
 		<year>1988</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="51612">
 				<rom name="star paws (alternative).tzx" size="51612" crc="97775533" sha1="26d4a2c1dcaacf6a9fa4473a9a87fb404ba309b0"/>
@@ -125858,7 +126106,7 @@ license:CC0
 	<software name="starwrec">
 		<description>Star Wreck (set 2)</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="41056">
 				<rom name="star wreck - alternate.tzx" size="41056" crc="bd5753be" sha1="2542513350923b564b755477b204a466ad1838a4"/>
@@ -126654,9 +126902,9 @@ license:CC0
 	</software>
 
 	<software name="stmlrd">
-		<description>Stormlord (set 1)</description>
+		<description>Stormlord</description>
 		<year>1989</year>
-		<publisher>Hewson Consultants Ltd</publisher>
+		<publisher>Hewson Consultants</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="49909">
 				<rom name="stormlord - side 1.tzx" size="49909" crc="2375d90b" sha1="871e11b74e40e13958f6eb9e0e683463d5a8d0c6"/>
@@ -126670,9 +126918,9 @@ license:CC0
 	</software>
 
 	<software name="stmlrda" cloneof="stmlrd">
-		<description>Stormlord (set 2, Erbe)</description>
+		<description>Stormlord (Erbe)</description>
 		<year>1989</year>
-		<publisher>Hewson Consultants Ltd / Erbe</publisher>
+		<publisher>Erbe Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="46522">
 				<rom name="stormlord - side 1 (erbe).tzx" size="46522" crc="cd2fa73a" sha1="0e5eed5020ce902b4dd4dc4bff13a536a877d11e"/>
@@ -126686,9 +126934,9 @@ license:CC0
 	</software>
 
 	<software name="stmlrd2">
-		<description>Stormlord 2 - Deliverance (set 1)</description>
+		<description>Stormlord II - Deliverance</description>
 		<year>1990</year>
-		<publisher>Hewson Consultants Ltd</publisher>
+		<publisher>Hewson Consultants</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="133472">
 				<rom name="stormlord 2 - deliverance.tzx" size="133472" crc="0ea5aa80" sha1="8eaf4a04f369295f0000ff8180c6153ee3031fc6"/>
@@ -126697,12 +126945,12 @@ license:CC0
 	</software>
 
 	<software name="stmlrd2a" cloneof="stmlrd2">
-		<description>Stormlord 2 - Deliverance (set 2, Erbe)</description>
+		<description>Stormlord II - Deliverance (Erbe)</description>
 		<year>1990</year>
-		<publisher>Hewson Consultants Ltd / Erbe</publisher>
+		<publisher>Erbe Software</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="136021">
-				<rom name="stormlord 2 - deliverance (erbe).tzx" size="136021" crc="db345e10" sha1="ed00eeed80f4d3561d3c5e38d5640b9f3d8ec670"/>
+			<dataarea name="cass" size="136012">
+				<rom name="stormlord II - deliverance (erbe).tzx" size="136012" crc="fe66430b" sha1="c55813e1225b239a05ffcbf3a98c1e33631b9520"/>
 			</dataarea>
 		</part>
 	</software>
@@ -127682,8 +127930,8 @@ license:CC0
 
 	<software name="superche_b" cloneof="superche">
 		<description>Super Chess II v2.1</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1983</year>
+		<publisher>CP Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="21575">
 				<rom name="super chess ii v2.1.tzx" size="21575" crc="8a65d0d0" sha1="4a5da55dbe0d61cfdbfef085120aed2f0f980ef6"/>
@@ -128234,10 +128482,10 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="supersto_a" cloneof="supersto">
+	<software name="supersty">
 		<description>Super Story</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1985</year>
+		<publisher>Computer Kontakt</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="53594">
 				<rom name="super story.tzx" size="53594" crc="7acfe926" sha1="24ad991247789fed20668fa1c5743c52fd7657c2"/>
@@ -128259,7 +128507,7 @@ license:CC0
 	<software name="superted">
 		<description>Super Ted - The Search For Spot (set 2)</description>
 		<year>1990</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="41849">
 				<rom name="super ted - the search for spot - alternate.tzx" size="41849" crc="562972a8" sha1="dcdac16b41f28fb487002a3be932b923e57051eb"/>
@@ -128306,6 +128554,28 @@ license:CC0
 	</software>
 
 	<software name="supertro">
+		<description>Super Trolley</description>
+		<year>1988</year>
+		<publisher>Mastertronic</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="41935">
+				<rom name="super trolley.tzx" size="41935" crc="e0a1b590" sha1="f79618fea4320f9641ca839f1369dc877a28dbbe"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="supertroa" cloneof="supertro">
+		<description>Super Trolley (Dro Soft)</description>
+		<year>1988</year>
+		<publisher>Dro Soft</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="44509">
+				<rom name="super trolley - alternate cover (dro soft).tzx" size="44509" crc="8ce84ed3" sha1="f5e8747cc38796846e980753b09a5e2ab764ca9f"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="supertrob" cloneof="supertro">
 		<description>Super Trolley (Flippy Flippy) (Side A Only)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
@@ -128320,18 +128590,6 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-
-	<software name="supertro_a" cloneof="supertro">
-		<description>Super Trolley</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="42176">
-				<rom name="super trolley.tzx" size="42176" crc="143e70b7" sha1="591f6977b238f676ccbb074cd25b4061e8b98de3"/>
-			</dataarea>
-		</part>
-	</software>
-
 
 	<software name="superwri">
 		<description>Super Writer</description>
@@ -128895,22 +129153,6 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="swivkixx">
-		<description>SWIV (Kixx)</description>
-		<year>1991</year>
-		<publisher>Kixx</publisher>
-		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="81308">
-				<rom name="swiv (kixx) - side a.tzx" size="81308" crc="6be68de2" sha1="bae2f1873eeed2a8a855a9b27e2679d46f27ff87"/>
-			</dataarea>
-		</part>
-		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="63819">
-				<rom name="swiv (kixx) - side b.tzx" size="63819" crc="db02847e" sha1="7db45e56eb9e6effd2b046ba2927e6a7ff82912c"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<software name="swiv">
 		<description>SWIV</description>
 		<year>1991</year>
@@ -128923,6 +129165,38 @@ license:CC0
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="63816">
 				<rom name="swiv - side b.tzx" size="63816" crc="daac1c43" sha1="24922d6e409f5a512d9cc05327b06c8a554d4a91"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="swiva" cloneof="swiv">
+		<description>SWIV (Dro Soft)</description>
+		<year>1991</year>
+		<publisher>Dro Soft</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="81480">
+				<rom name="swiv - side 1 (dro soft).tzx" size="81480" crc="73ae41a8" sha1="6cbfe3a6907a11f90775cdb5e4b7aaab9791d2d9"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="63988">
+				<rom name="swiv - side 2 (dro soft).tzx" size="63988" crc="392366a8" sha1="83966037d5e4989e6cedf1a94d160c36581ef8c9"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="swivb" cloneof="swiv">
+		<description>SWIV (Kixx)</description>
+		<year>1991</year>
+		<publisher>Kixx</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="81308">
+				<rom name="swiv (kixx) - side a.tzx" size="81308" crc="6be68de2" sha1="bae2f1873eeed2a8a855a9b27e2679d46f27ff87"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="63819">
+				<rom name="swiv (kixx) - side b.tzx" size="63819" crc="db02847e" sha1="7db45e56eb9e6effd2b046ba2927e6a7ff82912c"/>
 			</dataarea>
 		</part>
 	</software>
@@ -131022,17 +131296,6 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="taucetir">
-		<description>Tau Ceti (Ricochet)</description>
-		<year>1985</year>
-		<publisher>Ricochet</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="47741">
-				<rom name="tau ceti (ricochet).tzx" size="47741" crc="05973bd3" sha1="497fc19a2d26363c36cdc16686a1c8199554115e"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<software name="taucetis">
 		<description>Tau Ceti - Special Edition</description>
 		<year>1987</year>
@@ -131051,6 +131314,17 @@ license:CC0
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="49796">
 				<rom name="tau ceti.tzx" size="49796" crc="50375131" sha1="e88b677151c5987e76a097ac820d45ea71f6bfd6"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="taucetia" cloneof="tauceti">
+		<description>Tau Ceti (Ricochet)</description>
+		<year>1985</year>
+		<publisher>Ricochet</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="47741">
+				<rom name="tau ceti (ricochet).tzx" size="47741" crc="05973bd3" sha1="497fc19a2d26363c36cdc16686a1c8199554115e"/>
 			</dataarea>
 		</part>
 	</software>
@@ -131692,6 +131966,17 @@ license:CC0
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48668">
 				<rom name="terrormolinos.tzx" size="48668" crc="7578d0bd" sha1="ddb621b7fe6505ad900e17c721ac6833d0ad2bac"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="terrormoa" cloneof="terrormo">
+		<description>Terrormolinos! (Aackosoft)</description>
+		<year>1985</year>
+		<publisher>Aackosoft</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="48668">
+				<rom name="terrormolinos (aackosoft).tzx" size="48668" crc="65ddb5b0" sha1="f20557a6d5a7868eb14c5ecad247490e18c359bc"/>
 			</dataarea>
 		</part>
 	</software>
@@ -134629,7 +134914,7 @@ license:CC0
 	<software name="towerofe">
 		<description>Tower Of Evil (Alternative)</description>
 		<year>1984</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="19692">
 				<rom name="tower of evil (alternative).tzx" size="19692" crc="36185a98" sha1="970fc4b3b1b9c0faf7950680f57d0affea1f9762"/>
@@ -136109,7 +136394,7 @@ license:CC0
 	<software name="turbobik">
 		<description>Turbo Bike (Alternative)</description>
 		<year>1988</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="49006">
 				<rom name="turbo bike (alternative).tzx" size="49006" crc="76c74ce2" sha1="594e7acad8fbe51f6372bf58910da90284b8672d"/>
@@ -136867,7 +137152,7 @@ license:CC0
 	<software name="usbasket">
 		<description>U.S. Basket Master (Alternative)</description>
 		<year>1988</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47400">
 				<rom name="u.s. basket master (alternative).tzx" size="47400" crc="58a62f9e" sha1="86a982220c039c2e9223f5685b0dc83867e409bc"/>
@@ -136876,23 +137161,34 @@ license:CC0
 	</software>
 
 	<software name="uchimata">
-		<description>Uchi-Mata (Alternative)</description>
+		<description>Uchi-Mata</description>
 		<year>1987</year>
 		<publisher>Martech Games</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="53180">
-				<rom name="uchi-mata (alternative).tzx" size="53180" crc="fccf65fb" sha1="5dc67fe0d8f3254f9cd25c298dc3a77b798cf5b6"/>
+				<rom name="uchi-mata.tzx" size="53180" crc="fccf65fb" sha1="5dc67fe0d8f3254f9cd25c298dc3a77b798cf5b6"/>
 			</dataarea>
 		</part>
 	</software>
 
-	<software name="uchimata_a" cloneof="uchimata">
+	<software name="uchimataa" cloneof="uchimata">
 		<description>Uchi-Mata (Erbe)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1987</year>
+		<publisher>Erbe Software</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="51167">
-				<rom name="uchi-mata (erbe).tzx" size="51167" crc="5afc6ede" sha1="c22f4e5b19d36009ecf3d5aec3b5f3f12457bc9d"/>
+			<dataarea name="cass" size="51277">
+				<rom name="uchi-mata (erbe).tzx" size="51277" crc="9bfdfb87" sha1="fb374f9c8ed46ddcc9c6f449da8d9dc036b0b5c7"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="uchimatab" cloneof="uchimata">
+		<description>Uchi-Mata (IBSA/Erbe, serie leyenda)</description>
+		<year>1988</year>
+		<publisher>IBSA/Erbe Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="51207">
+				<rom name="uchi-mata (erbe - serie leyenda).tzx" size="51207" crc="a910fd0a" sha1="6be3055fc4bc17b13564cbd95f2815cb27410207"/>
 			</dataarea>
 		</part>
 	</software>
@@ -139422,7 +139718,7 @@ license:CC0
 	<software name="thewombl">
 		<description>The Wombles (Alternative)</description>
 		<year>1990</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48075">
 				<rom name="the wombles (alternative).tzx" size="48075" crc="6db1234a" sha1="710c3d03a695067dc8cbafcaa0a8b9a88c17ebfc"/>
@@ -140440,7 +140736,7 @@ license:CC0
 	<software name="wheeliea">
 		<description>Wheelie (Alternative)</description>
 		<year>1988</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="46753">
 				<rom name="wheelie (alternative).tzx" size="46753" crc="7ea1b042" sha1="ffe44d552d08b784dc3065efc2a4b54cc13609f7"/>
@@ -140711,7 +141007,7 @@ license:CC0
 	<software name="whodares">
 		<description>Who Dares Wins II (Alternative)</description>
 		<year>1986</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="41723">
 				<rom name="who dares wins ii (alternative).tzx" size="41723" crc="08dfde31" sha1="8316cc56ef942d271cc8a22ad48eec787483f278"/>
@@ -141242,7 +141538,7 @@ license:CC0
 	<software name="wizbizal">
 		<description>Wiz-Biz (set 2)</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="41149">
 				<rom name="wiz-biz - alternate.tzx" size="41149" crc="b42aaa10" sha1="adae7c5717c9e78ede17f570d7b3253fc00efdbc"/>
@@ -141253,7 +141549,7 @@ license:CC0
 	<software name="wizbiz">
 		<description>Wiz-Biz</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="41279">
 				<rom name="wiz-biz.tzx" size="41279" crc="fe59b32b" sha1="687c473cffd0f6456d4016daa31882bf42ece2ed"/>
@@ -141420,7 +141716,18 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="wizballe">
+	<software name="wizball">
+		<description>Wizball</description>
+		<year>1987</year>
+		<publisher>Ocean</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="55569">
+				<rom name="wizball.tzx" size="55569" crc="4ec494fc" sha1="c6bdbeb1c3c940815dc53459f99ad888b1799827"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="wizballa" cloneof="wizball">
 		<description>Wizball (EDOS)</description>
 		<year>1989</year>
 		<publisher>EDOS</publisher>
@@ -141431,35 +141738,35 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="wizballe_a" cloneof="wizballe">
-		<description>Wizball (Erbe)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="wizballb" cloneof="wizball">
+		<description>Wizball (Erbe Software)</description>
+		<year>1987</year>
+		<publisher>Erbe Software</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="54883">
-				<rom name="wizball (erbe).tzx" size="54883" crc="ef4ff8e9" sha1="16d0c37023882fdb31336a92ba6784df3a73a1dc"/>
+			<dataarea name="cass" size="57315">
+				<rom name="wizball (erbe).tzx" size="57315" crc="7899030a" sha1="38d4dfb1ee986d3711a026ae5e599e59d3999ccf"/>
 			</dataarea>
 		</part>
 	</software>
 
-	<software name="wizballt">
+	<software name="wizballc" cloneof="wizball">
+		<description>Wizball (IBSA)</description>
+		<year>1987</year>
+		<publisher>IBSA</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="57323">
+				<rom name="wizball (erbe - the hit squad).tzx" size="57323" crc="9bdcbf00" sha1="a382f787a30df4f7fc0018fb5c88987d7673d532"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="wizballd" cloneof="wizball">
 		<description>Wizball (The Hit Squad)</description>
 		<year>1989</year>
 		<publisher>The Hit Squad</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="54828">
 				<rom name="wizball (the hit squad).tzx" size="54828" crc="b1e40aec" sha1="af770356f4488d44ca733c0f1b352e819c7b48cc"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="wizball">
-		<description>Wizball</description>
-		<year>1987</year>
-		<publisher>Ocean</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="55569">
-				<rom name="wizball.tzx" size="55569" crc="4ec494fc" sha1="c6bdbeb1c3c940815dc53459f99ad888b1799827"/>
 			</dataarea>
 		</part>
 	</software>
@@ -143338,7 +143645,7 @@ license:CC0
 	<software name="yetialte">
 		<description>Yeti (Alternative)</description>
 		<year>1988</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="46763">
 				<rom name="yeti (alternative).tzx" size="46763" crc="223c83d4" sha1="b093b172410b6b9c0c023a970ee18be3e012c020"/>
@@ -144810,7 +145117,7 @@ license:CC0
 	<software name="4mostact">
 		<description>4 Most Action (set 2)</description>
 		<year>1991</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="103166">
 				<rom name="4 most action - alternate - side 1.tzx" size="103166" crc="963e124d" sha1="ea06f536287177c8fc0e113bfab1932481a175f9"/>
@@ -144842,7 +145149,7 @@ license:CC0
 	<software name="4mostadv">
 		<description>4 Most Adventures</description>
 		<year>1990</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="82643">
 				<rom name="4 most adventures - side 1.tzx" size="82643" crc="cd095236" sha1="461f8c6c00a0785ec615b2a48936c3ff0afc1ccd"/>
@@ -144858,7 +145165,7 @@ license:CC0
 	<software name="4mostair">
 		<description>4 Most Airpower</description>
 		<year>1991</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="123122">
 				<rom name="4 most airpower - side a.tzx" size="123122" crc="478e4c16" sha1="890907630188dbf8e8874d59fcf2111d61d58d67"/>
@@ -144874,7 +145181,7 @@ license:CC0
 	<software name="4mostbal">
 		<description>4 Most Balls, Boots &amp; Brains</description>
 		<year>1992</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="89471">
 				<rom name="4 most balls, boots _ brains - side a.tzx" size="89471" crc="edd654df" sha1="5addcf64241cc12b95330203219de5684951abbe"/>
@@ -144890,7 +145197,7 @@ license:CC0
 	<software name="4mostbig">
 		<description>4 Most Big Hits</description>
 		<year>1992</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="96002">
 				<rom name="4 most big hits - side 1.tzx" size="96002" crc="8730ed7c" sha1="7160c033b1cff789885165b2f62452ac82e1a500"/>
@@ -144906,7 +145213,7 @@ license:CC0
 	<software name="4mostcut">
 		<description>4 Most Cute</description>
 		<year>1991</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="89789">
 				<rom name="4 most cute - side a.tzx" size="89789" crc="8029b539" sha1="6ae4318cbdb0ce7646a2ddf6f4bb2b85abf03bd3"/>
@@ -144922,7 +145229,7 @@ license:CC0
 	<software name="4mostfig">
 		<description>4 Most Fight &amp; Fright</description>
 		<year>1991</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="234613">
 				<rom name="4 most fight _ fright - side 1.tzx" size="234613" crc="54094357" sha1="c789d69c8bf786dce3290e941e7fd10c4c290f33"/>
@@ -144938,7 +145245,7 @@ license:CC0
 	<software name="4mostfun">
 		<description>4 Most Fun</description>
 		<year>1991</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="80085">
 				<rom name="4 most fun - side 1.tzx" size="80085" crc="d2ce7494" sha1="a6e8fa9d836319b34f90d68b790fee6a77bb1e39"/>
@@ -144954,7 +145261,7 @@ license:CC0
 	<software name="4mosthor">
 		<description>4 Most Horrors</description>
 		<year>1991</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="112708">
 				<rom name="4 most horrors - side 1.tzx" size="112708" crc="c250aa83" sha1="f4c235c40c30c128f71720e6edba52551bbdecd3"/>
@@ -144970,7 +145277,7 @@ license:CC0
 	<software name="4mostmeg">
 		<description>4 Most Megaheros</description>
 		<year>1991</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="181431">
 				<rom name="4 most megaheros - side a.tzx" size="181431" crc="805f4c80" sha1="4aa95dde6cfdcf82df90d6a334fe86429fb96ac0"/>
@@ -144986,7 +145293,7 @@ license:CC0
 	<software name="4mostspe">
 		<description>4 Most Speedstunts</description>
 		<year>1991</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="132580">
 				<rom name="4 most speedstunts - side 1.tzx" size="132580" crc="8433d19d" sha1="4d2f9f8c89ffaf620cff399772e6cc110b5d2691"/>
@@ -145002,7 +145309,7 @@ license:CC0
 	<software name="4mostspo">
 		<description>4 Most Sport</description>
 		<year>1991</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="87561">
 				<rom name="4 most sport - side 1.tzx" size="87561" crc="12b7fa64" sha1="79577eb849a354bcdf16fb07d52908aa07475e3f"/>
@@ -145050,7 +145357,7 @@ license:CC0
 	<software name="4mosttop">
 		<description>4 Most Toppers</description>
 		<year>1992</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="130265">
 				<rom name="4 most toppers - side a.tzx" size="130265" crc="c6c83761" sha1="b6b29dc699daff14df0b59584ea298fdd0cb4968"/>
@@ -145066,7 +145373,7 @@ license:CC0
 	<software name="4mostwar">
 		<description>4 Most War Zone</description>
 		<year>1991</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="198277">
 				<rom name="4 most war zone - side a.tzx" size="198277" crc="c22e6a36" sha1="d02d0d33d6bd7475876492019817c37ba62f7f4c"/>
@@ -145082,7 +145389,7 @@ license:CC0
 	<software name="4mostwor">
 		<description>4 Most World Sport</description>
 		<year>1991</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="82247">
 				<rom name="4 most world sport - side a.tzx" size="82247" crc="23d55b8b" sha1="f365e2b5761a29d85579e2753b38a2dc8b146322"/>
@@ -145114,7 +145421,7 @@ license:CC0
 	<software name="carcad3">
 		<description>Classic Arcadia 3</description>
 		<year>1992</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="67290">
 				<rom name="classic arcadia 3 - side 1.tzx" size="67290" crc="fc5e68a8" sha1="e0e8ade00ec21f155b77fd79258e0f4c4bce7f17"/>
@@ -145385,7 +145692,7 @@ license:CC0
 	<software name="thepopey">
 		<description>The Popeye Collection</description>
 		<year>1992</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="35032">
 				<rom name="the popeye collection - tape 1.tzx" size="35032" crc="08681020" sha1="6b159aadfdaaccfa7ed129e142fb3470914ce16e"/>
@@ -145411,7 +145718,7 @@ license:CC0
 	<software name="thepostm">
 		<description>The Postman Pat Hit Collection</description>
 		<year>1992</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="54359">
 				<rom name="the postman pat hit collection - tape 1.tzx" size="54359" crc="f5e3527b" sha1="f382c209f2fe39c0d416566ed3612e5bf7f78248"/>
@@ -145495,7 +145802,7 @@ license:CC0
 	<software name="triplede">
 		<description>Triple Decker 2</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="97677">
 				<rom name="triple decker 2.tzx" size="97677" crc="f620d632" sha1="f65be7aa4cb5c3f16014f285d60e77e02d64e609"/>
@@ -151733,7 +152040,7 @@ license:CC0
 	<software name="ginormou">
 		<description>Ginormous Collection</description>
 		<year>1992</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="29066">
 				<rom name="ginormous collection - tape 01 - rugby boss.tzx" size="29066" crc="771f28f5" sha1="6b527897b18153a7b33a08f703ad53bcf8d30de9"/>
@@ -151895,7 +152202,7 @@ license:CC0
 	</software>
 
 	<software name="goldsilv">
-		<description>Gold Silver Bronze</description>
+		<description>Gold, Silver, Bronze</description>
 		<year>1988</year>
 		<publisher>U.S. Gold</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -152652,7 +152959,7 @@ license:CC0
 	<software name="iasb">
 		<description>Ice Attack &amp; Star Buster</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="6021">
 				<rom name="ice attack _ star buster - ice attack.tzx" size="6021" crc="38b27736" sha1="780bf5ceffbf5eb5c2f5a110a8ada233750b5cba"/>
@@ -158278,7 +158585,7 @@ license:CC0
 	<software name="sf40sfh">
 		<description>Spitfire 40 &amp; Strike Force Harrier</description>
 		<year>1992</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="45536">
 				<rom name="spitfire _40_ _ strike force harrier - spitfire _40_.tzx" size="45536" crc="cae06c09" sha1="d36529bb6c557e2a764f292dc7c9afd161745aff"/>
@@ -158347,7 +158654,7 @@ license:CC0
 	<software name="stgctri">
 		<description>Stage Coach Triple Decker</description>
 		<year>1987</year>
-		<publisher>Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="123089">
 				<rom name="stage coach triple decker.tzx" size="123089" crc="016e705d" sha1="b6bf8db15ddb9007df0725fb1837abed9303298e"/>
