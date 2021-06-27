@@ -38680,7 +38680,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="abusimbe_d" cloneof="abusimbe">
 		<description>Abu Simbel Profanation (small case, alt)</description>
 		<year>1985</year>
@@ -104956,7 +104956,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="pacmaniaa" cloneof="pacmania">
 		<description>Pac-Mania (MCM)</description>
 		<year>1988</year>
