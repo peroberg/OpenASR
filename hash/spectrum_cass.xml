@@ -137183,7 +137183,7 @@ license:CC0
 	</software>
 
 	<software name="uchimatab" cloneof="uchimata">
-		<description>Uchi-Mata (IBSA/Erbe, serie leyenda)</description>
+		<description>Uchi-Mata (IBSA/Erbe, Serie Leyenda)</description>
 		<year>1988</year>
 		<publisher>IBSA/Erbe Software</publisher>
 		<part name="cass" interface="spectrum_cass">
