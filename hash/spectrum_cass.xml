@@ -12868,7 +12868,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="horctowra" cloneof="horctowr">
 		<description>Horace Goes To The Tower (TAP tape image)</description>
 		<year>2011</year>
@@ -47359,7 +47359,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="bombjack2a" cloneof="bombjack2">
 		<description>Bomb Jack II (pre-production)</description>
 		<year>1987</year>
@@ -88553,7 +88553,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="lasersqexp">
 		<description>Laser Squad - Expansion Kit One</description>
 		<year>1988</year>
