@@ -119601,7 +119601,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="sservicea" cloneof="sservice">
 		<description>Silent Service (Erbe)</description>
 		<year>1987</year>
