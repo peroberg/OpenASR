@@ -2011,7 +2011,7 @@ license:CC0
 	</software>
 
 	<software name="svc_ngpc">
-		<description>SNK Vs. Capcom (Neo Geo Pocker Color)</description>
+		<description>SNK Vs. Capcom (Neo Geo Pocket Color)</description>
 		<year>1999</year>
 		<publisher>SNK</publisher>
 		<info name="cores" value="T6W28"/>
@@ -5374,8 +5374,8 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="bldwolf_pcx">
-		<description>Bloody Wolf (PCX)</description>
+	<software name="bldwolf">
+		<description>Bloody Wolf (Arcade)</description>
 		<year>1988</year>
 		<publisher>Data East</publisher>
 		<info name="cores" value="HuC6280 (BGM), YM2203 (SE)"/>
@@ -168547,7 +168547,7 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="dizzyvsp_9821">
+	<software name="starfire_98">
 		<description>Starfire (NEC PC-9801, PC-9821)</description>
 		<year>1994</year>
 		<publisher>Starcraft</publisher>
@@ -182586,7 +182586,7 @@ license:CC0
 		<description>4D Boxing (IBM PC XT AT)</description>
 		<year>1991</year>
 		<publisher>Electronic Arts</publisher>
-		<info name="cores" value="YM3812,"/>
+		<info name="cores" value="YM3812, Sound Blaster DAC"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="15051">
@@ -182617,7 +182617,7 @@ license:CC0
 		<description>4D Boxing (Tandy 1000 SL TL RL)</description>
 		<year>1991</year>
 		<publisher>Electronic Arts</publisher>
-		<info name="cores" value="NCR7496,"/>
+		<info name="cores" value="NCR7496, Tandy DAC, PC Speaker"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="13531">
