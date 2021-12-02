@@ -10,7 +10,7 @@ license:CC0
 
     Most of the multi-side / multi-disk games will need sorting into a proper order!
 
-    I believe most of the dumps are good, but many fail in MESS due to inadequate emulation, some of the protection routines are quite fussy.
+    I believe most of the dumps are good, but many fail in MAME due to inadequate emulation, some of the protection routines are quite fussy.
     In cases where games fail to operate try the pirate versions (which in current convention are those not tagged with [Original] )
 
     Loading Instructions:
