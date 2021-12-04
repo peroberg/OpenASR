@@ -267452,7 +267452,7 @@ license:CC0
 
 	<software name="bugslife_md">
 		<description>A Bug's Life (GEN/MD)</description>
-		<year>199?</year>
+		<year>2000</year>
 		<publisher>unknown</publisher>
 		<info name="cores" value="YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -271749,7 +271749,7 @@ license:CC0
 
 	<software name="smgp2u_md">
 		<description>Ayrton Senna's Super Monaco GP II (GEN/MD)</description>
-		<year>19??</year>
+		<year>1992</year>
 		<publisher>Sega</publisher>
 		<info name="cores" value="SN76496, YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -272791,7 +272791,7 @@ license:CC0
 
 	<software name="btlmania_md">
 		<description>Battle Mania (Trouble Shooter) (GEN/MD)</description>
-		<year>19??</year>
+		<year>1992</year>
 		<publisher>Studio Uchoo Tetsujin</publisher>
 		<info name="cores" value="YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -274255,7 +274255,7 @@ license:CC0
 
 	<software name="btomato_md">
 		<description>Bill's Tomato Game (GEN/MD)</description>
-		<year>199?</year>
+		<year>1994</year>
 		<publisher>Sega</publisher>
 		<info name="cores" value="YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -275686,7 +275686,7 @@ license:CC0
 
 	<software name="barver_md">
 		<description>Brave Battle Saga (GEN/MD)</description>
-		<year>199?</year>
+		<year>1996</year>
 		<publisher>ChuanPu Technology Co.,Ltd.</publisher>
 		<info name="cores" value="YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -279417,7 +279417,7 @@ license:CC0
 
 	<software name="tunshi_md">
 		<description>Conquering the World III (GEN/MD)</description>
-		<year>199?</year>
+		<year>1997</year>
 		<publisher>SKOB</publisher>
 		<info name="cores" value="YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -281107,7 +281107,7 @@ license:CC0
 
 	<software name="dahnak_md">
 		<description>Dahna Megami Tanjou (GEN/MD)</description>
-		<year>199?</year>
+		<year>1992</year>
 		<publisher>IGS</publisher>
 		<info name="cores" value="SN76496, YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -283411,7 +283411,7 @@ license:CC0
 
 	<software name="domino_md">
 		<description>Domino (GEN/MD)</description>
-		<year>199?</year>
+		<year>2000</year>
 		<publisher>New Game</publisher>
 		<info name="cores" value="SN76496, YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -288505,7 +288505,7 @@ license:CC0
 
 	<software name="fatfury_md">
 		<description>Fatal Fury (GEN/MD)</description>
-		<year>19??</year>
+		<year>1993</year>
 		<publisher>Sega / SNK / Takara</publisher>
 		<info name="cores" value="SN76496, YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -289447,7 +289447,7 @@ license:CC0
 
 	<software name="funcar_md">
 		<description>Fun Car Rally (Beta) (GEN/MD)</description>
-		<year>199?</year>
+		<year>1993</year>
 		<publisher>Unknown</publisher>
 		<info name="cores" value="SN76496, YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -290367,7 +290367,7 @@ license:CC0
 
 	<software name="gamenko_md">
 		<description>Game no Kandzume Otokuyou (GEN/MD)</description>
-		<year>199?</year>
+		<year>1995</year>
 		<publisher>Sega</publisher>
 		<info name="cores" value="SN76496, YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -295042,7 +295042,7 @@ license:CC0
 
 	<software name="jimpower_md">
 		<description>Jim Power - The Arcade Game (GEN/MD)</description>
-		<year>199?</year>
+		<year>1994</year>
 		<publisher>Loricel</publisher>
 		<info name="cores" value="SN76496, YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -299081,7 +299081,7 @@ license:CC0
 
 	<software name="madoumon_md">
 		<description>Madou Monogatari I (GEN/MD)</description>
-		<year>19??</year>
+		<year>1996</year>
 		<publisher>Compile / LMS Music</publisher>
 		<info name="cores" value="SN76496, YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -299310,7 +299310,7 @@ license:CC0
 
 	<software name="xiaomo_md">
 		<description>Magic Girl (GEN/MD)</description>
-		<year>199?</year>
+		<year>1993</year>
 		<publisher>Gamtec</publisher>
 		<info name="cores" value="SN76496, YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -301210,7 +301210,7 @@ license:CC0
 
 	<software name="meganser_md">
 		<description>Mega Anser (GEN/MD)</description>
-		<year>199?</year>
+		<year>1989</year>
 		<publisher>Sega</publisher>
 		<info name="cores" value="SN76496, YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -301271,7 +301271,7 @@ license:CC0
 
 	<software name="megabm8_md">
 		<description>Mega Bomberman Demo (GEN/MD)</description>
-		<year>199?</year>
+		<year>1994</year>
 		<publisher>Factor 5/ Hudson Soft</publisher>
 		<info name="cores" value="SN76496, YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -303197,7 +303197,7 @@ license:CC0
 
 	<software name="micromc2_md">
 		<description>Micro Machines 2 - Turbo Tournament (GEN/MD)</description>
-		<year>19??</year>
+		<year>1994</year>
 		<publisher>Supersonic / Codemasters</publisher>
 		<info name="cores" value="YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -311106,7 +311106,7 @@ license:CC0
 
 	<software name="pokemon2_md">
 		<description>Pocket Monster 2 (GEN/MD)</description>
-		<year>199?</year>
+		<year>2001</year>
 		<publisher>Unknown</publisher>
 		<info name="cores" value="YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -314195,7 +314195,7 @@ license:CC0
 
 	<software name="resq_md">
 		<description>ResQ (GEN/MD)</description>
-		<year>199?</year>
+		<year>1994</year>
 		<publisher>Psygnosis / Tempest</publisher>
 		<info name="cores" value="YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -317012,7 +317012,7 @@ license:CC0
 
 	<software name="segachnl_md">
 		<description>Sega Channel (Demo Cartridge #4) (GEN/MD)</description>
-		<year>199?</year>
+		<year>1994</year>
 		<publisher>Sega</publisher>
 		<info name="cores" value="SN76496"/>
 		<part name="001" interface="vgm_quik">
@@ -320919,7 +320919,7 @@ license:CC0
 
 	<software name="scrack_md">
 		<description>Sonic Crackers (GEN/MD)</description>
-		<year>199?</year>
+		<year>1994</year>
 		<publisher>Sega</publisher>
 		<info name="cores" value="SN76496, YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -323712,7 +323712,7 @@ license:CC0
 
 	<software name="squirrel_md">
 		<description>Squirrel King (Super Mario World) (GEN/MD)</description>
-		<year>199?</year>
+		<year>1995</year>
 		<publisher>Unknown</publisher>
 		<info name="cores" value="SN76496, YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -324476,7 +324476,7 @@ license:CC0
 
 	<software name="sf2pir_md">
 		<description>Street Fighter II Turbo (Beta) (GEN/MD)</description>
-		<year>1993?</year>
+		<year>1994</year>
 		<publisher>Capcom</publisher>
 		<info name="cores" value="SN76496, YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -326409,7 +326409,7 @@ license:CC0
 
 	<software name="suprbubl_md">
 		<description>Super Bubble Bobble MD (GEN/MD)</description>
-		<year>199?</year>
+		<year>1995</year>
 		<publisher>Unknown</publisher>
 		<info name="cores" value="SN76496, YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -327173,7 +327173,7 @@ license:CC0
 
 	<software name="smario2_md">
 		<description>Super Mario 2 1998 (Sonic Jam 6) (GEN/MD)</description>
-		<year>199?</year>
+		<year>1998</year>
 		<publisher>Unknown Pirate Group</publisher>
 		<info name="cores" value="SN76496, YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -329093,7 +329093,7 @@ license:CC0
 
 	<software name="tecmocup_md">
 		<description>Tecmo Cup Football Game (GEN/MD)</description>
-		<year>199?</year>
+		<year>1993</year>
 		<publisher>Sega(Unreleased)</publisher>
 		<info name="cores" value="SN76496, YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -332430,7 +332430,7 @@ license:CC0
 
 	<software name="lionkin2_md">
 		<description>The Lion King II (GEN/MD)</description>
-		<year>199?</year>
+		<year>1996</year>
 		<publisher>Unknown</publisher>
 		<info name="cores" value="SN76496, YM2612"/>
 		<part name="001" interface="vgm_quik">
@@ -354695,7 +354695,7 @@ license:CC0
 
 	<software name="greatbasj_sms">
 		<description>Great Baseball Card (SMS)</description>
-		<year>19??</year>
+		<year>1987</year>
 		<publisher>Sega</publisher>
 		<info name="cores" value="SN76496"/>
 		<part name="001" interface="vgm_quik">
@@ -358093,7 +358093,7 @@ license:CC0
 
 	<software name="missil3d_sms">
 		<description>Missile Defense 3-D (SMS)</description>
-		<year>19??</year>
+		<year>1987</year>
 		<publisher>Sega</publisher>
 		<info name="cores" value="SN76496"/>
 		<part name="001" interface="vgm_quik">
@@ -363847,7 +363847,7 @@ license:CC0
 
 	<software name="sonicedu_sms">
 		<description>Sonics Edusoft (SMS)</description>
-		<year>19??</year>
+		<year>1991</year>
 		<publisher>Sega</publisher>
 		<info name="cores" value="SN76496"/>
 		<part name="001" interface="vgm_quik">
@@ -366133,7 +366133,7 @@ license:CC0
 
 	<software name="suprbskt_smsfm">
 		<description>Super Basketball (SMS-FM)</description>
-		<year>1989?</year>
+		<year>1990</year>
 		<publisher>Sega</publisher>
 		<info name="cores" value="YM2413"/>
 		<part name="001" interface="vgm_quik">
@@ -366146,7 +366146,7 @@ license:CC0
 
 	<software name="suprbskt_sms">
 		<description>Super Basketball (SMS-PSG)</description>
-		<year>1989?</year>
+		<year>1990</year>
 		<publisher>Sega</publisher>
 		<info name="cores" value="SN76496"/>
 		<part name="001" interface="vgm_quik">
@@ -366574,7 +366574,7 @@ license:CC0
 
 	<software name="stetris_gg">
 		<description>Super Tetris (GG)</description>
-		<year>19??</year>
+		<year>199?</year>
 		<publisher>Unknown</publisher>
 		<info name="cores" value="SuperTetris"/>
 		<part name="001" interface="vgm_quik">
@@ -367333,7 +367333,7 @@ license:CC0
 
 	<software name="tblade_sms">
 		<description>Thunder Blade (SMS-PSG)</description>
-		<year>19??</year>
+		<year>1988</year>
 		<publisher>Sega</publisher>
 		<info name="cores" value="SN76496"/>
 		<part name="001" interface="vgm_quik">
