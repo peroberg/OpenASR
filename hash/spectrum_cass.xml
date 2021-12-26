@@ -43610,7 +43610,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="avengere" cloneof="avenger">
 		<description>Avenger (1986, Gremlin) (set 2, small case, Erbe Serie Leyenda)</description>
 		<year>1988</year>
@@ -43620,7 +43620,7 @@ license:CC0
 				<rom name="avenger - small case (erbe - serie leyenda).tzx" size="55271" crc="9dadcd5b" sha1="4ed632686667f63d626c85377f0a9c24b56d16df"/>
 			</dataarea>
 		</part>
-	</software>	
+	</software>
 
 	<software name="avengerk" cloneof="avenger">
 		<description>Avenger (1986, Gremlin) (set 3, Kixx)</description>
@@ -43660,7 +43660,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="avoira" cloneof="avoir">
 		<description>Avoir (set 2)</description>
 		<year>1985</year>
@@ -44452,28 +44452,28 @@ license:CC0
 		<description>Backpackers Guide To The Universe</description>
 		<year>1984</year>
 		<publisher>Fantasy Software</publisher>
-		<part name="cass1" interface="spectrum_cass">	
+		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="49592">
 				<rom name="backpackers guide to the universe.tzx" size="49592" crc="fa1fd170" sha1="2c6880c60d5ba204eed1efa28573513b90b4da9e"/>
 			</dataarea>
 		</part>
-		<part name="cass2" interface="spectrum_cass">	
+		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="44009">
 				<rom name="backpackers guide to the universe - the guide.tzx" size="44009" crc="d4513590" sha1="0ded85a356020d7692151c3b7d9ea0497c7ad1a9"/>
 			</dataarea>
-		</part>	
+		</part>
 	</software>
 
 	<software name="backpackp" cloneof="backpack"> <!-- Manual copy protection -->
 		<description>Backpackers Guide To The Universe (Paxman)</description>
 		<year>1984</year>
 		<publisher>Paxman Promotions</publisher>
-		<part name="cass1" interface="spectrum_cass">	
+		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="49592">
 				<rom name="backpackers guide to the universe (paxman).tzx" size="49592" crc="92c834bf" sha1="c5d734b21c12be041dce1fddae6471049ca82cb6"/>
 			</dataarea>
 		</part>
-		<part name="cass2" interface="spectrum_cass">	
+		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="44009">
 				<rom name="backpackers guide to the universe - the guide (paxman).tzx" size="44009" crc="be487e4d" sha1="11be613c4aae88695de10d4d52f8d914eeed7d52"/>
 			</dataarea>
@@ -65253,7 +65253,7 @@ license:CC0
 	</software>
 
 	<!-- not the same as the above game -->
-	<software name="electnm"> 
+	<software name="electnm">
 		<description>Election (1984, Mastertronic)</description>
 		<year>1984</year>
 		<publisher>Mastertronic</publisher>
@@ -92612,7 +92612,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="flunky">
 		<description>Flunky</description>
 		<year>1987</year>
@@ -92623,7 +92623,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="madflunk" cloneof="flunky"> <!-- box art was changed to 'Mad Flunky' game title was not updated -->
 		<description>Mad Flunky (set 1, Alternative)</description>
 		<year>1987</year>
@@ -92776,7 +92776,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<!-- some versions had Mad Mix Game on the box -->
 	<software name="madmixa" cloneof="madmix">
 		<description>Mad Mix Game (set 1, Spanish, SLS 208)</description>
@@ -92810,8 +92810,8 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
-	
+
+
 
 	<software name="madnurse">
 		<description>Mad Nurse</description>
@@ -92840,7 +92840,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="madcapa" cloneof="madcap">
 		<description>Madcap Manor (set 2, bugfix)</description>
 		<year>1985</year>
@@ -92856,7 +92856,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 
 	<software name="madhatte">
 		<description>Madhatter</description>
@@ -96060,7 +96060,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<!-- not the same as the above game -->
 	<software name="meteorhv">
 		<description>Meteor (1983, Hofacker Verlag)</description>
@@ -97561,7 +97561,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 
 	<!-- not the same game as above -->
 	<software name="momega">
@@ -98180,7 +98180,7 @@ license:CC0
 				<rom name="moons of tantalus - program.tzx" size="42408" crc="4c70fee5" sha1="ac02a7230b5a2ab0b5cbd663829c88c50e05017c"/>
 			</dataarea>
 		</part>
-	
+
 	</software>
 
 	<software name="moonscap">
@@ -109597,7 +109597,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="prohibita" cloneof="prohibit">
 		<description>Prohibition (set 2, Players)</description>
 		<year>1987</year>
@@ -109608,7 +109608,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 
 	<software name="projectf">
 		<description>Project Future (Currys)</description>
@@ -109716,7 +109716,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="pjstlthb" cloneof="pjstlth">
 		<description>Project Stealth Fighter (set 3, Kixx)</description>
 		<year>19??</year>
@@ -109742,7 +109742,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 
 	<software name="projecto">
 		<description>Projector 1</description>
@@ -135814,7 +135814,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 
 	<software name="tchncgld">
 		<description>Treble Chance Gold</description>
