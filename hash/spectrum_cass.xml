@@ -3701,7 +3701,7 @@ license:CC0
 	</software>
 
 	<software name="basil">
-		<description>Basil The Great Mouse Detective (set 1)</description>
+		<description>Basil The Great Mouse Detective</description>
 		<year>1987</year>
 		<publisher>Gremlin Graphics Software</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -3712,9 +3712,9 @@ license:CC0
 	</software>
 
 	<software name="basilera" cloneof="basil">
-		<description>Basil The Great Mouse Detective (set 2, Erbe - Serie Leyenda)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Basil The Great Mouse Detective (IBSA)</description>
+		<year>1987</year>
+		<publisher>IBSA</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="81546">
 				<rom name="basil the great mouse detective (erbe - serie leyenda).tzx" size="81546" crc="b43b343c" sha1="ab8f34b60aae546dda9c44ee5a91bbf398cf52ba"/>
@@ -3723,9 +3723,9 @@ license:CC0
 	</software>
 
 	<software name="basiler" cloneof="basil">
-		<description>Basil The Great Mouse Detective (set 3, Erbe)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Basil The Great Mouse Detective (Erbe)</description>
+		<year>1987</year>
+		<publisher>Erbe Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="78599">
 				<rom name="basil the great mouse detective (erbe).tzx" size="78599" crc="a4cff544" sha1="cf6f19e4be26e7a0b37af7898c39f3380820780e"/>
@@ -3733,8 +3733,8 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="basilthe">
-		<description>Basil The Great Mouse Detective (set 4)</description>
+	<software name="basilthe" cloneof="basil">
+		<description>Basil The Great Mouse Detective (alt)</description>
 		<year>1987</year>
 		<publisher>Gremlin Graphics Software</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -3745,7 +3745,7 @@ license:CC0
 	</software>
 
 	<software name="batmov">
-		<description>Batman - The Movie (set 1)</description>
+		<description>Batman - The Movie</description>
 		<year>1989</year>
 		<publisher>Ocean</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -3756,9 +3756,9 @@ license:CC0
 	</software>
 
 	<software name="batmovhs" cloneof="batmov">
-		<description>Batman - The Movie (set 2, The Hit Squad)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Batman - The Movie (The Hit Squad)</description>
+		<year>1991</year>
+		<publisher>The Hit Squad</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="125614">
 				<rom name="batman - the movie - side 1 (the hit squad).tzx" size="125614" crc="a7110b2b" sha1="6d694dfa63c8673265210db6bbe8c8ff24fa31e9"/>
@@ -3772,7 +3772,7 @@ license:CC0
 	</software>
 
 	<software name="batmova" cloneof="batmov">
-		<description>Batman - The Movie (set 3)</description>
+		<description>Batman - The Movie (alt)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -3782,8 +3782,35 @@ license:CC0
 		</part>
 	</software>
 
+	<software name="batmovb" cloneof="batmov">
+		<description>Batman - The Movie (Erbe, double case)</description>
+		<year>1989</year>
+		<publisher>Erbe Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="225197">
+				<rom name="batman - the movie (erbe).tzx" size="225197" crc="a2da6c73" sha1="733a4adfde2457b4fc8f888fc4090f51adef016a"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="batmovc" cloneof="batmov">
+		<description>Batman - The Movie (IBSA)</description>
+		<year>1991</year>
+		<publisher>IBSA</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="121240">
+				<rom name="batman - the movie - side 1 (erbe - the hit squad).tzx" size="121240" crc="5be4e3ff" sha1="4373e6a9829d06dabefca7b49b6dc21d0f7f9205"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="103854">
+				<rom name="batman - the movie - side 2 (erbe - the hit squad).tzx" size="103854" crc="5f5ad8a2" sha1="4b6c3c6cdd76f0c7f4b26c9c6ea52b45438fef1b"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="batcape">
-		<description>Batman The Caped Crusader (set 1)</description>
+		<description>Batman: The Caped Crusader</description>
 		<year>1988</year>
 		<publisher>Ocean</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -3799,9 +3826,9 @@ license:CC0
 	</software>
 
 	<software name="batcapehs" cloneof="batcape">
-		<description>Batman The Caped Crusader (set 2, The Hit Squad)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Batman: The Caped Crusader (The Hit Squad)</description>
+		<year>1991</year>
+		<publisher>The Hit Squad</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="53368">
 				<rom name="batman the caped crusader - side 1 (the hit squad).tzx" size="53368" crc="ab4da1e7" sha1="748abc896da99ea355138f92f5293b6c135b65b5"/>
@@ -3815,9 +3842,9 @@ license:CC0
 	</software>
 
 	<software name="batcapeer" cloneof="batcape">
-		<description>Batman - El Super Heroe (Erbe)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Batman: El Super Heroe (Erbe)</description>
+		<year>1988</year>
+		<publisher>Erbe Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="47953">
 				<rom name="batman - el super heroe - side 1 (erbe).tzx" size="47953" crc="ffcc9a31" sha1="a865402b6801fe0f4390229d25190af81fdfc762"/>
@@ -27930,7 +27957,7 @@ license:CC0
 	</software>
 
 	<software name="unsquadr">
-		<description>UN Squadron</description>
+		<description>U.N. Squadron</description>
 		<year>1990</year>
 		<publisher>U.S. Gold</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -39794,7 +39821,7 @@ license:CC0
 	</software>
 
 	<software name="aftermat">
-		<description>Aftermath (Alternative) - Bugfix</description>
+		<description>Aftermath (Alternative, bugfix)</description>
 		<year>1988</year>
 		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -44797,8 +44824,8 @@ license:CC0
 
 	<software name="bargainb_a" cloneof="bargainb">
 		<description>Bargain Basement</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1986</year>
+		<publisher>Sparklers</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="40455">
 				<rom name="bargain basement.tzx" size="40455" crc="ef6e1164" sha1="f91eca4248d5fb24c261409b0cf8eded410509a6"/>
@@ -44818,9 +44845,9 @@ license:CC0
 	</software>
 
 	<software name="barmybur_a" cloneof="barmybur">
-		<description>Barmy Burgers</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Barmy Burgers (set 1)</description>
+		<year>1983</year>
+		<publisher>Blaby Computer Games</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="31219">
 				<rom name="barmy burgers.tzx" size="31219" crc="d621fe3a" sha1="beaa37bc5f2d65e2ce3e21af61ff3bf06b700078"/>
@@ -45271,11 +45298,10 @@ license:CC0
 		</part>
 	</software>
 
-
 	<software name="bazam">
 		<description>Bazam</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1985</year>
+		<publisher>Alan Firminger</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="9947">
 				<rom name="bazam - side 1.tzx" size="9947" crc="2e1da80a" sha1="9e7426aab5241437c0d9775247e68f0d6328c6e8"/>
@@ -45494,7 +45520,7 @@ license:CC0
 	</software>
 
 	<software name="beatlequ">
-		<description>Beatle Quest - Bugfix</description>
+		<description>Beatle Quest (bugfix)</description>
 		<year>1985</year>
 		<publisher>Number 9</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -46154,7 +46180,7 @@ license:CC0
 	</software>
 
 	<software name="billybon">
-		<description>Billy Bong - Bugfix</description>
+		<description>Billy Bong (bugfix)</description>
 		<year>1984</year>
 		<publisher>MC Lothlorien</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -50581,6 +50607,17 @@ license:CC0
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="114877">
 				<rom name="carrier command.tzx" size="114877" crc="ec684a17" sha1="cf3d6d8b32ccbbfada0765b6e4de1e05baeaf6ed"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="casanova">
+		<description>Casanova</description>
+		<year>1989</year>
+		<publisher>Iber Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="48265">
+				<rom name="casanova.tzx" size="48265" crc="aa30e60b" sha1="91f535b9f48ff463ac79c0649adeb43e9bc79ed8"/>
 			</dataarea>
 		</part>
 	</software>
@@ -56772,7 +56809,7 @@ license:CC0
 	</software>
 
 	<software name="crusoebu">
-		<description>Crusoe - Bugfix</description>
+		<description>Crusoe (bugfix)</description>
 		<year>1984</year>
 		<publisher>Automata UK</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -62049,7 +62086,7 @@ license:CC0
 	</software>
 
 	<software name="dometrpc" cloneof="dometrp">
-		<description>Dome Trooper (set 4, v2, The Guild, +D Bugfix)</description>
+		<description>Dome Trooper (set 4, v2, The Guild, +D bugfix)</description>
 		<year>1986</year>
 		<publisher>Matand Software / The Guild</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -77138,7 +77175,7 @@ license:CC0
 
 
 	<software name="habilitb">
-		<description>Habilit - Bugfix</description>
+		<description>Habilit (bugfix)</description>
 		<year>1988</year>
 		<publisher>Iber</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -79526,7 +79563,7 @@ license:CC0
 	</software>
 
 	<software name="homicide_a" cloneof="homicide">
-		<description>Homicide Hotel - +D Bugfix (The Guild)</description>
+		<description>Homicide Hotel (+D bugfix) (The Guild)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -84595,7 +84632,7 @@ license:CC0
 	</software>
 
 	<software name="jetsetwi_ax" cloneof="jetsetwi">
-		<description>Jet Set Willy - Spectrum Computing - Bugfix</description>
+		<description>Jet Set Willy - Spectrum Computing (bugfix)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -102134,7 +102171,7 @@ license:CC0
 	</software>
 
 	<software name="ninjabug">
-		<description>Ninja - Bugfix</description>
+		<description>Ninja (bugfix)</description>
 		<year>1987</year>
 		<publisher>Entertainment USA</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -105351,7 +105388,7 @@ license:CC0
 	</software>
 
 	<software name="pakacuda">
-		<description>Pakacuda - Bugfix</description>
+		<description>Pakacuda (bugfix)</description>
 		<year>1983</year>
 		<publisher>Rabbit</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -111251,8 +111288,8 @@ license:CC0
 	</software>
 
 	<software name="quanntul">
-		<description>Quann-Tulla (GI Games)</description>
-		<year>1985</year>
+		<description>Quann-Tulla (G.I. Games)</description>
+		<year>1991</year>
 		<publisher>G.I. Games</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="43067">
@@ -111263,8 +111300,8 @@ license:CC0
 
 	<software name="quanntul_a" cloneof="quanntul">
 		<description>Quann-Tulla (set 3)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1984</year>
+		<publisher>8th Day Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="35324">
 				<rom name="quann-tulla - alternate #2.tzx" size="35324" crc="a2ab248b" sha1="d2a4635b1772db6c46ff023a9c1d81b3934a7939"/>
@@ -111274,8 +111311,8 @@ license:CC0
 
 	<software name="quanntul_b" cloneof="quanntul">
 		<description>Quann-Tulla (set 2)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1984</year>
+		<publisher>8th Day Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="34756">
 				<rom name="quann-tulla - alternate.tzx" size="34756" crc="19e051b2" sha1="2d0ce8931267ec6504b639d4c6e1c37efc24bcb5"/>
@@ -111284,9 +111321,9 @@ license:CC0
 	</software>
 
 	<software name="quanntul_c" cloneof="quanntul">
-		<description>Quann-Tulla</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Quann-Tulla (set 1)</description>
+		<year>1984</year>
+		<publisher>8th Day Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="41412">
 				<rom name="quann-tulla - side 1.tzx" size="41412" crc="ba9b42f2" sha1="8d9107b9a11f161c08ef10091aaac0341d2cefaa"/>
@@ -111295,6 +111332,38 @@ license:CC0
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="48037">
 				<rom name="quann-tulla - side 2.tzx" size="48037" crc="38b5cd3a" sha1="1e827c122a42f7bba4391c2f8e1c43dc9ee65a8f"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="quanntul_d" cloneof="quanntul">
+		<description>Quann-Tulla (release 1)</description>
+		<year>19??</year>
+		<publisher>8th Day Software</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="41412">
+				<rom name="quan-tulla - release 1 - side 1.tzx" size="41412" crc="0a3e8e64" sha1="d2c50d40e65aff301941a9f7b521b157c83b1586"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="15148">
+				<rom name="quan-tulla - release 1 - side 2.tzx" size="15148" crc="8e4d2879" sha1="b5282646b8c4ea414540427f48c0896ce1ba857d"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="quanntul_e" cloneof="quanntul">
+		<description>Quann-Tulla (release 3)</description>
+		<year>19??</year>
+		<publisher>8th Day Software</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="34204">
+				<rom name="quann-tulla - release 3 - side 1.tzx" size="34204" crc="297f31e6" sha1="30a30797a642a2315422865e1c7f636469b0dd95"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="15074">
+				<rom name="quann-tulla - release 3 - side 2.tzx" size="15074" crc="9ac7b367" sha1="2a9a665250a6c70c435ac772c520878a3f3d3540"/>
 			</dataarea>
 		</part>
 	</software>
@@ -129728,7 +129797,7 @@ license:CC0
 	</software>
 
 	<software name="thesagao_a" cloneof="thesagao">
-		<description>The Saga of a Mad Barbarian - +D Bugfix (The Guild)</description>
+		<description>The Saga of a Mad Barbarian (+D bugfix) (The Guild)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -132524,7 +132593,7 @@ license:CC0
 	</software>
 
 	<software name="thanosbu">
-		<description>Thanos - Bugfix</description>
+		<description>Thanos (bugfix)</description>
 		<year>1989</year>
 		<publisher>MicroHobby</publisher>
 		<part name="cass" interface="spectrum_cass">
