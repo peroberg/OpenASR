@@ -13082,6 +13082,17 @@ license:CC0
 		</part>
 	</software>
 
+	<software name="ingadget">
+		<description>Inspector Gadget and the Circus of Fear</description>
+		<year>1987</year>
+		<publisher>Erbe Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="44940">
+				<rom name="inspector gadget.tzx" size="44940" crc="e6bc07c3" sha1="5fa9fe2c59909b74c75d3b5f2fad3bff33532658"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="ik">
 		<description>International Karate (set 1)</description>
 		<year>1985</year>
@@ -15644,7 +15655,17 @@ license:CC0
 		</part>
 	</software>
 
-
+	<!-- NC128 -->
+	<software name="lsdmd">
+		<description>LSD Megademo</description>
+		<year>1992</year>
+		<publisher>Pentagram</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="253071">
+				<rom name="lsd.tap" size="253071" crc="6bbaf78d" sha1="64cf725fc8fe47a2917d3a4832de437698f5b69b"/>
+			</dataarea>
+		</part>
+	</software>
 
 	<software name="lumascii">
 		<description>LumASCII</description>
@@ -21413,6 +21434,17 @@ license:CC0
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="82235">
 				<rom name="robin hood - legend quest.tzx" size="82235" crc="e38cbfcd" sha1="71765989b79c7e676c63456e24c9f3b5641620ba"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="stimpysl">
+		<description>The Ren and Stimpy Slideshow</description>
+		<year>1994</year>
+		<publisher>Extacy-3</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="39209">
+				<rom name="renstimp.tap" size="39209" crc="daa54264" sha1="bc556f82d9fe4bba3cfbc0580a8fa86c7ebde620"/>
 			</dataarea>
 		</part>
 	</software>
