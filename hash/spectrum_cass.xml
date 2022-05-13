@@ -13060,6 +13060,17 @@ license:CC0
 	     Titles beginning with 'I'
 	     ############################################################################################################################## -->
 
+	<software name="intrs232">
+		<description>Interface RS232</description>
+		<year>198?</year>
+		<publisher>TMX Portugal Ltda</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="418">
+				<rom name="interface rs232 - timex computer.tzx" size="418" crc="81e729fd" sha1="88c2e38ca230f2cb535f7ea404f807f2cfed9f6c"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="irugbys">
 		<description>International Rugby Simulator (set 1)</description>
 		<year>19??</year>
@@ -23211,6 +23222,19 @@ license:CC0
 	     Titles beginning with 'S'
 	     ############################################################################################################################## -->
 
+	<software name="shockmd">
+		<!-- NC128 -->
+		<!--	Generated from the "SHOCKSAVER" program in the covertape for Sinclair User #85	-->
+		<description>Shock Megademo</description>
+		<year>1992</year>
+		<publisher>Sinclair User</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="100007">
+				<rom name="shock megademo.tzx" size="100007" crc="c45bb9bb" sha1="dd87ade12ae39fd3b150f3250ec0e0a6f7906643"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="snare">
 		<description>Snare (set 1)</description>
 		<year>1992</year>
@@ -26541,6 +26565,17 @@ license:CC0
 	<!-- ##############################################################################################################################
 	     Titles beginning with 'T'
 	     ############################################################################################################################## -->
+
+	<software name="lyra2">
+		<description>The Lyra II Megademo</description>
+		<year>1991</year>
+		<publisher>ESI</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="207762">
+				<rom name="lyra2.tap" size="207762" crc="e0a4d1a6" sha1="63fb3b2dc00efa132377c335a1d8afd5641f68a1"/>
+			</dataarea>
+		</part>
+	</software>
 
 	<software name="tarzan">
 		<description>Tarzan (set 1)</description>
@@ -31798,7 +31833,7 @@ license:CC0
 	</software>
 
 	<!-- ##############################################################################################################################
-	      covertapes from 'Microhobby'
+	      Covertapes from "MicroHobby"
 	     ############################################################################################################################## -->
 
 	<software name="mhobby015">
@@ -31811,7 +31846,7 @@ license:CC0
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size = "43079">
+			<dataarea name="cass" size="43079">
 				<rom name="microhobby suerte (side b).tzx" size="43079" crc="97e25806" sha1="c2a251b92992f4687bcd77a4acaa54418d51f8e5"/>
 			</dataarea>
 		</part>
@@ -32796,7 +32831,7 @@ license:CC0
 		<year>1985</year>
 		<publisher>Mecsa / Inforpress</publisher>
 		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size = "27410">
+			<dataarea name="cass" size="27410">
 				<rom name="load_n_run (spain) (especial).tzx" size="27410" crc="f0cdb6c9" sha1="4157c4aaa805801a9c7eeaf2a451a6dfe98ccf85"/>
 			</dataarea>
 		</part>
@@ -61870,8 +61905,8 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="disenado">
-		<description>Disenador de Juegos (Investronica)</description>
+	<software name="disejueg" cloneof="gamesdes">
+		<description>Diseñador de Juegos (Investronica)</description>
 		<year>1983</year>
 		<publisher>Investronica</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -61881,13 +61916,13 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="disenado_a" cloneof="disenado">
-		<description>Disenador de Juegos (Microbyte)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="disejuegmb" cloneof="gamesdes">
+		<description>Diseñador de Juegos (Microbyte)</description>
+		<year>1987</year>
+		<publisher>Microbyte</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="36968">
-				<rom name="disenador de juegos (microbyte).tzx" size="36968" crc="a2058a48" sha1="3bd1d8e0dc9dc83d470da146611767e6d5585d13"/>
+			<dataarea name="cass" size="36956">
+				<rom name="disenador de juegos (microbyte).tzx" size="36956" crc="b3c3f766" sha1="50a4a6ef5211b8093e609e7a155d6773dda48acb"/>
 			</dataarea>
 		</part>
 	</software>
@@ -86294,10 +86329,10 @@ license:CC0
 	<software name="perigosn" cloneof="jungletr">
 		<description>Perigos na Selva</description>
 		<year>1983</year>
-		<publisher>Timex Portugal</publisher>
+		<publisher>TMX Portugal Ltda</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="22988">
-				<rom name="perigos na selva.tzx" size="22988" crc="4c7cc1c9" sha1="6de7770c91b420d776ca93e678cbf32c3186239f"/>
+			<dataarea name="cass" size="23070">
+				<rom name="perigos na selva (1983)(tmx portugal ltda).tzx" size="23070" crc="61c78a5f" sha1="c5b5c0a590164db3f7f4f6d35c8d5327a804580e"/>
 			</dataarea>
 		</part>
 	</software>
@@ -123332,13 +123367,13 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="spacerai_a" cloneof="spacerai">
+	<software name="spaceraip" cloneof="spacerai">
 		<description>Space Raiders - Invasores Galácticos (Portuguese)</description>
 		<year>1983</year>
-		<publisher>Timex Portugal</publisher>
+		<publisher>TMX Portugal Ltda</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="22623">
-				<rom name="invasores galacticos (timex).tzx" size="22623" crc="fe13856c" sha1="c6c6424ccd2582b3f59e98119a8b6add20e62a8a"/>
+			<dataarea name="cass" size="22651">
+				<rom name="space raiders (1983)(tmx portugal ltda).tzx" size="22651" crc="03aaf3e4" sha1="05fb367e864377853ed63b9a3e79be00fde37eae"/>
 			</dataarea>
 		</part>
 	</software>
@@ -153547,6 +153582,24 @@ license:CC0
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="56687">
 				<rom name="horizons - side b.tzx" size="56687" crc="1e7f4bdf" sha1="068123873f759803cb7253319075531b8575b6c1"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="prpresen" cloneof="horizons">
+		<description>Programa de Apresentação</description>
+		<year>1983</year>
+		<publisher>TMX Portugal Ltda</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<feature name="part_id" value="Side A"/>
+			<dataarea name="cass" size="64513">
+				<rom name="programa de a presentacao - side a (1983)(tmx portugal ltda).tzx" size="64513" crc="473f0089" sha1="3cfcc1e405f6dfcdd9f99be11651f5a680904fcc"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<feature name="part_id" value="Side B"/>
+			<dataarea name="cass" size="87645">
+				<rom name="programa de a presentacao - side b (1983)(tmx portugal ltda).tzx" size="87645" crc="988ad0de" sha1="c4322b5a4f7560377c118746413c798f37aa6cc9"/>
 			</dataarea>
 		</part>
 	</software>
