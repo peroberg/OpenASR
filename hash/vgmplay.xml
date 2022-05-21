@@ -383653,7 +383653,7 @@ license:CC0
 	</software>
 
 	<software name="wboymlnd_smsfm">
-		<description>Wonder Boy In Monster Land (SMS-FM)</description>
+		<description>Wonder Boy in Monster Land (SMS-FM)</description>
 		<year>1988</year>
 		<publisher>Sega</publisher>
 		<info name="cores" value="YM2413"/>
@@ -383720,7 +383720,7 @@ license:CC0
 	</software>
 
 	<software name="wboymlnd_sms">
-		<description>Wonder Boy In Monster Land (SMS-PSG)</description>
+		<description>Wonder Boy in Monster Land (SMS-PSG)</description>
 		<year>1988</year>
 		<publisher>Sega</publisher>
 		<info name="cores" value="SN76496"/>
@@ -383787,7 +383787,7 @@ license:CC0
 	</software>
 
 	<software name="wboymwld_sms">
-		<description>Wonder Boy In Monster World (SMS)</description>
+		<description>Wonder Boy in Monster World (SMS)</description>
 		<year>1993</year>
 		<publisher>Sega</publisher>
 		<info name="cores" value="SN76496"/>
