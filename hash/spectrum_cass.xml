@@ -8935,7 +8935,7 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="exolon_b" cloneof="exolon">
 		<description>Exolon (Erbe)</description>
 		<year>1987</year>
@@ -23224,7 +23224,7 @@ license:CC0
 
 	<software name="shockmd">
 		<!-- NC128 -->
-		<!--	Generated from the "SHOCKSAVER" program in the covertape for Sinclair User #85	-->
+		<!--    Generated from the "SHOCKSAVER" program in the covertape for Sinclair User #85  -->
 		<description>Shock Megademo</description>
 		<year>1992</year>
 		<publisher>Sinclair User</publisher>
