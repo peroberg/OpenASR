@@ -31833,6 +31833,506 @@ license:CC0
 	</software>
 
 	<!-- ##############################################################################################################################
+	      Type-in compilation cassettes from "MicroHobby Semanal"
+	     ############################################################################################################################## -->
+
+	<software name="mhobbys01">
+		<description>MicroHobby Semanal (Issues 001-004)</description>
+		<year>1984</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="61405">
+				<rom name="microhobby semanal 1-4 - side a.tzx" size="61405" crc="e6e3f873" sha1="fd6d57c1426842dc391165b18a0718af556af1a3"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="69749">
+				<rom name="microhobby semanal 1-4 - side b.tzx" size="69749" crc="8c7c46e4" sha1="6e2571fbfa1670ed9ade196ece5311d4bc0f67e6"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys02">
+		<description>MicroHobby Semanal (Issues 005-008)</description>
+		<year>1984</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="68825">
+				<rom name="microhobby semanal 5-8 - side a.tzx" size="68825" crc="87ce9852" sha1="fba5fabffd6d0616de971240262959a9ee416342"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="76460">
+				<rom name="microhobby semanal 5-8 - side b.tzx" size="76460" crc="d2fe6ae9" sha1="70d7f0ec1f28d70124d4cf098bdcea4f60298014"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys03">
+		<description>MicroHobby Semanal (Issues 009-012)</description>
+		<year>1985</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="90006">
+				<rom name="microhobby semanal 9-12 - side a.tzx" size="90006" crc="210d1151" sha1="2ac517b44f20e63362a3a297c87368d7dd87c497"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="89506">
+				<rom name="microhobby semanal 9-12 - side b.tzx" size="89506" crc="c25dcbfd" sha1="d1c1720a375c19174281c2863346ca1d16e790c2"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys04">
+		<description>MicroHobby Semanal (Issues 013-016)</description>
+		<year>1985</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="74292">
+				<rom name="microhobby semanal 13-16 - side a.tzx" size="74292" crc="8f748ac7" sha1="023342788383ef198dbb2633b1fdec0c9975669a"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="70595">
+				<rom name="microhobby semanal 13-16 - side b.tzx" size="70595" crc="ead4d469" sha1="01710cf075446a91dc2da928e76ae186f0683dce"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys05">
+		<description>MicroHobby Semanal (Issues 017-020)</description>
+		<year>1985</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="82761">
+				<rom name="microhobby semanal 17-20 - side a.tzx" size="82761" crc="90dea1e3" sha1="6c0a26fd6bf47771424c2f49798fa0e016fa3eaf"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="80362">
+				<rom name="microhobby semanal 17-20 - side b.tzx" size="80362" crc="c2b9ff48" sha1="3ec3f7709a68af5c9edce6d2952e1d0aade9f850"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys06">
+		<description>MicroHobby Semanal (Issues 021-024)</description>
+		<year>1985</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="70815">
+				<rom name="microhobby semanal 21-24 - side a.tzx" size="70815" crc="d16ea7a2" sha1="d8fd62a245fdda9686652e57d4461913fb9e0786"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="70154">
+				<rom name="microhobby semanal 21-24 - side b.tzx" size="70154" crc="77e87e0c" sha1="eb6f428706e2a9b1574894485640f9859993ba86"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys07">
+		<description>MicroHobby Semanal (Issues 025-028)</description>
+		<year>1985</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="88048">
+				<rom name="microhobby semanal 25-28 - side a.tzx" size="88048" crc="faafc824" sha1="3be0576d79197a4b6d9aa674ecb8bbff345ef08e"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="92203">
+				<rom name="microhobby semanal 25-28 - side b.tzx" size="92203" crc="a1d2dc9e" sha1="f7d5cd0686f41d581ee6c5c4d4853e29043f0e63"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys08">
+		<description>MicroHobby Semanal (Issues 029-032)</description>
+		<year>1985</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="83169">
+				<rom name="microhobby semanal 29-32 - side a.tzx" size="83169" crc="9fd8f7a0" sha1="36ca5bf3f60bb3a7401e6e904021070e14097eb9"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="82888">
+				<rom name="microhobby semanal 29-32 - side b.tzx" size="82888" crc="8cc0c8bd" sha1="8f43e553e3e306bdca3081887c054053dd0c774f"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys09">
+		<description>MicroHobby Semanal (Issues 033-036)</description>
+		<year>1985</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="96352">
+				<rom name="microhobby semanal 33-36 - side a.tzx" size="96352" crc="3353cf74" sha1="8bb29729d0ce1d0803034874b7a184fafc60cf1f"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="98363">
+				<rom name="microhobby semanal 33-36 - side b.tzx" size="98363" crc="1f86e68d" sha1="485ad1a1ab03947d10b26f74ffc90595382ec5be"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys10">
+		<description>MicroHobby Semanal (Issues 037-040)</description>
+		<year>1985</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="96080">
+				<rom name="microhobby semanal 37-40 - side a.tzx" size="96080" crc="f998f67b" sha1="000b9ff5083253a68a62e20a24c6d440324c86a8"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="91174">
+				<rom name="microhobby semanal 37-40 - side b.tzx" size="91174" crc="cba2f07a" sha1="223291416e75fc0429b42d5dbfd5bc2fb9ae433c"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys11">
+		<description>MicroHobby Semanal (Issues 041-044)</description>
+		<year>1985</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="90617">
+				<rom name="microhobby semanal 41-44 - side a.tzx" size="90617" crc="971384db" sha1="bd788aa9d731b96613c08fa160388bae7e4e7c6a"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="89993">
+				<rom name="microhobby semanal 41-44 - side b.tzx" size="89993" crc="148769de" sha1="51d38e10ee51fb80e3ebedcca5e87cdf419aee3a"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys12">
+		<description>MicroHobby Semanal (Issues 045-048)</description>
+		<year>1985</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="78510">
+				<rom name="microhobby semanal 45-48 - side a.tzx" size="78510" crc="d7f03479" sha1="d8c6c067b094fbd21aedae63402d42993e02354c"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="80133">
+				<rom name="microhobby semanal 45-48 - side b.tzx" size="80133" crc="1cc4151e" sha1="a6c45d2dedf887ba42af94bd3d09a72a5fd58f92"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys13">
+		<description>MicroHobby Semanal (Issues 049-052)</description>
+		<year>1985</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="48077">
+				<rom name="microhobby semanal 49-52 - side a.tzx" size="48077" crc="681c2bd5" sha1="2200068d02535e91ca91aa5dc1c103a17f148939"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="48043">
+				<rom name="microhobby semanal 49-52 - side b.tzx" size="48043" crc="7635e457" sha1="cc375f5e9110934adcf5478439a0b098b56a18e5"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys14">
+		<description>MicroHobby Semanal (Issues 053-056)</description>
+		<year>1985</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="53872">
+				<rom name="microhobby semanal 53-56 - side a.tzx" size="53872" crc="f85542da" sha1="23f71bdea8f7cf7831776de4b115e3fd368a5848"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="58840">
+				<rom name="microhobby semanal 53-56 - side b.tzx" size="58840" crc="940a325a" sha1="3fd2e11db1c51bd651860c64419232f2955bd5e3"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys15">
+		<description>MicroHobby Semanal (Issues 057-060)</description>
+		<year>1986</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="56134">
+				<rom name="microhobby semanal 57-60 - side a.tzx" size="56134" crc="ab5b1a1e" sha1="402026f17bd144b08d802778535306e9dffe5721"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="55101">
+				<rom name="microhobby semanal 57-60 - side b.tzx" size="55101" crc="0d667a83" sha1="0cbdf9db49adcd5d4ec9456b962111c0b53648a3"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys16">
+		<description>MicroHobby Semanal (Issues 061-064)</description>
+		<year>1986</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="40140">
+				<rom name="microhobby semanal 61-64 - side a.tzx" size="40140" crc="dc000f02" sha1="1d5fdf1d8c4edd5e7ab877d85dad234fb91da6f3"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="46433">
+				<rom name="microhobby semanal 61-64 - side b.tzx" size="46433" crc="69deb849" sha1="c842ac1b0f6b31802d36e0b5da6ec5044bd4c23d"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys17">
+		<description>MicroHobby Semanal (Issues 065-068)</description>
+		<year>1986</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="55231">
+				<rom name="microhobby semanal 65-68 - side a.tzx" size="55231" crc="49fe3fd2" sha1="17779001cb55e443f4466a4ef284694677436496"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="56901">
+				<rom name="microhobby semanal 65-68 - side b.tzx" size="56901" crc="1b06ef44" sha1="e5d924a58135df1036c1a97d86d1cc9ed5934837"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys18">
+		<description>MicroHobby Semanal (Issues 069-072)</description>
+		<year>1986</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="48372">
+				<rom name="microhobby semanal 69-72 - side a.tzx" size="48372" crc="5792eb77" sha1="e34c3d282c263233106739c57783c80970d956f0"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="41774">
+				<rom name="microhobby semanal 69-72 - side b.tzx" size="41774" crc="94e5f072" sha1="f5395d9abb52ad30774bab38c6dab2bb263a34f2"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys19">
+		<description>MicroHobby Semanal (Issues 073-076)</description>
+		<year>1986</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="57711">
+				<rom name="microhobby semanal 73-76 - side a.tzx" size="57711" crc="294ee071" sha1="c6a66159c019cfe465dfa0bba7a38894d8c62288"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="58578">
+				<rom name="microhobby semanal 73-76 - side b.tzx" size="58578" crc="61d766dd" sha1="776948860dccab4cb45ee5f919e0a06d8c79d4dc"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys20">
+		<description>MicroHobby Semanal (Issues 077-080)</description>
+		<year>1986</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="54846">
+				<rom name="microhobby semanal 77-80 - side a.tzx" size="54846" crc="29578cd2" sha1="e13e22d10c4c46ea3232fa4f11dec071c7360ff2"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="50310">
+				<rom name="microhobby semanal 77-80 - side b.tzx" size="50310" crc="24b56857" sha1="13d3bd03d0177380b92af54a8c526d538dd159b2"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys21">
+		<description>MicroHobby Semanal (Issues 081-084)</description>
+		<year>1986</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="39226">
+				<rom name="microhobby semanal 81-84 - side a.tzx" size="39226" crc="fef0ccba" sha1="e7abd2cbde227f57a157a714a994b7a6222b8914"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="46960">
+				<rom name="microhobby semanal 81-84 - side b.tzx" size="46960" crc="09379e86" sha1="295c4861d2dc0666443c77a6b0d0e5ad1df40531"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys22">
+		<description>MicroHobby Semanal (Issues 085-088)</description>
+		<year>1986</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="37980">
+				<rom name="microhobby semanal 85-88 - side a.tzx" size="37980" crc="87fce371" sha1="a48b03b20eb9424336a78c44646a72ccf175d9be"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="26993">
+				<rom name="microhobby semanal 85-88 - side b.tzx" size="26993" crc="cb534089" sha1="6815403dbf32a8d8a68994ed59f0a47720a358d8"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys23">
+		<description>MicroHobby Semanal (Issues 089-092)</description>
+		<year>1986</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="33940">
+				<rom name="microhobby semanal 89-92 - side a.tzx" size="33940" crc="e650136f" sha1="b07abcb2fbe09427b3bbb8413df47ec9210fa345"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="30358">
+				<rom name="microhobby semanal 89-92 - side b.tzx" size="30358" crc="a6649c48" sha1="5f2e83885944f531fb1dd0608cad37a9f8feaafe"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys24">
+		<description>MicroHobby Semanal (Issues 093-096)</description>
+		<year>1986</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="57998">
+				<rom name="microhobby semanal 93-96 - side a.tzx" size="57998" crc="f5420fbe" sha1="e85e871bbecc579f7a834a0e3dd493292a6dd6a2"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="51733">
+				<rom name="microhobby semanal 93-96 - side b.tzx" size="51733" crc="059cd191" sha1="103f45f229e761e1e0ca499b3dc127a24cf94900"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys25">
+		<description>MicroHobby Semanal (Issues 097-100)</description>
+		<year>1986</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="52212">
+				<rom name="microhobby semanal 97-100 - side a.tzx" size="52212" crc="cee43a9e" sha1="7ad52c33ccf87f0a0797aecd86aa4b85c4ccc87b"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="49876">
+				<rom name="microhobby semanal 97-100 - side b.tzx" size="49876" crc="44dafac1" sha1="932122b4cb26cbc9f613d0bd9e3994a5fe1614dc"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys26">
+		<description>MicroHobby Semanal (Issues 101-104)</description>
+		<year>1986</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="45193">
+				<rom name="microhobby semanal 101-104 - side a.tzx" size="45193" crc="618f53d0" sha1="5ee5c799e488a5a3cb473e663cbb1d47ad8550c0"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="22417">
+				<rom name="microhobby semanal 101-104 - side b.tzx" size="22417" crc="e268e24c" sha1="7df380e428826e74d6809c52b230815abb8ea685"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys27">
+		<description>MicroHobby Semanal (Issues 105-108)</description>
+		<year>1986</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="58877">
+				<rom name="microhobby semanal 105-108 - side a.tzx" size="58877" crc="afb8cb0f" sha1="61065011c56a814251b814fd2ca56402068acc1b"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="60963">
+				<rom name="microhobby semanal 105-108 - side b.tzx" size="60963" crc="25189001" sha1="c70d8ec838517725f9ed28e045903b7df3287759"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys28">
+		<description>MicroHobby Semanal (Issues 109-112)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="49045">
+				<rom name="microhobby semanal 109-112 - side a.tzx" size="49045" crc="1f20bb77" sha1="ea7d59ffd4774343a6a40bc888995bb81d709cda"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="42283">
+				<rom name="microhobby semanal 109-112 - side b.tzx" size="42283" crc="abfa22b2" sha1="64f3a3a7eae135649c6fb34c824d8633026197bc"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys29">
+		<description>MicroHobby Semanal (Issues 113-116)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="39999">
+				<rom name="microhobby semanal 113-116 - side a.tzx" size="39999" crc="03445e96" sha1="f8dbf3a92ab5f33613e12f551ed187e2d2331dee"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="33168">
+				<rom name="microhobby semanal 113-116 - side b.tzx" size="33168" crc="d9f694c7" sha1="5c0e5b67dd49620d1d013c5b423b6f6d9f9a0b69"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys30">
+		<description>MicroHobby Semanal (Issues 117-120)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="30449">
+				<rom name="microhobby semanal 117-120 - side a.tzx" size="30449" crc="039acf1b" sha1="415f4532917088d08dd8a0b03a6185b4d526239d"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="36703">
+				<rom name="microhobby semanal 117-120 - side b.tzx" size="36703" crc="7f23a0a4" sha1="52b8047ed0dfe4ef3f267b77db3e675991f4f27c"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbys31">
+		<description>MicroHobby Semanal (Issues 121-124)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="29865">
+				<rom name="microhobby semanal 121-124 - side a.tzx" size="29865" crc="263b4bee" sha1="cb07c7a3824a0b6dd99299570a549124248c0458"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="40535">
+				<rom name="microhobby semanal 121-124 - side b.tzx" size="40535" crc="58579574" sha1="858b2a0193997be1ab948a3ec2708ba391790aed"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<!-- ##############################################################################################################################
 	      Covertapes from "MicroHobby"
 	     ############################################################################################################################## -->
 
@@ -31853,7 +32353,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby182s01">
-		<description>MicroHobby (Issue 182) Seleccion 01</description>
+		<description>MicroHobby (Issue 182) Selección 01</description>
 		<year>1988</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -31870,7 +32370,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby183s02">
-		<description>MicroHobby (Issue 183) Seleccion 02</description>
+		<description>MicroHobby (Issue 183) Selección 02</description>
 		<year>1988</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -31886,7 +32386,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby184s03">
-		<description>MicroHobby (Issue 184) Seleccion 03</description>
+		<description>MicroHobby (Issue 184) Selección 03</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -31902,7 +32402,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby185s04">
-		<description>MicroHobby (Issue 185) Seleccion 04</description>
+		<description>MicroHobby (Issue 185) Selección 04</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -31918,7 +32418,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby186s05">
-		<description>MicroHobby (Issue 186) Seleccion 05</description>
+		<description>MicroHobby (Issue 186) Selección 05</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -31934,7 +32434,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby187s06">
-		<description>MicroHobby (Issue 187) Seleccion 06</description>
+		<description>MicroHobby (Issue 187) Selección 06</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -31950,7 +32450,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby188s07">
-		<description>MicroHobby (Issue 188) Seleccion 07</description>
+		<description>MicroHobby (Issue 188) Selección 07</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -31966,7 +32466,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby189s08">
-		<description>MicroHobby (Issue 189) Seleccion 08</description>
+		<description>MicroHobby (Issue 189) Selección 08</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -31982,7 +32482,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby190s09">
-		<description>MicroHobby (Issue 190) Seleccion 09</description>
+		<description>MicroHobby (Issue 190) Selección 09</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -31998,7 +32498,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby190s10">
-		<description>MicroHobby (Issue 190) Seleccion 10</description>
+		<description>MicroHobby (Issue 190) Selección 10</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32014,7 +32514,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby191s11">
-		<description>MicroHobby (Issue 191) Seleccion 11</description>
+		<description>MicroHobby (Issue 191) Selección 11</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32030,7 +32530,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby192s12">
-		<description>MicroHobby (Issue 192) Seleccion 12</description>
+		<description>MicroHobby (Issue 192) Selección 12</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32046,7 +32546,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby192s13">
-		<description>MicroHobby (Issue 192) Seleccion 13</description>
+		<description>MicroHobby (Issue 192) Selección 13</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32062,7 +32562,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby193s14">
-		<description>MicroHobby (Issue 193) Seleccion 14</description>
+		<description>MicroHobby (Issue 193) Selección 14</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32078,7 +32578,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby194s15">
-		<description>MicroHobby (Issue 194) Seleccion 15</description>
+		<description>MicroHobby (Issue 194) Selección 15</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32094,7 +32594,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby194s16">
-		<description>MicroHobby (Issue 194) Seleccion 16</description>
+		<description>MicroHobby (Issue 194) Selección 16</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32110,7 +32610,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby195s17">
-		<description>MicroHobby (Issue 195) Seleccion 17</description>
+		<description>MicroHobby (Issue 195) Selección 17</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32126,7 +32626,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby195s18">
-		<description>MicroHobby (Issue 195) Seleccion 18</description>
+		<description>MicroHobby (Issue 195) Selección 18</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32142,7 +32642,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby196s19">
-		<description>MicroHobby (Issue 196) Seleccion 19</description>
+		<description>MicroHobby (Issue 196) Selección 19</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32158,7 +32658,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby197s20">
-		<description>MicroHobby (Issue 197) Seleccion 20</description>
+		<description>MicroHobby (Issue 197) Selección 20</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32174,7 +32674,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby198s21">
-		<description>MicroHobby (Issue 198) Seleccion 21</description>
+		<description>MicroHobby (Issue 198) Selección 21</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32190,7 +32690,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby199s22">
-		<description>MicroHobby (Issue 199) Seleccion 22</description>
+		<description>MicroHobby (Issue 199) Selección 22</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32206,7 +32706,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby200s23">
-		<description>MicroHobby (Issue 200) Seleccion 23</description>
+		<description>MicroHobby (Issue 200) Selección 23</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32222,7 +32722,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby200s24">
-		<description>MicroHobby (Issue 200) Seleccion 24</description>
+		<description>MicroHobby (Issue 200) Selección 24</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32238,7 +32738,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby201s25">
-		<description>MicroHobby (Issue 201) Seleccion 25</description>
+		<description>MicroHobby (Issue 201) Selección 25</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32254,7 +32754,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby201s26">
-		<description>MicroHobby (Issue 201) Seleccion 26</description>
+		<description>MicroHobby (Issue 201) Selección 26</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32270,7 +32770,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby202s27">
-		<description>MicroHobby (Issue 202) Seleccion 27</description>
+		<description>MicroHobby (Issue 202) Selección 27</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32286,7 +32786,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby203s28">
-		<description>MicroHobby (Issue 203) Seleccion 28</description>
+		<description>MicroHobby (Issue 203) Selección 28</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32302,7 +32802,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby204s29">
-		<description>MicroHobby (Issue 204) Seleccion 29</description>
+		<description>MicroHobby (Issue 204) Selección 29</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32318,7 +32818,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby204s30">
-		<description>MicroHobby (Issue 204) Seleccion 30</description>
+		<description>MicroHobby (Issue 204) Selección 30</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32334,7 +32834,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby205s31">
-		<description>MicroHobby (Issue 205) Seleccion 31</description>
+		<description>MicroHobby (Issue 205) Selección 31</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32350,7 +32850,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby205s32">
-		<description>MicroHobby (Issue 205) Seleccion 32</description>
+		<description>MicroHobby (Issue 205) Selección 32</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32366,7 +32866,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby206s33">
-		<description>MicroHobby (Issue 206) Seleccion 33</description>
+		<description>MicroHobby (Issue 206) Selección 33</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32382,7 +32882,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby207s34">
-		<description>MicroHobby (Issue 207) Seleccion 34</description>
+		<description>MicroHobby (Issue 207) Selección 34</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32398,7 +32898,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby208s35">
-		<description>MicroHobby (Issue 208) Seleccion 35</description>
+		<description>MicroHobby (Issue 208) Selección 35</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32414,7 +32914,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby209s36">
-		<description>MicroHobby (Issue 209) Seleccion 36</description>
+		<description>MicroHobby (Issue 209) Selección 36</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32430,7 +32930,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby210s37">
-		<description>MicroHobby (Issue 210) Seleccion 37</description>
+		<description>MicroHobby (Issue 210) Selección 37</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32446,7 +32946,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby211s38">
-		<description>MicroHobby (Issue 211) Seleccion 38</description>
+		<description>MicroHobby (Issue 211) Selección 38</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32462,7 +32962,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby211s39">
-		<description>MicroHobby (Issue 211) Seleccion 39</description>
+		<description>MicroHobby (Issue 211) Selección 39</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32478,7 +32978,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby212s40">
-		<description>MicroHobby (Issue 212) Seleccion 40</description>
+		<description>MicroHobby (Issue 212) Selección 40</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32494,7 +32994,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby212s41">
-		<description>MicroHobby (Issue 212) Seleccion 41</description>
+		<description>MicroHobby (Issue 212) Selección 41</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32510,7 +33010,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby213s42">
-		<description>MicroHobby (Issue 213) Seleccion 42</description>
+		<description>MicroHobby (Issue 213) Selección 42</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32526,7 +33026,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby214s43">
-		<description>MicroHobby (Issue 214) Seleccion 43</description>
+		<description>MicroHobby (Issue 214) Selección 43</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32542,7 +33042,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby215s44">
-		<description>MicroHobby (Issue 215) Seleccion 44</description>
+		<description>MicroHobby (Issue 215) Selección 44</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32558,7 +33058,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby215s45">
-		<description>MicroHobby (Issue 215) Seleccion 45</description>
+		<description>MicroHobby (Issue 215) Selección 45</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32574,7 +33074,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby216s46">
-		<description>MicroHobby (Issue 216) Seleccion 46</description>
+		<description>MicroHobby (Issue 216) Selección 46</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32590,7 +33090,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby217s47">
-		<description>MicroHobby (Issue 217) Seleccion 47</description>
+		<description>MicroHobby (Issue 217) Selección 47</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32606,7 +33106,7 @@ license:CC0
 	</software>
 
 	<software name="mhobby217s48">
-		<description>MicroHobby (Issue 217) Seleccion 48</description>
+		<description>MicroHobby (Issue 217) Selección 48</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32617,6 +33117,218 @@ license:CC0
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="93667">
 				<rom name="microhobby issue 217 - tape 48 (side b).tzx" size="93667" crc="73cf3eb6" sha1="e2a9980dfe61455cd89c2c8620284951fa04d1a8"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<!-- ##############################################################################################################################
+	      Covertapes from "MicroHobby Cassette"
+	     ############################################################################################################################## -->
+
+	<software name="mhobbyc01">
+		<description>MicroHobby Cassette (Issue 01)</description>
+		<year>1985</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="60442">
+				<rom name="microhobby cassette (issue 01) - side a.tzx" size="60442" crc="7bb36d35" sha1="30105d56f9a28810b50b3a37e1250cdf4e8dd182"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="62405">
+				<rom name="microhobby cassette (issue 01) - side b.tzx" size="62405" crc="c219597e" sha1="177280a35296c3b1582f0b3155f3ce09116d765e"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbyc02">
+		<description>MicroHobby Cassette (Issue 02)</description>
+		<year>1985</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="59160">
+				<rom name="microhobby cassette (issue 02) - side a.tzx" size="59160" crc="e41a4cf8" sha1="fdb6cfaf159bffd5e71927e1987ce33981722201"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="50970">
+				<rom name="microhobby cassette (issue 02) - side b.tzx" size="50970" crc="ed75b7d9" sha1="a7ca9e8914dccdb54de02e0d0420b2fbb0505047"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbyc03">
+		<description>MicroHobby Cassette (Issue 03)</description>
+		<year>1985</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="69226">
+				<rom name="microhobby cassette (issue 03) - side a.tzx" size="69226" crc="dbda4fe6" sha1="5370c578240c7c6c6eee45ca091df388baaabb1c"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="65496">
+				<rom name="microhobby cassette (issue 03) - side b.tzx" size="65496" crc="fca0734a" sha1="f3167603bec6a49c542945b4b5c8a651bc7c6923"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbyc04">
+		<description>MicroHobby Cassette (Issue 04)</description>
+		<year>1985</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="61657">
+				<rom name="microhobby cassette (issue 04) - side a.tzx" size="61657" crc="e9e09dcf" sha1="79eb025d73cc2183f5b6cd963123d0baded9d273"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="59215">
+				<rom name="microhobby cassette (issue 04) - side b.tzx" size="59215" crc="9e87f458" sha1="c85641d47bba9ff084f6b7d2acdcefe728f1fabd"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbyc05">
+		<description>MicroHobby Cassette (Issue 05)</description>
+		<year>1985</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="60511">
+				<rom name="microhobby cassette (issue 05) - side a.tzx" size="60511" crc="e7021274" sha1="cbd4c1e97f056351ae3385cf1d3e3775f24e1c3f"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="64608">
+				<rom name="microhobby cassette (issue 05) - side b.tzx" size="64608" crc="335da394" sha1="b32c07a75225a6c6f96bc9217eaa431c64ff2666"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbyc06">
+		<description>MicroHobby Cassette (Issue 06)</description>
+		<year>1985</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="76734">
+				<rom name="microhobby cassette (issue 06) - side a.tzx" size="76734" crc="7810a705" sha1="cf285696f5349c8a643190ea9d5707f11f13f0f7"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="53885">
+				<rom name="microhobby cassette (issue 06) - side b.tzx" size="53885" crc="52b5125e" sha1="b1d7e66ab16f26e585271dcfc37e025e1f06584d"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbyc07">
+		<description>MicroHobby Cassette (Issue 07)</description>
+		<year>1985</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="80385">
+				<rom name="microhobby cassette (issue 07) - side a.tzx" size="80385" crc="1b676dc6" sha1="926da6674c9fd992b6ea214bb97089882df85e44"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="75044">
+				<rom name="microhobby cassette (issue 07) - side b.tzx" size="75044" crc="3f27dceb" sha1="a78f2f4f9b80ae909352cb2beb8aa2a9a3fc74e7"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbyc08">
+		<description>MicroHobby Cassette (Issue 08)</description>
+		<year>1985</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="105411">
+				<rom name="microhobby cassette (issue 08) - side a.tzx" size="105411" crc="d03a1ea5" sha1="efae28ac9cb9c5d0725873b894802383ccb49c3b"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="124177">
+				<rom name="microhobby cassette (issue 08) - side b.tzx" size="124177" crc="c908c814" sha1="c01b809f1f5569a6cf9958bb0c138ae4ba8af34c"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbyc09">
+		<description>MicroHobby Cassette (Issue 09)</description>
+		<year>1985</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="86979">
+				<rom name="microhobby cassette (issue 09) - side a.tzx" size="86979" crc="9d81f97b" sha1="3f2743ec6b12f4e61d15ead7ca9ab180f61ce0b1"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="72664">
+				<rom name="microhobby cassette (issue 09) - side b.tzx" size="72664" crc="88104949" sha1="d77a43dbfc929c0634ce01e9954285a4d123a0b3"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbyc10">
+		<description>MicroHobby Cassette (Issue 10)</description>
+		<year>1985</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="131736">
+				<rom name="microhobby cassette (issue 10) - side a.tzx" size="131736" crc="743ad86e" sha1="05c87b688d38b6c574807739015268eaf1e904a2"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="129509">
+				<rom name="microhobby cassette (issue 10) - side b.tzx" size="129509" crc="8248cb7e" sha1="95d372d25ac29141b6d42ff0ab9bd13d35eec487"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbyc11">
+		<description>MicroHobby Cassette (Issue 11)</description>
+		<year>1986</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="99830">
+				<rom name="microhobby cassette (issue 11) - side a.tzx" size="99830" crc="0d8c8f35" sha1="ad70b0e0e5e8af90bb3ff815b0e421642a69b03d"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="115314">
+				<rom name="microhobby cassette (issue 11) - side b.tzx" size="115314" crc="f3e60590" sha1="c77d6b1aec19dd50cd4a42570b51b31b30bde11d"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbyc12">
+		<description>MicroHobby Cassette (Issue 12)</description>
+		<year>1986</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="104857">
+				<rom name="microhobby cassette (issue 12) - side a.tzx" size="104857" crc="c512d8d1" sha1="f2cf14c3906b2fd801eb687686ebc456109ae23b"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="102265">
+				<rom name="microhobby cassette (issue 12) - side b.tzx" size="102265" crc="90526153" sha1="ef1caf35cf1f216f9d1b148e7d553f906f01149c"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobbyc13">
+		<description>MicroHobby Cassette (Issue 13)</description>
+		<year>1986</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="127276">
+				<rom name="microhobby cassette (issue 13) - side a.tzx" size="127276" crc="900dbb6a" sha1="ff6720f376638e308e323dc71b0fcc118fe9f84c"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="134550">
+				<rom name="microhobby cassette (issue 13) - side b.tzx" size="134550" crc="b91857e5" sha1="c77e73d4846fb1bb8b360c4ae62e1be697ed30d6"/>
 			</dataarea>
 		</part>
 	</software>
