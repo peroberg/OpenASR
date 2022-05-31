@@ -128,21 +128,6 @@ license:CC0
 		</part>
 	</software>
 
-	<!-- This program was included as an audio track on the record "1984" from the Spanish
-	         music group "La Mode". It was present only on the vinyl version (not on the cassette),
-	         as the last track of the B side, titled as "Programa Computado".
-	         It was programmed by Mario Gil (one of the "La Mode" group members). -->
-	<software name="1984lm">
-		<description>La Mode - 1984 (Programa Computado)</description>
-		<year>1984</year>
-		<publisher>La Mode / Ediciones Nemo</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="13378">
-				<rom name="lamode_1984_programa_computado.tzx" size="13308" crc="f87f7615" sha1="97b4d233855d3c5871c5a99aa516f8d26970989d"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<!-- NC128 -->
 	<software name="3dstarfi">
 		<description>3D Starfighter</description>
@@ -722,6 +707,22 @@ license:CC0
 		</part>
 	</software>
 
+	<software name="androides" cloneof="androids">
+		<description>Androides</description>
+		<year>1983</year>
+		<publisher>Ventamatic</publisher>
+		<info name="alt_title" value="Androide Cero (advertisement)"/>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="32272">
+				<rom name="androides (a).tzx" size="32272" crc="b6d92769" sha1="d2f65bed899d5c4a3393dbe3042aabc076dbd98d"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="32272">
+				<rom name="androides (b).tzx" size="32272" crc="f7a9f4ed" sha1="e8234d03c7e5498aa99a6eafad5f2e5e4c8ea6b6"/>
+			</dataarea>
+		</part>
+	</software>
 
 	<software name="atking"> <!-- rerelease of SuperCar Trans-AM from the dlgun pack -->
 		<description>American Turbo King (Mastertronic, Joystick)</description>
@@ -1941,6 +1942,17 @@ license:CC0
 	<!-- ##############################################################################################################################
 	     Titles beginning with 'B'
 	     ############################################################################################################################## -->
+
+	<software name="batallan">
+		<description>Batalla Naval</description>
+		<year>1983</year>
+		<publisher>Taller de Aplicaciones Informáticas</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="17818">
+				<rom name="batalla naval.tzx" size="17818" crc="9c13d091" sha1="30a325409e5c00b4e13b7a09aebdc94cbfa5345a"/>
+			</dataarea>
+		</part>
+	</software>
 
 	<!-- Batman had a variety of loaders, some work, some don't ... -->
 
@@ -4867,6 +4879,78 @@ license:CC0
 	     Titles beginning with 'C'
 	     ############################################################################################################################## -->
 
+	<software name="cozumelsl">
+		<!--
+			Bug fixed release.
+		-->
+		<description>Ci-U-Than Trilogy-I: Cozumel (Serie Leyenda)</description>
+		<year>1990</year>
+		<publisher>IBSA</publisher>
+		<info name="alt_title" value="Diosa de Cozumel (in-game)"/>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="47748">
+				<rom name="cozumel - side 1 (serie leyenda).tzx" size="47748" crc="814adb3c" sha1="46c575ee642d1f283bacaf376ff186cefa3e3c4f" offset="0"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="47748">
+				<rom name="cozumel - side 2 (serie leyenda).tzx" size="47748" crc="bb4df2bb" sha1="a694ca70f97a4ef8118c6297c575e4b144ed36ce" offset="0"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="cozumel" cloneof="cozumelsl">
+		<!--
+			This version can't be finished without knowing how to work around a bug.
+		-->
+		<description>Ci-U-Than Trilogy-I: Cozumel</description>
+		<year>1990</year>
+		<publisher>Aventuras AD</publisher>
+		<info name="alt_title" value="Diosa de Cozumel (in-game)"/>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="48160">
+				<rom name="cozumel - side a.tzx" size="48160" crc="77c701f0" sha1="45545fbc291641817ce652a822c373350de51ce0" offset="0"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="48160">
+				<rom name="cozumel - side b.tzx" size="48160" crc="b682d89f" sha1="b633edfc2bf01ac8f744b45ec129ab93ee8b82e1" offset="0"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="tempsagr">
+		<description>Ci-U-Than Trilogy-II: Los Templos Sagrados</description>
+		<year>1991</year>
+		<publisher>Aventuras AD</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="47301">
+				<rom name="los templos sagrados - side 1.tzx" size="47301" crc="4eb11128" sha1="4874e4d7734992868a8caf0a288c8853ed3e2926"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="47262">
+				<rom name="los templos sagrados - side 2.tzx" size="47262" crc="bfcd1571" sha1="2c508e9ccbf4c5bb391e9aaf81c75746fc9c83a0"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="chicheni">
+		<description>Ci-U-Than Trilogy-III: Chichén Itzá</description>
+		<year>1992</year>
+		<publisher>Aventuras AD</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="48362">
+				<rom name="chichen itza - side 1.tzx" size="48362" crc="89b59d24" sha1="44354efa2a66692b79b6a62d60765d508c366af1"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="48362">
+				<rom name="chichen itza - side 2.tzx" size="48362" crc="894e48f5" sha1="50adb20c01a51b7d89a202a62d5fd5c57ceca50a"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<!-- Homebrew released at http://spectralinterlude.com/#download for use on real systems & emulators -->
 	<software name="castlvsi">
 		<description>Castlevania - Spectral Interlude (v1.1, English, 128K)</description>
@@ -6900,10 +6984,64 @@ license:CC0
 		</part>
 	</software>
 
+	<software name="cuerpodi">
+		<description>Cuerpo / Digestivo</description>
+		<year>1984</year>
+		<publisher>Boalox Informática</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<feature name="part_id" value="Side A: Cuerpo"/>
+			<dataarea name="cass" size="40632">
+				<rom name="cuerpo + digestivo - side a.tzx" size="40632" crc="9a3e2ede" sha1="6ce8fd81f49f85ce716e38598973b6f20b7cc10a"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<feature name="part_id" value="Side B: Digestivo"/>
+			<dataarea name="cass" size="17305">
+				<rom name="cuerpo + digestivo - side b.tzx" size="17305" crc="3243135c" sha1="3c8b18d7520cb683b294c80f76a4fd8e38ec5a41"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<!-- ##############################################################################################################################
 	     Titles beginning with 'D'
 	     ############################################################################################################################## -->
 
+	<software name="davgnomo">
+		<!--
+			This program was included as an audio track on the record "David el Gnomo" (the OST from the
+			Spanish TV animation series with the same name, published by "Ariola Eurodisc S.A.").
+			It was present on both the vinyl and the cassette versions, as a track titled
+			"Juego de Los Gnomos para ordenador Spectrum".
+			It was programmed by Manuel Orcera within the Spanish company "Juliet Software" for the,
+			also Spanish, company "Compulogical S.A.".
+			The game was re-released on 1986 on the audio record "Baby Album" (also published by
+			"Ariola Eurodisc S.A."), but this time only on the vinyl version, not on the cassette.
+		-->
+		<description>David el Gnomo</description>
+		<year>1985</year>
+		<publisher>Ariola Eurodisc S.A.</publisher>
+		<info name="alt_title" value="Los Gnomos (inlay)"/>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="47189">
+				<rom name="david el gnomo.tzx" size="47189" crc="63322d16" sha1="a5b7ffa68267887e71ae4011888f628e9c0b5e89"/>
+			</dataarea>
+		</part>
+	</software>
+	
+	<software name="davgnomov" cloneof="davgnomo">
+		<!--
+			Same data as cassette version but with longer pauses.
+		-->
+		<description>David el Gnomo (vinyl version)</description>
+		<year>1985</year>
+		<publisher>Ariola Eurodisc S.A.</publisher>
+		<info name="alt_title" value="Los Gnomos (back cover)"/>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="47189">
+				<rom name="david el gnomo vinyl version.tzx" size="47189" crc="c9bee68e" sha1="7ebc4a65fc2a6d3b2a3a593bb32218dab13599a0"/>
+			</dataarea>
+		</part>
+	</software>
 
 	<!-- NC128 -->
 	<software name="dizzy">
@@ -11042,6 +11180,20 @@ license:CC0
 		</part>
 	</software>
 
+	<software name="globus">
+		<!--
+			Unreleased game.
+		-->
+		<description>Globus</description>
+		<year>1987</year>
+		<publisher>Paco Lafuente</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="48473">
+				<rom name="globus 22-2-87-3.tzx" size="48473" crc="1d696a7f" sha1="0c9b18b98037552b88b16d45bf4e3b5fbd69e0ac"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="gloop">
 		<description>Gloop</description>
 		<year>1994</year>
@@ -14457,6 +14609,31 @@ license:CC0
 	     Titles beginning with 'K'
 	     ############################################################################################################################## -->
 
+	<software name="kingleon">
+		<description>King Leonard</description>
+		<year>1986</year>
+		<publisher>Mind Games España</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="47859">
+				<rom name="king leonard.tzx" size="47859" crc="85ca3fb0" sha1="c258d60125ed72d4a69f86ed9a0860b8241446e8"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="kingleonb" cloneof="kingleon">
+		<!--
+			Identical to its other release.
+		-->
+		<description>King Leonard (large case)</description>
+		<year>1986</year>
+		<publisher>Mind Games España</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="47833">
+				<rom name="king leonard (large case).tzx" size="47833" crc="5502968d" sha1="b457b6e89096f5a43d722361acdc766d1a76aaf1"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="dizzyks">
 		<description>Kwik Snax Dizzy (set 1)</description>
 		<year>1990</year>
@@ -15356,6 +15533,23 @@ license:CC0
 	     Titles beginning with 'L'
 	     ############################################################################################################################## -->
 
+	<!-- NC128 -->
+	<software name="diosacoz">
+		<!--
+			Unreleased original 1987 version of Cozumel by Samusoft, freebie for Spanish Retro Gamer subscribers.
+			Later reissued by Matra in 2015 without the Retro Gamer branding.
+		-->
+		<description>La Diosa de Cozumel (Samusoft, Retro Gamer)</description>
+		<year>2013</year>
+		<publisher>Axel Springer / Matra</publisher>
+		<info name="alt_title" value="Diosa de Cozumel (in-game)"/>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="47992">
+				<rom name="cozumel (retro gamer).tzx" size="47992" crc="a96e2c5e" sha1="fce2355d09ed50a44bd370d6765b24d0fb456d35"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="lpuff">
 		<description>Little Puff In Dragon Land</description>
 		<year>1989</year>
@@ -15562,9 +15756,9 @@ license:CC0
 	</software>
 
 	<software name="attckatl" cloneof="lunaratt">
-		<description>Attack on Atlantis (Mind Games Espana)</description>
+		<description>Attack on Atlantis (Mind Games España)</description>
 		<year>1985</year>
-		<publisher>Mind Games Espana</publisher>
+		<publisher>Mind Games España</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="18212">
 				<rom name="attack on atlantis (mind games espana).tzx" size="18212" crc="7e3ddb3a" sha1="a7f4701e9720d496a8711485e825cd8b4b7943a9"/>
@@ -16692,7 +16886,7 @@ license:CC0
 	</software>
 
 	<software name="mminer">
-		<description>Manic Miner (set 1)</description>
+		<description>Manic Miner (Bug-Byte Software)</description>
 		<year>1983</year>
 		<publisher>Bug-Byte Software</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -16703,7 +16897,7 @@ license:CC0
 	</software>
 
 	<software name="mminera" cloneof="mminer"> <!-- doesn't have any proper loading screen -->
-		<description>Manic Miner (set 2)</description>
+		<description>Manic Miner (Bug-Byte Software, first release)</description>
 		<year>1983</year>
 		<publisher>Bug-Byte Software</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -16714,7 +16908,7 @@ license:CC0
 	</software>
 
 	<software name="mmineral" cloneof="mminer">
-		<description>Manic Miner (set 3, Al Rushaid)</description>
+		<description>Manic Miner (Al Rushaid)</description>
 		<year>1983</year>
 		<publisher>Bug-Byte Software Ltd / Al Rushaid</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -16725,7 +16919,7 @@ license:CC0
 	</software>
 
 	<software name="mminerm" cloneof="mminer">
-		<description>Manic Miner (set 4, MAD)</description>
+		<description>Manic Miner (MAD)</description>
 		<year>1983</year>
 		<publisher>Bug-Byte Software Ltd / MAD</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -16736,7 +16930,7 @@ license:CC0
 	</software>
 
 	<software name="mminers" cloneof="mminer">
-		<description>Manic Miner (set 5, Software Projects)</description>
+		<description>Manic Miner (Software Projects)</description>
 		<year>1983</year>
 		<publisher>Bug-Byte Software Ltd / Software Projects</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -16752,7 +16946,7 @@ license:CC0
 	</software>
 
 	<software name="mminerslsh" cloneof="mminer">
-		<description>Manic Miner (set 6, Software Projects -Version 1) (loading screen hack)</description>
+		<description>Manic Miner (Software Projects -Version 1) (loading screen hack)</description>
 		<year>19??</year>
 		<publisher>hack</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -16763,7 +16957,7 @@ license:CC0
 	</software>
 
 	<software name="mminerslsha" cloneof="mminer">
-		<description>Manic Miner (set 7, Software Projects - Version 2) (loading screen hack)</description>
+		<description>Manic Miner (Software Projects - Version 2) (loading screen hack)</description>
 		<year>19??</year>
 		<publisher>hack</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -16772,8 +16966,6 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-
-
 
 	<software name="mminered">
 		<description>Manic Miner Game Designer &amp; Editor (v8)</description>
@@ -18738,6 +18930,36 @@ license:CC0
 	     Titles beginning with 'O'
 	     ############################################################################################################################## -->
 
+	<software name="ogerox">
+		<!--
+			The version originally published in MicroHobby had some parts missing, this full game has been recovered directly from one of its authors.
+			Game can't be finished normally due to a bug. Requires to insert "POKE 59942,3" in its loader, in order to limit the number of on-screen sprites to 3, which lowers the number of enemies and allows the final door lock to appear.
+		-->
+		<description>Ogerox en los Dominios del Fuego</description>
+		<year>1988</year>
+		<publisher>Aroevs Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="41830">
+				<rom name="ogerox.tzx" size="41830" crc="2a39b3c5" sha1="bf593dc4e3f0a5bb9b4cb3a4379482dba21268b2"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="okcomput">
+		<!--
+			Last track of the 2017 cassette remaster of Radiohead's Ok Computer album.
+		-->
+		<description>Ok Computer Program (Radiohead – OK Computer OKNOTOK 1997 2017)</description>
+		<year>2017</year>
+		<publisher>XL Recordings</publisher>
+		<info name="usage" value="have to load and RUN as a BASIC program" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="939">
+				<rom name="radiohead ok computer.tzx" size="939" crc="78ad495d" sha1="5565b8925166ecc59ea62f5425de679504e8a4cf"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="olli">
 		<description>Olli &amp; Lissa - The Ghost of Shilmoore</description>
 		<year>1986</year>
@@ -19391,6 +19613,23 @@ license:CC0
 	<!-- ##############################################################################################################################
 	     Titles beginning with 'P'
 	     ############################################################################################################################## -->
+
+	<software name="progcomp">
+		<!--
+			This program was included as an audio track on the record "1984" from the Spanish
+			music group "La Mode". It was present only on the vinyl version (not on the cassette),
+			as the last track of the B side, titled as "Programa Computado".
+			It was programmed by Mario Gil (one of the "La Mode" group members).
+		-->
+		<description>Programa Computado (La Mode - 1984)</description>
+		<year>1984</year>
+		<publisher>La Mode / Ediciones Nemo</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="13378">
+				<rom name="lamode_1984_programa_computado.tzx" size="13308" crc="f87f7615" sha1="97b4d233855d3c5871c5a99aa516f8d26970989d"/>
+			</dataarea>
+		</part>
+	</software>
 
 	<software name="pacman">
 		<description>Pac-Man (set 1)</description>
@@ -22528,7 +22767,7 @@ license:CC0
 	</software>
 
 	<software name="resatlan">
-		<description>Rescate Atlantida (set 1, IB-S-006)</description>
+		<description>Rescate Atlántida (set 1, IB-S-006)</description>
 		<year>1989</year>
 		<publisher>Dinamic Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -22544,7 +22783,7 @@ license:CC0
 	</software>
 
 	<software name="resatlana" cloneof="resatlan">
-		<description>Rescate Atlantida (set 2)</description>
+		<description>Rescate Atlántida (set 2)</description>
 		<year>1989</year>
 		<publisher>Dinamic Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -22560,7 +22799,7 @@ license:CC0
 	</software>
 
 	<software name="resatlanb" cloneof="resatlan">
-		<description>Rescate Atlantida (set 3)</description>
+		<description>Rescate Atlántida (set 3)</description>
 		<year>1989</year>
 		<publisher>Dinamic Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -23214,6 +23453,39 @@ license:CC0
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="79855">
 				<rom name="redshift (standard load).tap" size="79855" crc="2198fb31" sha1="d84375ad96398e240ffb74344313302ef60194e3"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="renault">
+		<!--
+			Given away in the UK with the purchase of a Renault 9.
+		-->
+		<description>Renault After Sales</description>
+		<year>1984</year>
+		<publisher>Renault S.A.</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<feature name="part_id" value="Tape 1 Side A: Renault After Sales Service"/>
+			<dataarea name="cass" size="11608">
+				<rom name="renault after sales service tape 1 side a.tzx" size="11608" crc="bf105a69" sha1="bf9918423ee9d5c859ab2d56889ef80a47c6d34a"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<feature name="part_id" value="Tape 1 Side B: Maintaining your car"/>
+			<dataarea name="cass" size="28572">
+				<rom name="renault maintaining your car tape 1 side b.tzx" size="28572" crc="4469dc19" sha1="90fcaa16c3bb4b7608b1d5ab669df46388e4c099"/>
+			</dataarea>
+		</part>
+		<part name="cass3" interface="spectrum_cass">
+			<feature name="part_id" value="Tape 2 Side A: Where to find your Renault Dealer (Southern England and Whales)"/>
+			<dataarea name="cass" size="69229">
+				<rom name="renault where to find your renault dealer tape 2 side a.tzx" size="69229" crc="37e0c011" sha1="404089d17a40860c15f577b3e295dcb9d2585247"/>
+			</dataarea>
+		</part>
+		<part name="cass4" interface="spectrum_cass">
+			<feature name="part_id" value="Tape 2 Side B: Where to find your Renault Dealer (Northern England, Midlands, Scotland and Northern Ireland)"/>
+			<dataarea name="cass" size="58045">
+				<rom name="renault where to find your renault dealer tape 2 side b.tzx" size="58045" crc="01b2f134" sha1="89660a32414575f3621043177be138fbb1f3a874"/>
 			</dataarea>
 		</part>
 	</software>
@@ -28323,6 +28595,20 @@ license:CC0
 	     Titles beginning with 'W'
 	     ############################################################################################################################## -->
 
+	<software name="wanderx" cloneof="xadom">
+		<!--
+			Bootleg release of Xadom.
+		-->
+		<description>Wander X</description>
+		<year>1984</year>
+		<publisher>Visiogame</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="47230">
+				<rom name="wanderx.tzx" size="47230" crc="c731f870" sha1="8ace1bffa4dd005c7d90f811a4c9a1d8880e88ee"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="wilwasp">
 		<description>Willy The Wasp</description>
 		<year>2014</year>
@@ -32341,13 +32627,37 @@ license:CC0
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
 		<part name="cass1" interface="spectrum_cass">
+			<feature name="part_id" value="Side A: Hobby Suerte"/>
 			<dataarea name="cass" size="37784">
 				<rom name="microhobby suerte (side a).tzx" size="37784" crc="0224414e" sha1="bacd8305e2c13572805f0bcbd65772d3eb716e50"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
+			<feature name="part_id" value="Side B: Moon Battle"/>
 			<dataarea name="cass" size="43079">
 				<rom name="microhobby suerte (side b).tzx" size="43079" crc="97e25806" sha1="c2a251b92992f4687bcd77a4acaa54418d51f8e5"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mhobby037">
+		<!--
+			Released on flexi disc as a freebie.
+		-->
+		<description>MicroHobby (Issue 037) Discoflex</description>
+		<year>1985</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<feature name="part_id" value="Side A: Wargame"/>
+			<dataarea name="cass" size="17874">
+				<rom name="wargame.tzx" size="17874" crc="b7fe1301" sha1="c9317f0804dfe5963e8ff9271b401cd74645e850"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<!-- NC128 -->
+			<feature name="part_id" value="Side B: Hyper Sports (demo)"/>
+			<dataarea name="cass" size="37597">
+				<rom name="hyper sports demo.tzx" size="37597" crc="f5281d15" sha1="e89f2cb8891b831e4e2cbb19f32f9a76673b6eb2"/>
 			</dataarea>
 		</part>
 	</software>
@@ -39806,9 +40116,9 @@ license:CC0
 
 
 	<software name="accelera">
-		<description>Accelerator (Mind Games Espana)</description>
+		<description>Accelerator (Mind Games España)</description>
 		<year>1985</year>
-		<publisher>Mind Games Espana</publisher>
+		<publisher>Mind Games España</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="35518">
 				<rom name="accelerator (mind games espana).tzx" size="35518" crc="eaf3109a" sha1="c0ea1edc7632d1d5ea5196668ede490a59fd72fb"/>
@@ -45903,7 +46213,7 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="basketma">
+	<software name="basketma" cloneof="fmbm">
 		<description>Basket Master</description>
 		<year>1988</year>
 		<publisher>Imagine Software</publisher>
@@ -54697,6 +55007,24 @@ license:CC0
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="41612">
 				<rom name="colditz.tzx" size="41612" crc="8d54be08" sha1="0fb3e9d82d3d6ef73ca24ee2267f89afc4c92135"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="dinamic90">
+		<description>Colección Dinamic-90</description>
+		<year>1989</year>
+		<publisher>Dinamic Software</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<feature name="part_id" value="Side A: Navy Moves, Aspar - GP Master, Comando Tracer"/>
+			<dataarea name="cass" size="171005">
+				<rom name="coleccion dinamic-90 - side 1.tzx" size="171005" crc="baf08d41" sha1="9b53704eaab1d825b26b38c8499e222935c20c15"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<feature name="part_id" value="Side B: Rescate Atlántida, Bestial Warrior"/>
+			<dataarea name="cass" size="280275">
+				<rom name="coleccion dinamic-90 - side 2.tzx" size="280275" crc="981e919e" sha1="5c4702e01758eb26f65c565fe4954b2691d1510f"/>
 			</dataarea>
 		</part>
 	</software>
@@ -69768,13 +70096,27 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="fernando">
+	<software name="fmbm">
 		<description>Fernando Martin Basket Master</description>
 		<year>1987</year>
 		<publisher>Dinamic Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47514">
 				<rom name="fernando martin basket master.tzx" size="47514" crc="f97e5238" sha1="c417a90325d14bb689c21b1ba62b6b39cb44b03e"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="fmbmdemo" cloneof="fmbm">
+		<!--
+			This demo was pitched to Dinamic by Gonzalo Martin Erro and Julio A. Martin Erro before it was fully developed as a commercial game. The recovered version was a bootleg distribution, no Microdrive cartridges with official builds are known to have survived.
+		-->
+		<description>Fernando Martin Basket Master (pitch demo, bootleg)</description>
+		<year>1987</year>
+		<publisher>Dinamic Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="48126">
+				<rom name="fernando martin basket master (pitch demo, bootleg).tzx" size="48126" crc="67fde8f1" sha1="797cc20061236cc923a69a3c52ae5e65784713d9"/>
 			</dataarea>
 		</part>
 	</software>
@@ -81881,9 +82223,9 @@ license:CC0
 	</software>
 
 	<software name="houshillb" cloneof="houshill">
-		<description>The House on Damned Hill (Mind Games Espana)</description>
+		<description>The House on Damned Hill (Mind Games España)</description>
 		<year>1985</year>
-		<publisher>Mind Games Espana</publisher>
+		<publisher>Mind Games España</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="54951">
 				<rom name="the house on damned hill - side 1 (mind games espana).tzx" size="54951" crc="d6aeeb0f" sha1="dea498dbe0e7357e7a6dd6cc5c5d8f8caaf5f0b9"/>
@@ -92180,27 +92522,6 @@ license:CC0
 		</part>
 	</software>
 
-	<!--
-	This program was included as an audio track on the record "David el Gnomo" (the OST from the
-	       Spanish TV animation series with the same name, published by "Ariola Eurodisc S.A.").
-	       It was present on both the vinyl and the casstette versions, as a track titled
-	       "Juego de Los Gnomos para ordenador Spectrum".
-	       It was programmed by Manuel Orcera within the Spanish company "Juliet Software" for the,
-	       also Spanish, company "Compulogical S.A.".
-	       The game was re-released on 1986 on the audio record "Baby Album" (also published by
-	       "Ariola Eurodisc S.A."), but this time only on the vinyl version, not on the cassette.
-	-->
-	<software name="losgnomos">
-		<description>Los Gnomos - David el Gnomo</description>
-		<year>1985</year>
-		<publisher>Ariola Eurodisc S.A.</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="47189">
-				<rom name="david el gnomo.tzx" size="47189" crc="c9bee68e" sha1="7ebc4a65fc2a6d3b2a3a593bb32218dab13599a0"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<software name="lospajar">
 		<description>Los Pajaros De Bangkok</description>
 		<year>1988</year>
@@ -94475,9 +94796,9 @@ license:CC0
 	</software>
 
 	<software name="mantrapa" cloneof="mantrap">
-		<description>Man Trap (set 2, Mind Games Espana)</description>
+		<description>Man Trap (set 2, Mind Games España)</description>
 		<year>1985</year>
-		<publisher>Mind Games Espana</publisher>
+		<publisher>Mind Games España</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="13772">
 				<rom name="man trap (mind games espana).tzx" size="13772" crc="0a33d1c4" sha1="d467d0dc8da4e3f2e400ec7871984fabc25b7607"/>
@@ -100429,6 +100750,17 @@ license:CC0
 		</part>
 	</software>
 
+	<software name="murcie4d">
+		<description>Murciélago en la Cuarta Dimensión (demo)</description>
+		<year>1987</year>
+		<publisher>Paco Lafuente</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="7377">
+				<rom name="demo murcielago.tzx" size="7377" crc="50d4dabc" sha1="cf54f0aa52d437b8bca491786c36a297a7a340a9"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="mhesaid">
 		<description>Murder - He Said (set 1, Zenobi, release 2)</description>
 		<year>1993</year>
@@ -102658,7 +102990,7 @@ license:CC0
 	</software>
 
 	<software name="nfaldob" cloneof="nfaldo">
-		<description>Nick Faldo Plays The Open (set 3, Mind Games Espana)</description>
+		<description>Nick Faldo Plays The Open (set 3, Mind Games España)</description>
 		<year>1985</year>
 		<publisher>Mind Games / Mind Games Espana</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -104486,9 +104818,9 @@ license:CC0
 	</software>
 
 	<software name="olympicc">
-		<description>Olympic Challenge (Mind Games Espana)</description>
+		<description>Olympic Challenge (Mind Games España)</description>
 		<year>1985</year>
-		<publisher>Mind Games Espana</publisher>
+		<publisher>Mind Games España</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47977">
 				<rom name="olympic challenge (mind games espana).tzx" size="47977" crc="addfcefb" sha1="c5d339eb2e59428415cf6dab073ea3fa1cc88e7e"/>
@@ -110977,6 +111309,7 @@ license:CC0
 		</part>
 	</software>
 
+	<!-- NC128 -->
 	<software name="proteus">
 		<description>Proteus (Ultrasoft)</description>
 		<year>1984</year>
@@ -110984,6 +111317,18 @@ license:CC0
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="55472">
 				<rom name="proteus (ultrasoft).tzx" size="55472" crc="abf262b7" sha1="3b5b4f24713e4411904f4440d0dcfac418588e0f"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<!-- NC128 -->
+	<software name="proteus86">
+		<description>Proteus</description>
+		<year>1986</year>
+		<publisher>Jorge Perez Barreiro</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="32173">
+				<rom name="proteus.tap" size="32173" crc="9604c599" sha1="cc3bee56c8d6174c940c077bfa68a46ccc77b404"/>
 			</dataarea>
 		</part>
 	</software>
@@ -119703,7 +120048,7 @@ license:CC0
 	</software>
 
 	<software name="sentnelsb" cloneof="sentnels">
-		<description>Sentinels (set 3, Mind Games Espana)</description>
+		<description>Sentinels (set 3, Mind Games España)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -139605,6 +139950,19 @@ license:CC0
 		</part>
 	</software>
 
+	<software name="vegasolrg" cloneof="vegasol">
+		<!--
+			Identical to the (previously recovered) unreleased final Spanish version, freebie for Spanish Retro Gamer subscribers.
+		-->
+		<description>Vega Solaris (Retro Gamer)</description>
+		<year>2013</year>
+		<publisher>Axel Springer / Matra</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="55996">
+				<rom name="vega solaris (retro gamer).tzx" size="55996" crc="c9e7b029" sha1="e0995dceaeeffccbc9d863db12a57749fe901226"/>
+			</dataarea>
+		</part>
+	</software>
 
 	<software name="vegatabl">
 		<description>Vega-Table</description>
@@ -144439,8 +144797,19 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="xadomfkw">
-		<description>Xadom (F+K-Ware)</description>
+	<software name="xadom">
+		<description>Xadom</description>
+		<year>1983</year>
+		<publisher>Quicksilva</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="45779">
+				<rom name="xadom.tzx" size="45779" crc="0340171a" sha1="980c2626be0894b5c8ca16365ec695d4c2dcf53e"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="xadomfkw" cloneof="xadom">
+		<description>Xadom (F+K Ware)</description>
 		<year>1983</year>
 		<publisher>F+K Ware</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -144450,13 +144819,41 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="xadom">
-		<description>XADOM</description>
+	<software name="xadominv" cloneof="xadom">
+		<description>Xadom (Investronica)</description>
 		<year>1983</year>
-		<publisher>Quicksilva</publisher>
+		<publisher>Investronica</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="45779">
-				<rom name="xadom.tzx" size="45779" crc="0340171a" sha1="980c2626be0894b5c8ca16365ec695d4c2dcf53e"/>
+			<dataarea name="cass" size="45090">
+				<rom name="xadom (investronica).tzx" size="45090" crc="357e8f85" sha1="8ad7a69f135a511453fc6bdd6347e8fb5a25b690"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="xadommb" cloneof="xadom">
+		<!--
+			Same data as Investronica release but with different pause lengths.
+		-->
+		<description>Xadom (Microbyte)</description>
+		<year>1987</year>
+		<publisher>Microbyte</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="45077">
+				<rom name="xadom (microbyte).tzx" size="45077" crc="0b16f21e" sha1="0d2e1ae729fd3bbf7cc045bdd3453e32102c01a1"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="xadomps" cloneof="xadom">
+		<!--
+			Same data as Quiksilva release but with different pause lengths.
+		-->
+		<description>Xadom (Power Software)</description>
+		<year>1983</year>
+		<publisher>Power Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="45809">
+				<rom name="xadom (power software).tzx" size="45809" crc="c6f4600b" sha1="27ecfc5a1f130e4afd1478e9c2d89a63f34b21f2"/>
 			</dataarea>
 		</part>
 	</software>
@@ -144627,7 +145024,7 @@ license:CC0
 	</software>
 
 	<software name="xenoc" cloneof="xeno">
-		<description>Xeno (Mind Games Espana)</description>
+		<description>Xeno (Mind Games España)</description>
 		<year>1986</year>
 		<publisher>A'n'F Software / Mind Games Espana</publisher>
 		<part name="cass" interface="spectrum_cass">
