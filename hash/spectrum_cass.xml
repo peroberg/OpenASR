@@ -7074,7 +7074,7 @@ license:CC0
 		<publisher>Code Masters</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48885">
-					<rom name="dizzy - the ultimate cartoon adventure.tap" size="48857" crc="6481fe73" sha1="eced00a33cc0d88f66cdacd79c9f6a5e15e7a745"/>
+				<rom name="dizzy - the ultimate cartoon adventure.tap" size="48857" crc="6481fe73" sha1="eced00a33cc0d88f66cdacd79c9f6a5e15e7a745"/>
 			</dataarea>
 		</part>
 	</software>
@@ -13772,7 +13772,7 @@ license:CC0
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Tape 1 - Side 1: Main Loader 1"/>
 			<dataarea name="cass" size="49089">
-					<rom name="jet bike simulator - tape 1 - side 1.tzx" size="49089" crc="b32a78a6" sha1="9707083b0f1c0b5517c7d68a902cc0304a89e11c"/>
+				<rom name="jet bike simulator - tape 1 - side 1.tzx" size="49089" crc="b32a78a6" sha1="9707083b0f1c0b5517c7d68a902cc0304a89e11c"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
@@ -14080,7 +14080,7 @@ license:CC0
 		</part>
 	</software>
 
-		<software name="jsw128_1" cloneof="jsw128">
+	<software name="jsw128_1" cloneof="jsw128">
 		<description>Jet Set Willy - 128k v.0.00 Hack Level 1</description>
 		<year>1996</year>
 		<publisher>&lt;unknown&gt;</publisher>
@@ -19101,7 +19101,7 @@ license:CC0
 		<publisher>Watson Software Services</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Side 1 - The Open"/>
-			<dataarea name="cass" size="41645"> <!-- identical to image in 'opencarn::cass1'  -->
+			<dataarea name="cass" size="41645"> <!-- identical to image in 'opencarn::cass1' -->
 				<rom name="the open - carnoustie - alternate - side 1.tzx" size="41645" crc="cd06ad11" sha1="c21a419a4416f605d9b7796bae0460caca5a3c92"/>
 			</dataarea>
 		</part>
@@ -23496,7 +23496,7 @@ license:CC0
 
 	<software name="shockmd">
 		<!-- NC128 -->
-		<!--    Generated from the "SHOCKSAVER" program in the covertape for Sinclair User #85  -->
+		<!-- Generated from the "SHOCKSAVER" program in the covertape for Sinclair User #85 -->
 		<description>Shock Megademo</description>
 		<year>1992</year>
 		<publisher>Sinclair User</publisher>
@@ -24779,7 +24779,7 @@ license:CC0
 		<description>Super Sprint (The Hit Squad)</description>
 		<year>1987</year>
 		<publisher>Electric Dreams Software / The Hit Squad</publisher>
-			<part name="cass" interface="spectrum_cass">
+		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="52544">
 				<rom name="super sprint (the hit squad).tzx" size="52544" crc="f1912dc5" sha1="d8d98be166233c5694407b35f36aab683b3ac105"/>
 			</dataarea>
@@ -28732,7 +28732,7 @@ license:CC0
 				<rom name="wonder boy (the hit squad) - alternate - side 1.tzx" size="101989" crc="1192f199" sha1="0e96c17566e2473355ad2bba0cc567ff86b83650"/>
 			</dataarea>
 		</part>
-			<part name="cass2" interface="spectrum_cass">
+		<part name="cass2" interface="spectrum_cass">
 			<feature name="part_id" value="Side 2"/>
 			<dataarea name="cass" size="29482">
 				<rom name="wonder boy (the hit squad) - alternate - side 2.tzx" size="29482" crc="e608576c" sha1="55ee715194b1c088f46364a6b37531114bd92855"/>
@@ -30147,7 +30147,7 @@ license:CC0
 		<publisher>Argus Press Software Ltd</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Tape 1 - Side 1 - Carpet Capers, Antics, Planetfall, Gridrunner, Bismark, Meteor Storm, Jet Set Gertie"/>
-				<dataarea name="cass" size="186165">
+			<dataarea name="cass" size="186165">
 				<rom name="30 games - side 1.tzx" size="186165" crc="71f8cbb8" sha1="1bff04db16b5b5c17350aa1455dd5d92c8d7de00"/>
 			</dataarea>
 		</part>
@@ -33734,7 +33734,7 @@ license:CC0
 	</software>
 
 	<software name="lnrsp105">
-		<!--    Verified dump from trusted source. Previous version had one block missing and its loader altered.   -->
+		<!-- Verified dump from trusted source. Previous version had one block missing and its loader altered. -->
 		<description>Load'N'Run (Spain) (Issue 05)</description>
 		<year>1985</year>
 		<publisher>Mecsa / Inforpress</publisher>
@@ -33847,8 +33847,8 @@ license:CC0
 	</software>
 
 	<software name="lnrsp10e">
-		<!--    Verified dump from trusted source. Previous version had a block name altered and had been converted to TZX from a TAP file. -->
-		<!--    Both sides contain the same data    -->
+		<!-- Verified dump from trusted source. Previous version had a block name altered and had been converted to TZX from a TAP file. -->
+		<!-- Both sides contain the same data -->
 		<description>Load'N'Run (Spain) (Especial)</description>
 		<year>1985</year>
 		<publisher>Mecsa / Inforpress</publisher>
@@ -79700,7 +79700,7 @@ license:CC0
 		</part>
 	</software>
 
-		<software name="hercules">
+	<software name="hercules">
 		<description>Hercules (set 1, Alpha-Omega Software)</description>
 		<year>1986</year>
 		<publisher>Alpha-Omega Software</publisher>
@@ -150854,7 +150854,7 @@ license:CC0
 				<rom name="caramelos y batalla naval - side 2.tzx" size="23652" crc="3c28529e" sha1="48a2972cbd3a4cd47ea3dbeb045ce23364df0f73"/>
 			</dataarea>
 		</part>
-		</software>
+	</software>
 
 	<software name="carmbna" cloneof="carmbn">
 		<description>Caramelos &amp; Batalla Naval (set 2)</description>
