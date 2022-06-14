@@ -37474,6 +37474,827 @@ license:CC0
 		</part>
 	</software>
 
+	<!--
+		####################################
+			Type-ins from "MicroHobby"		
+		####################################
+	-->
+
+	<software name="timh125balalin">
+		<!--
+			By Juan Carlos Caneiro Gago.
+		-->
+		<description>Balalín (type-in, MicroHobby #125)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="7767">
+				<rom name="Balalin.tap" size="7767" crc="42fd702c" sha1="110fde199151c7f6d3ef94bf93b1e9fc9ee6d2d3"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh126magnusz">
+		<!--
+			By Carlos Quintero González.
+		-->
+		<description>Magnus Zone (type-in, MicroHobby #126)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="5785">
+				<rom name="Magnus Zone.tap" size="5785" crc="f5473a9b" sha1="24a42c3c4aea194575d0ba7f9b9a94f76403f3c0"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<!-- NC128 -->
+	<software name="timh127oraculoe">
+		<!--
+			By Agustín Fernández and Antonio Fernández.
+			Graphics set was published incomplete, some cards aren't displayed correctly.
+		-->
+		<description>Oráculo Egipcio (type-in, MicroHobby #127)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="24320">
+				<rom name="Oraculo Egipcio.tap" size="24320" crc="06ce6dbc" sha1="a973ffda800dc15a0e89fdb2c905f5f051357838"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh128demoliti">
+		<!--
+			By Manuel Rodríguez Corzo (Coloma Soft).
+		-->
+		<description>Demolition (type-in, MicroHobby #128)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<info name="alt_title" value="El Muro (in-game)"/>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="2862">
+				<rom name="Demolition.tap" size="2862" crc="468c4fbe" sha1="ab93bbef2a4f046b373e8b0b6f10b2d9a3e61821"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<!-- NC128 -->
+	<software name="timh129baskettr">
+		<!--
+			By David Enrich and Victor Mora (Jantycar).
+		-->
+		<description>Basket Trainer (type-in, MicroHobby #129)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<info name="alt_title" value="International Basketball (in-game)"/>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="6171">
+				<rom name="Basket Trainer.tap" size="6171" crc="934683db" sha1="1438d78bdde2b6292b735a5677993bdc2eba609e"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh130galaxyf">
+		<!--
+			By Juan José Sánchez Plaza.
+		-->
+		<description>Galaxy Fun (type-in, MicroHobby #130)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="7940">
+				<rom name="Galaxy Fun.tap" size="7940" crc="bf2cb77d" sha1="03e9e7834601b1099febe848c9f0f8a4c5b9aa07"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh131microdr">
+		<!--
+			By Luis Ángel Alda Rodríguez.
+		-->
+		<description>Micro Draw (type-in, MicroHobby #131, #132)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="13387">
+				<rom name="Micro Draw.tap" size="13387" crc="a0ff47cb" sha1="50fa6a60a06fe928d0ef6138a7921ea5d3e86b21"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh133alambris">
+		<!--
+			By Pilar and Ciriaco Uzquiaga.
+		-->
+		<description>El Alambrista (type-in, MicroHobby #133)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="9214">
+				<rom name="El Alambrista.tap" size="9214" crc="edfe7ac0" sha1="5df8a066b618281de315c5819a62538048df01ad"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh134ranamire">
+		<!--
+			By Vicente Javier Jiménez Vázquez.
+		-->
+		<description>Ranamirez (type-in, MicroHobby #134)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="4905">
+				<rom name="Ranamirez.tap" size="4905" crc="cb22ec8b" sha1="d255df3e704994904fa239932ed873d4f20e3cd1"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<!-- NC128 -->
+	<software name="timh135formsuic">
+		<!--
+			By Carlos Quirós Fernández.
+		-->
+		<description>Fórmula Suicida (type-in, MicroHobby #135)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="5389">
+				<rom name="Formula Suicida.tap" size="5389" crc="49b536f0" sha1="1d73c7e4d1a59f9730960931367bc74438cfa3ec"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh136phantasm">
+		<!--
+			By Vicente Javier Jiménez Vázquez.
+		-->
+		<description>Phantasmas (type-in, MicroHobby #136)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="9244">
+				<rom name="Phantasmas.tap" size="9244" crc="e64aac02" sha1="958949b358af451406d686940d2a3d82511406e0"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh137dardos">
+		<!--
+			By Sergio Hernández Cerezo.
+		-->
+		<description>Dardos (type-in, MicroHobby #137)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="10929">
+				<rom name="Dardos.tap" size="10929" crc="6ca7350b" sha1="fe6852e2ad43ac67e0ef14a85b813a382a7ffcac"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh138semisis">
+		<!--
+			By Manuel Guillén Barranco.
+		-->
+		<description>S.E.M.I.S.I.S. (type-in, MicroHobby #138, #139)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="26151">
+				<rom name="S.E.M.I.S.I.S..tap" size="26151" crc="62a6c5dc" sha1="5ed991fb917986cbc640eb9125f719ffdd5dd6c1"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh140alleysg">
+		<!--
+			By Francisco Javier Cámara Melosa.
+		-->
+		<description>Alley's Gun (type-in, MicroHobby #140)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<info name="alt_title" value="Hogan's Alley (in-game)"/>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="29615">
+				<rom name="Alleys Gun.tap" size="29615" crc="f75b1b70" sha1="686899c7b840e111850e62d5b691958641fff7e0"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh141kleingel">
+		<!--
+			By José Manuel Herrerías Estéban.
+		-->
+		<description>Kleingeld (type-in, MicroHobby #141, #142)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="31107">
+				<rom name="Kleingeld.tap" size="31107" crc="5b62a784" sha1="1f985875ee35aa84efaf42aae32751c59cc48aae"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh143caribesd">
+		<!--
+			By José Luis Simón Rubio and Javier Simón Rubio (Simon Soft).
+		-->
+		<description>Caribe’s Day (type-in, MicroHobby #143)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<info name="alt_title" value="Un Día en el Caribe (in-game)"/>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="15457">
+				<rom name="Caribes Day.tap" size="15457" crc="4b1386c5" sha1="c99718160df45cbaf46549b44fc3b5a5915df1cb"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh144rally">
+		<!--
+			By Antonio Sánchez Albares (Tony Soft).
+		-->
+		<description>Rally (type-in, MicroHobby #144)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="6290">
+				<rom name="Rally.tap" size="6290" crc="becac5b9" sha1="dfe652c1bd60204385f91cc70f434edca72c2e9a"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh145profecia">
+		<!--
+			By Vicente Javier Jiménez Vázquez.
+		-->
+		<description>La Profecía (type-in, MicroHobby #145)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="9346">
+				<rom name="La Profecia.tap" size="9346" crc="93e25efb" sha1="758f188d66b79d2cc9c14a5055fe09a32c8fd98c"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<!-- NC128 -->
+	<software name="timh146minealer">
+		<!--
+			By Ramón Gallastegui.
+		-->
+		<description>Mine Alert (type-in, MicroHobby #146, #147)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="31396">
+				<rom name="Mine Alert.tap" size="31396" crc="540606d4" sha1="2138f91dae82105d4830e934ec83aea73a04e855"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<!-- NC128 -->
+	<software name="timh148freddy">
+		<!--
+			By Antonio González Rivas and Luis Alberto González Rivas (HighSoftware).
+		-->
+		<description>Freddy (type-in, MicroHobby #148)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="17165">
+				<rom name="Freddy.tap" size="17165" crc="a957ce8f" sha1="b62056c538e6c425d1a06275f93e3cb021699e23"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<!-- NC128 -->
+	<software name="timh149russatck">
+		<!--
+			By Pablo I. Sánchez Martín.
+		-->
+		<description>Russian's Attack (type-in, MicroHobby #149, #150)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<info name="alt_title" value="Wargame II - Russian's Attack (in-game)"/>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="37790">
+				<rom name="Russians Attack.tap" size="37790" crc="6bc78d1c" sha1="21774a3e0114c8ae79f0ae7b0e643c6b89c26e53"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<!-- NC128 -->
+	<software name="timh151enruta">
+		<!--
+			By Miguel Ángel Montoya.
+		-->
+		<description>En Ruta (type-in, MicroHobby #151)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="9326">
+				<rom name="En Ruta.tap" size="9326" crc="55d7949d" sha1="8e01619c5916dd22cd22967f4623678a068ce46d"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh152zinco">
+		<!--
+			By Juan José Rivas García.
+		-->
+		<description>Zinco (type-in, MicroHobby #152)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="7496">
+				<rom name="Zinco.tap" size="7496" crc="8f1867ab" sha1="3bc5a5f8cf2703a6f8bd0f409c2bc5553d8fb469"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh153ruffosdr">
+		<!--
+			By José Antonio García and Juan José González.
+		-->
+		<description>Ruffo’s Dream (type-in, MicroHobby #153)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<info name="alt_title" value="El Sueño de Ruffo (in-game)"/>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="14613">
+				<rom name="Ruffos Dream.tap" size="14613" crc="ae8d4406" sha1="d8270207f52a6eb56ee16ece45e827ad001043b5"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh154crozet">
+		<!--
+			By Tomás Ledo.
+		-->
+		<description>Crozet (type-in, MicroHobby #154)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="7776">
+				<rom name="Crozet.tap" size="7776" crc="65446415" sha1="eabdc4e2868c5269fb179e9cd133dee2653629f7"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<!-- NC128 -->
+	<software name="timh155rockanim">
+		<!--
+			By José Enrique Ceballos Olmos.
+			Requires playing a music cassette to work.
+		-->
+		<description>Rock Animation (type-in, MicroHobby #155)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="20261">
+				<rom name="Rock Animation.tap" size="20261" crc="d24ef54d" sha1="9ead7c6612574d421b7f807ee56b8299aa814ad6"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh156bunker">
+		<!--
+			By Moisés Vilalta Pons.
+		-->
+		<description>Bunker (type-in, MicroHobby #156)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="9128">
+				<rom name="Bunker.tap" size="9128" crc="7bdd1018" sha1="b92d68ea28952a14c5c849d6562624640f03e396"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<!-- NC128 -->
+	<software name="timh157telepuzz">
+		<!--
+			By Eduardo Llana Ugalde.
+			Requires loading 2-4 SCREEN$ blocks to work.
+			Was published with a wrong loading address for one machine code block, which had to be fixed.
+		-->
+		<description>Telepuzzle (type-in, MicroHobby #157)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<info name="alt_title" value="TV Puzzle (in-game)"/>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="9865">
+				<rom name="Telepuzzle.tap" size="9865" crc="d0a44134" sha1="9342e40fdaba69ccf53f6eb4cdc5376df16b06a2"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh158golfoper">
+		<!--
+			By Ciriaco Uzquiaga Zardoya.
+		-->
+		<description>Golfo Pérsico (type-in, MicroHobby #158)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<info name="alt_title" value="Indiana Jones (loading screen), Indyana Jones (in-game)"/>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="9436">
+				<rom name="Golfo Persico.tap" size="9436" crc="49b42913" sha1="5ae07999ab8b5ba5dca9e8aec360de7e05f1167f"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh159maddriv">
+		<!--
+			By Fernando de la Villa Albares.
+		-->
+		<description>Mad Drivers (type-in, MicroHobby #159)</description>
+		<year>1987</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="9527">
+				<rom name="Mad Drivers.tap" size="9527" crc="5600f239" sha1="5d88a964aa450b399e1bb149d38f9912ff028705"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh160bowlstar">
+		<!--
+			By Miguel Ángel García Martínez.
+		-->
+		<description>Bowling Star (type-in, MicroHobby #160)</description>
+		<year>1988</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="8316">
+				<rom name="Bowling Star.tap" size="8316" crc="0355937b" sha1="b86b2f54c4e2812f352785fb6de5ad93e470df63"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh161gascar">
+		<!--
+			By Moisés Villa Rivas (Buho Soft).
+		-->
+		<description>Gas-Car (type-in, MicroHobby #161)</description>
+		<year>1988</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="4867">
+				<rom name="Gas-Car.tap" size="4867" crc="030cd4d2" sha1="ea20a4a4aaa971f4895c96f290f33a6e024c0f8d"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh162ghostlik">
+		<!--
+			By Rafael Eduardo García (Made In Argentina Soft).
+		-->
+		<description>Ghost Like (type-in, MicroHobby #162)</description>
+		<year>1988</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="13935">
+				<rom name="Ghost Like.tap" size="13935" crc="c9ae8465" sha1="160056493caef3c2478c0da227c18ee80db3f84e"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh163skyinvad">
+		<!--
+			By Enrique López Martínez.
+		-->
+		<description>Sky Invaders (type-in, MicroHobby #163)</description>
+		<year>1988</year>
+		<publisher>Hobby Press</publisher>
+		<info name="alt_title" value="Snake Vs Snake (in-game)"/>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="5859">
+				<rom name="Sky Invaders.tap" size="5859" crc="c039f968" sha1="5870c0cbd04e89049f2a7f8c26d647a8ad2bea0e"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh164pericojo">
+		<!--
+			By Fernando Ruza Rodríguez.
+		-->
+		<description>Perico Jones (type-in, MicroHobby #164)</description>
+		<year>1988</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="19096">
+				<rom name="Perico Jones.tap" size="19096" crc="87747856" sha1="c46f6a8b1ed8743bd114d872553c36505f4d655a"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh165bradzote">
+		<!--
+			By Fernando Mouriño Varela, Alberto and Carlos.
+		-->
+		<description>Brad Zotes (type-in, MicroHobby #165)</description>
+		<year>1988</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="21949">
+				<rom name="Brad Zotes.tap" size="21949" crc="4e605b0b" sha1="5d2f082a46eb4edb444b77397268cb2cc3d799a0"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh166striker">
+		<!--
+			By Octavio Campos Barroso.
+		-->
+		<description>Striker (type-in, MicroHobby #166)</description>
+		<year>1988</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="4577">
+				<rom name="Striker.tap" size="4577" crc="c883a22b" sha1="e9f9de6852dc466fdcc5287a25745769b7585eba"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh167indy">
+		<!--
+			By Encarna Mengual Parra and Octavio Montagud Ballester.
+		-->
+		<description>Indy (type-in, MicroHobby #167)</description>
+		<year>1988</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="19666">
+				<rom name="Indy.tap" size="19666" crc="0e863ce4" sha1="d5e465b7d88c5f1140c71d0e9ce4fe4bde3a16c8"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh168topin">
+		<!--
+			By José Ignacio Vicario P.
+		-->
+		<description>Topin (type-in, MicroHobby #168)</description>
+		<year>1988</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="8939">
+				<rom name="Topin.tap" size="8939" crc="a1bd0d27" sha1="9eef446b0a1ebea3861280645511a8bf2dd3ebc1"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh169starlike">
+		<!--
+			By Moisés Villa Rivas (Buho Soft).
+		-->
+		<description>Starlike (type-in, MicroHobby #169)</description>
+		<year>1988</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="13685">
+				<rom name="Starlike.tap" size="13685" crc="b6ac7280" sha1="63244aa003fb42ee7d467e86330652a2f8f1473b"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh170tresraya">
+		<!--
+			By Alberto Vilades Laborda.
+			Crashes when pressing 6, something's wrong with it.
+		-->
+		<description>Tres en Raya (type-in, MicroHobby #170)</description>
+		<year>1988</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="5188">
+				<rom name="Tres en Raya.tap" size="5188" crc="a5f2f5b8" sha1="c263fe4328c85ad04c383fc51f59b32aeb366fe1" status="baddump"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<!-- NC128 -->
+	<software name="timh171goteras">
+		<!--
+			By César Álvarez and J. Ignacio Martín (Coslada Soft).
+		-->
+		<description>Goteras (type-in, MicroHobby #171)</description>
+		<year>1988</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="5785">
+				<rom name="Goteras.tap" size="5785" crc="595a43f2" sha1="22c00d13361b9aa370c9b090d1ac960444d96a60"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<!-- NC128 -->
+	<software name="timh172parvisio">
+		<!--
+			By J. P. Olabarrieta.
+		-->
+		<description>Parvision (type-in, MicroHobby #172)</description>
+		<year>1988</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="17038">
+				<rom name="Parvision.tap" size="17038" crc="fbce1994" sha1="a66d234d0f6ea4c63c790d2006c3479ddb217e31"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh173furax">
+		<!--
+			By Fermín Gómez Laguna.
+			Graphics garbled in title screen, was it published like this?
+		-->
+		<description>Furax (type-in, MicroHobby #173)</description>
+		<year>1988</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="6851">
+				<rom name="Furax.tap" size="6851" crc="44208e70" sha1="3bd0ae422a9c6acaf940feb93c4b132bc9703d1f"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh174duckshoo">
+		<!--
+			By Juan Francisco Vázquez.
+		-->
+		<description>Duck Shooting (type-in, MicroHobby #174)</description>
+		<year>1988</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="7730">
+				<rom name="Duck Shooting.tap" size="7730" crc="c436cc7a" sha1="eee8257c67e083d1719d5036ef78b77a6fb43eee"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh175nomenros">
+		<!--
+			By Marco Montes de Oca González.
+		-->
+		<description>Nomen Rosae (type-in, MicroHobby #175)</description>
+		<year>1988</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="29317">
+				<rom name="Nomen Rosae.tap" size="29317" crc="d8b6d817" sha1="5329c9ce0ea7615ed3a40bcdf25062888eac720c"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<!-- NC128 -->
+	<software name="timh176punkyman">
+		<!--
+			By Luis Miguel Agudelo.
+		-->
+		<description>PunkyMan (type-in, MicroHobby #176)</description>
+		<year>1988</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="21974">
+				<rom name="PunkyMan.tap" size="21974" crc="4a765ced" sha1="2a748d74c92b1ee6fa98017ef3aa6e391ff8af8f"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh177retyedi">
+		<!--
+			By José Victor Mora (Jantycar).
+		-->
+		<description>El Retorno del Yedi (type-in, MicroHobby #177)</description>
+		<year>1988</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="5018">
+				<rom name="El Retorno del Yedi.tap" size="5018" crc="5f5435fb" sha1="04cdd2162f533be6b16236dd66c0c0a441325118"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh178skywar">
+		<!--
+			By Rafael Albelda.
+			To make it work under 48K Basic on a Spectrum +3, insert 'OUT 32765,48' before the RANDOMIZE instruction.
+		-->
+		<description>Sky Warrior (type-in, MicroHobby #178)</description>
+		<year>1988</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="11968">
+				<rom name="Sky Warrior.tap" size="11968" crc="547976e8" sha1="fa3f50a5e1756aa871bf95c54971261506fda041"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh179reptkon">
+		<!--
+			By Eduardo Martín.
+		-->
+		<description>Reptkon (type-in, MicroHobby #179)</description>
+		<year>1988</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="4072">
+				<rom name="Reptkon.tap" size="4072" crc="c2a71768" sha1="1d895f85de00e3f2cd821067acd773adbfeac2cb"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<!-- NC128 -->
+	<software name="timh180intro">
+		<!--
+			By J. Manuel Sánchez Medina.
+		-->
+		<description>Intro (type-in, MicroHobby #180)</description>
+		<year>1988</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="40404">
+				<rom name="Intro.tap" size="40404" crc="987123f4" sha1="a5c78af5f50c5c949c078579fbf9ea1b44a3bcdc"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh181keops">
+		<!--
+			By Roberto Sarsa.
+		-->
+		<description>Keops (type-in, MicroHobby #181)</description>
+		<year>1988</year>
+		<publisher>Hobby Press</publisher>
+		<info name="alt_title" value="Keops - La Aventura (in-game)"/>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="26163">
+				<rom name="Keops.tap" size="26163" crc="b3ba2810" sha1="521e645d8ac27784a06b8b6085a1f18299146a93"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh182sgawain">
+		<!--
+			By Alfonso Guerricabeitia.
+		-->
+		<description>Sir Gawain (type-in, MicroHobby #182)</description>
+		<year>1988</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="21786">
+				<rom name="Sir Gawain.tap" size="21786" crc="03180dab" sha1="cc8b15fc57aee2a8203f1412531f4096f4c80498"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh183snake">
+		<!--
+			By Álvaro de la Fuente.
+		-->
+		<description>Snake (type-in, MicroHobby #183)</description>
+		<year>1988</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="5154">
+				<rom name="Snake.tap" size="5154" crc="f4f5b9a4" sha1="d8d5e3ea58c8fb34e511e3a5f3bbcc189075b946"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh184micbowl">
+		<!--
+			By Luis Sánchez.
+		-->
+		<description>Microbowl (type-in, MicroHobby #184)</description>
+		<year>1989</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="13938">
+				<rom name="Microbowl.tap" size="13938" crc="a9857610" sha1="055c14ae102fc98224aded07803784f26c921725"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timh185godspunk">
+		<!--
+			By Fernando Pérez.
+		-->
+		<description>God Save the Punk (type-in, MicroHobby #185)</description>
+		<year>1989</year>
+		<publisher>Hobby Press</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="12563">
+				<rom name="God Save the Punk.tap" size="12563" crc="681ce551" sha1="f00f732ad95e82395e58401a45cd984181a2cafb"/>
+			</dataarea>
+		</part>
+	</software>
+
+
 	<!-- ##############################################################################################################################
 	     unsorted (main collection)
 	     ############################################################################################################################## -->
