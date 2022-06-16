@@ -91802,7 +91802,7 @@ license:CC0
 		<publisher>Delta Software S.L.</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="235442">
-				<rom name="Legend.tzx" size="235442" crc="62ea4f8a" sha1="777e525c5ba14654077d4a25eac6767832bbe0b2"/>
+				<rom name="legend.tzx" size="235442" crc="62ea4f8a" sha1="777e525c5ba14654077d4a25eac6767832bbe0b2"/>
 			</dataarea>
 		</part>
 	</software>
@@ -91816,7 +91816,7 @@ license:CC0
 		<publisher>Delta Software S.L.</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="198227">
-				<rom name="legend.tzx" size="198227" crc="56d643b1" sha1="98c2be30d2b9327adf9cfbc75346e2649a74c700"/>
+				<rom name="legend alt.tzx" size="198227" crc="56d643b1" sha1="98c2be30d2b9327adf9cfbc75346e2649a74c700"/>
 			</dataarea>
 		</part>
 	</software>
