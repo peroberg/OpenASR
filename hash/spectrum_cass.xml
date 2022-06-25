@@ -4892,7 +4892,7 @@ license:CC0
 
 	<software name="cozumelsl">
 		<!--
-			Bug fixed release.
+		    Bug fixed release.
 		-->
 		<description>Ci-U-Than Trilogy-I: Cozumel (Serie Leyenda)</description>
 		<year>1990</year>
@@ -4912,7 +4912,7 @@ license:CC0
 
 	<software name="cozumel" cloneof="cozumelsl">
 		<!--
-			This version can't be finished without knowing how to work around a bug.
+		    This version can't be finished without knowing how to work around a bug.
 		-->
 		<description>Ci-U-Than Trilogy-I: Cozumel</description>
 		<year>1990</year>
@@ -5435,7 +5435,7 @@ license:CC0
 
 	<software name="cueboy">
 		<!--
-			This was meant to be part of the "Supersports Challenge" compilation, along with another unique game "Slicks". However, no dumps of the compilation exist.
+		    This was meant to be part of the "Supersports Challenge" compilation, along with another unique game "Slicks". However, no dumps of the compilation exist.
 		-->
 		<description>Cue Boy</description>
 		<year>1992</year>
@@ -5449,7 +5449,7 @@ license:CC0
 
 	<software name="cuenbanc">
 		<!--
-			May be based on an English release.
+		    May be based on an English release.
 		-->
 		<description>Cuentas Bancarias</description>
 		<year>1983</year>
@@ -7033,14 +7033,14 @@ license:CC0
 
 	<software name="davgnomo">
 		<!--
-			This program was included as an audio track on the record "David el Gnomo" (the OST from the
-			Spanish TV animation series with the same name, published by "Ariola Eurodisc S.A.").
-			It was present on both the vinyl and the cassette versions, as a track titled
-			"Juego de Los Gnomos para ordenador Spectrum".
-			It was programmed by Manuel Orcera within the Spanish company "Juliet Software" for the,
-			also Spanish, company "Compulogical S.A.".
-			The game was re-released on 1986 on the audio record "Baby Album" (also published by
-			"Ariola Eurodisc S.A."), but this time only on the vinyl version, not on the cassette.
+		    This program was included as an audio track on the record "David el Gnomo" (the OST from the
+		    Spanish TV animation series with the same name, published by "Ariola Eurodisc S.A.").
+		    It was present on both the vinyl and the cassette versions, as a track titled
+		    "Juego de Los Gnomos para ordenador Spectrum".
+		    It was programmed by Manuel Orcera within the Spanish company "Juliet Software" for the,
+		    also Spanish, company "Compulogical S.A.".
+		    The game was re-released on 1986 on the audio record "Baby Album" (also published by
+		    "Ariola Eurodisc S.A."), but this time only on the vinyl version, not on the cassette.
 		-->
 		<description>David el Gnomo</description>
 		<year>1985</year>
@@ -7052,10 +7052,10 @@ license:CC0
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="davgnomov" cloneof="davgnomo">
 		<!--
-			Same data as cassette version but with longer pauses.
+		    Same data as cassette version but with longer pauses.
 		-->
 		<description>David el Gnomo (vinyl version)</description>
 		<year>1985</year>
@@ -8990,7 +8990,7 @@ license:CC0
 
 	<software name="paquetaz">
 		<!--
-			This bundle came with the regular System 4 releases inside a cardboard box, including cassettes and unfolded inlays but without their plastic cases.
+		    This bundle came with the regular System 4 releases inside a cardboard box, including cassettes and unfolded inlays but without their plastic cases.
 		-->
 		<description>El Paquetazo</description>
 		<year>1989</year>
@@ -9003,7 +9003,7 @@ license:CC0
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<!--
-				Has some partially recorded data after the last block, from an unknown game.
+			    Has some partially recorded data after the last block, from an unknown game.
 			-->
 			<feature name="part_id" value="Tape 2: Gunboat"/>
 			<dataarea name="cass" size="48480">
@@ -11288,7 +11288,7 @@ license:CC0
 
 	<software name="globus">
 		<!--
-			Unreleased game.
+		    Unreleased game.
 		-->
 		<description>Globus</description>
 		<year>1987</year>
@@ -11600,7 +11600,7 @@ license:CC0
 
 	<software name="gup">
 		<!--
-			Unreleased game.
+		    Unreleased game.
 		-->
 		<description>Gup</description>
 		<year>19??</year>
@@ -14753,7 +14753,7 @@ license:CC0
 
 	<software name="kingleonb" cloneof="kingleon">
 		<!--
-			Identical to its other release.
+		    Identical to its other release.
 		-->
 		<description>King Leonard (large case)</description>
 		<year>1986</year>
@@ -15667,8 +15667,8 @@ license:CC0
 	<!-- NC128 -->
 	<software name="diosacoz">
 		<!--
-			Unreleased original 1987 version of Cozumel by Samusoft, freebie for Spanish Retro Gamer subscribers.
-			Later reissued by Matra in 2015 without the Retro Gamer branding.
+		    Unreleased original 1987 version of Cozumel by Samusoft, freebie for Spanish Retro Gamer subscribers.
+		    Later reissued by Matra in 2015 without the Retro Gamer branding.
 		-->
 		<description>La Diosa de Cozumel (Samusoft, Retro Gamer)</description>
 		<year>2013</year>
@@ -19075,8 +19075,8 @@ license:CC0
 
 	<software name="ogerox">
 		<!--
-			The version originally published in MicroHobby had some parts missing, this full game has been recovered directly from one of its authors.
-			Game can't be finished normally due to a bug. Requires to insert "POKE 59942,3" in its loader, in order to limit the number of on-screen sprites to 3, which lowers the number of enemies and allows the final door lock to appear.
+		    The version originally published in MicroHobby had some parts missing, this full game has been recovered directly from one of its authors.
+		    Game can't be finished normally due to a bug. Requires to insert "POKE 59942,3" in its loader, in order to limit the number of on-screen sprites to 3, which lowers the number of enemies and allows the final door lock to appear.
 		-->
 		<description>Ogerox en los Dominios del Fuego</description>
 		<year>1988</year>
@@ -19090,7 +19090,7 @@ license:CC0
 
 	<software name="okcomput">
 		<!--
-			Last track of the 2017 cassette remaster of Radiohead's Ok Computer album.
+		    Last track of the 2017 cassette remaster of Radiohead's Ok Computer album.
 		-->
 		<description>Ok Computer Program (Radiohead – OK Computer OKNOTOK 1997 2017)</description>
 		<year>2017</year>
@@ -19759,9 +19759,9 @@ license:CC0
 
 	<software name="progcomp">
 		<!--
-			This program was included as an audio track on the record "1984" from the Spanish
-			music group "La Mode". It was present only on the vinyl version (not on the cassette),
-			as the last track of the B side.
+		    This program was included as an audio track on the record "1984" from the Spanish
+		    music group "La Mode". It was present only on the vinyl version (not on the cassette),
+		    as the last track of the B side.
 		-->
 		<description>Programa Computado (La Mode - 1984)</description>
 		<year>1984</year>
@@ -19987,7 +19987,7 @@ license:CC0
 
 	<software name="pringles">
 		<!--
-			Part of the "Mind Popping" promotional campaign for Pringles, launched to coincide with the ZX Spectrum's 40th anniversary.
+		    Part of the "Mind Popping" promotional campaign for Pringles, launched to coincide with the ZX Spectrum's 40th anniversary.
 		-->
 		<description>Pringlesonic</description>
 		<year>2022</year>
@@ -23628,7 +23628,7 @@ license:CC0
 
 	<software name="renault">
 		<!--
-			Given away in the UK with the purchase of a Renault 9.
+		    Given away in the UK with the purchase of a Renault 9.
 		-->
 		<description>Renault After Sales</description>
 		<year>1984</year>
@@ -28800,7 +28800,7 @@ license:CC0
 
 	<software name="wanderx" cloneof="xadom">
 		<!--
-			Bootleg release of Xadom.
+		    Bootleg release of Xadom.
 		-->
 		<description>Wander X</description>
 		<year>1984</year>
@@ -32845,7 +32845,7 @@ license:CC0
 
 	<software name="mhobby037">
 		<!--
-			Released on flexi disc as a freebie.
+		    Released on flexi disc as a freebie.
 		-->
 		<description>MicroHobby (Issue 037) Discoflex</description>
 		<year>1985</year>
@@ -37480,9 +37480,9 @@ license:CC0
 	</software>
 
 	<!--
-		####################################
-			Type-ins from "MicroHobby"		
-		####################################
+	    ####################################
+	        Type-ins from "MicroHobby"
+	    ####################################
 	-->
 
 	<software name="timh125balalin">
@@ -37512,7 +37512,7 @@ license:CC0
 	<!-- NC128 -->
 	<software name="timh127oraculoe">
 		<!--
-			Graphics set was published incomplete, some cards aren't displayed correctly.
+		    Graphics set was published incomplete, some cards aren't displayed correctly.
 		-->
 		<description>Oráculo Egipcio (type-in, MicroHobby #127)</description>
 		<year>1987</year>
@@ -37804,7 +37804,7 @@ license:CC0
 	<!-- NC128 -->
 	<software name="timh155rockanim">
 		<!--
-			Requires playing a music cassette to work.
+		    Requires playing a music cassette to work.
 		-->
 		<description>Rock Animation (type-in, MicroHobby #155)</description>
 		<year>1987</year>
@@ -37832,8 +37832,8 @@ license:CC0
 	<!-- NC128 -->
 	<software name="timh157telepuzz">
 		<!--
-			Requires loading 2-4 SCREEN$ blocks to work.
-			Was published with a wrong loading address for one machine code block, which had to be fixed.
+		    Requires loading 2-4 SCREEN$ blocks to work.
+		    Was published with a wrong loading address for one machine code block, which had to be fixed.
 		-->
 		<description>Telepuzzle (type-in, MicroHobby #157)</description>
 		<year>1987</year>
@@ -37995,7 +37995,7 @@ license:CC0
 
 	<software name="timh170tresraya">
 		<!--
-			Crashes when pressing 6, something's wrong with it.
+		    Crashes when pressing 6, something's wrong with it.
 		-->
 		<description>Tres en Raya (type-in, MicroHobby #170)</description>
 		<year>1988</year>
@@ -38036,7 +38036,7 @@ license:CC0
 
 	<software name="timh173furax">
 		<!--
-			Graphics garbled in title screen, was it published like this?
+		    Graphics garbled in title screen, was it published like this?
 		-->
 		<description>Furax (type-in, MicroHobby #173)</description>
 		<year>1988</year>
@@ -38100,7 +38100,7 @@ license:CC0
 
 	<software name="timh178skywar">
 		<!--
-			To make it work under 48K Basic on a Spectrum +3, insert 'OUT 32765,48' before the RANDOMIZE instruction.
+		    To make it work under 48K Basic on a Spectrum +3, insert 'OUT 32765,48' before the RANDOMIZE instruction.
 		-->
 		<description>Sky Warrior (type-in, MicroHobby #178)</description>
 		<year>1988</year>
@@ -71104,7 +71104,7 @@ license:CC0
 
 	<software name="fmbmdemo" cloneof="fmbm">
 		<!--
-			This demo was pitched to Dinamic by Gonzalo Martin Erro and Julio A. Martin Erro before it was fully developed as a commercial game. The recovered version was a bootleg distribution, no Microdrive cartridges with official builds are known to have survived.
+		    This demo was pitched to Dinamic by Gonzalo Martin Erro and Julio A. Martin Erro before it was fully developed as a commercial game. The recovered version was a bootleg distribution, no Microdrive cartridges with official builds are known to have survived.
 		-->
 		<description>Fernando Martin Basket Master (concept demo, bootleg)</description>
 		<year>1987</year>
@@ -91701,7 +91701,7 @@ license:CC0
 
 	<software name="legend">
 		<!--
-			Includes game introduction after first loading block, but can't be loaded from the menu. Is the block order correct?
+		    Includes game introduction after first loading block, but can't be loaded from the menu. Is the block order correct?
 		-->
 		<description>Legend</description>
 		<year>1990</year>
@@ -91715,7 +91715,7 @@ license:CC0
 
 	<software name="legenda" cloneof="legend">
 		<!--
-			Lacks game introduction, bad dump or alternate version?
+		    Lacks game introduction, bad dump or alternate version?
 		-->
 		<description>Legend (alt)</description>
 		<year>1990</year>
@@ -100439,7 +100439,7 @@ license:CC0
 
 	<software name="montedor">
 		<!--
-			Unreleased game.
+		    Unreleased game.
 		-->
 		<description>Monte Dorado</description>
 		<year>1992</year>
@@ -141105,7 +141105,7 @@ license:CC0
 	<software name="vegasol">
 		<description>Vega Solaris (English)</description>
 		<!--
-			Unreleased game.
+		    Unreleased game.
 		-->
 		<year>1989</year>
 		<publisher>Eclipse</publisher>
@@ -141119,7 +141119,7 @@ license:CC0
 
 	<software name="vegasolsp" cloneof="vegasol">
 		<!--
-			Unreleased game.
+		    Unreleased game.
 		-->
 		<description>Vega Solaris (Spanish)</description>
 		<year>1989</year>
@@ -141158,7 +141158,7 @@ license:CC0
 
 	<software name="vegasolrg" cloneof="vegasol">
 		<!--
-			Identical to the (previously recovered) unreleased final Spanish version, freebie for Spanish Retro Gamer subscribers.
+		    Identical to the (previously recovered) unreleased final Spanish version, freebie for Spanish Retro Gamer subscribers.
 		-->
 		<description>Vega Solaris (Retro Gamer)</description>
 		<year>2013</year>
@@ -146082,7 +146082,7 @@ license:CC0
 
 	<software name="xadommb" cloneof="xadom">
 		<!--
-			Same data as Investronica release but with different pause lengths.
+		    Same data as Investronica release but with different pause lengths.
 		-->
 		<description>Xadom (Microbyte)</description>
 		<year>1987</year>
@@ -146096,7 +146096,7 @@ license:CC0
 
 	<software name="xadomps" cloneof="xadom">
 		<!--
-			Same data as Quiksilva release but with different pause lengths.
+		    Same data as Quiksilva release but with different pause lengths.
 		-->
 		<description>Xadom (Power Software)</description>
 		<year>1983</year>
@@ -156810,7 +156810,7 @@ license:CC0
 
 	<software name="libsofts20">
 		<!--
-			Erroneously labeled as #19 in its release.
+		    Erroneously labeled as #19 in its release.
 		-->
 		<description>Libreria de Software Spectrum (Issue 20) (Night)</description>
 		<year>1987</year>
