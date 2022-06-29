@@ -298159,7 +298159,7 @@ license:CC0
 	</software>
 
 	<software name="qgakumon">
-		<description>Quiz Gakumon No Susume (Arcade)</description>
+		<description>Quiz Gakumon no Susume (Arcade)</description>
 		<year>1993</year>
 		<publisher>Konami</publisher>
 		<info name="cores" value="YM2151, K053260"/>
