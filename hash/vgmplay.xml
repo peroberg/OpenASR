@@ -121900,7 +121900,7 @@ license:CC0
 	</software>
 
 	<software name="hydlide3_fc">
-		<description>Hydlide 3 - Yami Kara no Houmonsha (Family Computer)</description>
+		<description>Hydlide 3 - Yami kara no Houmonsha (Family Computer)</description>
 		<year>1989</year>
 		<publisher>Namco</publisher>
 		<info name="cores" value="NES APU"/>
