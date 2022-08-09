@@ -2789,22 +2789,22 @@ license:CC0
 		<publisher>Sulis Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="31220">
-				<rom name="spellbound - besieged - tape 1 - side  1.tzx" size="31220" crc="f425ad1e" sha1="29d498cd74ead3d3ee154160a46b9f2c8eaddd2e"/>
+				<rom name="spellbound - besieged - tape 1 - side 1.tzx" size="31220" crc="f425ad1e" sha1="29d498cd74ead3d3ee154160a46b9f2c8eaddd2e"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="31220">
-				<rom name="spellbound - besieged - tape 1 - side  2.tzx" size="31220" crc="06e62991" sha1="8def39e865db2299e800016f6d4b50eed5193d57"/>
+				<rom name="spellbound - besieged - tape 1 - side 2.tzx" size="31220" crc="06e62991" sha1="8def39e865db2299e800016f6d4b50eed5193d57"/>
 			</dataarea>
 		</part>
 		<part name="cass3" interface="spectrum_cass">
 			<dataarea name="cass" size="31220">
-				<rom name="spellbound - besieged - tape 2 - side  1.tzx" size="31220" crc="89cdeb3d" sha1="b79ce7c7f53ce5ab4aedb012fb1f4d9475807f41"/>
+				<rom name="spellbound - besieged - tape 2 - side 1.tzx" size="31220" crc="89cdeb3d" sha1="b79ce7c7f53ce5ab4aedb012fb1f4d9475807f41"/>
 			</dataarea>
 		</part>
 		<part name="cass4" interface="spectrum_cass">
 			<dataarea name="cass" size="31220">
-				<rom name="spellbound - besieged - tape 2 - side  2.tzx" size="31220" crc="4d29c588" sha1="0bf05c86edc2dcb3223e1802083690b5d652f250"/>
+				<rom name="spellbound - besieged - tape 2 - side 2.tzx" size="31220" crc="4d29c588" sha1="0bf05c86edc2dcb3223e1802083690b5d652f250"/>
 			</dataarea>
 		</part>
 	</software>
@@ -6219,7 +6219,7 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="colywobl"> <!-- the majority (all?) other Pirate Software (Harry S. Price) games are hacks of either magazine type-ins or other commercial releases.  Is this an original, or the source game just not figured out? -->
+	<software name="colywobl"> <!-- the majority (all?) other Pirate Software (Harry S. Price) games are hacks of either magazine type-ins or other commercial releases. Is this an original, or the source game just not figured out? -->
 		<description>Collywobbles</description>
 		<year>1987</year>
 		<publisher>Pirate Software Ltd</publisher>
@@ -13542,7 +13542,7 @@ license:CC0
 	<software name="eaglnestp" cloneof="eaglnest">
 		<description>Into The Eagle's Nest (Players)</description>
 		<year>1987</year>
-		<publisher>Pandora  / Players</publisher>
+		<publisher>Pandora / Players</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="80770">
 				<rom name="into the eagle_s nest (players).tzx" size="80770" crc="f8d4d47a" sha1="5de5b00afaff2a9e9a9a307d83f55cedb212e33f"/>
@@ -55465,7 +55465,7 @@ license:CC0
 	</software>
 
 	<software name="clevercl">
-		<description>Clever Clogs - Game :  Blockbuster</description>
+		<description>Clever Clogs - Game : Blockbuster</description>
 		<year>1984</year>
 		<publisher>Computer Tutor</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -57615,12 +57615,12 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="27260">
-				<rom name="cosmic pirate -  side a.tzx" size="27260" crc="662415f6" sha1="0b639bb3a2026a7ac22b8a420ac0cf781553c2ce"/>
+				<rom name="cosmic pirate - side a.tzx" size="27260" crc="662415f6" sha1="0b639bb3a2026a7ac22b8a420ac0cf781553c2ce"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="27206">
-				<rom name="cosmic pirate -  side b.tzx" size="27206" crc="1fd5ab49" sha1="8751e4e425b4f09ea83f2f1c15795f025328f29d"/>
+				<rom name="cosmic pirate - side b.tzx" size="27206" crc="1fd5ab49" sha1="8751e4e425b4f09ea83f2f1c15795f025328f29d"/>
 			</dataarea>
 		</part>
 	</software>
@@ -64079,7 +64079,7 @@ license:CC0
 		<publisher>Cascade Games</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="52700">
-				<rom name="dna warrior  - 128k.tzx" size="52700" crc="efc5c184" sha1="6107b51d9d04425886de46f23259c57da9f387c4"/>
+				<rom name="dna warrior - 128k.tzx" size="52700" crc="efc5c184" sha1="6107b51d9d04425886de46f23259c57da9f387c4"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
@@ -95237,7 +95237,7 @@ license:CC0
 		<publisher>Topo Soft</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48485">
-			<rom name="mad mix game.tzx" size="48485" crc="5a0ead19" sha1="e1e92591573addfd2dac5f8cdcc3e7adbfe308a9" offset="0"/>
+				<rom name="mad mix game.tzx" size="48485" crc="5a0ead19" sha1="e1e92591573addfd2dac5f8cdcc3e7adbfe308a9" offset="0"/>
 			</dataarea>
 		</part>
 	</software>
@@ -101854,7 +101854,7 @@ license:CC0
 	</software>
 
 	<software name="mup">
-		<description>MUP -  Microdrive Utility Program (Easyuse Software / JC Jumbo Data)</description>
+		<description>MUP - Microdrive Utility Program (Easyuse Software / JC Jumbo Data)</description>
 		<year>1984</year>
 		<publisher>Easyuse Software / JC Jumbo Data</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -112316,7 +112316,7 @@ license:CC0
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="19236">
-				<rom name="project stealth fighter - tape 1 - side b - +2  compatible.tzx" size="19236" crc="7986e75c" sha1="833956106afcafcb09dd9676b7f6ea41ff69534d"/>
+				<rom name="project stealth fighter - tape 1 - side b - +2 compatible.tzx" size="19236" crc="7986e75c" sha1="833956106afcafcb09dd9676b7f6ea41ff69534d"/>
 			</dataarea>
 		</part>
 		<part name="cass3" interface="spectrum_cass">
@@ -158383,7 +158383,7 @@ license:CC0
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="324418">
-				<rom name="p15g - tape 1 -  side a.tzx" size="324418" crc="80239204" sha1="dae3871fa713f4d06c9e5bf8bf46ca2747da1d3e"/>
+				<rom name="p15g - tape 1 - side a.tzx" size="324418" crc="80239204" sha1="dae3871fa713f4d06c9e5bf8bf46ca2747da1d3e"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
@@ -160895,7 +160895,7 @@ license:CC0
 		<publisher>Aackosoft</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="66872">
-				<rom name="spectrum computing (aackosoft) (issue 09)  - side a.tzx" size="66872" crc="296a5a5d" sha1="1897813ee90f8ddcbf047c203ea88a77013a5cb0"/>
+				<rom name="spectrum computing (aackosoft) (issue 09) - side a.tzx" size="66872" crc="296a5a5d" sha1="1897813ee90f8ddcbf047c203ea88a77013a5cb0"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
