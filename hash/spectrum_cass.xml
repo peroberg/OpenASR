@@ -6219,7 +6219,7 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="colywobl"> <!-- the majority (all?) other Pirate Software (Harry S. Price) games are hacks of either magazine type-ins or other commercial releases. Is this an original, or the source game just not figured out? -->
+	<software name="colywobl"> <!-- the majority (all?) other Pirate Software (Harry S. Price) games are hacks of either magazine type-ins or other commercial releases.  Is this an original, or the source game just not figured out? -->
 		<description>Collywobbles</description>
 		<year>1987</year>
 		<publisher>Pirate Software Ltd</publisher>
