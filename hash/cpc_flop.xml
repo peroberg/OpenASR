@@ -68394,10 +68394,12 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Roland In Space (UK) (1984) [Original].zip... --> <!-- CPC Power -->
-	<software name="rolandin" supported="no">
+	<!-- Known issue: Detection of the Amstrad SSA-1 speech synthesiser fails, due to
+	     the status signals of the SP0256 being incorrect, game runs perfectly fine otherwise. -->
+	<software name="rolandsp" supported="no">
 		<description>Roland In Space (UK) [Original]</description>
 		<year>1984</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Amsoft</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="roland in space (uk) (1984) [original].dsk" size="194816" crc="50790ace" sha1="186b6168b91c2e78f64f35560a1a346d596bb0a4"/>
@@ -68406,10 +68408,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Roland In Space (UK) (1984).zip... --> <!-- CPC Power -->
-	<software name="rolandin01" cloneof="rolandin" supported="no">
+	<software name="rolandsp01" cloneof="rolandsp" supported="no">
 		<description>Roland In Space (UK)</description>
 		<year>1984</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Amsoft</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="roland in space (uk) (1984).dsk" size="194816" crc="091006a0" sha1="4639339b950d2bd37a525cb5728d048f3c63bf34"/>
@@ -68418,10 +68420,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Roland In The Caves (UK) (1984) [Original].zip... --> <!-- CPC Power -->
-	<software name="rolandin02" cloneof="rolandin" supported="no">
+	<software name="rolandcv" supported="yes">
 		<description>Roland In The Caves (UK) [Original]</description>
 		<year>1984</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Amsoft</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="roland in the caves (uk) (1984) [original].dsk" size="194816" crc="3aa01650" sha1="6362dfe292e6397997721f0b70871d831caed584"/>
@@ -68430,10 +68432,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Roland In The Caves (UK) (1984).zip... --> <!-- CPC Power -->
-	<software name="rolandin03" cloneof="rolandin" supported="no">
+	<software name="rolandcv01" cloneof="rolandcv" supported="yes">
 		<description>Roland In The Caves (UK)</description>
 		<year>1984</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Amsoft</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="roland in the caves (uk) (1984).dsk" size="194816" crc="2cff92ac" sha1="6b4b2a235b7c9d7314f5cd4425d354b69277874c"/>
@@ -68442,10 +68444,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Roland In Time (UK) (1984) [Original].zip... --> <!-- CPC Power -->
-	<software name="rolandin06" cloneof="rolandin" supported="no">
+	<software name="rolandtm" supported="yes">
 		<description>Roland In Time (UK) [Original]</description>
 		<year>1984</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Amsoft</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="roland in time (uk) (1984) [original].dsk" size="194816" crc="17d50a64" sha1="9f4daf83ff942ce083a99c9cd6ab2688af0410a8"/>
@@ -68454,10 +68456,11 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Roland In Time (UK) (1984).zip... --> <!-- CPC Power -->
-	<software name="rolandin07" cloneof="rolandin" supported="no">
+	<!-- This and rolandtm02 seem to be a re-lease, with the copyright changed to "1986 AMSTRAD LTD" -->
+	<software name="rolandtm01" cloneof="rolandtm" supported="yes">
 		<description>Roland In Time (UK)</description>
-		<year>1984</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1986</year>
+		<publisher>Amsoft</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="roland in time (uk) (1984).dsk" size="194816" crc="5ab77710" sha1="dce3fe7947646c9a7b2e2b864a8a34e2ce491f2c"/>
@@ -109172,10 +109175,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Roland in the Caves (E).dsk... --> <!-- CPC Base -->
-	<software name="rolandin08" cloneof="rolandin" supported="no">
+	<software name="rolandcv02" cloneof="rolandcv" supported="yes">
 		<description>Roland in the Caves (Euro)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1984</year>
+		<publisher>Amsoft</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="195328">
 				<rom name="roland in the caves (e).dsk" size="195328" crc="88f68381" sha1="fd4f7021a3bc2592cef3805695074e7d648873e2"/>
@@ -141956,10 +141959,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Roland in Space (1984)(Amsoft).dsk... --> <!-- Mostly GoodCPC -->
-	<software name="rolandin09" cloneof="rolandin" supported="no">
+	<software name="rolandsp02" cloneof="rolandsp" supported="no">
 		<description>Roland in Space (Amsoft)</description>
 		<year>1984</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Amsoft</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="roland in space (1984)(amsoft).dsk" size="194816" crc="69b9b470" sha1="a981bed0ca81c0762106682300645c84a75e883a"/>
@@ -141968,10 +141971,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Roland in the Caves (1984)(Indescomp - Amsoft)(es).dsk... --> <!-- Mostly GoodCPC -->
-	<software name="rolandin0a" cloneof="rolandin" supported="no">
+	<software name="rolandcv03" cloneof="rolandcv" supported="yes">
 		<description>Roland in the Caves (Indescomp - Amsoft)(es)</description>
 		<year>1984</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Indescomp / Amsoft</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="roland in the caves (1984)(indescomp - amsoft)(es).dsk" size="194816" crc="e786405b" sha1="10ec8ec6525a56d2536b8ab490516664408bd474"/>
@@ -141980,10 +141983,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Roland in the Caves (1984)(Indescomp - Amsoft).dsk... --> <!-- Mostly GoodCPC -->
-	<software name="rolandin0b" cloneof="rolandin" supported="no">
+	<software name="rolandcv04" cloneof="rolandcv" supported="yes">
 		<description>Roland in the Caves (Indescomp - Amsoft)</description>
 		<year>1984</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Amsoft</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="roland in the caves (1984)(indescomp - amsoft).dsk" size="194816" crc="4f201b11" sha1="b6939a4044c792ab03d9c542136bd86336614ad3"/>
@@ -141992,10 +141995,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Roland in Time (1986)(Amsoft).dsk... --> <!-- Mostly GoodCPC -->
-	<software name="rolandin0e" cloneof="rolandin" supported="no">
+	<software name="rolandtm02" cloneof="rolandtm" supported="yes">
 		<description>Roland in Time (Amsoft)</description>
 		<year>1986</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Amsoft</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="roland in time (1986)(amsoft).dsk" size="194816" crc="3385f4ab" sha1="2cc95081c65ca6efb43103e679ab37454d58e45c"/>
@@ -181835,10 +181838,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Roland in the Caves (UK) (1984) [a1].dsk... --> <!-- GoodCPC -->
-	<software name="rolandin0f" cloneof="rolandin" supported="no">
+	<software name="rolandcv05" cloneof="rolandcv" supported="yes">
 		<description>Roland in the Caves (UK) [a1]</description>
 		<year>1984</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Amsoft</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="180480">
 				<rom name="roland in the caves (uk) (1984) [a1] (goodcpc).dsk" size="180480" crc="1e528609" sha1="2775072c4b1d82faae9840818290fa03711da1e7"/>
@@ -181847,10 +181850,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Roland in the Caves (UK) (1984) [a2].dsk... --> <!-- GoodCPC -->
-	<software name="rolandin10" cloneof="rolandin" supported="no">
+	<software name="rolandcv06" cloneof="rolandcv" supported="yes">
 		<description>Roland in the Caves (UK) [a2]</description>
 		<year>1984</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Amsoft</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="roland in the caves (uk) (1984) [a2] (goodcpc).dsk" size="194816" crc="95703f2a" sha1="6871de8ed9f3a223e001b8e9c1379875e0551d66"/>
@@ -181859,10 +181862,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Roland in Time (UK) (1984) [a1].dsk... --> <!-- GoodCPC -->
-	<software name="rolandin11" cloneof="rolandin" supported="no">
+	<software name="rolandtm03" cloneof="rolandtm" supported="yes">
 		<description>Roland in Time (UK) [a1]</description>
 		<year>1984</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Amsoft</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="roland in time (uk) (1984) [a1] (goodcpc).dsk" size="194816" crc="ca21e4f8" sha1="88bc963fcbab3d5c40beecc2ed815daed20eaa19"/>
@@ -181871,10 +181874,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Roland in Time (UK) (1984) [a2].dsk... --> <!-- GoodCPC -->
-	<software name="rolandin12" cloneof="rolandin" supported="no">
+	<software name="rolandtm04" cloneof="rolandtm" supported="yes">
 		<description>Roland in Time (UK) [a2]</description>
 		<year>1984</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Amsoft</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="roland in time (uk) (1984) [a2] (goodcpc).dsk" size="194816" crc="7ef9b250" sha1="b0041a1d3418306fabc88a670b8cdec72e8ddd4d"/>
@@ -212571,10 +212574,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Roland in the caves (Amsoft) (1985) (Slim Standard Jewel Case) (nongoodcpc).dsk... --> <!-- NonGoodCPC -->
-	<software name="rolandin13" cloneof="rolandin" supported="no">
+	<software name="rolandcv07" cloneof="rolandcv" supported="yes">
 		<description>Roland in the caves (Amsoft) (Slim Standard Jewel Case)</description>
 		<year>1985</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Amsoft</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="roland in the caves (amsoft) (1985) (slim standard jewel case) (nongoodcpc).dsk" size="194816" crc="607af8a9" sha1="f5cd672d629578eedd078eb7485ff374577f0df4"/>
@@ -212583,10 +212586,10 @@ stick to CPC-Power disks, when available)
 	</software>
 
 	<!-- Identifying Roland in Time (Amsoft FR) (Side A) (nongoodcpc).dsk... --> <!-- NonGoodCPC -->
-	<software name="rolandin14" cloneof="rolandin" supported="no">
+	<software name="rolandtm05" cloneof="rolandtm" supported="yes">
 		<description>Roland in Time (Amsoft FR) (Side A)</description>
 		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Amsoft</publisher>
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="roland in time (amsoft fr) (side a) (nongoodcpc).dsk" size="194816" crc="0ad2d4f7" sha1="1a8eae91b94d0f9e06210b870264c96bfaca52db"/>
