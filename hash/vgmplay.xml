@@ -423,7 +423,7 @@ license:CC0
 		<description>Famicom Disk System BIOS (FDS)</description>
 		<year>1986</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="famicom disk system bios - 01 - bios.vgm" />
 			<dataarea name="quik" size="449">
@@ -1276,7 +1276,7 @@ license:CC0
 		<description>M82 Game Selectable Working Product Display (Kiosk)</description>
 		<year>199?</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="m82 game selectable working product display - 01 - main music.vgz" />
 			<dataarea name="quik" size="6427">
@@ -2401,7 +2401,7 @@ license:CC0
 		<description>Yuu Maze (NES)</description>
 		<year>1988</year>
 		<publisher>Taito</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 main theme 1.vgz" />
 			<dataarea name="quik" size="10722">
@@ -3384,7 +3384,7 @@ license:CC0
 		<description>Arm Wrestling (Arcade)</description>
 		<year>1985</year>
 		<publisher>Nintendo of America</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 got money bag.vgz" />
 			<dataarea name="quik" size="869">
@@ -7878,7 +7878,7 @@ license:CC0
 		<description>Donkey Kong 3 (Arcade)</description>
 		<year>1984</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="2xNES APU (N2A03)"/>
+		<info name="cores" value="2xNES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 credit.vgz" />
 			<dataarea name="quik" size="335">
@@ -9703,7 +9703,7 @@ license:CC0
 		<description>FamicomBox (Arcade)</description>
 		<year>1986</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="686">
@@ -18316,7 +18316,7 @@ license:CC0
 		<description>Punch-Out!! (Arcade)</description>
 		<year>1984</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="2257">
@@ -27867,7 +27867,7 @@ license:CC0
 		<description>Vs. Balloon Fight (Nintendo VS. System)</description>
 		<year>1985</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 credit.vgz" />
 			<dataarea name="quik" size="274">
@@ -27958,7 +27958,7 @@ license:CC0
 		<description>Vs. Duck Hunt (Nintendo Vs. Unisystem)</description>
 		<year>1985</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="594">
@@ -28025,7 +28025,7 @@ license:CC0
 		<description>Vs. Hogan's Alley (Nintendo Vs. Unisystem)</description>
 		<year>1985</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 staff.vgz" />
 			<dataarea name="quik" size="943">
@@ -28080,7 +28080,7 @@ license:CC0
 		<description>VS Ninja JaJaMaru-kun (VS System)</description>
 		<year>1985</year>
 		<publisher>Jaleco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="326">
@@ -28171,7 +28171,7 @@ license:CC0
 		<description>Vs Raid on Bungeling Bay (VS System)</description>
 		<year>1985</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="806">
@@ -106660,7 +106660,7 @@ license:CC0
 		<description>10-Yard Fight (NES)</description>
 		<year>1985</year>
 		<publisher>Irem (AC / FC) / Nintendo (U)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="338">
@@ -106679,7 +106679,7 @@ license:CC0
 		<description>1942 (NES)</description>
 		<year>1985</year>
 		<publisher>Capcom</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 start.vgz" />
 			<dataarea name="quik" size="298">
@@ -106722,7 +106722,7 @@ license:CC0
 		<description>1943 - The Battle of Midway (NES)</description>
 		<year>1988</year>
 		<publisher>Capcom</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="4050">
@@ -106825,7 +106825,7 @@ license:CC0
 		<description>720° (NES)</description>
 		<year>1989</year>
 		<publisher>Mindscape</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen, ramp &amp; slalom theme.vgz" />
 			<dataarea name="quik" size="1620">
@@ -106856,7 +106856,7 @@ license:CC0
 		<description>98 in 1 (NES)</description>
 		<year>19??</year>
 		<publisher>Unknown</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 menu.vgz" />
 			<dataarea name="quik" size="6170">
@@ -106869,7 +106869,7 @@ license:CC0
 		<description>Abadox - The Deadly Inner War (NES)</description>
 		<year>1989</year>
 		<publisher>Natsume (J) / Milton Bradley (U)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening se.vgz" />
 			<dataarea name="quik" size="648">
@@ -106948,7 +106948,7 @@ license:CC0
 		<description>Adam &amp; Eve (NES)</description>
 		<year>1991</year>
 		<publisher>Mega Soft / Caltron / NTDEC / Asder / Gluk Video</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="719">
@@ -106985,7 +106985,7 @@ license:CC0
 		<description>After Burner (NES)</description>
 		<year>1989</year>
 		<publisher>Sega (AC) / Tengen (NES)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 maximum power.vgz" />
 			<dataarea name="quik" size="1967">
@@ -107022,7 +107022,7 @@ license:CC0
 		<description>After Burner II (NES)</description>
 		<year>1989</year>
 		<publisher>Sega (AC) / Sunsoft (FC)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 maximum power.vgz" />
 			<dataarea name="quik" size="14599">
@@ -107065,7 +107065,7 @@ license:CC0
 		<description>Aighina no Yogen - Balubalouk no Densetsu Yori (Family Computer)</description>
 		<year>1986</year>
 		<publisher>Vic Tokai</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening, shop, talk.vgz" />
 			<dataarea name="quik" size="664">
@@ -107156,7 +107156,7 @@ license:CC0
 		<description>Aliens - Alien 2 (Family Computer Disk System)</description>
 		<year>1987</year>
 		<publisher>Square</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="2759">
@@ -107217,7 +107217,7 @@ license:CC0
 		<description>Alien Syndrome (NES)</description>
 		<year>1989</year>
 		<publisher>Tengen (U) / Sunsoft (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="649">
@@ -107315,7 +107315,7 @@ license:CC0
 		<description>Alter Ego (NES)</description>
 		<year>2011</year>
 		<publisher>Shiru</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="6780">
@@ -107382,7 +107382,7 @@ license:CC0
 		<description>Argus (Family Computer)</description>
 		<year>1986</year>
 		<publisher>Jaleco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 demo.vgz" />
 			<dataarea name="quik" size="849">
@@ -107449,7 +107449,7 @@ license:CC0
 		<description>Arkanoid (NES)</description>
 		<year>1987</year>
 		<publisher>Taito</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="4218">
@@ -107486,7 +107486,7 @@ license:CC0
 		<description>Arkanoid II (NES)</description>
 		<year>1988</year>
 		<publisher>Taito Corporation</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 coin.vgz" />
 			<dataarea name="quik" size="490">
@@ -107620,7 +107620,7 @@ license:CC0
 		<description>Asterix (NES)</description>
 		<year>1993</year>
 		<publisher>Infogrames</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="10952">
@@ -107711,7 +107711,7 @@ license:CC0
 		<description>Athena (NES)</description>
 		<year>1987</year>
 		<publisher>SNK</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 setting off.vgz" />
 			<dataarea name="quik" size="863">
@@ -107796,7 +107796,7 @@ license:CC0
 		<description>Atlantis no Nazo (NES)</description>
 		<year>1986</year>
 		<publisher>Sunsoft (JP); Activision (US, Proto)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="531">
@@ -107845,7 +107845,7 @@ license:CC0
 		<description>Babel no Tou (NES)</description>
 		<year>1986</year>
 		<publisher>Namco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="4183">
@@ -107900,7 +107900,7 @@ license:CC0
 		<description>Balloon Fight (NES)</description>
 		<year>1985</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="652">
@@ -107979,7 +107979,7 @@ license:CC0
 		<description>Baseball (NES)</description>
 		<year>1985</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="1492">
@@ -108022,7 +108022,7 @@ license:CC0
 		<description>Batman - Return of The Joker (NES)</description>
 		<year>1991</year>
 		<publisher>Sunsoft</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 main theme (opening).vgz" />
 			<dataarea name="quik" size="15704">
@@ -108119,7 +108119,7 @@ license:CC0
 		<description>Batman - The Video Game (NES)</description>
 		<year>1990</year>
 		<publisher>Sunsoft</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="15737">
@@ -108192,7 +108192,7 @@ license:CC0
 		<description>Batman Returns (NES)</description>
 		<year>1992</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="4883">
@@ -108380,7 +108380,7 @@ license:CC0
 		<description>Battle City (NES)</description>
 		<year>1985</year>
 		<publisher>Namco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 stage start.vgz" />
 			<dataarea name="quik" size="483">
@@ -108405,7 +108405,7 @@ license:CC0
 		<description>Binary Land (NES)</description>
 		<year>1985</year>
 		<publisher>Hudson</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 round start ~ main bgm.vgz" />
 			<dataarea name="quik" size="785">
@@ -108533,7 +108533,7 @@ license:CC0
 		<description>Bio Senshi Dan - Increaser to no Tatakai (Family Computer)</description>
 		<year>1987</year>
 		<publisher>Jaleco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="12105">
@@ -108684,7 +108684,7 @@ license:CC0
 		<description>Blackjack (NES)</description>
 		<year>1992</year>
 		<publisher>American Video</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="13688">
@@ -108709,7 +108709,7 @@ license:CC0
 		<description>Blaster Master (NES)</description>
 		<year>1988</year>
 		<publisher>Sunsoft</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 area 1.vgz" />
 			<dataarea name="quik" size="9312">
@@ -108800,7 +108800,7 @@ license:CC0
 		<description>Bomberman (NES)</description>
 		<year>1989</year>
 		<publisher>Hudson</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="1050">
@@ -108867,7 +108867,7 @@ license:CC0
 		<description>Bomberman II (NES)</description>
 		<year>1993</year>
 		<publisher>Hudson Soft</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="12094">
@@ -108982,7 +108982,7 @@ license:CC0
 		<description>Booby Kids (NES)</description>
 		<year>1987</year>
 		<publisher>Nichibutsu</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="1053">
@@ -109061,7 +109061,7 @@ license:CC0
 		<description>Bubble Bobble (NES)</description>
 		<year>1988</year>
 		<publisher>Taito (U / FDS) / Nintendo (E) / Mattel (AU)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 introduction ~ main theme.vgz" />
 			<dataarea name="quik" size="3211">
@@ -109116,7 +109116,7 @@ license:CC0
 		<description>Burai Fighter (NES)</description>
 		<year>1990</year>
 		<publisher>Taxan (UE) / Taito (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="1164">
@@ -109177,7 +109177,7 @@ license:CC0
 		<description>BurgerTime (NES)</description>
 		<year>1987</year>
 		<publisher>Data East (NES U / FDS) / Namco (FC)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 round start.vgz" />
 			<dataarea name="quik" size="562">
@@ -109208,7 +109208,7 @@ license:CC0
 		<description>Caesar's Palace (NES)</description>
 		<year>1992</year>
 		<publisher>Virgin Games</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="3837">
@@ -109239,7 +109239,7 @@ license:CC0
 		<description>Captain Tsubasa Vol. II - Super Striker (NES)</description>
 		<year>1990</year>
 		<publisher>Tecmo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="32189">
@@ -109486,7 +109486,7 @@ license:CC0
 		<description>Castelian (NES)</description>
 		<year>1991</year>
 		<publisher>Triffix (U) / The Sales Curve (E) / Hiro (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 main theme.vgz" />
 			<dataarea name="quik" size="13671">
@@ -109523,7 +109523,7 @@ license:CC0
 		<description>Castlevania (NES)</description>
 		<year>1987</year>
 		<publisher>Konami (NES / FDS / FC) / Nintendo (AC)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 prologue.vgz" />
 			<dataarea name="quik" size="1096">
@@ -109626,7 +109626,7 @@ license:CC0
 		<description>Castlevania III - Dracula's Curse (NES)</description>
 		<year>1990</year>
 		<publisher>Konami (U) / Palcom (E)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 prelude.vgz" />
 			<dataarea name="quik" size="10127">
@@ -109801,7 +109801,7 @@ license:CC0
 		<description>Castlevania II - Simon's Quest (NES)</description>
 		<year>1988</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 the silence of the daylight.vgz" />
 			<dataarea name="quik" size="14516">
@@ -109862,7 +109862,7 @@ license:CC0
 		<description>Castle of Dragon (NES)</description>
 		<year>1990</year>
 		<publisher>Seta USA (U) / Athena (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="4979">
@@ -109965,7 +109965,7 @@ license:CC0
 		<description>Chack'n Pop (NES)</description>
 		<year>1985</year>
 		<publisher>Taito</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 main bgm.vgz" />
 			<dataarea name="quik" size="346">
@@ -110002,7 +110002,7 @@ license:CC0
 		<description>Challenger (NES)</description>
 		<year>1985</year>
 		<publisher>Hudson</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 stop the express!.vgz" />
 			<dataarea name="quik" size="2158">
@@ -110045,7 +110045,7 @@ license:CC0
 		<description>Chaos World (Family Computer)</description>
 		<year>1991</year>
 		<publisher>Natsume</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="5564">
@@ -110196,7 +110196,7 @@ license:CC0
 		<description>Chester Field - Episode II Ankoku Shin e no Chousen (Family Computer)</description>
 		<year>1987</year>
 		<publisher>Vic Tokai</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="4428">
@@ -110317,7 +110317,7 @@ license:CC0
 		<description>Choplifter (NES)</description>
 		<year>1986</year>
 		<publisher>Jaleco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="643">
@@ -110342,7 +110342,7 @@ license:CC0
 		<description>Choujin Sentai Jetman (NES)</description>
 		<year>1991</year>
 		<publisher>Angel</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="7979">
@@ -110457,7 +110457,7 @@ license:CC0
 		<description>Chuka Taisen (Family Computer)</description>
 		<year>1989</year>
 		<publisher>Taito</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 round start.vgz" />
 			<dataarea name="quik" size="483">
@@ -110536,7 +110536,7 @@ license:CC0
 		<description>Circus Caper (NES)</description>
 		<year>1990</year>
 		<publisher>Toho Co., Ltd.</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01a title screen.vgz" />
 			<dataarea name="quik" size="12537">
@@ -110699,7 +110699,7 @@ license:CC0
 		<description>Circus Charlie (Family Computer)</description>
 		<year>1986</year>
 		<publisher>Soft Pro</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 jump through the wheel of fire ~ get on the bend.vgz" />
 			<dataarea name="quik" size="14044">
@@ -110730,7 +110730,7 @@ license:CC0
 		<description>Clu Clu Land (NES)</description>
 		<year>1985</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title bgm.vgz" />
 			<dataarea name="quik" size="797">
@@ -110779,7 +110779,7 @@ license:CC0
 		<description>Contra (NES)</description>
 		<year>1988</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 contra (title).vgz" />
 			<dataarea name="quik" size="13259">
@@ -110864,7 +110864,7 @@ license:CC0
 		<description>Contra Force (NES)</description>
 		<year>1992</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="12716">
@@ -110955,7 +110955,7 @@ license:CC0
 		<description>Crisis Force (Family Computer)</description>
 		<year>1991</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening 1.vgz" />
 			<dataarea name="quik" size="5687">
@@ -111034,7 +111034,7 @@ license:CC0
 		<description>Dark Lord (Family Computer)</description>
 		<year>1991</year>
 		<publisher>Data East</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="17246">
@@ -111203,7 +111203,7 @@ license:CC0
 		<description>Deadly Towers (NES)</description>
 		<year>1987</year>
 		<publisher>Broderbund (U) / Irem (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="1323">
@@ -111366,7 +111366,7 @@ license:CC0
 		<description>Deathbots (NES)</description>
 		<year>1990</year>
 		<publisher>American Video</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="3358">
@@ -111518,7 +111518,7 @@ license:CC0
 		<description>Defender II (NES)</description>
 		<year>1988</year>
 		<publisher>HAL Laboratory</publisher>
-		<info name="cores" value="NES APU (2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="1051">
@@ -111543,7 +111543,7 @@ license:CC0
 		<description>Destiny of an Emperor (NES)</description>
 		<year>1989</year>
 		<publisher>Capcom</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="6374">
@@ -111670,7 +111670,7 @@ license:CC0
 		<description>Devil World (NES)</description>
 		<year>1987</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="823">
@@ -111707,7 +111707,7 @@ license:CC0
 		<description>Dezaemon (Family Computer)</description>
 		<year>1991</year>
 		<publisher>Athena</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 menu.vgz" />
 			<dataarea name="quik" size="19131">
@@ -111756,7 +111756,7 @@ license:CC0
 		<description>Dian Shi Ma Li (Dendy)</description>
 		<year>1989</year>
 		<publisher>Fiver Firm</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 bonus.vgz" />
 			<dataarea name="quik" size="396">
@@ -111781,7 +111781,7 @@ license:CC0
 		<description>Digital Devil Story - Megami Tensei (Family Computer)</description>
 		<year>1987</year>
 		<publisher>Namco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="1608">
@@ -111908,7 +111908,7 @@ license:CC0
 		<description>Dig Dug (NES)</description>
 		<year>1985</year>
 		<publisher>Namco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 coin.vgz" />
 			<dataarea name="quik" size="308">
@@ -111969,7 +111969,7 @@ license:CC0
 		<description>Dig Dug II (NES)</description>
 		<year>1989</year>
 		<publisher>Bandai (U) / Namco (J, FDS)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 coin.vgz" />
 			<dataarea name="quik" size="355">
@@ -112036,7 +112036,7 @@ license:CC0
 		<description>Donkey Kong (NES)</description>
 		<year>1983</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title bgm.vgz" />
 			<dataarea name="quik" size="978">
@@ -112121,7 +112121,7 @@ license:CC0
 		<description>Donkey Kong 3 (NES)</description>
 		<year>1984</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title, game start.vgz" />
 			<dataarea name="quik" size="553">
@@ -112182,7 +112182,7 @@ license:CC0
 		<description>Donkey Kong Country 4 (Dendy)</description>
 		<year>1997</year>
 		<publisher>Nintendo (SNES) / Hummer Team (Dendy)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 theme.vgz" />
 			<dataarea name="quik" size="7810">
@@ -112267,7 +112267,7 @@ license:CC0
 		<description>Donkey Kong Jr. (NES)</description>
 		<year>1983</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title bgm.vgz" />
 			<dataarea name="quik" size="1027">
@@ -112394,7 +112394,7 @@ license:CC0
 		<description>Don Doko Don (NES)</description>
 		<year>1990</year>
 		<publisher>Taito</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title demo.vgz" />
 			<dataarea name="quik" size="1315">
@@ -112473,7 +112473,7 @@ license:CC0
 		<description>Doraemon (Family Computer)</description>
 		<year>1987</year>
 		<publisher>Hudson</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="1715">
@@ -112594,7 +112594,7 @@ license:CC0
 		<description>Double Dragon III - The Sacred Stones (NES)</description>
 		<year>1991</year>
 		<publisher>Technos Japan (J) / Acclaim (UE)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="12635">
@@ -112727,7 +112727,7 @@ license:CC0
 		<description>Double Dribble (NES)</description>
 		<year>1987</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 start.vgz" />
 			<dataarea name="quik" size="476">
@@ -112782,7 +112782,7 @@ license:CC0
 		<description>Dr. Jekyll and Mr. Hyde (NES)</description>
 		<year>1989</year>
 		<publisher>Bandai (U) / Toho (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="1589">
@@ -112897,7 +112897,7 @@ license:CC0
 		<description>Dr. Mario (NES)</description>
 		<year>1990</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="14144">
@@ -112970,7 +112970,7 @@ license:CC0
 		<description>Dracula II - Noroi no Fuuin (Family Computer Disk System)</description>
 		<year>1987</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03), FDS"/>
+		<info name="cores" value="NES APU (RP2A03), FDS"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 message of darkness (naming bgm).vgz" />
 			<dataarea name="quik" size="2314">
@@ -113031,7 +113031,7 @@ license:CC0
 		<description>Dragon Buster (NES)</description>
 		<year>1987</year>
 		<publisher>Namco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="627">
@@ -113104,7 +113104,7 @@ license:CC0
 		<description>Dragon Buster II - Yami no Fuuin (Family Computer)</description>
 		<year>1989</year>
 		<publisher>Namco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="1906">
@@ -113207,7 +113207,7 @@ license:CC0
 		<description>Dragon Fighter (NES)</description>
 		<year>1990</year>
 		<publisher>Towa Chiki (J) / Sofel (U)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="1340">
@@ -113292,7 +113292,7 @@ license:CC0
 		<description>Dragon Spirit - The New Legend (NES)</description>
 		<year>1989</year>
 		<publisher>Bandai (U) / Namco (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 start.vgz" />
 			<dataarea name="quik" size="471">
@@ -113413,7 +113413,7 @@ license:CC0
 		<description>Dragon Warrior (NES)</description>
 		<year>1989</year>
 		<publisher>Nintendo (U) / Enix (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 overture.vgz" />
 			<dataarea name="quik" size="1099">
@@ -113570,7 +113570,7 @@ license:CC0
 		<description>Dragon Warrior III (NES)</description>
 		<year>1992</year>
 		<publisher>Enix</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="1609">
@@ -113781,7 +113781,7 @@ license:CC0
 		<description>Dragon Warrior II (NES)</description>
 		<year>1990</year>
 		<publisher>Nintendo (U) / Enix (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 overture.vgz" />
 			<dataarea name="quik" size="4015">
@@ -113938,7 +113938,7 @@ license:CC0
 		<description>Dragon Warrior IV (NES)</description>
 		<year>1992</year>
 		<publisher>Enix</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 overture.vgz" />
 			<dataarea name="quik" size="7969">
@@ -114227,7 +114227,7 @@ license:CC0
 		<description>DuckTales (NES)</description>
 		<year>1989</year>
 		<publisher>Capcom</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="9547">
@@ -114312,7 +114312,7 @@ license:CC0
 		<description>Duck Hunt (NES)</description>
 		<year>1984</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="746">
@@ -114349,7 +114349,7 @@ license:CC0
 		<description>Elevator Action (NES)</description>
 		<year>1987</year>
 		<publisher>Taito</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 main bgm.vgz" />
 			<dataarea name="quik" size="1052">
@@ -114362,7 +114362,7 @@ license:CC0
 		<description>Excitebike (NES, Hyundai Comboy)</description>
 		<year>1985</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title bgm 1.vgz" />
 			<dataarea name="quik" size="684">
@@ -114442,7 +114442,7 @@ license:CC0
 		<description>Exed Exes (NES)</description>
 		<year>1985</year>
 		<publisher>Tokuma Shoten</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 start demo ~ main bgm.vgz" />
 			<dataarea name="quik" size="701">
@@ -114491,7 +114491,7 @@ license:CC0
 		<description>Exerion (NES)</description>
 		<year>1985</year>
 		<publisher>Jaleco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="674">
@@ -114504,7 +114504,7 @@ license:CC0
 		<description>F-1 Race (NES)</description>
 		<year>1984</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="1548">
@@ -114529,7 +114529,7 @@ license:CC0
 		<description>Falsion (Family Computer Disk System)</description>
 		<year>1987</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03), FDS"/>
+		<info name="cores" value="NES APU (RP2A03), FDS"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 the first space fight (stage 1 bgm).vgz" />
 			<dataarea name="quik" size="8640">
@@ -114663,7 +114663,7 @@ license:CC0
 		<description>Famicom Jump - Hero Retsuden (Family Computer)</description>
 		<year>1989</year>
 		<publisher>Bandai</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 anniversary jump 20th.vgz" />
 			<dataarea name="quik" size="1484">
@@ -114886,7 +114886,7 @@ license:CC0
 		<description>Famicom Jump II - Saikyo no 7-nin (Family Computer)</description>
 		<year>1991</year>
 		<publisher>Bandai</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 strongest 7 theme.vgz" />
 			<dataarea name="quik" size="5555">
@@ -115170,7 +115170,7 @@ license:CC0
 		<description>Famicom Yarou 54 (NES)</description>
 		<year>19??</year>
 		<publisher>Unknown</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 menu.vgz" />
 			<dataarea name="quik" size="641">
@@ -115183,7 +115183,7 @@ license:CC0
 		<description>Famista '90 (NES)</description>
 		<year>1989</year>
 		<publisher>Namco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 team select.vgz" />
 			<dataarea name="quik" size="4726">
@@ -115268,7 +115268,7 @@ license:CC0
 		<description>Famista '91 (NES)</description>
 		<year>1990</year>
 		<publisher>Namco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="2582">
@@ -115407,7 +115407,7 @@ license:CC0
 		<description>Famista '93 (NES)</description>
 		<year>1992</year>
 		<publisher>Namco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="2497">
@@ -115534,7 +115534,7 @@ license:CC0
 		<description>Fantasy Zone (NES)</description>
 		<year>1987</year>
 		<publisher>Sunsoft</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 coin.vgz" />
 			<dataarea name="quik" size="322">
@@ -115625,7 +115625,7 @@ license:CC0
 		<description>Fantasy Zone (NES) Tengen</description>
 		<year>1989</year>
 		<publisher>Tengen</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opa-opa.vgz" />
 			<dataarea name="quik" size="12088">
@@ -115710,7 +115710,7 @@ license:CC0
 		<description>Fantasy Zone II - The Teardrop of Opa-Opa (NES)</description>
 		<year>1988</year>
 		<publisher>Sunsoft</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 cama-ternya.vgz" />
 			<dataarea name="quik" size="1513">
@@ -115801,7 +115801,7 @@ license:CC0
 		<description>Faxanadu (NES)</description>
 		<year>1987</year>
 		<publisher>Hudson</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="3663">
@@ -116050,7 +116050,7 @@ license:CC0
 		<description>Final Fantasy (NES)</description>
 		<year>1990</year>
 		<publisher>Square</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 prelude.vgz" />
 			<dataarea name="quik" size="2104">
@@ -116183,7 +116183,7 @@ license:CC0
 		<description>Final Fantasy III (Family Computer)</description>
 		<year>1990</year>
 		<publisher>Square</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 the prelude.vgz" />
 			<dataarea name="quik" size="10912">
@@ -116544,7 +116544,7 @@ license:CC0
 		<description>Final Fantasy II (Family Computer)</description>
 		<year>1988</year>
 		<publisher>Square</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 prelude.vgz" />
 			<dataarea name="quik" size="2723">
@@ -116695,7 +116695,7 @@ license:CC0
 		<description>Final Mission (Family Computer)</description>
 		<year>1990</year>
 		<publisher>Natsume</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="22385">
@@ -116774,7 +116774,7 @@ license:CC0
 		<description>Fire 'n Ice (NES)</description>
 		<year>1993</year>
 		<publisher>Tecmo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 coolmint island (prologue pt 1).vgz" />
 			<dataarea name="quik" size="16801">
@@ -116925,7 +116925,7 @@ license:CC0
 		<description>Fire Emblem - Ankoku Ryu to Hikari no Tsurugi (Family Computer)</description>
 		<year>1990</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening title ~ demo.vgz" />
 			<dataarea name="quik" size="22179">
@@ -117124,7 +117124,7 @@ license:CC0
 		<description>Fire Emblem Gaiden (Family Computer)</description>
 		<year>1992</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="19434">
@@ -117335,7 +117335,7 @@ license:CC0
 		<description>Fleet Commander (Family Computer)</description>
 		<year>1988</year>
 		<publisher>Ascii</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="2307">
@@ -117354,7 +117354,7 @@ license:CC0
 		<description>Flying Dragon - The Secret Scroll (NES)</description>
 		<year>1989</year>
 		<publisher>Nihon Game (Culture Brain)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 main theme (opening).vgz" />
 			<dataarea name="quik" size="7330">
@@ -117439,7 +117439,7 @@ license:CC0
 		<description>Flying Hero (NES)</description>
 		<year>1989</year>
 		<publisher>Epic</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="4608">
@@ -117506,7 +117506,7 @@ license:CC0
 		<description>Flying Warriors (NES)</description>
 		<year>1991</year>
 		<publisher>Culture Brain</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="25423">
@@ -117693,7 +117693,7 @@ license:CC0
 		<description>Formation Z (NES)</description>
 		<year>1985</year>
 		<publisher>Jaleco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="430">
@@ -117712,7 +117712,7 @@ license:CC0
 		<description>Freedom Force (NES)</description>
 		<year>1988</year>
 		<publisher>Sun Corporation of America</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="1671">
@@ -117827,7 +117827,7 @@ license:CC0
 		<description>Friday the 13th (NES)</description>
 		<year>1989</year>
 		<publisher>LJN</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 main title.vgz" />
 			<dataarea name="quik" size="548">
@@ -117864,7 +117864,7 @@ license:CC0
 		<description>Galaga (NES)</description>
 		<year>1988</year>
 		<publisher>Bandai (UE) / Namco (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 credit inserted.vgz" />
 			<dataarea name="quik" size="332">
@@ -117931,7 +117931,7 @@ license:CC0
 		<description>Galaxian (NES)</description>
 		<year>1984</year>
 		<publisher>Namco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 music 1.vgz" />
 			<dataarea name="quik" size="657">
@@ -117999,7 +117999,7 @@ license:CC0
 		<description>Ganbare Goemon! Karakuri Douchuu (Family Computer)</description>
 		<year>1986</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="12787">
@@ -118114,7 +118114,7 @@ license:CC0
 		<description>Ganbare Goemon 2 (Family Computer)</description>
 		<year>1989</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 the journey started (stage 1, 5, 8).vgz" />
 			<dataarea name="quik" size="24931">
@@ -118241,7 +118241,7 @@ license:CC0
 		<description>Ganbare Goemon Gaiden 2 - Tenka no Zaiho (Family Computer)</description>
 		<year>1992</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 name input screen.vgz" />
 			<dataarea name="quik" size="1348">
@@ -118842,7 +118842,7 @@ license:CC0
 		<description>Ganso Saiyuuki - Super Monkey Daibouken (Family Computer)</description>
 		<year>1986</year>
 		<publisher>Vap</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="950">
@@ -118879,7 +118879,7 @@ license:CC0
 		<description>Gargoyle's Quest II (NES)</description>
 		<year>1992</year>
 		<publisher>Capcom</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="4377">
@@ -119012,7 +119012,7 @@ license:CC0
 		<description>Genpei Toumaden - Computer Boardgame (NES)</description>
 		<year>1988</year>
 		<publisher>Namco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 theme of genpei toumaden.vgz" />
 			<dataarea name="quik" size="1165">
@@ -119145,7 +119145,7 @@ license:CC0
 		<description>Getsu Fuuma Den (Family Computer)</description>
 		<year>1987</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 start.vgz" />
 			<dataarea name="quik" size="474">
@@ -119242,7 +119242,7 @@ license:CC0
 		<description>Ghostbusters (NES)</description>
 		<year>1986</year>
 		<publisher>Activision (U) / Tokuma Shoten (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 ghostbusters!.vgz" />
 			<dataarea name="quik" size="3366">
@@ -119261,7 +119261,7 @@ license:CC0
 		<description>Ghosts 'N Goblins (NES)</description>
 		<year>1986</year>
 		<publisher>Capcom</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 start demo.vgz" />
 			<dataarea name="quik" size="673">
@@ -119552,7 +119552,7 @@ license:CC0
 		<description>Golgo 13 - Top Secret Episode (Family Computer)</description>
 		<year>1988</year>
 		<publisher>Vic Tokai</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 vic tokai logo.vgz" />
 			<dataarea name="quik" size="763">
@@ -119703,7 +119703,7 @@ license:CC0
 		<description>Gomoku Narabe Renju (Family Computer)</description>
 		<year>1983</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="601">
@@ -119752,7 +119752,7 @@ license:CC0
 		<description>Gradius (NES)</description>
 		<year>1986</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 coin.vgz" />
 			<dataarea name="quik" size="491">
@@ -119831,7 +119831,7 @@ license:CC0
 		<description>Gradius II (Family Computer)</description>
 		<year>1988</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 equipment (selection).vgz" />
 			<dataarea name="quik" size="17998">
@@ -119928,7 +119928,7 @@ license:CC0
 		<description>Green Beret (NES)</description>
 		<year>1987</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 prologue.vgz" />
 			<dataarea name="quik" size="2082">
@@ -120067,7 +120067,7 @@ license:CC0
 		<description>Guerrilla War (NES)</description>
 		<year>1987</year>
 		<publisher>SNK</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="1705">
@@ -120164,7 +120164,7 @@ license:CC0
 		<description>Gumshoe (NES)</description>
 		<year>1986</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 intro.vgz" />
 			<dataarea name="quik" size="1247">
@@ -120255,7 +120255,7 @@ license:CC0
 		<description>Gyrodine (NES)</description>
 		<year>1987</year>
 		<publisher>Taito</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="593">
@@ -120274,7 +120274,7 @@ license:CC0
 		<description>Gyromite (NES)</description>
 		<year>1985</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="751">
@@ -120347,7 +120347,7 @@ license:CC0
 		<description>Happily Ever After (NES)</description>
 		<year>1991</year>
 		<publisher>Sofel</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 introduction.vgz" />
 			<dataarea name="quik" size="13968">
@@ -120420,7 +120420,7 @@ license:CC0
 		<description>Heracles no Eikou II - Titan no Metsubou (Family Computer)</description>
 		<year>1989</year>
 		<publisher>Data East</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 to heroes.vgz" />
 			<dataarea name="quik" size="2367">
@@ -120541,7 +120541,7 @@ license:CC0
 		<description>Higemaru Makaijima - Nanatsu no Shima Daibouken (NES)</description>
 		<year>1987</year>
 		<publisher>Capcom</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 welcome to the adventure world.vgz" />
 			<dataarea name="quik" size="1227">
@@ -120644,7 +120644,7 @@ license:CC0
 		<description>Hikari no Senshi Photon - Wakusei Zoldias no Tatakai (Family Computer)</description>
 		<year>1987</year>
 		<publisher>Takara</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="3060">
@@ -120904,7 +120904,7 @@ license:CC0
 		<description>Hiryu no Ken III - 5 Nin no Ryu Senshi (Family Computer)</description>
 		<year>1990</year>
 		<publisher>Culture Brain</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="474">
@@ -121067,7 +121067,7 @@ license:CC0
 		<description>Hiryu no Ken II - Dragon no Tsubasa (Family Computer)</description>
 		<year>1988</year>
 		<publisher>Culture Brain</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 main theme.vgz" />
 			<dataarea name="quik" size="16521">
@@ -121266,7 +121266,7 @@ license:CC0
 		<description>Hiryu no Ken Special - Fighting Wars (Family Computer)</description>
 		<year>1991</year>
 		<publisher>Culture Brain</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="4725">
@@ -121375,7 +121375,7 @@ license:CC0
 		<description>Hit the Ice (NES)</description>
 		<year>1993</year>
 		<publisher>Taito Corporation Japan</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen ~ character select.vgz" />
 			<dataarea name="quik" size="6400">
@@ -121472,7 +121472,7 @@ license:CC0
 		<description>Hi no Tori Hououhen - Gaou no Bouken (Family Computer)</description>
 		<year>1987</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="1044">
@@ -121545,7 +121545,7 @@ license:CC0
 		<description>Hogan's Alley (NES)</description>
 		<year>1985</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="747">
@@ -121594,7 +121594,7 @@ license:CC0
 		<description>Holy Diver (Family Computer)</description>
 		<year>1989</year>
 		<publisher>Irem</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="1534">
@@ -121709,7 +121709,7 @@ license:CC0
 		<description>Huangdi- Zhuolu zhi Zhan (NES)</description>
 		<year>1994</year>
 		<publisher>Asder</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 introduction.vgz" />
 			<dataarea name="quik" size="1405">
@@ -121824,7 +121824,7 @@ license:CC0
 		<description>Hudson's Adventure Island (NES)</description>
 		<year>1988</year>
 		<publisher>Hudson</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="1294">
@@ -122018,7 +122018,7 @@ license:CC0
 		<description>Ice Climber (NES)</description>
 		<year>1985</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="751">
@@ -122238,7 +122238,7 @@ license:CC0
 		<description>Ikki (NES)</description>
 		<year>1985</year>
 		<publisher>Sunsoft</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="524">
@@ -122269,7 +122269,7 @@ license:CC0
 		<description>Image Fight (NES)</description>
 		<year>1990</year>
 		<publisher>Irem</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 into the 'image fight' (cockpit 1).vgz" />
 			<dataarea name="quik" size="407">
@@ -122415,7 +122415,7 @@ license:CC0
 		<description>Insector X (Family Computer)</description>
 		<year>1990</year>
 		<publisher>Taito</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 round start.vgz" />
 			<dataarea name="quik" size="708">
@@ -122658,7 +122658,7 @@ license:CC0
 		<description>Journey to Silius (NES)</description>
 		<year>1990</year>
 		<publisher>Sunsoft (U, E, J) / Mattel (A)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="29317">
@@ -122737,7 +122737,7 @@ license:CC0
 		<description>Joust (NES)</description>
 		<year>1988</year>
 		<publisher>HAL Laboratory</publisher>
-		<info name="cores" value="NES APU (2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="1043">
@@ -122750,7 +122750,7 @@ license:CC0
 		<description>Kai no Bouken - The Quest of Ki (NES)</description>
 		<year>1988</year>
 		<publisher>Namco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 coin.vgz" />
 			<dataarea name="quik" size="576">
@@ -122835,7 +122835,7 @@ license:CC0
 		<description>Kanshaku Tamanage Kantarou no Tokaido Gojusan Tsugi (NES)</description>
 		<year>1986</year>
 		<publisher>Sunsoft</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="778">
@@ -122926,7 +122926,7 @@ license:CC0
 		<description>Karnov (NES)</description>
 		<year>1988</year>
 		<publisher>Data East (U) / Namco (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="1443">
@@ -122987,7 +122987,7 @@ license:CC0
 		<description>Kekkyoku Nankyoku Daibouken (NES)</description>
 		<year>1985</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="540">
@@ -123018,7 +123018,7 @@ license:CC0
 		<description>Kick Master (NES)</description>
 		<year>1992</year>
 		<publisher>Taito</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title, opening scroll.vgz" />
 			<dataarea name="quik" size="10440">
@@ -123169,7 +123169,7 @@ license:CC0
 		<description>Kidou Senshi Z-Gundam - Hot Scramble (Family Computer)</description>
 		<year>1986</year>
 		<publisher>Bandai</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 z. toki wo koete (opening).vgz" />
 			<dataarea name="quik" size="2782">
@@ -123206,7 +123206,7 @@ license:CC0
 		<description>Kid Icarus (NES)</description>
 		<year>1987</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title bgm.vgz" />
 			<dataarea name="quik" size="3300">
@@ -123285,7 +123285,7 @@ license:CC0
 		<description>Kid Niki - Radical Ninja (NES)</description>
 		<year>1987</year>
 		<publisher>Data East (U) / Irem (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 chirin.vgz" />
 			<dataarea name="quik" size="689">
@@ -123352,7 +123352,7 @@ license:CC0
 		<description>King's Knight (NES)</description>
 		<year>1986</year>
 		<publisher>Square</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="563">
@@ -123413,7 +123413,7 @@ license:CC0
 		<description>King Kong 2 - Ikari no Megaton Punch (NES)</description>
 		<year>1986</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start ~ bgm 1.vgz" />
 			<dataarea name="quik" size="4285">
@@ -123498,7 +123498,7 @@ license:CC0
 		<description>Kirby's Adventure (NES)</description>
 		<year>1993</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 drawing song.vgz" />
 			<dataarea name="quik" size="4040">
@@ -123757,7 +123757,7 @@ license:CC0
 		<description>Kiwi Kraze (NES)</description>
 		<year>1991</year>
 		<publisher>Taito (U) / Ocean (E)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="5915">
@@ -123824,7 +123824,7 @@ license:CC0
 		<description>Klax (NES)</description>
 		<year>1990</year>
 		<publisher>Tengen (US); Hudson (JP)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="17470">
@@ -123928,7 +123928,7 @@ license:CC0
 		<description>Konami Wai Wai World (Family Computer)</description>
 		<year>1988</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 garage bgm.vgz" />
 			<dataarea name="quik" size="5333">
@@ -124061,7 +124061,7 @@ license:CC0
 		<description>Kujaku Ou (Family Computer)</description>
 		<year>1988</year>
 		<publisher>Pony Canyon</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="560">
@@ -124140,7 +124140,7 @@ license:CC0
 		<description>Kujaku Ou II (Family Computer)</description>
 		<year>1990</year>
 		<publisher>Pony Canyon</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="589">
@@ -124225,7 +124225,7 @@ license:CC0
 		<description>Kung Fu (NES)</description>
 		<year>1985</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="505">
@@ -124262,7 +124262,7 @@ license:CC0
 		<description>Labyrinth - Maou no Meikyu (Family Computer)</description>
 		<year>1987</year>
 		<publisher>Tokumashoten</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening titles including underground.vgz" />
 			<dataarea name="quik" size="12543">
@@ -124377,7 +124377,7 @@ license:CC0
 		<description>Lagrange Point (Family Computer)</description>
 		<year>1991</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03), VRC7"/>
+		<info name="cores" value="NES APU (RP2A03), VRC7"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 theme of isis.vgz" />
 			<dataarea name="quik" size="11254">
@@ -124570,7 +124570,7 @@ license:CC0
 		<description>Lan Master (NES)</description>
 		<year>2011</year>
 		<publisher>Shiru</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="17826">
@@ -124601,7 +124601,7 @@ license:CC0
 		<description>Lawn Mower (NES)</description>
 		<year>2011</year>
 		<publisher>Shiru</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="11646">
@@ -124638,7 +124638,7 @@ license:CC0
 		<description>Legacy of The Wizard (NES)</description>
 		<year>1989</year>
 		<publisher>Broderbund (U) / Namcot (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening theme.vgz" />
 			<dataarea name="quik" size="1825">
@@ -124741,7 +124741,7 @@ license:CC0
 		<description>Lemmings (NES)</description>
 		<year>1992</year>
 		<publisher>Sunsoft (U) / Ocean (E)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="1259">
@@ -124808,7 +124808,7 @@ license:CC0
 		<description>Les Chevaliers du Zodiaque - La Legende d'Or (NES)</description>
 		<year>1987</year>
 		<publisher>Bandai</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="4585">
@@ -124869,7 +124869,7 @@ license:CC0
 		<description>Life Force (NES)</description>
 		<year>1988</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 coin.vgz" />
 			<dataarea name="quik" size="573">
@@ -124942,7 +124942,7 @@ license:CC0
 		<description>Lode Runner (NES)</description>
 		<year>1987</year>
 		<publisher>Broderbund (U, LR only) / Hudson (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="501">
@@ -124991,7 +124991,7 @@ license:CC0
 		<description>Lot Lot (NES)</description>
 		<year>1985</year>
 		<publisher>Tokuma Shoten</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="480">
@@ -125022,7 +125022,7 @@ license:CC0
 		<description>Low G Man - The Low Gravity Man (NES)</description>
 		<year>1990</year>
 		<publisher>Taxan</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="2621">
@@ -125119,7 +125119,7 @@ license:CC0
 		<description>Mach Rider (NES)</description>
 		<year>1985</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title bgm.vgz" />
 			<dataarea name="quik" size="1105">
@@ -125192,7 +125192,7 @@ license:CC0
 		<description>Madoola no Tsubasa (NES)</description>
 		<year>1986</year>
 		<publisher>Sunsoft</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="1046">
@@ -125259,7 +125259,7 @@ license:CC0
 		<description>Magician (NES)</description>
 		<year>1991</year>
 		<publisher>Taxan</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="20292">
@@ -125380,7 +125380,7 @@ license:CC0
 		<description>Mahjong (Family Computer)</description>
 		<year>1983</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="641">
@@ -125423,7 +125423,7 @@ license:CC0
 		<description>Majou Densetsu II - Daimashikyou Galious (Family Computer)</description>
 		<year>1987</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 prologue.vgz" />
 			<dataarea name="quik" size="1214">
@@ -125514,7 +125514,7 @@ license:CC0
 		<description>Maniac Mansion (NES)</description>
 		<year>1990</year>
 		<publisher>Jaleco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="12078">
@@ -125611,7 +125611,7 @@ license:CC0
 		<description>Mappy (NES)</description>
 		<year>1984</year>
 		<publisher>Namco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 main.vgz" />
 			<dataarea name="quik" size="1448">
@@ -125660,7 +125660,7 @@ license:CC0
 		<description>Marble Madness (NES)</description>
 		<year>1989</year>
 		<publisher>Milton Bradley (U) / Hasbro (E)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 level 1.vgz" />
 			<dataarea name="quik" size="683">
@@ -125715,7 +125715,7 @@ license:CC0
 		<description>Mario Bros. (NES)</description>
 		<year>1983</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title bgm.vgz" />
 			<dataarea name="quik" size="939">
@@ -125758,7 +125758,7 @@ license:CC0
 		<description>Marusa no Onna (Family Computer)</description>
 		<year>1989</year>
 		<publisher>Capcom</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 tax evasion in the shadow of crime (opening theme).vgz" />
 			<dataarea name="quik" size="11986">
@@ -125825,7 +125825,7 @@ license:CC0
 		<description>Maxi 15 (NES)</description>
 		<year>1992</year>
 		<publisher>American Video</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="3351">
@@ -125838,7 +125838,7 @@ license:CC0
 		<description>Mega Man (NES)</description>
 		<year>1987</year>
 		<publisher>Capcom</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 stage select.vgz" />
 			<dataarea name="quik" size="639">
@@ -125941,7 +125941,7 @@ license:CC0
 		<description>Mega Man 2 (NES)</description>
 		<year>1989</year>
 		<publisher>Capcom</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="9924">
@@ -126104,7 +126104,7 @@ license:CC0
 		<description>Mega Man 3 (NES)</description>
 		<year>1990</year>
 		<publisher>Capcom</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="15916">
@@ -126255,7 +126255,7 @@ license:CC0
 		<description>Mega Man 4 (NES)</description>
 		<year>1992</year>
 		<publisher>Capcom</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="8627">
@@ -126442,7 +126442,7 @@ license:CC0
 		<description>Mega Man 5 (NES)</description>
 		<year>1992</year>
 		<publisher>Capcom</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="12830">
@@ -126611,7 +126611,7 @@ license:CC0
 		<description>Mega Man 6 (NES)</description>
 		<year>1994</year>
 		<publisher>Capcom</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 capcom logo.vgz" />
 			<dataarea name="quik" size="1401">
@@ -126925,7 +126925,7 @@ license:CC0
 		<description>Metal Fighter (NES)</description>
 		<year>1989</year>
 		<publisher>Sachen / Kinema Music / Color Dreams</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 main bgm.vgz" />
 			<dataarea name="quik" size="1108">
@@ -126950,7 +126950,7 @@ license:CC0
 		<description>Metal Gear (NES)</description>
 		<year>1988</year>
 		<publisher>Ultra (U) / Konami (JE)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 aerial insertion.vgz" />
 			<dataarea name="quik" size="13558">
@@ -127029,7 +127029,7 @@ license:CC0
 		<description>Metal Max (Family Computer)</description>
 		<year>1991</year>
 		<publisher>Data East</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="16019">
@@ -127264,7 +127264,7 @@ license:CC0
 		<description>Metro-Cross (NES)</description>
 		<year>1986</year>
 		<publisher>Namco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 bgm intro.vgz" />
 			<dataarea name="quik" size="514">
@@ -127319,7 +127319,7 @@ license:CC0
 		<description>Metroid (NES)</description>
 		<year>1987</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title bgm.vgz" />
 			<dataarea name="quik" size="2576">
@@ -127398,7 +127398,7 @@ license:CC0
 		<description>Mickey Mousecapade (NES)</description>
 		<year>1988</year>
 		<publisher>Capcom (U) / Hudson (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 round start.vgz" />
 			<dataarea name="quik" size="1071">
@@ -127477,7 +127477,7 @@ license:CC0
 		<description>Mighty Bomb Jack (NES)</description>
 		<year>1987</year>
 		<publisher>Tecmo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 door.vgz" />
 			<dataarea name="quik" size="663">
@@ -127580,7 +127580,7 @@ license:CC0
 		<description>Mike Tyson's Punch-Out!! (NES)</description>
 		<year>1987</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="2282">
@@ -127707,7 +127707,7 @@ license:CC0
 		<description>Millipede (NES)</description>
 		<year>1988</year>
 		<publisher>HAL Laboratory</publisher>
-		<info name="cores" value="NES APU (2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="1551">
@@ -127726,7 +127726,7 @@ license:CC0
 		<description>Milon's Secret Castle (NES)</description>
 		<year>1986</year>
 		<publisher>Hudson</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="731">
@@ -127853,7 +127853,7 @@ license:CC0
 		<description>Miracle Ropit's Adventure in 2100 (NES)</description>
 		<year>1987</year>
 		<publisher>King Records / Animation 20</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 theme of miracle ropit (title screen version).vgz" />
 			<dataarea name="quik" size="2358">
@@ -127914,7 +127914,7 @@ license:CC0
 		<description>Mississippi Satsujin Jiken (Family Computer)</description>
 		<year>1986</year>
 		<publisher>Jaleco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 main theme.vgz" />
 			<dataarea name="quik" size="1724">
@@ -127987,7 +127987,7 @@ license:CC0
 		<description>Monster in my Pocket (NES)</description>
 		<year>1992</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 get out from a pocket (title).vgz" />
 			<dataarea name="quik" size="14252">
@@ -128127,7 +128127,7 @@ license:CC0
 		<description>Moon Crystal (NES)</description>
 		<year>1992</year>
 		<publisher>Hect</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening part #1.vgz" />
 			<dataarea name="quik" size="1503">
@@ -128254,7 +128254,7 @@ license:CC0
 		<description>Mother (NES)</description>
 		<year>1988</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="16204">
@@ -128501,7 +128501,7 @@ license:CC0
 		<description>Ms. Pac-Man (NES)</description>
 		<year>1993</year>
 		<publisher>Namco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 start.vgz" />
 			<dataarea name="quik" size="3248">
@@ -128532,7 +128532,7 @@ license:CC0
 		<description>MTV - Remote Control (NES)</description>
 		<year>1990</year>
 		<publisher>Hi-Tech Expressions</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="5779">
@@ -128545,7 +128545,7 @@ license:CC0
 		<description>Musashi no Ken - Tadaima Shugyou Chuu (NES)</description>
 		<year>1986</year>
 		<publisher>Taito</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 action bgm.vgz" />
 			<dataarea name="quik" size="1292">
@@ -128588,7 +128588,7 @@ license:CC0
 		<description>Nazo no Murasamejou (Family Computer Disk System)</description>
 		<year>1986</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03), FDS"/>
+		<info name="cores" value="NES APU (RP2A03), FDS"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="871">
@@ -128649,7 +128649,7 @@ license:CC0
 		<description>Ninja Gaiden (NES)</description>
 		<year>1988</year>
 		<publisher>Tecmo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 the moonlight duel.vgz" />
 			<dataarea name="quik" size="5458">
@@ -128836,7 +128836,7 @@ license:CC0
 		<description>Ninja Hattori-kun (Family Computer)</description>
 		<year>1987</year>
 		<publisher>Hudson</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="534">
@@ -128897,7 +128897,7 @@ license:CC0
 		<description>Nintendo World Championships 1990 (NES)</description>
 		<year>1990</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 start game.vgz" />
 			<dataarea name="quik" size="1159">
@@ -128928,7 +128928,7 @@ license:CC0
 		<description>Nobunaga's Ambition (NES)</description>
 		<year>1988</year>
 		<publisher>Koei</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 overture ~nobunaga's ambition~ (opening, ending).vgz" />
 			<dataarea name="quik" size="661">
@@ -128989,7 +128989,7 @@ license:CC0
 		<description>Nobunaga's Ambition II (NES)</description>
 		<year>1990</year>
 		<publisher>Koei</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 pre-opening.vgz" />
 			<dataarea name="quik" size="2407">
@@ -129092,7 +129092,7 @@ license:CC0
 		<description>Nobunaga no Yabou - Bushou Fuunroku (NES)</description>
 		<year>1991</year>
 		<publisher>Koei</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 elegance (opening).vgz" />
 			<dataarea name="quik" size="5338">
@@ -129249,7 +129249,7 @@ license:CC0
 		<description>Operation Wolf (NES)</description>
 		<year>1989</year>
 		<publisher>Taito</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening demo.vgz" />
 			<dataarea name="quik" size="10646">
@@ -129292,7 +129292,7 @@ license:CC0
 		<description>Over Horizon (NES)</description>
 		<year>1991</year>
 		<publisher>Hot-B (J) / Takara (E)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="8941">
@@ -129486,7 +129486,7 @@ license:CC0
 		<description>Pac-Mania (NES)</description>
 		<year>1990</year>
 		<publisher>Tengen</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="823">
@@ -129547,7 +129547,7 @@ license:CC0
 		<description>Pac-Man (NES)</description>
 		<year>1993</year>
 		<publisher>Namco (NES U 3rd launch,</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="2871">
@@ -129566,7 +129566,7 @@ license:CC0
 		<description>Parodius (NES)</description>
 		<year>1992</year>
 		<publisher>Palcom (E) / Konami (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 parodius dance.vgz" />
 			<dataarea name="quik" size="13776">
@@ -129705,7 +129705,7 @@ license:CC0
 		<description>Penguin-Kun Wars (Family Computer)</description>
 		<year>1985</year>
 		<publisher>ASCII</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 main bgm.vgz" />
 			<dataarea name="quik" size="852">
@@ -129718,7 +129718,7 @@ license:CC0
 		<description>Phantom Fighter (NES)</description>
 		<year>1990</year>
 		<publisher>FCI (U) / Pony Canyon (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="2425">
@@ -129863,7 +129863,7 @@ license:CC0
 		<description>Pinball (NES)</description>
 		<year>1984</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="854">
@@ -129882,7 +129882,7 @@ license:CC0
 		<description>Poker Jingling (NES)</description>
 		<year>1990</year>
 		<publisher>TXC (As) / Hacker International (J) / Panesian (U)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 a.v. poker title screen.vgz" />
 			<dataarea name="quik" size="1796">
@@ -129949,7 +129949,7 @@ license:CC0
 		<description>Pool of Radiance (NES)</description>
 		<year>1992</year>
 		<publisher>FCI (U) / Pony Canyon (J)</publisher>
-		<info name="cores" value="NES APU (2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="9113">
@@ -130124,7 +130124,7 @@ license:CC0
 		<description>Pooyan (Family Computer)</description>
 		<year>1985</year>
 		<publisher>Hudson Soft</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="11667">
@@ -130239,7 +130239,7 @@ license:CC0
 		<description>Power Blade 2 (NES)</description>
 		<year>1992</year>
 		<publisher>Taito</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 intro.vgz" />
 			<dataarea name="quik" size="23825">
@@ -130360,7 +130360,7 @@ license:CC0
 		<description>Pro Yakyuu - Family Stadium '88 (NES)</description>
 		<year>1988</year>
 		<publisher>Namco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 team select.vgz" />
 			<dataarea name="quik" size="1874">
@@ -130445,7 +130445,7 @@ license:CC0
 		<description>Puzznic (NES)</description>
 		<year>1990</year>
 		<publisher>Taito (UE) / IGS (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 level select.vgz" />
 			<dataarea name="quik" size="852">
@@ -130500,7 +130500,7 @@ license:CC0
 		<description>Quarth (Family Computer)</description>
 		<year>1990</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 setup.vgz" />
 			<dataarea name="quik" size="643">
@@ -130549,7 +130549,7 @@ license:CC0
 		<description>Radia Senki - Reimei Hen (NES)</description>
 		<year>1991</year>
 		<publisher>Tecmo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="9022">
@@ -130790,7 +130790,7 @@ license:CC0
 		<description>Rad Racer (NES)</description>
 		<year>1987</year>
 		<publisher>Nintendo (UE); Mattel (CN); Square (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 bgm 1.vgz" />
 			<dataarea name="quik" size="2454">
@@ -130833,7 +130833,7 @@ license:CC0
 		<description>Rainbow Islands - The Story of Bubble Bobble 2 (NES)</description>
 		<year>1991</year>
 		<publisher>Taito</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 ready.vgz" />
 			<dataarea name="quik" size="913">
@@ -130984,7 +130984,7 @@ license:CC0
 		<description>RBI Baseball (NES)</description>
 		<year>1988</year>
 		<publisher>Tengen (U) / Home Entertainment</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 play ball.vgz" />
 			<dataarea name="quik" size="833">
@@ -131033,7 +131033,7 @@ license:CC0
 		<description>Renegade (NES)</description>
 		<year>1988</year>
 		<publisher>Taito (U) / Technos Japan (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="415">
@@ -131136,7 +131136,7 @@ license:CC0
 		<description>Road Fighter (NES)</description>
 		<year>1992</year>
 		<publisher>Palcom (E) / Konami (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="11864">
@@ -131167,7 +131167,7 @@ license:CC0
 		<description>Road Runner (NES)</description>
 		<year>1989</year>
 		<publisher>Tengen</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 william tell overture.vgz" />
 			<dataarea name="quik" size="4358">
@@ -131222,7 +131222,7 @@ license:CC0
 		<description>Robert Byrne's Pool Challenge (NES)</description>
 		<year>1992</year>
 		<publisher>American Video</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="7955">
@@ -131259,7 +131259,7 @@ license:CC0
 		<description>Robocop (NES)</description>
 		<year>1989</year>
 		<publisher>Data East (JU) / Ocean (E)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="1852">
@@ -131320,7 +131320,7 @@ license:CC0
 		<description>Robo Warrior (NES)</description>
 		<year>1988</year>
 		<publisher>Jaleco (UE) / Hudson (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 intro.vgz" />
 			<dataarea name="quik" size="1878">
@@ -131411,7 +131411,7 @@ license:CC0
 		<description>Rolling Thunder (NES)</description>
 		<year>1989</year>
 		<publisher>Tengen</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 start ~ bgm 1.vgz" />
 			<dataarea name="quik" size="5019">
@@ -131454,7 +131454,7 @@ license:CC0
 		<description>Route 16 Turbo (NES)</description>
 		<year>1985</year>
 		<publisher>Sunsoft</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="7544">
@@ -131503,7 +131503,7 @@ license:CC0
 		<description>Rygar (NES)</description>
 		<year>1987</year>
 		<publisher>Tecmo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 starting point (sunset).vgz" />
 			<dataarea name="quik" size="1170">
@@ -131636,7 +131636,7 @@ license:CC0
 		<description>S.C.A.T. - Special Cybernetic Attack Team (NES)</description>
 		<year>1991</year>
 		<publisher>Natsume (U) / Infogrames (E)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening 1.vgz" />
 			<dataarea name="quik" size="17886">
@@ -131721,7 +131721,7 @@ license:CC0
 		<description>Saint Seiya - Ougon Densetsu (Family Computer)</description>
 		<year>1987</year>
 		<publisher>Bandai</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 pegasus fantasy (title).vgz" />
 			<dataarea name="quik" size="11679">
@@ -131782,7 +131782,7 @@ license:CC0
 		<description>Saint Seiya - Ougon Densetsu Kanketsu Hen (Family Computer)</description>
 		<year>1988</year>
 		<publisher>Bandai</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 pegasus fantasy (title).vgz" />
 			<dataarea name="quik" size="13603">
@@ -131861,7 +131861,7 @@ license:CC0
 		<description>Seicross (NES)</description>
 		<year>1988</year>
 		<publisher>FCI (U) / Nichibutsu (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 start.vgz" />
 			<dataarea name="quik" size="512">
@@ -131910,7 +131910,7 @@ license:CC0
 		<description>Shadow of the Ninja (NES)</description>
 		<year>1990</year>
 		<publisher>Natsume (JU) / Taito (E)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="7070">
@@ -131989,7 +131989,7 @@ license:CC0
 		<description>Shatterhand (NES)</description>
 		<year>1991</year>
 		<publisher>Jaleco (UE) / Angel (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 intro.vgz" />
 			<dataarea name="quik" size="4030">
@@ -132086,7 +132086,7 @@ license:CC0
 		<description>Shinobi (NES)</description>
 		<year>1989</year>
 		<publisher>Tengen</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 bgm 1.vgz" />
 			<dataarea name="quik" size="1508">
@@ -132159,7 +132159,7 @@ license:CC0
 		<description>Side Pocket (NES)</description>
 		<year>1987</year>
 		<publisher>Data East (U) / Namco (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 main bgm.vgz" />
 			<dataarea name="quik" size="2020">
@@ -132220,7 +132220,7 @@ license:CC0
 		<description>Silver Surfer (NES)</description>
 		<year>1990</year>
 		<publisher>Arcadia Systems</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="24608">
@@ -132281,7 +132281,7 @@ license:CC0
 		<description>Sky Destroyer (NES)</description>
 		<year>1985</year>
 		<publisher>Taito</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="527">
@@ -132300,7 +132300,7 @@ license:CC0
 		<description>Sky Kid (NES)</description>
 		<year>1987</year>
 		<publisher>Sunsoft (U) / Namco (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 start music ~ bgm intro ~ bgm.vgz" />
 			<dataarea name="quik" size="1687">
@@ -132536,7 +132536,7 @@ license:CC0
 		<description>Solitaire (NES)</description>
 		<year>1992</year>
 		<publisher>American Video</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="5217">
@@ -132567,7 +132567,7 @@ license:CC0
 		<description>Solomon's Key (NES)</description>
 		<year>1987</year>
 		<publisher>Tecmo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="655">
@@ -132646,7 +132646,7 @@ license:CC0
 		<description>Solstice - The Quest for the Staff of Demnos (NES)</description>
 		<year>1990</year>
 		<publisher>CSG Imagesoft (U) / Epic/Sony Records (J) / Nintendo (E)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="23499">
@@ -132689,7 +132689,7 @@ license:CC0
 		<description>Somari (Dendy)</description>
 		<year>1994</year>
 		<publisher>Ge De Industry Co.</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="4431">
@@ -132774,7 +132774,7 @@ license:CC0
 		<description>Space Harrier (NES)</description>
 		<year>1989</year>
 		<publisher>Takara</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="920">
@@ -132871,7 +132871,7 @@ license:CC0
 		<description>Space Hunter (Family Computer)</description>
 		<year>1986</year>
 		<publisher>Kemco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title ~ main.vgz" />
 			<dataarea name="quik" size="2900">
@@ -132890,7 +132890,7 @@ license:CC0
 		<description>Spartan X 2 (Family Computer)</description>
 		<year>1991</year>
 		<publisher>Irem</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="2770">
@@ -132975,7 +132975,7 @@ license:CC0
 		<description>Spelunker (NES)</description>
 		<year>1987</year>
 		<publisher>Br�derbund (U) / Irem (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title bgm.vgz" />
 			<dataarea name="quik" size="760">
@@ -133042,7 +133042,7 @@ license:CC0
 		<description>Starship Hector (NES)</description>
 		<year>1990</year>
 		<publisher>Hudson</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="2167">
@@ -133103,7 +133103,7 @@ license:CC0
 		<description>Star Force (NES)</description>
 		<year>1987</year>
 		<publisher>Tecmo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 start.vgz" />
 			<dataarea name="quik" size="978">
@@ -133170,7 +133170,7 @@ license:CC0
 		<description>Star Force (NES) JP</description>
 		<year>1985</year>
 		<publisher>Hudson</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 start.vgz" />
 			<dataarea name="quik" size="454">
@@ -133213,7 +133213,7 @@ license:CC0
 		<description>Star Soldier (NES)</description>
 		<year>1989</year>
 		<publisher>Taxan (U) / Hudson (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="618">
@@ -133389,7 +133389,7 @@ license:CC0
 		<description>Stinger (NES)</description>
 		<year>1987</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 introduction.vgz" />
 			<dataarea name="quik" size="2195">
@@ -133504,7 +133504,7 @@ license:CC0
 		<description>Strider (NES)</description>
 		<year>1989</year>
 		<publisher>Capcom</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="15830">
@@ -133601,7 +133601,7 @@ license:CC0
 		<description>Summer Carnival '92 - Recca (Family Computer)</description>
 		<year>1992</year>
 		<publisher>Naxat</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 ad 2302 (opening unused).vgz" />
 			<dataarea name="quik" size="2093">
@@ -133722,7 +133722,7 @@ license:CC0
 		<description>Sunday Funday (NES)</description>
 		<year>1995</year>
 		<publisher>Wisdom Tree</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 menu theme.vgz" />
 			<dataarea name="quik" size="1047">
@@ -133741,7 +133741,7 @@ license:CC0
 		<description>Super Arabian (Family Computer)</description>
 		<year>1985</year>
 		<publisher>Sunsoft</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 stage bgm.vgz" />
 			<dataarea name="quik" size="410">
@@ -133772,7 +133772,7 @@ license:CC0
 		<description>Super Contra (NES)</description>
 		<year>1990</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 thunder landing (area 1).vgz" />
 			<dataarea name="quik" size="27360">
@@ -133863,7 +133863,7 @@ license:CC0
 		<description>Super Donkey Kong (Dendy)</description>
 		<year>199?</year>
 		<publisher>Hosenkan Electronics</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 theme.vgz" />
 			<dataarea name="quik" size="1945">
@@ -133912,7 +133912,7 @@ license:CC0
 		<description>Super Gun (NES)</description>
 		<year>1992</year>
 		<publisher>Caltron Industries, Inc. / NTDEC</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen, ending.vgz" />
 			<dataarea name="quik" size="1142">
@@ -133943,7 +133943,7 @@ license:CC0
 		<description>Super HIK 300 in 1 (NES)</description>
 		<year>19??</year>
 		<publisher>Unknown</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 menu.vgz" />
 			<dataarea name="quik" size="1997">
@@ -134005,7 +134005,7 @@ license:CC0
 		<description>Super Mario Bros. (NES)</description>
 		<year>1985</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 running about.vgz" />
 			<dataarea name="quik" size="3140">
@@ -134138,7 +134138,7 @@ license:CC0
 		<description>Super Mario Bros. 2 (NES)</description>
 		<year>1988</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="2027">
@@ -134241,7 +134241,7 @@ license:CC0
 		<description>Super Mario Bros. 3 (NES)</description>
 		<year>1990</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 world 1 map.vgz" />
 			<dataarea name="quik" size="7095">
@@ -134440,7 +134440,7 @@ license:CC0
 		<description>Super Mario World (Dendy)</description>
 		<year>1995</year>
 		<publisher>Nintendo (SNES) / Hummer Team (Dendy)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="6024">
@@ -134537,7 +134537,7 @@ license:CC0
 		<description>Super Pitfall (NES)</description>
 		<year>1986</year>
 		<publisher>Pony Canyon (J) / Activision (U)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 player start.vgz" />
 			<dataarea name="quik" size="348">
@@ -134586,7 +134586,7 @@ license:CC0
 		<description>Super Star Force - Jikuureki no Himitsu (NES)</description>
 		<year>1986</year>
 		<publisher>Tecmo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 take off (da 2010, 1608).vgz" />
 			<dataarea name="quik" size="5953">
@@ -134671,7 +134671,7 @@ license:CC0
 		<description>Super Xevious - GAMP no Nazo (Family Computer)</description>
 		<year>1986</year>
 		<publisher>Namco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 credit.vgz" />
 			<dataarea name="quik" size="539">
@@ -134798,7 +134798,7 @@ license:CC0
 		<description>Sword Master (NES)</description>
 		<year>1990</year>
 		<publisher>Athena (J) / Activision (UE)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="16374">
@@ -134901,7 +134901,7 @@ license:CC0
 		<description>Taito Chase H.Q. (NES)</description>
 		<year>1989</year>
 		<publisher>Taito</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 round start.vgz" />
 			<dataarea name="quik" size="1136">
@@ -134974,7 +134974,7 @@ license:CC0
 		<description>Takeshi no Chousenjou (Family Computer)</description>
 		<year>1986</year>
 		<publisher>Taito</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 main bgm.vgz" />
 			<dataarea name="quik" size="1107">
@@ -135029,7 +135029,7 @@ license:CC0
 		<description>Tama &amp; Friends - 3 Choume Daibouken (Famicom Disk System)</description>
 		<year>1989</year>
 		<publisher>Bandai</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="9255">
@@ -135096,7 +135096,7 @@ license:CC0
 		<description>Target - Renegade (NES)</description>
 		<year>1989</year>
 		<publisher>Taito</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 taito logo.vgz" />
 			<dataarea name="quik" size="1626">
@@ -135163,7 +135163,7 @@ license:CC0
 		<description>Tecmo Cup Soccer Game (NES)</description>
 		<year>1992</year>
 		<publisher>Tecmo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening, credit roll.vgz" />
 			<dataarea name="quik" size="29910">
@@ -135344,7 +135344,7 @@ license:CC0
 		<description>Tenchi o Kurau II - Shokatsu Koumei Den (Family Computer)</description>
 		<year>1991</year>
 		<publisher>Capcom</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="14002">
@@ -135507,7 +135507,7 @@ license:CC0
 		<description>Terra Cresta (NES)</description>
 		<year>1986</year>
 		<publisher>Nichibutsu</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="606">
@@ -135568,7 +135568,7 @@ license:CC0
 		<description>Terra Cresta (NES) US</description>
 		<year>1990</year>
 		<publisher>Vic Tokai</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="11165">
@@ -135641,7 +135641,7 @@ license:CC0
 		<description>Tetris (NES)</description>
 		<year>1988</year>
 		<publisher>Bullet-Proof Software</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 peddler.vgz" />
 			<dataarea name="quik" size="1545">
@@ -135690,7 +135690,7 @@ license:CC0
 		<description>Tetris (NES, Tengen)</description>
 		<year>1989</year>
 		<publisher>Tengen</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="1441">
@@ -135751,7 +135751,7 @@ license:CC0
 		<description>Thexder (NES)</description>
 		<year>1985</year>
 		<publisher>Square</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 main bgm.vgz" />
 			<dataarea name="quik" size="764">
@@ -135764,7 +135764,7 @@ license:CC0
 		<description>The Flintstones - The Rescue of Dino &amp; Hoppy (NES)</description>
 		<year>1991</year>
 		<publisher>Taito (U / J / PAL) / Mattel (AU)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="6503">
@@ -135843,7 +135843,7 @@ license:CC0
 		<description>The Flintstones - The Surprise at Dinosaur Peak! (NES)</description>
 		<year>1994</year>
 		<publisher>Taito</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="7951">
@@ -135934,7 +135934,7 @@ license:CC0
 		<description>The Goonies (NES)</description>
 		<year>1986</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 start.vgz" />
 			<dataarea name="quik" size="515">
@@ -136001,7 +136001,7 @@ license:CC0
 		<description>The Goonies II (NES)</description>
 		<year>1987</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 start.vgz" />
 			<dataarea name="quik" size="456">
@@ -136080,7 +136080,7 @@ license:CC0
 		<description>The Guardian Legend (NES)</description>
 		<year>1988</year>
 		<publisher>Irem / Broderbund</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="18917">
@@ -136255,7 +136255,7 @@ license:CC0
 		<description>The Jungle Book (NES)</description>
 		<year>1994</year>
 		<publisher>Virgin Interactive</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 virgin logo ~ level clear.vgz" />
 			<dataarea name="quik" size="1591">
@@ -136334,7 +136334,7 @@ license:CC0
 		<description>The Karate Kid (NES)</description>
 		<year>1987</year>
 		<publisher>LJN</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen, ending.vgz" />
 			<dataarea name="quik" size="12493">
@@ -136413,7 +136413,7 @@ license:CC0
 		<description>The Legend of Zelda (NES)</description>
 		<year>1987</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title bgm.vgz" />
 			<dataarea name="quik" size="10966">
@@ -136625,7 +136625,7 @@ license:CC0
 		<description>The Mafat Conspiracy (NES)</description>
 		<year>1990</year>
 		<publisher>Vic Tokai</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="588">
@@ -136758,7 +136758,7 @@ license:CC0
 		<description>The Panda Prince (NES)</description>
 		<year>1996</year>
 		<publisher>Kǎshèng / Taiwan Shin-Shin</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 bonus room blitz (introduction).vgz" />
 			<dataarea name="quik" size="1936">
@@ -136861,7 +136861,7 @@ license:CC0
 		<description>The Smurfs (NES)</description>
 		<year>1994</year>
 		<publisher>Infogrames</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="24603">
@@ -136964,7 +136964,7 @@ license:CC0
 		<description>The Tower of Druaga (NES)</description>
 		<year>1985</year>
 		<publisher>Namco (AC / FC)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 round start.vgz" />
 			<dataarea name="quik" size="546">
@@ -137037,7 +137037,7 @@ license:CC0
 		<description>Tiger-Heli (NES)</description>
 		<year>1987</year>
 		<publisher>Acclaim (UE) / Pony Canyon (J) / Hyundai (KR)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 first mission.vgz" />
 			<dataarea name="quik" size="836">
@@ -137074,7 +137074,7 @@ license:CC0
 		<description>Times of Lore (NES)</description>
 		<year>1990</year>
 		<publisher>Toho Co.</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="2068">
@@ -137123,7 +137123,7 @@ license:CC0
 		<description>TM Network - Live in Power Bowl (Family Computer)</description>
 		<year>1989</year>
 		<publisher>Epic Sony</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 come on everybody (opening).vgz" />
 			<dataarea name="quik" size="2717">
@@ -137226,7 +137226,7 @@ license:CC0
 		<description>Toujin Makyou Den - Heracles no Eikou (Family Computer)</description>
 		<year>1987</year>
 		<publisher>Data East</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="1723">
@@ -137377,7 +137377,7 @@ license:CC0
 		<description>Town &amp; Country II - Thrilla's Surfari (NES)</description>
 		<year>1988</year>
 		<publisher>LJN</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 intro part 1.vgz" />
 			<dataarea name="quik" size="829">
@@ -137438,7 +137438,7 @@ license:CC0
 		<description>Town &amp; Country Surf Designs - Wood &amp; Water Rage (NES)</description>
 		<year>1988</year>
 		<publisher>LJN</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="11498">
@@ -137475,7 +137475,7 @@ license:CC0
 		<description>Track &amp; Field (NES)</description>
 		<year>1987</year>
 		<publisher>Konami (JU) / Kemco (E)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="13472">
@@ -137548,7 +137548,7 @@ license:CC0
 		<description>Transformers - Convoy no Nazo (Family Computer)</description>
 		<year>1986</year>
 		<publisher>Takara</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="1004">
@@ -137609,7 +137609,7 @@ license:CC0
 		<description>TwinBee (Family Computer)</description>
 		<year>1986</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 start.vgz" />
 			<dataarea name="quik" size="474">
@@ -137670,7 +137670,7 @@ license:CC0
 		<description>TwinBee 3 - Poko Poko Daimaou (Family Computer)</description>
 		<year>1989</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 start, power-up se.vgz" />
 			<dataarea name="quik" size="759">
@@ -137791,7 +137791,7 @@ license:CC0
 		<description>Twin Cobra (NES)</description>
 		<year>1990</year>
 		<publisher>American Sammy (U) / CBS (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 challenge.vgz" />
 			<dataarea name="quik" size="9901">
@@ -137858,7 +137858,7 @@ license:CC0
 		<description>Uchuu Keibitai SDF (Family Computer)</description>
 		<year>1990</year>
 		<publisher>HAL Laboratory</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 start demo.vgz" />
 			<dataarea name="quik" size="15730">
@@ -137937,7 +137937,7 @@ license:CC0
 		<description>Ufouria - The Saga (NES)</description>
 		<year>1992</year>
 		<publisher>Sunsoft</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 hebereke! (title).vgz" />
 			<dataarea name="quik" size="20119">
@@ -138022,7 +138022,7 @@ license:CC0
 		<description>Ultima - Exodus (NES)</description>
 		<year>1988</year>
 		<publisher>FCI (U) / Pony Canyon (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 the undergound labyrinth.vgz" />
 			<dataarea name="quik" size="8892">
@@ -138095,7 +138095,7 @@ license:CC0
 		<description>Ultima - Quest of the Avatar (NES)</description>
 		<year>1990</year>
 		<publisher>FCI (U) / Pony Canyon (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="4714">
@@ -138282,7 +138282,7 @@ license:CC0
 		<description>Valkyrie no Bouken - Toki no Kagi Densetsu (Family Computer)</description>
 		<year>1986</year>
 		<publisher>Namco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 bgm a (overground).vgz" />
 			<dataarea name="quik" size="988">
@@ -138355,7 +138355,7 @@ license:CC0
 		<description>Vegas Dream (NES)</description>
 		<year>1988</year>
 		<publisher>HAL Laboratory</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="2335">
@@ -138458,7 +138458,7 @@ license:CC0
 		<description>Vs. Clu Clu Land (Vs. Unisystem)</description>
 		<year>1984</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="754">
@@ -138935,7 +138935,7 @@ license:CC0
 		<description>Wardner no Mori (FDS)</description>
 		<year>1988</year>
 		<publisher>Taito Corporation</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="1963">
@@ -138978,7 +138978,7 @@ license:CC0
 		<description>Warpman (NES)</description>
 		<year>1985</year>
 		<publisher>Namco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="497">
@@ -139009,7 +139009,7 @@ license:CC0
 		<description>War on Wheels (NES)</description>
 		<year>1991</year>
 		<publisher>Jaleco, Ltd.</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="3789">
@@ -139088,7 +139088,7 @@ license:CC0
 		<description>Wayne's World (NES)</description>
 		<year>1993</year>
 		<publisher>T*HQ</publisher>
-		<info name="cores" value="NES APU (2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="2684">
@@ -139143,7 +139143,7 @@ license:CC0
 		<description>Wily &amp; Right no RockBoard - That's Paradise (Family Computer)</description>
 		<year>1993</year>
 		<publisher>Capcom</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="7724">
@@ -139240,7 +139240,7 @@ license:CC0
 		<description>Wit's (Family Computer)</description>
 		<year>1990</year>
 		<publisher>Athena</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="326">
@@ -139361,7 +139361,7 @@ license:CC0
 		<description>Wizardry - Knight of Diamonds - The Second Scenario (NES)</description>
 		<year>1990</year>
 		<publisher>Ascii Corporation</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 knight of diamonds -opening theme-.vgz" />
 			<dataarea name="quik" size="6991">
@@ -139464,7 +139464,7 @@ license:CC0
 		<description>Wizardry - Proving Grounds of The Mad Overlord (NES)</description>
 		<year>1987</year>
 		<publisher>Nexoft Corporation (U) / Ascii Corporation (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening theme.vgz" />
 			<dataarea name="quik" size="5393">
@@ -139579,7 +139579,7 @@ license:CC0
 		<description>Wizardry II - Llylgamyn no Isan (Family Computer)</description>
 		<year>1989</year>
 		<publisher>Ascii Corporation</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 wizardry ii opening theme.vgz" />
 			<dataarea name="quik" size="2739">
@@ -139785,7 +139785,7 @@ license:CC0
 		<description>Wrecking Crew (NES)</description>
 		<year>1985</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 start ~ phase bgm.vgz" />
 			<dataarea name="quik" size="2205">
@@ -139822,7 +139822,7 @@ license:CC0
 		<description>Xevious (NES)</description>
 		<year>1984</year>
 		<publisher>Namco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="570">
@@ -139841,7 +139841,7 @@ license:CC0
 		<description>Yie Ar Kung Fu (NES)</description>
 		<year>1985</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 main bgm.vgz" />
 			<dataarea name="quik" size="1685">
@@ -139866,7 +139866,7 @@ license:CC0
 		<description>Yo! Noid (NES)</description>
 		<year>1990</year>
 		<publisher>Capcom</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="1033">
@@ -140035,7 +140035,7 @@ license:CC0
 		<description>Yoshi's Cookie (NES)</description>
 		<year>1993</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title theme.vgz" />
 			<dataarea name="quik" size="6796">
@@ -140180,7 +140180,7 @@ license:CC0
 		<description>Yoshi (NES)</description>
 		<year>1992</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title theme.vgz" />
 			<dataarea name="quik" size="15915">
@@ -140265,7 +140265,7 @@ license:CC0
 		<description>Youkai Douchuuki (NES)</description>
 		<year>1988</year>
 		<publisher>Namco</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="1006">
@@ -140356,7 +140356,7 @@ license:CC0
 		<description>Ys - Ancient Ys Vanished Omen (Family Computer)</description>
 		<year>1988</year>
 		<publisher>Victor</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 feena.vgz" />
 			<dataarea name="quik" size="13381">
@@ -140519,7 +140519,7 @@ license:CC0
 		<description>Ys III - Wanderers from Ys (Family Computer)</description>
 		<year>1991</year>
 		<publisher>Victor</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 feena.vgz" />
 			<dataarea name="quik" size="5799">
@@ -140688,7 +140688,7 @@ license:CC0
 		<description>Ys II - Ancient Ys Vanished The Final Chapter (Family Computer)</description>
 		<year>1990</year>
 		<publisher>Victor</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="1664">
@@ -140954,7 +140954,7 @@ license:CC0
 		<description>Yuu Maze (Famicom Disk System)</description>
 		<year>1988</year>
 		<publisher>Taito</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 main theme 1.vgz" />
 			<dataarea name="quik" size="10737">
@@ -141222,7 +141222,7 @@ license:CC0
 		<description>Zippy Race (NES)</description>
 		<year>1985</year>
 		<publisher>Irem</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 start.vgz" />
 			<dataarea name="quik" size="519">
@@ -141277,7 +141277,7 @@ license:CC0
 		<description>Zombie Nation (NES)</description>
 		<year>1991</year>
 		<publisher>Meldac</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 suzumushi (opening 1).vgz" />
 			<dataarea name="quik" size="911">
@@ -224356,7 +224356,7 @@ license:CC0
 		<description>Bio Miracle Bokutte Upa (Family Computer)</description>
 		<year>1993</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 a rattle samba.vgz" />
 			<dataarea name="quik" size="9790">
@@ -227214,7 +227214,7 @@ license:CC0
 		<description>Smash Ping Pong (Family Computer Disk System)</description>
 		<year>1987</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="911">
@@ -228525,7 +228525,7 @@ license:CC0
 		<description>Garfield no Isshuukan - A Week of Garfield (Family Computer)</description>
 		<year>1989</year>
 		<publisher>Towa Chiki</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="2893">
@@ -228787,7 +228787,7 @@ license:CC0
 		<description>Kart Fighter (Dendy)</description>
 		<year>1994</year>
 		<publisher>J.Y. Company</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="4439">
@@ -229104,7 +229104,7 @@ license:CC0
 		<description>Pictionary - The Game of Video Quick Draw (NES)</description>
 		<year>1990</year>
 		<publisher>LJN</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title theme.vgz" />
 			<dataarea name="quik" size="14925">
@@ -229409,7 +229409,7 @@ license:CC0
 		<description>SimCity (NES)</description>
 		<year>1991</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="8264">
@@ -229476,7 +229476,7 @@ license:CC0
 		<description>Sky Shark (NES)</description>
 		<year>1989</year>
 		<publisher>Taito America Corporation</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen, stage 2.vgz" />
 			<dataarea name="quik" size="13472">
@@ -230035,7 +230035,7 @@ license:CC0
 		<description>Super Contra 7 (Dendy)</description>
 		<year>1996</year>
 		<publisher>Waixing</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="2681">
@@ -230512,7 +230512,7 @@ license:CC0
 		<description>The Adventures of Tom Sawyer (NES)</description>
 		<year>1989</year>
 		<publisher>Seta</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="713">
@@ -231485,7 +231485,7 @@ license:CC0
 		<description>Fist of the North Star (NES)</description>
 		<year>1989</year>
 		<publisher>Taxan (U) / Toei Animation (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="813">
@@ -235794,7 +235794,7 @@ license:CC0
 		<description>8-bit ADV Steins;Gate (NES)</description>
 		<year>2019</year>
 		<publisher>Spike Chunsoft (UE) / Mages. (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 gate of steiner.vgz" />
 			<dataarea name="quik" size="30109">
@@ -236894,7 +236894,7 @@ license:CC0
 		<description>Tom &amp; Jerry - The Ultimate Game of Cat and Mouse! (NES)</description>
 		<year>1991</year>
 		<publisher>Hi-Tech Expressions</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="5509">
@@ -236986,7 +236986,7 @@ license:CC0
 		<description>UWC (NES)</description>
 		<year>1988</year>
 		<publisher>Seta</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="753">
@@ -237041,7 +237041,7 @@ license:CC0
 		<description>Wild Gunman (NES)</description>
 		<year>1985</year>
 		<publisher>Nintendo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title bgm.vgz" />
 			<dataarea name="quik" size="736">
@@ -237792,7 +237792,7 @@ license:CC0
 		<description>Puyo Puyo (NES, FDS)</description>
 		<year>1991</year>
 		<publisher>Tokuma Shoten</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 baroque of puyo puyo.vgz" />
 			<dataarea name="quik" size="6911">
@@ -238405,7 +238405,7 @@ license:CC0
 		<description>Don Doko Don 2 (Family Computer)</description>
 		<year>1992</year>
 		<publisher>Taito</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="2228">
@@ -238538,7 +238538,7 @@ license:CC0
 		<description>Famicom Yarou Vol. 1 (NES)</description>
 		<year>19??</year>
 		<publisher>unknown</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 menu.vgz" />
 			<dataarea name="quik" size="2509">
@@ -240132,7 +240132,7 @@ license:CC0
 		<description>The Jetsons - Cogswell's Caper! (NES)</description>
 		<year>1992</year>
 		<publisher>Taito (W) / Mattel (A)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 intro.vgz" />
 			<dataarea name="quik" size="5561">
@@ -241866,7 +241866,7 @@ license:CC0
 		<description>Toy Story (Dendy)</description>
 		<year>1997</year>
 		<publisher>NT</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 you've got a friend in me.vgz" />
 			<dataarea name="quik" size="2131">
@@ -242889,7 +242889,7 @@ license:CC0
 		<description>Door Door (Family Computer)</description>
 		<year>1985</year>
 		<publisher>Enix</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 game start.vgz" />
 			<dataarea name="quik" size="553">
@@ -245711,7 +245711,7 @@ license:CC0
 		<description>The Cheetahmen II (NES)</description>
 		<year>1992</year>
 		<publisher>Active Enterprises</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="1725">
@@ -245881,7 +245881,7 @@ license:CC0
 		<description>Tiny Toon Adventures (NES)</description>
 		<year>1991</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening (theme song).vgz" />
 			<dataarea name="quik" size="7110">
@@ -246210,7 +246210,7 @@ license:CC0
 		<description>Duck Maze (NES)</description>
 		<year>1987</year>
 		<publisher>Bit Corporation (TW) / HES Interactive (AU) / Dismac (BR)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 main bgm.vgz" />
 			<dataarea name="quik" size="1878">
@@ -246340,7 +246340,7 @@ license:CC0
 		<description>Fire Dragon (Dendy)</description>
 		<year>19??</year>
 		<publisher>Gamtec / BIC / JungleTac (Dragon Fire) / Inventor (Dragon) / Trump Grand (Shunting)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="1722">
@@ -247227,7 +247227,7 @@ license:CC0
 		<description>The Ultimate Stuntman (NES)</description>
 		<year>1990</year>
 		<publisher>Camerica</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 codemasters logo.vgz" />
 			<dataarea name="quik" size="767">
@@ -247992,7 +247992,7 @@ license:CC0
 		<description>Bubble Bobble Part 2 (NES)</description>
 		<year>1993</year>
 		<publisher>Taito</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 introduction.vgz" />
 			<dataarea name="quik" size="2247">
@@ -250211,7 +250211,7 @@ license:CC0
 		<description>Kid Kool and the Quest for the Seven Wonder Herbs (NES)</description>
 		<year>1988</year>
 		<publisher>Vic Tokai</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="2872">
@@ -252387,7 +252387,7 @@ license:CC0
 		<description>Battle Storm (Family Computer)</description>
 		<year>1991</year>
 		<publisher>Yonezawa PR21</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 the battle storm.vgz" />
 			<dataarea name="quik" size="2040">
@@ -261696,7 +261696,7 @@ license:CC0
 		<description>Zanac A.I. (NES)</description>
 		<year>1986</year>
 		<publisher>FCI (U) / Pony Canyon (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="1666">
@@ -262311,7 +262311,7 @@ license:CC0
 		<description>Darkman (NES)</description>
 		<year>1991</year>
 		<publisher>Ocean</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 ocean logo, game over.vgz" />
 			<dataarea name="quik" size="2697">
@@ -263339,7 +263339,7 @@ license:CC0
 		<description>Jurassic Park (NES)</description>
 		<year>1993</year>
 		<publisher>Ocean of America, Inc.</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="877">
@@ -264045,7 +264045,7 @@ license:CC0
 		<description>Alien 3 (NES)</description>
 		<year>1993</year>
 		<publisher>LJN</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title theme.vgz" />
 			<dataarea name="quik" size="39685">
@@ -264428,7 +264428,7 @@ license:CC0
 		<description>Overlord (NES)</description>
 		<year>1993</year>
 		<publisher>Virgin Games</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="59913">
@@ -264583,7 +264583,7 @@ license:CC0
 		<description>Alfred Chicken (NES)</description>
 		<year>1993</year>
 		<publisher>Mindscape</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="17800">
@@ -265598,7 +265598,7 @@ license:CC0
 		<description>James Bond Jr. (NES)</description>
 		<year>1992</year>
 		<publisher>THQ</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="10841">
@@ -266269,7 +266269,7 @@ license:CC0
 		<description>Snake's Revenge (NES)</description>
 		<year>1990</year>
 		<publisher>Ultra</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="6590">
@@ -266930,7 +266930,7 @@ license:CC0
 		<description>Mitsume ga Tooru (NES)</description>
 		<year>1992</year>
 		<publisher>Tomy</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 introduction, final boss.vgz" />
 			<dataarea name="quik" size="5088">
@@ -267021,7 +267021,7 @@ license:CC0
 		<description>Race America (NES)</description>
 		<year>1991</year>
 		<publisher>Milton Bradley (E) / Absolute (U)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen ~ race start.vgz" />
 			<dataarea name="quik" size="12530">
@@ -267590,7 +267590,7 @@ license:CC0
 		<description>Battletoads (NES)</description>
 		<year>1991</year>
 		<publisher>Tradewest (U, E) / Masaya (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="230729">
@@ -268138,7 +268138,7 @@ license:CC0
 		<description>Gremlins 2 - The New Batch (NES)</description>
 		<year>1990</year>
 		<publisher>Sunsoft</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="6485">
@@ -269958,7 +269958,7 @@ license:CC0
 		<description>A Boy and His Blob - Trouble on Blobolonia (NES)</description>
 		<year>1989</year>
 		<publisher>Absolute (U) / Nintendo (E) / Jaleco (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="18582">
@@ -270025,7 +270025,7 @@ license:CC0
 		<description>Bucky O'Hare (NES)</description>
 		<year>1992</year>
 		<publisher>Konami (U, J) / Palcom (E)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="1284">
@@ -270762,7 +270762,7 @@ license:CC0
 		<description>Heavy Shreddin' - The Snowboarding Video Game (NES)</description>
 		<year>1990</year>
 		<publisher>Activision (E) / Parker Brothers (U)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="20132">
@@ -270835,7 +270835,7 @@ license:CC0
 		<description>Krusty's Fun House (NES)</description>
 		<year>1992</year>
 		<publisher>Acclaim</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 main theme.vgz" />
 			<dataarea name="quik" size="8806">
@@ -271303,7 +271303,7 @@ license:CC0
 		<description>Terminator 2 - Judgment Day (NES)</description>
 		<year>1992</year>
 		<publisher>LJN (U, E) / Pack-In-Video (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="14009">
@@ -271358,7 +271358,7 @@ license:CC0
 		<description>Tiny Toon Adventures 2 - Trouble in Wackyland (NES)</description>
 		<year>1992</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 intro (tiny toon adventures theme).vgz" />
 			<dataarea name="quik" size="7595">
@@ -273507,7 +273507,7 @@ license:CC0
 		<description>Teenage Mutant Ninja Turtles (NES)</description>
 		<year>1989</year>
 		<publisher>Ultra Games (U) / Palcom (E/A) / Konami (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title, opening &amp; cutscene.vgz" />
 			<dataarea name="quik" size="10754">
@@ -273610,7 +273610,7 @@ license:CC0
 		<description>Teenage Mutant Ninja Turtles II - The Arcade Game (NES)</description>
 		<year>1990</year>
 		<publisher>Konami (J/E) / Ultra Games (U)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 choose your turtle (selection).vgz" />
 			<dataarea name="quik" size="2682">
@@ -275630,7 +275630,7 @@ license:CC0
 		<description>Willow (NES)</description>
 		<year>1989</year>
 		<publisher>Capcom</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 prologue.vgz" />
 			<dataarea name="quik" size="13238">
@@ -276334,7 +276334,7 @@ license:CC0
 		<description>Ninja Gaiden III - The Ancient Ship of Doom (NES)</description>
 		<year>1991</year>
 		<publisher>Tecmo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 introduction i.vgz" />
 			<dataarea name="quik" size="2436">
@@ -276515,7 +276515,7 @@ license:CC0
 		<description>Ninja Gaiden II - The Dark Sword of Chaos (NES)</description>
 		<year>1990</year>
 		<publisher>Tecmo</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 chaosium sword.vgz" />
 			<dataarea name="quik" size="21034">
@@ -277206,7 +277206,7 @@ license:CC0
 		<description>Teenage Mutant Ninja Turtles - Tournament Fighters (NES)</description>
 		<year>1993</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 story (prologue, part 1).vgz" />
 			<dataarea name="quik" size="5090">
@@ -277363,7 +277363,7 @@ license:CC0
 		<description>Teenage Mutant Ninja Turtles III - The Manhattan Project (NES)</description>
 		<year>1991</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="6861">
@@ -279488,7 +279488,7 @@ license:CC0
 		<description>Ferrari Grand Prix Challenge (NES)</description>
 		<year>1992</year>
 		<publisher>Acclaim (U, E) / Coconuts Japan (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="28895">
@@ -281538,7 +281538,7 @@ license:CC0
 		<description>Cliffhanger (NES)</description>
 		<year>1993</year>
 		<publisher>Sony Imagesoft</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="2340">
@@ -281816,7 +281816,7 @@ license:CC0
 		<description>Fester's Quest (NES)</description>
 		<year>1989</year>
 		<publisher>Sunsoft</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening.vgz" />
 			<dataarea name="quik" size="4195">
@@ -284827,7 +284827,7 @@ license:CC0
 		<description>Panic Restaurant (NES)</description>
 		<year>1992</year>
 		<publisher>Taito</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 intro - part 1, menu.vgz" />
 			<dataarea name="quik" size="19509">
@@ -285629,7 +285629,7 @@ license:CC0
 		<description>Wolverine (NES)</description>
 		<year>1991</year>
 		<publisher>LJN</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title theme.vgz" />
 			<dataarea name="quik" size="17321">
@@ -286478,7 +286478,7 @@ license:CC0
 		<description>DuckTales 2 (NES)</description>
 		<year>1993</year>
 		<publisher>Capcom</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 prologue.vgz" />
 			<dataarea name="quik" size="2008">
@@ -286783,7 +286783,7 @@ license:CC0
 		<description>Lethal Weapon (NES)</description>
 		<year>1993</year>
 		<publisher>Ocean</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="15899">
@@ -287050,7 +287050,7 @@ license:CC0
 		<description>Platoon (NES)</description>
 		<year>1988</year>
 		<publisher>Sunsoft</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title.vgz" />
 			<dataarea name="quik" size="4241">
@@ -288481,7 +288481,7 @@ license:CC0
 		<description>Hook (NES)</description>
 		<year>1992</year>
 		<publisher>Sony Imagesoft (U) / Ocean (E) / Epic/Sony Records (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening, level clear.vgz" />
 			<dataarea name="quik" size="971">
@@ -288542,7 +288542,7 @@ license:CC0
 		<description>Hudson Hawk (NES)</description>
 		<year>1991</year>
 		<publisher>Sony Imagesoft (U) / Ocean (E) / Epic/Sony (J)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 intro screen.vgz" />
 			<dataarea name="quik" size="2652">
@@ -288639,7 +288639,7 @@ license:CC0
 		<description>Kira Kira Star Night DX (Family Computer)</description>
 		<year>2016</year>
 		<publisher>Columbus Circle</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 fc-nova.vgz" />
 			<dataarea name="quik" size="2452">
@@ -288947,7 +288947,7 @@ license:CC0
 		<description>M.C. Kids (NES)</description>
 		<year>1992</year>
 		<publisher>Virgin Games (U) / Ocean (E)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="15951">
@@ -289550,7 +289550,7 @@ license:CC0
 		<description>Mission - Impossible (NES)</description>
 		<year>1990</year>
 		<publisher>Ultra (U) / Palcom (E)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 theme from mission impossible.vgz" />
 			<dataarea name="quik" size="7524">
@@ -293134,7 +293134,7 @@ license:CC0
 		<description>Indiana Jones and the Last Crusade (NES)</description>
 		<year>1991</year>
 		<publisher>Taito</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="4830">
@@ -294110,7 +294110,7 @@ license:CC0
 		<description>Top Gun (NES)</description>
 		<year>1987</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 top gun anthem.vgz" />
 			<dataarea name="quik" size="5820">
@@ -294159,7 +294159,7 @@ license:CC0
 		<description>Top Gun - The Second Mission (NES)</description>
 		<year>1989</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 introduction.vgz" />
 			<dataarea name="quik" size="7717">
@@ -294402,7 +294402,7 @@ license:CC0
 		<description>Zen - Intergalactic Ninja (NES)</description>
 		<year>1993</year>
 		<publisher>Konami</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening - part 1.vgz" />
 			<dataarea name="quik" size="8092">
@@ -298560,7 +298560,7 @@ license:CC0
 		<description>The Blues Brothers (NES)</description>
 		<year>1992</year>
 		<publisher>Titus Software</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 peter gunn theme.vgz" />
 			<dataarea name="quik" size="4615">
@@ -300277,7 +300277,7 @@ license:CC0
 		<description>RoboCop 2 (NES)</description>
 		<year>1991</year>
 		<publisher>Data East (U, J) / Ocean (E)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 opening, game over.vgz" />
 			<dataarea name="quik" size="2042">
@@ -300344,7 +300344,7 @@ license:CC0
 		<description>RoboCop 3 (NES)</description>
 		<year>1992</year>
 		<publisher>Ocean</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="45734">
@@ -300405,7 +300405,7 @@ license:CC0
 		<description>RoboCop versus The Terminator (NES)</description>
 		<year>1993</year>
 		<publisher>Virgin Games</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 title screen.vgz" />
 			<dataarea name="quik" size="1735">
@@ -309191,7 +309191,7 @@ license:CC0
 		<description>River City Ransom (NES)</description>
 		<year>1989</year>
 		<publisher>American Technos (U) / Infogrames (E)</publisher>
-		<info name="cores" value="NES APU (N2A03)"/>
+		<info name="cores" value="NES APU (RP2A03)"/>
 		<part name="001" interface="vgm_quik">
 			<feature name="part_id" value="01 choose game mode, character select.vgz" />
 			<dataarea name="quik" size="1106">
