@@ -25147,7 +25147,7 @@ license:CC0
 	<software name="strider2k" cloneof="strider2">
 		<description>Strider II (Kixx)</description>
 		<year>1990</year>
-		<publisher>U.S. Gold</publisher>
+		<publisher>Kixx</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="28647">
 				<rom name="strider 2 (kixx) - side 1.tzx" size="28647" crc="781c8147" sha1="25eb228b297ce6498234fe7b594ef847778b9842"/>
@@ -27895,7 +27895,7 @@ license:CC0
 	<software name="turricaner" cloneof="turrican">
 		<description>Turrican (Erbe - Musical 1)</description>
 		<year>1990</year>
-		<publisher>Rainbow Arts / Erbe / Musical 1</publisher>
+		<publisher>Erbe Software / Musical 1</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="273597">
 				<rom name="turrican (erbe - musical 1).tzx" size="273597" crc="d1f2383a" sha1="c9cd107941a0664f81c1c537bcdd9157360f0534"/>
@@ -27906,7 +27906,7 @@ license:CC0
 	<software name="turricanera" cloneof="turrican">
 		<description>Turrican (Erbe)</description>
 		<year>1990</year>
-		<publisher>Rainbow Arts / Erbe</publisher>
+		<publisher>Erbe Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="273532">
 				<rom name="turrican (erbe).tzx" size="273532" crc="df3e9926" sha1="b75a8ccde1b9c60269dedb10e713936f6c682f77"/>
@@ -27917,7 +27917,7 @@ license:CC0
 	<software name="turricank" cloneof="turrican">
 		<description>Turrican (Kixx)</description>
 		<year>1990</year>
-		<publisher>Rainbow Arts / Kixx</publisher>
+		<publisher>Kixx</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="266795">
 				<rom name="turrican (kixx).tzx" size="266795" crc="c941d8a7" sha1="fa223678eb0c76e756545bcedbd24e460c2b41a2"/>
@@ -27944,7 +27944,7 @@ license:CC0
 	<software name="turricn2e" cloneof="turricn2">
 		<description>Turrican 2 (Erbe)</description>
 		<year>1991</year>
-		<publisher>Rainbow Arts/ Erbe</publisher>
+		<publisher>Erbe Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="176093">
 				<rom name="turrican 2 - side 1 (erbe).tzx" size="176093" crc="e9040bb5" sha1="d0d6409e2b4a66b6a709bb7aa533ca2e1338c3ef"/>
@@ -27960,14 +27960,13 @@ license:CC0
 	<software name="turricn2k" cloneof="turricn2"> <!-- all data on single side -->
 		<description>Turrican 2 (Kixx)</description>
 		<year>1991</year>
-		<publisher>Rainbow Arts / Kixx</publisher>
+		<publisher>Kixx</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="356402">
 				<rom name="turrican 2 (kixx).tzx" size="356402" crc="566f0cd8" sha1="69229653676c03fbfcb90a48894c5250d09caa17"/>
 			</dataarea>
 		</part>
 	</software>
-
 
 	<software name="thrust">
 		<description>Thrust</description>
@@ -41962,7 +41961,7 @@ Tape 5: Kwik Snax
 		</part>
 	</software>
 
-	<software name="afterthe">
+	<software name="afterwar">
 		<description>After The War</description>
 		<year>1989</year>
 		<publisher>Dinamic Software</publisher>
@@ -41974,6 +41973,38 @@ Tape 5: Kwik Snax
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="52884">
 				<rom name="after the war - side b.tzx" size="52884" crc="446b3d27" sha1="3268ec7cf36885cd921b7d13837900f1d51b8770"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="afterwar_a" cloneof="afterwar">
+		<description>After The War (small case)</description>
+		<year>1989</year>
+		<publisher>Dinamic Software</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="47544">
+				<rom name="after the war - small case - side 1.tzx" size="47544" crc="ba352f81" sha1="4c87bde9078d0a9c18e08d34c4080e3c5b879f53"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="47744">
+				<rom name="after the war - small case - side 2.tzx" size="47744" crc="6feefde3" sha1="e2316b7d7e78ff70ca335f73177fdbd3ed6f99b5"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="afterwar_b" cloneof="afterwar">
+		<description>After The War (alt)</description>
+		<year>1989</year>
+		<publisher>Dinamic Software</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="47422">
+				<rom name="after the war - side 1.tzx" size="47422" crc="5245adce" sha1="270a8d927f681ddfcb255855175a3de7b7b5a2b9"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="47622">
+				<rom name="after the war - side 2.tzx" size="47622" crc="08ff3d4c" sha1="8d9f4301f8a9ff0537bcc4e4185f4a1272f287ad"/>
 			</dataarea>
 		</part>
 	</software>
@@ -42062,16 +42093,27 @@ Tape 5: Kwik Snax
 
 	<software name="agentx">
 		<description>Agent X</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1986</year>
+		<publisher>Mastertronic</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="74017">
+				<rom name="agent - x.tzx" size="74017" crc="7fe581ab" sha1="1b37bd67220be85372f8dcc77a013c9df699ce5a"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="agentx_a" cloneof="agentx">
+		<description>Agent X (Dro Soft)</description>
+		<year>1986</year>
+		<publisher>Dro Soft</publisher>
 		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="21770">
-				<rom name="agent x - side 1.tzx" size="21770" crc="9a77a1cf" sha1="f353333e271393565b20d63a88009563e25bcd83"/>
+			<dataarea name="cass" size="21655">
+				<rom name="agent-x - side 1 (dro soft).tzx" size="21655" crc="a706f2a9" sha1="7c6208cc11d45fafc3ba67c7178497c60ba41d18"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="52268">
-				<rom name="agent x - side 2.tzx" size="52268" crc="798c8f80" sha1="b6df745f56fe877fb35a92bcb35a63272d259d63"/>
+				<rom name="agent-x - side 2 (dro soft).tzx" size="52268" crc="c33c9c3a" sha1="2f2fdf2872b9b38c42f291f7b313c9486121b356"/>
 			</dataarea>
 		</part>
 	</software>
@@ -42087,14 +42129,25 @@ Tape 5: Kwik Snax
 		</part>
 	</software>
 
-
 	<software name="agentx2">
-		<description>Agent X 2</description>
+		<description>Agent X II</description>
 		<year>1987</year>
 		<publisher>Mastertronic</publisher>
+		<info name="alt_title" value="Agent X II: The Mad Prof's Back!" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="144980">
 				<rom name="agent x 2.tzx" size="144980" crc="da1ff1bf" sha1="b012043f4804d2b39f295ab4213d458035964406"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="agentx2_a" cloneof="agentx2">
+		<description>Agent X II (Dro Soft)</description>
+		<year>1987</year>
+		<publisher>Dro Soft</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="144910">
+				<rom name="agent - x 2 (dro soft).tzx" size="144910" crc="e0e06609" sha1="b4aebb7a8a9186673e6931fa1c4cd7e38e3c55ca"/>
 			</dataarea>
 		</part>
 	</software>
@@ -73300,25 +73353,25 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="freddy">
-		<description>Freddy Hardest (set 1)</description>
+		<description>Freddy Hardest</description>
 		<year>1987</year>
 		<publisher>Dinamic Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="57349">
-				<rom name="freddy hardest - part 1.tzx" size="57349" crc="41e8584c" sha1="fb449b5b1b431a429c31faa6df5b0e80ac227a9c"/>
+			<dataarea name="cass" size="48084">
+				<rom name="freddy hardest - side 1 (spanish).tzx" size="48084" crc="ddbebd84" sha1="b62164eb920e48a76e619cb68319168909338b7f"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="57147">
-				<rom name="freddy hardest - part 2.tzx" size="57147" crc="dfc43cb5" sha1="6b0119d7ab2b39f745922be2d1ac9658e3b7f3f7"/>
+			<dataarea name="cass" size="47840">
+				<rom name="freddy hardest - side 2 (spanish).tzx" size="47840" crc="78a39997" sha1="19855da2fa8a874d28c8e08fcaa50834cfe0475d"/>
 			</dataarea>
 		</part>
 	</software>
 
 	<software name="freddya" cloneof="freddy">
-		<description>Freddy Hardest (set 2, Alternative)</description>
+		<description>Freddy Hardest (Alternative)</description>
 		<year>1987</year>
-		<publisher>Dinamic Software / Alternative</publisher>
+		<publisher>Alternative Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="57349">
 				<rom name="freddy hardest (alternative) - part 1.tzx" size="57349" crc="30282762" sha1="e6e424321acbe9a1b66de1bcc482fb2a694fcd83"/>
@@ -73327,6 +73380,22 @@ Tape 5: Kwik Snax
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="57147">
 				<rom name="freddy hardest (alternative) - part 2.tzx" size="57147" crc="822c1ae6" sha1="0e9cb98a874b3664bf65b40edb4ea8f07ff3d86d"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="freddyb" cloneof="freddy">
+		<description>Freddy Hardest (Imagine)</description>
+		<year>1987</year>
+		<publisher>Imagine Software</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="57349">
+				<rom name="freddy hardest - part 1.tzx" size="57349" crc="41e8584c" sha1="fb449b5b1b431a429c31faa6df5b0e80ac227a9c"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="57147">
+				<rom name="freddy hardest - part 2.tzx" size="57147" crc="dfc43cb5" sha1="6b0119d7ab2b39f745922be2d1ac9658e3b7f3f7"/>
 			</dataarea>
 		</part>
 	</software>
@@ -75047,8 +75116,8 @@ Tape 5: Kwik Snax
 
 	<software name="thefurya" cloneof="thefury">
 		<description>The Fury (set 2, Erbe)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1988</year>
+		<publisher>Erbe Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48064">
 				<rom name="the fury (erbe).tzx" size="48064" crc="2ee45bca" sha1="4789269bc415651c5b017d3d6c4190f298e2a3b3"/>
@@ -77047,6 +77116,61 @@ Tape 5: Kwik Snax
 		<description>Golden Pack 100 - vol. 1 (compilation, pirate)</description>
 		<year>198?</year>
 		<publisher>Orion</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A:
+1. Orion (intro)
+2. Jetpac 
+3. Pac-Man 
+4. Chuckie Egg 
+5. Lord Harry 
+6. Arcadia 
+7. Pssst 
+8. Cookie
+9. Combat Zone
+10. Taxi!
+11. Raider of the Cursed Mine
+12. Galaxians
+13. Bubble Buster
+14. Push Off
+15. Painter
+16. Backgammon
+
+Tape 1 - Side B:
+1. Step in to Pack 100
+2. Crusing 
+3. Gulpman
+4. Cyber rats
+5. Galactic Troopers
+6. Skate
+7. Buzzy Bee
+8. Mutant Rats
+9. Aterragem
+10. Platform Willy
+11. Rato
+12. Caçador
+13. Ataque
+14. Racer
+15. Dodger
+16. QWERTY
+17. Cursor
+18. O Maluco!!
+19. Mata Moscas
+20. Choque
+21. Planetoids
+22. Clobber Castle
+23. Misseis
+24. Subrotinas
+25. Millipede
+26. Astro Blaster
+27. Manic Climber
+28. Music Maker
+29. Fire Hawks
+30. Saturn
+31. Race Fun
+32. Alarme
+33. Galactic Abductors
+]]></notes>
+		
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="223357">
 				<rom name="golden pack 100 - side a.tzx" size="223357" crc="ffc1fdce" sha1="2f93630eb3cf02bfad2624624496e1be598fb080"/>
@@ -78831,7 +78955,23 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="thegames">
-		<description>The Games Summer Edition (Kixx)</description>
+		<description>The Games - Summer Edition</description>
+		<year>1989</year>
+		<publisher>U.S. Gold</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="88328">
+				<rom name="the games summer edition - side a.tzx" size="88328" crc="a0eb7ceb" sha1="56876cb500cee10d6cc763f1553278bf17077345"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="271064">
+				<rom name="the games summer edition - side b.tzx" size="271064" crc="05fe9cb0" sha1="9080d0b4654cd54ce3fdc69cf9e508fe72a26a09"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="thegames_a" cloneof="thegames">
+		<description>The Games - Summer Edition (Kixx)</description>
 		<year>1991</year>
 		<publisher>Kixx</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -78846,26 +78986,26 @@ Tape 5: Kwik Snax
 		</part>
 	</software>
 
-	<software name="thegames_a" cloneof="thegames">
-		<description>The Games Summer Edition</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="thegames_b" cloneof="thegames">
+		<description>The Games - Summer Edition (Erbe)</description>
+		<year>1989</year>
+		<publisher>Erbe Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="88328">
-				<rom name="the games summer edition - side a.tzx" size="88328" crc="a0eb7ceb" sha1="56876cb500cee10d6cc763f1553278bf17077345"/>
+			<dataarea name="cass" size="83114">
+				<rom name="the games summer edition - side 1 (erbe - serie 5 estrellas).tzx" size="83114" crc="348c8746" sha1="9e348077ae0172b7bccb7fd1047fb4b1d4c10bd6"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="271064">
-				<rom name="the games summer edition - side b.tzx" size="271064" crc="05fe9cb0" sha1="9080d0b4654cd54ce3fdc69cf9e508fe72a26a09"/>
+			<dataarea name="cass" size="271201">
+				<rom name="the games summer edition - side 2 (erbe - serie 5 estrellas).tzx" size="271201" crc="49a33b47" sha1="7933ee987ec9b1cf4e7cc08cbcb75e46ae0566fe"/>
 			</dataarea>
 		</part>
 	</software>
 
-	<software name="thegames_d" cloneof="thegames">
-		<description>The Games Winter Edition</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="gamewint">
+		<description>The Games - Winter Edition</description>
+		<year>1988</year>
+		<publisher>U.S. Gold</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="163031">
 				<rom name="the games winter edition - 128k.tzx" size="163031" crc="b4cff82a" sha1="77e762c3123f6e627f4dcda54eed2307a66ca1b3"/>
@@ -78878,10 +79018,10 @@ Tape 5: Kwik Snax
 		</part>
 	</software>
 
-	<software name="thegames_f" cloneof="thegames">
-		<description>The Games Winter Edition (Erbe)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="gamewint_a" cloneof="gamewint">
+		<description>The Games - Winter Edition (Erbe)</description>
+		<year>1988</year>
+		<publisher>Erbe Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="144943">
 				<rom name="the games winter edition - side 1 (erbe).tzx" size="144943" crc="cb3b8f86" sha1="5136eff96ff5c6d3f8f52822a5d1a5b4977ee8d5"/>
@@ -78894,10 +79034,10 @@ Tape 5: Kwik Snax
 		</part>
 	</software>
 
-	<software name="thegames_h" cloneof="thegames">
-		<description>The Games Winter Edition (Kixx)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="gamewint_b" cloneof="gamewint">
+		<description>The Games - Winter Edition (Kixx)</description>
+		<year>1988</year>
+		<publisher>Kixx</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="153922">
 				<rom name="the games winter edition - side a (kixx).tzx" size="153922" crc="471f1b81" sha1="438d5131b4952a89e4a947821a8a2d2beb2a1dbc"/>
@@ -80228,6 +80368,17 @@ Tape 5: Kwik Snax
 		</part>
 	</software>
 
+	<software name="hate_a" cloneof="hate">
+		<description>H.A.T.E. - Hostile All Terrain Encounter (Erbe)</description>
+		<year>1989</year>
+		<publisher>Erbe Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="39239">
+				<rom name="hate (erbe).tzx" size="39239" crc="bbad8e65" sha1="4a9112b1f6ac946351b1c7cb2f0edd27c0882833"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="hhedges">
 		<description>Haunted Hedges (set 1)</description>
 		<year>1983</year>
@@ -81046,6 +81197,11 @@ Tape 5: Kwik Snax
 		<description>Hero Quest Twin Pack</description>
 		<year>1991</year>
 		<publisher>Gremlin Graphics Software</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1: Hero Quest
+Tape 2: Hero Quest: Return of the Witch Lord
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="111943">
 				<rom name="hero quest twin pack - tape 1 - side 1.tzx" size="111943" crc="89e050d1" sha1="e526e77b5a4f9b930616cbcc46f5694faeb8d8a1"/>
@@ -83865,9 +84021,25 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="impossam">
+		<description>Impossamole</description>
+		<year>1990</year>
+		<publisher>Gremlin Graphics Software</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="68987">
+				<rom name="impossamole - side a.tzx" size="68987" crc="9daf487d" sha1="02ee110b3eb8584b2f3e5949cfb2da3ac142050a"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="84168">
+				<rom name="impossamole - side b.tzx" size="84168" crc="6385a360" sha1="52a94d7af00d69454064118b1451b29d01b62bb6"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="impossam_a" cloneof="impossam">
 		<description>Impossamole (EDOS)</description>
 		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>EDOS</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="69255">
 				<rom name="impossamole (edos) - side 1.tzx" size="69255" crc="f861a42d" sha1="ed2635f4e9a49a6ba2a01fa338faa04caeba78d7"/>
@@ -83882,8 +84054,8 @@ Tape 5: Kwik Snax
 
 	<software name="impossam_b" cloneof="impossam">
 		<description>Impossamole (GBH)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1990</year>
+		<publisher>GBH</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="68982">
 				<rom name="impossamole (gbh) - side 1.tzx" size="68982" crc="14be60a3" sha1="22b80096fa79880f54e7f7556f85b67456fe391f"/>
@@ -83895,23 +84067,6 @@ Tape 5: Kwik Snax
 			</dataarea>
 		</part>
 	</software>
-
-	<software name="impossam_d" cloneof="impossam">
-		<description>Impossamole</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="68987">
-				<rom name="impossamole - side a.tzx" size="68987" crc="9daf487d" sha1="02ee110b3eb8584b2f3e5949cfb2da3ac142050a"/>
-			</dataarea>
-		</part>
-		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="84168">
-				<rom name="impossamole - side b.tzx" size="84168" crc="6385a360" sha1="52a94d7af00d69454064118b1451b29d01b62bb6"/>
-			</dataarea>
-		</part>
-	</software>
-
 
 	<software name="imposms2">
 		<description>Impossible Mission II</description>
@@ -84039,6 +84194,22 @@ Tape 5: Kwik Snax
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="66010">
 				<rom name="in the loft - side 2.tzx" size="66010" crc="57cd360f" sha1="7a0531b28d9cd408d4f7d4f9d3b196d56b5952d5"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="icebreak">
+		<description>Ice Breaker</description>
+		<year>1990</year>
+		<publisher>Topo Soft</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="75996">
+				<rom name="ice breaker - side 1.tzx" size="75996" crc="4d27a566" sha1="3d15a92366b6d2606f49d528f38c9f04cdfc370e"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="89513">
+				<rom name="ice breaker - side 2.tzx" size="89513" crc="28d7c4d1" sha1="8c8919f0fc0e6e440543dc8d040d164549590cb5"/>
 			</dataarea>
 		</part>
 	</software>
@@ -88046,7 +88217,7 @@ Tape 5: Kwik Snax
 		</part>
 	</software>
 
-	<software name="joeblade_d" cloneof="joeblade">
+	<software name="joeblade3">
 		<description>Joe Blade III</description>
 		<year>1989</year>
 		<publisher>Players Software</publisher>
@@ -96645,20 +96816,20 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="marauder">
-		<description>Marauder (Erbe)</description>
+		<description>Marauder</description>
 		<year>1988</year>
-		<publisher>Erbe Software</publisher>
+		<publisher>Hewson Consultants</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="54362">
-				<rom name="marauder (erbe).tzx" size="54362" crc="9984faf1" sha1="e59f8228ac922125e397e20c5583d6aef1cc2bc0"/>
+			<dataarea name="cass" size="54197">
+				<rom name="marauder.tzx" size="54197" crc="1d4fa119" sha1="6d1c24bd2674b6ac380d54c2f51788f8cb41728d"/>
 			</dataarea>
 		</part>
 	</software>
 
 	<software name="marauder_a" cloneof="marauder">
 		<description>Marauder (Kixx)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1988</year>
+		<publisher>Kixx</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="54197">
 				<rom name="marauder (kixx).tzx" size="54197" crc="7fdea28c" sha1="0025052a26b2b682a08efa114c8f87d2e41c21a1"/>
@@ -96667,12 +96838,12 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="marauder_b" cloneof="marauder">
-		<description>Marauder</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Marauder (Erbe)</description>
+		<year>1988</year>
+		<publisher>Erbe Software</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="54197">
-				<rom name="marauder.tzx" size="54197" crc="1d4fa119" sha1="6d1c24bd2674b6ac380d54c2f51788f8cb41728d"/>
+			<dataarea name="cass" size="54362">
+				<rom name="marauder (erbe).tzx" size="54362" crc="9984faf1" sha1="e59f8228ac922125e397e20c5583d6aef1cc2bc0"/>
 			</dataarea>
 		</part>
 	</software>
@@ -106842,19 +107013,8 @@ Tape 5: Kwik Snax
 		</part>
 	</software>
 
-	<software name="orbiterp">
-		<description>Orbiter (Paxman)</description>
-		<year>1982</year>
-		<publisher>Paxman Promotions</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="9341">
-				<rom name="orbiter (paxman).tzx" size="9341" crc="9e85abcb" sha1="b209b7ca48968b132468049e717e424967fdc6c4"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<software name="orbiterr">
-		<description>Orbiter - Release 1</description>
+		<description>Orbiter (release 1)</description>
 		<year>1982</year>
 		<publisher>Silversoft</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -106865,9 +107025,9 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="orbiterr_a" cloneof="orbiterr">
-		<description>Orbiter - Release 2</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Orbiter (release 2)</description>
+		<year>1982</year>
+		<publisher>Silversoft</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="9341">
 				<rom name="orbiter - release 2.tzx" size="9341" crc="464f93fb" sha1="d939ebea57db405d300d5ca0ea14d8a80521a533"/>
@@ -106876,12 +107036,23 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="orbiterr_b" cloneof="orbiterr">
-		<description>Orbiter - Release 3</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Orbiter (release 3)</description>
+		<year>1982</year>
+		<publisher>Silversoft</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="8359">
 				<rom name="orbiter - release 3.tzx" size="8359" crc="dee2e01f" sha1="59a787ae1347e70678e175a5878f12500a9c5ccf"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="orbiterr_c" cloneof="orbiterr">
+		<description>Orbiter (Paxman)</description>
+		<year>1982</year>
+		<publisher>Paxman Promotions</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="9341">
+				<rom name="orbiter (paxman).tzx" size="9341" crc="9e85abcb" sha1="b209b7ca48968b132468049e717e424967fdc6c4"/>
 			</dataarea>
 		</part>
 	</software>
@@ -120719,42 +120890,10 @@ Tape 5: Kwik Snax
 		</part>
 	</software>
 
-	<software name="scramble_e" cloneof="scramble">
-		<description>Scramble Spirits (Unique)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="53603">
-				<rom name="scramble spirits (unique) - side a.tzx" size="53603" crc="55a435ed" sha1="e414ee33bc51e87b1687cd043390a31cbffa8d39"/>
-			</dataarea>
-		</part>
-		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="52766">
-				<rom name="scramble spirits (unique) - side b.tzx" size="52766" crc="4f8ff5d1" sha1="d2ca3def1214f8973dda238b06f9b21a7254ba16"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="scramble_g" cloneof="scramble">
-		<description>Scramble Spirits (MCM)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="105787">
-				<rom name="scramble spirits - side 1 (mcm).tzx" size="105787" crc="830a9453" sha1="9038d7eec17cb3bb8ea19f358c5772d13020aad2"/>
-			</dataarea>
-		</part>
-		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="52664">
-				<rom name="scramble spirits - side 2 (mcm).tzx" size="52664" crc="b23a3c94" sha1="a6140182da2a34065e7c76f2690b4ec406e2e35e"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="scramble_i" cloneof="scramble">
+	<software name="scrambsp">
 		<description>Scramble Spirits</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1990</year>
+		<publisher>Grandslam Entertainments</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="53568">
 				<rom name="scramble spirits - side a.tzx" size="53568" crc="37a2db52" sha1="15b1a7dd376ec8f3760e27289367d009c8565eec"/>
@@ -120767,10 +120906,42 @@ Tape 5: Kwik Snax
 		</part>
 	</software>
 
-	<software name="scramble_k" cloneof="scramble">
+	<software name="scrambsp_a" cloneof="scrambsp">
+		<description>Scramble Spirits (MCM)</description>
+		<year>1990</year>
+		<publisher>MCM Software</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="105787">
+				<rom name="scramble spirits - side 1 (mcm).tzx" size="105787" crc="830a9453" sha1="9038d7eec17cb3bb8ea19f358c5772d13020aad2"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="52664">
+				<rom name="scramble spirits - side 2 (mcm).tzx" size="52664" crc="b23a3c94" sha1="a6140182da2a34065e7c76f2690b4ec406e2e35e"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="scrambsp_b" cloneof="scrambsp">
+		<description>Scramble Spirits (Unique)</description>
+		<year>1990</year>
+		<publisher>Unique</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="53603">
+				<rom name="scramble spirits (unique) - side a.tzx" size="53603" crc="55a435ed" sha1="e414ee33bc51e87b1687cd043390a31cbffa8d39"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="52766">
+				<rom name="scramble spirits (unique) - side b.tzx" size="52766" crc="4f8ff5d1" sha1="d2ca3def1214f8973dda238b06f9b21a7254ba16"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="scrambl2">
 		<description>Scrambler 2</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1983</year>
+		<publisher>Mentor Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="37193">
 				<rom name="scrambler 2.tzx" size="37193" crc="a8894b5e" sha1="50c17f4d3184827710a4cada3c26028ef682690f"/>
@@ -127985,6 +128156,17 @@ Tape 5: Kwik Snax
 		</part>
 	</software>
 
+	<software name="spirits">
+		<description>Spirits</description>
+		<year>1987</year>
+		<publisher>Topo Soft</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="48639">
+				<rom name="spirits.tzx" size="48639" crc="dcba7a2c" sha1="786b69bf331ba6a5f2c4aaddc21faba81e2cebb7"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="spitfire">
 		<description>Spitfire (Encore)</description>
 		<year>1989</year>
@@ -131247,23 +131429,23 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="supermon">
+		<description>Super Monaco GP</description>
+		<year>1991</year>
+		<publisher>U.S. Gold</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="88983">
+				<rom name="super monaco gp.tzx" size="88983" crc="0732008b" sha1="13732918bc710ae3b7d5fe4ef2b86ac4d805668c"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="supermon_a" cloneof="supermon">
 		<description>Super Monaco GP (Kixx)</description>
 		<year>1991</year>
 		<publisher>Kixx</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="88978">
 				<rom name="super monaco gp (kixx).tzx" size="88978" crc="44d21f40" sha1="de8a8a41b4fa0386a79a576ed549dd1f4d161874"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="supermon_a" cloneof="supermon">
-		<description>Super Monaco GP</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="88983">
-				<rom name="super monaco gp.tzx" size="88983" crc="0732008b" sha1="13732918bc710ae3b7d5fe4ef2b86ac4d805668c"/>
 			</dataarea>
 		</part>
 	</software>
@@ -139908,7 +140090,7 @@ Tape 5: Kwik Snax
 	<software name="tutorsta">
 		<description>Tutorstar (Profisoft)</description>
 		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Profisoft</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="28094">
 				<rom name="tutorstar (profisoft) - side a.tzx" size="28094" crc="d1f4c5a2" sha1="523dc4a2c4c1575d5a6cd9e6154b9f1b15dc196b"/>
@@ -139966,8 +140148,8 @@ Tape 5: Kwik Snax
 
 	<software name="twiceshy_b" cloneof="twiceshy">
 		<description>Twice Shy</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1986</year>
+		<publisher>Mosaic Publishing</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="56107">
 				<rom name="twice shy - side 1.tzx" size="56107" crc="325c3f97" sha1="d96010917f1e5bf5e52cd6f4d1975289395d5ea3"/>
@@ -146252,6 +146434,22 @@ Tape 5: Kwik Snax
 		</part>
 	</software>
 
+	<software name="xout_b" cloneof="xout">
+		<description>X-Out (Erbe)</description>
+		<year>1990</year>
+		<publisher>Erbe Software</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="36446">
+				<rom name="x-out - small case - side 1 (erbe).tzx" size="36446" crc="92971d01" sha1="7ccecaa6195130f000b12643be999ba209cc9065"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="230108">
+				<rom name="x-out - small case - side 2 (erbe).tzx" size="230108" crc="b995bb39" sha1="244c13f32d50f1c448802975a2c96544f524dd45"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="xrayv27">
 		<description>X-Ray v2.7</description>
 		<year>19??</year>
@@ -150935,10 +151133,10 @@ Tape 2 - Side B: Indoor Bowling
 		</part>
 	</software>
 
-	<software name="actionpa_e" cloneof="actionpa">
-		<description>Action Pack Lightgun</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="actpklgn">
+		<description>Action Pack - Lightgun Games (compilation, 3 tapes)</description>
+		<year>1989</year>
+		<publisher>Virgin Mastertronic</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="16432">
 				<rom name="action pack lightgun - tape 1 - side a.tzx" size="16432" crc="c3089d92" sha1="00f053cdb57e0e9a21fe110ec707f7c70ef4604c"/>
@@ -150967,6 +151165,81 @@ Tape 2 - Side B: Indoor Bowling
 		<part name="cass6" interface="spectrum_cass">
 			<dataarea name="cass" size="109153">
 				<rom name="action pack lightgun - tape 3 - side b.tzx" size="109153" crc="f41d58f0" sha1="8470ea1f97b6a7849a66634f91694ab3b1bf26ae"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="actpklgn_a" cloneof="actpklgn">
+		<description>Action Pack - Lightgun Games (compilation)</description>
+		<year>1989</year>
+		<publisher>Virgin Mastertronic</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A - Game 1: Missile Ground Zero
+Tape 1 - Side A - Game 2: Solar Invasion
+Tape 1 - Side A - Game 3: Operation Wolf
+Tape 1 - Side B - Game 1: Rookie
+Tape 1 - Side B - Game 2: Robot Attack
+Tape 1 - Side B - Game 3: Bullseye
+]]></notes>
+
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="200980">
+				<rom name="lightgun games - 48k - side a.tzx" size="200980" crc="4ef20363" sha1="2145dc59b61c39422bd4e343aa19ff37f1af1e10"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="150209">
+				<rom name="lightgun games - 48k - side b.tzx" size="150209" crc="e0ceaa63" sha1="1c838930d0c20bf3f9969501488ced4c145787ea"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="actpklgn_b" cloneof="actpklgn">
+		<description>Action Pack - Lightgun Games (compilation, alt)</description>
+		<year>1989</year>
+		<publisher>Virgin Mastertronic</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A - Game 1: Missile Ground Zero
+Tape 1 - Side A - Game 2: Solar Invasion
+Tape 1 - Side A - Game 3: Operation Wolf
+Tape 1 - Side B - Game 1: Rookie
+Tape 1 - Side B - Game 2: Robot Attack
+Tape 1 - Side B - Game 3: Bullseye
+]]></notes>
+
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="166361">
+				<rom name="sinclair action pack - side a.tzx" size="166361" crc="a3a46e27" sha1="cbf48f9e63cf3d0685fea710a3aa718c755004ac"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="166673">
+				<rom name="sinclair action pack - side b.tzx" size="166673" crc="a4f4e1c4" sha1="920b0c3e122c9f7725b65ed83404d7c17aab8283"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="actpklgn_c" cloneof="actpklgn">
+		<description>Action Pack - Lightgun Games (compilation, Spanish)</description>
+		<year>1989</year>
+		<publisher>Sinclair Research</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A - Game 1: Missile Ground Zero
+Tape 1 - Side A - Game 2: Solar Invasion
+Tape 1 - Side A - Game 3: Operation Wolf
+Tape 1 - Side B - Game 1: Rookie
+Tape 1 - Side B - Game 2: Robot Attack
+Tape 1 - Side B - Game 3: Bullseye
+]]></notes>
+
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="166619">
+				<rom name="sinclair action pack - side 1 (spanish).tzx" size="166619" crc="58e84b33" sha1="e790b9b39f2438ebb3da2c6082209639c7ebf63e"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="166909">
+				<rom name="sinclair action pack - side 2 (spanish).tzx" size="166909" crc="d10b8c31" sha1="9e631266277345a896239e5ccc13441faa287f0e"/>
 			</dataarea>
 		</part>
 	</software>
@@ -155852,6 +156125,13 @@ Tape 2 - Side B: Indoor Bowling
 		<description>Heroes (compilation)</description>
 		<year>1990</year>
 		<publisher>Domark</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Sida A: The Running Man
+Tape 1 - Sida B: Barbarian II: The Dungeon of Drax
+Tape 2 - Sida A: Licence to Kill
+Tape 2 - Sida B: Star Wars
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="112747">
 				<rom name="heroes - tape 1 - side a.tzx" size="112747" crc="92252fc0" sha1="b6b9d001268698a01d46776cb972f32039c738f6"/>
