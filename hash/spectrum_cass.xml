@@ -4911,12 +4911,12 @@ license:CC0
 		<info name="alt_title" value="Diosa de Cozumel (in-game)"/>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="47748">
-				<rom name="cozumel - side 1 (serie leyenda).tzx" size="47748" crc="814adb3c" sha1="46c575ee642d1f283bacaf376ff186cefa3e3c4f" offset="0"/>
+				<rom name="cozumel - side 1 (serie leyenda).tzx" size="47748" crc="814adb3c" sha1="46c575ee642d1f283bacaf376ff186cefa3e3c4f"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="47748">
-				<rom name="cozumel - side 2 (serie leyenda).tzx" size="47748" crc="bb4df2bb" sha1="a694ca70f97a4ef8118c6297c575e4b144ed36ce" offset="0"/>
+				<rom name="cozumel - side 2 (serie leyenda).tzx" size="47748" crc="bb4df2bb" sha1="a694ca70f97a4ef8118c6297c575e4b144ed36ce"/>
 			</dataarea>
 		</part>
 	</software>
@@ -4931,12 +4931,12 @@ license:CC0
 		<info name="alt_title" value="Diosa de Cozumel (in-game)"/>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="48160">
-				<rom name="cozumel - side a.tzx" size="48160" crc="77c701f0" sha1="45545fbc291641817ce652a822c373350de51ce0" offset="0"/>
+				<rom name="cozumel - side a.tzx" size="48160" crc="77c701f0" sha1="45545fbc291641817ce652a822c373350de51ce0"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="48160">
-				<rom name="cozumel - side b.tzx" size="48160" crc="b682d89f" sha1="b633edfc2bf01ac8f744b45ec129ab93ee8b82e1" offset="0"/>
+				<rom name="cozumel - side b.tzx" size="48160" crc="b682d89f" sha1="b633edfc2bf01ac8f744b45ec129ab93ee8b82e1"/>
 			</dataarea>
 		</part>
 	</software>
@@ -9009,7 +9009,7 @@ license:CC0
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Tape 1: Erik - The Phantom of the Opera"/>
 			<dataarea name="cass" size="39666">
-				<rom name="erik - the phantom of the opera (system 4) (francisco de diego, 35).tzx" size="39666" crc="6d264ca0" sha1="543806037f652bf5dd7f6313f70d36ae8aeffcdc" offset="0"/>
+				<rom name="erik - the phantom of the opera (system 4) (francisco de diego, 35).tzx" size="39666" crc="6d264ca0" sha1="543806037f652bf5dd7f6313f70d36ae8aeffcdc"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
@@ -9018,31 +9018,31 @@ license:CC0
 			-->
 			<feature name="part_id" value="Tape 2: Gunboat"/>
 			<dataarea name="cass" size="48480">
-				<rom name="gunboat (system 4) (francisco de diego, 35).tzx" size="48480" crc="4e18cb97" sha1="1fa967cf4521712ebddbf6ef1d7306473e6e7334" offset="0"/>
+				<rom name="gunboat (system 4) (francisco de diego, 35).tzx" size="48480" crc="4e18cb97" sha1="1fa967cf4521712ebddbf6ef1d7306473e6e7334"/>
 			</dataarea>
 		</part>
 		<part name="cass3" interface="spectrum_cass">
 			<feature name="part_id" value="Tape 3: Implosion"/>
 			<dataarea name="cass" size="48206">
-				<rom name="implosion (system 4) (laurel, 10).tzx" size="48206" crc="645b4103" sha1="c40325b6896b3cec6729f946bb0467ad845926b1" offset="0"/>
+				<rom name="implosion (system 4) (laurel, 10).tzx" size="48206" crc="645b4103" sha1="c40325b6896b3cec6729f946bb0467ad845926b1"/>
 			</dataarea>
 		</part>
 		<part name="cass4" interface="spectrum_cass">
 			<feature name="part_id" value="Tape 4: The Fifth Quadrant"/>
 			<dataarea name="cass" size="40434">
-				<rom name="the fifth quadrant (system 4) (laurel, 10).tzx" size="40434" crc="79ee68f1" sha1="c89f9bb341b8f2f97831268e145e5c08cfbdd520" offset="0"/>
+				<rom name="the fifth quadrant (system 4) (laurel, 10).tzx" size="40434" crc="79ee68f1" sha1="c89f9bb341b8f2f97831268e145e5c08cfbdd520"/>
 			</dataarea>
 		</part>
 		<part name="cass5" interface="spectrum_cass">
 			<feature name="part_id" value="Tape 5: Through The Trap Door"/>
 			<dataarea name="cass" size="40062">
-				<rom name="through the trap door (system 4) (francisco de diego, 35).tzx" size="40062" crc="7607a59d" sha1="a2b17528ec34cb667703ad701ba1071b5fa4c537" offset="0"/>
+				<rom name="through the trap door (system 4) (francisco de diego, 35).tzx" size="40062" crc="7607a59d" sha1="a2b17528ec34cb667703ad701ba1071b5fa4c537"/>
 			</dataarea>
 		</part>
 		<part name="cass6" interface="spectrum_cass">
 			<feature name="part_id" value="Tape 6: Yogi Bear"/>
 			<dataarea name="cass" size="45862">
-				<rom name="yogi bear (system 4) (francisco de diego, 35).tzx" size="45862" crc="e0c3fb93" sha1="5485cf42b5b6668f28907c2d6e00b69ab4f55e49" offset="0"/>
+				<rom name="yogi bear (system 4) (francisco de diego, 35).tzx" size="45862" crc="e0c3fb93" sha1="5485cf42b5b6668f28907c2d6e00b69ab4f55e49"/>
 			</dataarea>
 		</part>
 	</software>
@@ -95538,7 +95538,7 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		<publisher>Topo Soft</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48485">
-				<rom name="mad mix game.tzx" size="48485" crc="5a0ead19" sha1="e1e92591573addfd2dac5f8cdcc3e7adbfe308a9" offset="0"/>
+				<rom name="mad mix game.tzx" size="48485" crc="5a0ead19" sha1="e1e92591573addfd2dac5f8cdcc3e7adbfe308a9"/>
 			</dataarea>
 		</part>
 	</software>
@@ -141859,7 +141859,7 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		<publisher>Topo Siglo XXI</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="196599">
-				<rom name="viaje al centro de la tierra - version extendida (2007)(topo siglo xxi)(48k-128k)(es)[pack 5 fases].tzx" size="196599" crc="fb46783f" sha1="696b414d390423152839908022ba888cdab1ed2e" offset="0" />
+				<rom name="viaje al centro de la tierra - version extendida (2007)(topo siglo xxi)(48k-128k)(es)[pack 5 fases].tzx" size="196599" crc="fb46783f" sha1="696b414d390423152839908022ba888cdab1ed2e" />
 			</dataarea>
 		</part>
 	</software>
@@ -141870,7 +141870,7 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		<publisher>Topo Siglo XXI</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="89849">
-				<rom name="viaje al centro de la tierra - version extendida (2007)(topo siglo xxi)(48k-128k)(es).tzx" size="89849" crc="d1fa8d71" sha1="9b55da70989ed474e7255a84b925b6e547d60389" offset="0" />
+				<rom name="viaje al centro de la tierra - version extendida (2007)(topo siglo xxi)(48k-128k)(es).tzx" size="89849" crc="d1fa8d71" sha1="9b55da70989ed474e7255a84b925b6e547d60389" />
 			</dataarea>
 		</part>
 	</software>
