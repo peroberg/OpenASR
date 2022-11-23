@@ -8337,7 +8337,7 @@ license:CC0
 	<software name="duet">
 		<description>Duet</description>
 		<year>1987</year>
-		<publisher>Elite Systems</publisher>
+		<publisher>Hit-Pak / Elite Systems</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="46949">
 				<rom name="duet.tzx" size="46949" crc="5acd6c49" sha1="7ea1e09ded039e831a2d2f7875584631888fcd33"/>
@@ -15694,9 +15694,11 @@ license:CC0
 	</software>
 
 	<software name="lpuff">
-		<description>Little Puff In Dragon Land</description>
+		<description>Little Puff</description>
 		<year>1989</year>
 		<publisher>Cartoon Time (Code Masters)</publisher>
+		<info name="alt_title" value="Little Puff in Dragon Land"/>
+		
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="43116">
 				<rom name="little puff in dragon land.tzx" size="43116" crc="64e72c56" sha1="0b65f9b3cba774e7ced4f2efc119b53c9c853382"/>
@@ -18453,9 +18455,9 @@ license:CC0
 	</software>
 
 	<software name="nonamed">
-		<description>Nonamed (English)</description>
-		<year>1987</year>
-		<publisher>Dinamic</publisher>
+		<description>Nonamed</description>
+		<year>1989</year>
+		<publisher>Mastertronic</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="44544">
 				<rom name="nonamed.tzx" size="44544" crc="5f051d85" sha1="33797c747aecc8ae6c2e0a37cf5c67b10dc8c00c"/>
@@ -18463,28 +18465,49 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="nonamedss" cloneof="nonamed"> <!-- custom loader -->
-		<description>Nonamed (Spanish, Small Orange Case)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="44852">
-				<rom name="nonamed - small orange case.tzx" size="44852" crc="faa5eece" sha1="089526873c5106d48d980aabb61fe3db089405a5"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="nonamedsm" cloneof="nonamed">  <!-- different custom loader -->
-		<description>Nonamed (Spanish, Medium Case)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="nonameda" cloneof="nonamed">  <!-- different custom loader -->
+		<description>Nonamed (Spanish, medium case)</description>
+		<year>1987</year>
+		<publisher>Dinamic Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="44465">
-				<rom name="nonamed - medium case.tzx" size="44465" crc="a629664f" sha1="09d210fb146c51658caf7a03f15537208d7d2994"/>
+				<rom name="nonamed (spanish).tzx" size="44465" crc="a629664f" sha1="09d210fb146c51658caf7a03f15537208d7d2994"/>
 			</dataarea>
 		</part>
 	</software>
 
+	<software name="nonamedb" cloneof="nonamed">
+		<description>Nonamed (Spanish, medium case, alt)</description>
+		<year>1987</year>
+		<publisher>Dinamic Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="44885">
+				<rom name="nonamed - medium case.tzx" size="44885" crc="f19c81b1" sha1="fdeab44a410b7e61cf8a09c8fe8be1c355d18f61"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="nonamedc" cloneof="nonamed"> <!-- custom loader -->
+		<description>Nonamed (Spanish, small orange case)</description>
+		<year>1988</year>
+		<publisher>Dinamic Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="44589">
+				<rom name="nonamed - small orange case.tzx" size="44589" crc="d7355ab6" sha1="46a288d2789b8a1e609195328a7380dede339ba6"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="nonamedd" cloneof="nonamed">
+		<description>Nonamed (Spanish, small case - black spine)</description>
+		<year>1988</year>
+		<publisher>Dinamic Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="44505">
+				<rom name="nonamed - small case black spine.tzx" size="44505" crc="85173af1" sha1="c3aacd2e6a7487571c1c6b22894c9ce63af91228"/>
+			</dataarea>
+		</part>
+	</software>
 
 	<software name="northsou">
 		<description>North &amp; South</description>
@@ -19137,9 +19160,11 @@ license:CC0
 	</software>
 
 	<software name="olli3">
-		<description>Olli &amp; Lissa 3 - The Candlelight Adventure</description>
+		<description>Olli &amp; Lissa 3</description>
 		<year>1989</year>
 		<publisher>Cartoon Time (Code Masters)</publisher>
+		<info name="alt_title" value="Olli &amp; Lissa III: The Candlelight Adventure"/>
+		
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="49880">
 				<rom name="olli _ lissa 3 - the candlelight adventure.tzx" size="49880" crc="652a1e34" sha1="876216b3225011450fc0a9c96291f06ffc6f05a3"/>
@@ -30633,9 +30658,16 @@ license:CC0
 
 
 	<software name="4in1">
-		<description>4 In 1 (set 1)</description>
+		<description>4 in 1 (set 1)</description>
 		<year>1986</year>
 		<publisher>Hit-Pak (Elite)</publisher>
+		<notes><![CDATA[Compilation contents:
+Side A - Game 1: Commando
+Side A - Game 2: Bomb Jack
+Side A - Game 3: Airwolf
+Side B - Game 1: Frank Bruno's Boxing
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="142375">
 				<rom name="4 in 1 - side 1.tzx" size="142375" crc="94ac6624" sha1="6c41763445f704f9ae977caee0b3b7ed8eaaed36"/>
@@ -30648,10 +30680,17 @@ license:CC0
 		</part>
 	</software>
 
-	<software name="4in1a">
-		<description>4 In 1 (set 2)</description>
+	<software name="4in1a" cloneof="4in1">
+		<description>4 in 1 (set 2)</description>
 		<year>1986</year>
 		<publisher>Hit-Pak (Elite)</publisher>
+		<notes><![CDATA[Compilation contents:
+Side A - Game 1: Commando
+Side A - Game 2: Bomb Jack
+Side A - Game 3: Airwolf
+Side B - Game 1: Frank Bruno's Boxing
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="142112">
 				<rom name="4 in 1 - alternate - side 1.tzx" size="142112" crc="ff9e8042" sha1="9221988b5118442b3aaff791655f834bbfb6867c"/>
@@ -30669,6 +30708,16 @@ license:CC0
 		<description>6-Pak</description>
 		<year>1987</year>
 		<publisher>Hit-Pak (Elite)</publisher>
+		<notes><![CDATA[Compilation contents:
+Side A - Game 1: Scooby-Doo
+Side A - Game 2: 1942
+Side A - Game 3: Duet
+Side A - Game 4: Jet Set Willy II
+Side B - Game 1: The Sacred Armour of Antiriad
+Side B - Game 2: Fighting Warrior
+Side B - Game 3: Split Personalities
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="196233"> <!-- baddump because duet is corrupt in this read, has loading error -->
 				<rom name="6-pak - side 1.tzx" size="196233" crc="7e86f853" sha1="59037a4476d0248afd501ddb096392fbcc90236b" status="baddump"/>
@@ -30681,10 +30730,70 @@ license:CC0
 		</part>
 	</software>
 
+	<software name="6pakz" cloneof="6pak">
+		<description>6-Pak (Zafiro)</description>
+		<year>1987</year>
+		<publisher>Zafi Chip</publisher>
+		<notes><![CDATA[Compilation contents:
+Side A - Game 1: Scooby-Doo
+Side A - Game 2: 1942
+Side A - Game 3: Duet
+Side A - Game 4: Jet Set Willy II
+Side B - Game 1: The Sacred Armour of Antiriad
+Side B - Game 2: Fighting Warrior
+Side B - Game 3: Split Personalities
+]]></notes>
+
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="196334">
+				<rom name="6-pak - side 1 (zafiro).tzx" size="196334" crc="427c7242" sha1="758e831b03c07967a7fbfb23f0da0b7a263ce117"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="145620">
+				<rom name="6-pak - side 2 (zafiro).tzx" size="145620" crc="abb99370" sha1="76dc8bd503b2795a2774026a6235d9da9902d96b"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="6pak2">
+		<description>6-Pak Vol 2</description>
+		<year>1987</year>
+		<publisher>Hit-Pak</publisher>
+		<notes><![CDATA[Compilation contents:
+Side A - Game 1: Into the Eagle's Nest
+Side A - Game 2: Lightforce
+Side A - Game 3: ACE
+Side B - Game 1: International Karate
+Side B - Game 2: Shockway Rider
+Side B - Game 3: Batty
+]]></notes>
+
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="126845">
+				<rom name="6-pak vol 2 - side a.tzx" size="126845" crc="0e695229" sha1="854011cbd8fc2c009be29e19d9b6d28dfdf56671"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="180415">
+				<rom name="6-pak vol 2 - side b.tzx" size="180415" crc="ba1ecb71" sha1="fe1486754b68c6f9534fcbf3b39e7b96d0b5cce1"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="6pak3">
 		<description>6-Pak Vol 3</description>
 		<year>1988</year>
 		<publisher>Hit-Pak (Elite)</publisher>
+		<notes><![CDATA[Compilation contents:
+Side A - Game 1: Dragon's Lair
+Side A - Game 2: Paperboy
+Side A - Game 3: Enduro Racer
+Side B - Game 1: Dragon's Lair II: Escape from Singe's Castle
+Side B - Game 2: Ghost 'n Goblins
+Side B - Game 3: The Living Daylights - The Computer Game
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="203262">
 				<rom name="6-pak vol 3 - side a.tzx" size="203262" crc="05c6aca3" sha1="93daf50d65f5f66f8393ee6c7b596e7d47a684f8"/>
@@ -30697,6 +30806,40 @@ license:CC0
 		</part>
 	</software>
 
+	<software name="6pak3z" cloneof="6pak3">
+		<description>6-Pak Vol 3 (Zafiro)</description>
+		<year>1988</year>
+		<publisher>MCM Software</publisher>
+		<notes><![CDATA[Compilation contents:
+Side A - Game 1: Dragon's Lair
+Side A - Game 2: Paperboy
+Side A - Game 3: Enduro Racer
+Side B - Game 1: Dragon's Lair II: Escape from Singe's Castle
+Side B - Game 2: Ghost 'n Goblins
+Side B - Game 3: The Living Daylights - The Computer Game
+]]></notes>
+
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="96511">
+				<rom name="6-pak vol 3 - tape 1 - side 1 (zafiro).tzx" size="96511" crc="5844b591" sha1="90d1696cbe606af78825f7a3658de11263cc5967"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="86938">
+				<rom name="6-pak vol 3 - tape 1 - side 2 (zafiro).tzx" size="86938" crc="218f8b88" sha1="6ce284294350c0084b5cc8f963f14b5e0321f123"/>
+			</dataarea>
+		</part>
+		<part name="cass3" interface="spectrum_cass">
+			<dataarea name="cass" size="96909">
+				<rom name="6-pak vol 3 - tape 2 - side 1 (zafiro).tzx" size="96909" crc="45f52734" sha1="242deb9866f61b9e77b63850ecc6ce4f699ca9a3"/>
+			</dataarea>
+		</part>
+		<part name="cass4" interface="spectrum_cass">
+			<dataarea name="cass" size="106786">
+				<rom name="6-pak vol 3 - tape 2 - side 2 (zafiro).tzx" size="106786" crc="b3b13b7f" sha1="cd1e641eb594ad53c167c74d53ced9696441e142"/>
+			</dataarea>
+		</part>
+	</software>
 
 	<software name="incrowd">
 		<description>The In Crowd (compilation)</description>
@@ -31286,7 +31429,7 @@ license:CC0
 	</software>
 
 	<software name="dizzycol">
-		<description>Dizzy Collection (compilation)</description>
+		<description>Dizzy Collection</description>
 		<year>1991</year>
 		<publisher>Code Masters</publisher>
 		<notes><![CDATA[Compilation contents:
@@ -31314,7 +31457,7 @@ Tape 2 - Side A - Game 1: Magicland Dizzy
 	</software>
 
 	<software name="dizzyex">
-		<description>Dizzy's Excellent Adventures (compilation)</description>
+		<description>Dizzy's Excellent Adventures</description>
 		<year>1991</year>
 		<publisher>Code Masters</publisher>
 		<notes><![CDATA[Compilation contents:
@@ -31701,9 +31844,16 @@ Tape 5: Kwik Snax
 
 	<!-- NC128 -->
 	<software name="qtr_adv">
-		<description>Quattro Adventure (Ghost Hunters, Super Robin Hood, Dizzy, Vampire)</description>
-		<year>19??</year>
+		<description>Quattro Adventure</description>
+		<year>1990</year>
 		<publisher>Code Masters</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A - Game 1 : Ghost Hunters
+Tape 1 - Side A - Game 2 : Super Robin Hood
+Tape 1 - Side B - Game 1 : Dizzy
+Tape 1 - Side B - Game 2 : Vampire (Phantomas 2)
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Side 1 - Ghost Hunters, Super Robin Hood"/>
 			<dataarea name="cass" size="96872">
@@ -31719,9 +31869,16 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="qtr_arc">
-		<description>Quattro Arcade (Advanced Pinball Simulator, Fruit Machine Simulator, Grand Prix Simulator 2, 3D Starfighter)</description>
-		<year>19??</year>
+		<description>Quattro Arcade</description>
+		<year>1991</year>
 		<publisher>Code Masters</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A - Game 1 : Advanced Pinball Simulator
+Tape 1 - Side A - Game 2 : Fruit Machine Simulator
+Tape 1 - Side B - Game 1 : Grand Prix Simulator 2
+Tape 1 - Side B - Game 2 : 3D Starfighter
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Side 1 - Advanced Pinball Simulator, Fruit Machine Simulator"/>
 			<dataarea name="cass" size="99803">
@@ -31737,9 +31894,16 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="qtr_toon">
-		<description>Quattro Cartoon (Little Puff in Dragonland, Wizard Willy, Frankenstein Jnr, Olli &amp; Lissa 3 - The Candlelight Adventure)</description>
-		<year>19??</year>
+		<description>Quattro Cartoon</description>
+		<year>1991</year>
 		<publisher>Code Masters</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A - Game 1 : Little Puff
+Tape 1 - Side A - Game 2 : Wizard Willy
+Tape 1 - Side B - Game 1 : Frankenstein Jnr.
+Tape 1 - Side B - Game 2 : Olli &amp; Lissa 3
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Side 1 - Little Puff in Dragonland, Wizard Willy"/>
 			<dataarea name="cass" size="88877">
@@ -31755,9 +31919,16 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="qtr_coin">
-		<description>Quattro Coinops (Advanced Pinball Simulator, Pub Trivia, Fruit Machine Simulator, Fast Food! Dizzy)</description>
-		<year>19??</year>
+		<description>Quattro Coin-Ops</description>
+		<year>1991</year>
 		<publisher>Code Masters</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A - Game 1 : Advanced Pinball Simulator
+Tape 1 - Side A - Game 2 : Pub Trivia
+Tape 1 - Side B - Game 1 : Fruit Machine Simulator
+Tape 1 - Side B - Game 2 : Fast Food
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Side 1 - Advanced Pinball Simulator, Pub Trivia"/>
 			<dataarea name="cass" size="152030">
@@ -31773,9 +31944,16 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="qtr_comb">
-		<description>Quattro Combat (SAS Combat Simulator, Ninja Massacre, Death Stalker, Arcade Flight Simulator)</description>
-		<year>19??</year>
+		<description>Quattro Combat</description>
+		<year>1991</year>
 		<publisher>Code Masters</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A - Game 1 : SAS Combat Simulator
+Tape 1 - Side A - Game 2 : Ninja Massacre
+Tape 1 - Side B - Game 1 : Death Stalker
+Tape 1 - Side B - Game 2 : Arcade Flight Simulator
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Side 1 - SAS Combat Simulator, Ninja Massacre"/>
 			<dataarea name="cass" size="102141">
@@ -31791,9 +31969,16 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="qtr_fant">
-		<description>Quattro Fantastic (Fruit Machine Simulator, Wacky Darts, Pub Trivia, Monte Carlo Casino)</description>
-		<year>19??</year>
+		<description>Quattro Fantastic</description>
+		<year>1992</year>
 		<publisher>Code Masters</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A - Game 1 : Fruit Machine Simulator
+Tape 1 - Side A - Game 2 : Wacky Darts
+Tape 1 - Side B - Game 1 : Pub Trivia
+Tape 1 - Side B - Game 2 : Monte Carlo Casino
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="109243">
 				<rom name="quattro fantastic - side a.tzx" size="109243" crc="de907f8d" sha1="f2e983fa6eb2cb95dd85d044383f08a5edddf7cc"/>
@@ -31807,9 +31992,16 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="qtr_fgt">
-		<description>Quattro Fighters (The Guardian Angel, Kamikaze, Mig-29 Soviet Fighter, SAS Combat Simulator)</description>
-		<year>19??</year>
+		<description>Quattro Fighters</description>
+		<year>1992</year>
 		<publisher>Code Masters</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A - Game 1 : Guardian Angel (Freddy Hardest en Manhattan Sur)
+Tape 1 - Side A - Game 2 : Kamikaze
+Tape 1 - Side B - Game 1 : Mig-29 Soviet Fighter
+Tape 1 - Side B - Game 2 : SAS Combat (SAS Combat Simulator)
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="92305">
 				<rom name="quattro fighters - side 1.tzx" size="92305" crc="a3e8598d" sha1="df0843ec2caf753704fe910ec253508c61b14287"/>
@@ -31823,9 +32015,16 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="qtr_fire">
-		<description>Quattro Firepower (Mig-29 Soviet Fighter, Operation Gunship, Terra-Cognita, 3D Starfighter)</description>
-		<year>19??</year>
+		<description>Quattro Firepower</description>
+		<year>1991</year>
 		<publisher>Code Masters</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A - Game 1 : Mig-29 Soviet Fighter
+Tape 1 - Side A - Game 2 : Operation Gunship
+Tape 1 - Side B - Game 1 : Terra Cognita
+Tape 1 - Side B - Game 2 : 3D Starfighter
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="102097">
 				<rom name="quattro firepower - side 1.tzx" size="102097" crc="b295476a" sha1="f8b5607ef537a10bf3efdd8d40bf4da50130f113"/>
@@ -31839,9 +32038,16 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="qtr_mega">
-		<description>Quattro Megastars (CJ's Elephant Antics, Little Puff in Dragonland, Bigfoot, Sky High Stuntman) (set 1)</description>
-		<year>19??</year>
+		<description>Quattro Megastars (set 1)</description>
+		<year>1992</year>
 		<publisher>Code Masters</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A - Game 1 : CJ's Elephant Antics
+Tape 1 - Side A - Game 2 : Little Puff
+Tape 1 - Side B - Game 1 : Bigfoot
+Tape 1 - Side B - Game 2 : Sky High Stuntman
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="104032">
 				<rom name="quattro megastars - side 1.tzx" size="104032" crc="417214a1" sha1="f1f87422789e495b8f9314e8fce2de8cea8c999b"/>
@@ -31855,9 +32061,16 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="qtr_megaa" cloneof="qtr_mega">
-		<description>Quattro Megastars (CJ's Elephant Antics, Little Puff in Dragonland, Bigfoot, Sky High Stuntman) (set 2)</description>
-		<year>19??</year>
+		<description>Quattro Megastars (set 2)</description>
+		<year>1992</year>
 		<publisher>Code Masters</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A - Game 1 : CJ's Elephant Antics
+Tape 1 - Side A - Game 2 : Little Puff
+Tape 1 - Side B - Game 1 : Bigfoot
+Tape 1 - Side B - Game 2 : Sky High Stuntman
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="104044">
 				<rom name="quattro megastars - side a.tzx" size="104044" crc="64df6978" sha1="40799025bf8d86e4a5b4ebfdcb36c5f6ebe9bdc6"/>
@@ -31871,9 +32084,16 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="qtr_powr">
-		<description>Quattro Power (Motocross Simulator, Twin Turbo V8, ATV Simulator, Power Boat Simulator)</description>
-		<year>19??</year>
+		<description>Quattro Power</description>
+		<year>1990</year>
 		<publisher>Code Masters</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A - Game 1 : Moto X (Moto Cross Simulator)
+Tape 1 - Side A - Game 2 : Twin Turbo V8
+Tape 1 - Side B - Game 1 : ATV Simulator
+Tape 1 - Side B - Game 2 : Pro Powerboat Simulator
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="102296">
 				<rom name="quattro power - side 1.tzx" size="102296" crc="f8cef4f7" sha1="5d489c6f941bce1101073e016b3b2f5cf151d489"/>
@@ -31888,9 +32108,16 @@ Tape 5: Kwik Snax
 
 	<!-- BMX Simulator 2 is on the tape twice, presumably because Championship Jetski Simulator on the other side is larger due to having 2 different programs -->
 	<software name="qtr_racr">
-		<description>Quattro Racers (ATV Simulator, BMX Simulator 2, BMX Freestyle Simulator, Championship Jetski Simulator)</description>
-		<year>19??</year>
+		<description>Quattro Racers</description>
+		<year>1991</year>
 		<publisher>Code Masters</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A - Game 1 : ATV Simulator
+Tape 1 - Side A - Game 2 : BMX Simulator 2
+Tape 1 - Side B - Game 1 : BMX Freestyle
+Tape 1 - Side B - Game 2 : Championship Jet Ski Simulator
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="150504">
 				<rom name="quattro racers - side 1.tzx" size="150504" crc="ca7cfc42" sha1="ac6b965a0758e6ad4aa421deec8955231f5e1f46"/>
@@ -31905,9 +32132,16 @@ Tape 5: Kwik Snax
 
 	<!-- Pro Skateboard and Pro Tennis have manual protection -->
 	<software name="qtr_skil">
-		<description>Quattro Skills (Pro Skateboard Simulator, International Rugby Simulator, 11-A-Side Soccer, Pro Tennis Simulator)</description>
-		<year>19??</year>
+		<description>Quattro Skills</description>
+		<year>1991</year>
 		<publisher>Code Masters</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A - Game 1 : Pro Skateboard Simulator
+Tape 1 - Side A - Game 2 : International Rugby Simulator
+Tape 1 - Side B - Game 1 : 11-a-Side Soccer
+Tape 1 - Side B - Game 2 : Pro Tennis Simulator
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="93331">
 				<rom name="quattro skills - side 1.tzx" size="93331" crc="5b3e85fa" sha1="8a955a426d2b46817f0b99d5d2097e65a60f000f"/>
@@ -31921,9 +32155,16 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="qtr_sprt">
-		<description>Quattro Sports (BMX Simulator, Grand Prix Simulator, Professional Ski Simulator, Professional Snooker Simulator)</description>
-		<year>19??</year>
+		<description>Quattro Sports</description>
+		<year>1990</year>
 		<publisher>Code Masters</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A - Game 1 : BMX Simulator
+Tape 1 - Side A - Game 2 : Grand Prix Simulator
+Tape 1 - Side B - Game 1 : Professional Ski Simulator
+Tape 1 - Side B - Game 2 : Professional Snooker Simulator
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="102766">
 				<rom name="quattro sports - side 1.tzx" size="102766" crc="b7e9a27d" sha1="a52fada09de5bce052d47b276dd5952a61c5aea2"/>
@@ -31937,9 +32178,16 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="qtr_shit">
-		<description>Quattro Super Hits (Super Stunt Man, KGB SuperSpy, Super Tank Simulator, Super Hero)</description>
+		<description>Quattro Super Hits</description>
 		<year>1991</year>
 		<publisher>Code Masters</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A - Game 1 : Super Stuntman
+Tape 1 - Side A - Game 2 : KGB Superspy
+Tape 1 - Side B - Game 1 : Super Tank
+Tape 1 - Side B - Game 2 : Super Hero
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="90654">
 				<rom name="quattro super hits - side 1.tzx" size="90654" crc="1625f9d4" sha1="633924146f4962da67ea66e825ab67ba8035e94b"/>
@@ -31954,9 +32202,16 @@ Tape 5: Kwik Snax
 
 	<!-- The Codemasters Gold release was on 2 cassettes, one game per side -->
 	<software name="4socr">
-		<description>4 Soccer Simulators (11 A-Side Soccer, Indoor Soccer, Soccer Skills, Street Soccer) (Code Masters Gold, 2 tapes)</description>
+		<description>4 Soccer Simulators (Code Masters Gold, 2 tapes)</description>
 		<year>1988</year>
-		<publisher>Code Masters</publisher>
+		<publisher>Code Masters Gold</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A: 11-a-Side Soccer
+Tape 1 - Side B: Indoor Soccer
+Tape 2 - Side A: Soccer Skills
+Tape 2 - Side B: Street Soccer
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Tape 1 - Side 1 - 11 A-Side Soccer"/>
 			<dataarea name="cass" size="48431">
@@ -31985,9 +32240,16 @@ Tape 5: Kwik Snax
 
 
 	<software name="4socra" cloneof="4socr">
-		<description>4 Soccer Simulators (11 A-Side Soccer, Indoor Soccer, Soccer Skills, Street Soccer) (Code Masters, single tape)</description>
+		<description>4 Soccer Simulators (Code Masters, single tape)</description>
 		<year>1988</year>
 		<publisher>Code Masters</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A - Game 1: 11-a-Side Soccer
+Tape 1 - Side A - Game 2: Indoor Soccer
+Tape 1 - Side B - Game 1: Soccer Skills
+Tape 1 - Side B - Game 2: Street Soccer
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Side 1 - 11 A-Side Soccer, Indoor Soccer"/>
 			<dataarea name="cass" size="95184">
@@ -32021,9 +32283,39 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="dinamic5">
-		<description>Dinamic 5 Aniversario (Abu Simbel Profanation, Fernando Martin Basket Master, Rocky, Los Pajaros de Bangkok, West Bank, Dustin, Meganova, Capitan Sevilla, Hundra, Freddy Hardest, Mega-Corp)</description>
+		<description>Dinamic 5 Aniversario</description>
 		<year>1989</year>
 		<publisher>Dinamic Software</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A:
+1. Abu Simbel Profanation
+2. Fernando Martin Basket Master
+
+Tape 1 - Side B:
+1. Rocky
+
+Tape 2 - Side A:
+1. Los Pajaros de Bangkok
+2. Phantis
+
+Tape 2 - Side B:
+1. West Bank
+
+Tape 3 - Side A:
+1. Dustin
+2. Meganova
+
+Tape 3 - Side B:
+1. Capitan Sevilla
+
+Tape 4 - Side A:
+1. Hundra
+2. Freddy Hardest
+
+Tape 4 - Side B:
+1. Mega-Corp
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Tape 1, Side 1 - Abu Simbel Profanation, Fernando Martin Basket Master"/>
 			<dataarea name="cass" size="93835">
@@ -32106,9 +32398,16 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="dinam4x1">
-		<description>4 X 1 (Dinamic)</description>
+		<description>4 x 1 - Cuatro por Uno</description>
 		<year>1988</year>
-		<publisher>Dinamic</publisher>
+		<publisher>Dinamic Software</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A - Game 1 : Phantomas 2
+Tape 1 - Side A - Game 2 : Camelot Warriors
+Tape 1 - Side B - Game 1 : Abu Simbel Profanation
+Tape 1 - Side B - Game 2 : Cobra's Arc
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="89120">
 				<rom name="4 x 1 - side a (dinamic).tzx" size="89120" crc="8be905d9" sha1="384be90eec04a72f2fbdb6f69ef545c872bd2eef"/>
@@ -32124,9 +32423,27 @@ Tape 5: Kwik Snax
 
 
 	<software name="dinamiex">
-		<description>Coleccion De Exitos Dinamic (Game Over, Abu Simbel Profanation, Don Quijote, Camelot Warriors, Army Moves, Phantomas 2, Dustin, Nonamed) (set 1)</description>
+		<description>Coleccion de Exitos Dinamic (set 1)</description>
 		<year>1988</year>
 		<publisher>Dinamic</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A:
+1. Game Over
+2. Abu Simbel Profanation
+
+Tape 1 - Side B:
+1. Don Quijote
+2. Camelot Warriors
+
+Tape 2 - Side A:
+1. Army Moves
+2. Phantomas 2
+
+Tape 2 - Side B:
+1. Dustin
+2. Nonamed
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Tape 1, Side 1 - Game Over (parts 1 &amp; 2), Abu Simbel Profanation"/>
 			<dataarea name="cass" size="128607">
@@ -32154,9 +32471,27 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="dinamiex2" cloneof="dinamiex">
-		<description>Coleccion De Exitos Dinamic (Game Over, Abu Simbel Profanation, Don Quijote, Camelot Warriors, Army Moves, Phantomas 2, Dustin, Nonamed) (set 2)</description>
+		<description>Coleccion de Exitos Dinamic (set 2)</description>
 		<year>1988</year>
 		<publisher>Dinamic</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A:
+1. Game Over
+2. Abu Simbel Profanation
+
+Tape 1 - Side B:
+1. Don Quijote
+2. Camelot Warriors
+
+Tape 2 - Side A:
+1. Army Moves
+2. Phantomas 2
+
+Tape 2 - Side B:
+1. Dustin
+2. Nonamed
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="128767">
 				<rom name="coleccion de exitos dinamic - tape 1 side 1.tzx" size="128767" crc="e4410593" sha1="5f2e3b2611bbb9030d1b4d25ff7391994dc6be87"/>
@@ -40382,7 +40717,7 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="amattero">
-		<description>A Matter of Evil (set 2)</description>
+		<description>Sherlock Holmes: A Matter of Evil (set 2)</description>
 		<year>1988</year>
 		<publisher>Creative Juices</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -40393,9 +40728,9 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="amattero_a" cloneof="amattero">
-		<description>A Matter of Evil</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Sherlock Holmes: A Matter of Evil</description>
+		<year>1988</year>
+		<publisher>Creative Juices</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="52072">
 				<rom name="a matter of evil.tzx" size="52072" crc="21b04774" sha1="0e2333c5b6c409eb4d99f39b7556c61f803fd1f7"/>
@@ -40542,7 +40877,7 @@ Tape 5: Kwik Snax
 
 	<software name="ashadowo">
 		<description>A Shadow on Glass (set 2)</description>
-		<year>1989</year>
+		<year>1991</year>
 		<publisher>Psychaedelic Hedgehog</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="37778">
@@ -40553,8 +40888,8 @@ Tape 5: Kwik Snax
 
 	<software name="ashadowo_a" cloneof="ashadowo">
 		<description>A Shadow on Glass</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>Psychaedelic Hedgehog</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47010">
 				<rom name="a shadow on glass.tzx" size="47010" crc="b33b2e48" sha1="2b96bd9bd8652f4472761ab5c25f41139187b301"/>
@@ -40869,9 +41204,22 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="abersoft">
-		<description>Abersoft Forth (Melbourne House)</description>
+		<description>FORTH</description>
+		<year>1983</year>
+		<publisher>Abersoft</publisher>
+		<info name="alt_title" value="Abersoft FORTH" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="9226">
+				<rom name="abersoft forth.tzx" size="9226" crc="3115a473" sha1="468e602b8b036484695f079b9fe1c1ba656a89e3"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="abersoft_a" cloneof="abersoft">
+		<description>FORTH (Melbourne House)</description>
 		<year>1983</year>
 		<publisher>Melbourne House</publisher>
+		<info name="alt_title" value="Abersoft FORTH" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="20520">
 				<rom name="abersoft forth (melbourne house).tzx" size="20520" crc="63ae4594" sha1="b4b6eb890f109423eab553816e25c9c13cccdd34"/>
@@ -40879,13 +41227,14 @@ Tape 5: Kwik Snax
 		</part>
 	</software>
 
-	<software name="abersoft_a" cloneof="abersoft">
-		<description>Abersoft Forth</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="abersoft_b" cloneof="abersoft">
+		<description>FORTH (Microbyte)</description>
+		<year>1983</year>
+		<publisher>Microbyte</publisher>
+		<info name="alt_title" value="Abersoft FORTH" />
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="9226">
-				<rom name="abersoft forth.tzx" size="9226" crc="3115a473" sha1="468e602b8b036484695f079b9fe1c1ba656a89e3"/>
+			<dataarea name="cass" size="9284">
+				<rom name="forth (microbyte).tzx" size="9284" crc="7787478d" sha1="77da9892e0f7f535aebe54c5942094b778e160bc"/>
 			</dataarea>
 		</part>
 	</software>
@@ -41234,7 +41583,7 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="aceinthe">
-		<description>Ace In The Hole (Add-On Electronics)</description>
+		<description>Ace in the H.O.L.E.</description>
 		<year>1983</year>
 		<publisher>Add-On Electronics</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -41245,9 +41594,9 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="aceinthe_a" cloneof="aceinthe">
-		<description>Ace In The Hole</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Ace in the H.O.L.E. (alt)</description>
+		<year>1983</year>
+		<publisher>Add-On Electronics</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="22914">
 				<rom name="ace in the hole.tzx" size="22914" crc="214f1ced" sha1="73c6405fee6d91dd4966a128758c6611853a245c"/>
@@ -50431,25 +50780,25 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="brianand">
-		<description>Brian And The Dishonest Politician (Zenobi)</description>
+		<description>Brian and the Dishonest Politician</description>
 		<year>1992</year>
-		<publisher>Zenobi Software</publisher>
+		<publisher>Delbert the Hamster Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="43938">
-				<rom name="brian and the dishonest politician - part 1 (zenobi).tzx" size="43938" crc="df14edf8" sha1="85d0f3270fa9c4d021beefe57ce6301e9670dcdb"/>
+			<dataarea name="cass" size="43932">
+				<rom name="brian and the dishonest politician - side 1.tzx" size="43932" crc="4eed2d5d" sha1="9dadfd81134bff27f5a0e842897a1b2af13c8923"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="42732">
-				<rom name="brian and the dishonest politician - part 2 (zenobi).tzx" size="42732" crc="7e52b1e7" sha1="340111570f92b5faad07cb35f9c01330a5dc7168"/>
+			<dataarea name="cass" size="42724">
+				<rom name="brian and the dishonest politician - side 2.tzx" size="42724" crc="9ee58ef6" sha1="a85e11bd18ff4055a46fa80799fb370f05e6b650"/>
 			</dataarea>
 		</part>
 	</software>
 
 	<software name="brianand_b" cloneof="brianand">
-		<description>Brian And The Dishonest Politician (set 2)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Brian and the Dishonest Politician (set 2)</description>
+		<year>1992</year>
+		<publisher>Delbert the Hamster Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="39380">
 				<rom name="brian and the dishonest politician - side 1 - alternate.tzx" size="39380" crc="d52d1cb8" sha1="2595590b54bc0140ab61957c78d66c864bc51ab6"/>
@@ -50463,21 +50812,20 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="brianand_c" cloneof="brianand">
-		<description>Brian And The Dishonest Politician</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Brian and the Dishonest Politician (Zenobi)</description>
+		<year>1992</year>
+		<publisher>Zenobi Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="43932">
-				<rom name="brian and the dishonest politician - side 1.tzx" size="43932" crc="4eed2d5d" sha1="9dadfd81134bff27f5a0e842897a1b2af13c8923"/>
+			<dataarea name="cass" size="43938">
+				<rom name="brian and the dishonest politician - part 1 (zenobi).tzx" size="43938" crc="df14edf8" sha1="85d0f3270fa9c4d021beefe57ce6301e9670dcdb"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="42724">
-				<rom name="brian and the dishonest politician - side 2.tzx" size="42724" crc="9ee58ef6" sha1="a85e11bd18ff4055a46fa80799fb370f05e6b650"/>
+			<dataarea name="cass" size="42732">
+				<rom name="brian and the dishonest politician - part 2 (zenobi).tzx" size="42732" crc="7e52b1e7" sha1="340111570f92b5faad07cb35f9c01330a5dc7168"/>
 			</dataarea>
 		</part>
 	</software>
-
 
 	<software name="brianclo">
 		<description>Brian Clough's Football Fortunes</description>
@@ -50770,7 +51118,7 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="brookthe">
-		<description>Brook The Barbarian</description>
+		<description>Brook the Barbarian</description>
 		<year>1986</year>
 		<publisher>Richard Silfverberg</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -50803,7 +51151,7 @@ Tape 5: Kwik Snax
 	</software>
 
 	<software name="brumbruma" cloneof="brumbrum">
-		<description>Brum Brum (Master)</description>
+		<description>Brum Brum (master tape)</description>
 		<year>1984</year>
 		<publisher>Astor Software</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -50815,8 +51163,8 @@ Tape 5: Kwik Snax
 
 	<software name="bryanrob">
 		<description>Bryan Robson's Super League</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1985</year>
+		<publisher>Paul Lamond</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="37201">
 				<rom name="bryan robson_s super league.tzx" size="37201" crc="c9a503da" sha1="7dd2040eee39dac5638fb129f68211dc9089a4a4"/>
@@ -70842,7 +71190,7 @@ Tape 5: Kwik Snax
 	<software name="fantasia">
 		<description>Fantasia Diamond (set 1)</description>
 		<year>1984</year>
-		<publisher>Hewson</publisher>
+		<publisher>Hewson Consultants</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="41061">
 				<rom name="fantasia diamond.tzx" size="41061" crc="000291ad" sha1="8b927737ecdc97c1ef249a18cad0b5d84e306609"/>
@@ -70872,7 +71220,16 @@ Tape 5: Kwik Snax
 		</part>
 	</software>
 
-
+	<software name="fantasiac" cloneof="fantasia">
+		<description>Fantasia Diamond (set 4, VTR, French)</description>
+		<year>19??</year>
+		<publisher>VTR Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="40926">
+				<rom name="fantasia diamond (vtr software).tzx" size="40926" crc="4ec52e04" sha1="4afd1652e527bb27fdaa7bb7d3075f6aa120e231"/>
+			</dataarea>
+		</part>
+	</software>
 
 	<software name="fantadv">
 		<description>Fantastic Adventure</description>
@@ -82841,6 +83198,17 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
+	<software name="hundrab" cloneof="hundra">
+		<description>Hundra (Dinamic)</description>
+		<year>1988</year>
+		<publisher>Dinamic Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="48626">
+				<rom name="hundra (spanish).tzx" size="48626" crc="96c50e71" sha1="98cffc0b3cb6d95f55ea8caae3759a9c9089f65f"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="hntkilr">
 		<description>Hunter Killer (set 1)</description>
 		<year>1983</year>
@@ -89597,6 +89965,17 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="54563">
 				<rom name="kinetik.tzx" size="54563" crc="13cf160e" sha1="7c832f11e979ce99ad524b90d42d2e413412e88d"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="karthur">
+		<description>King Arthur</description>
+		<year>1983</year>
+		<publisher>East Midlands Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="24236">
+				<rom name="king arthur - east midlands software.tzx" size="24236" crc="1203198e" sha1="8dc4b4fb1b3d998fffe84604f7c9ee603467b216"/>
 			</dataarea>
 		</part>
 	</software>
@@ -101831,6 +102210,19 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
+	<software name="shawdblw">
+		<description>Mr. Shaw's Double Whammy</description>
+		<year>1995</year>
+		<publisher>Fish Enterprises / Shaw Brothers</publisher>
+		<notes>Compilation contents: Hop'n'Chop / Football Glory</notes>
+
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="119797">
+				<rom name="mr shaws double whammy - fish enterprises - tape b.tzx" size="119797" crc="1ade8249" sha1="2d9aaf6b185c78664159878160930016802369a8"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="mrweems">
 		<description>Mr. Weems and the She Vampires</description>
 		<year>1987</year>
@@ -105132,20 +105524,20 @@ Tape 2: Hero Quest: Return of the Witch Lord
 	</software>
 
 	<software name="nosferat">
-		<description>Nosferatu El Vampiro (Zafiro)</description>
-		<year>1987</year>
-		<publisher>Z Cobra</publisher>
+		<description>Nosferatu the Vampyre</description>
+		<year>1986</year>
+		<publisher>Piranha</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="62881">
-				<rom name="nosferatu el vampiro (zafiro).tzx" size="62881" crc="77842d8f" sha1="a6bc9d565f93fd9045f2671c271ba9455355457e"/>
+			<dataarea name="cass" size="62911">
+				<rom name="nosferatu the vampyre.tzx" size="62911" crc="58c83858" sha1="71b39d61d8edb3866ed23326100e9098b7f60f27"/>
 			</dataarea>
 		</part>
 	</software>
 
 	<software name="nosferat_a" cloneof="nosferat">
-		<description>Nosferatu The Vampyre (Alternative)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Nosferatu the Vampyre (Alternative)</description>
+		<year>1987</year>
+		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="62912">
 				<rom name="nosferatu the vampyre (alternative).tzx" size="62912" crc="cdd517da" sha1="e12d323d9872e66afb60d3566275c365fd580dc7"/>
@@ -105154,9 +105546,9 @@ Tape 2: Hero Quest: Return of the Witch Lord
 	</software>
 
 	<software name="nosferat_b" cloneof="nosferat">
-		<description>Nosferatu The Vampyre (System 4)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Nosferatu the Vampyre (System 4)</description>
+		<year>1988</year>
+		<publisher>System 4</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="63018">
 				<rom name="nosferatu the vampyre (system 4).tzx" size="63018" crc="66ea0afe" sha1="0a1674667ed3344f0686fee96488c5a84d30854a"/>
@@ -105165,23 +105557,36 @@ Tape 2: Hero Quest: Return of the Witch Lord
 	</software>
 
 	<software name="nosferat_c" cloneof="nosferat">
-		<description>Nosferatu The Vampyre</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Nosferatu el Vampiro (Zafiro)</description>
+		<year>1987</year>
+		<publisher>Z Cobra</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="62911">
-				<rom name="nosferatu the vampyre.tzx" size="62911" crc="58c83858" sha1="71b39d61d8edb3866ed23326100e9098b7f60f27"/>
+			<dataarea name="cass" size="63173">
+				<rom name="nosferatu el vampiro (zafiro).tzx" size="63173" crc="fa16b007" sha1="1614bcf3111d95de306b95dc9af2e745250529a7"/>
 			</dataarea>
 		</part>
 	</software>
 
-	<software name="nosferat_d" cloneof="nosferat">
-		<description>Nosferatu</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="nosferqv">
+		<description>Nosferatu: Quest for the Vampire</description>
+		<year>1984</year>
+		<publisher>Omni Software</publisher>
+		<info name="alt_title" value="Nosferatu"/>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="34644">
 				<rom name="nosferatu.tzx" size="34644" crc="b10df8d2" sha1="a8352e20dea2b72267d59853fec3ca7b6a1496dc"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="nosferqv_a" cloneof="nosferqv">
+		<description>Nosferatu: Quest for the Vampire (alt)</description>
+		<year>1984</year>
+		<publisher>Omni Software</publisher>
+		<info name="alt_title" value="Nosferatu"/>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="36575">
+				<rom name="nosferatu - quest for the vampire.tzx" size="36575" crc="7cdef167" sha1="6572773f1aa1cd1f4780a98eb2c2289a689f5505"/>
 			</dataarea>
 		</part>
 	</software>
@@ -105291,6 +105696,17 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="35394">
 				<rom name="nuclear countdown.tzx" size="35394" crc="0c254a66" sha1="746d57e362daa9d44deeb944440536340ef8831f"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="nreactor">
+		<description>Nuclear Reactor</description>
+		<year>198?</year>
+		<publisher>Robert &amp; Barry Rowlingson</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="24987">
+				<rom name="nuclear reactor.tzx" size="24987" crc="04659c36" sha1="361483e249f4338f886ecca9416379007094c39d"/>
 			</dataarea>
 		</part>
 	</software>
@@ -117358,7 +117774,7 @@ Tape 2: Hero Quest: Return of the Witch Lord
 	<software name="roadblasa" cloneof="roadblas">
 		<description>Road Blasters (set 2, Erbe)</description>
 		<year>1988</year>
-		<publisher>U.S. Gold / Erbe</publisher>
+		<publisher>Erbe Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="207616">
 				<rom name="road blasters - side 1 (erbe).tzx" size="207616" crc="e3095a6b" sha1="5e8ad48edbce1ef22a1c66230e24f3215ccbb1f9"/>
@@ -117374,7 +117790,7 @@ Tape 2: Hero Quest: Return of the Witch Lord
 	<software name="roadblasb" cloneof="roadblas">
 		<description>Road Blasters (set 3, Kixx)</description>
 		<year>1988</year>
-		<publisher>U.S. Gold Ltd / Kixx</publisher>
+		<publisher>Kixx</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="138663">
 				<rom name="road blasters (kixx) - side 1.tzx" size="138663" crc="300f29f4" sha1="55e5ac8f42004b8de09ea9fbc50c268cce0230c6"/>
@@ -129562,10 +129978,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="starship_c" cloneof="starship">
-		<description>Starship Quest - 128k (set 2)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="starsqst">
+		<description>Starship Quest (128k, set 2)</description>
+		<year>1989</year>
+		<publisher>FSF Adventures</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="198695">
 				<rom name="starship quest - 128k - alternate.tzx" size="198695" crc="4f76eef8" sha1="066abb13d054b0de66da31c3547d9efad11103f8"/>
@@ -129573,10 +129989,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="starship_d" cloneof="starship">
-		<description>Starship Quest - 128k</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="starsqst_a" cloneof="starsqst">
+		<description>Starship Quest (128k)</description>
+		<year>1990</year>
+		<publisher>FSF Adventures</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="194750">
 				<rom name="starship quest - 128k.tzx" size="194750" crc="bc53b9c4" sha1="c42150981fc997865b567ea7a84e7f577d4dbb50"/>
@@ -129584,13 +130000,24 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="starship_e" cloneof="starship">
-		<description>Starship Quest - 48k</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="starsqst_b" cloneof="starsqst">
+		<description>Starship Quest (48k)</description>
+		<year>1989</year>
+		<publisher>FSF Adventures</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="118564">
 				<rom name="starship quest - 48k.tzx" size="118564" crc="393aee59" sha1="9aa77055fcfc503968242cbea152178102812d62"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mulvaney">
+		<description>Starship Mulvaney</description>
+		<year>198?</year>
+		<publisher>Hometown Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="48088">
+				<rom name="starship mulvaney.tzx" size="48088" crc="0402ebd5" sha1="9d37fa3beadc36c9cee1cacadfcb69bfec5c8fd6"/>
 			</dataarea>
 		</part>
 	</software>
@@ -129622,10 +130049,21 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="starstri_b" cloneof="starstri">
-		<description>Starstrike II (Cobra)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="starstr2">
+		<description>Starstrike II</description>
+		<year>1986</year>
+		<publisher>Realtime Games Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="49556">
+				<rom name="starstrike ii.tzx" size="49556" crc="18262188" sha1="cddc2e58110baae35049db748a2af14737a9d645"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="starstr2_a" cloneof="starstr2">
+		<description>Starstrike II (Z Cobra)</description>
+		<year>1987</year>
+		<publisher>Z Cobra</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="49556">
 				<rom name="starstrike ii (cobra).tzx" size="49556" crc="e51b53bd" sha1="4c3145ce0e2f98390c2b20fe5348eee2f6c3e4ed"/>
@@ -134012,17 +134450,6 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="tankerbe">
-		<description>Tank (Erbe)</description>
-		<year>1987</year>
-		<publisher>Erbe Software</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="69545">
-				<rom name="tank (erbe).tzx" size="69545" crc="1265232d" sha1="1edd0064117796348839eefc86f9927046f6133e"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<software name="tankatta">
 		<description>Tank Attack</description>
 		<year>1988</year>
@@ -134107,6 +134534,17 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="69123">
 				<rom name="tank.tzx" size="69123" crc="ee142a9f" sha1="c9aea9b0e56626e1b6895e4b6980e1c21368aa18"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="tankerbe" cloneof="tank">
+		<description>Tank (Erbe)</description>
+		<year>1987</year>
+		<publisher>Erbe Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="69545">
+				<rom name="tank (erbe).tzx" size="69545" crc="1265232d" sha1="1edd0064117796348839eefc86f9927046f6133e"/>
 			</dataarea>
 		</part>
 	</software>
@@ -138972,13 +139410,25 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="tremoram">
+	<software name="tremor">
 		<description>Tremor (Americana)</description>
 		<year>1986</year>
-		<publisher>Americana</publisher>
+		<publisher>Americana Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48770">
 				<rom name="tremor (americana).tzx" size="48770" crc="90541944" sha1="ae629f9b0f570fcc0b3178dd0c924aa4ba55493d"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="tremor_a" cloneof="tremor">
+		<description>Tremor (pirate)</description>
+		<year>1986</year>
+		<publisher>Hello Games</publisher>
+		<notes>A pirated version from Portugal</notes>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="56247">
+				<rom name="tremor (hello games).tzx" size="56247" crc="3404c5fb" sha1="946a6fe1d72910339ed9b21a63f73dea80355f50"/>
 			</dataarea>
 		</part>
 	</software>
@@ -150739,64 +151189,6 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="6pakz">
-		<description>6-Pak (Zafiro)</description>
-		<year>1987</year>
-		<publisher>Zafi Chip</publisher>
-		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="196334">
-				<rom name="6-pak - side 1 (zafiro).tzx" size="196334" crc="427c7242" sha1="758e831b03c07967a7fbfb23f0da0b7a263ce117"/>
-			</dataarea>
-		</part>
-		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="145620">
-				<rom name="6-pak - side 2 (zafiro).tzx" size="145620" crc="abb99370" sha1="76dc8bd503b2795a2774026a6235d9da9902d96b"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="6pakvol2">
-		<description>6-Pak Vol 2</description>
-		<year>1987</year>
-		<publisher>Hit-Pak</publisher>
-		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="126845">
-				<rom name="6-pak vol 2 - side a.tzx" size="126845" crc="0e695229" sha1="854011cbd8fc2c009be29e19d9b6d28dfdf56671"/>
-			</dataarea>
-		</part>
-		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="180415">
-				<rom name="6-pak vol 2 - side b.tzx" size="180415" crc="ba1ecb71" sha1="fe1486754b68c6f9534fcbf3b39e7b96d0b5cce1"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="6pak3z">
-		<description>6-Pak Vol 3 (Zafiro)</description>
-		<year>1988</year>
-		<publisher>MCM Software</publisher>
-		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="96511">
-				<rom name="6-pak vol 3 - tape 1 - side 1 (zafiro).tzx" size="96511" crc="5844b591" sha1="90d1696cbe606af78825f7a3658de11263cc5967"/>
-			</dataarea>
-		</part>
-		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="86938">
-				<rom name="6-pak vol 3 - tape 1 - side 2 (zafiro).tzx" size="86938" crc="218f8b88" sha1="6ce284294350c0084b5cc8f963f14b5e0321f123"/>
-			</dataarea>
-		</part>
-		<part name="cass3" interface="spectrum_cass">
-			<dataarea name="cass" size="96909">
-				<rom name="6-pak vol 3 - tape 2 - side 1 (zafiro).tzx" size="96909" crc="45f52734" sha1="242deb9866f61b9e77b63850ecc6ce4f699ca9a3"/>
-			</dataarea>
-		</part>
-		<part name="cass4" interface="spectrum_cass">
-			<dataarea name="cass" size="106786">
-				<rom name="6-pak vol 3 - tape 2 - side 2 (zafiro).tzx" size="106786" crc="b3b13b7f" sha1="cd1e641eb594ad53c167c74d53ced9696441e142"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<software name="60gamest">
 		<description>60 Games</description>
 		<year>1986</year>
@@ -150885,6 +151277,13 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		<description>A Toda Maquina</description>
 		<year>1989</year>
 		<publisher>Erbe Software</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A: Batman
+Tape 1 - Side B: Rambo III
+Tape 2 - Side A: RoboCop / Dragon Ninja
+Tape 2 - Side B: Afterburner
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="160466">
 				<rom name="a toda maquina - tape 1 side 1 - robocop.tzx" size="160466" crc="de5ab1b2" sha1="d775d9e37d9535299595e9eccf81e5ec1b4840be"/>
@@ -150907,10 +151306,17 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="atodamaq_d" cloneof="atodamaq">
+	<software name="atodamq2">
 		<description>A Toda Maquina 2</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1990</year>
+		<publisher>Erbe Software</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A: Altered Beast
+Tape 1 - Side B: Galaxy Force
+Tape 2 - Side A: Operation Thunderbolt
+Tape 3 - Side A: Chase H.Q.
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="206999">
 				<rom name="a toda maquina 2 - tape 1 side a.tzx" size="206999" crc="98c51bda" sha1="f62330b4c96b7681ff0ec0ff7a439a406a2cee8d"/>
@@ -151095,7 +151501,7 @@ Tape 2: Hero Quest: Return of the Witch Lord
 	</software>
 
 	<software name="actionpk1">
-		<description>Action Pack 1 (compilation)</description>
+		<description>Action Pack 1</description>
 		<year>1986</year>
 		<publisher>WH Smith</publisher>
 		<notes><![CDATA[Compilation contents:
@@ -151112,7 +151518,7 @@ Tape 4: Son of Blagger
 	</software>
 
 	<software name="actionpk3">
-		<description>Action Pack 3 (compilation)</description>
+		<description>Action Pack 3</description>
 		<year>1987</year>
 		<publisher>WH Smith</publisher>
 		<notes><![CDATA[Compilation contents:
@@ -151134,7 +151540,7 @@ Tape 2 - Side B: Indoor Bowling
 	</software>
 
 	<software name="actpklgn">
-		<description>Action Pack - Lightgun Games (compilation, 3 tapes)</description>
+		<description>Action Pack - Lightgun Games (3 tapes)</description>
 		<year>1989</year>
 		<publisher>Virgin Mastertronic</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -151170,7 +151576,7 @@ Tape 2 - Side B: Indoor Bowling
 	</software>
 
 	<software name="actpklgn_a" cloneof="actpklgn">
-		<description>Action Pack - Lightgun Games (compilation)</description>
+		<description>Action Pack - Lightgun Games</description>
 		<year>1989</year>
 		<publisher>Virgin Mastertronic</publisher>
 		<notes><![CDATA[Compilation contents:
@@ -151195,7 +151601,7 @@ Tape 1 - Side B - Game 3: Bullseye
 	</software>
 
 	<software name="actpklgn_b" cloneof="actpklgn">
-		<description>Action Pack - Lightgun Games (compilation, alt)</description>
+		<description>Action Pack - Lightgun Games (alt)</description>
 		<year>1989</year>
 		<publisher>Virgin Mastertronic</publisher>
 		<notes><![CDATA[Compilation contents:
@@ -151220,7 +151626,7 @@ Tape 1 - Side B - Game 3: Bullseye
 	</software>
 
 	<software name="actpklgn_c" cloneof="actpklgn">
-		<description>Action Pack - Lightgun Games (compilation, Spanish)</description>
+		<description>Action Pack - Lightgun Games (Spanish)</description>
 		<year>1989</year>
 		<publisher>Sinclair Research</publisher>
 		<notes><![CDATA[Compilation contents:
@@ -156122,7 +156528,7 @@ Tape 1 - Side B - Game 3: Bullseye
 	</software>
 
 	<software name="heroesta">
-		<description>Heroes (compilation)</description>
+		<description>Heroes</description>
 		<year>1990</year>
 		<publisher>Domark</publisher>
 		<notes><![CDATA[Compilation contents:
@@ -162705,7 +163111,7 @@ Tape 2 - Sida B: Star Wars
 	<software name="sstrk12">
 		<description>Starstrike I &amp; II</description>
 		<year>1988</year>
-		<publisher>Silverbird</publisher>
+		<publisher>Silverbird Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="47546">
 				<rom name="starstrike i _ ii - side a.tzx" size="47546" crc="31e8b4b3" sha1="eab6837fceacbf6ac074ca9b1fed60d328e68935"/>
@@ -165035,7 +165441,7 @@ Tape 2 - Sida B: Star Wars
 	</software>
 
 	<software name="topbytop">
-		<description>Top By Topo (compilation)</description>
+		<description>Top By Topo</description>
 		<year>1989</year>
 		<publisher>Topo Soft</publisher>
 		<notes><![CDATA[Compilation contents:
@@ -165071,7 +165477,7 @@ Tape 2 - Side B - Game 2: Black Beard
 	</software>
 
 	<software name="topbytop2">
-		<description>Top By Topo 2 (compilation)</description>
+		<description>Top By Topo 2</description>
 		<year>1991</year>
 		<publisher>Topo Soft</publisher>
 		<notes><![CDATA[Compilation contents:
