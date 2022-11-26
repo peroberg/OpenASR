@@ -15698,7 +15698,7 @@ license:CC0
 		<year>1989</year>
 		<publisher>Cartoon Time (Code Masters)</publisher>
 		<info name="alt_title" value="Little Puff in Dragon Land"/>
-		
+
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="43116">
 				<rom name="little puff in dragon land.tzx" size="43116" crc="64e72c56" sha1="0b65f9b3cba774e7ced4f2efc119b53c9c853382"/>
@@ -19164,7 +19164,7 @@ license:CC0
 		<year>1989</year>
 		<publisher>Cartoon Time (Code Masters)</publisher>
 		<info name="alt_title" value="Olli &amp; Lissa III: The Candlelight Adventure"/>
-		
+
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="49880">
 				<rom name="olli _ lissa 3 - the candlelight adventure.tzx" size="49880" crc="652a1e34" sha1="876216b3225011450fc0a9c96291f06ffc6f05a3"/>
@@ -77476,12 +77476,12 @@ Tape 2 - Side B:
 		<notes><![CDATA[Compilation contents:
 Tape 1 - Side A:
 1. Orion (intro)
-2. Jetpac 
-3. Pac-Man 
-4. Chuckie Egg 
-5. Lord Harry 
-6. Arcadia 
-7. Pssst 
+2. Jetpac
+3. Pac-Man
+4. Chuckie Egg
+5. Lord Harry
+6. Arcadia
+7. Pssst
 8. Cookie
 9. Combat Zone
 10. Taxi!
@@ -77494,7 +77494,7 @@ Tape 1 - Side A:
 
 Tape 1 - Side B:
 1. Step in to Pack 100
-2. Crusing 
+2. Crusing
 3. Gulpman
 4. Cyber rats
 5. Galactic Troopers
@@ -77527,7 +77527,7 @@ Tape 1 - Side B:
 32. Alarme
 33. Galactic Abductors
 ]]></notes>
-		
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="223357">
 				<rom name="golden pack 100 - side a.tzx" size="223357" crc="ffc1fdce" sha1="2f93630eb3cf02bfad2624624496e1be598fb080"/>
