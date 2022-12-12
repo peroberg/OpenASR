@@ -607,7 +607,7 @@ license:CC0
 	</software>
 
 	<software name="android2">
-		<description>Android 2 (Release 2)</description>
+		<description>Android 2 (release 2)</description>
 		<year>1983</year>
 		<publisher>Vortex Software</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -618,7 +618,7 @@ license:CC0
 	</software>
 
 	<software name="android2a" cloneof="android2">
-		<description>Android 2 (Release 1)</description>
+		<description>Android 2 (release 1)</description>
 		<year>1983</year>
 		<publisher>Vortex Software</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -39106,24 +39106,25 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
-	<software name="180spark">
+	<software name="180">
+		<description>180</description>
+		<year>1983</year>
+		<publisher>Mikro-Gen</publisher>
+		<info name="alt_title" value="One Hundred and Eighty!" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="25730">
+				<rom name="180.tzx" size="25730" crc="816b2218" sha1="e6163a713fa17afaf18604063fe8fef2a7a4cdf5"/>
+			</dataarea>
+		</part>
+	</software>
+	
+	<software name="180spark" cloneof="180">
 		<description>180 (Sparklers)</description>
 		<year>1983</year>
 		<publisher>Sparklers</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="25856">
 				<rom name="180 (sparklers).tzx" size="25856" crc="69c0d61c" sha1="a4436b5bec96d7be9de4847a1e02f58b7743d7ae"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="180">
-		<description>180</description>
-		<year>1983</year>
-		<publisher>Mikro-Gen</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="25730">
-				<rom name="180.tzx" size="25730" crc="816b2218" sha1="e6163a713fa17afaf18604063fe8fef2a7a4cdf5"/>
 			</dataarea>
 		</part>
 	</software>
@@ -39210,28 +39211,6 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
-	<software name="1994curr">
-		<description>1994 (Currys)</description>
-		<year>1983</year>
-		<publisher>Currys</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="21575">
-				<rom name="1994 (currys).tzx" size="21575" crc="08ea37bd" sha1="83fae13846f9c3d68fe943d00891759f6be1d6bd"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="1994alte">
-		<description>1994 (set 2)</description>
-		<year>1984</year>
-		<publisher>Visions Software Factory</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="22065">
-				<rom name="1994 - alternate.tzx" size="22065" crc="61f8a8ff" sha1="013938629a56064098ae53f512dcfa86c23e0e28"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<software name="1994loco">
 		<description>1994 Locospotter</description>
 		<year>1994</year>
@@ -39244,12 +39223,34 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="1994">
-		<description>1994</description>
+		<description>1994 - Ten Years After</description>
 		<year>1984</year>
 		<publisher>Visions Software Factory</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="21575">
 				<rom name="1994.tzx" size="21575" crc="1953365f" sha1="9d87cd3da40fd870799d464ae63df908f119e023"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="1994alte" cloneof="1994">
+		<description>1994 - Ten Years After (set 2)</description>
+		<year>1984</year>
+		<publisher>Visions Software Factory</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="22065">
+				<rom name="1994 - alternate.tzx" size="22065" crc="61f8a8ff" sha1="013938629a56064098ae53f512dcfa86c23e0e28"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="1994curr" cloneof="1994">
+		<description>1994 - Ten Years After (Currys)</description>
+		<year>1983</year>
+		<publisher>Currys</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="21575">
+				<rom name="1994 (currys).tzx" size="21575" crc="08ea37bd" sha1="83fae13846f9c3d68fe943d00891759f6be1d6bd"/>
 			</dataarea>
 		</part>
 	</software>
@@ -39309,22 +39310,6 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
-	<software name="2088sm">
-		<description>2088 (Summit)</description>
-		<year>1989</year>
-		<publisher>Summit</publisher>
-		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="48856">
-				<rom name="2088 - 128k (summit).tzx" size="48856" crc="a87a6688" sha1="1f5a1c7a116d29c864914f76ed2f1b888d88d38d"/>
-			</dataarea>
-		</part>
-		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="44323">
-				<rom name="2088 - 48k (summit).tzx" size="44323" crc="ce9218ff" sha1="4bec23ef8a65d22dbbfdc088c32c68749a9b1568"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<software name="2088">
 		<description>2088</description>
 		<year>1988</year>
@@ -39337,9 +39322,9 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="2088mast" cloneof="2088">
-		<description>2088 (Mastering Tape)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>2088 (master tape)</description>
+		<year>1988</year>
+		<publisher>Zeppelin Games</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="28946">
 				<rom name="2088 master tape.tzx" size="28946" crc="aca0da05" sha1="0e49a66fde6d2fcf84383d06f9d5f1f92699008d"/>
@@ -39569,39 +39554,6 @@ Tape 2 - Side B:
 		<part name="cass4" interface="spectrum_cass">
 			<dataarea name="cass" size="47454">
 				<rom name="3d construction kit - tape 2 - side 2.tzx" size="47454" crc="d8121994" sha1="28f4c0ba95a3e9f77d73f21563e4efe427d85d06"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="3ddeathc">
-		<description>3D Deathchase</description>
-		<year>1983</year>
-		<publisher>Micromega</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="16515">
-				<rom name="3d deathchase.tzx" size="16515" crc="cca317b6" sha1="0c35ecae020b7662775d19569301d4c737ed9471"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="3ddeathca" cloneof="3ddeathc">
-		<description>3D Deathchase (2.99 Classics)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="32993">
-				<rom name="3d deathchase (299).tzx" size="32993" crc="4b244b14" sha1="91f3bea2f94f90c5a7c808d4647dba79323ee7dd"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="3ddeathcmast" cloneof="3ddeathc">
-		<description>3D Deathchase (Mastering Tape)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="17777">
-				<rom name="3d deathchase master tape.tzx" size="17777" crc="7a62c3c0" sha1="156b6b308cef419e7625771098a781ae9b970421"/>
 			</dataarea>
 		</part>
 	</software>
@@ -40519,7 +40471,7 @@ Tape 2 - Side B:
 	<software name="afistful">
 		<description>A Fistful of Blood Capsules (set 2)</description>
 		<year>1987</year>
-		<publisher>Zodiac</publisher>
+		<publisher>Zodiac Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="170997">
 				<rom name="a fistful of blood capsules - alternate.tzx" size="170997" crc="d721d480" sha1="fb2564103429adb61b8d164f77c61edf2113a3ba"/>
@@ -40529,8 +40481,8 @@ Tape 2 - Side B:
 
 	<software name="afistful_a" cloneof="afistful">
 		<description>A Fistful of Blood Capsules</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1987</year>
+		<publisher>Zodiac Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="48123">
 				<rom name="a fistful of blood capsules - storyboard.tzx" size="48123" crc="68201818" sha1="552b48d73d0a57489204cb6854e2df4d21a8128f"/>
@@ -40553,10 +40505,10 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
-	<software name="afistful_e" cloneof="afistful">
+	<software name="fistnecr">
 		<description>A Fistful of Necronomicons</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1995</year>
+		<publisher>Zenobi Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="39936">
 				<rom name="a fistful of necronomicons.tzx" size="39936" crc="56fa3ecf" sha1="b88a1aab94f6532c5f119a5a5cd860195deff41e"/>
@@ -41582,6 +41534,38 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
+	<software name="ace2088a" cloneof="ace2088">
+		<description>ACE 2088 (MCM)</description>
+		<year>1989</year>
+		<publisher>MCM Software</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="44111">
+				<rom name="ace 2088 - side 1 (mcm).tzx" size="44111" crc="bd9335cb" sha1="256304ec85749e665fb9f16ef822a0a69442c6d6"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="48638">
+				<rom name="ace 2088 - side 2 (mcm).tzx" size="48638" crc="251a1fd1" sha1="7cf41d8731f05507f3c3fbb85158e64350489bd4"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="2088sm" cloneof="ace2088">
+		<description>ACE 2088 (Summit)</description>
+		<year>1989</year>
+		<publisher>Summit Software</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="48856">
+				<rom name="2088 - 128k (summit).tzx" size="48856" crc="a87a6688" sha1="1f5a1c7a116d29c864914f76ed2f1b888d88d38d"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="44323">
+				<rom name="2088 - 48k (summit).tzx" size="44323" crc="ce9218ff" sha1="4bec23ef8a65d22dbbfdc088c32c68749a9b1568"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="aceinthe">
 		<description>Ace in the H.O.L.E.</description>
 		<year>1983</year>
@@ -41954,6 +41938,17 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="adidasch">
+		<description>Adidas Championship Football</description>
+		<year>1990</year>
+		<publisher>Ocean Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="103406">
+				<rom name="adidas championship football.tzx" size="103406" crc="2e0129b6" sha1="23304a40b401d827056ceb391e69deba8868f5ab"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="adidasch_a" cloneof="adidasch">
 		<description>Adidas Championship Football (Erbe - Musical 1)</description>
 		<year>1990</year>
 		<publisher>Musical 1</publisher>
@@ -41964,24 +41959,35 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
-	<software name="adidasch_a" cloneof="adidasch">
-		<description>Adidas Championship Football</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="adidasch_b" cloneof="adidasch">
+		<description>Adidas Championship Football (Erbe)</description>
+		<year>1990</year>
+		<publisher>Erbe Software</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="103406">
-				<rom name="adidas championship football.tzx" size="103406" crc="2e0129b6" sha1="23304a40b401d827056ceb391e69deba8868f5ab"/>
+			<dataarea name="cass" size="106650">
+				<rom name="adidas championship football (erbe).tzx" size="106650" crc="b49842f2" sha1="f66c01025a8f5175ed21766e7c865c7659729337"/>
 			</dataarea>
 		</part>
 	</software>
 
-	<software name="adidasch_b" cloneof="adidasch">
+	<software name="adidtieb">
 		<description>Adidas Championship Tie Break</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1990</year>
+		<publisher>Ocean Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="53732">
 				<rom name="adidas championship tie break.tzx" size="53732" crc="372c9d37" sha1="99ece0810fde86ff189a0c7d14d3809168de4cd5"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="adidtieb_a" cloneof="adidtieb">
+		<description>Adidas Championship Tie Break (Musical 1)</description>
+		<year>1990</year>
+		<publisher>Musical 1</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="55127">
+				<rom name="adidas championship tie-break (musical 1).tzx" size="55127" crc="3c02c1b6" sha1="05c66d99e27a077d73c5ed1af53f10c20c747ffc"/>
 			</dataarea>
 		</part>
 	</software>
@@ -42107,10 +42113,10 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
-	<software name="adventur_g" cloneof="adventur">
+	<software name="advholid">
 		<description>Adventure Holiday</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1985</year>
+		<publisher>L'Ensouleiado Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="45053">
 				<rom name="adventure holiday.tzx" size="45053" crc="0c4bb639" sha1="e040884dbd06ef0e7551c95cda1de39a1edc0f48"/>
@@ -42118,10 +42124,10 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
-	<software name="adventur_h" cloneof="adventur">
-		<description>Adventure In Bristol</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="advbrist">
+		<description>Adventure in Bristol</description>
+		<year>1985</year>
+		<publisher>Garry Lancaster</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="26163">
 				<rom name="adventure in bristol.tzx" size="26163" crc="6e57b17e" sha1="dcf95be5a1a386b0decbaac868f7ce9f251df8c5"/>
@@ -42129,10 +42135,10 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
-	<software name="adventur_i" cloneof="adventur">
+	<software name="advislnd">
 		<description>Adventure Island</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1983</year>
+		<publisher>Contrast Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="24144">
 				<rom name="adventure island.tzx" size="24144" crc="aa7663ca" sha1="e7f77f381715d741318a8279161ce0cf122b1371"/>
@@ -42140,10 +42146,10 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
-	<software name="adventur_j" cloneof="adventur">
+	<software name="advplayg">
 		<description>Adventure Playground</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1984</year>
+		<publisher>Widgit Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="44920">
 				<rom name="adventure playground - side a.tzx" size="44920" crc="e1184583" sha1="cc8cecf3ceefc5432520addafb0ecb37268a8397"/>
@@ -42156,10 +42162,10 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
-	<software name="adventur_l" cloneof="adventur">
-		<description>Adventure Quest - Release 1</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="advquest">
+		<description>Adventure Quest (release 1)</description>
+		<year>1982</year>
+		<publisher>Level 9 Computing</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="25384">
 				<rom name="adventure quest - release 1.tzx" size="25384" crc="f29cb312" sha1="6b54a5fb2a5d17a56131815817bae2aed60f6cb7"/>
@@ -42167,10 +42173,10 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
-	<software name="adventur_m" cloneof="adventur">
-		<description>Adventure Quest - Release 2</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="advquest_a" cloneof="advquest">
+		<description>Adventure Quest (release 2)</description>
+		<year>1982</year>
+		<publisher>Level 9 Computing</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="33805">
 				<rom name="adventure quest - release 2.tzx" size="33805" crc="7a9ac9f3" sha1="5d7ea311bb2700668699c53c49fae399ae98d953"/>
@@ -42178,10 +42184,10 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
-	<software name="adventur_n" cloneof="adventur">
+	<software name="advland">
 		<description>Adventureland (set 2)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1985</year>
+		<publisher>Adventure International</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48004">
 				<rom name="adventureland - alternate.tzx" size="48004" crc="71ab6b29" sha1="646bdf5262d496d1fe5141a6737818e85b4be540"/>
@@ -42189,10 +42195,10 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
-	<software name="adventur_o" cloneof="adventur">
+	<software name="advland_a" cloneof="advland">
 		<description>Adventureland</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1985</year>
+		<publisher>Adventure International</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47855">
 				<rom name="adventureland.tzx" size="47855" crc="4f9154bb" sha1="d84057f545f0a22846aac02b356183da1b43d755"/>
@@ -42200,21 +42206,10 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
-	<software name="adventur_p" cloneof="adventur">
-		<description>Adventurers Nightmare</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="36619">
-				<rom name="adventurers nightmare.tzx" size="36619" crc="89fc0b49" sha1="041b79807886a1db37fcd52661a57a8f52cd6ade"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="adventur_q" cloneof="adventur">
+	<software name="advnight">
 		<description>Adventurer's Nightmare</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1983</year>
+		<publisher>Wicosoft</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="36619">
 				<rom name="adventurer_s nightmare.tzx" size="36619" crc="4fada680" sha1="fceec6b0a9a6d5bdd662bdabd4a2b3b48eb6d56a"/>
@@ -42222,10 +42217,21 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
-	<software name="adventur_r" cloneof="adventur">
-		<description>Adventures In The Lost Valley</description>
+	<software name="advnight_a" cloneof="advnight">
+		<description>Adventurer's Nightmare (alt)</description>
+		<year>1983</year>
+		<publisher>Wicosoft</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="36619">
+				<rom name="adventurers nightmare.tzx" size="36619" crc="89fc0b49" sha1="041b79807886a1db37fcd52661a57a8f52cd6ade"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="advlostv">
+		<description>Adventures in the Lost Valley</description>
 		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Mega-Soft</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="25914">
 				<rom name="adventures in the lost valley.tzx" size="25914" crc="5f9f4a34" sha1="fbd32ad6661c2ffb8b478117e10e3c7452bac8fe"/>
@@ -42414,17 +42420,6 @@ Tape 2 - Side B:
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="40635">
 				<rom name="agatha_s folly - part 2.tzx" size="40635" crc="3e26ea9a" sha1="6703ea47eb038388fe00682ecdeac4ab6aeff26c"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="agentx2d">
-		<description>Agent - X 2 (Dro Soft)</description>
-		<year>1987</year>
-		<publisher>Dro Soft</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="144910">
-				<rom name="agent - x 2 (dro soft).tzx" size="144910" crc="e0e06609" sha1="b4aebb7a8a9186673e6931fa1c4cd7e38e3c55ca"/>
 			</dataarea>
 		</part>
 	</software>
@@ -42829,10 +42824,11 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
-	<software name="alcatraz_a" cloneof="alcatraz">
-		<description>Alcatrazz Harry</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="alcharry">
+		<description>Alcatraz Harry</description>
+		<year>1984</year>
+		<publisher>Mastertronic</publisher>
+		<info name="alt_title" value="Alcatrazz Harry" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="44894">
 				<rom name="alcatrazz harry.tzx" size="44894" crc="5d0fa874" sha1="e5dbd04dca8a065fe15221b2ffea089d4ce1b252"/>
@@ -43039,7 +43035,7 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="allinada">
-		<description>All In A Days Work (set 2)</description>
+		<description>All in a Day's Work (set 2)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -43050,9 +43046,9 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="allinada_a" cloneof="allinada">
-		<description>All In A Day's Work</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>All in a Day's Work</description>
+		<year>1996</year>
+		<publisher>Zenobi Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="43796">
 				<rom name="all in a day_s work.tzx" size="43796" crc="88aee37c" sha1="8767419f5e1af7fd98a6b14363407e5729297911"/>
@@ -43061,23 +43057,23 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="allornot">
+		<description>All or Nothing</description>
+		<year>1984</year>
+		<publisher>Abbex Electronics</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="49359">
+				<rom name="all or nothing.tzx" size="49359" crc="3546d45a" sha1="8deb8e365f0073b6214d8a8171947424c5542c10"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="allornot_a" cloneof="allornot">
 		<description>All Or Nothing (Prism Leisure)</description>
 		<year>1984</year>
 		<publisher>Prism Leisure Corporation</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="49389">
 				<rom name="all or nothing (prism leisure).tzx" size="49389" crc="1841f022" sha1="5473b4b89e2a97dfa99a63c3e9c0969842335e35"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="allornot_a" cloneof="allornot">
-		<description>All Or Nothing</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="49359">
-				<rom name="all or nothing.tzx" size="49359" crc="3546d45a" sha1="8deb8e365f0073b6214d8a8171947424c5542c10"/>
 			</dataarea>
 		</part>
 	</software>
@@ -43153,7 +43149,7 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="almadegu">
-		<description>Alma De Guerrero</description>
+		<description>Alma de Guerrero</description>
 		<year>2003</year>
 		<publisher>Beyker Soft</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -43240,10 +43236,10 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
-	<software name="alphabet_d" cloneof="alphabet">
+	<software name="alphbett">
 		<description>Alphabetter</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1985</year>
+		<publisher>Macmillan Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="35135">
 				<rom name="alphabetter.tzx" size="35135" crc="62d9cdb0" sha1="ab30c9f5896194dadb12b667f1f1e7e6e8481cca"/>
@@ -53187,7 +53183,7 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="carlosmi">
-		<description>Carlos Michelis - Demo</description>
+		<description>Carlos Michelis (demo)</description>
 		<year>2012</year>
 		<publisher>World XXI Soft</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -61266,7 +61262,7 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="dallasre">
-		<description>Dallas - Release 1</description>
+		<description>Dallas (release 1)</description>
 		<year>1983</year>
 		<publisher>CCS</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -61277,9 +61273,9 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="dallasre_a" cloneof="dallasre">
-		<description>Dallas - Release 2</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Dallas (release 2)</description>
+		<year>1983</year>
+		<publisher>CCS</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="13456">
 				<rom name="dallas - release 2.tzx" size="13456" crc="f99ddd9e" sha1="860db6e8774e9991b1a27ca4ddf0d09f5fa5a9c9"/>
@@ -61288,9 +61284,9 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="dallasre_b" cloneof="dallasre">
-		<description>Dallas - Release 3</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Dallas (release 3)</description>
+		<year>1983</year>
+		<publisher>CCS</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="21133">
 				<rom name="dallas - release 3.tzx" size="21133" crc="86df61b5" sha1="8e6df3c16e336fa04ecd5a36b6c5d92e9782324c"/>
@@ -62286,6 +62282,50 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
+	<software name="deathchs">
+		<description>Deathchase</description>
+		<year>1983</year>
+		<publisher>Micromega</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="16515">
+				<rom name="3d deathchase.tzx" size="16515" crc="cca317b6" sha1="0c35ecae020b7662775d19569301d4c737ed9471"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="deathca" cloneof="deathchs">
+		<description>Deathchase (2.99 Classics)</description>
+		<year>1986</year>
+		<publisher>2.99 Classics</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="32993">
+				<rom name="3d deathchase (299).tzx" size="32993" crc="4b244b14" sha1="91f3bea2f94f90c5a7c808d4647dba79323ee7dd"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="deathcmast" cloneof="deathchs">
+		<description>Deathchase (Zeppelin Games, master tape)</description>
+		<year>1989</year>
+		<publisher>Zeppelin Games</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="17777">
+				<rom name="3d deathchase master tape.tzx" size="17777" crc="7a62c3c0" sha1="156b6b308cef419e7625771098a781ae9b970421"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="deathcha" cloneof="deathchs">
+		<description>Deathchase (Zeppelin)</description>
+		<year>1983</year>
+		<publisher>Zeppelin Games</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="17130">
+				<rom name="death chase (zeppelin).tzx" size="17130" crc="dbb49ca4" sha1="4dc129d4fc5c42f1031266cd4d6792072564d18c"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="deathall">
 		<description>Death Alley 3000</description>
 		<year>19??</year>
@@ -62311,21 +62351,10 @@ Tape 2 - Side B:
 	<software name="deathbri">
 		<description>Death Bringer</description>
 		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>The Guild</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="42889">
 				<rom name="death bringer.tzx" size="42889" crc="9139bcd9" sha1="15a15c4cebc45cf438319d8848e83e62127be3e4"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="deathcha">
-		<description>Death Chase (Zeppelin)</description>
-		<year>1983</year>
-		<publisher>Zeppelin Games</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="17130">
-				<rom name="death chase (zeppelin).tzx" size="17130" crc="dbb49ca4" sha1="4dc129d4fc5c42f1031266cd4d6792072564d18c"/>
 			</dataarea>
 		</part>
 	</software>
@@ -138766,12 +138795,12 @@ Tape 2: Hero Quest: Return of the Witch Lord
 	</software>
 
 	<software name="tracksui">
-		<description>Track Suit Manager (EDOS)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Track Suit Manager</description>
+		<year>1988</year>
+		<publisher>Goliath Games</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="42180">
-				<rom name="track suit manager (edos).tzx" size="42180" crc="ce23f255" sha1="b3cee150160ee6c2b7bcb0ee0137e726afa52245"/>
+			<dataarea name="cass" size="41983">
+				<rom name="track suit manager.tzx" size="41983" crc="600a163a" sha1="e1b25c93ff63a9f37c57fdda87eb49a88f6b7571"/>
 			</dataarea>
 		</part>
 	</software>
@@ -138788,12 +138817,12 @@ Tape 2: Hero Quest: Return of the Witch Lord
 	</software>
 
 	<software name="tracksui_b" cloneof="tracksui">
-		<description>Track Suit Manager</description>
-		<year>1988</year>
-		<publisher>Goliath Games</publisher>
+		<description>Track Suit Manager (EDOS)</description>
+		<year>19??</year>
+		<publisher>EDOS</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="41983">
-				<rom name="track suit manager.tzx" size="41983" crc="600a163a" sha1="e1b25c93ff63a9f37c57fdda87eb49a88f6b7571"/>
+			<dataarea name="cass" size="42180">
+				<rom name="track suit manager (edos).tzx" size="42180" crc="ce23f255" sha1="b3cee150160ee6c2b7bcb0ee0137e726afa52245"/>
 			</dataarea>
 		</part>
 	</software>
@@ -149838,6 +149867,19 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		<description>10 Adventure Game Pack</description>
 		<year>1986</year>
 		<publisher>Central Solutions</publisher>
+		<notes><![CDATA[Compilation contents:
+Side A - Game 1: A Tangled Tale (D. Watson)
+Side A - Game 2: Jason and the Golden Fleece (Pocket Money Software)
+Side A - Game 3: Crystal Quest (Pocket Money Software)
+Side A - Game 4: Sea of Zirun (Gilsoft International)
+Side A - Game 5: Time Quest (Peter L. Robinson)
+Side B - Game 1: Dragon Slayer (Pocket Money Software)
+Side B - Game 2: Eye of Vartan (Pocket Money Software)
+Side B - Game 3: The Rifts of Time (Gilsoft International)
+Side B - Game 4: Commando (Pocket Money Software)
+Side B - Game 5: The Hexagonal Museum (Double Play Adventures)
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="158570">
 				<rom name="10 adventure game pack - side 1.tzx" size="158570" crc="383593ba" sha1="2ec22f104061cd1712fa8da3ee4f350f12cb408a"/>
@@ -149850,10 +149892,23 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="10advent_b" cloneof="10advent">
+	<software name="10advent2">
 		<description>10 Adventure Game Pack - Volume 2</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1986</year>
+		<publisher>Central Solutions</publisher>
+		<notes><![CDATA[Compilation contents:
+Side A - Game 1: Pirate Gold (Dave Watson)
+Side A - Game 2: Orbit of Doom (Dave Watson)
+Side A - Game 3: The Prospector (Tartan Software)
+Side A - Game 4: The Theatre of Death
+Side A - Game 5: The Rings of Merlin (Central Solutions)
+Side B - Game 1: The Keeper (Central Solutions)
+Side B - Game 2: Trail (Pocket Money Software)
+Side B - Game 3: Giants (Edward Beck)
+Side B - Game 4: Goldseeker (Pocket Money Software)
+Side B - Game 5: The Ring of Dreams (Central Solutions)
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="212418">
 				<rom name="10 adventure game pack - volume 2 - side a.tzx" size="212418" crc="152fd304" sha1="a4b38fc648cb1a45321dc6fe5eac7c6fef5cabc8"/>
@@ -149870,6 +149925,19 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		<description>10 Computer Hits 1</description>
 		<year>1985</year>
 		<publisher>Beau-Jolly</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A - Game 1: Brian Jacks Superstar Challenge (Martech Games)
+Tape 1 - Side A - Game 2: Chuckie Egg (A'n'F Software)
+Tape 1 - Side A - Game 3: Jasper! (Micromega)
+Tape 1 - Side A - Game 4: Project Future (Micromania)
+Tape 1 - Side A - Game 5: Overlords (MC Lothlorien)
+Tape 2 - Side A - Game 1: Wriggler (Romantic Robot)
+Tape 2 - Side A - Game 2: Harrier Attack! (Durell Software)
+Tape 2 - Side A - Game 3: Braxx Bluff (Micromega)
+Tape 2 - Side A - Game 4: Skool Daze (Microsphere)
+Tape 2 - Side A - Game 5: The Sorcerer of Claymorgue Castle (Adventure International)
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="250655">
 				<rom name="10 computer hits 1 - tape a.tzx" size="250655" crc="cc9ffbf5" sha1="d718603a541176e5fdce7de45abbcfb8231329d2"/>
@@ -149886,6 +149954,19 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		<description>10 Computer Hits 2</description>
 		<year>1986</year>
 		<publisher>Beau-Jolly</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A - Game 1: Codename MAT (Micromega)
+Tape 1 - Side A - Game 2: Wizard's Lair (Bubble Bus Software)
+Tape 1 - Side A - Game 3: Technician Ted (Hewson Consultants)
+Tape 1 - Side A - Game 4: Mutant Monty (Artic Computing)
+Tape 1 - Side A - Game 5: Snooker (Visions Software Factory)
+Tape 2 - Side A - Game 1: Android Two (Vortex Software)
+Tape 2 - Side A - Game 2: On the Run (Design Design Software)
+Tape 2 - Side A - Game 3: The Covenant (PSS)
+Tape 2 - Side A - Game 4: Super Pipeline II (Taskset)
+Tape 2 - Side A - Game 5: Circus (Digital Fantasia)
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="175819">
 				<rom name="10 computer hits 2 - side a.tzx" size="175819" crc="b54f184c" sha1="7e6c430905aa4052239f6b6b885e170c3497322d"/>
@@ -149898,10 +149979,23 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="10cshit3">
+	<software name="10chit3">
 		<description>10 Computer Hits 3</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1986</year>
+		<publisher>Beau-Jolly</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A - Game 1: Forbidden Planet (Design Design Software)
+Tape 1 - Side A - Game 2: Who Dares Wins II (Alligata Software)
+Tape 1 - Side A - Game 3: Cauldron (Palace Software)
+Tape 1 - Side A - Game 4: Juggernaut (CRL Group PLC)
+Tape 1 - Side A - Game 5: 3D Lunattack (Hewson Consultants)
+Tape 2 - Side A - Game 1: Herbert's Dummy Run (Mikro-Gen)
+Tape 2 - Side A - Game 2: Geoff Capes Strong Man (Martech Games)
+Tape 2 - Side A - Game 3: Astroclone (Hewson Consultants)
+Tape 2 - Side A - Game 4: Give My Regards to Broad Street (Mind Games)
+Tape 2 - Side A - Game 5: Show Jumping (Alligata Software)
+]]></notes>
+		
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="213452">
 				<rom name="10 computer hits 3 - tape a.tzx" size="213452" crc="e9751a0d" sha1="420b7079974bd6ab21c49b5a66a94c6e5959b27e"/>
@@ -149916,8 +150010,23 @@ Tape 2: Hero Quest: Return of the Witch Lord
 
 	<software name="10chit4">
 		<description>10 Computer Hits 4</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1987</year>
+		<publisher>Beau-Jolly</publisher>
+		<notes><![CDATA[Compilation contents:
+Side A - Game 1: Bride of Frankenstein (39 Steps)
+Side A - Game 2: Contact Sam Cruise (Microsphere)
+Side A - Game 3: Spindizzy (Electric Dreams Software)
+Side A - Game 4: Uchi Mata (Martech Games)
+Side A - Game 5: City Slicker (Hewson Consultants)
+Side A - Game 6: The Sacred Armour of Antiriad (Palace Software)
+Side B - Game 1: Deactivators (Reaktor)
+Side B - Game 2: Starquake (Bubble Bus Software)
+Side B - Game 3: Pyracurse (Hewson Consultants)
+Side B - Game 4: Pulsator (Martech Games)
+Side B - Game 5: Revolution (U.S. Gold)
+Side B - Game 6: Dandy (Electric Dreams Software)
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="311605">
 				<rom name="10 computer hits 4 - side 1.tzx" size="311605" crc="e4d43463" sha1="e95de839c420be3dd2e8315c66c3d96c9a91f3e9"/>
@@ -149932,8 +150041,21 @@ Tape 2: Hero Quest: Return of the Witch Lord
 
 	<software name="10chit5">
 		<description>10 Computer Hits 5</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1988</year>
+		<publisher>Beau-Jolly</publisher>
+		<notes><![CDATA[Compilation contents:
+Tape 1 - Side A - Game 1: Dark Sceptre (Firebird Software)
+Tape 1 - Side A - Game 2: Catch 23 (Martech Games)
+Tape 1 - Side A - Game 3: Frightmare (Cascade Games)
+Tape 1 - Side B - Game 1: Magnetron (Firebird Software)
+Tape 1 - Side B - Game 2: Mega-Apocalypse (Martech Games)
+Tape 2 - Side A - Game 1: Mystery of the Nile [El Misterio del Nilo] (Zigurat Software)
+Tape 2 - Side A - Game 2: Traz (Gamebusters)
+Tape 2 - Side A - Game 3: Druid II: Enlightenment (Firebird Software)
+Tape 2 - Side B - Game 1: Tarzan (Martech Games)
+Tape 2 - Side B - Game 2: Ninja Hamster (CRL Group PLC)
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="165752">
 				<rom name="10 computer hits 5 - tape 1 - side a.tzx" size="165752" crc="1f48481c" sha1="3e61573a1cb064e9e5b959ee468acd416558f52a"/>
@@ -150291,10 +150413,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu">
-		<description>1648 (Issue 01)</description>
+	<software name="1648_t01">
+		<description>16/48 Magazine Tape 01</description>
 		<year>1983</year>
-		<publisher>16-48 Tape Magazine</publisher>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="50529">
 				<rom name="1648 (issue 01) - side 1.tzx" size="50529" crc="798064ba" sha1="5bd90aff779e080335c909370869e5fe6ec3e872"/>
@@ -150307,10 +150429,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_b" cloneof="1648issu">
-		<description>1648 (Issue 02)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t02">
+		<description>16/48 Magazine Tape 02</description>
+		<year>1983</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="55709">
 				<rom name="1648 (issue 02) - side 1.tzx" size="55709" crc="e1a649e4" sha1="4701a81a2a6ec3aa6841d9bb2d1b06c4c8e1c9e6"/>
@@ -150323,10 +150445,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_d" cloneof="1648issu">
-		<description>1648 (Issue 03)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t03">
+		<description>16/48 Magazine Tape 03</description>
+		<year>1984</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="76971">
 				<rom name="1648 (issue 03) - side 1.tzx" size="76971" crc="765bf1cd" sha1="7887fef53ef2f13318c9a8b7ac082c40f625df69"/>
@@ -150339,10 +150461,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_f" cloneof="1648issu">
-		<description>1648 (Issue 04)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t04">
+		<description>16/48 Magazine Tape 04</description>
+		<year>1984</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="70441">
 				<rom name="1648 (issue 04) - side 1.tzx" size="70441" crc="1544ccdf" sha1="706d164b6fd37b9bcf16242f8e49616fd41fdb2d"/>
@@ -150355,10 +150477,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_h" cloneof="1648issu">
-		<description>1648 (Issue 05)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t05">
+		<description>16/48 Magazine Tape 05</description>
+		<year>1984</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="63687">
 				<rom name="1648 (issue 05) - side 1.tzx" size="63687" crc="c5622c8e" sha1="d26c3a241fba8fa0391d3d1807e555d050ee84fc"/>
@@ -150371,10 +150493,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_j" cloneof="1648issu">
-		<description>1648 (Issue 06)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t06">
+		<description>16/48 Magazine Tape 06</description>
+		<year>1984</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="54072">
 				<rom name="1648 (issue 06) - side 1.tzx" size="54072" crc="3958eb32" sha1="bcdda2874acdbbec8237b94c6c15d967e2da6b23"/>
@@ -150387,10 +150509,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_l" cloneof="1648issu">
-		<description>1648 (Issue 07)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t07">
+		<description>16/48 Magazine Tape 07</description>
+		<year>1984</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="61983">
 				<rom name="1648 (issue 07) - side 1.tzx" size="61983" crc="acf8fb04" sha1="3462ab0cf4159f897f8b5ffa1aee67429f14bf44"/>
@@ -150403,10 +150525,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_n" cloneof="1648issu">
-		<description>1648 (Issue 08)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t08">
+		<description>16/48 Magazine Tape 08</description>
+		<year>1984</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="65855">
 				<rom name="1648 (issue 08) - side 1.tzx" size="65855" crc="65c6d426" sha1="fe53cc98d4635100dee220a1a8188d790fa09a9d"/>
@@ -150419,10 +150541,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_p" cloneof="1648issu">
-		<description>1648 (Issue 09)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t09">
+		<description>16/48 Magazine Tape 09</description>
+		<year>1984</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="87227">
 				<rom name="1648 (issue 09) - side 1.tzx" size="87227" crc="fb35c8b3" sha1="8c0d869ab320ed92e64f65a82d5e0052061b2eec"/>
@@ -150435,10 +150557,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_r" cloneof="1648issu">
-		<description>1648 (Issue 10)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t10">
+		<description>16/48 Magazine Tape 10</description>
+		<year>1984</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="129095">
 				<rom name="1648 (issue 10) - side 1.tzx" size="129095" crc="f078bc4a" sha1="3e5a24c1217836f3a2b8e9bcf52fca9bba2f8805"/>
@@ -150451,10 +150573,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_t" cloneof="1648issu">
-		<description>1648 (Issue 11)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t11">
+		<description>16/48 Magazine Tape 11</description>
+		<year>1984</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="143809">
 				<rom name="1648 (issue 11) - side 1.tzx" size="143809" crc="bef8cb55" sha1="86ecf9fe2463417784a45e6b07280ce8e6031f07"/>
@@ -150467,10 +150589,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_v" cloneof="1648issu">
-		<description>1648 (Issue 12)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t12">
+		<description>16/48 Magazine Tape 12</description>
+		<year>1984</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="110166">
 				<rom name="1648 (issue 12) - side 1.tzx" size="110166" crc="90e19f77" sha1="efbc999d6456b43c53e28d4b377d3280fa53c6f0"/>
@@ -150483,10 +150605,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_x" cloneof="1648issu">
-		<description>1648 (Issue 13)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t13">
+		<description>16/48 Magazine Tape 13</description>
+		<year>1985</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="82039">
 				<rom name="1648 (issue 13) - side 1.tzx" size="82039" crc="2cf46113" sha1="873d38efa98bc62cb8db1f3d1ebdc878352222f9"/>
@@ -150499,10 +150621,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_z" cloneof="1648issu">
-		<description>1648 (Issue 14)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t14">
+		<description>16/48 Magazine Tape 14</description>
+		<year>1985</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="90326">
 				<rom name="1648 (issue 14) - side 1.tzx" size="90326" crc="fb2806e3" sha1="d899619c9005970e54699876efb61045b5d401af"/>
@@ -150515,10 +150637,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_ab" cloneof="1648issu">
-		<description>1648 (Issue 15)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t15">
+		<description>16/48 Magazine Tape 15</description>
+		<year>1985</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="106492">
 				<rom name="1648 (issue 15) - side 1.tzx" size="106492" crc="76e74ccc" sha1="8a4d88426f1a8884b729c740bed66bf6218b4f10"/>
@@ -150531,10 +150653,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_ad" cloneof="1648issu">
-		<description>1648 (Issue 16)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t16">
+		<description>16/48 Magazine Tape 16</description>
+		<year>1985</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="93751">
 				<rom name="1648 (issue 16) - side 1.tzx" size="93751" crc="24acaa71" sha1="1f62bd5f5df61aeab137152ffacdcf39e35a72d5"/>
@@ -150547,10 +150669,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_af" cloneof="1648issu">
-		<description>1648 (Issue 17)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t17">
+		<description>16/48 Magazine Tape 17</description>
+		<year>1985</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="91679">
 				<rom name="1648 (issue 17) - side 1.tzx" size="91679" crc="d294b942" sha1="bfbd6420803763b84adb94638200125f4e41a0f5"/>
@@ -150563,10 +150685,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_ah" cloneof="1648issu">
-		<description>1648 (Issue 18)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t18">
+		<description>16/48 Magazine Tape 18</description>
+		<year>1985</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="107522">
 				<rom name="1648 (issue 18) - side 1.tzx" size="107522" crc="e801d4cc" sha1="3745dd587a5e6206bdef9b7815bb1d1906a5df07"/>
@@ -150579,10 +150701,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_aj" cloneof="1648issu">
-		<description>1648 (Issue 19)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t19">
+		<description>16/48 Magazine Tape 19</description>
+		<year>1985</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="96388">
 				<rom name="1648 (issue 19) - side 1.tzx" size="96388" crc="b84f5f48" sha1="32f1f2c8e55cf324522643072aabfbd97de98cfd"/>
@@ -150595,10 +150717,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_al" cloneof="1648issu">
-		<description>1648 (Issue 20)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t20">
+		<description>16/48 Magazine Tape 20</description>
+		<year>1985</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="112590">
 				<rom name="1648 (issue 20) - side 1.tzx" size="112590" crc="ab3a8918" sha1="3091948d6af862fe91c2a97655dcbe71ecf8635d"/>
@@ -150611,10 +150733,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_an" cloneof="1648issu">
-		<description>1648 (Issue 21)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t21">
+		<description>16/48 Magazine Tape 21</description>
+		<year>1985</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="102735">
 				<rom name="1648 (issue 21) - side 1.tzx" size="102735" crc="01d57af0" sha1="bcf6ef92af1d105dfa4ab2ca339b9ac0947d2d7f"/>
@@ -150627,10 +150749,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_ap" cloneof="1648issu">
-		<description>1648 (Issue 22)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t22">
+		<description>16/48 Magazine Tape 22</description>
+		<year>1985</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="104493">
 				<rom name="1648 (issue 22) - side 1.tzx" size="104493" crc="9ee19552" sha1="25d6a2a698a3a3a27daa00054f1bbc5a155329aa"/>
@@ -150643,10 +150765,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_ar" cloneof="1648issu">
-		<description>1648 (Issue 23)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t23">
+		<description>16/48 Magazine Tape 23</description>
+		<year>1985</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="117498">
 				<rom name="1648 (issue 23) - side 1.tzx" size="117498" crc="2ed39925" sha1="8772fe1e36237576b2be9986abcca6882843a160"/>
@@ -150659,10 +150781,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_at" cloneof="1648issu">
-		<description>1648 (Issue 24)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t24">
+		<description>16/48 Magazine Tape 24</description>
+		<year>1985</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="61633">
 				<rom name="1648 (issue 24) - side 1.tzx" size="61633" crc="ecd5b099" sha1="95ff061b0bbbcea21df85e1c4f0a0c6977fd18b8"/>
@@ -150675,10 +150797,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_av" cloneof="1648issu">
-		<description>1648 (Issue 25)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t25">
+		<description>16/48 Magazine Tape 25</description>
+		<year>1986</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="104190">
 				<rom name="1648 (issue 25) - side 1.tzx" size="104190" crc="2cb1b2be" sha1="c9087ec1dd76ec5801b1a51b9f434ddeba378477"/>
@@ -150691,10 +150813,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="1648issu_ax" cloneof="1648issu">
-		<description>1648 (Issue 26)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="1648_t26">
+		<description>16/48 Magazine Tape 26</description>
+		<year>1986</year>
+		<publisher>16/48 Tape Magazine</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="80771">
 				<rom name="1648 (issue 26) - side 1.tzx" size="80771" crc="90eb22c9" sha1="dec0dce02e070dad92be3706833f0c6e28bebe26"/>
@@ -150899,10 +151021,10 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="4crashsm_d" cloneof="4crashsm">
+	<software name="4crashsm2">
 		<description>4 Crash Smashes II</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1986</year>
+		<publisher>Gremlin Graphics Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="99570">
 				<rom name="4 crash smashes ii - side a.tzx" size="99570" crc="f33be0bc" sha1="c1921ab687fa83a2dc35cf78cc594c8ead9ad4a3"/>
@@ -150918,7 +151040,14 @@ Tape 2: Hero Quest: Return of the Witch Lord
 	<software name="4gamepac">
 		<description>4 Game Pack No. 1</description>
 		<year>1992</year>
-		<publisher>Atlantis</publisher>
+		<publisher>Atlantis Software</publisher>
+		<notes><![CDATA[Compilation contents:
+Side A - Game 1: Superkid (Atlantis Software)
+Side A - Game 2: Crack-Up (Atlantis Software)
+Side B - Game 1: Spooky Castle (Atlantis Software)
+Side B - Game 2: Crossfire (Atlantis Software)
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="91565">
 				<rom name="4 game pack no. 1 - side a.tzx" size="91565" crc="4640b1b1" sha1="83872b5c3d634410bda3e24678673f6eab6cb37c"/>
@@ -150931,10 +151060,17 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="4gamepac_b" cloneof="4gamepac">
+	<software name="4gamepac2">
 		<description>4 Game Pack No. 2</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1992</year>
+		<publisher>Atlantis Software</publisher>
+		<notes><![CDATA[Compilation contents:
+Side A - Game 1: Snoball in Hell (Atlantis Software)
+Side A - Game 2: Skatin' USA (Atlantis Software)
+Side B - Game 1: Gunfighter (Atlantis Software)
+Side B - Game 2: Periscope Up (Atlantis Software)
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="74436">
 				<rom name="4 game pack no. 2 - side a.tzx" size="74436" crc="3491a1d6" sha1="df9cbd2f06a038f0db282ee65047239eb012a4da"/>
@@ -150947,10 +151083,17 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="4gamepac_d" cloneof="4gamepac">
+	<software name="4gamepac3">
 		<description>4 Game Pack No. 3</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1992</year>
+		<publisher>Atlantis Software</publisher>
+		<notes><![CDATA[Compilation contents:
+Side A - Game 1: League Challenge (Atlantis Software)
+Side A - Game 2: Battle-Field (Atlantis Software)
+Side B - Game 1: Survivors (Atlantis Software)
+Side B - Game 2: Superkid in Space (Atlantis Software)
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="87849">
 				<rom name="4 game pack no. 3 - side a.tzx" size="87849" crc="9af10c4a" sha1="00284bb4b8b8205b75016394661c7b2587b8169c"/>
@@ -151360,10 +151503,14 @@ Tape 3 - Side A: Chase H.Q.
 		</part>
 	</software>
 
-	<software name="aceissue">
-		<description>ACE (Issue 01)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="aceiss01">
+		<description>ACE (issue 01 - October 1987)</description>
+		<year>1987</year>
+		<publisher>Magazine ACE (Advanced Computer Entertainment)</publisher>
+		<notes><![CDATA[Tape contents:
+Gift from the Gods (Ocean Software)
+]]></notes>
+
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="99241">
 				<rom name="ace (issue 01).tzx" size="99241" crc="7f998bc4" sha1="da4c7772c26e5602b738cdfc2c35fa6abab40b60"/>
@@ -151371,10 +151518,14 @@ Tape 3 - Side A: Chase H.Q.
 		</part>
 	</software>
 
-	<software name="aceissue_a" cloneof="aceissue">
-		<description>ACE (Issue 02)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="aceiss02">
+		<description>ACE (issue 02 - November 1987)</description>
+		<year>1987</year>
+		<publisher>Magazine ACE (Advanced Computer Entertainment)</publisher>
+		<notes><![CDATA[Tape contents:
+Bubble Bobble [demo] (Firebird Software)
+]]></notes>
+
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47932">
 				<rom name="ace (issue 02).tzx" size="47932" crc="0e946194" sha1="d66b92380d235873c495bb503afe83d2d0abdee0"/>
@@ -151382,10 +151533,14 @@ Tape 3 - Side A: Chase H.Q.
 		</part>
 	</software>
 
-	<software name="aceissue_b" cloneof="aceissue">
-		<description>ACE (Issue 09)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="aceiss09">
+		<description>ACE (issue 09 - June 1988)</description>
+		<year>1988</year>
+		<publisher>Magazine ACE (Advanced Computer Entertainment)</publisher>
+		<notes><![CDATA[Tape contents:
+Impossible Mission (U.S. Gold)
+]]></notes>
+
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="56486">
 				<rom name="ace (issue 09).tzx" size="56486" crc="1a6ee477" sha1="7895865d686e555496590f63d9742656e3ff5146"/>
@@ -151393,10 +151548,14 @@ Tape 3 - Side A: Chase H.Q.
 		</part>
 	</software>
 
-	<software name="aceissue_c" cloneof="aceissue">
-		<description>ACE (Issue 10)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="aceiss10">
+		<description>ACE (issue 10 - July 1988)</description>
+		<year>1988</year>
+		<publisher>Magazine ACE (Advanced Computer Entertainment)</publisher>
+		<notes><![CDATA[Tape contents:
+Spindizzy (Electric Dreams Software)
+]]></notes>
+
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48665">
 				<rom name="ace (issue 10).tzx" size="48665" crc="023bcc1d" sha1="bbe789eb8da184dfcf207e5ab1a3c3f40a3dec7e"/>
@@ -151404,10 +151563,14 @@ Tape 3 - Side A: Chase H.Q.
 		</part>
 	</software>
 
-	<software name="aceissue_d" cloneof="aceissue">
-		<description>ACE (Issue 16)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="aceiss16">
+		<description>ACE (issue 16 - January 1989)</description>
+		<year>1989</year>
+		<publisher>Magazine ACE (Advanced Computer Entertainment)</publisher>
+		<notes><![CDATA[Tape contents:
+Dragon Ninja [demo] (Imagine Software)
+]]></notes>
+
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="39821">
 				<rom name="ace (issue 16).tzx" size="39821" crc="63f30e20" sha1="6608a2bb152e4608181149178b3f8d2a63938f90"/>
@@ -151415,10 +151578,14 @@ Tape 3 - Side A: Chase H.Q.
 		</part>
 	</software>
 
-	<software name="aceissue_e" cloneof="aceissue">
-		<description>ACE (Issue 17)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="aceiss17">
+		<description>ACE (issue 17 - February 1989)</description>
+		<year>1989</year>
+		<publisher>Magazine ACE (Advanced Computer Entertainment)</publisher>
+		<notes><![CDATA[Tape contents:
+Aliens (USA version) (Electric Dreams Software)
+]]></notes>
+
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="193058">
 				<rom name="ace (issue 17).tzx" size="193058" crc="5c41d131" sha1="b7796faa14068c2f802d69445fe3f61734f1fc08"/>
@@ -151773,10 +151940,10 @@ Tape 1 - Side B - Game 3: Bullseye
 		</part>
 	</software>
 
-	<software name="advtap1" cloneof="adventur">
+	<software name="advtap1">
 		<description>Adventure Tape 1</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>Sword Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="189633">
 				<rom name="adventure tape 1.tzx" size="189633" crc="3a0ca8b2" sha1="757d9eba9c42536e2be71765ad84c7ef8f6ce0a7"/>
@@ -151938,7 +152105,7 @@ Tape 1 - Side B - Game 3: Bullseye
 	</software>
 
 	<software name="alsdoubl">
-		<description>Al's Double Bill - English</description>
+		<description>Al's Double Bill (English)</description>
 		<year>2013</year>
 		<publisher>Alessandro Grussu</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -151949,9 +152116,9 @@ Tape 1 - Side B - Game 3: Bullseye
 	</software>
 
 	<software name="alsdoubl_a" cloneof="alsdoubl">
-		<description>Al's Double Bill - French</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Al's Double Bill (French)</description>
+		<year>2013</year>
+		<publisher>Alessandro Grussu</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="67544">
 				<rom name="al_s double bill - french.tzx" size="67544" crc="d23666ed" sha1="a3e96ddcea1733c4426ffaecbfee0c7de470a676"/>
@@ -151960,9 +152127,9 @@ Tape 1 - Side B - Game 3: Bullseye
 	</software>
 
 	<software name="alsdoubl_b" cloneof="alsdoubl">
-		<description>Al's Double Bill - German</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Al's Double Bill (German)</description>
+		<year>2013</year>
+		<publisher>Alessandro Grussu</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="67562">
 				<rom name="al_s double bill - german.tzx" size="67562" crc="8bf2d424" sha1="13705dd3cf7d37fd71a1cb2aa1e18e4c417967c8"/>
@@ -151971,9 +152138,9 @@ Tape 1 - Side B - Game 3: Bullseye
 	</software>
 
 	<software name="alsdoubl_c" cloneof="alsdoubl">
-		<description>Al's Double Bill - Italian</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Al's Double Bill (Italian)</description>
+		<year>2013</year>
+		<publisher>Alessandro Grussu</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="67505">
 				<rom name="al_s double bill - italian.tzx" size="67505" crc="1c24210e" sha1="68c4fb8a206e7ac1274e4895684deba10584d5fb"/>
@@ -151982,9 +152149,9 @@ Tape 1 - Side B - Game 3: Bullseye
 	</software>
 
 	<software name="alsdoubl_d" cloneof="alsdoubl">
-		<description>Al's Double Bill - Portuguese</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Al's Double Bill (Portuguese)</description>
+		<year>2013</year>
+		<publisher>Alessandro Grussu</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="67541">
 				<rom name="al_s double bill - portuguese.tzx" size="67541" crc="66299d9a" sha1="95f882960af3c1f05404f1675922c68d05d33e9e"/>
@@ -151993,9 +152160,9 @@ Tape 1 - Side B - Game 3: Bullseye
 	</software>
 
 	<software name="alsdoubl_e" cloneof="alsdoubl">
-		<description>Al's Double Bill - Spanish</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Al's Double Bill (Spanish)</description>
+		<year>2013</year>
+		<publisher>Alessandro Grussu</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="67545">
 				<rom name="al_s double bill - spanish.tzx" size="67545" crc="2e36e014" sha1="b003f20890a3e56fdf5e66e3d0f13c63bf477d72"/>
