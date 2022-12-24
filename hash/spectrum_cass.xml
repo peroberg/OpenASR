@@ -39117,7 +39117,7 @@ Tape 2 - Side B:
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="180spark" cloneof="180">
 		<description>180 (Sparklers)</description>
 		<year>1983</year>
@@ -149995,7 +149995,7 @@ Tape 2 - Side A - Game 3: Astroclone (Hewson Consultants)
 Tape 2 - Side A - Game 4: Give My Regards to Broad Street (Mind Games)
 Tape 2 - Side A - Game 5: Show Jumping (Alligata Software)
 ]]></notes>
-		
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="213452">
 				<rom name="10 computer hits 3 - tape a.tzx" size="213452" crc="e9751a0d" sha1="420b7079974bd6ab21c49b5a66a94c6e5959b27e"/>
