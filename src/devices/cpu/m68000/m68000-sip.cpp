@@ -6445,8 +6445,8 @@ void m68000_device::btst_dd_ais_ip() // 0110 f1f8
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_and8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_and8(m_dbin, 1 << (m_dcr & 7));
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
@@ -6522,8 +6522,8 @@ void m68000_device::btst_dd_aips_ip() // 0118 f1f8
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_and8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_and8(m_dbin, 1 << (m_dcr & 7));
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
@@ -6601,8 +6601,8 @@ void m68000_device::btst_dd_pais_ip() // 0120 f1f8
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_and8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_and8(m_dbin, 1 << (m_dcr & 7));
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
@@ -6699,8 +6699,8 @@ void m68000_device::btst_dd_das_ip() // 0128 f1f8
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_and8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_and8(m_dbin, 1 << (m_dcr & 7));
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
@@ -6840,8 +6840,8 @@ adsw2:
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_and8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_and8(m_dbin, 1 << (m_dcr & 7));
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
@@ -6937,8 +6937,8 @@ void m68000_device::btst_dd_adr16_ip() // 0138 f1ff
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_and8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_and8(m_dbin, 1 << (m_dcr & 7));
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
@@ -7059,8 +7059,8 @@ void m68000_device::btst_dd_adr32_ip() // 0139 f1ff
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_and8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_and8(m_dbin, 1 << (m_dcr & 7));
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
@@ -7156,8 +7156,8 @@ void m68000_device::btst_dd_dpc_ip() // 013a f1ff
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_and8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_and8(m_dbin, 1 << (m_dcr & 7));
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
@@ -7296,8 +7296,8 @@ adsw2:
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_and8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_and8(m_dbin, 1 << (m_dcr & 7));
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
@@ -7408,8 +7408,8 @@ bcsr4:
 	// 0c4 bcsr4
 	m_ird = m_ir;
 	set_16l(m_dt, m_aluo);
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_icount -= 2;
@@ -7421,8 +7421,8 @@ bcsr4:
 btsr3:
 	// 044 btsr3
 	m_ird = m_ir;
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=23:m_dt d=R.dcro:m_dcro
-	alu_and8(high16(m_dt), 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=23:m_dt d=R.dcro8:m_dcro8
+	alu_and8(high16(m_dt), 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_icount -= 2;
@@ -7725,8 +7725,8 @@ void m68000_device::bchg_dd_ais_ip() // 0150 f1f8
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_eor8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_eor8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -7745,8 +7745,8 @@ void m68000_device::bchg_dd_ais_ip() // 0150 f1f8
 		return;
 	}
 	[[fallthrough]]; case 6:
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -7819,8 +7819,8 @@ void m68000_device::bchg_dd_aips_ip() // 0158 f1f8
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_eor8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_eor8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -7839,8 +7839,8 @@ void m68000_device::bchg_dd_aips_ip() // 0158 f1f8
 		return;
 	}
 	[[fallthrough]]; case 6:
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -7915,8 +7915,8 @@ void m68000_device::bchg_dd_pais_ip() // 0160 f1f8
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_eor8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_eor8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -7935,8 +7935,8 @@ void m68000_device::bchg_dd_pais_ip() // 0160 f1f8
 		return;
 	}
 	[[fallthrough]]; case 6:
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -8030,8 +8030,8 @@ void m68000_device::bchg_dd_das_ip() // 0168 f1f8
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_eor8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_eor8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -8050,8 +8050,8 @@ void m68000_device::bchg_dd_das_ip() // 0168 f1f8
 		return;
 	}
 	[[fallthrough]]; case 8:
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -8188,8 +8188,8 @@ adsw2:
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_eor8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_eor8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -8208,8 +8208,8 @@ adsw2:
 		return;
 	}
 	[[fallthrough]]; case 8:
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -8302,8 +8302,8 @@ void m68000_device::bchg_dd_adr16_ip() // 0178 f1ff
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_eor8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_eor8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -8322,8 +8322,8 @@ void m68000_device::bchg_dd_adr16_ip() // 0178 f1ff
 		return;
 	}
 	[[fallthrough]]; case 8:
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -8441,8 +8441,8 @@ void m68000_device::bchg_dd_adr32_ip() // 0179 f1ff
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_eor8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_eor8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -8461,8 +8461,8 @@ void m68000_device::bchg_dd_adr32_ip() // 0179 f1ff
 		return;
 	}
 	[[fallthrough]]; case 10:
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -8709,8 +8709,8 @@ void m68000_device::bclr_dd_ais_ip() // 0190 f1f8
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
-	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	// 067 bclm2
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
@@ -8735,8 +8735,8 @@ void m68000_device::bclr_dd_ais_ip() // 0190 f1f8
 	m_irc = m_edb;
 	m_au = m_au + 2;
 	m_dbin = m_edb;
-	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro:m_dcro
-	alu_eor8(m_aluo, 1 << (m_dcr & 15));
+	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro8:m_dcro8
+	alu_eor8(m_aluo, 1 << (m_dcr & 7));
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
@@ -8754,8 +8754,8 @@ void m68000_device::bclr_dd_ais_ip() // 0190 f1f8
 		return;
 	}
 	[[fallthrough]]; case 6:
-	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -8807,8 +8807,8 @@ void m68000_device::bclr_dd_aips_ip() // 0198 f1f8
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
-	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	// 067 bclm2
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
@@ -8833,8 +8833,8 @@ void m68000_device::bclr_dd_aips_ip() // 0198 f1f8
 	m_irc = m_edb;
 	m_au = m_au + 2;
 	m_dbin = m_edb;
-	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro:m_dcro
-	alu_eor8(m_aluo, 1 << (m_dcr & 15));
+	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro8:m_dcro8
+	alu_eor8(m_aluo, 1 << (m_dcr & 7));
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
@@ -8852,8 +8852,8 @@ void m68000_device::bclr_dd_aips_ip() // 0198 f1f8
 		return;
 	}
 	[[fallthrough]]; case 6:
-	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -8907,8 +8907,8 @@ void m68000_device::bclr_dd_pais_ip() // 01a0 f1f8
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
-	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	// 067 bclm2
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
@@ -8933,8 +8933,8 @@ void m68000_device::bclr_dd_pais_ip() // 01a0 f1f8
 	m_irc = m_edb;
 	m_au = m_au + 2;
 	m_dbin = m_edb;
-	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro:m_dcro
-	alu_eor8(m_aluo, 1 << (m_dcr & 15));
+	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro8:m_dcro8
+	alu_eor8(m_aluo, 1 << (m_dcr & 7));
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
@@ -8952,8 +8952,8 @@ void m68000_device::bclr_dd_pais_ip() // 01a0 f1f8
 		return;
 	}
 	[[fallthrough]]; case 6:
-	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -9026,8 +9026,8 @@ void m68000_device::bclr_dd_das_ip() // 01a8 f1f8
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
-	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	// 067 bclm2
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
@@ -9052,8 +9052,8 @@ void m68000_device::bclr_dd_das_ip() // 01a8 f1f8
 	m_irc = m_edb;
 	m_au = m_au + 2;
 	m_dbin = m_edb;
-	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro:m_dcro
-	alu_eor8(m_aluo, 1 << (m_dcr & 15));
+	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro8:m_dcro8
+	alu_eor8(m_aluo, 1 << (m_dcr & 7));
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
@@ -9071,8 +9071,8 @@ void m68000_device::bclr_dd_das_ip() // 01a8 f1f8
 		return;
 	}
 	[[fallthrough]]; case 8:
-	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -9188,8 +9188,8 @@ adsw2:
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
-	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	// 067 bclm2
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
@@ -9214,8 +9214,8 @@ adsw2:
 	m_irc = m_edb;
 	m_au = m_au + 2;
 	m_dbin = m_edb;
-	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro:m_dcro
-	alu_eor8(m_aluo, 1 << (m_dcr & 15));
+	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro8:m_dcro8
+	alu_eor8(m_aluo, 1 << (m_dcr & 7));
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
@@ -9233,8 +9233,8 @@ adsw2:
 		return;
 	}
 	[[fallthrough]]; case 8:
-	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -9306,8 +9306,8 @@ void m68000_device::bclr_dd_adr16_ip() // 01b8 f1ff
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
-	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	// 067 bclm2
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
@@ -9332,8 +9332,8 @@ void m68000_device::bclr_dd_adr16_ip() // 01b8 f1ff
 	m_irc = m_edb;
 	m_au = m_au + 2;
 	m_dbin = m_edb;
-	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro:m_dcro
-	alu_eor8(m_aluo, 1 << (m_dcr & 15));
+	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro8:m_dcro8
+	alu_eor8(m_aluo, 1 << (m_dcr & 7));
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
@@ -9351,8 +9351,8 @@ void m68000_device::bclr_dd_adr16_ip() // 01b8 f1ff
 		return;
 	}
 	[[fallthrough]]; case 8:
-	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -9449,8 +9449,8 @@ void m68000_device::bclr_dd_adr32_ip() // 01b9 f1ff
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
-	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	// 067 bclm2
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
@@ -9475,8 +9475,8 @@ void m68000_device::bclr_dd_adr32_ip() // 01b9 f1ff
 	m_irc = m_edb;
 	m_au = m_au + 2;
 	m_dbin = m_edb;
-	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro:m_dcro
-	alu_eor8(m_aluo, 1 << (m_dcr & 15));
+	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro8:m_dcro8
+	alu_eor8(m_aluo, 1 << (m_dcr & 7));
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
@@ -9494,8 +9494,8 @@ void m68000_device::bclr_dd_adr32_ip() // 01b9 f1ff
 		return;
 	}
 	[[fallthrough]]; case 10:
-	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -9791,8 +9791,8 @@ void m68000_device::bset_dd_ais_ip() // 01d0 f1f8
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -9811,8 +9811,8 @@ void m68000_device::bset_dd_ais_ip() // 01d0 f1f8
 		return;
 	}
 	[[fallthrough]]; case 6:
-	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -9885,8 +9885,8 @@ void m68000_device::bset_dd_aips_ip() // 01d8 f1f8
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -9905,8 +9905,8 @@ void m68000_device::bset_dd_aips_ip() // 01d8 f1f8
 		return;
 	}
 	[[fallthrough]]; case 6:
-	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -9981,8 +9981,8 @@ void m68000_device::bset_dd_pais_ip() // 01e0 f1f8
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -10001,8 +10001,8 @@ void m68000_device::bset_dd_pais_ip() // 01e0 f1f8
 		return;
 	}
 	[[fallthrough]]; case 6:
-	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -10096,8 +10096,8 @@ void m68000_device::bset_dd_das_ip() // 01e8 f1f8
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -10116,8 +10116,8 @@ void m68000_device::bset_dd_das_ip() // 01e8 f1f8
 		return;
 	}
 	[[fallthrough]]; case 8:
-	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -10254,8 +10254,8 @@ adsw2:
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -10274,8 +10274,8 @@ adsw2:
 		return;
 	}
 	[[fallthrough]]; case 8:
-	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -10368,8 +10368,8 @@ void m68000_device::bset_dd_adr16_ip() // 01f8 f1ff
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -10388,8 +10388,8 @@ void m68000_device::bset_dd_adr16_ip() // 01f8 f1ff
 		return;
 	}
 	[[fallthrough]]; case 8:
-	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -10507,8 +10507,8 @@ void m68000_device::bset_dd_adr32_ip() // 01f9 f1ff
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -10527,8 +10527,8 @@ void m68000_device::bset_dd_adr32_ip() // 01f9 f1ff
 		return;
 	}
 	[[fallthrough]]; case 10:
-	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -22327,8 +22327,8 @@ void m68000_device::btst_imm8_ais_ip() // 0810 fff8
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_and8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_and8(m_dbin, 1 << (m_dcr & 7));
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
@@ -22430,8 +22430,8 @@ void m68000_device::btst_imm8_aips_ip() // 0818 fff8
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_and8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_and8(m_dbin, 1 << (m_dcr & 7));
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
@@ -22535,8 +22535,8 @@ void m68000_device::btst_imm8_pais_ip() // 0820 fff8
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_and8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_and8(m_dbin, 1 << (m_dcr & 7));
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
@@ -22659,8 +22659,8 @@ void m68000_device::btst_imm8_das_ip() // 0828 fff8
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_and8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_and8(m_dbin, 1 << (m_dcr & 7));
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
@@ -22826,8 +22826,8 @@ adsw2:
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_and8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_and8(m_dbin, 1 << (m_dcr & 7));
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
@@ -22949,8 +22949,8 @@ void m68000_device::btst_imm8_adr16_ip() // 0838 ffff
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_and8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_and8(m_dbin, 1 << (m_dcr & 7));
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
@@ -23097,8 +23097,8 @@ void m68000_device::btst_imm8_adr32_ip() // 0839 ffff
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_and8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_and8(m_dbin, 1 << (m_dcr & 7));
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
@@ -23220,8 +23220,8 @@ void m68000_device::btst_imm8_dpc_ip() // 083a ffff
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_and8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_and8(m_dbin, 1 << (m_dcr & 7));
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
@@ -23386,8 +23386,8 @@ adsw2:
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_and8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_and8(m_dbin, 1 << (m_dcr & 7));
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
@@ -23614,8 +23614,8 @@ void m68000_device::bchg_imm8_ais_ip() // 0850 fff8
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_eor8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_eor8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -23634,8 +23634,8 @@ void m68000_device::bchg_imm8_ais_ip() // 0850 fff8
 		return;
 	}
 	[[fallthrough]]; case 8:
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -23734,8 +23734,8 @@ void m68000_device::bchg_imm8_aips_ip() // 0858 fff8
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_eor8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_eor8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -23754,8 +23754,8 @@ void m68000_device::bchg_imm8_aips_ip() // 0858 fff8
 		return;
 	}
 	[[fallthrough]]; case 8:
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -23856,8 +23856,8 @@ void m68000_device::bchg_imm8_pais_ip() // 0860 fff8
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_eor8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_eor8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -23876,8 +23876,8 @@ void m68000_device::bchg_imm8_pais_ip() // 0860 fff8
 		return;
 	}
 	[[fallthrough]]; case 8:
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -23997,8 +23997,8 @@ void m68000_device::bchg_imm8_das_ip() // 0868 fff8
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_eor8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_eor8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -24017,8 +24017,8 @@ void m68000_device::bchg_imm8_das_ip() // 0868 fff8
 		return;
 	}
 	[[fallthrough]]; case 10:
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -24181,8 +24181,8 @@ adsw2:
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_eor8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_eor8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -24201,8 +24201,8 @@ adsw2:
 		return;
 	}
 	[[fallthrough]]; case 10:
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -24321,8 +24321,8 @@ void m68000_device::bchg_imm8_adr16_ip() // 0878 ffff
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_eor8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_eor8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -24341,8 +24341,8 @@ void m68000_device::bchg_imm8_adr16_ip() // 0878 ffff
 		return;
 	}
 	[[fallthrough]]; case 10:
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -24486,8 +24486,8 @@ void m68000_device::bchg_imm8_adr32_ip() // 0879 ffff
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_eor8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=13 c=2 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_eor8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -24506,8 +24506,8 @@ void m68000_device::bchg_imm8_adr32_ip() // 0879 ffff
 		return;
 	}
 	[[fallthrough]]; case 12:
-	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -24697,8 +24697,8 @@ void m68000_device::bclr_imm8_ais_ip() // 0890 fff8
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
-	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	// 067 bclm2
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
@@ -24723,8 +24723,8 @@ void m68000_device::bclr_imm8_ais_ip() // 0890 fff8
 	m_irc = m_edb;
 	m_au = m_au + 2;
 	m_dbin = m_edb;
-	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro:m_dcro
-	alu_eor8(m_aluo, 1 << (m_dcr & 15));
+	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro8:m_dcro8
+	alu_eor8(m_aluo, 1 << (m_dcr & 7));
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
@@ -24742,8 +24742,8 @@ void m68000_device::bclr_imm8_ais_ip() // 0890 fff8
 		return;
 	}
 	[[fallthrough]]; case 8:
-	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -24821,8 +24821,8 @@ void m68000_device::bclr_imm8_aips_ip() // 0898 fff8
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
-	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	// 067 bclm2
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
@@ -24847,8 +24847,8 @@ void m68000_device::bclr_imm8_aips_ip() // 0898 fff8
 	m_irc = m_edb;
 	m_au = m_au + 2;
 	m_dbin = m_edb;
-	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro:m_dcro
-	alu_eor8(m_aluo, 1 << (m_dcr & 15));
+	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro8:m_dcro8
+	alu_eor8(m_aluo, 1 << (m_dcr & 7));
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
@@ -24866,8 +24866,8 @@ void m68000_device::bclr_imm8_aips_ip() // 0898 fff8
 		return;
 	}
 	[[fallthrough]]; case 8:
-	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -24947,8 +24947,8 @@ void m68000_device::bclr_imm8_pais_ip() // 08a0 fff8
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
-	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	// 067 bclm2
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
@@ -24973,8 +24973,8 @@ void m68000_device::bclr_imm8_pais_ip() // 08a0 fff8
 	m_irc = m_edb;
 	m_au = m_au + 2;
 	m_dbin = m_edb;
-	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro:m_dcro
-	alu_eor8(m_aluo, 1 << (m_dcr & 15));
+	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro8:m_dcro8
+	alu_eor8(m_aluo, 1 << (m_dcr & 7));
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
@@ -24992,8 +24992,8 @@ void m68000_device::bclr_imm8_pais_ip() // 08a0 fff8
 		return;
 	}
 	[[fallthrough]]; case 8:
-	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -25092,8 +25092,8 @@ void m68000_device::bclr_imm8_das_ip() // 08a8 fff8
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
-	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	// 067 bclm2
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
@@ -25118,8 +25118,8 @@ void m68000_device::bclr_imm8_das_ip() // 08a8 fff8
 	m_irc = m_edb;
 	m_au = m_au + 2;
 	m_dbin = m_edb;
-	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro:m_dcro
-	alu_eor8(m_aluo, 1 << (m_dcr & 15));
+	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro8:m_dcro8
+	alu_eor8(m_aluo, 1 << (m_dcr & 7));
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
@@ -25137,8 +25137,8 @@ void m68000_device::bclr_imm8_das_ip() // 08a8 fff8
 		return;
 	}
 	[[fallthrough]]; case 10:
-	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -25280,8 +25280,8 @@ adsw2:
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
-	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	// 067 bclm2
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
@@ -25306,8 +25306,8 @@ adsw2:
 	m_irc = m_edb;
 	m_au = m_au + 2;
 	m_dbin = m_edb;
-	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro:m_dcro
-	alu_eor8(m_aluo, 1 << (m_dcr & 15));
+	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro8:m_dcro8
+	alu_eor8(m_aluo, 1 << (m_dcr & 7));
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
@@ -25325,8 +25325,8 @@ adsw2:
 		return;
 	}
 	[[fallthrough]]; case 10:
-	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -25424,8 +25424,8 @@ void m68000_device::bclr_imm8_adr16_ip() // 08b8 ffff
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
-	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	// 067 bclm2
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
@@ -25450,8 +25450,8 @@ void m68000_device::bclr_imm8_adr16_ip() // 08b8 ffff
 	m_irc = m_edb;
 	m_au = m_au + 2;
 	m_dbin = m_edb;
-	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro:m_dcro
-	alu_eor8(m_aluo, 1 << (m_dcr & 15));
+	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro8:m_dcro8
+	alu_eor8(m_aluo, 1 << (m_dcr & 7));
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
@@ -25469,8 +25469,8 @@ void m68000_device::bclr_imm8_adr16_ip() // 08b8 ffff
 		return;
 	}
 	[[fallthrough]]; case 10:
-	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -25593,8 +25593,8 @@ void m68000_device::bclr_imm8_adr32_ip() // 08b9 ffff
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
-	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	// 067 bclm2
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
@@ -25619,8 +25619,8 @@ void m68000_device::bclr_imm8_adr32_ip() // 08b9 ffff
 	m_irc = m_edb;
 	m_au = m_au + 2;
 	m_dbin = m_edb;
-	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro:m_dcro
-	alu_eor8(m_aluo, 1 << (m_dcr & 15));
+	// alu r=14 c=4 m=.....  i=bl..... ALU.eor a=R.aluo:m_aluo d=R.dcro8:m_dcro8
+	alu_eor8(m_aluo, 1 << (m_dcr & 7));
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
@@ -25638,8 +25638,8 @@ void m68000_device::bclr_imm8_adr32_ip() // 08b9 ffff
 		return;
 	}
 	[[fallthrough]]; case 12:
-	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=bl...i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -25842,8 +25842,8 @@ void m68000_device::bset_imm8_ais_ip() // 08d0 fff8
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -25862,8 +25862,8 @@ void m68000_device::bset_imm8_ais_ip() // 08d0 fff8
 		return;
 	}
 	[[fallthrough]]; case 8:
-	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -25962,8 +25962,8 @@ void m68000_device::bset_imm8_aips_ip() // 08d8 fff8
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -25982,8 +25982,8 @@ void m68000_device::bset_imm8_aips_ip() // 08d8 fff8
 		return;
 	}
 	[[fallthrough]]; case 8:
-	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -26084,8 +26084,8 @@ void m68000_device::bset_imm8_pais_ip() // 08e0 fff8
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -26104,8 +26104,8 @@ void m68000_device::bset_imm8_pais_ip() // 08e0 fff8
 		return;
 	}
 	[[fallthrough]]; case 8:
-	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -26225,8 +26225,8 @@ void m68000_device::bset_imm8_das_ip() // 08e8 fff8
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -26245,8 +26245,8 @@ void m68000_device::bset_imm8_das_ip() // 08e8 fff8
 		return;
 	}
 	[[fallthrough]]; case 10:
-	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -26409,8 +26409,8 @@ adsw2:
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -26429,8 +26429,8 @@ adsw2:
 		return;
 	}
 	[[fallthrough]]; case 10:
-	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -26549,8 +26549,8 @@ void m68000_device::bset_imm8_adr16_ip() // 08f8 ffff
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -26569,8 +26569,8 @@ void m68000_device::bset_imm8_adr16_ip() // 08f8 ffff
 		return;
 	}
 	[[fallthrough]]; case 10:
-	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
@@ -26714,8 +26714,8 @@ void m68000_device::bset_imm8_adr32_ip() // 08f9 ffff
 	m_pc = m_au;
 	m_irc = m_edb;
 	m_au = m_au + 2;
-	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro:m_dcro
-	alu_or8(m_dbin, 1 << (m_dcr & 15));
+	// alu r=14 c=2 m=.....  i=b...... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
+	alu_or8(m_dbin, 1 << (m_dcr & 7));
 	m_dbin = m_edb;
 	// 082 bcsm2
 	m_aob = m_at;
@@ -26734,8 +26734,8 @@ void m68000_device::bset_imm8_adr32_ip() // 08f9 ffff
 		return;
 	}
 	[[fallthrough]]; case 12:
-	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro:m_dcro
-	alu_and8(m_alub, 1 << (m_dcr & 15));
+	// alu r=14 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
+	alu_and8(m_alub, 1 << (m_dcr & 7));
 	sr_z();
 	set_ftu_const();
 	m_inst_state = m_next_state ? m_next_state : m_decode_table[m_ird];
