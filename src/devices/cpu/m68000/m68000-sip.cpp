@@ -6348,7 +6348,7 @@ void m68000_device::movep_w_das_dd_ip() // 0108 f1f8
 	}
 	[[fallthrough]]; case 4:
 	m_au = m_au + 2;
-	set_8(m_dbin, m_edb);
+	set_8h(m_dbin, m_edb);
 	// alu r=13 c=0 m=.....  i=b...... ALU.eor a=none d=none
 	// 368 mpiw3
 	m_aob = m_au;
@@ -6370,7 +6370,7 @@ void m68000_device::movep_w_das_dd_ip() // 0108 f1f8
 	}
 	[[fallthrough]]; case 6:
 	m_au = m_pc + 4;
-	set_8h(m_dbin, m_edb);
+	set_8(m_dbin, m_edb);
 	// alu r=13 c=0 m=.....  i=b...... ALU.eor a=none d=none
 	// 36a mpiw4
 	m_aob = m_au;
@@ -7566,7 +7566,7 @@ void m68000_device::movep_l_das_dd_ip() // 0148 f1f8
 	}
 	[[fallthrough]]; case 4:
 	m_au = m_au + 2;
-	set_8(m_dbin, m_edb);
+	set_8h(m_dbin, m_edb);
 	// alu r=13 c=0 m=.....  i=b...... ALU.eor a=none d=none
 	// 34e mpil3
 	m_aob = m_au;
@@ -7586,7 +7586,7 @@ void m68000_device::movep_l_das_dd_ip() // 0148 f1f8
 	}
 	[[fallthrough]]; case 6:
 	m_au = m_au + 2;
-	set_8h(m_dbin, m_edb);
+	set_8(m_dbin, m_edb);
 	// alu r=13 c=0 m=.....  i=b...... ALU.eor a=none d=none
 	// 34f mpil4
 	m_aob = m_au;
@@ -7607,7 +7607,7 @@ void m68000_device::movep_l_das_dd_ip() // 0148 f1f8
 	[[fallthrough]]; case 8:
 	set_16h(m_da[rx], m_dbin);
 	m_au = m_au + 2;
-	set_8(m_dbin, m_edb);
+	set_8h(m_dbin, m_edb);
 	// alu r=13 c=0 m=.....  i=b...... ALU.eor a=R.dbin:m_dbin d=none
 	// 368 mpiw3
 	m_aob = m_au;
@@ -7629,7 +7629,7 @@ void m68000_device::movep_l_das_dd_ip() // 0148 f1f8
 	}
 	[[fallthrough]]; case 10:
 	m_au = m_pc + 4;
-	set_8h(m_dbin, m_edb);
+	set_8(m_dbin, m_edb);
 	// alu r=13 c=0 m=.....  i=b...... ALU.eor a=none d=none
 	// 36a mpiw4
 	m_aob = m_au;
