@@ -12,6 +12,7 @@ void m68000_device::state_reset_ipm()
 	m_icount -= 2;
 	// 296 rstp4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_ftu_const();
 	m_icount -= 2;
 	if(m_sr & SR_T)
@@ -156,11 +157,11 @@ void m68000_device::state_reset_ipm()
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R | SSW_N;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -291,6 +292,7 @@ void m68000_device::state_bus_error_ipm()
 	// 088 bser6
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA | SSW_N | SSW_CRITICAL;
 	[[fallthrough]]; case 7:
@@ -470,11 +472,11 @@ void m68000_device::state_bus_error_ipm()
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R | SSW_N;
 	[[fallthrough]]; case 21:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -605,6 +607,7 @@ void m68000_device::state_address_error_ipm()
 	// 088 bser6
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA | SSW_N | SSW_CRITICAL;
 	[[fallthrough]]; case 7:
@@ -784,11 +787,11 @@ void m68000_device::state_address_error_ipm()
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R | SSW_N;
 	[[fallthrough]]; case 21:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -903,10 +906,10 @@ void m68000_device::state_interrupt_ipm()
 	m_irc = m_edb;
 	// 118 itlx6
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_icount -= 2;
 	// 292 itlx7
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_ftu_const();
 	m_icount -= 2;
 	if(m_sr & SR_T)
@@ -1040,11 +1043,11 @@ void m68000_device::state_interrupt_ipm()
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R | SSW_N;
 	[[fallthrough]]; case 15:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -1248,11 +1251,11 @@ void m68000_device::state_trace_ipm()
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R | SSW_N;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -1456,11 +1459,11 @@ void m68000_device::state_illegal_ipm()
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R | SSW_N;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -1664,11 +1667,11 @@ void m68000_device::state_priviledge_ipm()
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R | SSW_N;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -1872,11 +1875,11 @@ void m68000_device::state_linea_ipm()
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R | SSW_N;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -2080,11 +2083,11 @@ void m68000_device::state_linef_ipm()
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R | SSW_N;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -2150,13 +2153,13 @@ void m68000_device::ori_b_imm8_ds_ipm() // 0000 fff8
 	// 100 roaw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=14 c=2 m=.nzvc  i=b....i. ALU.or_ a=R.dtl:m_dt d=R.dyl:m_da[ry]
 	alu_or8(m_dt, m_da[ry]);
 	sr_nzvc();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -2249,7 +2252,6 @@ void m68000_device::ori_b_imm8_ais_ipm() // 0010 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -2279,6 +2281,7 @@ void m68000_device::ori_b_imm8_ais_ipm() // 0010 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -2368,7 +2371,6 @@ void m68000_device::ori_b_imm8_aips_ipm() // 0018 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -2398,6 +2400,7 @@ void m68000_device::ori_b_imm8_aips_ipm() // 0018 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -2489,7 +2492,6 @@ void m68000_device::ori_b_imm8_pais_ipm() // 0020 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -2519,6 +2521,7 @@ void m68000_device::ori_b_imm8_pais_ipm() // 0020 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -2629,7 +2632,6 @@ void m68000_device::ori_b_imm8_das_ipm() // 0028 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -2659,6 +2661,7 @@ void m68000_device::ori_b_imm8_das_ipm() // 0028 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -2812,7 +2815,6 @@ adsw2:
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -2842,6 +2844,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -2951,7 +2954,6 @@ void m68000_device::ori_b_imm8_adr16_ipm() // 0038 ffff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -2981,6 +2983,7 @@ void m68000_device::ori_b_imm8_adr16_ipm() // 0038 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -3115,7 +3118,6 @@ void m68000_device::ori_b_imm8_adr32_ipm() // 0039 ffff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -3145,6 +3147,7 @@ void m68000_device::ori_b_imm8_adr32_ipm() // 0039 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -3251,12 +3254,12 @@ void m68000_device::ori_imm8_ccr_ipm() // 003c ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=14 c=0 m=.....  i=b...... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -3323,13 +3326,13 @@ void m68000_device::ori_w_imm16_ds_ipm() // 0040 fff8
 	// 100 roaw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=14 c=2 m=.nzvc  i=.....i. ALU.or_ a=R.dtl:m_dt d=R.dyl:m_da[ry]
 	alu_or(m_dt, m_da[ry]);
 	sr_nzvc();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -3426,7 +3429,6 @@ void m68000_device::ori_w_imm16_ais_ipm() // 0050 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -3456,6 +3458,7 @@ void m68000_device::ori_w_imm16_ais_ipm() // 0050 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -3555,7 +3558,6 @@ void m68000_device::ori_w_imm16_aips_ipm() // 0058 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -3585,6 +3587,7 @@ void m68000_device::ori_w_imm16_aips_ipm() // 0058 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -3686,7 +3689,6 @@ void m68000_device::ori_w_imm16_pais_ipm() // 0060 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -3716,6 +3718,7 @@ void m68000_device::ori_w_imm16_pais_ipm() // 0060 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -3836,7 +3839,6 @@ void m68000_device::ori_w_imm16_das_ipm() // 0068 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -3866,6 +3868,7 @@ void m68000_device::ori_w_imm16_das_ipm() // 0068 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -4029,7 +4032,6 @@ adsw2:
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -4059,6 +4061,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -4178,7 +4181,6 @@ void m68000_device::ori_w_imm16_adr16_ipm() // 0078 ffff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -4208,6 +4210,7 @@ void m68000_device::ori_w_imm16_adr16_ipm() // 0078 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -4352,7 +4355,6 @@ void m68000_device::ori_w_imm16_adr32_ipm() // 0079 ffff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -4382,6 +4384,7 @@ void m68000_device::ori_w_imm16_adr32_ipm() // 0079 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -4500,12 +4503,12 @@ void m68000_device::ori_i16u_sr_ipm() // 007c ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=14 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -4597,7 +4600,6 @@ void m68000_device::ori_l_imm32_ds_ipm() // 0080 fff8
 	// 10c roal1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=14 c=2 m=.nzvc  i=.l...i. ALU.or_ a=R.dtl:m_dt d=R.dyl:m_da[ry]
 	alu_or(m_dt, m_da[ry]);
@@ -4633,6 +4635,7 @@ void m68000_device::ori_l_imm32_ds_ipm() // 0080 fff8
 	m_icount -= 2;
 	// 25b roal4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=14 c=0 m=.....  i=.l..... ALU.or_ a=R.aluo:m_aluo d=none
@@ -4758,7 +4761,6 @@ void m68000_device::ori_l_imm32_ais_ipm() // 0090 fff8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -4814,6 +4816,7 @@ void m68000_device::ori_l_imm32_ais_ipm() // 0090 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -4961,7 +4964,6 @@ void m68000_device::ori_l_imm32_aips_ipm() // 0098 fff8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -5017,6 +5019,7 @@ void m68000_device::ori_l_imm32_aips_ipm() // 0098 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -5165,7 +5168,6 @@ void m68000_device::ori_l_imm32_pais_ipm() // 00a0 fff8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -5221,6 +5223,7 @@ void m68000_device::ori_l_imm32_pais_ipm() // 00a0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -5389,7 +5392,6 @@ void m68000_device::ori_l_imm32_das_ipm() // 00a8 fff8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -5445,6 +5447,7 @@ void m68000_device::ori_l_imm32_das_ipm() // 00a8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 15:
@@ -5656,7 +5659,6 @@ adsl2:
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -5712,6 +5714,7 @@ adsl2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 15:
@@ -5883,7 +5886,6 @@ void m68000_device::ori_l_imm32_adr16_ipm() // 00b8 ffff
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -5939,6 +5941,7 @@ void m68000_device::ori_l_imm32_adr16_ipm() // 00b8 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 15:
@@ -6135,7 +6138,6 @@ void m68000_device::ori_l_imm32_adr32_ipm() // 00b9 ffff
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -6191,6 +6193,7 @@ void m68000_device::ori_l_imm32_adr32_ipm() // 00b9 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 17:
@@ -6231,7 +6234,6 @@ void m68000_device::btst_dd_ds_ipm() // 0100 f1f8
 	// 3e7 btsr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_dcr = m_da[rx];
 	m_at = m_da[rx];
@@ -6272,6 +6274,7 @@ void m68000_device::btst_dd_ds_ipm() // 0100 f1f8
 bcsr4:
 	// 0c4 bcsr4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_da[ry], m_aluo);
 	// alu r=13 c=1 m=..z..  i=.....i. ALU.and_ a=alub d=R.dcro:m_dcro
 	alu_and(m_alub, 1 << (m_dcr & 15));
@@ -6286,6 +6289,7 @@ bcsr4:
 btsr3:
 	// 044 btsr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	// alu r=13 c=1 m=..z..  i=.....i. ALU.and_ a=18:m_da[ry] d=R.dcro:m_dcro
 	alu_and(high16(m_da[ry]), 1 << (m_dcr & 15));
 	sr_z();
@@ -6353,7 +6357,6 @@ void m68000_device::movep_w_das_dd_ipm() // 0108 f1f8
 	// 368 mpiw3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_DATA | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_data(m_aob & ~1, m_aob & 1 ? 0x00ff : 0xff00);
@@ -6375,6 +6378,7 @@ void m68000_device::movep_w_das_dd_ipm() // 0108 f1f8
 	// 36a mpiw4
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -6442,7 +6446,6 @@ void m68000_device::btst_dd_ais_ipm() // 0110 f1f8
 	// 215 btsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -6450,6 +6453,7 @@ void m68000_device::btst_dd_ais_ipm() // 0110 f1f8
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -6519,7 +6523,6 @@ void m68000_device::btst_dd_aips_ipm() // 0118 f1f8
 	// 215 btsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -6527,6 +6530,7 @@ void m68000_device::btst_dd_aips_ipm() // 0118 f1f8
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -6598,7 +6602,6 @@ void m68000_device::btst_dd_pais_ipm() // 0120 f1f8
 	// 215 btsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -6606,6 +6609,7 @@ void m68000_device::btst_dd_pais_ipm() // 0120 f1f8
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -6696,7 +6700,6 @@ void m68000_device::btst_dd_das_ipm() // 0128 f1f8
 	// 215 btsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -6704,6 +6707,7 @@ void m68000_device::btst_dd_das_ipm() // 0128 f1f8
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -6837,7 +6841,6 @@ adsw2:
 	// 215 btsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -6845,6 +6848,7 @@ adsw2:
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -6934,7 +6938,6 @@ void m68000_device::btst_dd_adr16_ipm() // 0138 f1ff
 	// 215 btsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -6942,6 +6945,7 @@ void m68000_device::btst_dd_adr16_ipm() // 0138 f1ff
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -7056,7 +7060,6 @@ void m68000_device::btst_dd_adr32_ipm() // 0139 f1ff
 	// 215 btsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -7064,6 +7067,7 @@ void m68000_device::btst_dd_adr32_ipm() // 0139 f1ff
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -7153,7 +7157,6 @@ void m68000_device::btst_dd_dpc_ipm() // 013a f1ff
 	// 215 btsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -7161,6 +7164,7 @@ void m68000_device::btst_dd_dpc_ipm() // 013a f1ff
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -7293,7 +7297,6 @@ adsw2:
 	// 215 btsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -7301,6 +7304,7 @@ adsw2:
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -7368,7 +7372,6 @@ void m68000_device::btst_dd_imm_ipm() // 013c f1ff
 	// 0ab btsi1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_dcr = m_da[rx];
 	set_16h(m_dt, high16(m_at));
@@ -7407,6 +7410,7 @@ void m68000_device::btst_dd_imm_ipm() // 013c f1ff
 bcsr4:
 	// 0c4 bcsr4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_dt, m_aluo);
 	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=alub d=R.dcro8:m_dcro8
 	alu_and8(m_alub, 1 << (m_dcr & 7));
@@ -7421,6 +7425,7 @@ bcsr4:
 btsr3:
 	// 044 btsr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=23:m_dt d=R.dcro8:m_dcro8
 	alu_and8(high16(m_dt), 1 << (m_dcr & 7));
 	sr_z();
@@ -7443,7 +7448,6 @@ void m68000_device::bchg_dd_ds_ipm() // 0140 f1f8
 	// 3ef bcsr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_dcr = m_da[rx];
 	m_at = m_da[rx];
@@ -7484,6 +7488,7 @@ void m68000_device::bchg_dd_ds_ipm() // 0140 f1f8
 bcsr4:
 	// 0c4 bcsr4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_da[ry], m_aluo);
 	// alu r=13 c=1 m=..z..  i=.....i. ALU.and_ a=alub d=R.dcro:m_dcro
 	alu_and(m_alub, 1 << (m_dcr & 15));
@@ -7503,6 +7508,7 @@ bcsr3:
 	m_icount -= 2;
 	// 0a1 bcsr5
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[ry], m_aluo);
 	// alu r=13 c=1 m=..z..  i=.....i. ALU.and_ a=alub d=R.dcro:m_dcro
 	alu_and(m_alub, 1 << (m_dcr & 15));
@@ -7612,7 +7618,6 @@ void m68000_device::movep_l_das_dd_ipm() // 0148 f1f8
 	// 368 mpiw3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_DATA | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_data(m_aob & ~1, m_aob & 1 ? 0x00ff : 0xff00);
@@ -7634,6 +7639,7 @@ void m68000_device::movep_l_das_dd_ipm() // 0148 f1f8
 	// 36a mpiw4
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -7701,7 +7707,6 @@ void m68000_device::bchg_dd_ais_ipm() // 0150 f1f8
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -7731,6 +7736,7 @@ void m68000_device::bchg_dd_ais_ipm() // 0150 f1f8
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -7795,7 +7801,6 @@ void m68000_device::bchg_dd_aips_ipm() // 0158 f1f8
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -7825,6 +7830,7 @@ void m68000_device::bchg_dd_aips_ipm() // 0158 f1f8
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -7891,7 +7897,6 @@ void m68000_device::bchg_dd_pais_ipm() // 0160 f1f8
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -7921,6 +7926,7 @@ void m68000_device::bchg_dd_pais_ipm() // 0160 f1f8
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -8006,7 +8012,6 @@ void m68000_device::bchg_dd_das_ipm() // 0168 f1f8
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -8036,6 +8041,7 @@ void m68000_device::bchg_dd_das_ipm() // 0168 f1f8
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -8164,7 +8170,6 @@ adsw2:
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -8194,6 +8199,7 @@ adsw2:
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -8278,7 +8284,6 @@ void m68000_device::bchg_dd_adr16_ipm() // 0178 f1ff
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -8308,6 +8313,7 @@ void m68000_device::bchg_dd_adr16_ipm() // 0178 f1ff
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -8417,7 +8423,6 @@ void m68000_device::bchg_dd_adr32_ipm() // 0179 f1ff
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -8447,6 +8452,7 @@ void m68000_device::bchg_dd_adr32_ipm() // 0179 f1ff
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -8482,7 +8488,6 @@ void m68000_device::bclr_dd_ds_ipm() // 0180 f1f8
 	// 3eb bclr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_dcr = m_da[rx];
 	m_at = m_da[rx];
@@ -8527,6 +8532,7 @@ bclr4:
 	m_icount -= 2;
 	// 0c4 bcsr4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_da[ry], m_aluo);
 	// alu r=14 c=1 m=..z..  i=.l...i. ALU.and_ a=alub d=R.dcro:m_dcro
 	alu_and(m_alub, 1 << (m_dcr & 15));
@@ -8550,6 +8556,7 @@ bclr3:
 	m_icount -= 2;
 	// 0a1 bcsr5
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[ry], m_aluo);
 	// alu r=14 c=1 m=..z..  i=.l...i. ALU.and_ a=alub d=R.dcro:m_dcro
 	alu_and(m_alub, 1 << (m_dcr & 15));
@@ -8598,7 +8605,6 @@ void m68000_device::movep_w_dd_das_ipm() // 0188 f1f8
 	// 36d mpow2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xh(m_dbout, m_da[rx]);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -8636,12 +8642,12 @@ void m68000_device::movep_w_dd_das_ipm() // 0188 f1f8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=14 c=0 m=.....  i=.l..... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -8706,7 +8712,6 @@ void m68000_device::bclr_dd_ais_ipm() // 0190 f1f8
 	// 069 bclm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
 	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -8740,6 +8745,7 @@ void m68000_device::bclr_dd_ais_ipm() // 0190 f1f8
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -8804,7 +8810,6 @@ void m68000_device::bclr_dd_aips_ipm() // 0198 f1f8
 	// 069 bclm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
 	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -8838,6 +8843,7 @@ void m68000_device::bclr_dd_aips_ipm() // 0198 f1f8
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -8904,7 +8910,6 @@ void m68000_device::bclr_dd_pais_ipm() // 01a0 f1f8
 	// 069 bclm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
 	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -8938,6 +8943,7 @@ void m68000_device::bclr_dd_pais_ipm() // 01a0 f1f8
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -9023,7 +9029,6 @@ void m68000_device::bclr_dd_das_ipm() // 01a8 f1f8
 	// 069 bclm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
 	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -9057,6 +9062,7 @@ void m68000_device::bclr_dd_das_ipm() // 01a8 f1f8
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -9185,7 +9191,6 @@ adsw2:
 	// 069 bclm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
 	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -9219,6 +9224,7 @@ adsw2:
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -9303,7 +9309,6 @@ void m68000_device::bclr_dd_adr16_ipm() // 01b8 f1ff
 	// 069 bclm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
 	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -9337,6 +9342,7 @@ void m68000_device::bclr_dd_adr16_ipm() // 01b8 f1ff
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -9446,7 +9452,6 @@ void m68000_device::bclr_dd_adr32_ipm() // 01b9 f1ff
 	// 069 bclm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
 	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -9480,6 +9485,7 @@ void m68000_device::bclr_dd_adr32_ipm() // 01b9 f1ff
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -9515,7 +9521,6 @@ void m68000_device::bset_dd_ds_ipm() // 01c0 f1f8
 	// 3ef bcsr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_dcr = m_da[rx];
 	m_at = m_da[rx];
@@ -9556,6 +9561,7 @@ void m68000_device::bset_dd_ds_ipm() // 01c0 f1f8
 bcsr4:
 	// 0c4 bcsr4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_da[ry], m_aluo);
 	// alu r=14 c=1 m=..z..  i=.....i. ALU.and_ a=alub d=R.dcro:m_dcro
 	alu_and(m_alub, 1 << (m_dcr & 15));
@@ -9575,6 +9581,7 @@ bcsr3:
 	m_icount -= 2;
 	// 0a1 bcsr5
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[ry], m_aluo);
 	// alu r=14 c=1 m=..z..  i=.....i. ALU.and_ a=alub d=R.dcro:m_dcro
 	alu_and(m_alub, 1 << (m_dcr & 15));
@@ -9659,7 +9666,6 @@ void m68000_device::movep_l_dd_das_ipm() // 01c8 f1f8
 	// 36d mpow2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xh(m_dbout, m_da[rx]);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -9697,12 +9703,12 @@ void m68000_device::movep_l_dd_das_ipm() // 01c8 f1f8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=14 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -9767,7 +9773,6 @@ void m68000_device::bset_dd_ais_ipm() // 01d0 f1f8
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -9797,6 +9802,7 @@ void m68000_device::bset_dd_ais_ipm() // 01d0 f1f8
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -9861,7 +9867,6 @@ void m68000_device::bset_dd_aips_ipm() // 01d8 f1f8
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -9891,6 +9896,7 @@ void m68000_device::bset_dd_aips_ipm() // 01d8 f1f8
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -9957,7 +9963,6 @@ void m68000_device::bset_dd_pais_ipm() // 01e0 f1f8
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -9987,6 +9992,7 @@ void m68000_device::bset_dd_pais_ipm() // 01e0 f1f8
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -10072,7 +10078,6 @@ void m68000_device::bset_dd_das_ipm() // 01e8 f1f8
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -10102,6 +10107,7 @@ void m68000_device::bset_dd_das_ipm() // 01e8 f1f8
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -10230,7 +10236,6 @@ adsw2:
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -10260,6 +10265,7 @@ adsw2:
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -10344,7 +10350,6 @@ void m68000_device::bset_dd_adr16_ipm() // 01f8 f1ff
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -10374,6 +10379,7 @@ void m68000_device::bset_dd_adr16_ipm() // 01f8 f1ff
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -10483,7 +10489,6 @@ void m68000_device::bset_dd_adr32_ipm() // 01f9 f1ff
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -10513,6 +10518,7 @@ void m68000_device::bset_dd_adr32_ipm() // 01f9 f1ff
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -10574,13 +10580,13 @@ void m68000_device::andi_b_imm8_ds_ipm() // 0200 fff8
 	// 100 roaw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=4 c=2 m=.nzvc  i=b....i. ALU.and_ a=R.dtl:m_dt d=R.dyl:m_da[ry]
 	alu_and8(m_dt, m_da[ry]);
 	sr_nzvc();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -10673,7 +10679,6 @@ void m68000_device::andi_b_imm8_ais_ipm() // 0210 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -10703,6 +10708,7 @@ void m68000_device::andi_b_imm8_ais_ipm() // 0210 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -10792,7 +10798,6 @@ void m68000_device::andi_b_imm8_aips_ipm() // 0218 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -10822,6 +10827,7 @@ void m68000_device::andi_b_imm8_aips_ipm() // 0218 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -10913,7 +10919,6 @@ void m68000_device::andi_b_imm8_pais_ipm() // 0220 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -10943,6 +10948,7 @@ void m68000_device::andi_b_imm8_pais_ipm() // 0220 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -11053,7 +11059,6 @@ void m68000_device::andi_b_imm8_das_ipm() // 0228 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -11083,6 +11088,7 @@ void m68000_device::andi_b_imm8_das_ipm() // 0228 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -11236,7 +11242,6 @@ adsw2:
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -11266,6 +11271,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -11375,7 +11381,6 @@ void m68000_device::andi_b_imm8_adr16_ipm() // 0238 ffff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -11405,6 +11410,7 @@ void m68000_device::andi_b_imm8_adr16_ipm() // 0238 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -11539,7 +11545,6 @@ void m68000_device::andi_b_imm8_adr32_ipm() // 0239 ffff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -11569,6 +11574,7 @@ void m68000_device::andi_b_imm8_adr32_ipm() // 0239 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -11675,12 +11681,12 @@ void m68000_device::andi_imm8_ccr_ipm() // 023c ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=4 c=0 m=.....  i=b...... ALU.and_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -11747,13 +11753,13 @@ void m68000_device::andi_w_imm16_ds_ipm() // 0240 fff8
 	// 100 roaw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=4 c=2 m=.nzvc  i=.....i. ALU.and_ a=R.dtl:m_dt d=R.dyl:m_da[ry]
 	alu_and(m_dt, m_da[ry]);
 	sr_nzvc();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -11850,7 +11856,6 @@ void m68000_device::andi_w_imm16_ais_ipm() // 0250 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -11880,6 +11885,7 @@ void m68000_device::andi_w_imm16_ais_ipm() // 0250 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -11979,7 +11985,6 @@ void m68000_device::andi_w_imm16_aips_ipm() // 0258 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -12009,6 +12014,7 @@ void m68000_device::andi_w_imm16_aips_ipm() // 0258 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -12110,7 +12116,6 @@ void m68000_device::andi_w_imm16_pais_ipm() // 0260 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -12140,6 +12145,7 @@ void m68000_device::andi_w_imm16_pais_ipm() // 0260 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -12260,7 +12266,6 @@ void m68000_device::andi_w_imm16_das_ipm() // 0268 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -12290,6 +12295,7 @@ void m68000_device::andi_w_imm16_das_ipm() // 0268 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -12453,7 +12459,6 @@ adsw2:
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -12483,6 +12488,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -12602,7 +12608,6 @@ void m68000_device::andi_w_imm16_adr16_ipm() // 0278 ffff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -12632,6 +12637,7 @@ void m68000_device::andi_w_imm16_adr16_ipm() // 0278 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -12776,7 +12782,6 @@ void m68000_device::andi_w_imm16_adr32_ipm() // 0279 ffff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -12806,6 +12811,7 @@ void m68000_device::andi_w_imm16_adr32_ipm() // 0279 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -12924,12 +12930,12 @@ void m68000_device::andi_i16u_sr_ipm() // 027c ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=4 c=0 m=.....  i=....... ALU.and_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -13021,7 +13027,6 @@ void m68000_device::andi_l_imm32_ds_ipm() // 0280 fff8
 	// 10c roal1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=4 c=2 m=.nzvc  i=.l...i. ALU.and_ a=R.dtl:m_dt d=R.dyl:m_da[ry]
 	alu_and(m_dt, m_da[ry]);
@@ -13057,6 +13062,7 @@ void m68000_device::andi_l_imm32_ds_ipm() // 0280 fff8
 	m_icount -= 2;
 	// 25b roal4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=4 c=0 m=.....  i=.l..... ALU.and_ a=R.aluo:m_aluo d=none
@@ -13182,7 +13188,6 @@ void m68000_device::andi_l_imm32_ais_ipm() // 0290 fff8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -13238,6 +13243,7 @@ void m68000_device::andi_l_imm32_ais_ipm() // 0290 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -13385,7 +13391,6 @@ void m68000_device::andi_l_imm32_aips_ipm() // 0298 fff8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -13441,6 +13446,7 @@ void m68000_device::andi_l_imm32_aips_ipm() // 0298 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -13589,7 +13595,6 @@ void m68000_device::andi_l_imm32_pais_ipm() // 02a0 fff8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -13645,6 +13650,7 @@ void m68000_device::andi_l_imm32_pais_ipm() // 02a0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -13813,7 +13819,6 @@ void m68000_device::andi_l_imm32_das_ipm() // 02a8 fff8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -13869,6 +13874,7 @@ void m68000_device::andi_l_imm32_das_ipm() // 02a8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 15:
@@ -14080,7 +14086,6 @@ adsl2:
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -14136,6 +14141,7 @@ adsl2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 15:
@@ -14307,7 +14313,6 @@ void m68000_device::andi_l_imm32_adr16_ipm() // 02b8 ffff
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -14363,6 +14368,7 @@ void m68000_device::andi_l_imm32_adr16_ipm() // 02b8 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 15:
@@ -14559,7 +14565,6 @@ void m68000_device::andi_l_imm32_adr32_ipm() // 02b9 ffff
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -14615,6 +14620,7 @@ void m68000_device::andi_l_imm32_adr32_ipm() // 02b9 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 17:
@@ -14680,13 +14686,13 @@ void m68000_device::subi_b_imm8_ds_ipm() // 0400 fff8
 	// 100 roaw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=5 c=2 m=xnzvc  i=b....i. ALU.sub a=R.dtl:m_dt d=R.dyl:m_da[ry]
 	alu_sub8(m_dt, m_da[ry]);
 	sr_xnzvc();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -14776,7 +14782,6 @@ void m68000_device::subi_b_imm8_ais_ipm() // 0410 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -14806,6 +14811,7 @@ void m68000_device::subi_b_imm8_ais_ipm() // 0410 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -14891,7 +14897,6 @@ void m68000_device::subi_b_imm8_aips_ipm() // 0418 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -14921,6 +14926,7 @@ void m68000_device::subi_b_imm8_aips_ipm() // 0418 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -15008,7 +15014,6 @@ void m68000_device::subi_b_imm8_pais_ipm() // 0420 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -15038,6 +15043,7 @@ void m68000_device::subi_b_imm8_pais_ipm() // 0420 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -15144,7 +15150,6 @@ void m68000_device::subi_b_imm8_das_ipm() // 0428 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -15174,6 +15179,7 @@ void m68000_device::subi_b_imm8_das_ipm() // 0428 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -15321,7 +15327,6 @@ adsw2:
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -15351,6 +15356,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -15456,7 +15462,6 @@ void m68000_device::subi_b_imm8_adr16_ipm() // 0438 ffff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -15486,6 +15491,7 @@ void m68000_device::subi_b_imm8_adr16_ipm() // 0438 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -15615,7 +15621,6 @@ void m68000_device::subi_b_imm8_adr32_ipm() // 0439 ffff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -15645,6 +15650,7 @@ void m68000_device::subi_b_imm8_adr32_ipm() // 0439 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -15703,13 +15709,13 @@ void m68000_device::subi_w_imm16_ds_ipm() // 0440 fff8
 	// 100 roaw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=5 c=2 m=xnzvc  i=.....i. ALU.sub a=R.dtl:m_dt d=R.dyl:m_da[ry]
 	alu_sub(m_dt, m_da[ry]);
 	sr_xnzvc();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -15803,7 +15809,6 @@ void m68000_device::subi_w_imm16_ais_ipm() // 0450 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -15833,6 +15838,7 @@ void m68000_device::subi_w_imm16_ais_ipm() // 0450 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -15928,7 +15934,6 @@ void m68000_device::subi_w_imm16_aips_ipm() // 0458 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -15958,6 +15963,7 @@ void m68000_device::subi_w_imm16_aips_ipm() // 0458 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -16055,7 +16061,6 @@ void m68000_device::subi_w_imm16_pais_ipm() // 0460 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -16085,6 +16090,7 @@ void m68000_device::subi_w_imm16_pais_ipm() // 0460 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -16201,7 +16207,6 @@ void m68000_device::subi_w_imm16_das_ipm() // 0468 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -16231,6 +16236,7 @@ void m68000_device::subi_w_imm16_das_ipm() // 0468 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -16388,7 +16394,6 @@ adsw2:
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -16418,6 +16423,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -16533,7 +16539,6 @@ void m68000_device::subi_w_imm16_adr16_ipm() // 0478 ffff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -16563,6 +16568,7 @@ void m68000_device::subi_w_imm16_adr16_ipm() // 0478 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -16702,7 +16708,6 @@ void m68000_device::subi_w_imm16_adr32_ipm() // 0479 ffff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -16732,6 +16737,7 @@ void m68000_device::subi_w_imm16_adr32_ipm() // 0479 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -16820,7 +16826,6 @@ void m68000_device::subi_l_imm32_ds_ipm() // 0480 fff8
 	// 10c roal1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=5 c=2 m=xnzvc  i=.l...i. ALU.sub a=R.dtl:m_dt d=R.dyl:m_da[ry]
 	alu_sub(m_dt, m_da[ry]);
@@ -16855,6 +16860,7 @@ void m68000_device::subi_l_imm32_ds_ipm() // 0480 fff8
 	m_icount -= 2;
 	// 25b roal4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -16976,7 +16982,6 @@ void m68000_device::subi_l_imm32_ais_ipm() // 0490 fff8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -17032,6 +17037,7 @@ void m68000_device::subi_l_imm32_ais_ipm() // 0490 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -17174,7 +17180,6 @@ void m68000_device::subi_l_imm32_aips_ipm() // 0498 fff8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -17230,6 +17235,7 @@ void m68000_device::subi_l_imm32_aips_ipm() // 0498 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -17373,7 +17379,6 @@ void m68000_device::subi_l_imm32_pais_ipm() // 04a0 fff8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -17429,6 +17434,7 @@ void m68000_device::subi_l_imm32_pais_ipm() // 04a0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -17592,7 +17598,6 @@ void m68000_device::subi_l_imm32_das_ipm() // 04a8 fff8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -17648,6 +17653,7 @@ void m68000_device::subi_l_imm32_das_ipm() // 04a8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 15:
@@ -17852,7 +17858,6 @@ adsl2:
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -17908,6 +17913,7 @@ adsl2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 15:
@@ -18073,7 +18079,6 @@ void m68000_device::subi_l_imm32_adr16_ipm() // 04b8 ffff
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -18129,6 +18134,7 @@ void m68000_device::subi_l_imm32_adr16_ipm() // 04b8 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 15:
@@ -18318,7 +18324,6 @@ void m68000_device::subi_l_imm32_adr32_ipm() // 04b9 ffff
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -18374,6 +18379,7 @@ void m68000_device::subi_l_imm32_adr32_ipm() // 04b9 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 17:
@@ -18438,13 +18444,13 @@ void m68000_device::addi_b_imm8_ds_ipm() // 0600 fff8
 	// 100 roaw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=2 c=2 m=xnzvc  i=b....i. ALU.add a=R.dtl:m_dt d=R.dyl:m_da[ry]
 	alu_add8(m_dt, m_da[ry]);
 	sr_xnzvc();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -18534,7 +18540,6 @@ void m68000_device::addi_b_imm8_ais_ipm() // 0610 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -18564,6 +18569,7 @@ void m68000_device::addi_b_imm8_ais_ipm() // 0610 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -18649,7 +18655,6 @@ void m68000_device::addi_b_imm8_aips_ipm() // 0618 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -18679,6 +18684,7 @@ void m68000_device::addi_b_imm8_aips_ipm() // 0618 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -18766,7 +18772,6 @@ void m68000_device::addi_b_imm8_pais_ipm() // 0620 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -18796,6 +18801,7 @@ void m68000_device::addi_b_imm8_pais_ipm() // 0620 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -18902,7 +18908,6 @@ void m68000_device::addi_b_imm8_das_ipm() // 0628 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -18932,6 +18937,7 @@ void m68000_device::addi_b_imm8_das_ipm() // 0628 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -19079,7 +19085,6 @@ adsw2:
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -19109,6 +19114,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -19214,7 +19220,6 @@ void m68000_device::addi_b_imm8_adr16_ipm() // 0638 ffff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -19244,6 +19249,7 @@ void m68000_device::addi_b_imm8_adr16_ipm() // 0638 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -19373,7 +19379,6 @@ void m68000_device::addi_b_imm8_adr32_ipm() // 0639 ffff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -19403,6 +19408,7 @@ void m68000_device::addi_b_imm8_adr32_ipm() // 0639 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -19461,13 +19467,13 @@ void m68000_device::addi_w_imm16_ds_ipm() // 0640 fff8
 	// 100 roaw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=2 c=2 m=xnzvc  i=.....i. ALU.add a=R.dtl:m_dt d=R.dyl:m_da[ry]
 	alu_add(m_dt, m_da[ry]);
 	sr_xnzvc();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -19561,7 +19567,6 @@ void m68000_device::addi_w_imm16_ais_ipm() // 0650 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -19591,6 +19596,7 @@ void m68000_device::addi_w_imm16_ais_ipm() // 0650 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -19686,7 +19692,6 @@ void m68000_device::addi_w_imm16_aips_ipm() // 0658 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -19716,6 +19721,7 @@ void m68000_device::addi_w_imm16_aips_ipm() // 0658 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -19813,7 +19819,6 @@ void m68000_device::addi_w_imm16_pais_ipm() // 0660 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -19843,6 +19848,7 @@ void m68000_device::addi_w_imm16_pais_ipm() // 0660 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -19959,7 +19965,6 @@ void m68000_device::addi_w_imm16_das_ipm() // 0668 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -19989,6 +19994,7 @@ void m68000_device::addi_w_imm16_das_ipm() // 0668 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -20146,7 +20152,6 @@ adsw2:
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -20176,6 +20181,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -20291,7 +20297,6 @@ void m68000_device::addi_w_imm16_adr16_ipm() // 0678 ffff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -20321,6 +20326,7 @@ void m68000_device::addi_w_imm16_adr16_ipm() // 0678 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -20460,7 +20466,6 @@ void m68000_device::addi_w_imm16_adr32_ipm() // 0679 ffff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -20490,6 +20495,7 @@ void m68000_device::addi_w_imm16_adr32_ipm() // 0679 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -20578,7 +20584,6 @@ void m68000_device::addi_l_imm32_ds_ipm() // 0680 fff8
 	// 10c roal1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=2 c=2 m=xnzvc  i=.l...i. ALU.add a=R.dtl:m_dt d=R.dyl:m_da[ry]
 	alu_add(m_dt, m_da[ry]);
@@ -20613,6 +20618,7 @@ void m68000_device::addi_l_imm32_ds_ipm() // 0680 fff8
 	m_icount -= 2;
 	// 25b roal4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -20734,7 +20740,6 @@ void m68000_device::addi_l_imm32_ais_ipm() // 0690 fff8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -20790,6 +20795,7 @@ void m68000_device::addi_l_imm32_ais_ipm() // 0690 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -20932,7 +20938,6 @@ void m68000_device::addi_l_imm32_aips_ipm() // 0698 fff8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -20988,6 +20993,7 @@ void m68000_device::addi_l_imm32_aips_ipm() // 0698 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -21131,7 +21137,6 @@ void m68000_device::addi_l_imm32_pais_ipm() // 06a0 fff8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -21187,6 +21192,7 @@ void m68000_device::addi_l_imm32_pais_ipm() // 06a0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -21350,7 +21356,6 @@ void m68000_device::addi_l_imm32_das_ipm() // 06a8 fff8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -21406,6 +21411,7 @@ void m68000_device::addi_l_imm32_das_ipm() // 06a8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 15:
@@ -21610,7 +21616,6 @@ adsl2:
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -21666,6 +21671,7 @@ adsl2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 15:
@@ -21831,7 +21837,6 @@ void m68000_device::addi_l_imm32_adr16_ipm() // 06b8 ffff
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -21887,6 +21892,7 @@ void m68000_device::addi_l_imm32_adr16_ipm() // 06b8 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 15:
@@ -22076,7 +22082,6 @@ void m68000_device::addi_l_imm32_adr32_ipm() // 06b9 ffff
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -22132,6 +22137,7 @@ void m68000_device::addi_l_imm32_adr32_ipm() // 06b9 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 17:
@@ -22197,7 +22203,6 @@ void m68000_device::btst_imm8_ds_ipm() // 0800 fff8
 	// 3e7 btsr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_dcr = m_dt;
 	m_at = m_dt;
@@ -22238,6 +22243,7 @@ void m68000_device::btst_imm8_ds_ipm() // 0800 fff8
 bcsr4:
 	// 0c4 bcsr4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_da[ry], m_aluo);
 	// alu r=13 c=1 m=..z..  i=.....i. ALU.and_ a=alub d=R.dcro:m_dcro
 	alu_and(m_alub, 1 << (m_dcr & 15));
@@ -22252,6 +22258,7 @@ bcsr4:
 btsr3:
 	// 044 btsr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	// alu r=13 c=1 m=..z..  i=.....i. ALU.and_ a=18:m_da[ry] d=R.dcro:m_dcro
 	alu_and(high16(m_da[ry]), 1 << (m_dcr & 15));
 	sr_z();
@@ -22324,7 +22331,6 @@ void m68000_device::btst_imm8_ais_ipm() // 0810 fff8
 	// 215 btsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -22332,6 +22338,7 @@ void m68000_device::btst_imm8_ais_ipm() // 0810 fff8
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -22427,7 +22434,6 @@ void m68000_device::btst_imm8_aips_ipm() // 0818 fff8
 	// 215 btsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -22435,6 +22441,7 @@ void m68000_device::btst_imm8_aips_ipm() // 0818 fff8
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -22532,7 +22539,6 @@ void m68000_device::btst_imm8_pais_ipm() // 0820 fff8
 	// 215 btsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -22540,6 +22546,7 @@ void m68000_device::btst_imm8_pais_ipm() // 0820 fff8
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -22656,7 +22663,6 @@ void m68000_device::btst_imm8_das_ipm() // 0828 fff8
 	// 215 btsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -22664,6 +22670,7 @@ void m68000_device::btst_imm8_das_ipm() // 0828 fff8
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -22823,7 +22830,6 @@ adsw2:
 	// 215 btsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -22831,6 +22837,7 @@ adsw2:
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -22946,7 +22953,6 @@ void m68000_device::btst_imm8_adr16_ipm() // 0838 ffff
 	// 215 btsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -22954,6 +22960,7 @@ void m68000_device::btst_imm8_adr16_ipm() // 0838 ffff
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -23094,7 +23101,6 @@ void m68000_device::btst_imm8_adr32_ipm() // 0839 ffff
 	// 215 btsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -23102,6 +23108,7 @@ void m68000_device::btst_imm8_adr32_ipm() // 0839 ffff
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -23217,7 +23224,6 @@ void m68000_device::btst_imm8_dpc_ipm() // 083a ffff
 	// 215 btsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -23225,6 +23231,7 @@ void m68000_device::btst_imm8_dpc_ipm() // 083a ffff
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -23383,7 +23390,6 @@ adsw2:
 	// 215 btsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=13 c=1 m=..z..  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -23391,6 +23397,7 @@ adsw2:
 	sr_z();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -23457,7 +23464,6 @@ void m68000_device::bchg_imm8_ds_ipm() // 0840 fff8
 	// 3ef bcsr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_dcr = m_dt;
 	m_at = m_dt;
@@ -23498,6 +23504,7 @@ void m68000_device::bchg_imm8_ds_ipm() // 0840 fff8
 bcsr4:
 	// 0c4 bcsr4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_da[ry], m_aluo);
 	// alu r=13 c=1 m=..z..  i=.....i. ALU.and_ a=alub d=R.dcro:m_dcro
 	alu_and(m_alub, 1 << (m_dcr & 15));
@@ -23517,6 +23524,7 @@ bcsr3:
 	m_icount -= 2;
 	// 0a1 bcsr5
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[ry], m_aluo);
 	// alu r=13 c=1 m=..z..  i=.....i. ALU.and_ a=alub d=R.dcro:m_dcro
 	alu_and(m_alub, 1 << (m_dcr & 15));
@@ -23590,7 +23598,6 @@ void m68000_device::bchg_imm8_ais_ipm() // 0850 fff8
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -23620,6 +23627,7 @@ void m68000_device::bchg_imm8_ais_ipm() // 0850 fff8
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -23710,7 +23718,6 @@ void m68000_device::bchg_imm8_aips_ipm() // 0858 fff8
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -23740,6 +23747,7 @@ void m68000_device::bchg_imm8_aips_ipm() // 0858 fff8
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -23832,7 +23840,6 @@ void m68000_device::bchg_imm8_pais_ipm() // 0860 fff8
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -23862,6 +23869,7 @@ void m68000_device::bchg_imm8_pais_ipm() // 0860 fff8
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -23973,7 +23981,6 @@ void m68000_device::bchg_imm8_das_ipm() // 0868 fff8
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -24003,6 +24010,7 @@ void m68000_device::bchg_imm8_das_ipm() // 0868 fff8
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -24157,7 +24165,6 @@ adsw2:
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -24187,6 +24194,7 @@ adsw2:
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -24297,7 +24305,6 @@ void m68000_device::bchg_imm8_adr16_ipm() // 0878 ffff
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -24327,6 +24334,7 @@ void m68000_device::bchg_imm8_adr16_ipm() // 0878 ffff
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -24462,7 +24470,6 @@ void m68000_device::bchg_imm8_adr32_ipm() // 0879 ffff
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -24492,6 +24499,7 @@ void m68000_device::bchg_imm8_adr32_ipm() // 0879 ffff
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -24553,7 +24561,6 @@ void m68000_device::bclr_imm8_ds_ipm() // 0880 fff8
 	// 3eb bclr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_dcr = m_dt;
 	m_at = m_dt;
@@ -24598,6 +24605,7 @@ bclr4:
 	m_icount -= 2;
 	// 0c4 bcsr4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_da[ry], m_aluo);
 	// alu r=14 c=1 m=..z..  i=.l...i. ALU.and_ a=alub d=R.dcro:m_dcro
 	alu_and(m_alub, 1 << (m_dcr & 15));
@@ -24621,6 +24629,7 @@ bclr3:
 	m_icount -= 2;
 	// 0a1 bcsr5
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[ry], m_aluo);
 	// alu r=14 c=1 m=..z..  i=.l...i. ALU.and_ a=alub d=R.dcro:m_dcro
 	alu_and(m_alub, 1 << (m_dcr & 15));
@@ -24694,7 +24703,6 @@ void m68000_device::bclr_imm8_ais_ipm() // 0890 fff8
 	// 069 bclm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
 	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -24728,6 +24736,7 @@ void m68000_device::bclr_imm8_ais_ipm() // 0890 fff8
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -24818,7 +24827,6 @@ void m68000_device::bclr_imm8_aips_ipm() // 0898 fff8
 	// 069 bclm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
 	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -24852,6 +24860,7 @@ void m68000_device::bclr_imm8_aips_ipm() // 0898 fff8
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -24944,7 +24953,6 @@ void m68000_device::bclr_imm8_pais_ipm() // 08a0 fff8
 	// 069 bclm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
 	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -24978,6 +24986,7 @@ void m68000_device::bclr_imm8_pais_ipm() // 08a0 fff8
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -25089,7 +25098,6 @@ void m68000_device::bclr_imm8_das_ipm() // 08a8 fff8
 	// 069 bclm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
 	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -25123,6 +25131,7 @@ void m68000_device::bclr_imm8_das_ipm() // 08a8 fff8
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -25277,7 +25286,6 @@ adsw2:
 	// 069 bclm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
 	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -25311,6 +25319,7 @@ adsw2:
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -25421,7 +25430,6 @@ void m68000_device::bclr_imm8_adr16_ipm() // 08b8 ffff
 	// 069 bclm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
 	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -25455,6 +25463,7 @@ void m68000_device::bclr_imm8_adr16_ipm() // 08b8 ffff
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -25590,7 +25599,6 @@ void m68000_device::bclr_imm8_adr32_ipm() // 08b9 ffff
 	// 069 bclm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
 	// alu r=14 c=2 m=.....  i=bl..... ALU.or_ a=R.dbin:m_dbin d=R.dcro8:m_dcro8
@@ -25624,6 +25632,7 @@ void m68000_device::bclr_imm8_adr32_ipm() // 08b9 ffff
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -25685,7 +25694,6 @@ void m68000_device::bset_imm8_ds_ipm() // 08c0 fff8
 	// 3ef bcsr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_dcr = m_dt;
 	m_at = m_dt;
@@ -25726,6 +25734,7 @@ void m68000_device::bset_imm8_ds_ipm() // 08c0 fff8
 bcsr4:
 	// 0c4 bcsr4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_da[ry], m_aluo);
 	// alu r=14 c=1 m=..z..  i=.....i. ALU.and_ a=alub d=R.dcro:m_dcro
 	alu_and(m_alub, 1 << (m_dcr & 15));
@@ -25745,6 +25754,7 @@ bcsr3:
 	m_icount -= 2;
 	// 0a1 bcsr5
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[ry], m_aluo);
 	// alu r=14 c=1 m=..z..  i=.....i. ALU.and_ a=alub d=R.dcro:m_dcro
 	alu_and(m_alub, 1 << (m_dcr & 15));
@@ -25818,7 +25828,6 @@ void m68000_device::bset_imm8_ais_ipm() // 08d0 fff8
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -25848,6 +25857,7 @@ void m68000_device::bset_imm8_ais_ipm() // 08d0 fff8
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -25938,7 +25948,6 @@ void m68000_device::bset_imm8_aips_ipm() // 08d8 fff8
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -25968,6 +25977,7 @@ void m68000_device::bset_imm8_aips_ipm() // 08d8 fff8
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -26060,7 +26070,6 @@ void m68000_device::bset_imm8_pais_ipm() // 08e0 fff8
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -26090,6 +26099,7 @@ void m68000_device::bset_imm8_pais_ipm() // 08e0 fff8
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -26201,7 +26211,6 @@ void m68000_device::bset_imm8_das_ipm() // 08e8 fff8
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -26231,6 +26240,7 @@ void m68000_device::bset_imm8_das_ipm() // 08e8 fff8
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -26385,7 +26395,6 @@ adsw2:
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -26415,6 +26424,7 @@ adsw2:
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -26525,7 +26535,6 @@ void m68000_device::bset_imm8_adr16_ipm() // 08f8 ffff
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -26555,6 +26564,7 @@ void m68000_device::bset_imm8_adr16_ipm() // 08f8 ffff
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -26690,7 +26700,6 @@ void m68000_device::bset_imm8_adr32_ipm() // 08f9 ffff
 	// 081 bcsm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -26720,6 +26729,7 @@ void m68000_device::bset_imm8_adr32_ipm() // 08f9 ffff
 	// 082 bcsm2
 	m_aob = m_at;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -26781,13 +26791,13 @@ void m68000_device::eori_b_imm8_ds_ipm() // 0a00 fff8
 	// 100 roaw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=13 c=2 m=.nzvc  i=b....i. ALU.eor a=R.dtl:m_dt d=R.dyl:m_da[ry]
 	alu_eor8(m_dt, m_da[ry]);
 	sr_nzvc();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -26880,7 +26890,6 @@ void m68000_device::eori_b_imm8_ais_ipm() // 0a10 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -26910,6 +26919,7 @@ void m68000_device::eori_b_imm8_ais_ipm() // 0a10 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -26999,7 +27009,6 @@ void m68000_device::eori_b_imm8_aips_ipm() // 0a18 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -27029,6 +27038,7 @@ void m68000_device::eori_b_imm8_aips_ipm() // 0a18 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -27120,7 +27130,6 @@ void m68000_device::eori_b_imm8_pais_ipm() // 0a20 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -27150,6 +27159,7 @@ void m68000_device::eori_b_imm8_pais_ipm() // 0a20 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -27260,7 +27270,6 @@ void m68000_device::eori_b_imm8_das_ipm() // 0a28 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -27290,6 +27299,7 @@ void m68000_device::eori_b_imm8_das_ipm() // 0a28 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -27443,7 +27453,6 @@ adsw2:
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -27473,6 +27482,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -27582,7 +27592,6 @@ void m68000_device::eori_b_imm8_adr16_ipm() // 0a38 ffff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -27612,6 +27621,7 @@ void m68000_device::eori_b_imm8_adr16_ipm() // 0a38 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -27746,7 +27756,6 @@ void m68000_device::eori_b_imm8_adr32_ipm() // 0a39 ffff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -27776,6 +27785,7 @@ void m68000_device::eori_b_imm8_adr32_ipm() // 0a39 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -27882,12 +27892,12 @@ void m68000_device::eori_imm8_ccr_ipm() // 0a3c ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=13 c=0 m=.....  i=b...... ALU.eor a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -27954,13 +27964,13 @@ void m68000_device::eori_w_imm16_ds_ipm() // 0a40 fff8
 	// 100 roaw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=13 c=2 m=.nzvc  i=.....i. ALU.eor a=R.dtl:m_dt d=R.dyl:m_da[ry]
 	alu_eor(m_dt, m_da[ry]);
 	sr_nzvc();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -28057,7 +28067,6 @@ void m68000_device::eori_w_imm16_ais_ipm() // 0a50 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -28087,6 +28096,7 @@ void m68000_device::eori_w_imm16_ais_ipm() // 0a50 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -28186,7 +28196,6 @@ void m68000_device::eori_w_imm16_aips_ipm() // 0a58 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -28216,6 +28225,7 @@ void m68000_device::eori_w_imm16_aips_ipm() // 0a58 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -28317,7 +28327,6 @@ void m68000_device::eori_w_imm16_pais_ipm() // 0a60 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -28347,6 +28356,7 @@ void m68000_device::eori_w_imm16_pais_ipm() // 0a60 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -28467,7 +28477,6 @@ void m68000_device::eori_w_imm16_das_ipm() // 0a68 fff8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -28497,6 +28506,7 @@ void m68000_device::eori_w_imm16_das_ipm() // 0a68 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -28660,7 +28670,6 @@ adsw2:
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -28690,6 +28699,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -28809,7 +28819,6 @@ void m68000_device::eori_w_imm16_adr16_ipm() // 0a78 ffff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -28839,6 +28848,7 @@ void m68000_device::eori_w_imm16_adr16_ipm() // 0a78 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -28983,7 +28993,6 @@ void m68000_device::eori_w_imm16_adr32_ipm() // 0a79 ffff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -29013,6 +29022,7 @@ void m68000_device::eori_w_imm16_adr32_ipm() // 0a79 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -29131,12 +29141,12 @@ void m68000_device::eori_i16u_sr_ipm() // 0a7c ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=13 c=0 m=.....  i=....... ALU.eor a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -29228,7 +29238,6 @@ void m68000_device::eori_l_imm32_ds_ipm() // 0a80 fff8
 	// 10c roal1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=13 c=2 m=.nzvc  i=.l...i. ALU.eor a=R.dtl:m_dt d=R.dyl:m_da[ry]
 	alu_eor(m_dt, m_da[ry]);
@@ -29264,6 +29273,7 @@ void m68000_device::eori_l_imm32_ds_ipm() // 0a80 fff8
 	m_icount -= 2;
 	// 25b roal4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=13 c=0 m=.....  i=.l..... ALU.eor a=R.aluo:m_aluo d=none
@@ -29389,7 +29399,6 @@ void m68000_device::eori_l_imm32_ais_ipm() // 0a90 fff8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -29445,6 +29454,7 @@ void m68000_device::eori_l_imm32_ais_ipm() // 0a90 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -29592,7 +29602,6 @@ void m68000_device::eori_l_imm32_aips_ipm() // 0a98 fff8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -29648,6 +29657,7 @@ void m68000_device::eori_l_imm32_aips_ipm() // 0a98 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -29796,7 +29806,6 @@ void m68000_device::eori_l_imm32_pais_ipm() // 0aa0 fff8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -29852,6 +29861,7 @@ void m68000_device::eori_l_imm32_pais_ipm() // 0aa0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -30020,7 +30030,6 @@ void m68000_device::eori_l_imm32_das_ipm() // 0aa8 fff8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -30076,6 +30085,7 @@ void m68000_device::eori_l_imm32_das_ipm() // 0aa8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 15:
@@ -30287,7 +30297,6 @@ adsl2:
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -30343,6 +30352,7 @@ adsl2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 15:
@@ -30514,7 +30524,6 @@ void m68000_device::eori_l_imm32_adr16_ipm() // 0ab8 ffff
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -30570,6 +30579,7 @@ void m68000_device::eori_l_imm32_adr16_ipm() // 0ab8 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 15:
@@ -30766,7 +30776,6 @@ void m68000_device::eori_l_imm32_adr32_ipm() // 0ab9 ffff
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -30822,6 +30831,7 @@ void m68000_device::eori_l_imm32_adr32_ipm() // 0ab9 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 17:
@@ -30887,13 +30897,13 @@ void m68000_device::cmpi_b_imm8_ds_ipm() // 0c00 fff8
 	// 108 rcaw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=6 c=2 m=.nzvc  i=b....i. ALU.sub a=R.dtl:m_dt d=R.dyl:m_da[ry]
 	alu_sub8(m_dt, m_da[ry]);
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -30982,7 +30992,6 @@ void m68000_device::cmpi_b_imm8_ais_ipm() // 0c10 fff8
 	// 087 cpdw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=6 c=2 m=.nzvc  i=b....i. ALU.sub a=R.dtl:m_dt d=R.dbin:m_dbin
@@ -30990,6 +30999,7 @@ void m68000_device::cmpi_b_imm8_ais_ipm() // 0c10 fff8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -31081,7 +31091,6 @@ void m68000_device::cmpi_b_imm8_aips_ipm() // 0c18 fff8
 	// 087 cpdw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=6 c=2 m=.nzvc  i=b....i. ALU.sub a=R.dtl:m_dt d=R.dbin:m_dbin
@@ -31089,6 +31098,7 @@ void m68000_device::cmpi_b_imm8_aips_ipm() // 0c18 fff8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -31182,7 +31192,6 @@ void m68000_device::cmpi_b_imm8_pais_ipm() // 0c20 fff8
 	// 087 cpdw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=6 c=2 m=.nzvc  i=b....i. ALU.sub a=R.dtl:m_dt d=R.dbin:m_dbin
@@ -31190,6 +31199,7 @@ void m68000_device::cmpi_b_imm8_pais_ipm() // 0c20 fff8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -31302,7 +31312,6 @@ void m68000_device::cmpi_b_imm8_das_ipm() // 0c28 fff8
 	// 087 cpdw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=6 c=2 m=.nzvc  i=b....i. ALU.sub a=R.dtl:m_dt d=R.dbin:m_dbin
@@ -31310,6 +31319,7 @@ void m68000_device::cmpi_b_imm8_das_ipm() // 0c28 fff8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -31463,7 +31473,6 @@ adsw2:
 	// 087 cpdw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=6 c=2 m=.nzvc  i=b....i. ALU.sub a=R.dtl:m_dt d=R.dbin:m_dbin
@@ -31471,6 +31480,7 @@ adsw2:
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -31582,7 +31592,6 @@ void m68000_device::cmpi_b_imm8_adr16_ipm() // 0c38 ffff
 	// 087 cpdw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=6 c=2 m=.nzvc  i=b....i. ALU.sub a=R.dtl:m_dt d=R.dbin:m_dbin
@@ -31590,6 +31599,7 @@ void m68000_device::cmpi_b_imm8_adr16_ipm() // 0c38 ffff
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -31725,7 +31735,6 @@ void m68000_device::cmpi_b_imm8_adr32_ipm() // 0c39 ffff
 	// 087 cpdw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=6 c=2 m=.nzvc  i=b....i. ALU.sub a=R.dtl:m_dt d=R.dbin:m_dbin
@@ -31733,6 +31742,7 @@ void m68000_device::cmpi_b_imm8_adr32_ipm() // 0c39 ffff
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -31797,13 +31807,13 @@ void m68000_device::cmpi_w_imm16_ds_ipm() // 0c40 fff8
 	// 108 rcaw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dtl:m_dt d=R.dyl:m_da[ry]
 	alu_sub(m_dt, m_da[ry]);
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -31896,7 +31906,6 @@ void m68000_device::cmpi_w_imm16_ais_ipm() // 0c50 fff8
 	// 087 cpdw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dtl:m_dt d=R.dbin:m_dbin
@@ -31904,6 +31913,7 @@ void m68000_device::cmpi_w_imm16_ais_ipm() // 0c50 fff8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -31999,7 +32009,6 @@ void m68000_device::cmpi_w_imm16_aips_ipm() // 0c58 fff8
 	// 087 cpdw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dtl:m_dt d=R.dbin:m_dbin
@@ -32007,6 +32016,7 @@ void m68000_device::cmpi_w_imm16_aips_ipm() // 0c58 fff8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -32104,7 +32114,6 @@ void m68000_device::cmpi_w_imm16_pais_ipm() // 0c60 fff8
 	// 087 cpdw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dtl:m_dt d=R.dbin:m_dbin
@@ -32112,6 +32121,7 @@ void m68000_device::cmpi_w_imm16_pais_ipm() // 0c60 fff8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -32228,7 +32238,6 @@ void m68000_device::cmpi_w_imm16_das_ipm() // 0c68 fff8
 	// 087 cpdw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dtl:m_dt d=R.dbin:m_dbin
@@ -32236,6 +32245,7 @@ void m68000_device::cmpi_w_imm16_das_ipm() // 0c68 fff8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -32393,7 +32403,6 @@ adsw2:
 	// 087 cpdw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dtl:m_dt d=R.dbin:m_dbin
@@ -32401,6 +32410,7 @@ adsw2:
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -32516,7 +32526,6 @@ void m68000_device::cmpi_w_imm16_adr16_ipm() // 0c78 ffff
 	// 087 cpdw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dtl:m_dt d=R.dbin:m_dbin
@@ -32524,6 +32533,7 @@ void m68000_device::cmpi_w_imm16_adr16_ipm() // 0c78 ffff
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -32663,7 +32673,6 @@ void m68000_device::cmpi_w_imm16_adr32_ipm() // 0c79 ffff
 	// 087 cpdw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dtl:m_dt d=R.dbin:m_dbin
@@ -32671,6 +32680,7 @@ void m68000_device::cmpi_w_imm16_adr32_ipm() // 0c79 ffff
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -32760,7 +32770,6 @@ void m68000_device::cmpi_l_imm32_ds_ipm() // 0c80 fff8
 	// 104 rcal1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=6 c=2 m=.nzvc  i=.l...i. ALU.sub a=R.dtl:m_dt d=R.dyl:m_da[ry]
 	alu_sub(m_dt, m_da[ry]);
@@ -32792,6 +32801,7 @@ void m68000_device::cmpi_l_imm32_ds_ipm() // 0c80 fff8
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -32912,7 +32922,6 @@ void m68000_device::cmpi_l_imm32_ais_ipm() // 0c90 fff8
 	// 08f cpdl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=6 c=2 m=.nzvc  i=.l...i. ALU.sub a=R.dtl:m_dt d=R.dbin:m_dbin
@@ -32920,6 +32929,7 @@ void m68000_device::cmpi_l_imm32_ais_ipm() // 0c90 fff8
 	sr_nzvc();
 	// 171 cpdl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -33065,7 +33075,6 @@ void m68000_device::cmpi_l_imm32_aips_ipm() // 0c98 fff8
 	// 08f cpdl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=6 c=2 m=.nzvc  i=.l...i. ALU.sub a=R.dtl:m_dt d=R.dbin:m_dbin
@@ -33073,6 +33082,7 @@ void m68000_device::cmpi_l_imm32_aips_ipm() // 0c98 fff8
 	sr_nzvc();
 	// 171 cpdl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -33219,7 +33229,6 @@ void m68000_device::cmpi_l_imm32_pais_ipm() // 0ca0 fff8
 	// 08f cpdl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=6 c=2 m=.nzvc  i=.l...i. ALU.sub a=R.dtl:m_dt d=R.dbin:m_dbin
@@ -33227,6 +33236,7 @@ void m68000_device::cmpi_l_imm32_pais_ipm() // 0ca0 fff8
 	sr_nzvc();
 	// 171 cpdl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -33393,7 +33403,6 @@ void m68000_device::cmpi_l_imm32_das_ipm() // 0ca8 fff8
 	// 08f cpdl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=6 c=2 m=.nzvc  i=.l...i. ALU.sub a=R.dtl:m_dt d=R.dbin:m_dbin
@@ -33401,6 +33410,7 @@ void m68000_device::cmpi_l_imm32_das_ipm() // 0ca8 fff8
 	sr_nzvc();
 	// 171 cpdl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -33608,7 +33618,6 @@ adsl2:
 	// 08f cpdl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=6 c=2 m=.nzvc  i=.l...i. ALU.sub a=R.dtl:m_dt d=R.dbin:m_dbin
@@ -33616,6 +33625,7 @@ adsl2:
 	sr_nzvc();
 	// 171 cpdl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -33784,7 +33794,6 @@ void m68000_device::cmpi_l_imm32_adr16_ipm() // 0cb8 ffff
 	// 08f cpdl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=6 c=2 m=.nzvc  i=.l...i. ALU.sub a=R.dtl:m_dt d=R.dbin:m_dbin
@@ -33792,6 +33801,7 @@ void m68000_device::cmpi_l_imm32_adr16_ipm() // 0cb8 ffff
 	sr_nzvc();
 	// 171 cpdl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -33984,7 +33994,6 @@ void m68000_device::cmpi_l_imm32_adr32_ipm() // 0cb9 ffff
 	// 08f cpdl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=6 c=2 m=.nzvc  i=.l...i. ALU.sub a=R.dtl:m_dt d=R.dbin:m_dbin
@@ -33992,6 +34001,7 @@ void m68000_device::cmpi_l_imm32_adr32_ipm() // 0cb9 ffff
 	sr_nzvc();
 	// 171 cpdl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -34034,7 +34044,6 @@ void m68000_device::move_b_ds_dd_ipm() // 1000 f1f8
 	// 121 rrgw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = m_da[ry];
 	m_au = m_au + 2;
@@ -34043,6 +34052,7 @@ void m68000_device::move_b_ds_dd_ipm() // 1000 f1f8
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -34107,7 +34117,6 @@ void m68000_device::move_b_ais_dd_ipm() // 1010 f1f8
 	// 29b mrgw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_8(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -34116,6 +34125,7 @@ void m68000_device::move_b_ais_dd_ipm() // 1010 f1f8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -34182,7 +34192,6 @@ void m68000_device::move_b_aips_dd_ipm() // 1018 f1f8
 	// 29b mrgw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_8(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -34191,6 +34200,7 @@ void m68000_device::move_b_aips_dd_ipm() // 1018 f1f8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -34259,7 +34269,6 @@ void m68000_device::move_b_pais_dd_ipm() // 1020 f1f8
 	// 29b mrgw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_8(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -34268,6 +34277,7 @@ void m68000_device::move_b_pais_dd_ipm() // 1020 f1f8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -34355,7 +34365,6 @@ void m68000_device::move_b_das_dd_ipm() // 1028 f1f8
 	// 29b mrgw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_8(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -34364,6 +34373,7 @@ void m68000_device::move_b_das_dd_ipm() // 1028 f1f8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -34492,7 +34502,6 @@ adsw2:
 	// 29b mrgw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_8(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -34501,6 +34510,7 @@ adsw2:
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -34587,7 +34597,6 @@ void m68000_device::move_b_adr16_dd_ipm() // 1038 f1ff
 	// 29b mrgw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_8(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -34596,6 +34605,7 @@ void m68000_device::move_b_adr16_dd_ipm() // 1038 f1ff
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -34706,7 +34716,6 @@ void m68000_device::move_b_adr32_dd_ipm() // 1039 f1ff
 	// 29b mrgw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_8(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -34715,6 +34724,7 @@ void m68000_device::move_b_adr32_dd_ipm() // 1039 f1ff
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -34801,7 +34811,6 @@ void m68000_device::move_b_dpc_dd_ipm() // 103a f1ff
 	// 29b mrgw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_8(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -34810,6 +34819,7 @@ void m68000_device::move_b_dpc_dd_ipm() // 103a f1ff
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -34937,7 +34947,6 @@ adsw2:
 	// 29b mrgw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_8(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -34946,6 +34955,7 @@ adsw2:
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -35011,7 +35021,6 @@ void m68000_device::move_b_imm8_dd_ipm() // 103c f1ff
 	// 121 rrgw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = m_dt;
 	m_au = m_au + 2;
@@ -35020,6 +35029,7 @@ void m68000_device::move_b_imm8_dd_ipm() // 103c f1ff
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -35061,7 +35071,6 @@ void m68000_device::move_b_ds_aid_ipm() // 1080 f1f8
 	// 2fa rmrw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_da[ry]);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 1:
@@ -35084,10 +35093,10 @@ void m68000_device::move_b_ds_aid_ipm() // 1080 f1f8
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -35171,10 +35180,10 @@ void m68000_device::move_b_ais_aid_ipm() // 1090 f1f8
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -35262,10 +35271,10 @@ void m68000_device::move_b_aips_aid_ipm() // 1098 f1f8
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -35355,10 +35364,10 @@ void m68000_device::move_b_pais_aid_ipm() // 10a0 f1f8
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -35467,10 +35476,10 @@ void m68000_device::move_b_das_aid_ipm() // 10a8 f1f8
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -35620,10 +35629,10 @@ adsw2:
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -35731,10 +35740,10 @@ void m68000_device::move_b_adr16_aid_ipm() // 10b8 f1ff
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -35866,10 +35875,10 @@ void m68000_device::move_b_adr32_aid_ipm() // 10b9 f1ff
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -35977,10 +35986,10 @@ void m68000_device::move_b_dpc_aid_ipm() // 10ba f1ff
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -36129,10 +36138,10 @@ adsw2:
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -36198,7 +36207,6 @@ void m68000_device::move_b_imm8_aid_ipm() // 10bc f1ff
 	// 2fa rmrw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_dt);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -36221,10 +36229,10 @@ void m68000_device::move_b_imm8_aid_ipm() // 10bc f1ff
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -36264,7 +36272,6 @@ void m68000_device::move_b_ds_aipd_ipm() // 10c0 f1f8
 	// 2fe rmiw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_da[ry]);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 1:
@@ -36287,6 +36294,7 @@ void m68000_device::move_b_ds_aipd_ipm() // 10c0 f1f8
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -36351,7 +36359,6 @@ void m68000_device::move_b_ais_aipd_ipm() // 10d0 f1f8
 	// 3af mmiw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_dbin);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -36374,6 +36381,7 @@ void m68000_device::move_b_ais_aipd_ipm() // 10d0 f1f8
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -36442,7 +36450,6 @@ void m68000_device::move_b_aips_aipd_ipm() // 10d8 f1f8
 	// 3af mmiw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_dbin);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -36465,6 +36472,7 @@ void m68000_device::move_b_aips_aipd_ipm() // 10d8 f1f8
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -36535,7 +36543,6 @@ void m68000_device::move_b_pais_aipd_ipm() // 10e0 f1f8
 	// 3af mmiw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_dbin);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -36558,6 +36565,7 @@ void m68000_device::move_b_pais_aipd_ipm() // 10e0 f1f8
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -36647,7 +36655,6 @@ void m68000_device::move_b_das_aipd_ipm() // 10e8 f1f8
 	// 3af mmiw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_dbin);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -36670,6 +36677,7 @@ void m68000_device::move_b_das_aipd_ipm() // 10e8 f1f8
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -36800,7 +36808,6 @@ adsw2:
 	// 3af mmiw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_dbin);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -36823,6 +36830,7 @@ adsw2:
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -36911,7 +36919,6 @@ void m68000_device::move_b_adr16_aipd_ipm() // 10f8 f1ff
 	// 3af mmiw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_dbin);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -36934,6 +36941,7 @@ void m68000_device::move_b_adr16_aipd_ipm() // 10f8 f1ff
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -37046,7 +37054,6 @@ void m68000_device::move_b_adr32_aipd_ipm() // 10f9 f1ff
 	// 3af mmiw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_dbin);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -37069,6 +37076,7 @@ void m68000_device::move_b_adr32_aipd_ipm() // 10f9 f1ff
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -37157,7 +37165,6 @@ void m68000_device::move_b_dpc_aipd_ipm() // 10fa f1ff
 	// 3af mmiw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_dbin);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -37180,6 +37187,7 @@ void m68000_device::move_b_dpc_aipd_ipm() // 10fa f1ff
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -37309,7 +37317,6 @@ adsw2:
 	// 3af mmiw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_dbin);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -37332,6 +37339,7 @@ adsw2:
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -37399,7 +37407,6 @@ void m68000_device::move_b_imm8_aipd_ipm() // 10fc f1ff
 	// 2fe rmiw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_dt);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -37422,6 +37429,7 @@ void m68000_device::move_b_imm8_aipd_ipm() // 10fc f1ff
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -37463,7 +37471,6 @@ void m68000_device::move_b_ds_paid_ipm() // 1100 f1f8
 	// 2f8 rmmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -37493,6 +37500,7 @@ void m68000_device::move_b_ds_paid_ipm() // 1100 f1f8
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -37550,7 +37558,6 @@ void m68000_device::move_b_ais_paid_ipm() // 1110 f1f8
 	// 38b mmmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -37580,6 +37587,7 @@ void m68000_device::move_b_ais_paid_ipm() // 1110 f1f8
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -37641,7 +37649,6 @@ void m68000_device::move_b_aips_paid_ipm() // 1118 f1f8
 	// 38b mmmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -37671,6 +37678,7 @@ void m68000_device::move_b_aips_paid_ipm() // 1118 f1f8
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -37734,7 +37742,6 @@ void m68000_device::move_b_pais_paid_ipm() // 1120 f1f8
 	// 38b mmmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -37764,6 +37771,7 @@ void m68000_device::move_b_pais_paid_ipm() // 1120 f1f8
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -37846,7 +37854,6 @@ void m68000_device::move_b_das_paid_ipm() // 1128 f1f8
 	// 38b mmmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -37876,6 +37883,7 @@ void m68000_device::move_b_das_paid_ipm() // 1128 f1f8
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -37999,7 +38007,6 @@ adsw2:
 	// 38b mmmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -38029,6 +38036,7 @@ adsw2:
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -38110,7 +38118,6 @@ void m68000_device::move_b_adr16_paid_ipm() // 1138 f1ff
 	// 38b mmmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -38140,6 +38147,7 @@ void m68000_device::move_b_adr16_paid_ipm() // 1138 f1ff
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -38245,7 +38253,6 @@ void m68000_device::move_b_adr32_paid_ipm() // 1139 f1ff
 	// 38b mmmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -38275,6 +38282,7 @@ void m68000_device::move_b_adr32_paid_ipm() // 1139 f1ff
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -38356,7 +38364,6 @@ void m68000_device::move_b_dpc_paid_ipm() // 113a f1ff
 	// 38b mmmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -38386,6 +38393,7 @@ void m68000_device::move_b_dpc_paid_ipm() // 113a f1ff
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -38508,7 +38516,6 @@ adsw2:
 	// 38b mmmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -38538,6 +38545,7 @@ adsw2:
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -38598,7 +38606,6 @@ void m68000_device::move_b_imm8_paid_ipm() // 113c f1ff
 	// 2f8 rmmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -38628,6 +38635,7 @@ void m68000_device::move_b_imm8_paid_ipm() // 113c f1ff
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -38686,7 +38694,6 @@ void m68000_device::move_b_ds_dad_ipm() // 1140 f1f8
 	// 2db rmdw2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_da[ry]);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -38708,11 +38715,11 @@ void m68000_device::move_b_ds_dad_ipm() // 1140 f1f8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -38802,6 +38809,7 @@ void m68000_device::move_b_ais_dad_ipm() // 1150 f1f8
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -38823,11 +38831,11 @@ void m68000_device::move_b_ais_dad_ipm() // 1150 f1f8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -38921,6 +38929,7 @@ void m68000_device::move_b_aips_dad_ipm() // 1158 f1f8
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -38942,11 +38951,11 @@ void m68000_device::move_b_aips_dad_ipm() // 1158 f1f8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -39042,6 +39051,7 @@ void m68000_device::move_b_pais_dad_ipm() // 1160 f1f8
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -39063,11 +39073,11 @@ void m68000_device::move_b_pais_dad_ipm() // 1160 f1f8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -39182,6 +39192,7 @@ void m68000_device::move_b_das_dad_ipm() // 1168 f1f8
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -39203,11 +39214,11 @@ void m68000_device::move_b_das_dad_ipm() // 1168 f1f8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -39363,6 +39374,7 @@ adsw2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -39384,11 +39396,11 @@ adsw2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -39502,6 +39514,7 @@ void m68000_device::move_b_adr16_dad_ipm() // 1178 f1ff
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -39523,11 +39536,11 @@ void m68000_device::move_b_adr16_dad_ipm() // 1178 f1ff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -39665,6 +39678,7 @@ void m68000_device::move_b_adr32_dad_ipm() // 1179 f1ff
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -39686,11 +39700,11 @@ void m68000_device::move_b_adr32_dad_ipm() // 1179 f1ff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -39804,6 +39818,7 @@ void m68000_device::move_b_dpc_dad_ipm() // 117a f1ff
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -39825,11 +39840,11 @@ void m68000_device::move_b_dpc_dad_ipm() // 117a f1ff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -39984,6 +39999,7 @@ adsw2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -40005,11 +40021,11 @@ adsw2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -40099,7 +40115,6 @@ void m68000_device::move_b_imm8_dad_ipm() // 117c f1ff
 	// 2db rmdw2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_dt);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -40121,11 +40136,11 @@ void m68000_device::move_b_imm8_dad_ipm() // 117c f1ff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -40231,7 +40246,6 @@ rmdw2:
 	// 2db rmdw2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_da[ry]);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -40253,11 +40267,11 @@ rmdw2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -40388,6 +40402,7 @@ maww2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -40409,11 +40424,11 @@ maww2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -40548,6 +40563,7 @@ maww2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -40569,11 +40585,11 @@ maww2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -40710,6 +40726,7 @@ maww2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -40731,11 +40748,11 @@ maww2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -40891,6 +40908,7 @@ maww2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -40912,11 +40930,11 @@ maww2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -41113,6 +41131,7 @@ maww2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -41134,11 +41153,11 @@ maww2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -41293,6 +41312,7 @@ maww2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -41314,11 +41334,11 @@ maww2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -41497,6 +41517,7 @@ maww2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -41518,11 +41539,11 @@ maww2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -41677,6 +41698,7 @@ maww2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -41698,11 +41720,11 @@ maww2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -41898,6 +41920,7 @@ maww2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -41919,11 +41942,11 @@ maww2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -42055,7 +42078,6 @@ rmdw2:
 	// 2db rmdw2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_dt);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -42077,11 +42099,11 @@ rmdw2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -42148,6 +42170,7 @@ void m68000_device::move_b_ds_adr16_ipm() // 11c0 fff8
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -42169,11 +42192,11 @@ void m68000_device::move_b_ds_adr16_ipm() // 11c0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -42262,6 +42285,7 @@ void m68000_device::move_b_ais_adr16_ipm() // 11d0 fff8
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -42283,11 +42307,11 @@ void m68000_device::move_b_ais_adr16_ipm() // 11d0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -42380,6 +42404,7 @@ void m68000_device::move_b_aips_adr16_ipm() // 11d8 fff8
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -42401,11 +42426,11 @@ void m68000_device::move_b_aips_adr16_ipm() // 11d8 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -42500,6 +42525,7 @@ void m68000_device::move_b_pais_adr16_ipm() // 11e0 fff8
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -42521,11 +42547,11 @@ void m68000_device::move_b_pais_adr16_ipm() // 11e0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -42639,6 +42665,7 @@ void m68000_device::move_b_das_adr16_ipm() // 11e8 fff8
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -42660,11 +42687,11 @@ void m68000_device::move_b_das_adr16_ipm() // 11e8 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -42819,6 +42846,7 @@ adsw2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -42840,11 +42868,11 @@ adsw2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -42957,6 +42985,7 @@ void m68000_device::move_b_adr16_adr16_ipm() // 11f8 ffff
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -42978,11 +43007,11 @@ void m68000_device::move_b_adr16_adr16_ipm() // 11f8 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -43119,6 +43148,7 @@ void m68000_device::move_b_adr32_adr16_ipm() // 11f9 ffff
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -43140,11 +43170,11 @@ void m68000_device::move_b_adr32_adr16_ipm() // 11f9 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -43257,6 +43287,7 @@ void m68000_device::move_b_dpc_adr16_ipm() // 11fa ffff
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -43278,11 +43309,11 @@ void m68000_device::move_b_dpc_adr16_ipm() // 11fa ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -43436,6 +43467,7 @@ adsw2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -43457,11 +43489,11 @@ adsw2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -43554,6 +43586,7 @@ void m68000_device::move_b_imm8_adr16_ipm() // 11fc ffff
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -43575,11 +43608,11 @@ void m68000_device::move_b_imm8_adr16_ipm() // 11fc ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -43670,6 +43703,7 @@ void m68000_device::move_b_ds_adr32_ipm() // 13c0 fff8
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -43691,11 +43725,11 @@ void m68000_device::move_b_ds_adr32_ipm() // 13c0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -43784,7 +43818,6 @@ void m68000_device::move_b_ais_adr32_ipm() // 13d0 fff8
 	// 32e malw2
 	m_aob = merge_16_32(high16(m_at), m_dbin);
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -43830,11 +43863,11 @@ void m68000_device::move_b_ais_adr32_ipm() // 13d0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -43927,7 +43960,6 @@ void m68000_device::move_b_aips_adr32_ipm() // 13d8 fff8
 	// 32e malw2
 	m_aob = merge_16_32(high16(m_at), m_dbin);
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -43973,11 +44005,11 @@ void m68000_device::move_b_aips_adr32_ipm() // 13d8 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -44072,7 +44104,6 @@ void m68000_device::move_b_pais_adr32_ipm() // 13e0 fff8
 	// 32e malw2
 	m_aob = merge_16_32(high16(m_at), m_dbin);
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -44118,11 +44149,11 @@ void m68000_device::move_b_pais_adr32_ipm() // 13e0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -44236,7 +44267,6 @@ void m68000_device::move_b_das_adr32_ipm() // 13e8 fff8
 	// 32e malw2
 	m_aob = merge_16_32(high16(m_at), m_dbin);
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -44282,11 +44312,11 @@ void m68000_device::move_b_das_adr32_ipm() // 13e8 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -44441,7 +44471,6 @@ adsw2:
 	// 32e malw2
 	m_aob = merge_16_32(high16(m_at), m_dbin);
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -44487,11 +44516,11 @@ adsw2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -44604,7 +44633,6 @@ void m68000_device::move_b_adr16_adr32_ipm() // 13f8 ffff
 	// 32e malw2
 	m_aob = merge_16_32(high16(m_at), m_dbin);
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -44650,11 +44678,11 @@ void m68000_device::move_b_adr16_adr32_ipm() // 13f8 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -44791,7 +44819,6 @@ void m68000_device::move_b_adr32_adr32_ipm() // 13f9 ffff
 	// 32e malw2
 	m_aob = merge_16_32(high16(m_at), m_dbin);
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -44837,11 +44864,11 @@ void m68000_device::move_b_adr32_adr32_ipm() // 13f9 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -44954,7 +44981,6 @@ void m68000_device::move_b_dpc_adr32_ipm() // 13fa ffff
 	// 32e malw2
 	m_aob = merge_16_32(high16(m_at), m_dbin);
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -45000,11 +45026,11 @@ void m68000_device::move_b_dpc_adr32_ipm() // 13fa ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -45158,7 +45184,6 @@ adsw2:
 	// 32e malw2
 	m_aob = merge_16_32(high16(m_at), m_dbin);
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -45204,11 +45229,11 @@ adsw2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -45325,6 +45350,7 @@ void m68000_device::move_b_imm8_adr32_ipm() // 13fc ffff
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -45346,11 +45372,11 @@ void m68000_device::move_b_imm8_adr32_ipm() // 13fc ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -45390,7 +45416,6 @@ void m68000_device::move_l_ds_dd_ipm() // 2000 f1f8
 	// 129 rrgl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = m_da[ry];
 	m_au = m_au + 2;
@@ -45399,6 +45424,7 @@ void m68000_device::move_l_ds_dd_ipm() // 2000 f1f8
 	sr_nzvc();
 	// 278 rrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -45442,7 +45468,6 @@ void m68000_device::move_l_as_dd_ipm() // 2008 f1f8
 	// 129 rrgl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = m_da[ry];
 	m_au = m_au + 2;
@@ -45451,6 +45476,7 @@ void m68000_device::move_l_as_dd_ipm() // 2008 f1f8
 	sr_nzvc();
 	// 278 rrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -45545,7 +45571,6 @@ void m68000_device::move_l_ais_dd_ipm() // 2010 f1f8
 	// 29f mrgl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -45554,6 +45579,7 @@ void m68000_device::move_l_ais_dd_ipm() // 2010 f1f8
 	sr_nzvc();
 	// 36f mrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -45651,7 +45677,6 @@ void m68000_device::move_l_aips_dd_ipm() // 2018 f1f8
 	// 29f mrgl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -45660,6 +45685,7 @@ void m68000_device::move_l_aips_dd_ipm() // 2018 f1f8
 	sr_nzvc();
 	// 36f mrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -45758,7 +45784,6 @@ void m68000_device::move_l_pais_dd_ipm() // 2020 f1f8
 	// 29f mrgl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -45767,6 +45792,7 @@ void m68000_device::move_l_pais_dd_ipm() // 2020 f1f8
 	sr_nzvc();
 	// 36f mrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -45885,7 +45911,6 @@ void m68000_device::move_l_das_dd_ipm() // 2028 f1f8
 	// 29f mrgl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -45894,6 +45919,7 @@ void m68000_device::move_l_das_dd_ipm() // 2028 f1f8
 	sr_nzvc();
 	// 36f mrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -46053,7 +46079,6 @@ adsl2:
 	// 29f mrgl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -46062,6 +46087,7 @@ adsl2:
 	sr_nzvc();
 	// 36f mrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -46182,7 +46208,6 @@ void m68000_device::move_l_adr16_dd_ipm() // 2038 f1ff
 	// 29f mrgl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -46191,6 +46216,7 @@ void m68000_device::move_l_adr16_dd_ipm() // 2038 f1ff
 	sr_nzvc();
 	// 36f mrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -46335,7 +46361,6 @@ void m68000_device::move_l_adr32_dd_ipm() // 2039 f1ff
 	// 29f mrgl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -46344,6 +46369,7 @@ void m68000_device::move_l_adr32_dd_ipm() // 2039 f1ff
 	sr_nzvc();
 	// 36f mrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -46461,7 +46487,6 @@ void m68000_device::move_l_dpc_dd_ipm() // 203a f1ff
 	// 29f mrgl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -46470,6 +46495,7 @@ void m68000_device::move_l_dpc_dd_ipm() // 203a f1ff
 	sr_nzvc();
 	// 36f mrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -46628,7 +46654,6 @@ adsl2:
 	// 29f mrgl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -46637,6 +46662,7 @@ adsl2:
 	sr_nzvc();
 	// 36f mrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -46730,7 +46756,6 @@ void m68000_device::move_l_imm32_dd_ipm() // 203c f1ff
 	// 129 rrgl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = m_dt;
 	m_au = m_au + 2;
@@ -46739,6 +46764,7 @@ void m68000_device::move_l_imm32_dd_ipm() // 203c f1ff
 	sr_nzvc();
 	// 278 rrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -46782,7 +46808,6 @@ void m68000_device::movea_l_ds_ad_ipm() // 2040 f1f8
 	// 129 rrgl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = m_da[ry];
 	m_au = m_au + 2;
@@ -46790,6 +46815,7 @@ void m68000_device::movea_l_ds_ad_ipm() // 2040 f1f8
 	alu_and(m_da[ry], 0xffff);
 	// 278 rrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -46832,7 +46858,6 @@ void m68000_device::movea_l_as_ad_ipm() // 2048 f1f8
 	// 129 rrgl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = m_da[ry];
 	m_au = m_au + 2;
@@ -46840,6 +46865,7 @@ void m68000_device::movea_l_as_ad_ipm() // 2048 f1f8
 	alu_and(m_da[ry], 0xffff);
 	// 278 rrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -46933,7 +46959,6 @@ void m68000_device::movea_l_ais_ad_ipm() // 2050 f1f8
 	// 29f mrgl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -46941,6 +46966,7 @@ void m68000_device::movea_l_ais_ad_ipm() // 2050 f1f8
 	alu_and(m_dbin, 0xffff);
 	// 36f mrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -47037,7 +47063,6 @@ void m68000_device::movea_l_aips_ad_ipm() // 2058 f1f8
 	// 29f mrgl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -47045,6 +47070,7 @@ void m68000_device::movea_l_aips_ad_ipm() // 2058 f1f8
 	alu_and(m_dbin, 0xffff);
 	// 36f mrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -47142,7 +47168,6 @@ void m68000_device::movea_l_pais_ad_ipm() // 2060 f1f8
 	// 29f mrgl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -47150,6 +47175,7 @@ void m68000_device::movea_l_pais_ad_ipm() // 2060 f1f8
 	alu_and(m_dbin, 0xffff);
 	// 36f mrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -47267,7 +47293,6 @@ void m68000_device::movea_l_das_ad_ipm() // 2068 f1f8
 	// 29f mrgl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -47275,6 +47300,7 @@ void m68000_device::movea_l_das_ad_ipm() // 2068 f1f8
 	alu_and(m_dbin, 0xffff);
 	// 36f mrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -47433,7 +47459,6 @@ adsl2:
 	// 29f mrgl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -47441,6 +47466,7 @@ adsl2:
 	alu_and(m_dbin, 0xffff);
 	// 36f mrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -47560,7 +47586,6 @@ void m68000_device::movea_l_adr16_ad_ipm() // 2078 f1ff
 	// 29f mrgl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -47568,6 +47593,7 @@ void m68000_device::movea_l_adr16_ad_ipm() // 2078 f1ff
 	alu_and(m_dbin, 0xffff);
 	// 36f mrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -47711,7 +47737,6 @@ void m68000_device::movea_l_adr32_ad_ipm() // 2079 f1ff
 	// 29f mrgl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -47719,6 +47744,7 @@ void m68000_device::movea_l_adr32_ad_ipm() // 2079 f1ff
 	alu_and(m_dbin, 0xffff);
 	// 36f mrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -47835,7 +47861,6 @@ void m68000_device::movea_l_dpc_ad_ipm() // 207a f1ff
 	// 29f mrgl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -47843,6 +47868,7 @@ void m68000_device::movea_l_dpc_ad_ipm() // 207a f1ff
 	alu_and(m_dbin, 0xffff);
 	// 36f mrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -48000,7 +48026,6 @@ adsl2:
 	// 29f mrgl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -48008,6 +48033,7 @@ adsl2:
 	alu_and(m_dbin, 0xffff);
 	// 36f mrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -48100,7 +48126,6 @@ void m68000_device::movea_l_imm32_ad_ipm() // 207c f1ff
 	// 129 rrgl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = m_dt;
 	m_au = m_au + 2;
@@ -48108,6 +48133,7 @@ void m68000_device::movea_l_imm32_ad_ipm() // 207c f1ff
 	alu_and(m_dt, 0xffff);
 	// 278 rrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -48175,7 +48201,6 @@ void m68000_device::move_l_ds_aid_ipm() // 2080 f1f8
 	// 23f rmrl2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_da[ry];
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -48203,6 +48228,7 @@ void m68000_device::move_l_ds_aid_ipm() // 2080 f1f8
 	// 258 rmrl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -48272,7 +48298,6 @@ void m68000_device::move_l_as_aid_ipm() // 2088 f1f8
 	// 23f rmrl2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_da[ry];
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -48300,6 +48325,7 @@ void m68000_device::move_l_as_aid_ipm() // 2088 f1f8
 	// 258 rmrl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -48422,7 +48448,6 @@ void m68000_device::move_l_ais_aid_ipm() // 2090 f1f8
 	// 3aa mmrl2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -48450,10 +48475,10 @@ void m68000_device::move_l_ais_aid_ipm() // 2090 f1f8
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -48574,7 +48599,6 @@ void m68000_device::move_l_aips_aid_ipm() // 2098 f1f8
 	// 3aa mmrl2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -48602,10 +48626,10 @@ void m68000_device::move_l_aips_aid_ipm() // 2098 f1f8
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -48727,7 +48751,6 @@ void m68000_device::move_l_pais_aid_ipm() // 20a0 f1f8
 	// 3aa mmrl2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -48755,10 +48778,10 @@ void m68000_device::move_l_pais_aid_ipm() // 20a0 f1f8
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -48900,7 +48923,6 @@ void m68000_device::move_l_das_aid_ipm() // 20a8 f1f8
 	// 3aa mmrl2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -48928,10 +48950,10 @@ void m68000_device::move_l_das_aid_ipm() // 20a8 f1f8
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -49114,7 +49136,6 @@ adsl2:
 	// 3aa mmrl2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -49142,10 +49163,10 @@ adsl2:
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -49289,7 +49310,6 @@ void m68000_device::move_l_adr16_aid_ipm() // 20b8 f1ff
 	// 3aa mmrl2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -49317,10 +49337,10 @@ void m68000_device::move_l_adr16_aid_ipm() // 20b8 f1ff
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -49488,7 +49508,6 @@ void m68000_device::move_l_adr32_aid_ipm() // 20b9 f1ff
 	// 3aa mmrl2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -49516,10 +49535,10 @@ void m68000_device::move_l_adr32_aid_ipm() // 20b9 f1ff
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -49660,7 +49679,6 @@ void m68000_device::move_l_dpc_aid_ipm() // 20ba f1ff
 	// 3aa mmrl2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -49688,10 +49706,10 @@ void m68000_device::move_l_dpc_aid_ipm() // 20ba f1ff
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -49873,7 +49891,6 @@ adsl2:
 	// 3aa mmrl2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -49901,10 +49918,10 @@ adsl2:
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -50019,7 +50036,6 @@ void m68000_device::move_l_imm32_aid_ipm() // 20bc f1ff
 	// 23f rmrl2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_dt;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -50047,6 +50063,7 @@ void m68000_device::move_l_imm32_aid_ipm() // 20bc f1ff
 	// 258 rmrl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -50116,7 +50133,6 @@ void m68000_device::move_l_ds_aipd_ipm() // 20c0 f1f8
 	// 23c rmil2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_da[ry];
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -50144,6 +50160,7 @@ void m68000_device::move_l_ds_aipd_ipm() // 20c0 f1f8
 	// 23d rmil3
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -50213,7 +50230,6 @@ void m68000_device::move_l_as_aipd_ipm() // 20c8 f1f8
 	// 23c rmil2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_da[ry];
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -50241,6 +50257,7 @@ void m68000_device::move_l_as_aipd_ipm() // 20c8 f1f8
 	// 23d rmil3
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -50363,7 +50380,6 @@ void m68000_device::move_l_ais_aipd_ipm() // 20d0 f1f8
 	// 3ae mmil2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -50391,6 +50407,7 @@ void m68000_device::move_l_ais_aipd_ipm() // 20d0 f1f8
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -50513,7 +50530,6 @@ void m68000_device::move_l_aips_aipd_ipm() // 20d8 f1f8
 	// 3ae mmil2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -50541,6 +50557,7 @@ void m68000_device::move_l_aips_aipd_ipm() // 20d8 f1f8
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -50664,7 +50681,6 @@ void m68000_device::move_l_pais_aipd_ipm() // 20e0 f1f8
 	// 3ae mmil2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -50692,6 +50708,7 @@ void m68000_device::move_l_pais_aipd_ipm() // 20e0 f1f8
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -50835,7 +50852,6 @@ void m68000_device::move_l_das_aipd_ipm() // 20e8 f1f8
 	// 3ae mmil2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -50863,6 +50879,7 @@ void m68000_device::move_l_das_aipd_ipm() // 20e8 f1f8
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -51047,7 +51064,6 @@ adsl2:
 	// 3ae mmil2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -51075,6 +51091,7 @@ adsl2:
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -51220,7 +51237,6 @@ void m68000_device::move_l_adr16_aipd_ipm() // 20f8 f1ff
 	// 3ae mmil2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -51248,6 +51264,7 @@ void m68000_device::move_l_adr16_aipd_ipm() // 20f8 f1ff
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -51417,7 +51434,6 @@ void m68000_device::move_l_adr32_aipd_ipm() // 20f9 f1ff
 	// 3ae mmil2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -51445,6 +51461,7 @@ void m68000_device::move_l_adr32_aipd_ipm() // 20f9 f1ff
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -51587,7 +51604,6 @@ void m68000_device::move_l_dpc_aipd_ipm() // 20fa f1ff
 	// 3ae mmil2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -51615,6 +51631,7 @@ void m68000_device::move_l_dpc_aipd_ipm() // 20fa f1ff
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -51798,7 +51815,6 @@ adsl2:
 	// 3ae mmil2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -51826,6 +51842,7 @@ adsl2:
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -51942,7 +51959,6 @@ void m68000_device::move_l_imm32_aipd_ipm() // 20fc f1ff
 	// 23c rmil2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_dt;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -51970,6 +51986,7 @@ void m68000_device::move_l_imm32_aipd_ipm() // 20fc f1ff
 	// 23d rmil3
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -52014,7 +52031,6 @@ void m68000_device::move_l_ds_paid_ipm() // 2100 f1f8
 	// 2fc rmml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -52070,6 +52086,7 @@ void m68000_device::move_l_ds_paid_ipm() // 2100 f1f8
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -52110,7 +52127,6 @@ void m68000_device::move_l_as_paid_ipm() // 2108 f1f8
 	// 2fc rmml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -52166,6 +52182,7 @@ void m68000_device::move_l_as_paid_ipm() // 2108 f1f8
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -52257,7 +52274,6 @@ void m68000_device::move_l_ais_paid_ipm() // 2110 f1f8
 	// 38f mmml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -52313,6 +52329,7 @@ void m68000_device::move_l_ais_paid_ipm() // 2110 f1f8
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -52407,7 +52424,6 @@ void m68000_device::move_l_aips_paid_ipm() // 2118 f1f8
 	// 38f mmml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -52463,6 +52479,7 @@ void m68000_device::move_l_aips_paid_ipm() // 2118 f1f8
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -52558,7 +52575,6 @@ void m68000_device::move_l_pais_paid_ipm() // 2120 f1f8
 	// 38f mmml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -52614,6 +52630,7 @@ void m68000_device::move_l_pais_paid_ipm() // 2120 f1f8
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -52729,7 +52746,6 @@ void m68000_device::move_l_das_paid_ipm() // 2128 f1f8
 	// 38f mmml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -52785,6 +52801,7 @@ void m68000_device::move_l_das_paid_ipm() // 2128 f1f8
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -52941,7 +52958,6 @@ adsl2:
 	// 38f mmml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -52997,6 +53013,7 @@ adsl2:
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -53114,7 +53131,6 @@ void m68000_device::move_l_adr16_paid_ipm() // 2138 f1ff
 	// 38f mmml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -53170,6 +53186,7 @@ void m68000_device::move_l_adr16_paid_ipm() // 2138 f1ff
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -53311,7 +53328,6 @@ void m68000_device::move_l_adr32_paid_ipm() // 2139 f1ff
 	// 38f mmml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -53367,6 +53383,7 @@ void m68000_device::move_l_adr32_paid_ipm() // 2139 f1ff
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -53481,7 +53498,6 @@ void m68000_device::move_l_dpc_paid_ipm() // 213a f1ff
 	// 38f mmml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -53537,6 +53553,7 @@ void m68000_device::move_l_dpc_paid_ipm() // 213a f1ff
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -53692,7 +53709,6 @@ adsl2:
 	// 38f mmml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -53748,6 +53764,7 @@ adsl2:
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -53838,7 +53855,6 @@ void m68000_device::move_l_imm32_paid_ipm() // 213c f1ff
 	// 2fc rmml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -53894,6 +53910,7 @@ void m68000_device::move_l_imm32_paid_ipm() // 213c f1ff
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -53985,7 +54002,6 @@ void m68000_device::move_l_ds_dad_ipm() // 2140 f1f8
 	// 2df rmdl3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_da[ry];
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -54013,6 +54029,7 @@ void m68000_device::move_l_ds_dad_ipm() // 2140 f1f8
 	// 258 rmrl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -54108,7 +54125,6 @@ void m68000_device::move_l_as_dad_ipm() // 2148 f1f8
 	// 2df rmdl3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_da[ry];
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -54136,6 +54152,7 @@ void m68000_device::move_l_as_dad_ipm() // 2148 f1f8
 	// 258 rmrl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -54285,6 +54302,7 @@ void m68000_device::move_l_ais_dad_ipm() // 2150 f1f8
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -54312,11 +54330,11 @@ void m68000_device::move_l_ais_dad_ipm() // 2150 f1f8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -54464,6 +54482,7 @@ void m68000_device::move_l_aips_dad_ipm() // 2158 f1f8
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -54491,11 +54510,11 @@ void m68000_device::move_l_aips_dad_ipm() // 2158 f1f8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -54644,6 +54663,7 @@ void m68000_device::move_l_pais_dad_ipm() // 2160 f1f8
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -54671,11 +54691,11 @@ void m68000_device::move_l_pais_dad_ipm() // 2160 f1f8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -54844,6 +54864,7 @@ void m68000_device::move_l_das_dad_ipm() // 2168 f1f8
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -54871,11 +54892,11 @@ void m68000_device::move_l_das_dad_ipm() // 2168 f1f8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -55085,6 +55106,7 @@ adsl2:
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -55112,11 +55134,11 @@ adsl2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -55287,6 +55309,7 @@ void m68000_device::move_l_adr16_dad_ipm() // 2178 f1ff
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -55314,11 +55337,11 @@ void m68000_device::move_l_adr16_dad_ipm() // 2178 f1ff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -55513,6 +55536,7 @@ void m68000_device::move_l_adr32_dad_ipm() // 2179 f1ff
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -55540,11 +55564,11 @@ void m68000_device::move_l_adr32_dad_ipm() // 2179 f1ff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 15:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -55712,6 +55736,7 @@ void m68000_device::move_l_dpc_dad_ipm() // 217a f1ff
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -55739,11 +55764,11 @@ void m68000_device::move_l_dpc_dad_ipm() // 217a f1ff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -55952,6 +55977,7 @@ adsl2:
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -55979,11 +56005,11 @@ adsl2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -56124,7 +56150,6 @@ void m68000_device::move_l_imm32_dad_ipm() // 217c f1ff
 	// 2df rmdl3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_dt;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -56152,6 +56177,7 @@ void m68000_device::move_l_imm32_dad_ipm() // 217c f1ff
 	// 258 rmrl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -56289,7 +56315,6 @@ rmdl2:
 	// 2df rmdl3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_da[ry];
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -56317,6 +56342,7 @@ rmdl2:
 	// 258 rmrl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -56454,7 +56480,6 @@ rmdl2:
 	// 2df rmdl3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_da[ry];
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -56482,6 +56507,7 @@ rmdl2:
 	// 258 rmrl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -56672,6 +56698,7 @@ mawl2:
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -56699,11 +56726,11 @@ mawl2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -56892,6 +56919,7 @@ mawl2:
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -56919,11 +56947,11 @@ mawl2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -57113,6 +57141,7 @@ mawl2:
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -57140,11 +57169,11 @@ mawl2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -57354,6 +57383,7 @@ mawl2:
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -57381,11 +57411,11 @@ mawl2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -57636,6 +57666,7 @@ mawl2:
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -57663,11 +57694,11 @@ mawl2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -57879,6 +57910,7 @@ mawl2:
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -57906,11 +57938,11 @@ mawl2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -58146,6 +58178,7 @@ mawl2:
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -58173,11 +58206,11 @@ mawl2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 15:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -58386,6 +58419,7 @@ mawl2:
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -58413,11 +58447,11 @@ mawl2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -58667,6 +58701,7 @@ mawl2:
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -58694,11 +58729,11 @@ mawl2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -58881,7 +58916,6 @@ rmdl2:
 	// 2df rmdl3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_dt;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -58909,6 +58943,7 @@ rmdl2:
 	// 258 rmrl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -59007,6 +59042,7 @@ void m68000_device::move_l_ds_adr16_ipm() // 21c0 fff8
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -59034,11 +59070,11 @@ void m68000_device::move_l_ds_adr16_ipm() // 21c0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -59132,6 +59168,7 @@ void m68000_device::move_l_as_adr16_ipm() // 21c8 fff8
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -59159,11 +59196,11 @@ void m68000_device::move_l_as_adr16_ipm() // 21c8 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -59307,6 +59344,7 @@ void m68000_device::move_l_ais_adr16_ipm() // 21d0 fff8
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -59334,11 +59372,11 @@ void m68000_device::move_l_ais_adr16_ipm() // 21d0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -59485,6 +59523,7 @@ void m68000_device::move_l_aips_adr16_ipm() // 21d8 fff8
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -59512,11 +59551,11 @@ void m68000_device::move_l_aips_adr16_ipm() // 21d8 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -59664,6 +59703,7 @@ void m68000_device::move_l_pais_adr16_ipm() // 21e0 fff8
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -59691,11 +59731,11 @@ void m68000_device::move_l_pais_adr16_ipm() // 21e0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -59863,6 +59903,7 @@ void m68000_device::move_l_das_adr16_ipm() // 21e8 fff8
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -59890,11 +59931,11 @@ void m68000_device::move_l_das_adr16_ipm() // 21e8 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -60103,6 +60144,7 @@ adsl2:
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -60130,11 +60172,11 @@ adsl2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -60304,6 +60346,7 @@ void m68000_device::move_l_adr16_adr16_ipm() // 21f8 ffff
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -60331,11 +60374,11 @@ void m68000_device::move_l_adr16_adr16_ipm() // 21f8 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -60529,6 +60572,7 @@ void m68000_device::move_l_adr32_adr16_ipm() // 21f9 ffff
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -60556,11 +60600,11 @@ void m68000_device::move_l_adr32_adr16_ipm() // 21f9 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 15:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -60727,6 +60771,7 @@ void m68000_device::move_l_dpc_adr16_ipm() // 21fa ffff
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -60754,11 +60799,11 @@ void m68000_device::move_l_dpc_adr16_ipm() // 21fa ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -60966,6 +61011,7 @@ adsl2:
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -60993,11 +61039,11 @@ adsl2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -61141,6 +61187,7 @@ void m68000_device::move_l_imm32_adr16_ipm() // 21fc ffff
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -61168,11 +61215,11 @@ void m68000_device::move_l_imm32_adr16_ipm() // 21fc ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -61290,6 +61337,7 @@ void m68000_device::move_l_ds_adr32_ipm() // 23c0 fff8
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -61317,11 +61365,11 @@ void m68000_device::move_l_ds_adr32_ipm() // 23c0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -61439,6 +61487,7 @@ void m68000_device::move_l_as_adr32_ipm() // 23c8 fff8
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -61466,11 +61515,11 @@ void m68000_device::move_l_as_adr32_ipm() // 23c8 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -61613,7 +61662,6 @@ void m68000_device::move_l_ais_adr32_ipm() // 23d0 fff8
 	// 32a mall3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -61668,11 +61716,11 @@ void m68000_device::move_l_ais_adr32_ipm() // 23d0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -61818,7 +61866,6 @@ void m68000_device::move_l_aips_adr32_ipm() // 23d8 fff8
 	// 32a mall3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -61873,11 +61920,11 @@ void m68000_device::move_l_aips_adr32_ipm() // 23d8 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -62024,7 +62071,6 @@ void m68000_device::move_l_pais_adr32_ipm() // 23e0 fff8
 	// 32a mall3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -62079,11 +62125,11 @@ void m68000_device::move_l_pais_adr32_ipm() // 23e0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -62250,7 +62296,6 @@ void m68000_device::move_l_das_adr32_ipm() // 23e8 fff8
 	// 32a mall3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -62305,11 +62350,11 @@ void m68000_device::move_l_das_adr32_ipm() // 23e8 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 15:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -62517,7 +62562,6 @@ adsl2:
 	// 32a mall3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -62572,11 +62616,11 @@ adsl2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 15:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -62745,7 +62789,6 @@ void m68000_device::move_l_adr16_adr32_ipm() // 23f8 ffff
 	// 32a mall3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -62800,11 +62843,11 @@ void m68000_device::move_l_adr16_adr32_ipm() // 23f8 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 15:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -62997,7 +63040,6 @@ void m68000_device::move_l_adr32_adr32_ipm() // 23f9 ffff
 	// 32a mall3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -63052,11 +63094,11 @@ void m68000_device::move_l_adr32_adr32_ipm() // 23f9 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 17:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -63222,7 +63264,6 @@ void m68000_device::move_l_dpc_adr32_ipm() // 23fa ffff
 	// 32a mall3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -63277,11 +63318,11 @@ void m68000_device::move_l_dpc_adr32_ipm() // 23fa ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 15:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -63488,7 +63529,6 @@ adsl2:
 	// 32a mall3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -63543,11 +63583,11 @@ adsl2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 15:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -63715,6 +63755,7 @@ void m68000_device::move_l_imm32_adr32_ipm() // 23fc ffff
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -63742,11 +63783,11 @@ void m68000_device::move_l_imm32_adr32_ipm() // 23fc ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -63786,7 +63827,6 @@ void m68000_device::move_w_ds_dd_ipm() // 3000 f1f8
 	// 121 rrgw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = m_da[ry];
 	m_au = m_au + 2;
@@ -63795,6 +63835,7 @@ void m68000_device::move_w_ds_dd_ipm() // 3000 f1f8
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -63836,7 +63877,6 @@ void m68000_device::move_w_as_dd_ipm() // 3008 f1f8
 	// 121 rrgw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = m_da[ry];
 	m_au = m_au + 2;
@@ -63845,6 +63885,7 @@ void m68000_device::move_w_as_dd_ipm() // 3008 f1f8
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -63913,7 +63954,6 @@ void m68000_device::move_w_ais_dd_ipm() // 3010 f1f8
 	// 29b mrgw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -63922,6 +63962,7 @@ void m68000_device::move_w_ais_dd_ipm() // 3010 f1f8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -63992,7 +64033,6 @@ void m68000_device::move_w_aips_dd_ipm() // 3018 f1f8
 	// 29b mrgw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -64001,6 +64041,7 @@ void m68000_device::move_w_aips_dd_ipm() // 3018 f1f8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -64073,7 +64114,6 @@ void m68000_device::move_w_pais_dd_ipm() // 3020 f1f8
 	// 29b mrgw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -64082,6 +64122,7 @@ void m68000_device::move_w_pais_dd_ipm() // 3020 f1f8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -64173,7 +64214,6 @@ void m68000_device::move_w_das_dd_ipm() // 3028 f1f8
 	// 29b mrgw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -64182,6 +64222,7 @@ void m68000_device::move_w_das_dd_ipm() // 3028 f1f8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -64314,7 +64355,6 @@ adsw2:
 	// 29b mrgw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -64323,6 +64363,7 @@ adsw2:
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -64413,7 +64454,6 @@ void m68000_device::move_w_adr16_dd_ipm() // 3038 f1ff
 	// 29b mrgw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -64422,6 +64462,7 @@ void m68000_device::move_w_adr16_dd_ipm() // 3038 f1ff
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -64536,7 +64577,6 @@ void m68000_device::move_w_adr32_dd_ipm() // 3039 f1ff
 	// 29b mrgw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -64545,6 +64585,7 @@ void m68000_device::move_w_adr32_dd_ipm() // 3039 f1ff
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -64635,7 +64676,6 @@ void m68000_device::move_w_dpc_dd_ipm() // 303a f1ff
 	// 29b mrgw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -64644,6 +64684,7 @@ void m68000_device::move_w_dpc_dd_ipm() // 303a f1ff
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -64775,7 +64816,6 @@ adsw2:
 	// 29b mrgw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	set_16l(m_da[rx], m_dbin);
 	m_au = m_au + 2;
@@ -64784,6 +64824,7 @@ adsw2:
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -64849,7 +64890,6 @@ void m68000_device::move_w_imm16_dd_ipm() // 303c f1ff
 	// 121 rrgw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = m_dt;
 	m_au = m_au + 2;
@@ -64858,6 +64898,7 @@ void m68000_device::move_w_imm16_dd_ipm() // 303c f1ff
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -64899,12 +64940,12 @@ void m68000_device::movea_w_ds_ad_ipm() // 3040 f1f8
 	// 279 rrgm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	m_au = m_au + 2;
 	// 278 rrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -64947,12 +64988,12 @@ void m68000_device::movea_w_as_ad_ipm() // 3048 f1f8
 	// 279 rrgm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	m_au = m_au + 2;
 	// 278 rrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -65022,12 +65063,12 @@ void m68000_device::movea_w_ais_ad_ipm() // 3050 f1f8
 	// 158 mrgm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_da[rx] = ext32(m_dbin);
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -65098,12 +65139,12 @@ void m68000_device::movea_w_aips_ad_ipm() // 3058 f1f8
 	// 158 mrgm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_da[rx] = ext32(m_dbin);
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -65176,12 +65217,12 @@ void m68000_device::movea_w_pais_ad_ipm() // 3060 f1f8
 	// 158 mrgm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_da[rx] = ext32(m_dbin);
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -65273,12 +65314,12 @@ void m68000_device::movea_w_das_ad_ipm() // 3068 f1f8
 	// 158 mrgm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_da[rx] = ext32(m_dbin);
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -65411,12 +65452,12 @@ adsw2:
 	// 158 mrgm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_da[rx] = ext32(m_dbin);
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -65507,12 +65548,12 @@ void m68000_device::movea_w_adr16_ad_ipm() // 3078 f1ff
 	// 158 mrgm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_da[rx] = ext32(m_dbin);
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -65627,12 +65668,12 @@ void m68000_device::movea_w_adr32_ad_ipm() // 3079 f1ff
 	// 158 mrgm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_da[rx] = ext32(m_dbin);
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -65723,12 +65764,12 @@ void m68000_device::movea_w_dpc_ad_ipm() // 307a f1ff
 	// 158 mrgm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_da[rx] = ext32(m_dbin);
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -65860,12 +65901,12 @@ adsw2:
 	// 158 mrgm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_da[rx] = ext32(m_dbin);
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -65931,12 +65972,12 @@ void m68000_device::movea_w_imm16_ad_ipm() // 307c f1ff
 	// 279 rrgm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dt);
 	m_au = m_au + 2;
 	// 278 rrgl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -65979,7 +66020,6 @@ void m68000_device::move_w_ds_aid_ipm() // 3080 f1f8
 	// 2fa rmrw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_da[ry];
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 1:
@@ -66008,10 +66048,10 @@ void m68000_device::move_w_ds_aid_ipm() // 3080 f1f8
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -66051,7 +66091,6 @@ void m68000_device::move_w_as_aid_ipm() // 3088 f1f8
 	// 2fa rmrw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_da[ry];
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 1:
@@ -66080,10 +66119,10 @@ void m68000_device::move_w_as_aid_ipm() // 3088 f1f8
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -66177,10 +66216,10 @@ void m68000_device::move_w_ais_aid_ipm() // 3090 f1f8
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -66278,10 +66317,10 @@ void m68000_device::move_w_aips_aid_ipm() // 3098 f1f8
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -66381,10 +66420,10 @@ void m68000_device::move_w_pais_aid_ipm() // 30a0 f1f8
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -66503,10 +66542,10 @@ void m68000_device::move_w_das_aid_ipm() // 30a8 f1f8
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -66666,10 +66705,10 @@ adsw2:
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -66787,10 +66826,10 @@ void m68000_device::move_w_adr16_aid_ipm() // 30b8 f1ff
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -66932,10 +66971,10 @@ void m68000_device::move_w_adr32_aid_ipm() // 30b9 f1ff
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -67053,10 +67092,10 @@ void m68000_device::move_w_dpc_aid_ipm() // 30ba f1ff
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -67215,10 +67254,10 @@ adsw2:
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -67284,7 +67323,6 @@ void m68000_device::move_w_imm16_aid_ipm() // 30bc f1ff
 	// 2fa rmrw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_dt;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -67313,10 +67351,10 @@ void m68000_device::move_w_imm16_aid_ipm() // 30bc f1ff
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -67356,7 +67394,6 @@ void m68000_device::move_w_ds_aipd_ipm() // 30c0 f1f8
 	// 2fe rmiw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_da[ry];
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 1:
@@ -67385,6 +67422,7 @@ void m68000_device::move_w_ds_aipd_ipm() // 30c0 f1f8
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -67426,7 +67464,6 @@ void m68000_device::move_w_as_aipd_ipm() // 30c8 f1f8
 	// 2fe rmiw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_da[ry];
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 1:
@@ -67455,6 +67492,7 @@ void m68000_device::move_w_as_aipd_ipm() // 30c8 f1f8
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -67523,7 +67561,6 @@ void m68000_device::move_w_ais_aipd_ipm() // 30d0 f1f8
 	// 3af mmiw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_dbin;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -67552,6 +67589,7 @@ void m68000_device::move_w_ais_aipd_ipm() // 30d0 f1f8
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -67624,7 +67662,6 @@ void m68000_device::move_w_aips_aipd_ipm() // 30d8 f1f8
 	// 3af mmiw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_dbin;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -67653,6 +67690,7 @@ void m68000_device::move_w_aips_aipd_ipm() // 30d8 f1f8
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -67727,7 +67765,6 @@ void m68000_device::move_w_pais_aipd_ipm() // 30e0 f1f8
 	// 3af mmiw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_dbin;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -67756,6 +67793,7 @@ void m68000_device::move_w_pais_aipd_ipm() // 30e0 f1f8
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -67849,7 +67887,6 @@ void m68000_device::move_w_das_aipd_ipm() // 30e8 f1f8
 	// 3af mmiw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_dbin;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -67878,6 +67915,7 @@ void m68000_device::move_w_das_aipd_ipm() // 30e8 f1f8
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -68012,7 +68050,6 @@ adsw2:
 	// 3af mmiw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_dbin;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -68041,6 +68078,7 @@ adsw2:
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -68133,7 +68171,6 @@ void m68000_device::move_w_adr16_aipd_ipm() // 30f8 f1ff
 	// 3af mmiw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_dbin;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -68162,6 +68199,7 @@ void m68000_device::move_w_adr16_aipd_ipm() // 30f8 f1ff
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -68278,7 +68316,6 @@ void m68000_device::move_w_adr32_aipd_ipm() // 30f9 f1ff
 	// 3af mmiw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_dbin;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -68307,6 +68344,7 @@ void m68000_device::move_w_adr32_aipd_ipm() // 30f9 f1ff
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -68399,7 +68437,6 @@ void m68000_device::move_w_dpc_aipd_ipm() // 30fa f1ff
 	// 3af mmiw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_dbin;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -68428,6 +68465,7 @@ void m68000_device::move_w_dpc_aipd_ipm() // 30fa f1ff
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -68561,7 +68599,6 @@ adsw2:
 	// 3af mmiw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_dbin;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -68590,6 +68627,7 @@ adsw2:
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -68657,7 +68695,6 @@ void m68000_device::move_w_imm16_aipd_ipm() // 30fc f1ff
 	// 2fe rmiw1
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_dt;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -68686,6 +68723,7 @@ void m68000_device::move_w_imm16_aipd_ipm() // 30fc f1ff
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -68727,7 +68765,6 @@ void m68000_device::move_w_ds_paid_ipm() // 3100 f1f8
 	// 2f8 rmmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -68757,6 +68794,7 @@ void m68000_device::move_w_ds_paid_ipm() // 3100 f1f8
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -68797,7 +68835,6 @@ void m68000_device::move_w_as_paid_ipm() // 3108 f1f8
 	// 2f8 rmmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -68827,6 +68864,7 @@ void m68000_device::move_w_as_paid_ipm() // 3108 f1f8
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -68894,7 +68932,6 @@ void m68000_device::move_w_ais_paid_ipm() // 3110 f1f8
 	// 38b mmmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -68924,6 +68961,7 @@ void m68000_device::move_w_ais_paid_ipm() // 3110 f1f8
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -68995,7 +69033,6 @@ void m68000_device::move_w_aips_paid_ipm() // 3118 f1f8
 	// 38b mmmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -69025,6 +69062,7 @@ void m68000_device::move_w_aips_paid_ipm() // 3118 f1f8
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -69098,7 +69136,6 @@ void m68000_device::move_w_pais_paid_ipm() // 3120 f1f8
 	// 38b mmmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -69128,6 +69165,7 @@ void m68000_device::move_w_pais_paid_ipm() // 3120 f1f8
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -69220,7 +69258,6 @@ void m68000_device::move_w_das_paid_ipm() // 3128 f1f8
 	// 38b mmmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -69250,6 +69287,7 @@ void m68000_device::move_w_das_paid_ipm() // 3128 f1f8
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -69383,7 +69421,6 @@ adsw2:
 	// 38b mmmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -69413,6 +69450,7 @@ adsw2:
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -69504,7 +69542,6 @@ void m68000_device::move_w_adr16_paid_ipm() // 3138 f1ff
 	// 38b mmmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -69534,6 +69571,7 @@ void m68000_device::move_w_adr16_paid_ipm() // 3138 f1ff
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -69649,7 +69687,6 @@ void m68000_device::move_w_adr32_paid_ipm() // 3139 f1ff
 	// 38b mmmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -69679,6 +69716,7 @@ void m68000_device::move_w_adr32_paid_ipm() // 3139 f1ff
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -69770,7 +69808,6 @@ void m68000_device::move_w_dpc_paid_ipm() // 313a f1ff
 	// 38b mmmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -69800,6 +69837,7 @@ void m68000_device::move_w_dpc_paid_ipm() // 313a f1ff
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -69932,7 +69970,6 @@ adsw2:
 	// 38b mmmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -69962,6 +69999,7 @@ adsw2:
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -70028,7 +70066,6 @@ void m68000_device::move_w_imm16_paid_ipm() // 313c f1ff
 	// 2f8 rmmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -70058,6 +70095,7 @@ void m68000_device::move_w_imm16_paid_ipm() // 313c f1ff
 	// 34b mmmw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -70122,7 +70160,6 @@ void m68000_device::move_w_ds_dad_ipm() // 3140 f1f8
 	// 2db rmdw2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_da[ry];
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -70150,11 +70187,11 @@ void m68000_device::move_w_ds_dad_ipm() // 3140 f1f8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -70218,7 +70255,6 @@ void m68000_device::move_w_as_dad_ipm() // 3148 f1f8
 	// 2db rmdw2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_da[ry];
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -70246,11 +70282,11 @@ void m68000_device::move_w_as_dad_ipm() // 3148 f1f8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -70344,6 +70380,7 @@ void m68000_device::move_w_ais_dad_ipm() // 3150 f1f8
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -70371,11 +70408,11 @@ void m68000_device::move_w_ais_dad_ipm() // 3150 f1f8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -70473,6 +70510,7 @@ void m68000_device::move_w_aips_dad_ipm() // 3158 f1f8
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -70500,11 +70538,11 @@ void m68000_device::move_w_aips_dad_ipm() // 3158 f1f8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -70604,6 +70642,7 @@ void m68000_device::move_w_pais_dad_ipm() // 3160 f1f8
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -70631,11 +70670,11 @@ void m68000_device::move_w_pais_dad_ipm() // 3160 f1f8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -70754,6 +70793,7 @@ void m68000_device::move_w_das_dad_ipm() // 3168 f1f8
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -70781,11 +70821,11 @@ void m68000_device::move_w_das_dad_ipm() // 3168 f1f8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -70945,6 +70985,7 @@ adsw2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -70972,11 +71013,11 @@ adsw2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -71094,6 +71135,7 @@ void m68000_device::move_w_adr16_dad_ipm() // 3178 f1ff
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -71121,11 +71163,11 @@ void m68000_device::move_w_adr16_dad_ipm() // 3178 f1ff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -71267,6 +71309,7 @@ void m68000_device::move_w_adr32_dad_ipm() // 3179 f1ff
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -71294,11 +71337,11 @@ void m68000_device::move_w_adr32_dad_ipm() // 3179 f1ff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -71416,6 +71459,7 @@ void m68000_device::move_w_dpc_dad_ipm() // 317a f1ff
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -71443,11 +71487,11 @@ void m68000_device::move_w_dpc_dad_ipm() // 317a f1ff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -71606,6 +71650,7 @@ adsw2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -71633,11 +71678,11 @@ adsw2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -71727,7 +71772,6 @@ void m68000_device::move_w_imm16_dad_ipm() // 317c f1ff
 	// 2db rmdw2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_dt;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -71755,11 +71799,11 @@ void m68000_device::move_w_imm16_dad_ipm() // 317c f1ff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -71865,7 +71909,6 @@ rmdw2:
 	// 2db rmdw2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_da[ry];
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -71893,11 +71936,11 @@ rmdw2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -72003,7 +72046,6 @@ rmdw2:
 	// 2db rmdw2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_da[ry];
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -72031,11 +72073,11 @@ rmdw2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -72170,6 +72212,7 @@ maww2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -72197,11 +72240,11 @@ maww2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -72340,6 +72383,7 @@ maww2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -72367,11 +72411,11 @@ maww2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -72512,6 +72556,7 @@ maww2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -72539,11 +72584,11 @@ maww2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -72703,6 +72748,7 @@ maww2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -72730,11 +72776,11 @@ maww2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -72935,6 +72981,7 @@ maww2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -72962,11 +73009,11 @@ maww2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -73125,6 +73172,7 @@ maww2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -73152,11 +73200,11 @@ maww2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -73339,6 +73387,7 @@ maww2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -73366,11 +73415,11 @@ maww2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -73529,6 +73578,7 @@ maww2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -73556,11 +73606,11 @@ maww2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -73760,6 +73810,7 @@ maww2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -73787,11 +73838,11 @@ maww2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -73923,7 +73974,6 @@ rmdw2:
 	// 2db rmdw2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_dt;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -73951,11 +74001,11 @@ rmdw2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -74022,6 +74072,7 @@ void m68000_device::move_w_ds_adr16_ipm() // 31c0 fff8
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -74049,11 +74100,11 @@ void m68000_device::move_w_ds_adr16_ipm() // 31c0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -74120,6 +74171,7 @@ void m68000_device::move_w_as_adr16_ipm() // 31c8 fff8
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -74147,11 +74199,11 @@ void m68000_device::move_w_as_adr16_ipm() // 31c8 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -74244,6 +74296,7 @@ void m68000_device::move_w_ais_adr16_ipm() // 31d0 fff8
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -74271,11 +74324,11 @@ void m68000_device::move_w_ais_adr16_ipm() // 31d0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -74372,6 +74425,7 @@ void m68000_device::move_w_aips_adr16_ipm() // 31d8 fff8
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -74399,11 +74453,11 @@ void m68000_device::move_w_aips_adr16_ipm() // 31d8 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -74502,6 +74556,7 @@ void m68000_device::move_w_pais_adr16_ipm() // 31e0 fff8
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -74529,11 +74584,11 @@ void m68000_device::move_w_pais_adr16_ipm() // 31e0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -74651,6 +74706,7 @@ void m68000_device::move_w_das_adr16_ipm() // 31e8 fff8
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -74678,11 +74734,11 @@ void m68000_device::move_w_das_adr16_ipm() // 31e8 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -74841,6 +74897,7 @@ adsw2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -74868,11 +74925,11 @@ adsw2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -74989,6 +75046,7 @@ void m68000_device::move_w_adr16_adr16_ipm() // 31f8 ffff
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -75016,11 +75074,11 @@ void m68000_device::move_w_adr16_adr16_ipm() // 31f8 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -75161,6 +75219,7 @@ void m68000_device::move_w_adr32_adr16_ipm() // 31f9 ffff
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -75188,11 +75247,11 @@ void m68000_device::move_w_adr32_adr16_ipm() // 31f9 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -75309,6 +75368,7 @@ void m68000_device::move_w_dpc_adr16_ipm() // 31fa ffff
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -75336,11 +75396,11 @@ void m68000_device::move_w_dpc_adr16_ipm() // 31fa ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -75498,6 +75558,7 @@ adsw2:
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -75525,11 +75586,11 @@ adsw2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -75622,6 +75683,7 @@ void m68000_device::move_w_imm16_adr16_ipm() // 31fc ffff
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -75649,11 +75711,11 @@ void m68000_device::move_w_imm16_adr16_ipm() // 31fc ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -75744,6 +75806,7 @@ void m68000_device::move_w_ds_adr32_ipm() // 33c0 fff8
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -75771,11 +75834,11 @@ void m68000_device::move_w_ds_adr32_ipm() // 33c0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -75866,6 +75929,7 @@ void m68000_device::move_w_as_adr32_ipm() // 33c8 fff8
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -75893,11 +75957,11 @@ void m68000_device::move_w_as_adr32_ipm() // 33c8 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -75990,7 +76054,6 @@ void m68000_device::move_w_ais_adr32_ipm() // 33d0 fff8
 	// 32e malw2
 	m_aob = merge_16_32(high16(m_at), m_dbin);
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -76042,11 +76105,11 @@ void m68000_device::move_w_ais_adr32_ipm() // 33d0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -76143,7 +76206,6 @@ void m68000_device::move_w_aips_adr32_ipm() // 33d8 fff8
 	// 32e malw2
 	m_aob = merge_16_32(high16(m_at), m_dbin);
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -76195,11 +76257,11 @@ void m68000_device::move_w_aips_adr32_ipm() // 33d8 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -76298,7 +76360,6 @@ void m68000_device::move_w_pais_adr32_ipm() // 33e0 fff8
 	// 32e malw2
 	m_aob = merge_16_32(high16(m_at), m_dbin);
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -76350,11 +76411,11 @@ void m68000_device::move_w_pais_adr32_ipm() // 33e0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -76472,7 +76533,6 @@ void m68000_device::move_w_das_adr32_ipm() // 33e8 fff8
 	// 32e malw2
 	m_aob = merge_16_32(high16(m_at), m_dbin);
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -76524,11 +76584,11 @@ void m68000_device::move_w_das_adr32_ipm() // 33e8 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -76687,7 +76747,6 @@ adsw2:
 	// 32e malw2
 	m_aob = merge_16_32(high16(m_at), m_dbin);
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -76739,11 +76798,11 @@ adsw2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -76860,7 +76919,6 @@ void m68000_device::move_w_adr16_adr32_ipm() // 33f8 ffff
 	// 32e malw2
 	m_aob = merge_16_32(high16(m_at), m_dbin);
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -76912,11 +76970,11 @@ void m68000_device::move_w_adr16_adr32_ipm() // 33f8 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -77057,7 +77115,6 @@ void m68000_device::move_w_adr32_adr32_ipm() // 33f9 ffff
 	// 32e malw2
 	m_aob = merge_16_32(high16(m_at), m_dbin);
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -77109,11 +77166,11 @@ void m68000_device::move_w_adr32_adr32_ipm() // 33f9 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -77230,7 +77287,6 @@ void m68000_device::move_w_dpc_adr32_ipm() // 33fa ffff
 	// 32e malw2
 	m_aob = merge_16_32(high16(m_at), m_dbin);
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -77282,11 +77338,11 @@ void m68000_device::move_w_dpc_adr32_ipm() // 33fa ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -77444,7 +77500,6 @@ adsw2:
 	// 32e malw2
 	m_aob = merge_16_32(high16(m_at), m_dbin);
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -77496,11 +77551,11 @@ adsw2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -77617,6 +77672,7 @@ void m68000_device::move_w_imm16_adr32_ipm() // 33fc ffff
 	// 389 maww2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -77644,11 +77700,11 @@ void m68000_device::move_w_imm16_adr32_ipm() // 33fc ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -77687,7 +77743,6 @@ void m68000_device::negx_b_ds_ipm() // 4000 fff8
 	// 133 nnrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=10 c=2 m=xnzvc  i=b....i. ALU.subx a=R.dyl:m_da[ry] d=0
@@ -77695,6 +77750,7 @@ void m68000_device::negx_b_ds_ipm() // 4000 fff8
 	sr_xnzvc_u();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -77758,7 +77814,6 @@ void m68000_device::negx_b_ais_ipm() // 4010 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -77788,6 +77843,7 @@ void m68000_device::negx_b_ais_ipm() // 4010 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -77847,7 +77903,6 @@ void m68000_device::negx_b_aips_ipm() // 4018 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -77877,6 +77932,7 @@ void m68000_device::negx_b_aips_ipm() // 4018 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -77938,7 +77994,6 @@ void m68000_device::negx_b_pais_ipm() // 4020 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -77968,6 +78023,7 @@ void m68000_device::negx_b_pais_ipm() // 4020 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -78048,7 +78104,6 @@ void m68000_device::negx_b_das_ipm() // 4028 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -78078,6 +78133,7 @@ void m68000_device::negx_b_das_ipm() // 4028 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -78199,7 +78255,6 @@ adsw2:
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -78229,6 +78284,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -78308,7 +78364,6 @@ void m68000_device::negx_b_adr16_ipm() // 4038 ffff
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -78338,6 +78393,7 @@ void m68000_device::negx_b_adr16_ipm() // 4038 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -78441,7 +78497,6 @@ void m68000_device::negx_b_adr32_ipm() // 4039 ffff
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -78471,6 +78526,7 @@ void m68000_device::negx_b_adr32_ipm() // 4039 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -78503,7 +78559,6 @@ void m68000_device::negx_w_ds_ipm() // 4040 fff8
 	// 133 nnrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=10 c=2 m=xnzvc  i=.....i. ALU.subx a=R.dyl:m_da[ry] d=0
@@ -78511,6 +78566,7 @@ void m68000_device::negx_w_ds_ipm() // 4040 fff8
 	sr_xnzvc_u();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -78578,7 +78634,6 @@ void m68000_device::negx_w_ais_ipm() // 4050 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -78608,6 +78663,7 @@ void m68000_device::negx_w_ais_ipm() // 4050 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -78677,7 +78733,6 @@ void m68000_device::negx_w_aips_ipm() // 4058 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -78707,6 +78762,7 @@ void m68000_device::negx_w_aips_ipm() // 4058 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -78778,7 +78834,6 @@ void m68000_device::negx_w_pais_ipm() // 4060 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -78808,6 +78863,7 @@ void m68000_device::negx_w_pais_ipm() // 4060 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -78898,7 +78954,6 @@ void m68000_device::negx_w_das_ipm() // 4068 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -78928,6 +78983,7 @@ void m68000_device::negx_w_das_ipm() // 4068 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -79059,7 +79115,6 @@ adsw2:
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -79089,6 +79144,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -79178,7 +79234,6 @@ void m68000_device::negx_w_adr16_ipm() // 4078 ffff
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -79208,6 +79263,7 @@ void m68000_device::negx_w_adr16_ipm() // 4078 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -79321,7 +79377,6 @@ void m68000_device::negx_w_adr32_ipm() // 4079 ffff
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -79351,6 +79406,7 @@ void m68000_device::negx_w_adr32_ipm() // 4079 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -79389,7 +79445,6 @@ void m68000_device::negx_l_ds_ipm() // 4080 fff8
 	// 137 nnrl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=10 c=2 m=xnzvc  i=.l...i. ALU.subx a=R.dyl:m_da[ry] d=0
@@ -79423,6 +79478,7 @@ void m68000_device::negx_l_ds_ipm() // 4080 fff8
 	sr_xnzvc_u();
 	// 25b roal4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -79494,7 +79550,6 @@ void m68000_device::negx_l_ais_ipm() // 4090 fff8
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -79550,6 +79605,7 @@ void m68000_device::negx_l_ais_ipm() // 4090 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -79642,7 +79698,6 @@ void m68000_device::negx_l_aips_ipm() // 4098 fff8
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -79698,6 +79753,7 @@ void m68000_device::negx_l_aips_ipm() // 4098 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -79791,7 +79847,6 @@ void m68000_device::negx_l_pais_ipm() // 40a0 fff8
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -79847,6 +79902,7 @@ void m68000_device::negx_l_pais_ipm() // 40a0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -79960,7 +80016,6 @@ void m68000_device::negx_l_das_ipm() // 40a8 fff8
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -80016,6 +80071,7 @@ void m68000_device::negx_l_das_ipm() // 40a8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -80170,7 +80226,6 @@ adsl2:
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -80226,6 +80281,7 @@ adsl2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -80341,7 +80397,6 @@ void m68000_device::negx_l_adr16_ipm() // 40b8 ffff
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -80397,6 +80452,7 @@ void m68000_device::negx_l_adr16_ipm() // 40b8 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -80536,7 +80592,6 @@ void m68000_device::negx_l_adr32_ipm() // 40b9 ffff
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -80592,6 +80647,7 @@ void m68000_device::negx_l_adr32_ipm() // 40b9 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -80630,7 +80686,6 @@ void m68000_device::move_sr_ds_ipm() // 40c0 fff8
 	// 3a5 strw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_ftu = m_sr;
 	// 340 strw2
@@ -80658,6 +80713,7 @@ void m68000_device::move_sr_ds_ipm() // 40c0 fff8
 	m_dbin = m_edb;
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -80704,7 +80760,6 @@ void m68000_device::move_sr_ais_ipm() // 40d0 fff8
 	// 3a1 stmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_ftu = m_sr;
 	// 324 sftm2
@@ -80735,6 +80790,7 @@ void m68000_device::move_sr_ais_ipm() // 40d0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -80804,7 +80860,6 @@ void m68000_device::move_sr_aips_ipm() // 40d8 fff8
 	// 3a1 stmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_ftu = m_sr;
 	// 324 sftm2
@@ -80835,6 +80890,7 @@ void m68000_device::move_sr_aips_ipm() // 40d8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -80906,7 +80962,6 @@ void m68000_device::move_sr_pais_ipm() // 40e0 fff8
 	// 3a1 stmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_ftu = m_sr;
 	// 324 sftm2
@@ -80937,6 +80992,7 @@ void m68000_device::move_sr_pais_ipm() // 40e0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -81027,7 +81083,6 @@ void m68000_device::move_sr_das_ipm() // 40e8 fff8
 	// 3a1 stmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_ftu = m_sr;
 	// 324 sftm2
@@ -81058,6 +81113,7 @@ void m68000_device::move_sr_das_ipm() // 40e8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -81189,7 +81245,6 @@ adsw2:
 	// 3a1 stmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_ftu = m_sr;
 	// 324 sftm2
@@ -81220,6 +81275,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -81309,7 +81365,6 @@ void m68000_device::move_sr_adr16_ipm() // 40f8 ffff
 	// 3a1 stmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_ftu = m_sr;
 	// 324 sftm2
@@ -81340,6 +81395,7 @@ void m68000_device::move_sr_adr16_ipm() // 40f8 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -81453,7 +81509,6 @@ void m68000_device::move_sr_adr32_ipm() // 40f9 ffff
 	// 3a1 stmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_ftu = m_sr;
 	// 324 sftm2
@@ -81484,6 +81539,7 @@ void m68000_device::move_sr_adr32_ipm() // 40f9 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -81706,7 +81762,6 @@ trap1:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	goto mmrw3;
@@ -81721,6 +81776,7 @@ chkr3:
 mmrw3:
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -81752,7 +81808,6 @@ chkr4:
 	// 150 chkr4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	goto mmrw3;
@@ -81978,7 +82033,6 @@ trap1:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	goto mmrw3;
@@ -81993,6 +82047,7 @@ chkr3:
 mmrw3:
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 15:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -82024,7 +82079,6 @@ chkr4:
 	// 150 chkr4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	goto mmrw3;
@@ -82254,7 +82308,6 @@ trap1:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	goto mmrw3;
@@ -82269,6 +82322,7 @@ chkr3:
 mmrw3:
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 15:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -82300,7 +82354,6 @@ chkr4:
 	// 150 chkr4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	goto mmrw3;
@@ -82532,7 +82585,6 @@ trap1:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	goto mmrw3;
@@ -82547,6 +82599,7 @@ chkr3:
 mmrw3:
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 15:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -82578,7 +82631,6 @@ chkr4:
 	// 150 chkr4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	goto mmrw3;
@@ -82829,7 +82881,6 @@ trap1:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	goto mmrw3;
@@ -82844,6 +82895,7 @@ chkr3:
 mmrw3:
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 17:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -82875,7 +82927,6 @@ chkr4:
 	// 150 chkr4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	goto mmrw3;
@@ -83167,7 +83218,6 @@ trap1:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	goto mmrw3;
@@ -83182,6 +83232,7 @@ chkr3:
 mmrw3:
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 17:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -83213,7 +83264,6 @@ chkr4:
 	// 150 chkr4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	goto mmrw3;
@@ -83463,7 +83513,6 @@ trap1:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	goto mmrw3;
@@ -83478,6 +83527,7 @@ chkr3:
 mmrw3:
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 17:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -83509,7 +83559,6 @@ chkr4:
 	// 150 chkr4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	goto mmrw3;
@@ -83783,7 +83832,6 @@ trap1:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	goto mmrw3;
@@ -83798,6 +83846,7 @@ chkr3:
 mmrw3:
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 19:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -83829,7 +83878,6 @@ chkr4:
 	// 150 chkr4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	goto mmrw3;
@@ -84079,7 +84127,6 @@ trap1:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	goto mmrw3;
@@ -84094,6 +84141,7 @@ chkr3:
 mmrw3:
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 17:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -84125,7 +84173,6 @@ chkr4:
 	// 150 chkr4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	goto mmrw3;
@@ -84416,7 +84463,6 @@ trap1:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	goto mmrw3;
@@ -84431,6 +84477,7 @@ chkr3:
 mmrw3:
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 17:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -84462,7 +84509,6 @@ chkr4:
 	// 150 chkr4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	goto mmrw3;
@@ -84687,7 +84733,6 @@ trap1:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	goto mmrw3;
@@ -84702,6 +84747,7 @@ chkr3:
 mmrw3:
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 15:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -84733,7 +84779,6 @@ chkr4:
 	// 150 chkr4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	goto mmrw3;
@@ -84749,13 +84794,13 @@ void m68000_device::lea_ais_ad_ipm() // 41d0 f1f8
 	// 2f1 leaa1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_movemr = m_dbin;
 	m_pc = m_au;
 	m_at = m_da[ry];
 	m_ftu = m_dbin;
 	// 066 leaa2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -84823,11 +84868,11 @@ void m68000_device::lea_das_ad_ipm() // 41e8 f1f8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -84936,11 +84981,11 @@ leax4:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -85003,11 +85048,11 @@ void m68000_device::lea_adr16_ad_ipm() // 41f8 f1ff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -85096,11 +85141,11 @@ void m68000_device::lea_adr32_ad_ipm() // 41f9 f1ff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -85165,11 +85210,11 @@ void m68000_device::lea_dpc_ad_ipm() // 41fa f1ff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -85277,11 +85322,11 @@ leax4:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -85320,7 +85365,6 @@ void m68000_device::clr_b_ds_ipm() // 4200 fff8
 	// 133 nnrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=4 c=2 m=.nzvc  i=b....i. ALU.and_ a=R.dyl:m_da[ry] d=0
@@ -85328,6 +85372,7 @@ void m68000_device::clr_b_ds_ipm() // 4200 fff8
 	sr_nzvc();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -85393,7 +85438,6 @@ void m68000_device::clr_b_ais_ipm() // 4210 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -85423,6 +85467,7 @@ void m68000_device::clr_b_ais_ipm() // 4210 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -85485,7 +85530,6 @@ void m68000_device::clr_b_aips_ipm() // 4218 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -85515,6 +85559,7 @@ void m68000_device::clr_b_aips_ipm() // 4218 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -85579,7 +85624,6 @@ void m68000_device::clr_b_pais_ipm() // 4220 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -85609,6 +85653,7 @@ void m68000_device::clr_b_pais_ipm() // 4220 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -85692,7 +85737,6 @@ void m68000_device::clr_b_das_ipm() // 4228 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -85722,6 +85766,7 @@ void m68000_device::clr_b_das_ipm() // 4228 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -85848,7 +85893,6 @@ adsw2:
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -85878,6 +85922,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -85960,7 +86005,6 @@ void m68000_device::clr_b_adr16_ipm() // 4238 ffff
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -85990,6 +86034,7 @@ void m68000_device::clr_b_adr16_ipm() // 4238 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -86097,7 +86142,6 @@ void m68000_device::clr_b_adr32_ipm() // 4239 ffff
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -86127,6 +86171,7 @@ void m68000_device::clr_b_adr32_ipm() // 4239 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -86160,7 +86205,6 @@ void m68000_device::clr_w_ds_ipm() // 4240 fff8
 	// 133 nnrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=4 c=2 m=.nzvc  i=.....i. ALU.and_ a=R.dyl:m_da[ry] d=0
@@ -86168,6 +86212,7 @@ void m68000_device::clr_w_ds_ipm() // 4240 fff8
 	sr_nzvc();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -86237,7 +86282,6 @@ void m68000_device::clr_w_ais_ipm() // 4250 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -86267,6 +86311,7 @@ void m68000_device::clr_w_ais_ipm() // 4250 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -86339,7 +86384,6 @@ void m68000_device::clr_w_aips_ipm() // 4258 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -86369,6 +86413,7 @@ void m68000_device::clr_w_aips_ipm() // 4258 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -86443,7 +86488,6 @@ void m68000_device::clr_w_pais_ipm() // 4260 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -86473,6 +86517,7 @@ void m68000_device::clr_w_pais_ipm() // 4260 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -86566,7 +86611,6 @@ void m68000_device::clr_w_das_ipm() // 4268 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -86596,6 +86640,7 @@ void m68000_device::clr_w_das_ipm() // 4268 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -86732,7 +86777,6 @@ adsw2:
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -86762,6 +86806,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -86854,7 +86899,6 @@ void m68000_device::clr_w_adr16_ipm() // 4278 ffff
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -86884,6 +86928,7 @@ void m68000_device::clr_w_adr16_ipm() // 4278 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -87001,7 +87046,6 @@ void m68000_device::clr_w_adr32_ipm() // 4279 ffff
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -87031,6 +87075,7 @@ void m68000_device::clr_w_adr32_ipm() // 4279 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -87070,7 +87115,6 @@ void m68000_device::clr_l_ds_ipm() // 4280 fff8
 	// 137 nnrl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=4 c=2 m=.nzvc  i=.l...i. ALU.and_ a=R.dyl:m_da[ry] d=0
@@ -87104,6 +87148,7 @@ void m68000_device::clr_l_ds_ipm() // 4280 fff8
 	sr_nzvc_u();
 	// 25b roal4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=4 c=0 m=.....  i=.l..... ALU.and_ a=R.aluo:m_aluo d=none
@@ -87177,7 +87222,6 @@ void m68000_device::clr_l_ais_ipm() // 4290 fff8
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -87233,6 +87277,7 @@ void m68000_device::clr_l_ais_ipm() // 4290 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -87328,7 +87373,6 @@ void m68000_device::clr_l_aips_ipm() // 4298 fff8
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -87384,6 +87428,7 @@ void m68000_device::clr_l_aips_ipm() // 4298 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -87480,7 +87525,6 @@ void m68000_device::clr_l_pais_ipm() // 42a0 fff8
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -87536,6 +87580,7 @@ void m68000_device::clr_l_pais_ipm() // 42a0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -87652,7 +87697,6 @@ void m68000_device::clr_l_das_ipm() // 42a8 fff8
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -87708,6 +87752,7 @@ void m68000_device::clr_l_das_ipm() // 42a8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -87867,7 +87912,6 @@ adsl2:
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -87923,6 +87967,7 @@ adsl2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -88042,7 +88087,6 @@ void m68000_device::clr_l_adr16_ipm() // 42b8 ffff
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -88098,6 +88142,7 @@ void m68000_device::clr_l_adr16_ipm() // 42b8 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -88242,7 +88287,6 @@ void m68000_device::clr_l_adr32_ipm() // 42b9 ffff
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -88298,6 +88342,7 @@ void m68000_device::clr_l_adr32_ipm() // 42b9 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -88337,7 +88382,6 @@ void m68000_device::neg_b_ds_ipm() // 4400 fff8
 	// 133 nnrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=5 c=2 m=xnzvc  i=b....i. ALU.sub a=R.dyl:m_da[ry] d=0
@@ -88345,6 +88389,7 @@ void m68000_device::neg_b_ds_ipm() // 4400 fff8
 	sr_xnzvc();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -88408,7 +88453,6 @@ void m68000_device::neg_b_ais_ipm() // 4410 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -88438,6 +88482,7 @@ void m68000_device::neg_b_ais_ipm() // 4410 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -88497,7 +88542,6 @@ void m68000_device::neg_b_aips_ipm() // 4418 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -88527,6 +88571,7 @@ void m68000_device::neg_b_aips_ipm() // 4418 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -88588,7 +88633,6 @@ void m68000_device::neg_b_pais_ipm() // 4420 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -88618,6 +88662,7 @@ void m68000_device::neg_b_pais_ipm() // 4420 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -88698,7 +88743,6 @@ void m68000_device::neg_b_das_ipm() // 4428 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -88728,6 +88772,7 @@ void m68000_device::neg_b_das_ipm() // 4428 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -88849,7 +88894,6 @@ adsw2:
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -88879,6 +88923,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -88958,7 +89003,6 @@ void m68000_device::neg_b_adr16_ipm() // 4438 ffff
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -88988,6 +89032,7 @@ void m68000_device::neg_b_adr16_ipm() // 4438 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -89091,7 +89136,6 @@ void m68000_device::neg_b_adr32_ipm() // 4439 ffff
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -89121,6 +89165,7 @@ void m68000_device::neg_b_adr32_ipm() // 4439 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -89153,7 +89198,6 @@ void m68000_device::neg_w_ds_ipm() // 4440 fff8
 	// 133 nnrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=5 c=2 m=xnzvc  i=.....i. ALU.sub a=R.dyl:m_da[ry] d=0
@@ -89161,6 +89205,7 @@ void m68000_device::neg_w_ds_ipm() // 4440 fff8
 	sr_xnzvc();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -89228,7 +89273,6 @@ void m68000_device::neg_w_ais_ipm() // 4450 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -89258,6 +89302,7 @@ void m68000_device::neg_w_ais_ipm() // 4450 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -89327,7 +89372,6 @@ void m68000_device::neg_w_aips_ipm() // 4458 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -89357,6 +89401,7 @@ void m68000_device::neg_w_aips_ipm() // 4458 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -89428,7 +89473,6 @@ void m68000_device::neg_w_pais_ipm() // 4460 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -89458,6 +89502,7 @@ void m68000_device::neg_w_pais_ipm() // 4460 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -89548,7 +89593,6 @@ void m68000_device::neg_w_das_ipm() // 4468 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -89578,6 +89622,7 @@ void m68000_device::neg_w_das_ipm() // 4468 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -89709,7 +89754,6 @@ adsw2:
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -89739,6 +89783,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -89828,7 +89873,6 @@ void m68000_device::neg_w_adr16_ipm() // 4478 ffff
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -89858,6 +89902,7 @@ void m68000_device::neg_w_adr16_ipm() // 4478 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -89971,7 +90016,6 @@ void m68000_device::neg_w_adr32_ipm() // 4479 ffff
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -90001,6 +90045,7 @@ void m68000_device::neg_w_adr32_ipm() // 4479 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -90039,7 +90084,6 @@ void m68000_device::neg_l_ds_ipm() // 4480 fff8
 	// 137 nnrl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=5 c=2 m=xnzvc  i=.l...i. ALU.sub a=R.dyl:m_da[ry] d=0
@@ -90073,6 +90117,7 @@ void m68000_device::neg_l_ds_ipm() // 4480 fff8
 	sr_xnzvc_u();
 	// 25b roal4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -90144,7 +90189,6 @@ void m68000_device::neg_l_ais_ipm() // 4490 fff8
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -90200,6 +90244,7 @@ void m68000_device::neg_l_ais_ipm() // 4490 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -90292,7 +90337,6 @@ void m68000_device::neg_l_aips_ipm() // 4498 fff8
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -90348,6 +90392,7 @@ void m68000_device::neg_l_aips_ipm() // 4498 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -90441,7 +90486,6 @@ void m68000_device::neg_l_pais_ipm() // 44a0 fff8
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -90497,6 +90541,7 @@ void m68000_device::neg_l_pais_ipm() // 44a0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -90610,7 +90655,6 @@ void m68000_device::neg_l_das_ipm() // 44a8 fff8
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -90666,6 +90710,7 @@ void m68000_device::neg_l_das_ipm() // 44a8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -90820,7 +90865,6 @@ adsl2:
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -90876,6 +90920,7 @@ adsl2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -90991,7 +91036,6 @@ void m68000_device::neg_l_adr16_ipm() // 44b8 ffff
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -91047,6 +91091,7 @@ void m68000_device::neg_l_adr16_ipm() // 44b8 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -91186,7 +91231,6 @@ void m68000_device::neg_l_adr32_ipm() // 44b9 ffff
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -91242,6 +91286,7 @@ void m68000_device::neg_l_adr32_ipm() // 44b9 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -91315,11 +91360,11 @@ void m68000_device::move_ds_ccr_ipm() // 44c0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -91420,11 +91465,11 @@ void m68000_device::move_ais_ccr_ipm() // 44d0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -91529,11 +91574,11 @@ void m68000_device::move_aips_ccr_ipm() // 44d8 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -91640,11 +91685,11 @@ void m68000_device::move_pais_ccr_ipm() // 44e0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -91770,11 +91815,11 @@ void m68000_device::move_das_ccr_ipm() // 44e8 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -91941,11 +91986,11 @@ adsw2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -92070,11 +92115,11 @@ void m68000_device::move_adr16_ccr_ipm() // 44f8 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -92223,11 +92268,11 @@ void m68000_device::move_adr32_ccr_ipm() // 44f9 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -92352,11 +92397,11 @@ void m68000_device::move_dpc_ccr_ipm() // 44fa ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -92522,11 +92567,11 @@ adsw2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -92626,11 +92671,11 @@ void m68000_device::move_imm8_ccr_ipm() // 44fc ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -92669,7 +92714,6 @@ void m68000_device::not_b_ds_ipm() // 4600 fff8
 	// 133 nnrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=11 c=2 m=.nzvc  i=b....i. ALU.not_ a=R.dyl:m_da[ry] d=0
@@ -92677,6 +92721,7 @@ void m68000_device::not_b_ds_ipm() // 4600 fff8
 	sr_nzvc();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -92740,7 +92785,6 @@ void m68000_device::not_b_ais_ipm() // 4610 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -92770,6 +92814,7 @@ void m68000_device::not_b_ais_ipm() // 4610 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -92829,7 +92874,6 @@ void m68000_device::not_b_aips_ipm() // 4618 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -92859,6 +92903,7 @@ void m68000_device::not_b_aips_ipm() // 4618 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -92920,7 +92965,6 @@ void m68000_device::not_b_pais_ipm() // 4620 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -92950,6 +92994,7 @@ void m68000_device::not_b_pais_ipm() // 4620 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -93030,7 +93075,6 @@ void m68000_device::not_b_das_ipm() // 4628 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -93060,6 +93104,7 @@ void m68000_device::not_b_das_ipm() // 4628 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -93181,7 +93226,6 @@ adsw2:
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -93211,6 +93255,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -93290,7 +93335,6 @@ void m68000_device::not_b_adr16_ipm() // 4638 ffff
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -93320,6 +93364,7 @@ void m68000_device::not_b_adr16_ipm() // 4638 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -93423,7 +93468,6 @@ void m68000_device::not_b_adr32_ipm() // 4639 ffff
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -93453,6 +93497,7 @@ void m68000_device::not_b_adr32_ipm() // 4639 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -93485,7 +93530,6 @@ void m68000_device::not_w_ds_ipm() // 4640 fff8
 	// 133 nnrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=11 c=2 m=.nzvc  i=.....i. ALU.not_ a=R.dyl:m_da[ry] d=0
@@ -93493,6 +93537,7 @@ void m68000_device::not_w_ds_ipm() // 4640 fff8
 	sr_nzvc();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -93560,7 +93605,6 @@ void m68000_device::not_w_ais_ipm() // 4650 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -93590,6 +93634,7 @@ void m68000_device::not_w_ais_ipm() // 4650 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -93659,7 +93704,6 @@ void m68000_device::not_w_aips_ipm() // 4658 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -93689,6 +93733,7 @@ void m68000_device::not_w_aips_ipm() // 4658 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -93760,7 +93805,6 @@ void m68000_device::not_w_pais_ipm() // 4660 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -93790,6 +93834,7 @@ void m68000_device::not_w_pais_ipm() // 4660 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -93880,7 +93925,6 @@ void m68000_device::not_w_das_ipm() // 4668 fff8
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -93910,6 +93954,7 @@ void m68000_device::not_w_das_ipm() // 4668 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -94041,7 +94086,6 @@ adsw2:
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -94071,6 +94115,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -94160,7 +94205,6 @@ void m68000_device::not_w_adr16_ipm() // 4678 ffff
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -94190,6 +94234,7 @@ void m68000_device::not_w_adr16_ipm() // 4678 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -94303,7 +94348,6 @@ void m68000_device::not_w_adr32_ipm() // 4679 ffff
 	// 2b8 nnmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -94333,6 +94377,7 @@ void m68000_device::not_w_adr32_ipm() // 4679 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -94371,7 +94416,6 @@ void m68000_device::not_l_ds_ipm() // 4680 fff8
 	// 137 nnrl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=11 c=2 m=.nzvc  i=.l...i. ALU.not_ a=R.dyl:m_da[ry] d=0
@@ -94405,6 +94449,7 @@ void m68000_device::not_l_ds_ipm() // 4680 fff8
 	sr_nzvc_u();
 	// 25b roal4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -94476,7 +94521,6 @@ void m68000_device::not_l_ais_ipm() // 4690 fff8
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -94532,6 +94576,7 @@ void m68000_device::not_l_ais_ipm() // 4690 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -94624,7 +94669,6 @@ void m68000_device::not_l_aips_ipm() // 4698 fff8
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -94680,6 +94724,7 @@ void m68000_device::not_l_aips_ipm() // 4698 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -94773,7 +94818,6 @@ void m68000_device::not_l_pais_ipm() // 46a0 fff8
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -94829,6 +94873,7 @@ void m68000_device::not_l_pais_ipm() // 46a0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -94942,7 +94987,6 @@ void m68000_device::not_l_das_ipm() // 46a8 fff8
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -94998,6 +95042,7 @@ void m68000_device::not_l_das_ipm() // 46a8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -95152,7 +95197,6 @@ adsl2:
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -95208,6 +95252,7 @@ adsl2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -95323,7 +95368,6 @@ void m68000_device::not_l_adr16_ipm() // 46b8 ffff
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -95379,6 +95423,7 @@ void m68000_device::not_l_adr16_ipm() // 46b8 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -95518,7 +95563,6 @@ void m68000_device::not_l_adr32_ipm() // 46b9 ffff
 	// 2bc nnml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -95574,6 +95618,7 @@ void m68000_device::not_l_adr32_ipm() // 46b9 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -95653,11 +95698,11 @@ void m68000_device::move_ds_sr_ipm() // 46c0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -95764,11 +95809,11 @@ void m68000_device::move_ais_sr_ipm() // 46d0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -95879,11 +95924,11 @@ void m68000_device::move_aips_sr_ipm() // 46d8 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -95996,11 +96041,11 @@ void m68000_device::move_pais_sr_ipm() // 46e0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -96132,11 +96177,11 @@ void m68000_device::move_das_sr_ipm() // 46e8 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -96309,11 +96354,11 @@ adsw2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -96444,11 +96489,11 @@ void m68000_device::move_adr16_sr_ipm() // 46f8 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -96603,11 +96648,11 @@ void m68000_device::move_adr32_sr_ipm() // 46f9 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -96738,11 +96783,11 @@ void m68000_device::move_dpc_sr_ipm() // 46fa ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -96914,11 +96959,11 @@ adsw2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -97024,11 +97069,11 @@ void m68000_device::move_i16u_sr_ipm() // 46fc ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -97067,7 +97112,6 @@ void m68000_device::nbcd_b_ds_ipm() // 4800 fff8
 	// 13b nbcr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=9 c=2 m=xnzvc  i=b....i. ALU.sbcd a=R.dyl:m_da[ry] d=0
@@ -97099,6 +97143,7 @@ void m68000_device::nbcd_b_ds_ipm() // 4800 fff8
 	// alu r=9 c=3 m=xnzvc  i=b.....f ALU.sbcd a=R.aluo:m_aluo d=?
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -97142,7 +97187,6 @@ void m68000_device::nbcd_b_ais_ipm() // 4810 fff8
 	// 15c nbcm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=9 c=2 m=xnzvc  i=b....i. ALU.sbcd a=R.dbin:m_dbin d=0
 	alu_sbcd8(m_dbin, 0x0000);
@@ -97174,6 +97218,7 @@ void m68000_device::nbcd_b_ais_ipm() // 4810 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -97233,7 +97278,6 @@ void m68000_device::nbcd_b_aips_ipm() // 4818 fff8
 	// 15c nbcm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=9 c=2 m=xnzvc  i=b....i. ALU.sbcd a=R.dbin:m_dbin d=0
 	alu_sbcd8(m_dbin, 0x0000);
@@ -97265,6 +97309,7 @@ void m68000_device::nbcd_b_aips_ipm() // 4818 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -97326,7 +97371,6 @@ void m68000_device::nbcd_b_pais_ipm() // 4820 fff8
 	// 15c nbcm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=9 c=2 m=xnzvc  i=b....i. ALU.sbcd a=R.dbin:m_dbin d=0
 	alu_sbcd8(m_dbin, 0x0000);
@@ -97358,6 +97402,7 @@ void m68000_device::nbcd_b_pais_ipm() // 4820 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -97438,7 +97483,6 @@ void m68000_device::nbcd_b_das_ipm() // 4828 fff8
 	// 15c nbcm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=9 c=2 m=xnzvc  i=b....i. ALU.sbcd a=R.dbin:m_dbin d=0
 	alu_sbcd8(m_dbin, 0x0000);
@@ -97470,6 +97514,7 @@ void m68000_device::nbcd_b_das_ipm() // 4828 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -97591,7 +97636,6 @@ adsw2:
 	// 15c nbcm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=9 c=2 m=xnzvc  i=b....i. ALU.sbcd a=R.dbin:m_dbin d=0
 	alu_sbcd8(m_dbin, 0x0000);
@@ -97623,6 +97667,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -97702,7 +97747,6 @@ void m68000_device::nbcd_b_adr16_ipm() // 4838 ffff
 	// 15c nbcm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=9 c=2 m=xnzvc  i=b....i. ALU.sbcd a=R.dbin:m_dbin d=0
 	alu_sbcd8(m_dbin, 0x0000);
@@ -97734,6 +97778,7 @@ void m68000_device::nbcd_b_adr16_ipm() // 4838 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -97837,7 +97882,6 @@ void m68000_device::nbcd_b_adr32_ipm() // 4839 ffff
 	// 15c nbcm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=9 c=2 m=xnzvc  i=b....i. ALU.sbcd a=R.dbin:m_dbin d=0
 	alu_sbcd8(m_dbin, 0x0000);
@@ -97869,6 +97913,7 @@ void m68000_device::nbcd_b_adr32_ipm() // 4839 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -97901,7 +97946,6 @@ void m68000_device::swap_ds_ipm() // 4840 fff8
 	// 341 swap1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_da[ry];
 	m_pc = m_au;
 	set_16h(m_at, m_da[ry]);
@@ -97910,6 +97954,7 @@ void m68000_device::swap_ds_ipm() // 4840 fff8
 	sr_nzvc();
 	// 342 swap2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -97953,7 +97998,6 @@ void m68000_device::pea_ais_ipm() // 4850 fff8
 	// 17c peaa1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -98007,6 +98051,7 @@ void m68000_device::pea_ais_ipm() // 4850 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -98072,7 +98117,6 @@ void m68000_device::pea_das_ipm() // 4868 fff8
 	// 17e pead2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_aluo) + m_at;
 	// 17f pead3
@@ -98128,6 +98172,7 @@ void m68000_device::pea_das_ipm() // 4868 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -98230,7 +98275,6 @@ peax3:
 peax4:
 	// 218 peax4
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_at = m_au;
 	// alu r=9 c=1 m=.....  i=....... ALU.and_ a=R.aul:m_au d=-1
 	alu_and(m_au, 0xffff);
@@ -98288,6 +98332,7 @@ peax4:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -98374,6 +98419,7 @@ void m68000_device::pea_adr16_ipm() // 4878 ffff
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -98401,11 +98447,11 @@ void m68000_device::pea_adr16_ipm() // 4878 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -98516,6 +98562,7 @@ void m68000_device::pea_adr32_ipm() // 4879 ffff
 	// 348 mawl3
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_at;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -98543,11 +98590,11 @@ void m68000_device::pea_adr32_ipm() // 4879 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -98612,7 +98659,6 @@ void m68000_device::pea_dpc_ipm() // 487a ffff
 	// 17e pead2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_aluo) + m_at;
 	// 17f pead3
@@ -98668,6 +98714,7 @@ void m68000_device::pea_dpc_ipm() // 487a ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -98769,7 +98816,6 @@ peax3:
 peax4:
 	// 218 peax4
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_at = m_au;
 	// alu r=9 c=1 m=.....  i=....... ALU.and_ a=R.aul:m_au d=-1
 	alu_and(m_au, 0xffff);
@@ -98827,6 +98873,7 @@ peax4:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -98865,7 +98912,6 @@ void m68000_device::ext_w_ds_ipm() // 4880 fff8
 	// 133 nnrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=8 c=2 m=.nzvc  i=.l...i. ALU.ext a=R.dyl:m_da[ry] d=0
@@ -98873,6 +98919,7 @@ void m68000_device::ext_w_ds_ipm() // 4880 fff8
 	sr_nzvc();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -98978,10 +99025,10 @@ mmrw2:
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -99087,11 +99134,11 @@ push3:
 	// 043 push3
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_da[ry] = m_at;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -99221,10 +99268,10 @@ mmrw2:
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -99395,10 +99442,10 @@ mmrw2:
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -99528,10 +99575,10 @@ mmrw2:
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -99685,10 +99732,10 @@ mmrw2:
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -99727,7 +99774,6 @@ void m68000_device::ext_l_ds_ipm() // 48c0 fff8
 	// 232 extr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=8 c=3 m=.nzvc  i=.....i. ALU.and_ a=R.dyl:m_da[ry] d=-1
@@ -99735,6 +99781,7 @@ void m68000_device::ext_l_ds_ipm() // 48c0 fff8
 	sr_nzvc();
 	// 233 extr2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -99863,10 +99910,10 @@ mmrw2:
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -99996,11 +100043,11 @@ push3:
 	// 043 push3
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_da[ry] = m_at;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -100153,10 +100200,10 @@ mmrw2:
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -100350,10 +100397,10 @@ mmrw2:
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -100506,10 +100553,10 @@ mmrw2:
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -100686,10 +100733,10 @@ mmrw2:
 	// 025 mmrw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -100728,7 +100775,6 @@ void m68000_device::tst_b_ds_ipm() // 4a00 fff8
 	// 12d tsrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = m_da[ry];
 	m_au = m_au + 2;
@@ -100737,6 +100783,7 @@ void m68000_device::tst_b_ds_ipm() // 4a00 fff8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -100800,7 +100847,6 @@ void m68000_device::tst_b_ais_ipm() // 4a10 fff8
 	// 3c3 tsmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=1 m=.nzvc  i=b....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -100808,6 +100854,7 @@ void m68000_device::tst_b_ais_ipm() // 4a10 fff8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -100876,7 +100923,6 @@ void m68000_device::tst_b_aips_ipm() // 4a18 fff8
 	// 3c3 tsmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=1 m=.nzvc  i=b....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -100884,6 +100930,7 @@ void m68000_device::tst_b_aips_ipm() // 4a18 fff8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -100954,7 +101001,6 @@ void m68000_device::tst_b_pais_ipm() // 4a20 fff8
 	// 3c3 tsmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=1 m=.nzvc  i=b....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -100962,6 +101008,7 @@ void m68000_device::tst_b_pais_ipm() // 4a20 fff8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -101051,7 +101098,6 @@ void m68000_device::tst_b_das_ipm() // 4a28 fff8
 	// 3c3 tsmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=1 m=.nzvc  i=b....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -101059,6 +101105,7 @@ void m68000_device::tst_b_das_ipm() // 4a28 fff8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -101191,7 +101238,6 @@ adsw2:
 	// 3c3 tsmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=1 m=.nzvc  i=b....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -101199,6 +101245,7 @@ adsw2:
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -101287,7 +101334,6 @@ void m68000_device::tst_b_adr16_ipm() // 4a38 ffff
 	// 3c3 tsmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=1 m=.nzvc  i=b....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -101295,6 +101341,7 @@ void m68000_device::tst_b_adr16_ipm() // 4a38 ffff
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -101408,7 +101455,6 @@ void m68000_device::tst_b_adr32_ipm() // 4a39 ffff
 	// 3c3 tsmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=1 m=.nzvc  i=b....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -101416,6 +101462,7 @@ void m68000_device::tst_b_adr32_ipm() // 4a39 ffff
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -101455,7 +101502,6 @@ void m68000_device::tst_w_ds_ipm() // 4a40 fff8
 	// 12d tsrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = m_da[ry];
 	m_au = m_au + 2;
@@ -101464,6 +101510,7 @@ void m68000_device::tst_w_ds_ipm() // 4a40 fff8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -101531,7 +101578,6 @@ void m68000_device::tst_w_ais_ipm() // 4a50 fff8
 	// 3c3 tsmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -101539,6 +101585,7 @@ void m68000_device::tst_w_ais_ipm() // 4a50 fff8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -101611,7 +101658,6 @@ void m68000_device::tst_w_aips_ipm() // 4a58 fff8
 	// 3c3 tsmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -101619,6 +101665,7 @@ void m68000_device::tst_w_aips_ipm() // 4a58 fff8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -101693,7 +101740,6 @@ void m68000_device::tst_w_pais_ipm() // 4a60 fff8
 	// 3c3 tsmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -101701,6 +101747,7 @@ void m68000_device::tst_w_pais_ipm() // 4a60 fff8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -101794,7 +101841,6 @@ void m68000_device::tst_w_das_ipm() // 4a68 fff8
 	// 3c3 tsmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -101802,6 +101848,7 @@ void m68000_device::tst_w_das_ipm() // 4a68 fff8
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -101938,7 +101985,6 @@ adsw2:
 	// 3c3 tsmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -101946,6 +101992,7 @@ adsw2:
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -102038,7 +102085,6 @@ void m68000_device::tst_w_adr16_ipm() // 4a78 ffff
 	// 3c3 tsmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -102046,6 +102092,7 @@ void m68000_device::tst_w_adr16_ipm() // 4a78 ffff
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -102163,7 +102210,6 @@ void m68000_device::tst_w_adr32_ipm() // 4a79 ffff
 	// 3c3 tsmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -102171,6 +102217,7 @@ void m68000_device::tst_w_adr32_ipm() // 4a79 ffff
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -102210,7 +102257,6 @@ void m68000_device::tst_l_ds_ipm() // 4a80 fff8
 	// 125 tsrl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = m_da[ry];
 	m_au = m_au + 2;
@@ -102219,6 +102265,7 @@ void m68000_device::tst_l_ds_ipm() // 4a80 fff8
 	sr_nzvc();
 	// 362 tsrl2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -102312,7 +102359,6 @@ void m68000_device::tst_l_ais_ipm() // 4a90 fff8
 	// 3cb tsml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=1 m=.nzvc  i=.l...i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -102320,6 +102366,7 @@ void m68000_device::tst_l_ais_ipm() // 4a90 fff8
 	sr_nzvc();
 	// 361 tsml2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -102417,7 +102464,6 @@ void m68000_device::tst_l_aips_ipm() // 4a98 fff8
 	// 3cb tsml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=1 m=.nzvc  i=.l...i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -102425,6 +102471,7 @@ void m68000_device::tst_l_aips_ipm() // 4a98 fff8
 	sr_nzvc();
 	// 361 tsml2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -102523,7 +102570,6 @@ void m68000_device::tst_l_pais_ipm() // 4aa0 fff8
 	// 3cb tsml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=1 m=.nzvc  i=.l...i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -102531,6 +102577,7 @@ void m68000_device::tst_l_pais_ipm() // 4aa0 fff8
 	sr_nzvc();
 	// 361 tsml2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -102649,7 +102696,6 @@ void m68000_device::tst_l_das_ipm() // 4aa8 fff8
 	// 3cb tsml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=1 m=.nzvc  i=.l...i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -102657,6 +102703,7 @@ void m68000_device::tst_l_das_ipm() // 4aa8 fff8
 	sr_nzvc();
 	// 361 tsml2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -102818,7 +102865,6 @@ adsl2:
 	// 3cb tsml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=1 m=.nzvc  i=.l...i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -102826,6 +102872,7 @@ adsl2:
 	sr_nzvc();
 	// 361 tsml2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -102947,7 +102994,6 @@ void m68000_device::tst_l_adr16_ipm() // 4ab8 ffff
 	// 3cb tsml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=1 m=.nzvc  i=.l...i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -102955,6 +103001,7 @@ void m68000_device::tst_l_adr16_ipm() // 4ab8 ffff
 	sr_nzvc();
 	// 361 tsml2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -103101,7 +103148,6 @@ void m68000_device::tst_l_adr32_ipm() // 4ab9 ffff
 	// 3cb tsml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=1 m=.nzvc  i=.l...i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -103109,6 +103155,7 @@ void m68000_device::tst_l_adr32_ipm() // 4ab9 ffff
 	sr_nzvc();
 	// 361 tsml2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -103150,13 +103197,13 @@ void m68000_device::tas_ds_ipm() // 4ac0 fff8
 	// 345 tasr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_da[ry];
 	m_pc = m_au;
 	// alu r=15 c=2 m=.....  i=b...... ALU.or_ a=R.ftu:m_ftu d=R.dyl:m_da[ry]
 	alu_or8(m_ftu, m_da[ry]);
 	// 346 tasr2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -103253,12 +103300,12 @@ void m68000_device::tas_ais_ipm() // 4ad0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=b...... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -103356,12 +103403,12 @@ void m68000_device::tas_aips_ipm() // 4ad8 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=b...... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -103461,12 +103508,12 @@ void m68000_device::tas_pais_ipm() // 4ae0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=b...... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -103585,12 +103632,12 @@ void m68000_device::tas_das_ipm() // 4ae8 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=b...... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -103752,12 +103799,12 @@ adsw2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=b...... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -103875,12 +103922,12 @@ void m68000_device::tas_adr16_ipm() // 4af8 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=b...... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -104023,12 +104070,12 @@ void m68000_device::tas_adr32_ipm() // 4af9 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=b...... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -104158,10 +104205,10 @@ mmaw2:
 	// 328 mmaw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -104226,7 +104273,6 @@ void m68000_device::movem_w_aips_list_ipm() // 4c98 fff8
 	// 115 popm2
 	m_aob = m_da[ry];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !m_movemr;
 	m_base_ssw = SSW_DATA | SSW_R;
 	[[fallthrough]]; case 3:
@@ -104295,6 +104341,7 @@ popm6:
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -104449,10 +104496,10 @@ mmaw2:
 	// 328 mmaw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -104647,10 +104694,10 @@ mmaw2:
 	// 328 mmaw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -104803,10 +104850,10 @@ mmaw2:
 	// 328 mmaw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -104986,10 +105033,10 @@ mmaw2:
 	// 328 mmaw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -105143,10 +105190,10 @@ mmaw2:
 	// 328 mmaw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -105340,10 +105387,10 @@ mmaw2:
 	// 328 mmaw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -105496,10 +105543,10 @@ mmaw2:
 	// 328 mmaw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -105564,7 +105611,6 @@ void m68000_device::movem_l_aips_list_ipm() // 4cd8 fff8
 	// 115 popm2
 	m_aob = m_da[ry];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !m_movemr;
 	m_base_ssw = SSW_DATA | SSW_R;
 	[[fallthrough]]; case 3:
@@ -105657,6 +105703,7 @@ popm6:
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -105835,10 +105882,10 @@ mmaw2:
 	// 328 mmaw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -106057,10 +106104,10 @@ mmaw2:
 	// 328 mmaw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -106237,10 +106284,10 @@ mmaw2:
 	// 328 mmaw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -106444,10 +106491,10 @@ mmaw2:
 	// 328 mmaw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -106625,10 +106672,10 @@ mmaw2:
 	// 328 mmaw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -106846,10 +106893,10 @@ mmaw2:
 	// 328 mmaw2
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 11:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -107050,11 +107097,11 @@ void m68000_device::trap_imm4_ipm() // 4e40 fff0
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 13:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -107122,7 +107169,6 @@ void m68000_device::link_as_imm16_ipm() // 4e50 fff8
 	// 30c link3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = high16(m_at);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 3:
@@ -107171,6 +107217,7 @@ void m68000_device::link_as_imm16_ipm() // 4e50 fff8
 	// 349 mmiw2
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -107237,7 +107284,6 @@ void m68000_device::unlk_as_ipm() // 4e58 fff8
 	// 1fe unlk2
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_DATA | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_data(m_aob & ~1, 0xffff);
@@ -107266,6 +107312,7 @@ void m68000_device::unlk_as_ipm() // 4e58 fff8
 	m_au = m_pc + 2;
 	// 27d unlk4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -107309,13 +107356,13 @@ void m68000_device::move_as_usp_ipm() // 4e60 fff8
 	// 2f5 lusp1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_movemr = m_dbin;
 	m_pc = m_au;
 	m_at = m_da[ry];
 	m_ftu = m_dbin;
 	// 066 leaa2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -107360,13 +107407,13 @@ void m68000_device::move_usp_as_ipm() // 4e68 fff8
 	// 230 susp1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_dcr = m_da[15];
 	m_at = m_da[15];
 	m_au = m_da[ry];
 	// 233 extr2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -107409,6 +107456,7 @@ void m68000_device::reset_ipm() // 4e70 ffff
 	}
 	// 3a6 rset1
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_movemr = m_dbin;
 	m_pc = m_au;
 	m_ftu = m_dbin;
@@ -107418,7 +107466,6 @@ void m68000_device::reset_ipm() // 4e70 ffff
 	m_icount -= 2;
 	// 27b rset2
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = ext32(m_aluo) - 2;
 	m_icount -= 2;
 	m_reset_cb(1);
@@ -107439,6 +107486,7 @@ rset5:
 	// 064 rset5
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -107477,11 +107525,11 @@ void m68000_device::nop_ipm() // 4e71 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -107522,6 +107570,7 @@ void m68000_device::stop_i16u_ipm() // 4e72 ffff
 	}
 	// 3a2 stop1
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_movemr = m_dbin;
 	m_pc = m_au;
 	m_ftu = m_dbin;
@@ -107531,6 +107580,7 @@ void m68000_device::stop_i16u_ipm() // 4e72 ffff
 	m_icount -= 2;
 	// 327 aaa01
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_sr = m_ftu & (SR_CCR|SR_SR);
 	update_user_super();
@@ -107659,11 +107709,11 @@ void m68000_device::rte_ipm() // 4e73 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -107774,11 +107824,11 @@ void m68000_device::rts_ipm() // 4e75 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -107816,7 +107866,6 @@ void m68000_device::trapv_ipm() // 4e76 ffff
 	// 06d trpv1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_isr & SR_V;
 	m_alub = m_dbin;
 	m_ftu = m_sr;
@@ -107827,6 +107876,7 @@ void m68000_device::trapv_ipm() // 4e76 ffff
 trpv2:
 	// 0e2 trpv2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -108038,11 +108088,11 @@ trpv3:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 17:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -108182,11 +108232,11 @@ void m68000_device::rtr_ipm() // 4e77 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -108273,7 +108323,6 @@ void m68000_device::jsr_ais_ipm() // 4e90 fff8
 	// 272 jsaw3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_pc;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -108298,11 +108347,11 @@ void m68000_device::jsr_ais_ipm() // 4e90 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -108395,7 +108444,6 @@ void m68000_device::jsr_das_ipm() // 4ea8 fff8
 	// 272 jsaw3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_pc;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -108420,11 +108468,11 @@ void m68000_device::jsr_das_ipm() // 4ea8 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -108537,7 +108585,6 @@ jsrd2:
 	// 272 jsaw3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_pc;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -108562,11 +108609,11 @@ jsrd2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -108655,7 +108702,6 @@ void m68000_device::jsr_adr16_ipm() // 4eb8 ffff
 	// 272 jsaw3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_pc;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -108680,11 +108726,11 @@ void m68000_device::jsr_adr16_ipm() // 4eb8 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -108795,7 +108841,6 @@ void m68000_device::jsr_adr32_ipm() // 4eb9 ffff
 	// 272 jsaw3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_pc;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -108820,11 +108865,11 @@ void m68000_device::jsr_adr32_ipm() // 4eb9 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -108916,7 +108961,6 @@ void m68000_device::jsr_dpc_ipm() // 4eba ffff
 	// 272 jsaw3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_pc;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -108941,11 +108985,11 @@ void m68000_device::jsr_dpc_ipm() // 4eba ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -109057,7 +109101,6 @@ jsrd2:
 	// 272 jsaw3
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_pc;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -109082,11 +109125,11 @@ jsrd2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -109148,11 +109191,11 @@ void m68000_device::jmp_ais_ipm() // 4ed0 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -109218,11 +109261,11 @@ void m68000_device::jmp_das_ipm() // 4ee8 fff8
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -109308,11 +109351,11 @@ bbci3:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -109376,11 +109419,11 @@ void m68000_device::jmp_adr16_ipm() // 4ef8 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -109465,11 +109508,11 @@ void m68000_device::jmp_adr32_ipm() // 4ef9 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -109534,11 +109577,11 @@ void m68000_device::jmp_dpc_ipm() // 4efa ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -109623,11 +109666,11 @@ bbci3:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -109666,7 +109709,6 @@ void m68000_device::addq_b_imm3_ds_ipm() // 5000 f1f8
 	// 2d8 raqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_dt = ext32(m_ftu);
 	// alu r=2 c=2 m=xnzvc  i=b....i. ALU.add a=R.ftu:m_ftu d=R.dyl:m_da[ry]
@@ -109674,6 +109716,7 @@ void m68000_device::addq_b_imm3_ds_ipm() // 5000 f1f8
 	sr_xnzvc();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -109737,7 +109780,6 @@ void m68000_device::addq_b_imm3_ais_ipm() // 5010 f1f8
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -109768,6 +109810,7 @@ void m68000_device::addq_b_imm3_ais_ipm() // 5010 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -109827,7 +109870,6 @@ void m68000_device::addq_b_imm3_aips_ipm() // 5018 f1f8
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -109858,6 +109900,7 @@ void m68000_device::addq_b_imm3_aips_ipm() // 5018 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -109919,7 +109962,6 @@ void m68000_device::addq_b_imm3_pais_ipm() // 5020 f1f8
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -109950,6 +109992,7 @@ void m68000_device::addq_b_imm3_pais_ipm() // 5020 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -110030,7 +110073,6 @@ void m68000_device::addq_b_imm3_das_ipm() // 5028 f1f8
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -110061,6 +110103,7 @@ void m68000_device::addq_b_imm3_das_ipm() // 5028 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -110182,7 +110225,6 @@ adsw2:
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -110213,6 +110255,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -110292,7 +110335,6 @@ void m68000_device::addq_b_imm3_adr16_ipm() // 5038 f1ff
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -110323,6 +110365,7 @@ void m68000_device::addq_b_imm3_adr16_ipm() // 5038 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -110426,7 +110469,6 @@ void m68000_device::addq_b_imm3_adr32_ipm() // 5039 f1ff
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -110457,6 +110499,7 @@ void m68000_device::addq_b_imm3_adr32_ipm() // 5039 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -110489,7 +110532,6 @@ void m68000_device::addq_w_imm3_ds_ipm() // 5040 f1f8
 	// 2d8 raqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_dt = ext32(m_ftu);
 	// alu r=2 c=2 m=xnzvc  i=.....i. ALU.add a=R.ftu:m_ftu d=R.dyl:m_da[ry]
@@ -110497,6 +110539,7 @@ void m68000_device::addq_w_imm3_ds_ipm() // 5040 f1f8
 	sr_xnzvc();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -110537,7 +110580,6 @@ void m68000_device::addq_w_imm3_as_ipm() // 5048 f1f8
 	// 2dc raql1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_dt = ext32(m_ftu);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.ftu:m_ftu d=R.ayl:m_da[ry]
@@ -110571,6 +110613,7 @@ void m68000_device::addq_w_imm3_as_ipm() // 5048 f1f8
 	m_icount -= 2;
 	// 25b roal4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -110618,7 +110661,6 @@ void m68000_device::addq_w_imm3_ais_ipm() // 5050 f1f8
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -110649,6 +110691,7 @@ void m68000_device::addq_w_imm3_ais_ipm() // 5050 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -110718,7 +110761,6 @@ void m68000_device::addq_w_imm3_aips_ipm() // 5058 f1f8
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -110749,6 +110791,7 @@ void m68000_device::addq_w_imm3_aips_ipm() // 5058 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -110820,7 +110863,6 @@ void m68000_device::addq_w_imm3_pais_ipm() // 5060 f1f8
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -110851,6 +110893,7 @@ void m68000_device::addq_w_imm3_pais_ipm() // 5060 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -110941,7 +110984,6 @@ void m68000_device::addq_w_imm3_das_ipm() // 5068 f1f8
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -110972,6 +111014,7 @@ void m68000_device::addq_w_imm3_das_ipm() // 5068 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -111103,7 +111146,6 @@ adsw2:
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -111134,6 +111176,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -111223,7 +111266,6 @@ void m68000_device::addq_w_imm3_adr16_ipm() // 5078 f1ff
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -111254,6 +111296,7 @@ void m68000_device::addq_w_imm3_adr16_ipm() // 5078 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -111367,7 +111410,6 @@ void m68000_device::addq_w_imm3_adr32_ipm() // 5079 f1ff
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -111398,6 +111440,7 @@ void m68000_device::addq_w_imm3_adr32_ipm() // 5079 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -111436,7 +111479,6 @@ void m68000_device::addq_l_imm3_ds_ipm() // 5080 f1f8
 	// 2dc raql1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_dt = ext32(m_ftu);
 	// alu r=2 c=2 m=xnzvc  i=.l...i. ALU.add a=R.ftu:m_ftu d=R.dyl:m_da[ry]
@@ -111472,6 +111514,7 @@ void m68000_device::addq_l_imm3_ds_ipm() // 5080 f1f8
 	m_icount -= 2;
 	// 25b roal4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -111492,7 +111535,6 @@ void m68000_device::addq_l_imm3_as_ipm() // 5088 f1f8
 	// 2dc raql1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_dt = ext32(m_ftu);
 	// alu r=2 c=2 m=.....  i=.l...i. ALU.add a=R.ftu:m_ftu d=R.ayl:m_da[ry]
@@ -111526,6 +111568,7 @@ void m68000_device::addq_l_imm3_as_ipm() // 5088 f1f8
 	m_icount -= 2;
 	// 25b roal4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -111597,7 +111640,6 @@ void m68000_device::addq_l_imm3_ais_ipm() // 5090 f1f8
 	// 2f7 maql1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -111654,6 +111696,7 @@ void m68000_device::addq_l_imm3_ais_ipm() // 5090 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -111746,7 +111789,6 @@ void m68000_device::addq_l_imm3_aips_ipm() // 5098 f1f8
 	// 2f7 maql1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -111803,6 +111845,7 @@ void m68000_device::addq_l_imm3_aips_ipm() // 5098 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -111896,7 +111939,6 @@ void m68000_device::addq_l_imm3_pais_ipm() // 50a0 f1f8
 	// 2f7 maql1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -111953,6 +111995,7 @@ void m68000_device::addq_l_imm3_pais_ipm() // 50a0 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -112066,7 +112109,6 @@ void m68000_device::addq_l_imm3_das_ipm() // 50a8 f1f8
 	// 2f7 maql1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -112123,6 +112165,7 @@ void m68000_device::addq_l_imm3_das_ipm() // 50a8 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -112277,7 +112320,6 @@ adsl2:
 	// 2f7 maql1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -112334,6 +112376,7 @@ adsl2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -112449,7 +112492,6 @@ void m68000_device::addq_l_imm3_adr16_ipm() // 50b8 f1ff
 	// 2f7 maql1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -112506,6 +112548,7 @@ void m68000_device::addq_l_imm3_adr16_ipm() // 50b8 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -112645,7 +112688,6 @@ void m68000_device::addq_l_imm3_adr32_ipm() // 50b9 f1ff
 	// 2f7 maql1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -112702,6 +112744,7 @@ void m68000_device::addq_l_imm3_adr32_ipm() // 50b9 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -112740,7 +112783,6 @@ void m68000_device::st_ds_ipm() // 50c0 fff8
 	// 384 sccr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = 1;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -112752,6 +112794,7 @@ void m68000_device::st_ds_ipm() // 50c0 fff8
 roaw2:
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -112810,6 +112853,7 @@ sccr2:
 	alu_or8(m_aluo, 0xff);
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=b...... ALU.or_ a=R.aluo:m_aluo d=none
@@ -112878,6 +112922,7 @@ dbcc2:
 dbcc6:
 	// 0c6 dbcc6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	set_ftu_const();
@@ -112912,12 +112957,12 @@ dbcc6:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -112950,12 +112995,12 @@ dbcc4:
 	// 0c7 dbcc4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -112990,6 +113035,7 @@ dbcc5:
 	// 007 dbcc5
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -113052,7 +113098,6 @@ void m68000_device::st_ais_ipm() // 50d0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = 1;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -113120,6 +113165,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -113182,7 +113228,6 @@ void m68000_device::st_aips_ipm() // 50d8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = 1;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -113250,6 +113295,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -113314,7 +113360,6 @@ void m68000_device::st_pais_ipm() // 50e0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = 1;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -113382,6 +113427,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -113465,7 +113511,6 @@ void m68000_device::st_das_ipm() // 50e8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = 1;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -113533,6 +113578,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -113659,7 +113705,6 @@ adsw2:
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = 1;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -113727,6 +113772,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -113809,7 +113855,6 @@ void m68000_device::st_adr16_ipm() // 50f8 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = 1;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -113877,6 +113922,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -113984,7 +114030,6 @@ void m68000_device::st_adr32_ipm() // 50f9 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = 1;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -114052,6 +114097,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -114085,7 +114131,6 @@ void m68000_device::subq_b_imm3_ds_ipm() // 5100 f1f8
 	// 2d8 raqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_dt = ext32(m_ftu);
 	// alu r=5 c=2 m=xnzvc  i=b....i. ALU.sub a=R.ftu:m_ftu d=R.dyl:m_da[ry]
@@ -114093,6 +114138,7 @@ void m68000_device::subq_b_imm3_ds_ipm() // 5100 f1f8
 	sr_xnzvc();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -114156,7 +114202,6 @@ void m68000_device::subq_b_imm3_ais_ipm() // 5110 f1f8
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -114187,6 +114232,7 @@ void m68000_device::subq_b_imm3_ais_ipm() // 5110 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -114246,7 +114292,6 @@ void m68000_device::subq_b_imm3_aips_ipm() // 5118 f1f8
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -114277,6 +114322,7 @@ void m68000_device::subq_b_imm3_aips_ipm() // 5118 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -114338,7 +114384,6 @@ void m68000_device::subq_b_imm3_pais_ipm() // 5120 f1f8
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -114369,6 +114414,7 @@ void m68000_device::subq_b_imm3_pais_ipm() // 5120 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -114449,7 +114495,6 @@ void m68000_device::subq_b_imm3_das_ipm() // 5128 f1f8
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -114480,6 +114525,7 @@ void m68000_device::subq_b_imm3_das_ipm() // 5128 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -114601,7 +114647,6 @@ adsw2:
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -114632,6 +114677,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -114711,7 +114757,6 @@ void m68000_device::subq_b_imm3_adr16_ipm() // 5138 f1ff
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -114742,6 +114787,7 @@ void m68000_device::subq_b_imm3_adr16_ipm() // 5138 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -114845,7 +114891,6 @@ void m68000_device::subq_b_imm3_adr32_ipm() // 5139 f1ff
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -114876,6 +114921,7 @@ void m68000_device::subq_b_imm3_adr32_ipm() // 5139 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -114908,7 +114954,6 @@ void m68000_device::subq_w_imm3_ds_ipm() // 5140 f1f8
 	// 2d8 raqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_dt = ext32(m_ftu);
 	// alu r=5 c=2 m=xnzvc  i=.....i. ALU.sub a=R.ftu:m_ftu d=R.dyl:m_da[ry]
@@ -114916,6 +114961,7 @@ void m68000_device::subq_w_imm3_ds_ipm() // 5140 f1f8
 	sr_xnzvc();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -114956,7 +115002,6 @@ void m68000_device::subq_w_imm3_as_ipm() // 5148 f1f8
 	// 2dc raql1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_dt = ext32(m_ftu);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.ftu:m_ftu d=R.ayl:m_da[ry]
@@ -114990,6 +115035,7 @@ void m68000_device::subq_w_imm3_as_ipm() // 5148 f1f8
 	m_icount -= 2;
 	// 25b roal4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -115037,7 +115083,6 @@ void m68000_device::subq_w_imm3_ais_ipm() // 5150 f1f8
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -115068,6 +115113,7 @@ void m68000_device::subq_w_imm3_ais_ipm() // 5150 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -115137,7 +115183,6 @@ void m68000_device::subq_w_imm3_aips_ipm() // 5158 f1f8
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -115168,6 +115213,7 @@ void m68000_device::subq_w_imm3_aips_ipm() // 5158 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -115239,7 +115285,6 @@ void m68000_device::subq_w_imm3_pais_ipm() // 5160 f1f8
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -115270,6 +115315,7 @@ void m68000_device::subq_w_imm3_pais_ipm() // 5160 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -115360,7 +115406,6 @@ void m68000_device::subq_w_imm3_das_ipm() // 5168 f1f8
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -115391,6 +115436,7 @@ void m68000_device::subq_w_imm3_das_ipm() // 5168 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -115522,7 +115568,6 @@ adsw2:
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -115553,6 +115598,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -115642,7 +115688,6 @@ void m68000_device::subq_w_imm3_adr16_ipm() // 5178 f1ff
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -115673,6 +115718,7 @@ void m68000_device::subq_w_imm3_adr16_ipm() // 5178 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -115786,7 +115832,6 @@ void m68000_device::subq_w_imm3_adr32_ipm() // 5179 f1ff
 	// 2f3 maqw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -115817,6 +115862,7 @@ void m68000_device::subq_w_imm3_adr32_ipm() // 5179 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -115855,7 +115901,6 @@ void m68000_device::subq_l_imm3_ds_ipm() // 5180 f1f8
 	// 2dc raql1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_dt = ext32(m_ftu);
 	// alu r=5 c=2 m=xnzvc  i=.l...i. ALU.sub a=R.ftu:m_ftu d=R.dyl:m_da[ry]
@@ -115891,6 +115936,7 @@ void m68000_device::subq_l_imm3_ds_ipm() // 5180 f1f8
 	m_icount -= 2;
 	// 25b roal4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -115911,7 +115957,6 @@ void m68000_device::subq_l_imm3_as_ipm() // 5188 f1f8
 	// 2dc raql1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_dt = ext32(m_ftu);
 	// alu r=5 c=2 m=.....  i=.l...i. ALU.sub a=R.ftu:m_ftu d=R.ayl:m_da[ry]
@@ -115945,6 +115990,7 @@ void m68000_device::subq_l_imm3_as_ipm() // 5188 f1f8
 	m_icount -= 2;
 	// 25b roal4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -116016,7 +116062,6 @@ void m68000_device::subq_l_imm3_ais_ipm() // 5190 f1f8
 	// 2f7 maql1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -116073,6 +116118,7 @@ void m68000_device::subq_l_imm3_ais_ipm() // 5190 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -116165,7 +116211,6 @@ void m68000_device::subq_l_imm3_aips_ipm() // 5198 f1f8
 	// 2f7 maql1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -116222,6 +116267,7 @@ void m68000_device::subq_l_imm3_aips_ipm() // 5198 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -116315,7 +116361,6 @@ void m68000_device::subq_l_imm3_pais_ipm() // 51a0 f1f8
 	// 2f7 maql1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -116372,6 +116417,7 @@ void m68000_device::subq_l_imm3_pais_ipm() // 51a0 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -116485,7 +116531,6 @@ void m68000_device::subq_l_imm3_das_ipm() // 51a8 f1f8
 	// 2f7 maql1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -116542,6 +116587,7 @@ void m68000_device::subq_l_imm3_das_ipm() // 51a8 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -116696,7 +116742,6 @@ adsl2:
 	// 2f7 maql1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -116753,6 +116798,7 @@ adsl2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -116868,7 +116914,6 @@ void m68000_device::subq_l_imm3_adr16_ipm() // 51b8 f1ff
 	// 2f7 maql1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -116925,6 +116970,7 @@ void m68000_device::subq_l_imm3_adr16_ipm() // 51b8 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -117064,7 +117110,6 @@ void m68000_device::subq_l_imm3_adr32_ipm() // 51b9 f1ff
 	// 2f7 maql1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -117121,6 +117166,7 @@ void m68000_device::subq_l_imm3_adr32_ipm() // 51b9 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -117159,7 +117205,6 @@ void m68000_device::sf_ds_ipm() // 51c0 fff8
 	// 384 sccr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = 0;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -117171,6 +117216,7 @@ void m68000_device::sf_ds_ipm() // 51c0 fff8
 roaw2:
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -117229,6 +117275,7 @@ sccr2:
 	alu_or8(m_aluo, 0xff);
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=b...... ALU.or_ a=R.aluo:m_aluo d=none
@@ -117297,6 +117344,7 @@ dbcc2:
 dbcc6:
 	// 0c6 dbcc6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	set_ftu_const();
@@ -117331,12 +117379,12 @@ dbcc6:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -117369,12 +117417,12 @@ dbcc4:
 	// 0c7 dbcc4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -117409,6 +117457,7 @@ dbcc5:
 	// 007 dbcc5
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -117471,7 +117520,6 @@ void m68000_device::sf_ais_ipm() // 51d0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = 0;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -117539,6 +117587,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -117601,7 +117650,6 @@ void m68000_device::sf_aips_ipm() // 51d8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = 0;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -117669,6 +117717,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -117733,7 +117782,6 @@ void m68000_device::sf_pais_ipm() // 51e0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = 0;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -117801,6 +117849,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -117884,7 +117933,6 @@ void m68000_device::sf_das_ipm() // 51e8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = 0;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -117952,6 +118000,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -118078,7 +118127,6 @@ adsw2:
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = 0;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -118146,6 +118194,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -118228,7 +118277,6 @@ void m68000_device::sf_adr16_ipm() // 51f8 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = 0;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -118296,6 +118344,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -118403,7 +118452,6 @@ void m68000_device::sf_adr32_ipm() // 51f9 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = 0;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -118471,6 +118519,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -118504,7 +118553,6 @@ void m68000_device::shi_ds_ipm() // 52c0 fff8
 	// 384 sccr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = (m_sr & (SR_C|SR_Z)) == 0;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -118516,6 +118564,7 @@ void m68000_device::shi_ds_ipm() // 52c0 fff8
 roaw2:
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -118574,6 +118623,7 @@ sccr2:
 	alu_or8(m_aluo, 0xff);
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=b...... ALU.or_ a=R.aluo:m_aluo d=none
@@ -118642,6 +118692,7 @@ dbcc2:
 dbcc6:
 	// 0c6 dbcc6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	set_ftu_const();
@@ -118676,12 +118727,12 @@ dbcc6:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -118714,12 +118765,12 @@ dbcc4:
 	// 0c7 dbcc4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -118754,6 +118805,7 @@ dbcc5:
 	// 007 dbcc5
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -118816,7 +118868,6 @@ void m68000_device::shi_ais_ipm() // 52d0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = (m_sr & (SR_C|SR_Z)) == 0;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -118884,6 +118935,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -118946,7 +118998,6 @@ void m68000_device::shi_aips_ipm() // 52d8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = (m_sr & (SR_C|SR_Z)) == 0;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -119014,6 +119065,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -119078,7 +119130,6 @@ void m68000_device::shi_pais_ipm() // 52e0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = (m_sr & (SR_C|SR_Z)) == 0;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -119146,6 +119197,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -119229,7 +119281,6 @@ void m68000_device::shi_das_ipm() // 52e8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = (m_sr & (SR_C|SR_Z)) == 0;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -119297,6 +119348,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -119423,7 +119475,6 @@ adsw2:
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = (m_sr & (SR_C|SR_Z)) == 0;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -119491,6 +119542,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -119573,7 +119625,6 @@ void m68000_device::shi_adr16_ipm() // 52f8 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = (m_sr & (SR_C|SR_Z)) == 0;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -119641,6 +119692,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -119748,7 +119800,6 @@ void m68000_device::shi_adr32_ipm() // 52f9 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = (m_sr & (SR_C|SR_Z)) == 0;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -119816,6 +119867,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -119849,7 +119901,6 @@ void m68000_device::sls_ds_ipm() // 53c0 fff8
 	// 384 sccr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = (m_sr & (SR_C|SR_Z)) != 0;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -119861,6 +119912,7 @@ void m68000_device::sls_ds_ipm() // 53c0 fff8
 roaw2:
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -119919,6 +119971,7 @@ sccr2:
 	alu_or8(m_aluo, 0xff);
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=b...... ALU.or_ a=R.aluo:m_aluo d=none
@@ -119987,6 +120040,7 @@ dbcc2:
 dbcc6:
 	// 0c6 dbcc6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	set_ftu_const();
@@ -120021,12 +120075,12 @@ dbcc6:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -120059,12 +120113,12 @@ dbcc4:
 	// 0c7 dbcc4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -120099,6 +120153,7 @@ dbcc5:
 	// 007 dbcc5
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -120161,7 +120216,6 @@ void m68000_device::sls_ais_ipm() // 53d0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = (m_sr & (SR_C|SR_Z)) != 0;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -120229,6 +120283,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -120291,7 +120346,6 @@ void m68000_device::sls_aips_ipm() // 53d8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = (m_sr & (SR_C|SR_Z)) != 0;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -120359,6 +120413,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -120423,7 +120478,6 @@ void m68000_device::sls_pais_ipm() // 53e0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = (m_sr & (SR_C|SR_Z)) != 0;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -120491,6 +120545,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -120574,7 +120629,6 @@ void m68000_device::sls_das_ipm() // 53e8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = (m_sr & (SR_C|SR_Z)) != 0;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -120642,6 +120696,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -120768,7 +120823,6 @@ adsw2:
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = (m_sr & (SR_C|SR_Z)) != 0;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -120836,6 +120890,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -120918,7 +120973,6 @@ void m68000_device::sls_adr16_ipm() // 53f8 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = (m_sr & (SR_C|SR_Z)) != 0;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -120986,6 +121040,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -121093,7 +121148,6 @@ void m68000_device::sls_adr32_ipm() // 53f9 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = (m_sr & (SR_C|SR_Z)) != 0;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -121161,6 +121215,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -121194,7 +121249,6 @@ void m68000_device::scc_ds_ipm() // 54c0 fff8
 	// 384 sccr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_C);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -121206,6 +121260,7 @@ void m68000_device::scc_ds_ipm() // 54c0 fff8
 roaw2:
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -121264,6 +121319,7 @@ sccr2:
 	alu_or8(m_aluo, 0xff);
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=b...... ALU.or_ a=R.aluo:m_aluo d=none
@@ -121332,6 +121388,7 @@ dbcc2:
 dbcc6:
 	// 0c6 dbcc6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	set_ftu_const();
@@ -121366,12 +121423,12 @@ dbcc6:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -121404,12 +121461,12 @@ dbcc4:
 	// 0c7 dbcc4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -121444,6 +121501,7 @@ dbcc5:
 	// 007 dbcc5
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -121506,7 +121564,6 @@ void m68000_device::scc_ais_ipm() // 54d0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_C);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -121574,6 +121631,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -121636,7 +121694,6 @@ void m68000_device::scc_aips_ipm() // 54d8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_C);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -121704,6 +121761,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -121768,7 +121826,6 @@ void m68000_device::scc_pais_ipm() // 54e0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_C);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -121836,6 +121893,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -121919,7 +121977,6 @@ void m68000_device::scc_das_ipm() // 54e8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_C);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -121987,6 +122044,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -122113,7 +122171,6 @@ adsw2:
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_C);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -122181,6 +122238,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -122263,7 +122321,6 @@ void m68000_device::scc_adr16_ipm() // 54f8 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_C);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -122331,6 +122388,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -122438,7 +122496,6 @@ void m68000_device::scc_adr32_ipm() // 54f9 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_C);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -122506,6 +122563,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -122539,7 +122597,6 @@ void m68000_device::scs_ds_ipm() // 55c0 fff8
 	// 384 sccr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_C;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -122551,6 +122608,7 @@ void m68000_device::scs_ds_ipm() // 55c0 fff8
 roaw2:
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -122609,6 +122667,7 @@ sccr2:
 	alu_or8(m_aluo, 0xff);
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=b...... ALU.or_ a=R.aluo:m_aluo d=none
@@ -122677,6 +122736,7 @@ dbcc2:
 dbcc6:
 	// 0c6 dbcc6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	set_ftu_const();
@@ -122711,12 +122771,12 @@ dbcc6:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -122749,12 +122809,12 @@ dbcc4:
 	// 0c7 dbcc4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -122789,6 +122849,7 @@ dbcc5:
 	// 007 dbcc5
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -122851,7 +122912,6 @@ void m68000_device::scs_ais_ipm() // 55d0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_C;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -122919,6 +122979,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -122981,7 +123042,6 @@ void m68000_device::scs_aips_ipm() // 55d8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_C;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -123049,6 +123109,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -123113,7 +123174,6 @@ void m68000_device::scs_pais_ipm() // 55e0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_C;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -123181,6 +123241,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -123264,7 +123325,6 @@ void m68000_device::scs_das_ipm() // 55e8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_C;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -123332,6 +123392,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -123458,7 +123519,6 @@ adsw2:
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_C;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -123526,6 +123586,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -123608,7 +123669,6 @@ void m68000_device::scs_adr16_ipm() // 55f8 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_C;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -123676,6 +123736,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -123783,7 +123844,6 @@ void m68000_device::scs_adr32_ipm() // 55f9 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_C;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -123851,6 +123911,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -123884,7 +123945,6 @@ void m68000_device::sne_ds_ipm() // 56c0 fff8
 	// 384 sccr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_Z);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -123896,6 +123956,7 @@ void m68000_device::sne_ds_ipm() // 56c0 fff8
 roaw2:
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -123954,6 +124015,7 @@ sccr2:
 	alu_or8(m_aluo, 0xff);
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=b...... ALU.or_ a=R.aluo:m_aluo d=none
@@ -124022,6 +124084,7 @@ dbcc2:
 dbcc6:
 	// 0c6 dbcc6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	set_ftu_const();
@@ -124056,12 +124119,12 @@ dbcc6:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -124094,12 +124157,12 @@ dbcc4:
 	// 0c7 dbcc4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -124134,6 +124197,7 @@ dbcc5:
 	// 007 dbcc5
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -124196,7 +124260,6 @@ void m68000_device::sne_ais_ipm() // 56d0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_Z);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -124264,6 +124327,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -124326,7 +124390,6 @@ void m68000_device::sne_aips_ipm() // 56d8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_Z);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -124394,6 +124457,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -124458,7 +124522,6 @@ void m68000_device::sne_pais_ipm() // 56e0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_Z);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -124526,6 +124589,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -124609,7 +124673,6 @@ void m68000_device::sne_das_ipm() // 56e8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_Z);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -124677,6 +124740,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -124803,7 +124867,6 @@ adsw2:
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_Z);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -124871,6 +124934,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -124953,7 +125017,6 @@ void m68000_device::sne_adr16_ipm() // 56f8 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_Z);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -125021,6 +125084,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -125128,7 +125192,6 @@ void m68000_device::sne_adr32_ipm() // 56f9 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_Z);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -125196,6 +125259,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -125229,7 +125293,6 @@ void m68000_device::seq_ds_ipm() // 57c0 fff8
 	// 384 sccr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_Z;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -125241,6 +125304,7 @@ void m68000_device::seq_ds_ipm() // 57c0 fff8
 roaw2:
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -125299,6 +125363,7 @@ sccr2:
 	alu_or8(m_aluo, 0xff);
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=b...... ALU.or_ a=R.aluo:m_aluo d=none
@@ -125367,6 +125432,7 @@ dbcc2:
 dbcc6:
 	// 0c6 dbcc6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	set_ftu_const();
@@ -125401,12 +125467,12 @@ dbcc6:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -125439,12 +125505,12 @@ dbcc4:
 	// 0c7 dbcc4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -125479,6 +125545,7 @@ dbcc5:
 	// 007 dbcc5
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -125541,7 +125608,6 @@ void m68000_device::seq_ais_ipm() // 57d0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_Z;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -125609,6 +125675,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -125671,7 +125738,6 @@ void m68000_device::seq_aips_ipm() // 57d8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_Z;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -125739,6 +125805,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -125803,7 +125870,6 @@ void m68000_device::seq_pais_ipm() // 57e0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_Z;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -125871,6 +125937,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -125954,7 +126021,6 @@ void m68000_device::seq_das_ipm() // 57e8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_Z;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -126022,6 +126088,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -126148,7 +126215,6 @@ adsw2:
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_Z;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -126216,6 +126282,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -126298,7 +126365,6 @@ void m68000_device::seq_adr16_ipm() // 57f8 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_Z;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -126366,6 +126432,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -126473,7 +126540,6 @@ void m68000_device::seq_adr32_ipm() // 57f9 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_Z;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -126541,6 +126607,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -126574,7 +126641,6 @@ void m68000_device::svc_ds_ipm() // 58c0 fff8
 	// 384 sccr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_V);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -126586,6 +126652,7 @@ void m68000_device::svc_ds_ipm() // 58c0 fff8
 roaw2:
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -126644,6 +126711,7 @@ sccr2:
 	alu_or8(m_aluo, 0xff);
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=b...... ALU.or_ a=R.aluo:m_aluo d=none
@@ -126712,6 +126780,7 @@ dbcc2:
 dbcc6:
 	// 0c6 dbcc6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	set_ftu_const();
@@ -126746,12 +126815,12 @@ dbcc6:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -126784,12 +126853,12 @@ dbcc4:
 	// 0c7 dbcc4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -126824,6 +126893,7 @@ dbcc5:
 	// 007 dbcc5
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -126886,7 +126956,6 @@ void m68000_device::svc_ais_ipm() // 58d0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_V);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -126954,6 +127023,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -127016,7 +127086,6 @@ void m68000_device::svc_aips_ipm() // 58d8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_V);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -127084,6 +127153,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -127148,7 +127218,6 @@ void m68000_device::svc_pais_ipm() // 58e0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_V);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -127216,6 +127285,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -127299,7 +127369,6 @@ void m68000_device::svc_das_ipm() // 58e8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_V);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -127367,6 +127436,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -127493,7 +127563,6 @@ adsw2:
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_V);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -127561,6 +127630,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -127643,7 +127713,6 @@ void m68000_device::svc_adr16_ipm() // 58f8 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_V);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -127711,6 +127780,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -127818,7 +127888,6 @@ void m68000_device::svc_adr32_ipm() // 58f9 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_V);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -127886,6 +127955,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -127919,7 +127989,6 @@ void m68000_device::svs_ds_ipm() // 59c0 fff8
 	// 384 sccr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_V;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -127931,6 +128000,7 @@ void m68000_device::svs_ds_ipm() // 59c0 fff8
 roaw2:
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -127989,6 +128059,7 @@ sccr2:
 	alu_or8(m_aluo, 0xff);
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=b...... ALU.or_ a=R.aluo:m_aluo d=none
@@ -128057,6 +128128,7 @@ dbcc2:
 dbcc6:
 	// 0c6 dbcc6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	set_ftu_const();
@@ -128091,12 +128163,12 @@ dbcc6:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -128129,12 +128201,12 @@ dbcc4:
 	// 0c7 dbcc4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -128169,6 +128241,7 @@ dbcc5:
 	// 007 dbcc5
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -128231,7 +128304,6 @@ void m68000_device::svs_ais_ipm() // 59d0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_V;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -128299,6 +128371,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -128361,7 +128434,6 @@ void m68000_device::svs_aips_ipm() // 59d8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_V;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -128429,6 +128501,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -128493,7 +128566,6 @@ void m68000_device::svs_pais_ipm() // 59e0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_V;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -128561,6 +128633,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -128644,7 +128717,6 @@ void m68000_device::svs_das_ipm() // 59e8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_V;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -128712,6 +128784,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -128838,7 +128911,6 @@ adsw2:
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_V;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -128906,6 +128978,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -128988,7 +129061,6 @@ void m68000_device::svs_adr16_ipm() // 59f8 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_V;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -129056,6 +129128,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -129163,7 +129236,6 @@ void m68000_device::svs_adr32_ipm() // 59f9 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_V;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -129231,6 +129303,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -129264,7 +129337,6 @@ void m68000_device::spl_ds_ipm() // 5ac0 fff8
 	// 384 sccr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_N);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -129276,6 +129348,7 @@ void m68000_device::spl_ds_ipm() // 5ac0 fff8
 roaw2:
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -129334,6 +129407,7 @@ sccr2:
 	alu_or8(m_aluo, 0xff);
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=b...... ALU.or_ a=R.aluo:m_aluo d=none
@@ -129402,6 +129476,7 @@ dbcc2:
 dbcc6:
 	// 0c6 dbcc6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	set_ftu_const();
@@ -129436,12 +129511,12 @@ dbcc6:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -129474,12 +129549,12 @@ dbcc4:
 	// 0c7 dbcc4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -129514,6 +129589,7 @@ dbcc5:
 	// 007 dbcc5
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -129576,7 +129652,6 @@ void m68000_device::spl_ais_ipm() // 5ad0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_N);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -129644,6 +129719,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -129706,7 +129782,6 @@ void m68000_device::spl_aips_ipm() // 5ad8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_N);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -129774,6 +129849,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -129838,7 +129914,6 @@ void m68000_device::spl_pais_ipm() // 5ae0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_N);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -129906,6 +129981,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -129989,7 +130065,6 @@ void m68000_device::spl_das_ipm() // 5ae8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_N);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -130057,6 +130132,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -130183,7 +130259,6 @@ adsw2:
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_N);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -130251,6 +130326,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -130333,7 +130409,6 @@ void m68000_device::spl_adr16_ipm() // 5af8 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_N);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -130401,6 +130476,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -130508,7 +130584,6 @@ void m68000_device::spl_adr32_ipm() // 5af9 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = !(m_sr & SR_N);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -130576,6 +130651,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -130609,7 +130685,6 @@ void m68000_device::smi_ds_ipm() // 5bc0 fff8
 	// 384 sccr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_N;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -130621,6 +130696,7 @@ void m68000_device::smi_ds_ipm() // 5bc0 fff8
 roaw2:
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -130679,6 +130755,7 @@ sccr2:
 	alu_or8(m_aluo, 0xff);
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=b...... ALU.or_ a=R.aluo:m_aluo d=none
@@ -130747,6 +130824,7 @@ dbcc2:
 dbcc6:
 	// 0c6 dbcc6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	set_ftu_const();
@@ -130781,12 +130859,12 @@ dbcc6:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -130819,12 +130897,12 @@ dbcc4:
 	// 0c7 dbcc4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -130859,6 +130937,7 @@ dbcc5:
 	// 007 dbcc5
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -130921,7 +131000,6 @@ void m68000_device::smi_ais_ipm() // 5bd0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_N;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -130989,6 +131067,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -131051,7 +131130,6 @@ void m68000_device::smi_aips_ipm() // 5bd8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_N;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -131119,6 +131197,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -131183,7 +131262,6 @@ void m68000_device::smi_pais_ipm() // 5be0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_N;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -131251,6 +131329,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -131334,7 +131413,6 @@ void m68000_device::smi_das_ipm() // 5be8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_N;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -131402,6 +131480,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -131528,7 +131607,6 @@ adsw2:
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_N;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -131596,6 +131674,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -131678,7 +131757,6 @@ void m68000_device::smi_adr16_ipm() // 5bf8 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_N;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -131746,6 +131824,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -131853,7 +131932,6 @@ void m68000_device::smi_adr32_ipm() // 5bf9 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_sr & SR_N;
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -131921,6 +131999,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -131954,7 +132033,6 @@ void m68000_device::sge_ds_ipm() // 5cc0 fff8
 	// 384 sccr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = ((m_sr & (SR_N|SR_V)) == (SR_N|SR_V)) || ((m_sr & (SR_N|SR_V)) == 0);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -131966,6 +132044,7 @@ void m68000_device::sge_ds_ipm() // 5cc0 fff8
 roaw2:
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -132024,6 +132103,7 @@ sccr2:
 	alu_or8(m_aluo, 0xff);
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=b...... ALU.or_ a=R.aluo:m_aluo d=none
@@ -132092,6 +132172,7 @@ dbcc2:
 dbcc6:
 	// 0c6 dbcc6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	set_ftu_const();
@@ -132126,12 +132207,12 @@ dbcc6:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -132164,12 +132245,12 @@ dbcc4:
 	// 0c7 dbcc4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -132204,6 +132285,7 @@ dbcc5:
 	// 007 dbcc5
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -132266,7 +132348,6 @@ void m68000_device::sge_ais_ipm() // 5cd0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = ((m_sr & (SR_N|SR_V)) == (SR_N|SR_V)) || ((m_sr & (SR_N|SR_V)) == 0);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -132334,6 +132415,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -132396,7 +132478,6 @@ void m68000_device::sge_aips_ipm() // 5cd8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = ((m_sr & (SR_N|SR_V)) == (SR_N|SR_V)) || ((m_sr & (SR_N|SR_V)) == 0);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -132464,6 +132545,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -132528,7 +132610,6 @@ void m68000_device::sge_pais_ipm() // 5ce0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = ((m_sr & (SR_N|SR_V)) == (SR_N|SR_V)) || ((m_sr & (SR_N|SR_V)) == 0);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -132596,6 +132677,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -132679,7 +132761,6 @@ void m68000_device::sge_das_ipm() // 5ce8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = ((m_sr & (SR_N|SR_V)) == (SR_N|SR_V)) || ((m_sr & (SR_N|SR_V)) == 0);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -132747,6 +132828,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -132873,7 +132955,6 @@ adsw2:
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = ((m_sr & (SR_N|SR_V)) == (SR_N|SR_V)) || ((m_sr & (SR_N|SR_V)) == 0);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -132941,6 +133022,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -133023,7 +133105,6 @@ void m68000_device::sge_adr16_ipm() // 5cf8 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = ((m_sr & (SR_N|SR_V)) == (SR_N|SR_V)) || ((m_sr & (SR_N|SR_V)) == 0);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -133091,6 +133172,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -133198,7 +133280,6 @@ void m68000_device::sge_adr32_ipm() // 5cf9 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = ((m_sr & (SR_N|SR_V)) == (SR_N|SR_V)) || ((m_sr & (SR_N|SR_V)) == 0);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -133266,6 +133347,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -133299,7 +133381,6 @@ void m68000_device::slt_ds_ipm() // 5dc0 fff8
 	// 384 sccr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = ((m_sr & (SR_N|SR_V)) == SR_N) || ((m_sr & (SR_N|SR_V)) == SR_V);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -133311,6 +133392,7 @@ void m68000_device::slt_ds_ipm() // 5dc0 fff8
 roaw2:
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -133369,6 +133451,7 @@ sccr2:
 	alu_or8(m_aluo, 0xff);
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=b...... ALU.or_ a=R.aluo:m_aluo d=none
@@ -133437,6 +133520,7 @@ dbcc2:
 dbcc6:
 	// 0c6 dbcc6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	set_ftu_const();
@@ -133471,12 +133555,12 @@ dbcc6:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -133509,12 +133593,12 @@ dbcc4:
 	// 0c7 dbcc4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -133549,6 +133633,7 @@ dbcc5:
 	// 007 dbcc5
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -133611,7 +133696,6 @@ void m68000_device::slt_ais_ipm() // 5dd0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = ((m_sr & (SR_N|SR_V)) == SR_N) || ((m_sr & (SR_N|SR_V)) == SR_V);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -133679,6 +133763,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -133741,7 +133826,6 @@ void m68000_device::slt_aips_ipm() // 5dd8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = ((m_sr & (SR_N|SR_V)) == SR_N) || ((m_sr & (SR_N|SR_V)) == SR_V);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -133809,6 +133893,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -133873,7 +133958,6 @@ void m68000_device::slt_pais_ipm() // 5de0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = ((m_sr & (SR_N|SR_V)) == SR_N) || ((m_sr & (SR_N|SR_V)) == SR_V);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -133941,6 +134025,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -134024,7 +134109,6 @@ void m68000_device::slt_das_ipm() // 5de8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = ((m_sr & (SR_N|SR_V)) == SR_N) || ((m_sr & (SR_N|SR_V)) == SR_V);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -134092,6 +134176,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -134218,7 +134303,6 @@ adsw2:
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = ((m_sr & (SR_N|SR_V)) == SR_N) || ((m_sr & (SR_N|SR_V)) == SR_V);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -134286,6 +134370,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -134368,7 +134453,6 @@ void m68000_device::slt_adr16_ipm() // 5df8 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = ((m_sr & (SR_N|SR_V)) == SR_N) || ((m_sr & (SR_N|SR_V)) == SR_V);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -134436,6 +134520,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -134543,7 +134628,6 @@ void m68000_device::slt_adr32_ipm() // 5df9 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = ((m_sr & (SR_N|SR_V)) == SR_N) || ((m_sr & (SR_N|SR_V)) == SR_V);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -134611,6 +134695,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -134644,7 +134729,6 @@ void m68000_device::sgt_ds_ipm() // 5ec0 fff8
 	// 384 sccr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = ((m_sr & (SR_N|SR_V|SR_Z)) == (SR_N|SR_V)) || ((m_sr & (SR_N|SR_V|SR_Z)) == 0);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -134656,6 +134740,7 @@ void m68000_device::sgt_ds_ipm() // 5ec0 fff8
 roaw2:
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -134714,6 +134799,7 @@ sccr2:
 	alu_or8(m_aluo, 0xff);
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=b...... ALU.or_ a=R.aluo:m_aluo d=none
@@ -134782,6 +134868,7 @@ dbcc2:
 dbcc6:
 	// 0c6 dbcc6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	set_ftu_const();
@@ -134816,12 +134903,12 @@ dbcc6:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -134854,12 +134941,12 @@ dbcc4:
 	// 0c7 dbcc4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -134894,6 +134981,7 @@ dbcc5:
 	// 007 dbcc5
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -134956,7 +135044,6 @@ void m68000_device::sgt_ais_ipm() // 5ed0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = ((m_sr & (SR_N|SR_V|SR_Z)) == (SR_N|SR_V)) || ((m_sr & (SR_N|SR_V|SR_Z)) == 0);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -135024,6 +135111,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -135086,7 +135174,6 @@ void m68000_device::sgt_aips_ipm() // 5ed8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = ((m_sr & (SR_N|SR_V|SR_Z)) == (SR_N|SR_V)) || ((m_sr & (SR_N|SR_V|SR_Z)) == 0);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -135154,6 +135241,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -135218,7 +135306,6 @@ void m68000_device::sgt_pais_ipm() // 5ee0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = ((m_sr & (SR_N|SR_V|SR_Z)) == (SR_N|SR_V)) || ((m_sr & (SR_N|SR_V|SR_Z)) == 0);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -135286,6 +135373,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -135369,7 +135457,6 @@ void m68000_device::sgt_das_ipm() // 5ee8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = ((m_sr & (SR_N|SR_V|SR_Z)) == (SR_N|SR_V)) || ((m_sr & (SR_N|SR_V|SR_Z)) == 0);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -135437,6 +135524,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -135563,7 +135651,6 @@ adsw2:
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = ((m_sr & (SR_N|SR_V|SR_Z)) == (SR_N|SR_V)) || ((m_sr & (SR_N|SR_V|SR_Z)) == 0);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -135631,6 +135718,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -135713,7 +135801,6 @@ void m68000_device::sgt_adr16_ipm() // 5ef8 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = ((m_sr & (SR_N|SR_V|SR_Z)) == (SR_N|SR_V)) || ((m_sr & (SR_N|SR_V|SR_Z)) == 0);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -135781,6 +135868,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -135888,7 +135976,6 @@ void m68000_device::sgt_adr32_ipm() // 5ef9 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = ((m_sr & (SR_N|SR_V|SR_Z)) == (SR_N|SR_V)) || ((m_sr & (SR_N|SR_V|SR_Z)) == 0);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -135956,6 +136043,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -135989,7 +136077,6 @@ void m68000_device::sle_ds_ipm() // 5fc0 fff8
 	// 384 sccr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = (m_sr & SR_Z) || ((m_sr & (SR_N|SR_V)) == SR_N) || ((m_sr & (SR_N|SR_V)) == SR_V);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -136001,6 +136088,7 @@ void m68000_device::sle_ds_ipm() // 5fc0 fff8
 roaw2:
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -136059,6 +136147,7 @@ sccr2:
 	alu_or8(m_aluo, 0xff);
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=b...... ALU.or_ a=R.aluo:m_aluo d=none
@@ -136127,6 +136216,7 @@ dbcc2:
 dbcc6:
 	// 0c6 dbcc6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	set_ftu_const();
@@ -136161,12 +136251,12 @@ dbcc6:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -136199,12 +136289,12 @@ dbcc4:
 	// 0c7 dbcc4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=15 c=0 m=.....  i=....... ALU.or_ a=none d=none
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -136239,6 +136329,7 @@ dbcc5:
 	// 007 dbcc5
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -136301,7 +136392,6 @@ void m68000_device::sle_ais_ipm() // 5fd0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = (m_sr & SR_Z) || ((m_sr & (SR_N|SR_V)) == SR_N) || ((m_sr & (SR_N|SR_V)) == SR_V);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -136369,6 +136459,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -136431,7 +136522,6 @@ void m68000_device::sle_aips_ipm() // 5fd8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = (m_sr & SR_Z) || ((m_sr & (SR_N|SR_V)) == SR_N) || ((m_sr & (SR_N|SR_V)) == SR_V);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -136499,6 +136589,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -136563,7 +136654,6 @@ void m68000_device::sle_pais_ipm() // 5fe0 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = (m_sr & SR_Z) || ((m_sr & (SR_N|SR_V)) == SR_N) || ((m_sr & (SR_N|SR_V)) == SR_V);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -136631,6 +136721,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -136714,7 +136805,6 @@ void m68000_device::sle_das_ipm() // 5fe8 fff8
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = (m_sr & SR_Z) || ((m_sr & (SR_N|SR_V)) == SR_N) || ((m_sr & (SR_N|SR_V)) == SR_V);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -136782,6 +136872,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -136908,7 +136999,6 @@ adsw2:
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = (m_sr & SR_Z) || ((m_sr & (SR_N|SR_V)) == SR_N) || ((m_sr & (SR_N|SR_V)) == SR_V);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -136976,6 +137066,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -137058,7 +137149,6 @@ void m68000_device::sle_adr16_ipm() // 5ff8 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = (m_sr & SR_Z) || ((m_sr & (SR_N|SR_V)) == SR_N) || ((m_sr & (SR_N|SR_V)) == SR_V);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -137126,6 +137216,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -137233,7 +137324,6 @@ void m68000_device::sle_adr32_ipm() // 5ff9 ffff
 	// 380 sccb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = (m_sr & SR_Z) || ((m_sr & (SR_N|SR_V)) == SR_N) || ((m_sr & (SR_N|SR_V)) == SR_V);
 	m_pc = m_au;
 	// alu r=15 c=1 m=.....  i=b...... ALU.and_ a=none d=0
@@ -137301,6 +137391,7 @@ morw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -137341,6 +137432,7 @@ void m68000_device::bra_rel16_ipm() // 6000 ffff
 bbcw3:
 	// 085 bbcw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -137404,11 +137496,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -137454,6 +137546,7 @@ void m68000_device::bra_rel8_ipm() // 6000 ff00
 bbci2:
 	// 045 bbci2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -137490,11 +137583,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -137612,11 +137705,11 @@ void m68000_device::bsr_rel16_ipm() // 6100 ffff
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -137734,11 +137827,11 @@ void m68000_device::bsr_rel8_ipm() // 6100 ff00
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -137784,6 +137877,7 @@ void m68000_device::bhi_rel16_ipm() // 6200 ffff
 bbcw3:
 	// 085 bbcw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -137847,11 +137941,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -137897,6 +137991,7 @@ void m68000_device::bhi_rel8_ipm() // 6200 ff00
 bbci2:
 	// 045 bbci2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -137933,11 +138028,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -137983,6 +138078,7 @@ void m68000_device::bls_rel16_ipm() // 6300 ffff
 bbcw3:
 	// 085 bbcw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -138046,11 +138142,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -138096,6 +138192,7 @@ void m68000_device::bls_rel8_ipm() // 6300 ff00
 bbci2:
 	// 045 bbci2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -138132,11 +138229,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -138182,6 +138279,7 @@ void m68000_device::bcc_rel16_ipm() // 6400 ffff
 bbcw3:
 	// 085 bbcw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -138245,11 +138343,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -138295,6 +138393,7 @@ void m68000_device::bcc_rel8_ipm() // 6400 ff00
 bbci2:
 	// 045 bbci2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -138331,11 +138430,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -138381,6 +138480,7 @@ void m68000_device::bcs_rel16_ipm() // 6500 ffff
 bbcw3:
 	// 085 bbcw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -138444,11 +138544,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -138494,6 +138594,7 @@ void m68000_device::bcs_rel8_ipm() // 6500 ff00
 bbci2:
 	// 045 bbci2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -138530,11 +138631,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -138580,6 +138681,7 @@ void m68000_device::bne_rel16_ipm() // 6600 ffff
 bbcw3:
 	// 085 bbcw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -138643,11 +138745,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -138693,6 +138795,7 @@ void m68000_device::bne_rel8_ipm() // 6600 ff00
 bbci2:
 	// 045 bbci2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -138729,11 +138832,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -138779,6 +138882,7 @@ void m68000_device::beq_rel16_ipm() // 6700 ffff
 bbcw3:
 	// 085 bbcw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -138842,11 +138946,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -138892,6 +138996,7 @@ void m68000_device::beq_rel8_ipm() // 6700 ff00
 bbci2:
 	// 045 bbci2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -138928,11 +139033,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -138978,6 +139083,7 @@ void m68000_device::bvc_rel16_ipm() // 6800 ffff
 bbcw3:
 	// 085 bbcw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -139041,11 +139147,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -139091,6 +139197,7 @@ void m68000_device::bvc_rel8_ipm() // 6800 ff00
 bbci2:
 	// 045 bbci2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -139127,11 +139234,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -139177,6 +139284,7 @@ void m68000_device::bvs_rel16_ipm() // 6900 ffff
 bbcw3:
 	// 085 bbcw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -139240,11 +139348,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -139290,6 +139398,7 @@ void m68000_device::bvs_rel8_ipm() // 6900 ff00
 bbci2:
 	// 045 bbci2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -139326,11 +139435,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -139376,6 +139485,7 @@ void m68000_device::bpl_rel16_ipm() // 6a00 ffff
 bbcw3:
 	// 085 bbcw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -139439,11 +139549,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -139489,6 +139599,7 @@ void m68000_device::bpl_rel8_ipm() // 6a00 ff00
 bbci2:
 	// 045 bbci2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -139525,11 +139636,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -139575,6 +139686,7 @@ void m68000_device::bmi_rel16_ipm() // 6b00 ffff
 bbcw3:
 	// 085 bbcw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -139638,11 +139750,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -139688,6 +139800,7 @@ void m68000_device::bmi_rel8_ipm() // 6b00 ff00
 bbci2:
 	// 045 bbci2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -139724,11 +139837,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -139774,6 +139887,7 @@ void m68000_device::bge_rel16_ipm() // 6c00 ffff
 bbcw3:
 	// 085 bbcw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -139837,11 +139951,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -139887,6 +140001,7 @@ void m68000_device::bge_rel8_ipm() // 6c00 ff00
 bbci2:
 	// 045 bbci2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -139923,11 +140038,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -139973,6 +140088,7 @@ void m68000_device::blt_rel16_ipm() // 6d00 ffff
 bbcw3:
 	// 085 bbcw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -140036,11 +140152,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -140086,6 +140202,7 @@ void m68000_device::blt_rel8_ipm() // 6d00 ff00
 bbci2:
 	// 045 bbci2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -140122,11 +140239,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -140172,6 +140289,7 @@ void m68000_device::bgt_rel16_ipm() // 6e00 ffff
 bbcw3:
 	// 085 bbcw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -140235,11 +140353,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -140285,6 +140403,7 @@ void m68000_device::bgt_rel8_ipm() // 6e00 ff00
 bbci2:
 	// 045 bbci2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -140321,11 +140440,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -140371,6 +140490,7 @@ void m68000_device::ble_rel16_ipm() // 6f00 ffff
 bbcw3:
 	// 085 bbcw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -140434,11 +140554,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -140484,6 +140604,7 @@ void m68000_device::ble_rel8_ipm() // 6f00 ff00
 bbci2:
 	// 045 bbci2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -140520,11 +140641,11 @@ b:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -140563,7 +140684,6 @@ void m68000_device::moveq_imm8o_dd_ipm() // 7000 f100
 	// 23b rlql1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_da[rx] = ext32(m_ftu);
 	m_au = m_au + 2;
@@ -140572,6 +140692,7 @@ void m68000_device::moveq_imm8o_dd_ipm() // 7000 f100
 	sr_nzvc();
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -140611,7 +140732,6 @@ void m68000_device::or_b_ds_dd_ipm() // 8000 f1f8
 	// 1c1 rorw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=14 c=2 m=.nzvc  i=b....i. ALU.or_ a=R.dyl:m_da[ry] d=R.dxl:m_da[rx]
@@ -140619,6 +140739,7 @@ void m68000_device::or_b_ds_dd_ipm() // 8000 f1f8
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -140685,7 +140806,6 @@ void m68000_device::or_b_ais_dd_ipm() // 8010 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=b....i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -140693,6 +140813,7 @@ void m68000_device::or_b_ais_dd_ipm() // 8010 f1f8
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -140764,7 +140885,6 @@ void m68000_device::or_b_aips_dd_ipm() // 8018 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=b....i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -140772,6 +140892,7 @@ void m68000_device::or_b_aips_dd_ipm() // 8018 f1f8
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -140845,7 +140966,6 @@ void m68000_device::or_b_pais_dd_ipm() // 8020 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=b....i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -140853,6 +140973,7 @@ void m68000_device::or_b_pais_dd_ipm() // 8020 f1f8
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -140945,7 +141066,6 @@ void m68000_device::or_b_das_dd_ipm() // 8028 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=b....i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -140953,6 +141073,7 @@ void m68000_device::or_b_das_dd_ipm() // 8028 f1f8
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -141088,7 +141209,6 @@ adsw2:
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=b....i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -141096,6 +141216,7 @@ adsw2:
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -141187,7 +141308,6 @@ void m68000_device::or_b_adr16_dd_ipm() // 8038 f1ff
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=b....i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -141195,6 +141315,7 @@ void m68000_device::or_b_adr16_dd_ipm() // 8038 f1ff
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -141311,7 +141432,6 @@ void m68000_device::or_b_adr32_dd_ipm() // 8039 f1ff
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=b....i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -141319,6 +141439,7 @@ void m68000_device::or_b_adr32_dd_ipm() // 8039 f1ff
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -141410,7 +141531,6 @@ void m68000_device::or_b_dpc_dd_ipm() // 803a f1ff
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=b....i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -141418,6 +141538,7 @@ void m68000_device::or_b_dpc_dd_ipm() // 803a f1ff
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -141552,7 +141673,6 @@ adsw2:
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=b....i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -141560,6 +141680,7 @@ adsw2:
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -141629,7 +141750,6 @@ void m68000_device::or_b_imm8_dd_ipm() // 803c f1ff
 	// 1c1 rorw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dt);
 	// alu r=14 c=2 m=.nzvc  i=b....i. ALU.or_ a=R.dtl:m_dt d=R.dxl:m_da[rx]
@@ -141637,6 +141757,7 @@ void m68000_device::or_b_imm8_dd_ipm() // 803c f1ff
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -141679,7 +141800,6 @@ void m68000_device::or_w_ds_dd_ipm() // 8040 f1f8
 	// 1c1 rorw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=14 c=2 m=.nzvc  i=.....i. ALU.or_ a=R.dyl:m_da[ry] d=R.dxl:m_da[rx]
@@ -141687,6 +141807,7 @@ void m68000_device::or_w_ds_dd_ipm() // 8040 f1f8
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -141757,7 +141878,6 @@ void m68000_device::or_w_ais_dd_ipm() // 8050 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=.....i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -141765,6 +141885,7 @@ void m68000_device::or_w_ais_dd_ipm() // 8050 f1f8
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -141840,7 +141961,6 @@ void m68000_device::or_w_aips_dd_ipm() // 8058 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=.....i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -141848,6 +141968,7 @@ void m68000_device::or_w_aips_dd_ipm() // 8058 f1f8
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -141925,7 +142046,6 @@ void m68000_device::or_w_pais_dd_ipm() // 8060 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=.....i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -141933,6 +142053,7 @@ void m68000_device::or_w_pais_dd_ipm() // 8060 f1f8
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -142029,7 +142150,6 @@ void m68000_device::or_w_das_dd_ipm() // 8068 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=.....i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -142037,6 +142157,7 @@ void m68000_device::or_w_das_dd_ipm() // 8068 f1f8
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -142176,7 +142297,6 @@ adsw2:
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=.....i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -142184,6 +142304,7 @@ adsw2:
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -142279,7 +142400,6 @@ void m68000_device::or_w_adr16_dd_ipm() // 8078 f1ff
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=.....i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -142287,6 +142407,7 @@ void m68000_device::or_w_adr16_dd_ipm() // 8078 f1ff
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -142407,7 +142528,6 @@ void m68000_device::or_w_adr32_dd_ipm() // 8079 f1ff
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=.....i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -142415,6 +142535,7 @@ void m68000_device::or_w_adr32_dd_ipm() // 8079 f1ff
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -142510,7 +142631,6 @@ void m68000_device::or_w_dpc_dd_ipm() // 807a f1ff
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=.....i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -142518,6 +142638,7 @@ void m68000_device::or_w_dpc_dd_ipm() // 807a f1ff
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -142656,7 +142777,6 @@ adsw2:
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=.....i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -142664,6 +142784,7 @@ adsw2:
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -142733,7 +142854,6 @@ void m68000_device::or_w_imm16_dd_ipm() // 807c f1ff
 	// 1c1 rorw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dt);
 	// alu r=14 c=2 m=.nzvc  i=.....i. ALU.or_ a=R.dtl:m_dt d=R.dxl:m_da[rx]
@@ -142741,6 +142861,7 @@ void m68000_device::or_w_imm16_dd_ipm() // 807c f1ff
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -142783,7 +142904,6 @@ void m68000_device::or_l_ds_dd_ipm() // 8080 f1f8
 	// 1c5 rorl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=14 c=2 m=.nzvc  i=.l...i. ALU.or_ a=R.dyl:m_da[ry] d=R.dxl:m_da[rx]
@@ -142820,6 +142940,7 @@ void m68000_device::or_l_ds_dd_ipm() // 8080 f1f8
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=14 c=0 m=.....  i=.l..... ALU.or_ a=R.aluo:m_aluo d=none
@@ -142894,7 +143015,6 @@ void m68000_device::or_l_ais_dd_ipm() // 8090 f1f8
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=.l...i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -142928,6 +143048,7 @@ void m68000_device::or_l_ais_dd_ipm() // 8090 f1f8
 	sr_nzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=14 c=0 m=.....  i=.l..... ALU.or_ a=R.aluo:m_aluo d=none
@@ -143006,7 +143127,6 @@ void m68000_device::or_l_aips_dd_ipm() // 8098 f1f8
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=.l...i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -143040,6 +143160,7 @@ void m68000_device::or_l_aips_dd_ipm() // 8098 f1f8
 	sr_nzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=14 c=0 m=.....  i=.l..... ALU.or_ a=R.aluo:m_aluo d=none
@@ -143119,7 +143240,6 @@ void m68000_device::or_l_pais_dd_ipm() // 80a0 f1f8
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=.l...i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -143153,6 +143273,7 @@ void m68000_device::or_l_pais_dd_ipm() // 80a0 f1f8
 	sr_nzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=14 c=0 m=.....  i=.l..... ALU.or_ a=R.aluo:m_aluo d=none
@@ -143252,7 +143373,6 @@ void m68000_device::or_l_das_dd_ipm() // 80a8 f1f8
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=.l...i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -143286,6 +143406,7 @@ void m68000_device::or_l_das_dd_ipm() // 80a8 f1f8
 	sr_nzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=14 c=0 m=.....  i=.l..... ALU.or_ a=R.aluo:m_aluo d=none
@@ -143428,7 +143549,6 @@ adsl2:
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=.l...i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -143462,6 +143582,7 @@ adsl2:
 	sr_nzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=14 c=0 m=.....  i=.l..... ALU.or_ a=R.aluo:m_aluo d=none
@@ -143564,7 +143685,6 @@ void m68000_device::or_l_adr16_dd_ipm() // 80b8 f1ff
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=.l...i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -143598,6 +143718,7 @@ void m68000_device::or_l_adr16_dd_ipm() // 80b8 f1ff
 	sr_nzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=14 c=0 m=.....  i=.l..... ALU.or_ a=R.aluo:m_aluo d=none
@@ -143725,7 +143846,6 @@ void m68000_device::or_l_adr32_dd_ipm() // 80b9 f1ff
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=.l...i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -143759,6 +143879,7 @@ void m68000_device::or_l_adr32_dd_ipm() // 80b9 f1ff
 	sr_nzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=14 c=0 m=.....  i=.l..... ALU.or_ a=R.aluo:m_aluo d=none
@@ -143857,7 +143978,6 @@ void m68000_device::or_l_dpc_dd_ipm() // 80ba f1ff
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=.l...i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -143891,6 +144011,7 @@ void m68000_device::or_l_dpc_dd_ipm() // 80ba f1ff
 	sr_nzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=14 c=0 m=.....  i=.l..... ALU.or_ a=R.aluo:m_aluo d=none
@@ -144032,7 +144153,6 @@ adsl2:
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=14 c=2 m=.nzvc  i=.l...i. ALU.or_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -144066,6 +144186,7 @@ adsl2:
 	sr_nzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=14 c=0 m=.....  i=.l..... ALU.or_ a=R.aluo:m_aluo d=none
@@ -144140,7 +144261,6 @@ void m68000_device::or_l_imm32_dd_ipm() // 80bc f1ff
 	// 1c5 rorl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dt);
 	// alu r=14 c=2 m=.nzvc  i=.l...i. ALU.or_ a=R.dtl:m_dt d=R.dxl:m_da[rx]
@@ -144177,6 +144297,7 @@ void m68000_device::or_l_imm32_dd_ipm() // 80bc f1ff
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=14 c=0 m=.....  i=.l..... ALU.or_ a=R.aluo:m_aluo d=none
@@ -144396,11 +144517,11 @@ dvur2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 17:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -144432,10 +144553,10 @@ dvum4:
 	// 2d1 dvum4
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 0e6 dvuma
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -144549,7 +144670,6 @@ dvumd:
 	// 0c0 dvumd
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_aluo;
 	m_au = m_pc + 2;
 	// alu r=1 c=6 m=.....  i=.l.d... ALU.sla1 a=R.aluo:m_aluo d=-1
@@ -144559,7 +144679,6 @@ dvumf:
 	// 080 dvumf
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_aluo;
 	set_16h(m_da[rx], m_at);
 	m_au = m_pc + 2;
@@ -144569,6 +144688,7 @@ dvumf:
 dvum0:
 	// 212 dvum0
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -144836,11 +144956,11 @@ dvur2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 19:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -144872,10 +144992,10 @@ dvum4:
 	// 2d1 dvum4
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 0e6 dvuma
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -144989,7 +145109,6 @@ dvumd:
 	// 0c0 dvumd
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_aluo;
 	m_au = m_pc + 2;
 	// alu r=1 c=6 m=.....  i=.l.d... ALU.sla1 a=R.aluo:m_aluo d=-1
@@ -144999,7 +145118,6 @@ dvumf:
 	// 080 dvumf
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_aluo;
 	set_16h(m_da[rx], m_at);
 	m_au = m_pc + 2;
@@ -145009,6 +145127,7 @@ dvumf:
 dvum0:
 	// 212 dvum0
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -145280,11 +145399,11 @@ dvur2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 19:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -145316,10 +145435,10 @@ dvum4:
 	// 2d1 dvum4
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 0e6 dvuma
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -145433,7 +145552,6 @@ dvumd:
 	// 0c0 dvumd
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_aluo;
 	m_au = m_pc + 2;
 	// alu r=1 c=6 m=.....  i=.l.d... ALU.sla1 a=R.aluo:m_aluo d=-1
@@ -145443,7 +145561,6 @@ dvumf:
 	// 080 dvumf
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_aluo;
 	set_16h(m_da[rx], m_at);
 	m_au = m_pc + 2;
@@ -145453,6 +145570,7 @@ dvumf:
 dvum0:
 	// 212 dvum0
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -145726,11 +145844,11 @@ dvur2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 19:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -145762,10 +145880,10 @@ dvum4:
 	// 2d1 dvum4
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 0e6 dvuma
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -145879,7 +145997,6 @@ dvumd:
 	// 0c0 dvumd
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_aluo;
 	m_au = m_pc + 2;
 	// alu r=1 c=6 m=.....  i=.l.d... ALU.sla1 a=R.aluo:m_aluo d=-1
@@ -145889,7 +146006,6 @@ dvumf:
 	// 080 dvumf
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_aluo;
 	set_16h(m_da[rx], m_at);
 	m_au = m_pc + 2;
@@ -145899,6 +146015,7 @@ dvumf:
 dvum0:
 	// 212 dvum0
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -146191,11 +146308,11 @@ dvur2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 21:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -146227,10 +146344,10 @@ dvum4:
 	// 2d1 dvum4
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 0e6 dvuma
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -146344,7 +146461,6 @@ dvumd:
 	// 0c0 dvumd
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_aluo;
 	m_au = m_pc + 2;
 	// alu r=1 c=6 m=.....  i=.l.d... ALU.sla1 a=R.aluo:m_aluo d=-1
@@ -146354,7 +146470,6 @@ dvumf:
 	// 080 dvumf
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_aluo;
 	set_16h(m_da[rx], m_at);
 	m_au = m_pc + 2;
@@ -146364,6 +146479,7 @@ dvumf:
 dvum0:
 	// 212 dvum0
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -146697,11 +146813,11 @@ dvur2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 21:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -146733,10 +146849,10 @@ dvum4:
 	// 2d1 dvum4
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 0e6 dvuma
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -146850,7 +146966,6 @@ dvumd:
 	// 0c0 dvumd
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_aluo;
 	m_au = m_pc + 2;
 	// alu r=1 c=6 m=.....  i=.l.d... ALU.sla1 a=R.aluo:m_aluo d=-1
@@ -146860,7 +146975,6 @@ dvumf:
 	// 080 dvumf
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_aluo;
 	set_16h(m_da[rx], m_at);
 	m_au = m_pc + 2;
@@ -146870,6 +146984,7 @@ dvumf:
 dvum0:
 	// 212 dvum0
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -147161,11 +147276,11 @@ dvur2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 21:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -147197,10 +147312,10 @@ dvum4:
 	// 2d1 dvum4
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 0e6 dvuma
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -147314,7 +147429,6 @@ dvumd:
 	// 0c0 dvumd
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_aluo;
 	m_au = m_pc + 2;
 	// alu r=1 c=6 m=.....  i=.l.d... ALU.sla1 a=R.aluo:m_aluo d=-1
@@ -147324,7 +147438,6 @@ dvumf:
 	// 080 dvumf
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_aluo;
 	set_16h(m_da[rx], m_at);
 	m_au = m_pc + 2;
@@ -147334,6 +147447,7 @@ dvumf:
 dvum0:
 	// 212 dvum0
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -147649,11 +147763,11 @@ dvur2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 23:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -147685,10 +147799,10 @@ dvum4:
 	// 2d1 dvum4
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 0e6 dvuma
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -147802,7 +147916,6 @@ dvumd:
 	// 0c0 dvumd
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_aluo;
 	m_au = m_pc + 2;
 	// alu r=1 c=6 m=.....  i=.l.d... ALU.sla1 a=R.aluo:m_aluo d=-1
@@ -147812,7 +147925,6 @@ dvumf:
 	// 080 dvumf
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_aluo;
 	set_16h(m_da[rx], m_at);
 	m_au = m_pc + 2;
@@ -147822,6 +147934,7 @@ dvumf:
 dvum0:
 	// 212 dvum0
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -148113,11 +148226,11 @@ dvur2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 21:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -148149,10 +148262,10 @@ dvum4:
 	// 2d1 dvum4
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 0e6 dvuma
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -148266,7 +148379,6 @@ dvumd:
 	// 0c0 dvumd
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_aluo;
 	m_au = m_pc + 2;
 	// alu r=1 c=6 m=.....  i=.l.d... ALU.sla1 a=R.aluo:m_aluo d=-1
@@ -148276,7 +148388,6 @@ dvumf:
 	// 080 dvumf
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_aluo;
 	set_16h(m_da[rx], m_at);
 	m_au = m_pc + 2;
@@ -148286,6 +148397,7 @@ dvumf:
 dvum0:
 	// 212 dvum0
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -148618,11 +148730,11 @@ dvur2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 21:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -148654,10 +148766,10 @@ dvum4:
 	// 2d1 dvum4
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 0e6 dvuma
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -148771,7 +148883,6 @@ dvumd:
 	// 0c0 dvumd
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_aluo;
 	m_au = m_pc + 2;
 	// alu r=1 c=6 m=.....  i=.l.d... ALU.sla1 a=R.aluo:m_aluo d=-1
@@ -148781,7 +148892,6 @@ dvumf:
 	// 080 dvumf
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_aluo;
 	set_16h(m_da[rx], m_at);
 	m_au = m_pc + 2;
@@ -148791,6 +148901,7 @@ dvumf:
 dvum0:
 	// 212 dvum0
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -149057,11 +149168,11 @@ dvur2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 19:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -149093,10 +149204,10 @@ dvum4:
 	// 2d1 dvum4
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// 0e6 dvuma
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -149210,7 +149321,6 @@ dvumd:
 	// 0c0 dvumd
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_aluo;
 	m_au = m_pc + 2;
 	// alu r=1 c=6 m=.....  i=.l.d... ALU.sla1 a=R.aluo:m_aluo d=-1
@@ -149220,7 +149330,6 @@ dvumf:
 	// 080 dvumf
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_aluo;
 	set_16h(m_da[rx], m_at);
 	m_au = m_pc + 2;
@@ -149230,6 +149339,7 @@ dvumf:
 dvum0:
 	// 212 dvum0
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -149273,7 +149383,6 @@ void m68000_device::sbcd_ds_dd_ipm() // 8100 f1f8
 	// 1cd rbrb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=9 c=2 m=xnzvc  i=b....i. ALU.sbcd a=R.dyl:m_da[ry] d=R.dxl:m_da[rx]
@@ -149305,6 +149414,7 @@ void m68000_device::sbcd_ds_dd_ipm() // 8100 f1f8
 	// alu r=9 c=3 m=xnzvc  i=b.....f ALU.sbcd a=R.aluo:m_aluo d=?
 	// 238 rbrb3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -149355,7 +149465,6 @@ void m68000_device::sbcd_pais_paid_ipm() // 8108 f1f8
 	// 04e asbb4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_DATA | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_data(m_aob & ~1, m_aob & 1 ? 0x00ff : 0xff00);
@@ -149407,6 +149516,7 @@ void m68000_device::sbcd_pais_paid_ipm() // 8108 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -149464,7 +149574,6 @@ void m68000_device::or_b_dd_ais_ipm() // 8110 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -149494,6 +149603,7 @@ void m68000_device::or_b_dd_ais_ipm() // 8110 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -149557,7 +149667,6 @@ void m68000_device::or_b_dd_aips_ipm() // 8118 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -149587,6 +149696,7 @@ void m68000_device::or_b_dd_aips_ipm() // 8118 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -149652,7 +149762,6 @@ void m68000_device::or_b_dd_pais_ipm() // 8120 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -149682,6 +149791,7 @@ void m68000_device::or_b_dd_pais_ipm() // 8120 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -149766,7 +149876,6 @@ void m68000_device::or_b_dd_das_ipm() // 8128 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -149796,6 +149905,7 @@ void m68000_device::or_b_dd_das_ipm() // 8128 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -149923,7 +150033,6 @@ adsw2:
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -149953,6 +150062,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -150036,7 +150146,6 @@ void m68000_device::or_b_dd_adr16_ipm() // 8138 f1ff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -150066,6 +150175,7 @@ void m68000_device::or_b_dd_adr16_ipm() // 8138 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -150174,7 +150284,6 @@ void m68000_device::or_b_dd_adr32_ipm() // 8139 f1ff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -150204,6 +150313,7 @@ void m68000_device::or_b_dd_adr32_ipm() // 8139 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -150266,7 +150376,6 @@ void m68000_device::or_w_dd_ais_ipm() // 8150 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -150296,6 +150405,7 @@ void m68000_device::or_w_dd_ais_ipm() // 8150 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -150369,7 +150479,6 @@ void m68000_device::or_w_dd_aips_ipm() // 8158 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -150399,6 +150508,7 @@ void m68000_device::or_w_dd_aips_ipm() // 8158 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -150474,7 +150584,6 @@ void m68000_device::or_w_dd_pais_ipm() // 8160 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -150504,6 +150613,7 @@ void m68000_device::or_w_dd_pais_ipm() // 8160 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -150598,7 +150708,6 @@ void m68000_device::or_w_dd_das_ipm() // 8168 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -150628,6 +150737,7 @@ void m68000_device::or_w_dd_das_ipm() // 8168 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -150765,7 +150875,6 @@ adsw2:
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -150795,6 +150904,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -150888,7 +150998,6 @@ void m68000_device::or_w_dd_adr16_ipm() // 8178 f1ff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -150918,6 +151027,7 @@ void m68000_device::or_w_dd_adr16_ipm() // 8178 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -151036,7 +151146,6 @@ void m68000_device::or_w_dd_adr32_ipm() // 8179 f1ff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -151066,6 +151175,7 @@ void m68000_device::or_w_dd_adr32_ipm() // 8179 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -151158,7 +151268,6 @@ void m68000_device::or_l_dd_ais_ipm() // 8190 f1f8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -151214,6 +151323,7 @@ void m68000_device::or_l_dd_ais_ipm() // 8190 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -151310,7 +151420,6 @@ void m68000_device::or_l_dd_aips_ipm() // 8198 f1f8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -151366,6 +151475,7 @@ void m68000_device::or_l_dd_aips_ipm() // 8198 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -151463,7 +151573,6 @@ void m68000_device::or_l_dd_pais_ipm() // 81a0 f1f8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -151519,6 +151628,7 @@ void m68000_device::or_l_dd_pais_ipm() // 81a0 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -151636,7 +151746,6 @@ void m68000_device::or_l_dd_das_ipm() // 81a8 f1f8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -151692,6 +151801,7 @@ void m68000_device::or_l_dd_das_ipm() // 81a8 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -151852,7 +151962,6 @@ adsl2:
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -151908,6 +152017,7 @@ adsl2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -152028,7 +152138,6 @@ void m68000_device::or_l_dd_adr16_ipm() // 81b8 f1ff
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -152084,6 +152193,7 @@ void m68000_device::or_l_dd_adr16_ipm() // 81b8 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -152229,7 +152339,6 @@ void m68000_device::or_l_dd_adr32_ipm() // 81b9 f1ff
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -152285,6 +152394,7 @@ void m68000_device::or_l_dd_adr32_ipm() // 81b9 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -152530,11 +152640,11 @@ dvur2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 17:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -152607,7 +152717,6 @@ dvumz:
 	// 2d5 dvumz
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	goto dvuma;
 dvs09:
@@ -152620,6 +152729,7 @@ dvs09:
 dvuma:
 	// 0e6 dvuma
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -152751,7 +152861,6 @@ dvs17:
 	// 04d dvs17
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_isr & SR_N;
 	set_16l(m_at, m_aluo);
 	m_au = m_pc + 2;
@@ -152782,7 +152891,6 @@ dvs1a:
 dvs1f:
 	// 08a dvs1f
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	// alu r=1 c=2 m=.nzvc  i=.l.d.i. ALU.sub a=alub d=0
 	alu_sub(m_alub, 0x0000);
 	sr_nzvc();
@@ -152814,6 +152922,7 @@ dvs1e:
 leaa2:
 	// 066 leaa2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -152847,14 +152956,12 @@ dvum4:
 	// 2d1 dvum4
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	goto dvuma;
 dvs1c:
 	// 251 dvs1c
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_at, m_aluo);
 	m_au = m_pc + 2;
 	// alu r=1 c=1 m=.nzvc  i=.l.d.i. ALU.and_ a=alub d=-1
@@ -153105,11 +153212,11 @@ dvur2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 19:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -153182,7 +153289,6 @@ dvumz:
 	// 2d5 dvumz
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	goto dvuma;
 dvs09:
@@ -153195,6 +153301,7 @@ dvs09:
 dvuma:
 	// 0e6 dvuma
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -153326,7 +153433,6 @@ dvs17:
 	// 04d dvs17
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_isr & SR_N;
 	set_16l(m_at, m_aluo);
 	m_au = m_pc + 2;
@@ -153357,7 +153463,6 @@ dvs1a:
 dvs1f:
 	// 08a dvs1f
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	// alu r=1 c=2 m=.nzvc  i=.l.d.i. ALU.sub a=alub d=0
 	alu_sub(m_alub, 0x0000);
 	sr_nzvc();
@@ -153389,6 +153494,7 @@ dvs1e:
 leaa2:
 	// 066 leaa2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -153422,14 +153528,12 @@ dvum4:
 	// 2d1 dvum4
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	goto dvuma;
 dvs1c:
 	// 251 dvs1c
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_at, m_aluo);
 	m_au = m_pc + 2;
 	// alu r=1 c=1 m=.nzvc  i=.l.d.i. ALU.and_ a=alub d=-1
@@ -153684,11 +153788,11 @@ dvur2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 19:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -153761,7 +153865,6 @@ dvumz:
 	// 2d5 dvumz
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	goto dvuma;
 dvs09:
@@ -153774,6 +153877,7 @@ dvs09:
 dvuma:
 	// 0e6 dvuma
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -153905,7 +154009,6 @@ dvs17:
 	// 04d dvs17
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_isr & SR_N;
 	set_16l(m_at, m_aluo);
 	m_au = m_pc + 2;
@@ -153936,7 +154039,6 @@ dvs1a:
 dvs1f:
 	// 08a dvs1f
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	// alu r=1 c=2 m=.nzvc  i=.l.d.i. ALU.sub a=alub d=0
 	alu_sub(m_alub, 0x0000);
 	sr_nzvc();
@@ -153968,6 +154070,7 @@ dvs1e:
 leaa2:
 	// 066 leaa2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -154001,14 +154104,12 @@ dvum4:
 	// 2d1 dvum4
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	goto dvuma;
 dvs1c:
 	// 251 dvs1c
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_at, m_aluo);
 	m_au = m_pc + 2;
 	// alu r=1 c=1 m=.nzvc  i=.l.d.i. ALU.and_ a=alub d=-1
@@ -154265,11 +154366,11 @@ dvur2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 19:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -154342,7 +154443,6 @@ dvumz:
 	// 2d5 dvumz
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	goto dvuma;
 dvs09:
@@ -154355,6 +154455,7 @@ dvs09:
 dvuma:
 	// 0e6 dvuma
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -154486,7 +154587,6 @@ dvs17:
 	// 04d dvs17
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_isr & SR_N;
 	set_16l(m_at, m_aluo);
 	m_au = m_pc + 2;
@@ -154517,7 +154617,6 @@ dvs1a:
 dvs1f:
 	// 08a dvs1f
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	// alu r=1 c=2 m=.nzvc  i=.l.d.i. ALU.sub a=alub d=0
 	alu_sub(m_alub, 0x0000);
 	sr_nzvc();
@@ -154549,6 +154648,7 @@ dvs1e:
 leaa2:
 	// 066 leaa2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -154582,14 +154682,12 @@ dvum4:
 	// 2d1 dvum4
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	goto dvuma;
 dvs1c:
 	// 251 dvs1c
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_at, m_aluo);
 	m_au = m_pc + 2;
 	// alu r=1 c=1 m=.nzvc  i=.l.d.i. ALU.and_ a=alub d=-1
@@ -154865,11 +154963,11 @@ dvur2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 21:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -154942,7 +155040,6 @@ dvumz:
 	// 2d5 dvumz
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	goto dvuma;
 dvs09:
@@ -154955,6 +155052,7 @@ dvs09:
 dvuma:
 	// 0e6 dvuma
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -155086,7 +155184,6 @@ dvs17:
 	// 04d dvs17
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_isr & SR_N;
 	set_16l(m_at, m_aluo);
 	m_au = m_pc + 2;
@@ -155117,7 +155214,6 @@ dvs1a:
 dvs1f:
 	// 08a dvs1f
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	// alu r=1 c=2 m=.nzvc  i=.l.d.i. ALU.sub a=alub d=0
 	alu_sub(m_alub, 0x0000);
 	sr_nzvc();
@@ -155149,6 +155245,7 @@ dvs1e:
 leaa2:
 	// 066 leaa2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -155182,14 +155279,12 @@ dvum4:
 	// 2d1 dvum4
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	goto dvuma;
 dvs1c:
 	// 251 dvs1c
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_at, m_aluo);
 	m_au = m_pc + 2;
 	// alu r=1 c=1 m=.nzvc  i=.l.d.i. ALU.and_ a=alub d=-1
@@ -155506,11 +155601,11 @@ dvur2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 21:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -155583,7 +155678,6 @@ dvumz:
 	// 2d5 dvumz
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	goto dvuma;
 dvs09:
@@ -155596,6 +155690,7 @@ dvs09:
 dvuma:
 	// 0e6 dvuma
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -155727,7 +155822,6 @@ dvs17:
 	// 04d dvs17
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_isr & SR_N;
 	set_16l(m_at, m_aluo);
 	m_au = m_pc + 2;
@@ -155758,7 +155852,6 @@ dvs1a:
 dvs1f:
 	// 08a dvs1f
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	// alu r=1 c=2 m=.nzvc  i=.l.d.i. ALU.sub a=alub d=0
 	alu_sub(m_alub, 0x0000);
 	sr_nzvc();
@@ -155790,6 +155883,7 @@ dvs1e:
 leaa2:
 	// 066 leaa2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -155823,14 +155917,12 @@ dvum4:
 	// 2d1 dvum4
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	goto dvuma;
 dvs1c:
 	// 251 dvs1c
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_at, m_aluo);
 	m_au = m_pc + 2;
 	// alu r=1 c=1 m=.nzvc  i=.l.d.i. ALU.and_ a=alub d=-1
@@ -156105,11 +156197,11 @@ dvur2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 21:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -156182,7 +156274,6 @@ dvumz:
 	// 2d5 dvumz
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	goto dvuma;
 dvs09:
@@ -156195,6 +156286,7 @@ dvs09:
 dvuma:
 	// 0e6 dvuma
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -156326,7 +156418,6 @@ dvs17:
 	// 04d dvs17
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_isr & SR_N;
 	set_16l(m_at, m_aluo);
 	m_au = m_pc + 2;
@@ -156357,7 +156448,6 @@ dvs1a:
 dvs1f:
 	// 08a dvs1f
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	// alu r=1 c=2 m=.nzvc  i=.l.d.i. ALU.sub a=alub d=0
 	alu_sub(m_alub, 0x0000);
 	sr_nzvc();
@@ -156389,6 +156479,7 @@ dvs1e:
 leaa2:
 	// 066 leaa2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -156422,14 +156513,12 @@ dvum4:
 	// 2d1 dvum4
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	goto dvuma;
 dvs1c:
 	// 251 dvs1c
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_at, m_aluo);
 	m_au = m_pc + 2;
 	// alu r=1 c=1 m=.nzvc  i=.l.d.i. ALU.and_ a=alub d=-1
@@ -156728,11 +156817,11 @@ dvur2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 23:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -156805,7 +156894,6 @@ dvumz:
 	// 2d5 dvumz
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	goto dvuma;
 dvs09:
@@ -156818,6 +156906,7 @@ dvs09:
 dvuma:
 	// 0e6 dvuma
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -156949,7 +157038,6 @@ dvs17:
 	// 04d dvs17
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_isr & SR_N;
 	set_16l(m_at, m_aluo);
 	m_au = m_pc + 2;
@@ -156980,7 +157068,6 @@ dvs1a:
 dvs1f:
 	// 08a dvs1f
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	// alu r=1 c=2 m=.nzvc  i=.l.d.i. ALU.sub a=alub d=0
 	alu_sub(m_alub, 0x0000);
 	sr_nzvc();
@@ -157012,6 +157099,7 @@ dvs1e:
 leaa2:
 	// 066 leaa2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -157045,14 +157133,12 @@ dvum4:
 	// 2d1 dvum4
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	goto dvuma;
 dvs1c:
 	// 251 dvs1c
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_at, m_aluo);
 	m_au = m_pc + 2;
 	// alu r=1 c=1 m=.nzvc  i=.l.d.i. ALU.and_ a=alub d=-1
@@ -157327,11 +157413,11 @@ dvur2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 21:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -157404,7 +157490,6 @@ dvumz:
 	// 2d5 dvumz
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	goto dvuma;
 dvs09:
@@ -157417,6 +157502,7 @@ dvs09:
 dvuma:
 	// 0e6 dvuma
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -157548,7 +157634,6 @@ dvs17:
 	// 04d dvs17
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_isr & SR_N;
 	set_16l(m_at, m_aluo);
 	m_au = m_pc + 2;
@@ -157579,7 +157664,6 @@ dvs1a:
 dvs1f:
 	// 08a dvs1f
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	// alu r=1 c=2 m=.nzvc  i=.l.d.i. ALU.sub a=alub d=0
 	alu_sub(m_alub, 0x0000);
 	sr_nzvc();
@@ -157611,6 +157695,7 @@ dvs1e:
 leaa2:
 	// 066 leaa2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -157644,14 +157729,12 @@ dvum4:
 	// 2d1 dvum4
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	goto dvuma;
 dvs1c:
 	// 251 dvs1c
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_at, m_aluo);
 	m_au = m_pc + 2;
 	// alu r=1 c=1 m=.nzvc  i=.l.d.i. ALU.and_ a=alub d=-1
@@ -157967,11 +158050,11 @@ dvur2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 21:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -158044,7 +158127,6 @@ dvumz:
 	// 2d5 dvumz
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	goto dvuma;
 dvs09:
@@ -158057,6 +158139,7 @@ dvs09:
 dvuma:
 	// 0e6 dvuma
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -158188,7 +158271,6 @@ dvs17:
 	// 04d dvs17
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_isr & SR_N;
 	set_16l(m_at, m_aluo);
 	m_au = m_pc + 2;
@@ -158219,7 +158301,6 @@ dvs1a:
 dvs1f:
 	// 08a dvs1f
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	// alu r=1 c=2 m=.nzvc  i=.l.d.i. ALU.sub a=alub d=0
 	alu_sub(m_alub, 0x0000);
 	sr_nzvc();
@@ -158251,6 +158332,7 @@ dvs1e:
 leaa2:
 	// 066 leaa2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -158284,14 +158366,12 @@ dvum4:
 	// 2d1 dvum4
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	goto dvuma;
 dvs1c:
 	// 251 dvs1c
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_at, m_aluo);
 	m_au = m_pc + 2;
 	// alu r=1 c=1 m=.nzvc  i=.l.d.i. ALU.and_ a=alub d=-1
@@ -158541,11 +158621,11 @@ dvur2:
 	// 363 b
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// 34c mmrw3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 19:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -158618,7 +158698,6 @@ dvumz:
 	// 2d5 dvumz
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	goto dvuma;
 dvs09:
@@ -158631,6 +158710,7 @@ dvs09:
 dvuma:
 	// 0e6 dvuma
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -158762,7 +158842,6 @@ dvs17:
 	// 04d dvs17
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_t = m_isr & SR_N;
 	set_16l(m_at, m_aluo);
 	m_au = m_pc + 2;
@@ -158793,7 +158872,6 @@ dvs1a:
 dvs1f:
 	// 08a dvs1f
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	// alu r=1 c=2 m=.nzvc  i=.l.d.i. ALU.sub a=alub d=0
 	alu_sub(m_alub, 0x0000);
 	sr_nzvc();
@@ -158825,6 +158903,7 @@ dvs1e:
 leaa2:
 	// 066 leaa2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -158858,14 +158937,12 @@ dvum4:
 	// 2d1 dvum4
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	goto dvuma;
 dvs1c:
 	// 251 dvs1c
 	m_aob = m_pc;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_at, m_aluo);
 	m_au = m_pc + 2;
 	// alu r=1 c=1 m=.nzvc  i=.l.d.i. ALU.and_ a=alub d=-1
@@ -158884,7 +158961,6 @@ void m68000_device::sub_b_ds_dd_ipm() // 9000 f1f8
 	// 1c1 rorw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=5 c=2 m=xnzvc  i=b....i. ALU.sub a=R.dyl:m_da[ry] d=R.dxl:m_da[rx]
@@ -158892,6 +158968,7 @@ void m68000_device::sub_b_ds_dd_ipm() // 9000 f1f8
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -158956,7 +159033,6 @@ void m68000_device::sub_b_ais_dd_ipm() // 9010 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=b....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -158964,6 +159040,7 @@ void m68000_device::sub_b_ais_dd_ipm() // 9010 f1f8
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -159032,7 +159109,6 @@ void m68000_device::sub_b_aips_dd_ipm() // 9018 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=b....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -159040,6 +159116,7 @@ void m68000_device::sub_b_aips_dd_ipm() // 9018 f1f8
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -159110,7 +159187,6 @@ void m68000_device::sub_b_pais_dd_ipm() // 9020 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=b....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -159118,6 +159194,7 @@ void m68000_device::sub_b_pais_dd_ipm() // 9020 f1f8
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -159207,7 +159284,6 @@ void m68000_device::sub_b_das_dd_ipm() // 9028 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=b....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -159215,6 +159291,7 @@ void m68000_device::sub_b_das_dd_ipm() // 9028 f1f8
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -159345,7 +159422,6 @@ adsw2:
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=b....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -159353,6 +159429,7 @@ adsw2:
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -159441,7 +159518,6 @@ void m68000_device::sub_b_adr16_dd_ipm() // 9038 f1ff
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=b....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -159449,6 +159525,7 @@ void m68000_device::sub_b_adr16_dd_ipm() // 9038 f1ff
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -159561,7 +159638,6 @@ void m68000_device::sub_b_adr32_dd_ipm() // 9039 f1ff
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=b....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -159569,6 +159645,7 @@ void m68000_device::sub_b_adr32_dd_ipm() // 9039 f1ff
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -159657,7 +159734,6 @@ void m68000_device::sub_b_dpc_dd_ipm() // 903a f1ff
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=b....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -159665,6 +159741,7 @@ void m68000_device::sub_b_dpc_dd_ipm() // 903a f1ff
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -159794,7 +159871,6 @@ adsw2:
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=b....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -159802,6 +159878,7 @@ adsw2:
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -159869,7 +159946,6 @@ void m68000_device::sub_b_imm8_dd_ipm() // 903c f1ff
 	// 1c1 rorw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dt);
 	// alu r=5 c=2 m=xnzvc  i=b....i. ALU.sub a=R.dtl:m_dt d=R.dxl:m_da[rx]
@@ -159877,6 +159953,7 @@ void m68000_device::sub_b_imm8_dd_ipm() // 903c f1ff
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -159918,7 +159995,6 @@ void m68000_device::sub_w_ds_dd_ipm() // 9040 f1f8
 	// 1c1 rorw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=5 c=2 m=xnzvc  i=.....i. ALU.sub a=R.dyl:m_da[ry] d=R.dxl:m_da[rx]
@@ -159926,6 +160002,7 @@ void m68000_device::sub_w_ds_dd_ipm() // 9040 f1f8
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -159967,7 +160044,6 @@ void m68000_device::sub_w_as_dd_ipm() // 9048 f1f8
 	// 1c1 rorw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=5 c=2 m=xnzvc  i=.....i. ALU.sub a=R.ayl:m_da[ry] d=R.dxl:m_da[rx]
@@ -159975,6 +160051,7 @@ void m68000_device::sub_w_as_dd_ipm() // 9048 f1f8
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -160043,7 +160120,6 @@ void m68000_device::sub_w_ais_dd_ipm() // 9050 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -160051,6 +160127,7 @@ void m68000_device::sub_w_ais_dd_ipm() // 9050 f1f8
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -160123,7 +160200,6 @@ void m68000_device::sub_w_aips_dd_ipm() // 9058 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -160131,6 +160207,7 @@ void m68000_device::sub_w_aips_dd_ipm() // 9058 f1f8
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -160205,7 +160282,6 @@ void m68000_device::sub_w_pais_dd_ipm() // 9060 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -160213,6 +160289,7 @@ void m68000_device::sub_w_pais_dd_ipm() // 9060 f1f8
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -160306,7 +160383,6 @@ void m68000_device::sub_w_das_dd_ipm() // 9068 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -160314,6 +160390,7 @@ void m68000_device::sub_w_das_dd_ipm() // 9068 f1f8
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -160448,7 +160525,6 @@ adsw2:
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -160456,6 +160532,7 @@ adsw2:
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -160548,7 +160625,6 @@ void m68000_device::sub_w_adr16_dd_ipm() // 9078 f1ff
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -160556,6 +160632,7 @@ void m68000_device::sub_w_adr16_dd_ipm() // 9078 f1ff
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -160672,7 +160749,6 @@ void m68000_device::sub_w_adr32_dd_ipm() // 9079 f1ff
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -160680,6 +160756,7 @@ void m68000_device::sub_w_adr32_dd_ipm() // 9079 f1ff
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -160772,7 +160849,6 @@ void m68000_device::sub_w_dpc_dd_ipm() // 907a f1ff
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -160780,6 +160856,7 @@ void m68000_device::sub_w_dpc_dd_ipm() // 907a f1ff
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -160913,7 +160990,6 @@ adsw2:
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -160921,6 +160997,7 @@ adsw2:
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -160988,7 +161065,6 @@ void m68000_device::sub_w_imm16_dd_ipm() // 907c f1ff
 	// 1c1 rorw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dt);
 	// alu r=5 c=2 m=xnzvc  i=.....i. ALU.sub a=R.dtl:m_dt d=R.dxl:m_da[rx]
@@ -160996,6 +161072,7 @@ void m68000_device::sub_w_imm16_dd_ipm() // 907c f1ff
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -161037,7 +161114,6 @@ void m68000_device::sub_l_ds_dd_ipm() // 9080 f1f8
 	// 1c5 rorl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=5 c=2 m=xnzvc  i=.l...i. ALU.sub a=R.dyl:m_da[ry] d=R.dxl:m_da[rx]
@@ -161073,6 +161149,7 @@ void m68000_device::sub_l_ds_dd_ipm() // 9080 f1f8
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -161094,7 +161171,6 @@ void m68000_device::sub_l_as_dd_ipm() // 9088 f1f8
 	// 1c5 rorl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=5 c=2 m=xnzvc  i=.l...i. ALU.sub a=R.ayl:m_da[ry] d=R.dxl:m_da[rx]
@@ -161130,6 +161206,7 @@ void m68000_device::sub_l_as_dd_ipm() // 9088 f1f8
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -161202,7 +161279,6 @@ void m68000_device::sub_l_ais_dd_ipm() // 9090 f1f8
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=.l...i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -161236,6 +161312,7 @@ void m68000_device::sub_l_ais_dd_ipm() // 9090 f1f8
 	sr_xnzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -161311,7 +161388,6 @@ void m68000_device::sub_l_aips_dd_ipm() // 9098 f1f8
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=.l...i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -161345,6 +161421,7 @@ void m68000_device::sub_l_aips_dd_ipm() // 9098 f1f8
 	sr_xnzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -161421,7 +161498,6 @@ void m68000_device::sub_l_pais_dd_ipm() // 90a0 f1f8
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=.l...i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -161455,6 +161531,7 @@ void m68000_device::sub_l_pais_dd_ipm() // 90a0 f1f8
 	sr_xnzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -161551,7 +161628,6 @@ void m68000_device::sub_l_das_dd_ipm() // 90a8 f1f8
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=.l...i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -161585,6 +161661,7 @@ void m68000_device::sub_l_das_dd_ipm() // 90a8 f1f8
 	sr_xnzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -161722,7 +161799,6 @@ adsl2:
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=.l...i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -161756,6 +161832,7 @@ adsl2:
 	sr_xnzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -161854,7 +161931,6 @@ void m68000_device::sub_l_adr16_dd_ipm() // 90b8 f1ff
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=.l...i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -161888,6 +161964,7 @@ void m68000_device::sub_l_adr16_dd_ipm() // 90b8 f1ff
 	sr_xnzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -162010,7 +162087,6 @@ void m68000_device::sub_l_adr32_dd_ipm() // 90b9 f1ff
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=.l...i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -162044,6 +162120,7 @@ void m68000_device::sub_l_adr32_dd_ipm() // 90b9 f1ff
 	sr_xnzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -162139,7 +162216,6 @@ void m68000_device::sub_l_dpc_dd_ipm() // 90ba f1ff
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=.l...i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -162173,6 +162249,7 @@ void m68000_device::sub_l_dpc_dd_ipm() // 90ba f1ff
 	sr_xnzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -162309,7 +162386,6 @@ adsl2:
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=xnzvc  i=.l...i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -162343,6 +162419,7 @@ adsl2:
 	sr_xnzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -162414,7 +162491,6 @@ void m68000_device::sub_l_imm32_dd_ipm() // 90bc f1ff
 	// 1c5 rorl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dt);
 	// alu r=5 c=2 m=xnzvc  i=.l...i. ALU.sub a=R.dtl:m_dt d=R.dxl:m_da[rx]
@@ -162450,6 +162526,7 @@ void m68000_device::sub_l_imm32_dd_ipm() // 90bc f1ff
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -162471,7 +162548,6 @@ void m68000_device::suba_w_ds_ad_ipm() // 90c0 f1f8
 	// 1c9 rorm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.dyl:m_da[ry] d=R.axl:m_da[rx]
@@ -162505,6 +162581,7 @@ void m68000_device::suba_w_ds_ad_ipm() // 90c0 f1f8
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -162526,7 +162603,6 @@ void m68000_device::suba_w_as_ad_ipm() // 90c8 f1f8
 	// 1c9 rorm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.ayl:m_da[ry] d=R.axl:m_da[rx]
@@ -162560,6 +162636,7 @@ void m68000_device::suba_w_as_ad_ipm() // 90c8 f1f8
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -162608,7 +162685,6 @@ void m68000_device::suba_w_ais_ad_ipm() // 90d0 f1f8
 	// 1c7 romm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -162642,6 +162718,7 @@ void m68000_device::suba_w_ais_ad_ipm() // 90d0 f1f8
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -162694,7 +162771,6 @@ void m68000_device::suba_w_aips_ad_ipm() // 90d8 f1f8
 	// 1c7 romm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -162728,6 +162804,7 @@ void m68000_device::suba_w_aips_ad_ipm() // 90d8 f1f8
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -162782,7 +162859,6 @@ void m68000_device::suba_w_pais_ad_ipm() // 90e0 f1f8
 	// 1c7 romm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -162816,6 +162892,7 @@ void m68000_device::suba_w_pais_ad_ipm() // 90e0 f1f8
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -162889,7 +162966,6 @@ void m68000_device::suba_w_das_ad_ipm() // 90e8 f1f8
 	// 1c7 romm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -162923,6 +162999,7 @@ void m68000_device::suba_w_das_ad_ipm() // 90e8 f1f8
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -163037,7 +163114,6 @@ adsw2:
 	// 1c7 romm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -163071,6 +163147,7 @@ adsw2:
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -163143,7 +163220,6 @@ void m68000_device::suba_w_adr16_ad_ipm() // 90f8 f1ff
 	// 1c7 romm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -163177,6 +163253,7 @@ void m68000_device::suba_w_adr16_ad_ipm() // 90f8 f1ff
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -163273,7 +163350,6 @@ void m68000_device::suba_w_adr32_ad_ipm() // 90f9 f1ff
 	// 1c7 romm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -163307,6 +163383,7 @@ void m68000_device::suba_w_adr32_ad_ipm() // 90f9 f1ff
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -163379,7 +163456,6 @@ void m68000_device::suba_w_dpc_ad_ipm() // 90fa f1ff
 	// 1c7 romm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -163413,6 +163489,7 @@ void m68000_device::suba_w_dpc_ad_ipm() // 90fa f1ff
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -163526,7 +163603,6 @@ adsw2:
 	// 1c7 romm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -163560,6 +163636,7 @@ adsw2:
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -163607,7 +163684,6 @@ void m68000_device::suba_w_imm16_ad_ipm() // 90fc f1ff
 	// 1c9 rorm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dt);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.dtl:m_dt d=R.axl:m_da[rx]
@@ -163641,6 +163717,7 @@ void m68000_device::suba_w_imm16_ad_ipm() // 90fc f1ff
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -163662,7 +163739,6 @@ void m68000_device::subx_b_ds_dd_ipm() // 9100 f1f8
 	// 1c1 rorw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=10 c=2 m=xnzvc  i=b....i. ALU.subx a=R.dyl:m_da[ry] d=R.dxl:m_da[rx]
@@ -163670,6 +163746,7 @@ void m68000_device::subx_b_ds_dd_ipm() // 9100 f1f8
 	sr_xnzvc_u();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -163740,7 +163817,6 @@ void m68000_device::subx_b_pais_paid_ipm() // 9108 f1f8
 	// 04a asxw4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_DATA | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_data(m_aob & ~1, m_aob & 1 ? 0x00ff : 0xff00);
@@ -163790,6 +163866,7 @@ void m68000_device::subx_b_pais_paid_ipm() // 9108 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -163846,7 +163923,6 @@ void m68000_device::sub_b_dd_ais_ipm() // 9110 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -163876,6 +163952,7 @@ void m68000_device::sub_b_dd_ais_ipm() // 9110 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -163936,7 +164013,6 @@ void m68000_device::sub_b_dd_aips_ipm() // 9118 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -163966,6 +164042,7 @@ void m68000_device::sub_b_dd_aips_ipm() // 9118 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -164028,7 +164105,6 @@ void m68000_device::sub_b_dd_pais_ipm() // 9120 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -164058,6 +164134,7 @@ void m68000_device::sub_b_dd_pais_ipm() // 9120 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -164139,7 +164216,6 @@ void m68000_device::sub_b_dd_das_ipm() // 9128 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -164169,6 +164245,7 @@ void m68000_device::sub_b_dd_das_ipm() // 9128 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -164291,7 +164368,6 @@ adsw2:
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -164321,6 +164397,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -164401,7 +164478,6 @@ void m68000_device::sub_b_dd_adr16_ipm() // 9138 f1ff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -164431,6 +164507,7 @@ void m68000_device::sub_b_dd_adr16_ipm() // 9138 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -164535,7 +164612,6 @@ void m68000_device::sub_b_dd_adr32_ipm() // 9139 f1ff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -164565,6 +164641,7 @@ void m68000_device::sub_b_dd_adr32_ipm() // 9139 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -164598,7 +164675,6 @@ void m68000_device::subx_w_ds_dd_ipm() // 9140 f1f8
 	// 1c1 rorw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=10 c=2 m=xnzvc  i=.....i. ALU.subx a=R.dyl:m_da[ry] d=R.dxl:m_da[rx]
@@ -164606,6 +164682,7 @@ void m68000_device::subx_w_ds_dd_ipm() // 9140 f1f8
 	sr_xnzvc_u();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -164680,7 +164757,6 @@ void m68000_device::subx_w_pais_paid_ipm() // 9148 f1f8
 	// 04a asxw4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_DATA | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_data(m_aob & ~1, 0xffff);
@@ -164734,6 +164810,7 @@ void m68000_device::subx_w_pais_paid_ipm() // 9148 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -164800,7 +164877,6 @@ void m68000_device::sub_w_dd_ais_ipm() // 9150 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -164830,6 +164906,7 @@ void m68000_device::sub_w_dd_ais_ipm() // 9150 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -164900,7 +164977,6 @@ void m68000_device::sub_w_dd_aips_ipm() // 9158 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -164930,6 +165006,7 @@ void m68000_device::sub_w_dd_aips_ipm() // 9158 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -165002,7 +165079,6 @@ void m68000_device::sub_w_dd_pais_ipm() // 9160 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -165032,6 +165108,7 @@ void m68000_device::sub_w_dd_pais_ipm() // 9160 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -165123,7 +165200,6 @@ void m68000_device::sub_w_dd_das_ipm() // 9168 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -165153,6 +165229,7 @@ void m68000_device::sub_w_dd_das_ipm() // 9168 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -165285,7 +165362,6 @@ adsw2:
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -165315,6 +165391,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -165405,7 +165482,6 @@ void m68000_device::sub_w_dd_adr16_ipm() // 9178 f1ff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -165435,6 +165511,7 @@ void m68000_device::sub_w_dd_adr16_ipm() // 9178 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -165549,7 +165626,6 @@ void m68000_device::sub_w_dd_adr32_ipm() // 9179 f1ff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -165579,6 +165655,7 @@ void m68000_device::sub_w_dd_adr32_ipm() // 9179 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -165618,7 +165695,6 @@ void m68000_device::subx_l_ds_dd_ipm() // 9180 f1f8
 	// 1c5 rorl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=10 c=2 m=xnzvc  i=.l...i. ALU.subx a=R.dyl:m_da[ry] d=R.dxl:m_da[rx]
@@ -165654,6 +165730,7 @@ void m68000_device::subx_l_ds_dd_ipm() // 9180 f1f8
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -165784,7 +165861,6 @@ void m68000_device::subx_l_pais_paid_ipm() // 9188 f1f8
 	// 061 asxl7
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -165836,6 +165912,7 @@ void m68000_device::subx_l_pais_paid_ipm() // 9188 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -165926,7 +166003,6 @@ void m68000_device::sub_l_dd_ais_ipm() // 9190 f1f8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -165982,6 +166058,7 @@ void m68000_device::sub_l_dd_ais_ipm() // 9190 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -166075,7 +166152,6 @@ void m68000_device::sub_l_dd_aips_ipm() // 9198 f1f8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -166131,6 +166207,7 @@ void m68000_device::sub_l_dd_aips_ipm() // 9198 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -166225,7 +166302,6 @@ void m68000_device::sub_l_dd_pais_ipm() // 91a0 f1f8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -166281,6 +166357,7 @@ void m68000_device::sub_l_dd_pais_ipm() // 91a0 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -166395,7 +166472,6 @@ void m68000_device::sub_l_dd_das_ipm() // 91a8 f1f8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -166451,6 +166527,7 @@ void m68000_device::sub_l_dd_das_ipm() // 91a8 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -166606,7 +166683,6 @@ adsl2:
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -166662,6 +166738,7 @@ adsl2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -166778,7 +166855,6 @@ void m68000_device::sub_l_dd_adr16_ipm() // 91b8 f1ff
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -166834,6 +166910,7 @@ void m68000_device::sub_l_dd_adr16_ipm() // 91b8 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -166974,7 +167051,6 @@ void m68000_device::sub_l_dd_adr32_ipm() // 91b9 f1ff
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -167030,6 +167106,7 @@ void m68000_device::sub_l_dd_adr32_ipm() // 91b9 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -167069,7 +167146,6 @@ void m68000_device::suba_l_ds_ad_ipm() // 91c0 f1f8
 	// 1c5 rorl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.dyl:m_da[ry] d=R.axl:m_da[rx]
@@ -167103,6 +167179,7 @@ void m68000_device::suba_l_ds_ad_ipm() // 91c0 f1f8
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -167124,7 +167201,6 @@ void m68000_device::suba_l_as_ad_ipm() // 91c8 f1f8
 	// 1c5 rorl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.ayl:m_da[ry] d=R.axl:m_da[rx]
@@ -167158,6 +167234,7 @@ void m68000_device::suba_l_as_ad_ipm() // 91c8 f1f8
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -167230,7 +167307,6 @@ void m68000_device::suba_l_ais_ad_ipm() // 91d0 f1f8
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -167262,6 +167338,7 @@ void m68000_device::suba_l_ais_ad_ipm() // 91d0 f1f8
 	alu_subc(m_alub, high16(m_da[rx]));
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -167337,7 +167414,6 @@ void m68000_device::suba_l_aips_ad_ipm() // 91d8 f1f8
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -167369,6 +167445,7 @@ void m68000_device::suba_l_aips_ad_ipm() // 91d8 f1f8
 	alu_subc(m_alub, high16(m_da[rx]));
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -167445,7 +167522,6 @@ void m68000_device::suba_l_pais_ad_ipm() // 91e0 f1f8
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -167477,6 +167553,7 @@ void m68000_device::suba_l_pais_ad_ipm() // 91e0 f1f8
 	alu_subc(m_alub, high16(m_da[rx]));
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -167573,7 +167650,6 @@ void m68000_device::suba_l_das_ad_ipm() // 91e8 f1f8
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -167605,6 +167681,7 @@ void m68000_device::suba_l_das_ad_ipm() // 91e8 f1f8
 	alu_subc(m_alub, high16(m_da[rx]));
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -167742,7 +167819,6 @@ adsl2:
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -167774,6 +167850,7 @@ adsl2:
 	alu_subc(m_alub, high16(m_da[rx]));
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -167872,7 +167949,6 @@ void m68000_device::suba_l_adr16_ad_ipm() // 91f8 f1ff
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -167904,6 +167980,7 @@ void m68000_device::suba_l_adr16_ad_ipm() // 91f8 f1ff
 	alu_subc(m_alub, high16(m_da[rx]));
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -168026,7 +168103,6 @@ void m68000_device::suba_l_adr32_ad_ipm() // 91f9 f1ff
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -168058,6 +168134,7 @@ void m68000_device::suba_l_adr32_ad_ipm() // 91f9 f1ff
 	alu_subc(m_alub, high16(m_da[rx]));
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -168153,7 +168230,6 @@ void m68000_device::suba_l_dpc_ad_ipm() // 91fa f1ff
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -168185,6 +168261,7 @@ void m68000_device::suba_l_dpc_ad_ipm() // 91fa f1ff
 	alu_subc(m_alub, high16(m_da[rx]));
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -168321,7 +168398,6 @@ adsl2:
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -168353,6 +168429,7 @@ adsl2:
 	alu_subc(m_alub, high16(m_da[rx]));
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -168424,7 +168501,6 @@ void m68000_device::suba_l_imm32_ad_ipm() // 91fc f1ff
 	// 1c5 rorl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dt);
 	// alu r=5 c=2 m=.....  i=.....i. ALU.sub a=R.dtl:m_dt d=R.axl:m_da[rx]
@@ -168458,6 +168534,7 @@ void m68000_device::suba_l_imm32_ad_ipm() // 91fc f1ff
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -168479,7 +168556,6 @@ void m68000_device::cmp_b_ds_dd_ipm() // b000 f1f8
 	// 1d1 cprw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=6 c=2 m=.nzvc  i=b....i. ALU.sub a=R.dyl:m_da[ry] d=R.dxl:m_da[rx]
@@ -168487,6 +168563,7 @@ void m68000_device::cmp_b_ds_dd_ipm() // b000 f1f8
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -168550,7 +168627,6 @@ void m68000_device::cmp_b_ais_dd_ipm() // b010 f1f8
 	// 1d3 cpmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=b....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -168558,6 +168634,7 @@ void m68000_device::cmp_b_ais_dd_ipm() // b010 f1f8
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -168625,7 +168702,6 @@ void m68000_device::cmp_b_aips_dd_ipm() // b018 f1f8
 	// 1d3 cpmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=b....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -168633,6 +168709,7 @@ void m68000_device::cmp_b_aips_dd_ipm() // b018 f1f8
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -168702,7 +168779,6 @@ void m68000_device::cmp_b_pais_dd_ipm() // b020 f1f8
 	// 1d3 cpmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=b....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -168710,6 +168786,7 @@ void m68000_device::cmp_b_pais_dd_ipm() // b020 f1f8
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -168798,7 +168875,6 @@ void m68000_device::cmp_b_das_dd_ipm() // b028 f1f8
 	// 1d3 cpmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=b....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -168806,6 +168882,7 @@ void m68000_device::cmp_b_das_dd_ipm() // b028 f1f8
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -168935,7 +169012,6 @@ adsw2:
 	// 1d3 cpmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=b....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -168943,6 +169019,7 @@ adsw2:
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -169030,7 +169107,6 @@ void m68000_device::cmp_b_adr16_dd_ipm() // b038 f1ff
 	// 1d3 cpmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=b....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -169038,6 +169114,7 @@ void m68000_device::cmp_b_adr16_dd_ipm() // b038 f1ff
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -169149,7 +169226,6 @@ void m68000_device::cmp_b_adr32_dd_ipm() // b039 f1ff
 	// 1d3 cpmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=b....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -169157,6 +169233,7 @@ void m68000_device::cmp_b_adr32_dd_ipm() // b039 f1ff
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -169244,7 +169321,6 @@ void m68000_device::cmp_b_dpc_dd_ipm() // b03a f1ff
 	// 1d3 cpmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=b....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -169252,6 +169328,7 @@ void m68000_device::cmp_b_dpc_dd_ipm() // b03a f1ff
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -169380,7 +169457,6 @@ adsw2:
 	// 1d3 cpmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=b....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -169388,6 +169464,7 @@ adsw2:
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -169454,7 +169531,6 @@ void m68000_device::cmp_b_imm8_dd_ipm() // b03c f1ff
 	// 1d1 cprw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dt);
 	// alu r=6 c=2 m=.nzvc  i=b....i. ALU.sub a=R.dtl:m_dt d=R.dxl:m_da[rx]
@@ -169462,6 +169538,7 @@ void m68000_device::cmp_b_imm8_dd_ipm() // b03c f1ff
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -169502,7 +169579,6 @@ void m68000_device::cmp_w_ds_dd_ipm() // b040 f1f8
 	// 1d1 cprw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dyl:m_da[ry] d=R.dxl:m_da[rx]
@@ -169510,6 +169586,7 @@ void m68000_device::cmp_w_ds_dd_ipm() // b040 f1f8
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -169550,7 +169627,6 @@ void m68000_device::cmp_w_as_dd_ipm() // b048 f1f8
 	// 1d1 cprw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.ayl:m_da[ry] d=R.dxl:m_da[rx]
@@ -169558,6 +169634,7 @@ void m68000_device::cmp_w_as_dd_ipm() // b048 f1f8
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -169625,7 +169702,6 @@ void m68000_device::cmp_w_ais_dd_ipm() // b050 f1f8
 	// 1d3 cpmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -169633,6 +169709,7 @@ void m68000_device::cmp_w_ais_dd_ipm() // b050 f1f8
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -169704,7 +169781,6 @@ void m68000_device::cmp_w_aips_dd_ipm() // b058 f1f8
 	// 1d3 cpmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -169712,6 +169788,7 @@ void m68000_device::cmp_w_aips_dd_ipm() // b058 f1f8
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -169785,7 +169862,6 @@ void m68000_device::cmp_w_pais_dd_ipm() // b060 f1f8
 	// 1d3 cpmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -169793,6 +169869,7 @@ void m68000_device::cmp_w_pais_dd_ipm() // b060 f1f8
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -169885,7 +169962,6 @@ void m68000_device::cmp_w_das_dd_ipm() // b068 f1f8
 	// 1d3 cpmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -169893,6 +169969,7 @@ void m68000_device::cmp_w_das_dd_ipm() // b068 f1f8
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -170026,7 +170103,6 @@ adsw2:
 	// 1d3 cpmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -170034,6 +170110,7 @@ adsw2:
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -170125,7 +170202,6 @@ void m68000_device::cmp_w_adr16_dd_ipm() // b078 f1ff
 	// 1d3 cpmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -170133,6 +170209,7 @@ void m68000_device::cmp_w_adr16_dd_ipm() // b078 f1ff
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -170248,7 +170325,6 @@ void m68000_device::cmp_w_adr32_dd_ipm() // b079 f1ff
 	// 1d3 cpmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -170256,6 +170332,7 @@ void m68000_device::cmp_w_adr32_dd_ipm() // b079 f1ff
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -170347,7 +170424,6 @@ void m68000_device::cmp_w_dpc_dd_ipm() // b07a f1ff
 	// 1d3 cpmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -170355,6 +170431,7 @@ void m68000_device::cmp_w_dpc_dd_ipm() // b07a f1ff
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -170487,7 +170564,6 @@ adsw2:
 	// 1d3 cpmw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -170495,6 +170571,7 @@ adsw2:
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -170561,7 +170638,6 @@ void m68000_device::cmp_w_imm16_dd_ipm() // b07c f1ff
 	// 1d1 cprw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dt);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dtl:m_dt d=R.dxl:m_da[rx]
@@ -170569,6 +170645,7 @@ void m68000_device::cmp_w_imm16_dd_ipm() // b07c f1ff
 	sr_nzvc();
 	// 23a rcaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -170609,7 +170686,6 @@ void m68000_device::cmp_l_ds_dd_ipm() // b080 f1f8
 	// 1d5 cprl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=6 c=2 m=.nzvc  i=.l...i. ALU.sub a=R.dyl:m_da[ry] d=R.dxl:m_da[rx]
@@ -170642,6 +170718,7 @@ void m68000_device::cmp_l_ds_dd_ipm() // b080 f1f8
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -170662,7 +170739,6 @@ void m68000_device::cmp_l_as_dd_ipm() // b088 f1f8
 	// 1d5 cprl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=6 c=2 m=.nzvc  i=.l...i. ALU.sub a=R.ayl:m_da[ry] d=R.dxl:m_da[rx]
@@ -170695,6 +170771,7 @@ void m68000_device::cmp_l_as_dd_ipm() // b088 f1f8
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -170766,7 +170843,6 @@ void m68000_device::cmp_l_ais_dd_ipm() // b090 f1f8
 	// 1d7 cpml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.l...i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -170799,6 +170875,7 @@ void m68000_device::cmp_l_ais_dd_ipm() // b090 f1f8
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -170873,7 +170950,6 @@ void m68000_device::cmp_l_aips_dd_ipm() // b098 f1f8
 	// 1d7 cpml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.l...i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -170906,6 +170982,7 @@ void m68000_device::cmp_l_aips_dd_ipm() // b098 f1f8
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -170981,7 +171058,6 @@ void m68000_device::cmp_l_pais_dd_ipm() // b0a0 f1f8
 	// 1d7 cpml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.l...i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -171014,6 +171090,7 @@ void m68000_device::cmp_l_pais_dd_ipm() // b0a0 f1f8
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -171109,7 +171186,6 @@ void m68000_device::cmp_l_das_dd_ipm() // b0a8 f1f8
 	// 1d7 cpml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.l...i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -171142,6 +171218,7 @@ void m68000_device::cmp_l_das_dd_ipm() // b0a8 f1f8
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -171278,7 +171355,6 @@ adsl2:
 	// 1d7 cpml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.l...i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -171311,6 +171387,7 @@ adsl2:
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -171408,7 +171485,6 @@ void m68000_device::cmp_l_adr16_dd_ipm() // b0b8 f1ff
 	// 1d7 cpml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.l...i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -171441,6 +171517,7 @@ void m68000_device::cmp_l_adr16_dd_ipm() // b0b8 f1ff
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -171562,7 +171639,6 @@ void m68000_device::cmp_l_adr32_dd_ipm() // b0b9 f1ff
 	// 1d7 cpml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.l...i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -171595,6 +171671,7 @@ void m68000_device::cmp_l_adr32_dd_ipm() // b0b9 f1ff
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -171689,7 +171766,6 @@ void m68000_device::cmp_l_dpc_dd_ipm() // b0ba f1ff
 	// 1d7 cpml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.l...i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -171722,6 +171798,7 @@ void m68000_device::cmp_l_dpc_dd_ipm() // b0ba f1ff
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -171857,7 +171934,6 @@ adsl2:
 	// 1d7 cpml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.l...i. ALU.sub a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -171890,6 +171966,7 @@ adsl2:
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -171960,7 +172037,6 @@ void m68000_device::cmp_l_imm32_dd_ipm() // b0bc f1ff
 	// 1d5 cprl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dt);
 	// alu r=6 c=2 m=.nzvc  i=.l...i. ALU.sub a=R.dtl:m_dt d=R.dxl:m_da[rx]
@@ -171993,6 +172069,7 @@ void m68000_device::cmp_l_imm32_dd_ipm() // b0bc f1ff
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -172013,7 +172090,6 @@ void m68000_device::cmpa_w_ds_ad_ipm() // b0c0 f1f8
 	// 1d9 cprm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dyl:m_da[ry] d=R.axl:m_da[rx]
@@ -172046,6 +172122,7 @@ void m68000_device::cmpa_w_ds_ad_ipm() // b0c0 f1f8
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -172066,7 +172143,6 @@ void m68000_device::cmpa_w_as_ad_ipm() // b0c8 f1f8
 	// 1d9 cprm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.ayl:m_da[ry] d=R.axl:m_da[rx]
@@ -172099,6 +172175,7 @@ void m68000_device::cmpa_w_as_ad_ipm() // b0c8 f1f8
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -172146,7 +172223,6 @@ void m68000_device::cmpa_w_ais_ad_ipm() // b0d0 f1f8
 	// 1cf cpmm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -172179,6 +172255,7 @@ void m68000_device::cmpa_w_ais_ad_ipm() // b0d0 f1f8
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -172230,7 +172307,6 @@ void m68000_device::cmpa_w_aips_ad_ipm() // b0d8 f1f8
 	// 1cf cpmm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -172263,6 +172339,7 @@ void m68000_device::cmpa_w_aips_ad_ipm() // b0d8 f1f8
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -172316,7 +172393,6 @@ void m68000_device::cmpa_w_pais_ad_ipm() // b0e0 f1f8
 	// 1cf cpmm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -172349,6 +172425,7 @@ void m68000_device::cmpa_w_pais_ad_ipm() // b0e0 f1f8
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -172421,7 +172498,6 @@ void m68000_device::cmpa_w_das_ad_ipm() // b0e8 f1f8
 	// 1cf cpmm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -172454,6 +172530,7 @@ void m68000_device::cmpa_w_das_ad_ipm() // b0e8 f1f8
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -172567,7 +172644,6 @@ adsw2:
 	// 1cf cpmm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -172600,6 +172676,7 @@ adsw2:
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -172671,7 +172748,6 @@ void m68000_device::cmpa_w_adr16_ad_ipm() // b0f8 f1ff
 	// 1cf cpmm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -172704,6 +172780,7 @@ void m68000_device::cmpa_w_adr16_ad_ipm() // b0f8 f1ff
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -172799,7 +172876,6 @@ void m68000_device::cmpa_w_adr32_ad_ipm() // b0f9 f1ff
 	// 1cf cpmm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -172832,6 +172908,7 @@ void m68000_device::cmpa_w_adr32_ad_ipm() // b0f9 f1ff
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -172903,7 +172980,6 @@ void m68000_device::cmpa_w_dpc_ad_ipm() // b0fa f1ff
 	// 1cf cpmm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -172936,6 +173012,7 @@ void m68000_device::cmpa_w_dpc_ad_ipm() // b0fa f1ff
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -173048,7 +173125,6 @@ adsw2:
 	// 1cf cpmm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -173081,6 +173157,7 @@ adsw2:
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -173127,7 +173204,6 @@ void m68000_device::cmpa_w_imm16_ad_ipm() // b0fc f1ff
 	// 1d9 cprm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dt);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dtl:m_dt d=R.axl:m_da[rx]
@@ -173160,6 +173236,7 @@ void m68000_device::cmpa_w_imm16_ad_ipm() // b0fc f1ff
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -173180,13 +173257,13 @@ void m68000_device::eor_b_dd_ds_ipm() // b100 f1f8
 	// 100 roaw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=13 c=2 m=.nzvc  i=b....i. ALU.eor a=R.dxl:m_da[rx] d=R.dyl:m_da[ry]
 	alu_eor8(m_da[rx], m_da[ry]);
 	sr_nzvc();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -173253,7 +173330,6 @@ void m68000_device::cmpm_b_aips_aipd_ipm() // b108 f1f8
 	// 122 cmmw3
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_DATA | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_data(m_aob & ~1, m_aob & 1 ? 0x00ff : 0xff00);
@@ -173276,6 +173352,7 @@ void m68000_device::cmpm_b_aips_aipd_ipm() // b108 f1f8
 	// 170 cmmw4
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -173344,7 +173421,6 @@ void m68000_device::eor_b_dd_ais_ipm() // b110 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -173374,6 +173450,7 @@ void m68000_device::eor_b_dd_ais_ipm() // b110 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -173437,7 +173514,6 @@ void m68000_device::eor_b_dd_aips_ipm() // b118 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -173467,6 +173543,7 @@ void m68000_device::eor_b_dd_aips_ipm() // b118 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -173532,7 +173609,6 @@ void m68000_device::eor_b_dd_pais_ipm() // b120 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -173562,6 +173638,7 @@ void m68000_device::eor_b_dd_pais_ipm() // b120 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -173646,7 +173723,6 @@ void m68000_device::eor_b_dd_das_ipm() // b128 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -173676,6 +173752,7 @@ void m68000_device::eor_b_dd_das_ipm() // b128 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -173803,7 +173880,6 @@ adsw2:
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -173833,6 +173909,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -173916,7 +173993,6 @@ void m68000_device::eor_b_dd_adr16_ipm() // b138 f1ff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -173946,6 +174022,7 @@ void m68000_device::eor_b_dd_adr16_ipm() // b138 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -174054,7 +174131,6 @@ void m68000_device::eor_b_dd_adr32_ipm() // b139 f1ff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -174084,6 +174160,7 @@ void m68000_device::eor_b_dd_adr32_ipm() // b139 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -174118,13 +174195,13 @@ void m68000_device::eor_w_dd_ds_ipm() // b140 f1f8
 	// 100 roaw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=13 c=2 m=.nzvc  i=.....i. ALU.eor a=R.dxl:m_da[rx] d=R.dyl:m_da[ry]
 	alu_eor(m_da[rx], m_da[ry]);
 	sr_nzvc();
 	// 08b roaw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -174195,7 +174272,6 @@ void m68000_device::cmpm_w_aips_aipd_ipm() // b148 f1f8
 	// 122 cmmw3
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_DATA | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_data(m_aob & ~1, 0xffff);
@@ -174222,6 +174298,7 @@ void m68000_device::cmpm_w_aips_aipd_ipm() // b148 f1f8
 	// 170 cmmw4
 	m_aob = m_pc;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -174294,7 +174371,6 @@ void m68000_device::eor_w_dd_ais_ipm() // b150 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -174324,6 +174400,7 @@ void m68000_device::eor_w_dd_ais_ipm() // b150 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -174397,7 +174474,6 @@ void m68000_device::eor_w_dd_aips_ipm() // b158 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -174427,6 +174503,7 @@ void m68000_device::eor_w_dd_aips_ipm() // b158 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -174502,7 +174579,6 @@ void m68000_device::eor_w_dd_pais_ipm() // b160 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -174532,6 +174608,7 @@ void m68000_device::eor_w_dd_pais_ipm() // b160 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -174626,7 +174703,6 @@ void m68000_device::eor_w_dd_das_ipm() // b168 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -174656,6 +174732,7 @@ void m68000_device::eor_w_dd_das_ipm() // b168 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -174793,7 +174870,6 @@ adsw2:
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -174823,6 +174899,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -174916,7 +174993,6 @@ void m68000_device::eor_w_dd_adr16_ipm() // b178 f1ff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -174946,6 +175022,7 @@ void m68000_device::eor_w_dd_adr16_ipm() // b178 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -175064,7 +175141,6 @@ void m68000_device::eor_w_dd_adr32_ipm() // b179 f1ff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -175094,6 +175170,7 @@ void m68000_device::eor_w_dd_adr32_ipm() // b179 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -175134,7 +175211,6 @@ void m68000_device::eor_l_dd_ds_ipm() // b180 f1f8
 	// 10c roal1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	// alu r=13 c=2 m=.nzvc  i=.l...i. ALU.eor a=R.dxl:m_da[rx] d=R.dyl:m_da[ry]
 	alu_eor(m_da[rx], m_da[ry]);
@@ -175170,6 +175246,7 @@ void m68000_device::eor_l_dd_ds_ipm() // b180 f1f8
 	m_icount -= 2;
 	// 25b roal4
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=13 c=0 m=.....  i=.l..... ALU.eor a=R.aluo:m_aluo d=none
@@ -175244,7 +175321,6 @@ void m68000_device::cmpm_l_aips_aipd_ipm() // b188 f1f8
 	// 12e cmml4
 	m_aob = m_da[rx];
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_DATA | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_data(m_aob & ~1, 0xffff);
@@ -175301,6 +175377,7 @@ void m68000_device::cmpm_l_aips_aipd_ipm() // b188 f1f8
 	sr_nzvc();
 	// 157 cmml7
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -175395,7 +175472,6 @@ void m68000_device::eor_l_dd_ais_ipm() // b190 f1f8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -175451,6 +175527,7 @@ void m68000_device::eor_l_dd_ais_ipm() // b190 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -175547,7 +175624,6 @@ void m68000_device::eor_l_dd_aips_ipm() // b198 f1f8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -175603,6 +175679,7 @@ void m68000_device::eor_l_dd_aips_ipm() // b198 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -175700,7 +175777,6 @@ void m68000_device::eor_l_dd_pais_ipm() // b1a0 f1f8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -175756,6 +175832,7 @@ void m68000_device::eor_l_dd_pais_ipm() // b1a0 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -175873,7 +175950,6 @@ void m68000_device::eor_l_dd_das_ipm() // b1a8 f1f8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -175929,6 +176005,7 @@ void m68000_device::eor_l_dd_das_ipm() // b1a8 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -176089,7 +176166,6 @@ adsl2:
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -176145,6 +176221,7 @@ adsl2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -176265,7 +176342,6 @@ void m68000_device::eor_l_dd_adr16_ipm() // b1b8 f1ff
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -176321,6 +176397,7 @@ void m68000_device::eor_l_dd_adr16_ipm() // b1b8 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -176466,7 +176543,6 @@ void m68000_device::eor_l_dd_adr32_ipm() // b1b9 f1ff
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -176522,6 +176598,7 @@ void m68000_device::eor_l_dd_adr32_ipm() // b1b9 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -176562,7 +176639,6 @@ void m68000_device::cmpa_l_ds_ad_ipm() // b1c0 f1f8
 	// 1d5 cprl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dyl:m_da[ry] d=R.axl:m_da[rx]
@@ -176595,6 +176671,7 @@ void m68000_device::cmpa_l_ds_ad_ipm() // b1c0 f1f8
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -176615,7 +176692,6 @@ void m68000_device::cmpa_l_as_ad_ipm() // b1c8 f1f8
 	// 1d5 cprl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.ayl:m_da[ry] d=R.axl:m_da[rx]
@@ -176648,6 +176724,7 @@ void m68000_device::cmpa_l_as_ad_ipm() // b1c8 f1f8
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -176719,7 +176796,6 @@ void m68000_device::cmpa_l_ais_ad_ipm() // b1d0 f1f8
 	// 1d7 cpml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -176752,6 +176828,7 @@ void m68000_device::cmpa_l_ais_ad_ipm() // b1d0 f1f8
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -176826,7 +176903,6 @@ void m68000_device::cmpa_l_aips_ad_ipm() // b1d8 f1f8
 	// 1d7 cpml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -176859,6 +176935,7 @@ void m68000_device::cmpa_l_aips_ad_ipm() // b1d8 f1f8
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -176934,7 +177011,6 @@ void m68000_device::cmpa_l_pais_ad_ipm() // b1e0 f1f8
 	// 1d7 cpml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -176967,6 +177043,7 @@ void m68000_device::cmpa_l_pais_ad_ipm() // b1e0 f1f8
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -177062,7 +177139,6 @@ void m68000_device::cmpa_l_das_ad_ipm() // b1e8 f1f8
 	// 1d7 cpml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -177095,6 +177171,7 @@ void m68000_device::cmpa_l_das_ad_ipm() // b1e8 f1f8
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -177231,7 +177308,6 @@ adsl2:
 	// 1d7 cpml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -177264,6 +177340,7 @@ adsl2:
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -177361,7 +177438,6 @@ void m68000_device::cmpa_l_adr16_ad_ipm() // b1f8 f1ff
 	// 1d7 cpml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -177394,6 +177470,7 @@ void m68000_device::cmpa_l_adr16_ad_ipm() // b1f8 f1ff
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -177515,7 +177592,6 @@ void m68000_device::cmpa_l_adr32_ad_ipm() // b1f9 f1ff
 	// 1d7 cpml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -177548,6 +177624,7 @@ void m68000_device::cmpa_l_adr32_ad_ipm() // b1f9 f1ff
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -177642,7 +177719,6 @@ void m68000_device::cmpa_l_dpc_ad_ipm() // b1fa f1ff
 	// 1d7 cpml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -177675,6 +177751,7 @@ void m68000_device::cmpa_l_dpc_ad_ipm() // b1fa f1ff
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -177810,7 +177887,6 @@ adsl2:
 	// 1d7 cpml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -177843,6 +177919,7 @@ adsl2:
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -177913,7 +177990,6 @@ void m68000_device::cmpa_l_imm32_ad_ipm() // b1fc f1ff
 	// 1d5 cprl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dt);
 	// alu r=6 c=2 m=.nzvc  i=.....i. ALU.sub a=R.dtl:m_dt d=R.axl:m_da[rx]
@@ -177946,6 +178022,7 @@ void m68000_device::cmpa_l_imm32_ad_ipm() // b1fc f1ff
 	sr_nzvc_u();
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -177966,7 +178043,6 @@ void m68000_device::and_b_ds_dd_ipm() // c000 f1f8
 	// 1c1 rorw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=4 c=2 m=.nzvc  i=b....i. ALU.and_ a=R.dyl:m_da[ry] d=R.dxl:m_da[rx]
@@ -177974,6 +178050,7 @@ void m68000_device::and_b_ds_dd_ipm() // c000 f1f8
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -178040,7 +178117,6 @@ void m68000_device::and_b_ais_dd_ipm() // c010 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -178048,6 +178124,7 @@ void m68000_device::and_b_ais_dd_ipm() // c010 f1f8
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -178119,7 +178196,6 @@ void m68000_device::and_b_aips_dd_ipm() // c018 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -178127,6 +178203,7 @@ void m68000_device::and_b_aips_dd_ipm() // c018 f1f8
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -178200,7 +178277,6 @@ void m68000_device::and_b_pais_dd_ipm() // c020 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -178208,6 +178284,7 @@ void m68000_device::and_b_pais_dd_ipm() // c020 f1f8
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -178300,7 +178377,6 @@ void m68000_device::and_b_das_dd_ipm() // c028 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -178308,6 +178384,7 @@ void m68000_device::and_b_das_dd_ipm() // c028 f1f8
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -178443,7 +178520,6 @@ adsw2:
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -178451,6 +178527,7 @@ adsw2:
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -178542,7 +178619,6 @@ void m68000_device::and_b_adr16_dd_ipm() // c038 f1ff
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -178550,6 +178626,7 @@ void m68000_device::and_b_adr16_dd_ipm() // c038 f1ff
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -178666,7 +178743,6 @@ void m68000_device::and_b_adr32_dd_ipm() // c039 f1ff
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -178674,6 +178750,7 @@ void m68000_device::and_b_adr32_dd_ipm() // c039 f1ff
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -178765,7 +178842,6 @@ void m68000_device::and_b_dpc_dd_ipm() // c03a f1ff
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -178773,6 +178849,7 @@ void m68000_device::and_b_dpc_dd_ipm() // c03a f1ff
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -178907,7 +178984,6 @@ adsw2:
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=b....i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -178915,6 +178991,7 @@ adsw2:
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -178984,7 +179061,6 @@ void m68000_device::and_b_imm8_dd_ipm() // c03c f1ff
 	// 1c1 rorw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dt);
 	// alu r=4 c=2 m=.nzvc  i=b....i. ALU.and_ a=R.dtl:m_dt d=R.dxl:m_da[rx]
@@ -178992,6 +179068,7 @@ void m68000_device::and_b_imm8_dd_ipm() // c03c f1ff
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -179034,7 +179111,6 @@ void m68000_device::and_w_ds_dd_ipm() // c040 f1f8
 	// 1c1 rorw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=4 c=2 m=.nzvc  i=.....i. ALU.and_ a=R.dyl:m_da[ry] d=R.dxl:m_da[rx]
@@ -179042,6 +179118,7 @@ void m68000_device::and_w_ds_dd_ipm() // c040 f1f8
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -179112,7 +179189,6 @@ void m68000_device::and_w_ais_dd_ipm() // c050 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -179120,6 +179196,7 @@ void m68000_device::and_w_ais_dd_ipm() // c050 f1f8
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -179195,7 +179272,6 @@ void m68000_device::and_w_aips_dd_ipm() // c058 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -179203,6 +179279,7 @@ void m68000_device::and_w_aips_dd_ipm() // c058 f1f8
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -179280,7 +179357,6 @@ void m68000_device::and_w_pais_dd_ipm() // c060 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -179288,6 +179364,7 @@ void m68000_device::and_w_pais_dd_ipm() // c060 f1f8
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -179384,7 +179461,6 @@ void m68000_device::and_w_das_dd_ipm() // c068 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -179392,6 +179468,7 @@ void m68000_device::and_w_das_dd_ipm() // c068 f1f8
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -179531,7 +179608,6 @@ adsw2:
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -179539,6 +179615,7 @@ adsw2:
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -179634,7 +179711,6 @@ void m68000_device::and_w_adr16_dd_ipm() // c078 f1ff
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -179642,6 +179718,7 @@ void m68000_device::and_w_adr16_dd_ipm() // c078 f1ff
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -179762,7 +179839,6 @@ void m68000_device::and_w_adr32_dd_ipm() // c079 f1ff
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -179770,6 +179846,7 @@ void m68000_device::and_w_adr32_dd_ipm() // c079 f1ff
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -179865,7 +179942,6 @@ void m68000_device::and_w_dpc_dd_ipm() // c07a f1ff
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -179873,6 +179949,7 @@ void m68000_device::and_w_dpc_dd_ipm() // c07a f1ff
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -180011,7 +180088,6 @@ adsw2:
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -180019,6 +180095,7 @@ adsw2:
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -180088,7 +180165,6 @@ void m68000_device::and_w_imm16_dd_ipm() // c07c f1ff
 	// 1c1 rorw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dt);
 	// alu r=4 c=2 m=.nzvc  i=.....i. ALU.and_ a=R.dtl:m_dt d=R.dxl:m_da[rx]
@@ -180096,6 +180172,7 @@ void m68000_device::and_w_imm16_dd_ipm() // c07c f1ff
 	sr_nzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -180138,7 +180215,6 @@ void m68000_device::and_l_ds_dd_ipm() // c080 f1f8
 	// 1c5 rorl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=4 c=2 m=.nzvc  i=.l...i. ALU.and_ a=R.dyl:m_da[ry] d=R.dxl:m_da[rx]
@@ -180175,6 +180251,7 @@ void m68000_device::and_l_ds_dd_ipm() // c080 f1f8
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=4 c=0 m=.....  i=.l..... ALU.and_ a=R.aluo:m_aluo d=none
@@ -180249,7 +180326,6 @@ void m68000_device::and_l_ais_dd_ipm() // c090 f1f8
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=.l...i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -180283,6 +180359,7 @@ void m68000_device::and_l_ais_dd_ipm() // c090 f1f8
 	sr_nzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=4 c=0 m=.....  i=.l..... ALU.and_ a=R.aluo:m_aluo d=none
@@ -180361,7 +180438,6 @@ void m68000_device::and_l_aips_dd_ipm() // c098 f1f8
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=.l...i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -180395,6 +180471,7 @@ void m68000_device::and_l_aips_dd_ipm() // c098 f1f8
 	sr_nzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=4 c=0 m=.....  i=.l..... ALU.and_ a=R.aluo:m_aluo d=none
@@ -180474,7 +180551,6 @@ void m68000_device::and_l_pais_dd_ipm() // c0a0 f1f8
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=.l...i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -180508,6 +180584,7 @@ void m68000_device::and_l_pais_dd_ipm() // c0a0 f1f8
 	sr_nzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=4 c=0 m=.....  i=.l..... ALU.and_ a=R.aluo:m_aluo d=none
@@ -180607,7 +180684,6 @@ void m68000_device::and_l_das_dd_ipm() // c0a8 f1f8
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=.l...i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -180641,6 +180717,7 @@ void m68000_device::and_l_das_dd_ipm() // c0a8 f1f8
 	sr_nzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=4 c=0 m=.....  i=.l..... ALU.and_ a=R.aluo:m_aluo d=none
@@ -180783,7 +180860,6 @@ adsl2:
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=.l...i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -180817,6 +180893,7 @@ adsl2:
 	sr_nzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=4 c=0 m=.....  i=.l..... ALU.and_ a=R.aluo:m_aluo d=none
@@ -180919,7 +180996,6 @@ void m68000_device::and_l_adr16_dd_ipm() // c0b8 f1ff
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=.l...i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -180953,6 +181029,7 @@ void m68000_device::and_l_adr16_dd_ipm() // c0b8 f1ff
 	sr_nzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=4 c=0 m=.....  i=.l..... ALU.and_ a=R.aluo:m_aluo d=none
@@ -181080,7 +181157,6 @@ void m68000_device::and_l_adr32_dd_ipm() // c0b9 f1ff
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=.l...i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -181114,6 +181190,7 @@ void m68000_device::and_l_adr32_dd_ipm() // c0b9 f1ff
 	sr_nzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=4 c=0 m=.....  i=.l..... ALU.and_ a=R.aluo:m_aluo d=none
@@ -181212,7 +181289,6 @@ void m68000_device::and_l_dpc_dd_ipm() // c0ba f1ff
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=.l...i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -181246,6 +181322,7 @@ void m68000_device::and_l_dpc_dd_ipm() // c0ba f1ff
 	sr_nzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=4 c=0 m=.....  i=.l..... ALU.and_ a=R.aluo:m_aluo d=none
@@ -181387,7 +181464,6 @@ adsl2:
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=4 c=2 m=.nzvc  i=.l...i. ALU.and_ a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -181421,6 +181497,7 @@ adsl2:
 	sr_nzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=4 c=0 m=.....  i=.l..... ALU.and_ a=R.aluo:m_aluo d=none
@@ -181495,7 +181572,6 @@ void m68000_device::and_l_imm32_dd_ipm() // c0bc f1ff
 	// 1c5 rorl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dt);
 	// alu r=4 c=2 m=.nzvc  i=.l...i. ALU.and_ a=R.dtl:m_dt d=R.dxl:m_da[rx]
@@ -181532,6 +181608,7 @@ void m68000_device::and_l_imm32_dd_ipm() // c0bc f1ff
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=4 c=0 m=.....  i=.l..... ALU.and_ a=R.aluo:m_aluo d=none
@@ -181554,7 +181631,6 @@ void m68000_device::mulu_w_ds_dd_ipm() // c0c0 f1f8
 	// 15b mulr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_da[rx];
 	m_alue = m_da[ry];
 	m_at = m_au;
@@ -181615,6 +181691,7 @@ mulm3:
 mulm6:
 	// 020 mulm6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_pc, high16(m_at));
 	m_da[rx] = merge_16_32(m_aluo, m_alue);
 	m_au = m_at + 2;
@@ -181667,7 +181744,6 @@ void m68000_device::mulu_w_ais_dd_ipm() // c0d0 f1f8
 	// 15a mulm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_da[rx];
 	m_alue = m_dbin;
 	m_at = m_au;
@@ -181728,6 +181804,7 @@ mulm3:
 mulm6:
 	// 020 mulm6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_pc, high16(m_at));
 	m_da[rx] = merge_16_32(m_aluo, m_alue);
 	m_au = m_at + 2;
@@ -181784,7 +181861,6 @@ void m68000_device::mulu_w_aips_dd_ipm() // c0d8 f1f8
 	// 15a mulm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_da[rx];
 	m_alue = m_dbin;
 	m_at = m_au;
@@ -181845,6 +181921,7 @@ mulm3:
 mulm6:
 	// 020 mulm6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_pc, high16(m_at));
 	m_da[rx] = merge_16_32(m_aluo, m_alue);
 	m_au = m_at + 2;
@@ -181903,7 +181980,6 @@ void m68000_device::mulu_w_pais_dd_ipm() // c0e0 f1f8
 	// 15a mulm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_da[rx];
 	m_alue = m_dbin;
 	m_at = m_au;
@@ -181964,6 +182040,7 @@ mulm3:
 mulm6:
 	// 020 mulm6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_pc, high16(m_at));
 	m_da[rx] = merge_16_32(m_aluo, m_alue);
 	m_au = m_at + 2;
@@ -182041,7 +182118,6 @@ void m68000_device::mulu_w_das_dd_ipm() // c0e8 f1f8
 	// 15a mulm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_da[rx];
 	m_alue = m_dbin;
 	m_at = m_au;
@@ -182102,6 +182178,7 @@ mulm3:
 mulm6:
 	// 020 mulm6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_pc, high16(m_at));
 	m_da[rx] = merge_16_32(m_aluo, m_alue);
 	m_au = m_at + 2;
@@ -182220,7 +182297,6 @@ adsw2:
 	// 15a mulm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_da[rx];
 	m_alue = m_dbin;
 	m_at = m_au;
@@ -182281,6 +182357,7 @@ mulm3:
 mulm6:
 	// 020 mulm6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_pc, high16(m_at));
 	m_da[rx] = merge_16_32(m_aluo, m_alue);
 	m_au = m_at + 2;
@@ -182357,7 +182434,6 @@ void m68000_device::mulu_w_adr16_dd_ipm() // c0f8 f1ff
 	// 15a mulm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_da[rx];
 	m_alue = m_dbin;
 	m_at = m_au;
@@ -182418,6 +182494,7 @@ mulm3:
 mulm6:
 	// 020 mulm6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_pc, high16(m_at));
 	m_da[rx] = merge_16_32(m_aluo, m_alue);
 	m_au = m_at + 2;
@@ -182518,7 +182595,6 @@ void m68000_device::mulu_w_adr32_dd_ipm() // c0f9 f1ff
 	// 15a mulm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_da[rx];
 	m_alue = m_dbin;
 	m_at = m_au;
@@ -182579,6 +182655,7 @@ mulm3:
 mulm6:
 	// 020 mulm6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_pc, high16(m_at));
 	m_da[rx] = merge_16_32(m_aluo, m_alue);
 	m_au = m_at + 2;
@@ -182655,7 +182732,6 @@ void m68000_device::mulu_w_dpc_dd_ipm() // c0fa f1ff
 	// 15a mulm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_da[rx];
 	m_alue = m_dbin;
 	m_at = m_au;
@@ -182716,6 +182792,7 @@ mulm3:
 mulm6:
 	// 020 mulm6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_pc, high16(m_at));
 	m_da[rx] = merge_16_32(m_aluo, m_alue);
 	m_au = m_at + 2;
@@ -182833,7 +182910,6 @@ adsw2:
 	// 15a mulm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_da[rx];
 	m_alue = m_dbin;
 	m_at = m_au;
@@ -182894,6 +182970,7 @@ mulm3:
 mulm6:
 	// 020 mulm6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_pc, high16(m_at));
 	m_da[rx] = merge_16_32(m_aluo, m_alue);
 	m_au = m_at + 2;
@@ -182945,7 +183022,6 @@ void m68000_device::mulu_w_imm16_dd_ipm() // c0fc f1ff
 	// 15b mulr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_da[rx];
 	m_alue = m_dt;
 	m_at = m_au;
@@ -183006,6 +183082,7 @@ mulm3:
 mulm6:
 	// 020 mulm6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_pc, high16(m_at));
 	m_da[rx] = merge_16_32(m_aluo, m_alue);
 	m_au = m_at + 2;
@@ -183031,7 +183108,6 @@ void m68000_device::abcd_ds_dd_ipm() // c100 f1f8
 	// 1cd rbrb1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=3 c=2 m=xnzvc  i=b....i. ALU.abcd a=R.dyl:m_da[ry] d=R.dxl:m_da[rx]
@@ -183063,6 +183139,7 @@ void m68000_device::abcd_ds_dd_ipm() // c100 f1f8
 	// alu r=3 c=3 m=xnzvc  i=b.....f ALU.add a=R.aluo:m_aluo d=?
 	// 238 rbrb3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -183113,7 +183190,6 @@ void m68000_device::abcd_pais_paid_ipm() // c108 f1f8
 	// 04e asbb4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_DATA | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_data(m_aob & ~1, m_aob & 1 ? 0x00ff : 0xff00);
@@ -183165,6 +183241,7 @@ void m68000_device::abcd_pais_paid_ipm() // c108 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -183222,7 +183299,6 @@ void m68000_device::and_b_dd_ais_ipm() // c110 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -183252,6 +183328,7 @@ void m68000_device::and_b_dd_ais_ipm() // c110 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -183315,7 +183392,6 @@ void m68000_device::and_b_dd_aips_ipm() // c118 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -183345,6 +183421,7 @@ void m68000_device::and_b_dd_aips_ipm() // c118 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -183410,7 +183487,6 @@ void m68000_device::and_b_dd_pais_ipm() // c120 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -183440,6 +183516,7 @@ void m68000_device::and_b_dd_pais_ipm() // c120 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -183524,7 +183601,6 @@ void m68000_device::and_b_dd_das_ipm() // c128 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -183554,6 +183630,7 @@ void m68000_device::and_b_dd_das_ipm() // c128 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -183681,7 +183758,6 @@ adsw2:
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -183711,6 +183787,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -183794,7 +183871,6 @@ void m68000_device::and_b_dd_adr16_ipm() // c138 f1ff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -183824,6 +183900,7 @@ void m68000_device::and_b_dd_adr16_ipm() // c138 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -183932,7 +184009,6 @@ void m68000_device::and_b_dd_adr32_ipm() // c139 f1ff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -183962,6 +184038,7 @@ void m68000_device::and_b_dd_adr32_ipm() // c139 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -183996,7 +184073,6 @@ void m68000_device::exg_dd_ds_ipm() // c140 f1f8
 	// 3e3 exge1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_dcr = m_da[rx];
 	m_at = m_da[rx];
@@ -184027,6 +184103,7 @@ void m68000_device::exg_dd_ds_ipm() // c140 f1f8
 	m_dbin = m_edb;
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -184047,7 +184124,6 @@ void m68000_device::exg_ad_as_ipm() // c148 f1f8
 	// 3e3 exge1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_dcr = m_da[rx];
 	m_at = m_da[rx];
@@ -184078,6 +184154,7 @@ void m68000_device::exg_ad_as_ipm() // c148 f1f8
 	m_dbin = m_edb;
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -184126,7 +184203,6 @@ void m68000_device::and_w_dd_ais_ipm() // c150 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -184156,6 +184232,7 @@ void m68000_device::and_w_dd_ais_ipm() // c150 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -184229,7 +184306,6 @@ void m68000_device::and_w_dd_aips_ipm() // c158 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -184259,6 +184335,7 @@ void m68000_device::and_w_dd_aips_ipm() // c158 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -184334,7 +184411,6 @@ void m68000_device::and_w_dd_pais_ipm() // c160 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -184364,6 +184440,7 @@ void m68000_device::and_w_dd_pais_ipm() // c160 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -184458,7 +184535,6 @@ void m68000_device::and_w_dd_das_ipm() // c168 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -184488,6 +184564,7 @@ void m68000_device::and_w_dd_das_ipm() // c168 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -184625,7 +184702,6 @@ adsw2:
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -184655,6 +184731,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -184748,7 +184825,6 @@ void m68000_device::and_w_dd_adr16_ipm() // c178 f1ff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -184778,6 +184854,7 @@ void m68000_device::and_w_dd_adr16_ipm() // c178 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -184896,7 +184973,6 @@ void m68000_device::and_w_dd_adr32_ipm() // c179 f1ff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -184926,6 +185002,7 @@ void m68000_device::and_w_dd_adr32_ipm() // c179 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -184966,7 +185043,6 @@ void m68000_device::exg_dd_as_ipm() // c188 f1f8
 	// 3e3 exge1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_dcr = m_da[rx];
 	m_at = m_da[rx];
@@ -184997,6 +185073,7 @@ void m68000_device::exg_dd_as_ipm() // c188 f1f8
 	m_dbin = m_edb;
 	// 08d rcal3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	set_ftu_const();
 	m_icount -= 2;
@@ -185069,7 +185146,6 @@ void m68000_device::and_l_dd_ais_ipm() // c190 f1f8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -185125,6 +185201,7 @@ void m68000_device::and_l_dd_ais_ipm() // c190 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -185221,7 +185298,6 @@ void m68000_device::and_l_dd_aips_ipm() // c198 f1f8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -185277,6 +185353,7 @@ void m68000_device::and_l_dd_aips_ipm() // c198 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -185374,7 +185451,6 @@ void m68000_device::and_l_dd_pais_ipm() // c1a0 f1f8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -185430,6 +185506,7 @@ void m68000_device::and_l_dd_pais_ipm() // c1a0 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -185547,7 +185624,6 @@ void m68000_device::and_l_dd_das_ipm() // c1a8 f1f8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -185603,6 +185679,7 @@ void m68000_device::and_l_dd_das_ipm() // c1a8 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -185763,7 +185840,6 @@ adsl2:
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -185819,6 +185895,7 @@ adsl2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -185939,7 +186016,6 @@ void m68000_device::and_l_dd_adr16_ipm() // c1b8 f1ff
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -185995,6 +186071,7 @@ void m68000_device::and_l_dd_adr16_ipm() // c1b8 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -186140,7 +186217,6 @@ void m68000_device::and_l_dd_adr32_ipm() // c1b9 f1ff
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -186196,6 +186272,7 @@ void m68000_device::and_l_dd_adr32_ipm() // c1b9 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -186236,7 +186313,6 @@ void m68000_device::muls_w_ds_dd_ipm() // c1c0 f1f8
 	// 15b mulr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_da[rx];
 	m_alue = m_da[ry];
 	m_at = m_au;
@@ -186299,6 +186375,7 @@ mulm5:
 mulm6:
 	// 020 mulm6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_pc, high16(m_at));
 	m_da[rx] = merge_16_32(m_aluo, m_alue);
 	m_au = m_at + 2;
@@ -186358,7 +186435,6 @@ void m68000_device::muls_w_ais_dd_ipm() // c1d0 f1f8
 	// 15a mulm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_da[rx];
 	m_alue = m_dbin;
 	m_at = m_au;
@@ -186421,6 +186497,7 @@ mulm5:
 mulm6:
 	// 020 mulm6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_pc, high16(m_at));
 	m_da[rx] = merge_16_32(m_aluo, m_alue);
 	m_au = m_at + 2;
@@ -186484,7 +186561,6 @@ void m68000_device::muls_w_aips_dd_ipm() // c1d8 f1f8
 	// 15a mulm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_da[rx];
 	m_alue = m_dbin;
 	m_at = m_au;
@@ -186547,6 +186623,7 @@ mulm5:
 mulm6:
 	// 020 mulm6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_pc, high16(m_at));
 	m_da[rx] = merge_16_32(m_aluo, m_alue);
 	m_au = m_at + 2;
@@ -186612,7 +186689,6 @@ void m68000_device::muls_w_pais_dd_ipm() // c1e0 f1f8
 	// 15a mulm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_da[rx];
 	m_alue = m_dbin;
 	m_at = m_au;
@@ -186675,6 +186751,7 @@ mulm5:
 mulm6:
 	// 020 mulm6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_pc, high16(m_at));
 	m_da[rx] = merge_16_32(m_aluo, m_alue);
 	m_au = m_at + 2;
@@ -186759,7 +186836,6 @@ void m68000_device::muls_w_das_dd_ipm() // c1e8 f1f8
 	// 15a mulm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_da[rx];
 	m_alue = m_dbin;
 	m_at = m_au;
@@ -186822,6 +186898,7 @@ mulm5:
 mulm6:
 	// 020 mulm6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_pc, high16(m_at));
 	m_da[rx] = merge_16_32(m_aluo, m_alue);
 	m_au = m_at + 2;
@@ -186947,7 +187024,6 @@ adsw2:
 	// 15a mulm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_da[rx];
 	m_alue = m_dbin;
 	m_at = m_au;
@@ -187010,6 +187086,7 @@ mulm5:
 mulm6:
 	// 020 mulm6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_pc, high16(m_at));
 	m_da[rx] = merge_16_32(m_aluo, m_alue);
 	m_au = m_at + 2;
@@ -187093,7 +187170,6 @@ void m68000_device::muls_w_adr16_dd_ipm() // c1f8 f1ff
 	// 15a mulm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_da[rx];
 	m_alue = m_dbin;
 	m_at = m_au;
@@ -187156,6 +187232,7 @@ mulm5:
 mulm6:
 	// 020 mulm6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_pc, high16(m_at));
 	m_da[rx] = merge_16_32(m_aluo, m_alue);
 	m_au = m_at + 2;
@@ -187263,7 +187340,6 @@ void m68000_device::muls_w_adr32_dd_ipm() // c1f9 f1ff
 	// 15a mulm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_da[rx];
 	m_alue = m_dbin;
 	m_at = m_au;
@@ -187326,6 +187402,7 @@ mulm5:
 mulm6:
 	// 020 mulm6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_pc, high16(m_at));
 	m_da[rx] = merge_16_32(m_aluo, m_alue);
 	m_au = m_at + 2;
@@ -187409,7 +187486,6 @@ void m68000_device::muls_w_dpc_dd_ipm() // c1fa f1ff
 	// 15a mulm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_da[rx];
 	m_alue = m_dbin;
 	m_at = m_au;
@@ -187472,6 +187548,7 @@ mulm5:
 mulm6:
 	// 020 mulm6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_pc, high16(m_at));
 	m_da[rx] = merge_16_32(m_aluo, m_alue);
 	m_au = m_at + 2;
@@ -187596,7 +187673,6 @@ adsw2:
 	// 15a mulm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_da[rx];
 	m_alue = m_dbin;
 	m_at = m_au;
@@ -187659,6 +187735,7 @@ mulm5:
 mulm6:
 	// 020 mulm6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_pc, high16(m_at));
 	m_da[rx] = merge_16_32(m_aluo, m_alue);
 	m_au = m_at + 2;
@@ -187717,7 +187794,6 @@ void m68000_device::muls_w_imm16_dd_ipm() // c1fc f1ff
 	// 15b mulr1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_alub = m_da[rx];
 	m_alue = m_dt;
 	m_at = m_au;
@@ -187780,6 +187856,7 @@ mulm5:
 mulm6:
 	// 020 mulm6
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_pc, high16(m_at));
 	m_da[rx] = merge_16_32(m_aluo, m_alue);
 	m_au = m_at + 2;
@@ -187812,7 +187889,6 @@ void m68000_device::add_b_ds_dd_ipm() // d000 f1f8
 	// 1c1 rorw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=2 c=2 m=xnzvc  i=b....i. ALU.add a=R.dyl:m_da[ry] d=R.dxl:m_da[rx]
@@ -187820,6 +187896,7 @@ void m68000_device::add_b_ds_dd_ipm() // d000 f1f8
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -187884,7 +187961,6 @@ void m68000_device::add_b_ais_dd_ipm() // d010 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=b....i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -187892,6 +187968,7 @@ void m68000_device::add_b_ais_dd_ipm() // d010 f1f8
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -187960,7 +188037,6 @@ void m68000_device::add_b_aips_dd_ipm() // d018 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=b....i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -187968,6 +188044,7 @@ void m68000_device::add_b_aips_dd_ipm() // d018 f1f8
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -188038,7 +188115,6 @@ void m68000_device::add_b_pais_dd_ipm() // d020 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=b....i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -188046,6 +188122,7 @@ void m68000_device::add_b_pais_dd_ipm() // d020 f1f8
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -188135,7 +188212,6 @@ void m68000_device::add_b_das_dd_ipm() // d028 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=b....i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -188143,6 +188219,7 @@ void m68000_device::add_b_das_dd_ipm() // d028 f1f8
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -188273,7 +188350,6 @@ adsw2:
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=b....i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -188281,6 +188357,7 @@ adsw2:
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -188369,7 +188446,6 @@ void m68000_device::add_b_adr16_dd_ipm() // d038 f1ff
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=b....i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -188377,6 +188453,7 @@ void m68000_device::add_b_adr16_dd_ipm() // d038 f1ff
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -188489,7 +188566,6 @@ void m68000_device::add_b_adr32_dd_ipm() // d039 f1ff
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=b....i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -188497,6 +188573,7 @@ void m68000_device::add_b_adr32_dd_ipm() // d039 f1ff
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -188585,7 +188662,6 @@ void m68000_device::add_b_dpc_dd_ipm() // d03a f1ff
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=b....i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -188593,6 +188669,7 @@ void m68000_device::add_b_dpc_dd_ipm() // d03a f1ff
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -188722,7 +188799,6 @@ adsw2:
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=b....i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -188730,6 +188806,7 @@ adsw2:
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -188797,7 +188874,6 @@ void m68000_device::add_b_imm8_dd_ipm() // d03c f1ff
 	// 1c1 rorw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dt);
 	// alu r=2 c=2 m=xnzvc  i=b....i. ALU.add a=R.dtl:m_dt d=R.dxl:m_da[rx]
@@ -188805,6 +188881,7 @@ void m68000_device::add_b_imm8_dd_ipm() // d03c f1ff
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -188846,7 +188923,6 @@ void m68000_device::add_w_ds_dd_ipm() // d040 f1f8
 	// 1c1 rorw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=2 c=2 m=xnzvc  i=.....i. ALU.add a=R.dyl:m_da[ry] d=R.dxl:m_da[rx]
@@ -188854,6 +188930,7 @@ void m68000_device::add_w_ds_dd_ipm() // d040 f1f8
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -188895,7 +188972,6 @@ void m68000_device::add_w_as_dd_ipm() // d048 f1f8
 	// 1c1 rorw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=2 c=2 m=xnzvc  i=.....i. ALU.add a=R.ayl:m_da[ry] d=R.dxl:m_da[rx]
@@ -188903,6 +188979,7 @@ void m68000_device::add_w_as_dd_ipm() // d048 f1f8
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -188971,7 +189048,6 @@ void m68000_device::add_w_ais_dd_ipm() // d050 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=.....i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -188979,6 +189055,7 @@ void m68000_device::add_w_ais_dd_ipm() // d050 f1f8
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -189051,7 +189128,6 @@ void m68000_device::add_w_aips_dd_ipm() // d058 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=.....i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -189059,6 +189135,7 @@ void m68000_device::add_w_aips_dd_ipm() // d058 f1f8
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -189133,7 +189210,6 @@ void m68000_device::add_w_pais_dd_ipm() // d060 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=.....i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -189141,6 +189217,7 @@ void m68000_device::add_w_pais_dd_ipm() // d060 f1f8
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -189234,7 +189311,6 @@ void m68000_device::add_w_das_dd_ipm() // d068 f1f8
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=.....i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -189242,6 +189318,7 @@ void m68000_device::add_w_das_dd_ipm() // d068 f1f8
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -189376,7 +189453,6 @@ adsw2:
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=.....i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -189384,6 +189460,7 @@ adsw2:
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -189476,7 +189553,6 @@ void m68000_device::add_w_adr16_dd_ipm() // d078 f1ff
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=.....i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -189484,6 +189560,7 @@ void m68000_device::add_w_adr16_dd_ipm() // d078 f1ff
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -189600,7 +189677,6 @@ void m68000_device::add_w_adr32_dd_ipm() // d079 f1ff
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=.....i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -189608,6 +189684,7 @@ void m68000_device::add_w_adr32_dd_ipm() // d079 f1ff
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -189700,7 +189777,6 @@ void m68000_device::add_w_dpc_dd_ipm() // d07a f1ff
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=.....i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -189708,6 +189784,7 @@ void m68000_device::add_w_dpc_dd_ipm() // d07a f1ff
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -189841,7 +189918,6 @@ adsw2:
 	// 1c3 romw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=.....i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -189849,6 +189925,7 @@ adsw2:
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -189916,7 +189993,6 @@ void m68000_device::add_w_imm16_dd_ipm() // d07c f1ff
 	// 1c1 rorw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dt);
 	// alu r=2 c=2 m=xnzvc  i=.....i. ALU.add a=R.dtl:m_dt d=R.dxl:m_da[rx]
@@ -189924,6 +190000,7 @@ void m68000_device::add_w_imm16_dd_ipm() // d07c f1ff
 	sr_xnzvc();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -189965,7 +190042,6 @@ void m68000_device::add_l_ds_dd_ipm() // d080 f1f8
 	// 1c5 rorl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=2 c=2 m=xnzvc  i=.l...i. ALU.add a=R.dyl:m_da[ry] d=R.dxl:m_da[rx]
@@ -190001,6 +190077,7 @@ void m68000_device::add_l_ds_dd_ipm() // d080 f1f8
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -190022,7 +190099,6 @@ void m68000_device::add_l_as_dd_ipm() // d088 f1f8
 	// 1c5 rorl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=2 c=2 m=xnzvc  i=.l...i. ALU.add a=R.ayl:m_da[ry] d=R.dxl:m_da[rx]
@@ -190058,6 +190134,7 @@ void m68000_device::add_l_as_dd_ipm() // d088 f1f8
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -190130,7 +190207,6 @@ void m68000_device::add_l_ais_dd_ipm() // d090 f1f8
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=.l...i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -190164,6 +190240,7 @@ void m68000_device::add_l_ais_dd_ipm() // d090 f1f8
 	sr_xnzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -190239,7 +190316,6 @@ void m68000_device::add_l_aips_dd_ipm() // d098 f1f8
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=.l...i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -190273,6 +190349,7 @@ void m68000_device::add_l_aips_dd_ipm() // d098 f1f8
 	sr_xnzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -190349,7 +190426,6 @@ void m68000_device::add_l_pais_dd_ipm() // d0a0 f1f8
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=.l...i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -190383,6 +190459,7 @@ void m68000_device::add_l_pais_dd_ipm() // d0a0 f1f8
 	sr_xnzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -190479,7 +190556,6 @@ void m68000_device::add_l_das_dd_ipm() // d0a8 f1f8
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=.l...i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -190513,6 +190589,7 @@ void m68000_device::add_l_das_dd_ipm() // d0a8 f1f8
 	sr_xnzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -190650,7 +190727,6 @@ adsl2:
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=.l...i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -190684,6 +190760,7 @@ adsl2:
 	sr_xnzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -190782,7 +190859,6 @@ void m68000_device::add_l_adr16_dd_ipm() // d0b8 f1ff
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=.l...i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -190816,6 +190892,7 @@ void m68000_device::add_l_adr16_dd_ipm() // d0b8 f1ff
 	sr_xnzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -190938,7 +191015,6 @@ void m68000_device::add_l_adr32_dd_ipm() // d0b9 f1ff
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=.l...i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -190972,6 +191048,7 @@ void m68000_device::add_l_adr32_dd_ipm() // d0b9 f1ff
 	sr_xnzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -191067,7 +191144,6 @@ void m68000_device::add_l_dpc_dd_ipm() // d0ba f1ff
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=.l...i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -191101,6 +191177,7 @@ void m68000_device::add_l_dpc_dd_ipm() // d0ba f1ff
 	sr_xnzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -191237,7 +191314,6 @@ adsl2:
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=xnzvc  i=.l...i. ALU.add a=R.dbin:m_dbin d=R.dxl:m_da[rx]
@@ -191271,6 +191347,7 @@ adsl2:
 	sr_xnzvc_u();
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -191342,7 +191419,6 @@ void m68000_device::add_l_imm32_dd_ipm() // d0bc f1ff
 	// 1c5 rorl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dt);
 	// alu r=2 c=2 m=xnzvc  i=.l...i. ALU.add a=R.dtl:m_dt d=R.dxl:m_da[rx]
@@ -191378,6 +191454,7 @@ void m68000_device::add_l_imm32_dd_ipm() // d0bc f1ff
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -191399,7 +191476,6 @@ void m68000_device::adda_w_ds_ad_ipm() // d0c0 f1f8
 	// 1c9 rorm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.dyl:m_da[ry] d=R.axl:m_da[rx]
@@ -191433,6 +191509,7 @@ void m68000_device::adda_w_ds_ad_ipm() // d0c0 f1f8
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -191454,7 +191531,6 @@ void m68000_device::adda_w_as_ad_ipm() // d0c8 f1f8
 	// 1c9 rorm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.ayl:m_da[ry] d=R.axl:m_da[rx]
@@ -191488,6 +191564,7 @@ void m68000_device::adda_w_as_ad_ipm() // d0c8 f1f8
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -191536,7 +191613,6 @@ void m68000_device::adda_w_ais_ad_ipm() // d0d0 f1f8
 	// 1c7 romm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -191570,6 +191646,7 @@ void m68000_device::adda_w_ais_ad_ipm() // d0d0 f1f8
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -191622,7 +191699,6 @@ void m68000_device::adda_w_aips_ad_ipm() // d0d8 f1f8
 	// 1c7 romm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -191656,6 +191732,7 @@ void m68000_device::adda_w_aips_ad_ipm() // d0d8 f1f8
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -191710,7 +191787,6 @@ void m68000_device::adda_w_pais_ad_ipm() // d0e0 f1f8
 	// 1c7 romm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -191744,6 +191820,7 @@ void m68000_device::adda_w_pais_ad_ipm() // d0e0 f1f8
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -191817,7 +191894,6 @@ void m68000_device::adda_w_das_ad_ipm() // d0e8 f1f8
 	// 1c7 romm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -191851,6 +191927,7 @@ void m68000_device::adda_w_das_ad_ipm() // d0e8 f1f8
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -191965,7 +192042,6 @@ adsw2:
 	// 1c7 romm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -191999,6 +192075,7 @@ adsw2:
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -192071,7 +192148,6 @@ void m68000_device::adda_w_adr16_ad_ipm() // d0f8 f1ff
 	// 1c7 romm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -192105,6 +192181,7 @@ void m68000_device::adda_w_adr16_ad_ipm() // d0f8 f1ff
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -192201,7 +192278,6 @@ void m68000_device::adda_w_adr32_ad_ipm() // d0f9 f1ff
 	// 1c7 romm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -192235,6 +192311,7 @@ void m68000_device::adda_w_adr32_ad_ipm() // d0f9 f1ff
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -192307,7 +192384,6 @@ void m68000_device::adda_w_dpc_ad_ipm() // d0fa f1ff
 	// 1c7 romm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -192341,6 +192417,7 @@ void m68000_device::adda_w_dpc_ad_ipm() // d0fa f1ff
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -192454,7 +192531,6 @@ adsw2:
 	// 1c7 romm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -192488,6 +192564,7 @@ adsw2:
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -192535,7 +192612,6 @@ void m68000_device::adda_w_imm16_ad_ipm() // d0fc f1ff
 	// 1c9 rorm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dt);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.dtl:m_dt d=R.axl:m_da[rx]
@@ -192569,6 +192645,7 @@ void m68000_device::adda_w_imm16_ad_ipm() // d0fc f1ff
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -192590,7 +192667,6 @@ void m68000_device::addx_b_ds_dd_ipm() // d100 f1f8
 	// 1c1 rorw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=12 c=2 m=xnzvc  i=b....i. ALU.addx a=R.dyl:m_da[ry] d=R.dxl:m_da[rx]
@@ -192598,6 +192674,7 @@ void m68000_device::addx_b_ds_dd_ipm() // d100 f1f8
 	sr_xnzvc_u();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -192671,7 +192748,6 @@ void m68000_device::addx_b_pais_paid_ipm() // d108 f1f8
 	// 04a asxw4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_DATA | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_data(m_aob & ~1, m_aob & 1 ? 0x00ff : 0xff00);
@@ -192722,6 +192798,7 @@ void m68000_device::addx_b_pais_paid_ipm() // d108 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -192779,7 +192856,6 @@ void m68000_device::add_b_dd_ais_ipm() // d110 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -192809,6 +192885,7 @@ void m68000_device::add_b_dd_ais_ipm() // d110 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -192869,7 +192946,6 @@ void m68000_device::add_b_dd_aips_ipm() // d118 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -192899,6 +192975,7 @@ void m68000_device::add_b_dd_aips_ipm() // d118 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -192961,7 +193038,6 @@ void m68000_device::add_b_dd_pais_ipm() // d120 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -192991,6 +193067,7 @@ void m68000_device::add_b_dd_pais_ipm() // d120 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -193072,7 +193149,6 @@ void m68000_device::add_b_dd_das_ipm() // d128 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -193102,6 +193178,7 @@ void m68000_device::add_b_dd_das_ipm() // d128 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -193224,7 +193301,6 @@ adsw2:
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -193254,6 +193330,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -193334,7 +193411,6 @@ void m68000_device::add_b_dd_adr16_ipm() // d138 f1ff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -193364,6 +193440,7 @@ void m68000_device::add_b_dd_adr16_ipm() // d138 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -193468,7 +193545,6 @@ void m68000_device::add_b_dd_adr32_ipm() // d139 f1ff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -193498,6 +193574,7 @@ void m68000_device::add_b_dd_adr32_ipm() // d139 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8xl(m_dbout, m_aluo);
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -193531,7 +193608,6 @@ void m68000_device::addx_w_ds_dd_ipm() // d140 f1f8
 	// 1c1 rorw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=12 c=2 m=xnzvc  i=.....i. ALU.addx a=R.dyl:m_da[ry] d=R.dxl:m_da[rx]
@@ -193539,6 +193615,7 @@ void m68000_device::addx_w_ds_dd_ipm() // d140 f1f8
 	sr_xnzvc_u();
 	// 27a rrgw2
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 1:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -193616,7 +193693,6 @@ void m68000_device::addx_w_pais_paid_ipm() // d148 f1f8
 	// 04a asxw4
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_DATA | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_data(m_aob & ~1, 0xffff);
@@ -193671,6 +193747,7 @@ void m68000_device::addx_w_pais_paid_ipm() // d148 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -193738,7 +193815,6 @@ void m68000_device::add_w_dd_ais_ipm() // d150 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -193768,6 +193844,7 @@ void m68000_device::add_w_dd_ais_ipm() // d150 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -193838,7 +193915,6 @@ void m68000_device::add_w_dd_aips_ipm() // d158 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -193868,6 +193944,7 @@ void m68000_device::add_w_dd_aips_ipm() // d158 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -193940,7 +194017,6 @@ void m68000_device::add_w_dd_pais_ipm() // d160 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 3:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -193970,6 +194046,7 @@ void m68000_device::add_w_dd_pais_ipm() // d160 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -194061,7 +194138,6 @@ void m68000_device::add_w_dd_das_ipm() // d168 f1f8
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -194091,6 +194167,7 @@ void m68000_device::add_w_dd_das_ipm() // d168 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -194223,7 +194300,6 @@ adsw2:
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -194253,6 +194329,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -194343,7 +194420,6 @@ void m68000_device::add_w_dd_adr16_ipm() // d178 f1ff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -194373,6 +194449,7 @@ void m68000_device::add_w_dd_adr16_ipm() // d178 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -194487,7 +194564,6 @@ void m68000_device::add_w_dd_adr32_ipm() // d179 f1ff
 	// 299 morw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -194517,6 +194593,7 @@ void m68000_device::add_w_dd_adr32_ipm() // d179 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -194556,7 +194633,6 @@ void m68000_device::addx_l_ds_dd_ipm() // d180 f1f8
 	// 1c5 rorl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=12 c=2 m=xnzvc  i=.l...i. ALU.addx a=R.dyl:m_da[ry] d=R.dxl:m_da[rx]
@@ -194593,6 +194669,7 @@ void m68000_device::addx_l_ds_dd_ipm() // d180 f1f8
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=12 c=0 m=.....  i=.l..... ALU.addx a=R.aluo:m_aluo d=none
@@ -194728,7 +194805,6 @@ void m68000_device::addx_l_pais_paid_ipm() // d188 f1f8
 	// 061 asxl7
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -194781,6 +194857,7 @@ void m68000_device::addx_l_pais_paid_ipm() // d188 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -194872,7 +194949,6 @@ void m68000_device::add_l_dd_ais_ipm() // d190 f1f8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -194928,6 +195004,7 @@ void m68000_device::add_l_dd_ais_ipm() // d190 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -195021,7 +195098,6 @@ void m68000_device::add_l_dd_aips_ipm() // d198 f1f8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -195077,6 +195153,7 @@ void m68000_device::add_l_dd_aips_ipm() // d198 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -195171,7 +195248,6 @@ void m68000_device::add_l_dd_pais_ipm() // d1a0 f1f8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 5:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -195227,6 +195303,7 @@ void m68000_device::add_l_dd_pais_ipm() // d1a0 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -195341,7 +195418,6 @@ void m68000_device::add_l_dd_das_ipm() // d1a8 f1f8
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -195397,6 +195473,7 @@ void m68000_device::add_l_dd_das_ipm() // d1a8 f1f8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -195552,7 +195629,6 @@ adsl2:
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -195608,6 +195684,7 @@ adsl2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -195724,7 +195801,6 @@ void m68000_device::add_l_dd_adr16_ipm() // d1b8 f1ff
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 7:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -195780,6 +195856,7 @@ void m68000_device::add_l_dd_adr16_ipm() // d1b8 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 11:
@@ -195920,7 +195997,6 @@ void m68000_device::add_l_dd_adr32_ipm() // d1b9 f1ff
 	// 29d morl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_base_ssw = SSW_PROGRAM | SSW_R;
 	[[fallthrough]]; case 9:
 	m_edb = m_mmu->read_program(m_aob & ~1, 0xffff);
@@ -195976,6 +196052,7 @@ void m68000_device::add_l_dd_adr32_ipm() // d1b9 f1ff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 13:
@@ -196015,7 +196092,6 @@ void m68000_device::adda_l_ds_ad_ipm() // d1c0 f1f8
 	// 1c5 rorl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.dyl:m_da[ry] d=R.axl:m_da[rx]
@@ -196049,6 +196125,7 @@ void m68000_device::adda_l_ds_ad_ipm() // d1c0 f1f8
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -196070,7 +196147,6 @@ void m68000_device::adda_l_as_ad_ipm() // d1c8 f1f8
 	// 1c5 rorl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_da[ry]);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.ayl:m_da[ry] d=R.axl:m_da[rx]
@@ -196104,6 +196180,7 @@ void m68000_device::adda_l_as_ad_ipm() // d1c8 f1f8
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -196176,7 +196253,6 @@ void m68000_device::adda_l_ais_ad_ipm() // d1d0 f1f8
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -196208,6 +196284,7 @@ void m68000_device::adda_l_ais_ad_ipm() // d1d0 f1f8
 	alu_addc(m_alub, high16(m_da[rx]));
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -196283,7 +196360,6 @@ void m68000_device::adda_l_aips_ad_ipm() // d1d8 f1f8
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -196315,6 +196391,7 @@ void m68000_device::adda_l_aips_ad_ipm() // d1d8 f1f8
 	alu_addc(m_alub, high16(m_da[rx]));
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -196391,7 +196468,6 @@ void m68000_device::adda_l_pais_ad_ipm() // d1e0 f1f8
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -196423,6 +196499,7 @@ void m68000_device::adda_l_pais_ad_ipm() // d1e0 f1f8
 	alu_addc(m_alub, high16(m_da[rx]));
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -196519,7 +196596,6 @@ void m68000_device::adda_l_das_ad_ipm() // d1e8 f1f8
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -196551,6 +196627,7 @@ void m68000_device::adda_l_das_ad_ipm() // d1e8 f1f8
 	alu_addc(m_alub, high16(m_da[rx]));
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -196688,7 +196765,6 @@ adsl2:
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -196720,6 +196796,7 @@ adsl2:
 	alu_addc(m_alub, high16(m_da[rx]));
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -196818,7 +196895,6 @@ void m68000_device::adda_l_adr16_ad_ipm() // d1f8 f1ff
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -196850,6 +196926,7 @@ void m68000_device::adda_l_adr16_ad_ipm() // d1f8 f1ff
 	alu_addc(m_alub, high16(m_da[rx]));
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -196972,7 +197049,6 @@ void m68000_device::adda_l_adr32_ad_ipm() // d1f9 f1ff
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -197004,6 +197080,7 @@ void m68000_device::adda_l_adr32_ad_ipm() // d1f9 f1ff
 	alu_addc(m_alub, high16(m_da[rx]));
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -197099,7 +197176,6 @@ void m68000_device::adda_l_dpc_ad_ipm() // d1fa f1ff
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -197131,6 +197207,7 @@ void m68000_device::adda_l_dpc_ad_ipm() // d1fa f1ff
 	alu_addc(m_alub, high16(m_da[rx]));
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -197267,7 +197344,6 @@ adsl2:
 	// 1cb roml1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dbin);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.dbin:m_dbin d=R.axl:m_da[rx]
@@ -197299,6 +197375,7 @@ adsl2:
 	alu_addc(m_alub, high16(m_da[rx]));
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -197370,7 +197447,6 @@ void m68000_device::adda_l_imm32_ad_ipm() // d1fc f1ff
 	// 1c5 rorl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_at = ext32(m_dt);
 	// alu r=2 c=2 m=.....  i=.....i. ALU.add a=R.dtl:m_dt d=R.axl:m_da[rx]
@@ -197404,6 +197480,7 @@ void m68000_device::adda_l_imm32_ad_ipm() // d1fc f1ff
 	m_icount -= 2;
 	// 25d roml3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16h(m_da[rx], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -197424,7 +197501,6 @@ void m68000_device::asr_b_imm3_ds_ipm() // e000 f1f8
 	// 381 srrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_ftu);
 	// alu r=2 c=1 m=.....  i=b...... ALU.and_ a=18:m_da[ry] d=-1
@@ -197476,6 +197552,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -197496,7 +197573,6 @@ void m68000_device::lsr_b_imm3_ds_ipm() // e008 f1f8
 	// 381 srrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_ftu);
 	// alu r=5 c=1 m=.....  i=b...... ALU.and_ a=18:m_da[ry] d=-1
@@ -197548,6 +197624,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -197568,7 +197645,6 @@ void m68000_device::roxr_b_imm3_ds_ipm() // e010 f1f8
 	// 381 srrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_ftu);
 	// alu r=8 c=1 m=.....  i=b...r.. ALU.and_ a=18:m_da[ry] d=-1
@@ -197620,6 +197696,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -197640,7 +197717,6 @@ void m68000_device::ror_b_imm3_ds_ipm() // e018 f1f8
 	// 381 srrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_ftu);
 	// alu r=10 c=1 m=.....  i=b...... ALU.and_ a=18:m_da[ry] d=-1
@@ -197692,6 +197768,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -197713,7 +197790,6 @@ void m68000_device::asr_b_dd_ds_ipm() // e020 f1f8
 	// 382 sriw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_da[rx]);
 	// alu r=2 c=1 m=.....  i=b...... ALU.and_ a=18:m_da[ry] d=-1
@@ -197765,6 +197841,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -197786,7 +197863,6 @@ void m68000_device::lsr_b_dd_ds_ipm() // e028 f1f8
 	// 382 sriw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_da[rx]);
 	// alu r=5 c=1 m=.....  i=b...... ALU.and_ a=18:m_da[ry] d=-1
@@ -197838,6 +197914,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -197859,7 +197936,6 @@ void m68000_device::roxr_b_dd_ds_ipm() // e030 f1f8
 	// 382 sriw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_da[rx]);
 	// alu r=8 c=1 m=.....  i=b...r.. ALU.and_ a=18:m_da[ry] d=-1
@@ -197911,6 +197987,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -197932,7 +198009,6 @@ void m68000_device::ror_b_dd_ds_ipm() // e038 f1f8
 	// 382 sriw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_da[rx]);
 	// alu r=10 c=1 m=.....  i=b...... ALU.and_ a=18:m_da[ry] d=-1
@@ -197984,6 +198060,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -198004,7 +198081,6 @@ void m68000_device::asr_w_imm3_ds_ipm() // e040 f1f8
 	// 381 srrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_ftu);
 	// alu r=2 c=1 m=.....  i=....... ALU.and_ a=18:m_da[ry] d=-1
@@ -198056,6 +198132,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -198076,7 +198153,6 @@ void m68000_device::lsr_w_imm3_ds_ipm() // e048 f1f8
 	// 381 srrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_ftu);
 	// alu r=5 c=1 m=.....  i=....... ALU.and_ a=18:m_da[ry] d=-1
@@ -198128,6 +198204,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -198148,7 +198225,6 @@ void m68000_device::roxr_w_imm3_ds_ipm() // e050 f1f8
 	// 381 srrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_ftu);
 	// alu r=8 c=1 m=.....  i=....r.. ALU.and_ a=18:m_da[ry] d=-1
@@ -198200,6 +198276,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -198220,7 +198297,6 @@ void m68000_device::ror_w_imm3_ds_ipm() // e058 f1f8
 	// 381 srrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_ftu);
 	// alu r=10 c=1 m=.....  i=....... ALU.and_ a=18:m_da[ry] d=-1
@@ -198272,6 +198348,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -198293,7 +198370,6 @@ void m68000_device::asr_w_dd_ds_ipm() // e060 f1f8
 	// 382 sriw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_da[rx]);
 	// alu r=2 c=1 m=.....  i=....... ALU.and_ a=18:m_da[ry] d=-1
@@ -198345,6 +198421,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -198366,7 +198443,6 @@ void m68000_device::lsr_w_dd_ds_ipm() // e068 f1f8
 	// 382 sriw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_da[rx]);
 	// alu r=5 c=1 m=.....  i=....... ALU.and_ a=18:m_da[ry] d=-1
@@ -198418,6 +198494,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -198439,7 +198516,6 @@ void m68000_device::roxr_w_dd_ds_ipm() // e070 f1f8
 	// 382 sriw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_da[rx]);
 	// alu r=8 c=1 m=.....  i=....r.. ALU.and_ a=18:m_da[ry] d=-1
@@ -198491,6 +198567,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -198512,7 +198589,6 @@ void m68000_device::ror_w_dd_ds_ipm() // e078 f1f8
 	// 382 sriw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_da[rx]);
 	// alu r=10 c=1 m=.....  i=....... ALU.and_ a=18:m_da[ry] d=-1
@@ -198564,6 +198640,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -198584,7 +198661,6 @@ void m68000_device::asr_l_imm3_ds_ipm() // e080 f1f8
 	// 385 srrl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_ftu);
 	// alu r=2 c=1 m=.....  i=.l..... ALU.and_ a=18:m_da[ry] d=-1
@@ -198640,6 +198716,7 @@ srrl4:
 	m_icount -= 2;
 	// 306 srrl5
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=2 c=1 m=.nz..  i=.l....f ALU.and_ a=alub d=-1
 	alu_and(m_alub, 0xffff);
@@ -198662,7 +198739,6 @@ void m68000_device::lsr_l_imm3_ds_ipm() // e088 f1f8
 	// 385 srrl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_ftu);
 	// alu r=5 c=1 m=.....  i=.l..... ALU.and_ a=18:m_da[ry] d=-1
@@ -198718,6 +198794,7 @@ srrl4:
 	m_icount -= 2;
 	// 306 srrl5
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=5 c=1 m=.nz..  i=.l....f ALU.and_ a=alub d=-1
 	alu_and(m_alub, 0xffff);
@@ -198740,7 +198817,6 @@ void m68000_device::roxr_l_imm3_ds_ipm() // e090 f1f8
 	// 385 srrl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_ftu);
 	// alu r=8 c=1 m=.....  i=.l..r.. ALU.and_ a=18:m_da[ry] d=-1
@@ -198796,6 +198872,7 @@ srrl4:
 	m_icount -= 2;
 	// 306 srrl5
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=8 c=1 m=.nz..  i=.l..r.f ALU.and_ a=alub d=-1
 	alu_andx(m_alub, 0xffff);
@@ -198818,7 +198895,6 @@ void m68000_device::ror_l_imm3_ds_ipm() // e098 f1f8
 	// 385 srrl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_ftu);
 	// alu r=10 c=1 m=.....  i=.l..... ALU.and_ a=18:m_da[ry] d=-1
@@ -198874,6 +198950,7 @@ srrl4:
 	m_icount -= 2;
 	// 306 srrl5
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=10 c=1 m=.nz..  i=.l....f ALU.and_ a=alub d=-1
 	alu_and(m_alub, 0xffff);
@@ -198897,7 +198974,6 @@ void m68000_device::asr_l_dd_ds_ipm() // e0a0 f1f8
 	// 386 sril1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_da[rx]);
 	// alu r=2 c=1 m=.....  i=.l..... ALU.and_ a=18:m_da[ry] d=-1
@@ -198953,6 +199029,7 @@ srrl4:
 	m_icount -= 2;
 	// 306 srrl5
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=2 c=1 m=.nz..  i=.l....f ALU.and_ a=alub d=-1
 	alu_and(m_alub, 0xffff);
@@ -198976,7 +199053,6 @@ void m68000_device::lsr_l_dd_ds_ipm() // e0a8 f1f8
 	// 386 sril1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_da[rx]);
 	// alu r=5 c=1 m=.....  i=.l..... ALU.and_ a=18:m_da[ry] d=-1
@@ -199032,6 +199108,7 @@ srrl4:
 	m_icount -= 2;
 	// 306 srrl5
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=5 c=1 m=.nz..  i=.l....f ALU.and_ a=alub d=-1
 	alu_and(m_alub, 0xffff);
@@ -199055,7 +199132,6 @@ void m68000_device::roxr_l_dd_ds_ipm() // e0b0 f1f8
 	// 386 sril1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_da[rx]);
 	// alu r=8 c=1 m=.....  i=.l..r.. ALU.and_ a=18:m_da[ry] d=-1
@@ -199111,6 +199187,7 @@ srrl4:
 	m_icount -= 2;
 	// 306 srrl5
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=8 c=1 m=.nz..  i=.l..r.f ALU.and_ a=alub d=-1
 	alu_andx(m_alub, 0xffff);
@@ -199134,7 +199211,6 @@ void m68000_device::ror_l_dd_ds_ipm() // e0b8 f1f8
 	// 386 sril1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_da[rx]);
 	// alu r=10 c=1 m=.....  i=.l..... ALU.and_ a=18:m_da[ry] d=-1
@@ -199190,6 +199266,7 @@ srrl4:
 	m_icount -= 2;
 	// 306 srrl5
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=10 c=1 m=.nz..  i=.l....f ALU.and_ a=alub d=-1
 	alu_and(m_alub, 0xffff);
@@ -199240,7 +199317,6 @@ void m68000_device::asr_ais_ipm() // e0d0 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=2 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -199275,6 +199351,7 @@ void m68000_device::asr_ais_ipm() // e0d0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -199345,7 +199422,6 @@ void m68000_device::asr_aips_ipm() // e0d8 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=2 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -199380,6 +199456,7 @@ void m68000_device::asr_aips_ipm() // e0d8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -199452,7 +199529,6 @@ void m68000_device::asr_pais_ipm() // e0e0 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=2 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -199487,6 +199563,7 @@ void m68000_device::asr_pais_ipm() // e0e0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -199578,7 +199655,6 @@ void m68000_device::asr_das_ipm() // e0e8 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=2 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -199613,6 +199689,7 @@ void m68000_device::asr_das_ipm() // e0e8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -199745,7 +199822,6 @@ adsw2:
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=2 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -199780,6 +199856,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -199870,7 +199947,6 @@ void m68000_device::asr_adr16_ipm() // e0f8 ffff
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=2 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -199905,6 +199981,7 @@ void m68000_device::asr_adr16_ipm() // e0f8 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -200019,7 +200096,6 @@ void m68000_device::asr_adr32_ipm() // e0f9 ffff
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=2 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -200054,6 +200130,7 @@ void m68000_device::asr_adr32_ipm() // e0f9 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -200092,7 +200169,6 @@ void m68000_device::asl_b_imm3_ds_ipm() // e100 f1f8
 	// 381 srrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_ftu);
 	// alu r=3 c=1 m=.....  i=b...... ALU.and_ a=18:m_da[ry] d=-1
@@ -200144,6 +200220,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -200164,7 +200241,6 @@ void m68000_device::lsl_b_imm3_ds_ipm() // e108 f1f8
 	// 381 srrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_ftu);
 	// alu r=4 c=1 m=.....  i=b...... ALU.and_ a=18:m_da[ry] d=-1
@@ -200216,6 +200292,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=4 c=0 m=.....  i=b...... ALU.and_ a=R.aluo:m_aluo d=none
@@ -200237,7 +200314,6 @@ void m68000_device::roxl_b_imm3_ds_ipm() // e110 f1f8
 	// 381 srrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_ftu);
 	// alu r=11 c=1 m=.....  i=b...r.. ALU.and_ a=18:m_da[ry] d=-1
@@ -200289,6 +200365,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -200309,7 +200386,6 @@ void m68000_device::rol_b_imm3_ds_ipm() // e118 f1f8
 	// 381 srrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_ftu);
 	// alu r=9 c=1 m=.....  i=b...... ALU.and_ a=18:m_da[ry] d=-1
@@ -200361,6 +200437,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -200382,7 +200459,6 @@ void m68000_device::asl_b_dd_ds_ipm() // e120 f1f8
 	// 382 sriw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_da[rx]);
 	// alu r=3 c=1 m=.....  i=b...... ALU.and_ a=18:m_da[ry] d=-1
@@ -200434,6 +200510,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -200455,7 +200532,6 @@ void m68000_device::lsl_b_dd_ds_ipm() // e128 f1f8
 	// 382 sriw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_da[rx]);
 	// alu r=4 c=1 m=.....  i=b...... ALU.and_ a=18:m_da[ry] d=-1
@@ -200507,6 +200583,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=4 c=0 m=.....  i=b...... ALU.and_ a=R.aluo:m_aluo d=none
@@ -200529,7 +200606,6 @@ void m68000_device::roxl_b_dd_ds_ipm() // e130 f1f8
 	// 382 sriw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_da[rx]);
 	// alu r=11 c=1 m=.....  i=b...r.. ALU.and_ a=18:m_da[ry] d=-1
@@ -200581,6 +200657,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -200602,7 +200679,6 @@ void m68000_device::rol_b_dd_ds_ipm() // e138 f1f8
 	// 382 sriw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_da[rx]);
 	// alu r=9 c=1 m=.....  i=b...... ALU.and_ a=18:m_da[ry] d=-1
@@ -200654,6 +200730,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_8(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -200674,7 +200751,6 @@ void m68000_device::asl_w_imm3_ds_ipm() // e140 f1f8
 	// 381 srrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_ftu);
 	// alu r=3 c=1 m=.....  i=....... ALU.and_ a=18:m_da[ry] d=-1
@@ -200726,6 +200802,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -200746,7 +200823,6 @@ void m68000_device::lsl_w_imm3_ds_ipm() // e148 f1f8
 	// 381 srrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_ftu);
 	// alu r=4 c=1 m=.....  i=....... ALU.and_ a=18:m_da[ry] d=-1
@@ -200798,6 +200874,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=4 c=0 m=.....  i=....... ALU.and_ a=R.aluo:m_aluo d=none
@@ -200819,7 +200896,6 @@ void m68000_device::roxl_w_imm3_ds_ipm() // e150 f1f8
 	// 381 srrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_ftu);
 	// alu r=11 c=1 m=.....  i=....r.. ALU.and_ a=18:m_da[ry] d=-1
@@ -200871,6 +200947,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -200891,7 +200968,6 @@ void m68000_device::rol_w_imm3_ds_ipm() // e158 f1f8
 	// 381 srrw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_ftu);
 	// alu r=9 c=1 m=.....  i=....... ALU.and_ a=18:m_da[ry] d=-1
@@ -200943,6 +201019,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -200964,7 +201041,6 @@ void m68000_device::asl_w_dd_ds_ipm() // e160 f1f8
 	// 382 sriw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_da[rx]);
 	// alu r=3 c=1 m=.....  i=....... ALU.and_ a=18:m_da[ry] d=-1
@@ -201016,6 +201092,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -201037,7 +201114,6 @@ void m68000_device::lsl_w_dd_ds_ipm() // e168 f1f8
 	// 382 sriw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_da[rx]);
 	// alu r=4 c=1 m=.....  i=....... ALU.and_ a=18:m_da[ry] d=-1
@@ -201089,6 +201165,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	// alu r=4 c=0 m=.....  i=....... ALU.and_ a=R.aluo:m_aluo d=none
@@ -201111,7 +201188,6 @@ void m68000_device::roxl_w_dd_ds_ipm() // e170 f1f8
 	// 382 sriw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_da[rx]);
 	// alu r=11 c=1 m=.....  i=....r.. ALU.and_ a=18:m_da[ry] d=-1
@@ -201163,6 +201239,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -201184,7 +201261,6 @@ void m68000_device::rol_w_dd_ds_ipm() // e178 f1f8
 	// 382 sriw1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_da[rx]);
 	// alu r=9 c=1 m=.....  i=....... ALU.and_ a=18:m_da[ry] d=-1
@@ -201236,6 +201312,7 @@ srrw3:
 nbcr3:
 	// 253 nbcr3
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	set_16l(m_da[ry], m_aluo);
 	m_au = m_pc + 2;
 	set_ftu_const();
@@ -201256,7 +201333,6 @@ void m68000_device::asl_l_imm3_ds_ipm() // e180 f1f8
 	// 385 srrl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_ftu);
 	// alu r=3 c=1 m=.....  i=.l..... ALU.and_ a=18:m_da[ry] d=-1
@@ -201312,6 +201388,7 @@ srrl4:
 	m_icount -= 2;
 	// 306 srrl5
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=3 c=1 m=.nz..  i=.l....f ALU.and_ a=alub d=-1
 	alu_and(m_alub, 0xffff);
@@ -201334,7 +201411,6 @@ void m68000_device::lsl_l_imm3_ds_ipm() // e188 f1f8
 	// 385 srrl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_ftu);
 	// alu r=4 c=1 m=.....  i=.l..... ALU.and_ a=18:m_da[ry] d=-1
@@ -201392,6 +201468,7 @@ srrl4:
 	m_icount -= 2;
 	// 306 srrl5
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=4 c=1 m=.nz..  i=.l....f ALU.and_ a=alub d=-1
 	alu_and(m_alub, 0xffff);
@@ -201414,7 +201491,6 @@ void m68000_device::roxl_l_imm3_ds_ipm() // e190 f1f8
 	// 385 srrl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_ftu);
 	// alu r=11 c=1 m=.....  i=.l..r.. ALU.and_ a=18:m_da[ry] d=-1
@@ -201470,6 +201546,7 @@ srrl4:
 	m_icount -= 2;
 	// 306 srrl5
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=11 c=1 m=.nz..  i=.l..r.f ALU.and_ a=alub d=-1
 	alu_andx(m_alub, 0xffff);
@@ -201492,7 +201569,6 @@ void m68000_device::rol_l_imm3_ds_ipm() // e198 f1f8
 	// 385 srrl1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_ftu);
 	// alu r=9 c=1 m=.....  i=.l..... ALU.and_ a=18:m_da[ry] d=-1
@@ -201548,6 +201624,7 @@ srrl4:
 	m_icount -= 2;
 	// 306 srrl5
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=9 c=1 m=.nz..  i=.l....f ALU.and_ a=alub d=-1
 	alu_and(m_alub, 0xffff);
@@ -201571,7 +201648,6 @@ void m68000_device::asl_l_dd_ds_ipm() // e1a0 f1f8
 	// 386 sril1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_da[rx]);
 	// alu r=3 c=1 m=.....  i=.l..... ALU.and_ a=18:m_da[ry] d=-1
@@ -201627,6 +201703,7 @@ srrl4:
 	m_icount -= 2;
 	// 306 srrl5
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=3 c=1 m=.nz..  i=.l....f ALU.and_ a=alub d=-1
 	alu_and(m_alub, 0xffff);
@@ -201650,7 +201727,6 @@ void m68000_device::lsl_l_dd_ds_ipm() // e1a8 f1f8
 	// 386 sril1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_da[rx]);
 	// alu r=4 c=1 m=.....  i=.l..... ALU.and_ a=18:m_da[ry] d=-1
@@ -201708,6 +201784,7 @@ srrl4:
 	m_icount -= 2;
 	// 306 srrl5
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=4 c=1 m=.nz..  i=.l....f ALU.and_ a=alub d=-1
 	alu_and(m_alub, 0xffff);
@@ -201731,7 +201808,6 @@ void m68000_device::roxl_l_dd_ds_ipm() // e1b0 f1f8
 	// 386 sril1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_da[rx]);
 	// alu r=11 c=1 m=.....  i=.l..r.. ALU.and_ a=18:m_da[ry] d=-1
@@ -201787,6 +201863,7 @@ srrl4:
 	m_icount -= 2;
 	// 306 srrl5
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=11 c=1 m=.nz..  i=.l..r.f ALU.and_ a=alub d=-1
 	alu_andx(m_alub, 0xffff);
@@ -201810,7 +201887,6 @@ void m68000_device::rol_l_dd_ds_ipm() // e1b8 f1f8
 	// 386 sril1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = ext32(m_da[rx]);
 	// alu r=9 c=1 m=.....  i=.l..... ALU.and_ a=18:m_da[ry] d=-1
@@ -201866,6 +201942,7 @@ srrl4:
 	m_icount -= 2;
 	// 306 srrl5
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_au = m_pc + 2;
 	// alu r=9 c=1 m=.nz..  i=.l....f ALU.and_ a=alub d=-1
 	alu_and(m_alub, 0xffff);
@@ -201916,7 +201993,6 @@ void m68000_device::asl_ais_ipm() // e1d0 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=3 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -201951,6 +202027,7 @@ void m68000_device::asl_ais_ipm() // e1d0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -202021,7 +202098,6 @@ void m68000_device::asl_aips_ipm() // e1d8 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=3 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -202056,6 +202132,7 @@ void m68000_device::asl_aips_ipm() // e1d8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -202128,7 +202205,6 @@ void m68000_device::asl_pais_ipm() // e1e0 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=3 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -202163,6 +202239,7 @@ void m68000_device::asl_pais_ipm() // e1e0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -202254,7 +202331,6 @@ void m68000_device::asl_das_ipm() // e1e8 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=3 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -202289,6 +202365,7 @@ void m68000_device::asl_das_ipm() // e1e8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -202421,7 +202498,6 @@ adsw2:
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=3 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -202456,6 +202532,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -202546,7 +202623,6 @@ void m68000_device::asl_adr16_ipm() // e1f8 ffff
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=3 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -202581,6 +202657,7 @@ void m68000_device::asl_adr16_ipm() // e1f8 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -202695,7 +202772,6 @@ void m68000_device::asl_adr32_ipm() // e1f9 ffff
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=3 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -202730,6 +202806,7 @@ void m68000_device::asl_adr32_ipm() // e1f9 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -202796,7 +202873,6 @@ void m68000_device::lsr_ais_ipm() // e2d0 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=5 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -202831,6 +202907,7 @@ void m68000_device::lsr_ais_ipm() // e2d0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -202901,7 +202978,6 @@ void m68000_device::lsr_aips_ipm() // e2d8 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=5 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -202936,6 +203012,7 @@ void m68000_device::lsr_aips_ipm() // e2d8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -203008,7 +203085,6 @@ void m68000_device::lsr_pais_ipm() // e2e0 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=5 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -203043,6 +203119,7 @@ void m68000_device::lsr_pais_ipm() // e2e0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -203134,7 +203211,6 @@ void m68000_device::lsr_das_ipm() // e2e8 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=5 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -203169,6 +203245,7 @@ void m68000_device::lsr_das_ipm() // e2e8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -203301,7 +203378,6 @@ adsw2:
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=5 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -203336,6 +203412,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -203426,7 +203503,6 @@ void m68000_device::lsr_adr16_ipm() // e2f8 ffff
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=5 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -203461,6 +203537,7 @@ void m68000_device::lsr_adr16_ipm() // e2f8 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -203575,7 +203652,6 @@ void m68000_device::lsr_adr32_ipm() // e2f9 ffff
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=5 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -203610,6 +203686,7 @@ void m68000_device::lsr_adr32_ipm() // e2f9 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -203677,7 +203754,6 @@ void m68000_device::lsl_ais_ipm() // e3d0 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=4 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -203712,6 +203788,7 @@ void m68000_device::lsl_ais_ipm() // e3d0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -203785,7 +203862,6 @@ void m68000_device::lsl_aips_ipm() // e3d8 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=4 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -203820,6 +203896,7 @@ void m68000_device::lsl_aips_ipm() // e3d8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -203895,7 +203972,6 @@ void m68000_device::lsl_pais_ipm() // e3e0 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=4 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -203930,6 +204006,7 @@ void m68000_device::lsl_pais_ipm() // e3e0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -204024,7 +204101,6 @@ void m68000_device::lsl_das_ipm() // e3e8 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=4 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -204059,6 +204135,7 @@ void m68000_device::lsl_das_ipm() // e3e8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -204196,7 +204273,6 @@ adsw2:
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=4 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -204231,6 +204307,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -204324,7 +204401,6 @@ void m68000_device::lsl_adr16_ipm() // e3f8 ffff
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=4 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -204359,6 +204435,7 @@ void m68000_device::lsl_adr16_ipm() // e3f8 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -204477,7 +204554,6 @@ void m68000_device::lsl_adr32_ipm() // e3f9 ffff
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=4 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -204512,6 +204588,7 @@ void m68000_device::lsl_adr32_ipm() // e3f9 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -204579,7 +204656,6 @@ void m68000_device::roxr_ais_ipm() // e4d0 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=8 c=1 m=.nzvc  i=....ri. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -204614,6 +204690,7 @@ void m68000_device::roxr_ais_ipm() // e4d0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -204684,7 +204761,6 @@ void m68000_device::roxr_aips_ipm() // e4d8 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=8 c=1 m=.nzvc  i=....ri. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -204719,6 +204795,7 @@ void m68000_device::roxr_aips_ipm() // e4d8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -204791,7 +204868,6 @@ void m68000_device::roxr_pais_ipm() // e4e0 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=8 c=1 m=.nzvc  i=....ri. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -204826,6 +204902,7 @@ void m68000_device::roxr_pais_ipm() // e4e0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -204917,7 +204994,6 @@ void m68000_device::roxr_das_ipm() // e4e8 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=8 c=1 m=.nzvc  i=....ri. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -204952,6 +205028,7 @@ void m68000_device::roxr_das_ipm() // e4e8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -205084,7 +205161,6 @@ adsw2:
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=8 c=1 m=.nzvc  i=....ri. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -205119,6 +205195,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -205209,7 +205286,6 @@ void m68000_device::roxr_adr16_ipm() // e4f8 ffff
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=8 c=1 m=.nzvc  i=....ri. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -205244,6 +205320,7 @@ void m68000_device::roxr_adr16_ipm() // e4f8 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -205358,7 +205435,6 @@ void m68000_device::roxr_adr32_ipm() // e4f9 ffff
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=8 c=1 m=.nzvc  i=....ri. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -205393,6 +205469,7 @@ void m68000_device::roxr_adr32_ipm() // e4f9 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -205459,7 +205536,6 @@ void m68000_device::roxl_ais_ipm() // e5d0 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=11 c=1 m=.nzvc  i=....ri. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -205494,6 +205570,7 @@ void m68000_device::roxl_ais_ipm() // e5d0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -205564,7 +205641,6 @@ void m68000_device::roxl_aips_ipm() // e5d8 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=11 c=1 m=.nzvc  i=....ri. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -205599,6 +205675,7 @@ void m68000_device::roxl_aips_ipm() // e5d8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -205671,7 +205748,6 @@ void m68000_device::roxl_pais_ipm() // e5e0 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=11 c=1 m=.nzvc  i=....ri. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -205706,6 +205782,7 @@ void m68000_device::roxl_pais_ipm() // e5e0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -205797,7 +205874,6 @@ void m68000_device::roxl_das_ipm() // e5e8 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=11 c=1 m=.nzvc  i=....ri. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -205832,6 +205908,7 @@ void m68000_device::roxl_das_ipm() // e5e8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -205964,7 +206041,6 @@ adsw2:
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=11 c=1 m=.nzvc  i=....ri. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -205999,6 +206075,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -206089,7 +206166,6 @@ void m68000_device::roxl_adr16_ipm() // e5f8 ffff
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=11 c=1 m=.nzvc  i=....ri. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -206124,6 +206200,7 @@ void m68000_device::roxl_adr16_ipm() // e5f8 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -206238,7 +206315,6 @@ void m68000_device::roxl_adr32_ipm() // e5f9 ffff
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=11 c=1 m=.nzvc  i=....ri. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -206273,6 +206349,7 @@ void m68000_device::roxl_adr32_ipm() // e5f9 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -206339,7 +206416,6 @@ void m68000_device::ror_ais_ipm() // e6d0 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=10 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -206374,6 +206450,7 @@ void m68000_device::ror_ais_ipm() // e6d0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -206444,7 +206521,6 @@ void m68000_device::ror_aips_ipm() // e6d8 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=10 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -206479,6 +206555,7 @@ void m68000_device::ror_aips_ipm() // e6d8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -206551,7 +206628,6 @@ void m68000_device::ror_pais_ipm() // e6e0 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=10 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -206586,6 +206662,7 @@ void m68000_device::ror_pais_ipm() // e6e0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -206677,7 +206754,6 @@ void m68000_device::ror_das_ipm() // e6e8 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=10 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -206712,6 +206788,7 @@ void m68000_device::ror_das_ipm() // e6e8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -206844,7 +206921,6 @@ adsw2:
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=10 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -206879,6 +206955,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -206969,7 +207046,6 @@ void m68000_device::ror_adr16_ipm() // e6f8 ffff
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=10 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -207004,6 +207080,7 @@ void m68000_device::ror_adr16_ipm() // e6f8 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -207118,7 +207195,6 @@ void m68000_device::ror_adr32_ipm() // e6f9 ffff
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=10 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -207153,6 +207229,7 @@ void m68000_device::ror_adr32_ipm() // e6f9 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
@@ -207219,7 +207296,6 @@ void m68000_device::rol_ais_ipm() // e7d0 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=9 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -207254,6 +207330,7 @@ void m68000_device::rol_ais_ipm() // e7d0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -207324,7 +207401,6 @@ void m68000_device::rol_aips_ipm() // e7d8 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=9 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -207359,6 +207435,7 @@ void m68000_device::rol_aips_ipm() // e7d8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -207431,7 +207508,6 @@ void m68000_device::rol_pais_ipm() // e7e0 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=9 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -207466,6 +207542,7 @@ void m68000_device::rol_pais_ipm() // e7e0 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 5:
@@ -207557,7 +207634,6 @@ void m68000_device::rol_das_ipm() // e7e8 fff8
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=9 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -207592,6 +207668,7 @@ void m68000_device::rol_das_ipm() // e7e8 fff8
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -207724,7 +207801,6 @@ adsw2:
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=9 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -207759,6 +207835,7 @@ adsw2:
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -207849,7 +207926,6 @@ void m68000_device::rol_adr16_ipm() // e7f8 ffff
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=9 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -207884,6 +207960,7 @@ void m68000_device::rol_adr16_ipm() // e7f8 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 7:
@@ -207998,7 +208075,6 @@ void m68000_device::rol_adr32_ipm() // e7f9 ffff
 	// 3c7 sftm1
 	m_aob = m_au;
 	m_ir = m_irc;
-	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
 	m_au = m_au + 2;
 	// alu r=9 c=1 m=.nzvc  i=.....i. ALU.and_ a=R.dbin:m_dbin d=-1
@@ -208033,6 +208109,7 @@ void m68000_device::rol_adr32_ipm() // e7f9 ffff
 	// 38d morw2
 	m_aob = m_au;
 	m_ird = m_ir;
+	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_dbout = m_aluo;
 	m_base_ssw = SSW_DATA;
 	[[fallthrough]]; case 9:
