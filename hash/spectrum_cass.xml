@@ -7463,9 +7463,10 @@ license:CC0-1.0
 	</software>
 
 	<software name="drdoomsr"> <!-- manual protection -->
-		<description>Dr. Doom's Revenge! (The Amazing Spider-Man and Captain America in)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Dr. Doom's Revenge!</description>
+		<year>1989</year>
+		<publisher>Empire Software</publisher>
+		<info name="alt_title" value="The Amazing Spider-Man and Captain America in Dr. Doom's Revenge!"/>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="199269">
 				<rom name="dr. doom_s revenge.tzx" size="199269" crc="a709a041" sha1="e6370b1f4dfc6411e12214511e08977bef701a74"/>
@@ -7474,9 +7475,10 @@ license:CC0-1.0
 	</software>
 
 	<software name="drdoomsrp" cloneof="drdoomsr">
-		<description>Dr Doom's Revenge! (The Amazing Spider-Man and Captain America in) (Proein) (Spanish)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Dr Doom's Revenge! (Proein) (Spanish)</description>
+		<year>1989</year>
+		<publisher>Proein Soft Line</publisher>
+		<info name="alt_title" value="The Amazing Spider-Man and Captain America in Dr. Doom's Revenge!"/>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="199689">
 				<rom name="dr doom_s revenge (proein).tzx" size="199689" crc="18b3fede" sha1="18b9f8644ac9d87232a8407fd0853e56ab935e0f"/>
@@ -30222,9 +30224,20 @@ license:CC0-1.0
 	     ############################################################################################################################## -->
 
 	<software name="mojon1">
-		<description>The Mojon Twins Covertape 1 (Phantomas Tales 4 - Severin Sewers demo, Lala Prologue demo, El Conde Macula, Maritrini, Freelance Monster Slayer demo, Julieta Noseque, Eleuterio, el Mono Serio demo, Toki and Miremare cheats)</description>
+		<description>Mojon Twins' Covertape 1</description>
 		<year>2012</year>
 		<publisher>The Mojon Twins</publisher>
+		<notes><![CDATA[
+Compilation contents:
+Side A - Game 1: Phantomas Tales #4: Severin Sewers (demo) (Ubhres Productions)
+Side A - Game 2: Lala Prologue (demo) (Ubhres Productions)
+Side A - Game 3: El Conde Macula (LOKOsoft)
+Side B - Game 1: Maritrini, Freelance Monster Slayer (demo) (Ubhres Productions)
+Side B - Game 2: Julieta Noseque (The Mojon Twins)
+Side B - Game 3: Eleuterio, el Mono Serio (demo) (The Mojon Twins)
+Side B - Game 4: Toki and Miremare cheats as loaders (Neil Parsons)
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="99748">
 				<rom name="mojon-twins--covertape-1--side-a.tap" size="99748" crc="d1bbea0d" sha1="cc6bb67adf9dfa7d3ca09e0cc7f1a41f649328c4"/>
@@ -30238,9 +30251,25 @@ license:CC0-1.0
 	</software>
 
 	<software name="mojon2">
-		<description>The Mojon Twins Covertape 2 (English) (Sir Ababol 2 demo, Lala Lah, D'Veel'Ng, Julifrustris in the City, Bootee, Jet Paco, El Vampiro Ramiro en el Bosque del Suspiro, BALOWWWN!, Dogmole Tuppowski vs. the Mesmerizing Meemaid From Miskatonic, Monono, Journey to the Centre of the Nose, Mega Meghan)</description>
+		<description>Mojon Twins' Covertape 2 (English)</description>
 		<year>2013</year>
 		<publisher>The Mojon Twins</publisher>
+		<notes><![CDATA[
+Compilation contents:
+Side A - Game 1: Sir Ababol 2 (demo) (The Mojon Twins)
+Side A - Game 2: Lala Lah (The Mojon Twins)
+Side A - Game 3: D'Veel'Ng (The Mojon Twins)
+Side A - Game 4: Julifrustris in the City (The Mojon Twins)
+Side A - Game 5: Bootee (The Mojon Twins)
+Side A - Game 6: Jet Paco (The Mojon Twins)
+Side B - Game 1: El Vampiro Ramiro en el Bosque del Suspiro (The Mojon Twins)
+Side B - Game 2: BALOWWWN! (The Mojon Twins)
+Side B - Game 3: Dogmole Tuppowski vs. the Mesmerizing Meemaid From Miskatonic (original release)
+Side B - Game 4: Monono (The Mojon Twins)
+Side B - Game 5: Journey to the Centre of the Nose (The Mojon Twins)
+Side B - Game 6: Mega Meghan (The Mojon Twins)
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="251755">
 				<rom name="mojon-twins--covertape-2--side-a--eng.tap" size="251755" crc="7d0e4249" sha1="5b3294aa89cf4b347a0cca8dc4120beb7d7c8bbb"/>
@@ -30254,9 +30283,25 @@ license:CC0-1.0
 	</software>
 
 	<software name="mojon2s" cloneof="mojon2">
-		<description>The Mojon Twins Covertape 2 (Spanish) (Sir Ababol 2 demo, Lala Lah, D'Veel'Ng, Julifrustris in the City, Bootee, Jet Paco, El Vampiro Ramiro en el Bosque del Suspiro, BALOWWWN!, Dogmole Tuppowski vs. the Mesmerizing Meemaid From Miskatonic, Monono, Journey to the Centre of the Nose, Mega Meghan)</description>
+		<description>Mojon Twins' Covertape 2 (Spanish)</description>
 		<year>2013</year>
 		<publisher>The Mojon Twins</publisher>
+		<notes><![CDATA[
+Compilation contents:
+Side A - Game 1: Sir Ababol 2 (demo) (The Mojon Twins)
+Side A - Game 2: Lala Lah (The Mojon Twins)
+Side A - Game 3: D'Veel'Ng (The Mojon Twins)
+Side A - Game 4: Julifrustris in the City (The Mojon Twins)
+Side A - Game 5: Bootee (The Mojon Twins)
+Side A - Game 6: Jet Paco (The Mojon Twins)
+Side B - Game 1: El Vampiro Ramiro en el Bosque del Suspiro (The Mojon Twins)
+Side B - Game 2: BALOWWWN! (The Mojon Twins)
+Side B - Game 3: Dogmole Tuppowski vs. the Mesmerizing Meemaid From Miskatonic (original release)
+Side B - Game 4: Monono (The Mojon Twins)
+Side B - Game 5: Journey to the Centre of the Nose (The Mojon Twins)
+Side B - Game 6: Mega Meghan (The Mojon Twins)
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="251783">
 				<rom name="mojon-twins--covertape-2--cara-a--esp.tap" size="251783" crc="85db489c" sha1="814779b36d48b8addceaf28b4b1bab03d63f6312"/>
@@ -30390,9 +30435,43 @@ license:CC0-1.0
 	</software>
 
 	<software name="30games">
-		<description>30 Games (Argus Press Software) (Carpet Capers, Antics, Planetfall, Gridrunner, Bismark, Meteor Storm, Jet Set Gertie, Tunnel 3D, Stock Market, Fridge Frenzy, The Valley, Dragonsbane, Demon Knight, Ned's Garden, Space Intruders, Mighty Magus, The Fall of Rome, Draughts, Xadom, Detective, 20 Tons, The Chess Player, Micro Mouse Goes De-bugging, Tube Cube, Strategy 1 - Invasion, Escape, Laser Zone, Strontium Dog - The Killing, Pyramania, Blood 'n' Guts)</description>
+		<description>30 Games (Argus Press Software)</description>
 		<year>1986</year>
 		<publisher>Argus Press Software Ltd</publisher>
+		<notes><![CDATA[
+Compilation contents:
+Tape 1 - Side A - Game 1: Carpet Capers (Terminal Software)
+Tape 1 - Side A - Game 2: Antics (Bug-Byte Software)
+Tape 1 - Side A - Game 3: Planetfall (Argus Press Software)
+Tape 1 - Side A - Game 4: Gridrunner (Quicksilva)
+Tape 1 - Side A - Game 5: Bismark (Argus Press Software)
+Tape 1 - Side A - Game 6: Meteor Storm (Quicksilva)
+Tape 1 - Side A - Game 7: Jet Set Gertie (Spectrum Computing - within e-magazine "Spectrum Computing 17")
+Tape 1 - Side B - Game 1: 3D Tunnel (New Generation Software)
+Tape 1 - Side B - Game 2: Stock Market (ASP Software)
+Tape 1 - Side B - Game 3: Fridge Frenzy (original release)
+Tape 1 - Side B - Game 4: The Valley (ASP Software)
+Tape 1 - Side B - Game 5: Dragonsbane (Quicksilva)
+Tape 1 - Side B - Game 6: Demon Knight (ASP Software)
+Tape 1 - Side B - Game 7: Ned's Garden (16/48 Tape Magazine - within e-magazine "16/48 Magazine Tape 23")
+Tape 1 - Side B - Game 8: Space Intruders (Quicksilva)
+Tape 2 - Side A - Game 1: Mighty Magus (Quicksilva)
+Tape 2 - Side A - Game 2: The Fall of Rome (ASP Software)
+Tape 2 - Side A - Game 3: Draughts (16/48 Tape Magazine - within e-magazine "16/48 Magazine Tape 23")
+Tape 2 - Side A - Game 4: Xadom (Quicksilva)
+Tape 2 - Side A - Game 5: Detective (ASP Software)
+Tape 2 - Side A - Game 6: 20 Tons (Spectrum Computing - within e-magazine "Spectrum Computing 16")
+Tape 2 - Side A - Game 7: The Chess Player (Quicksilva)
+Tape 2 - Side B - Game 1: Micro Mouse Goes De-bugging (MC Lothlorien)
+Tape 2 - Side B - Game 2: Tube Cube (Magazine Computing Today - type-in from issue 1983/June)
+Tape 2 - Side B - Game 3: Strategy 1 - Invasion (ASP Software)
+Tape 2 - Side B - Game 4: Escape (New Generation Software)
+Tape 2 - Side B - Game 5: Laser Zone (Quicksilva)
+Tape 2 - Side B - Game 6: Strontium Dog: The Killing (Quicksilva)
+Tape 2 - Side B - Game 7: Pyramania (16/48 Tape Magazine - within e-magazine "16/48 Magazine Tape 12")
+Tape 2 - Side B - Game 8: Blood 'n' Guts (Quicksilva)
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Tape 1 - Side 1 - Carpet Capers, Antics, Planetfall, Gridrunner, Bismark, Meteor Storm, Jet Set Gertie"/>
 			<dataarea name="cass" size="186165">
@@ -31395,9 +31474,19 @@ Side B - Game 3: The Living Daylights - The Computer Game
 	</software>
 
 	<software name="sincactn">
-		<description>Sinclair Action Pack - Lightgun Games (Missile Ground Zero, Solar Invasion, Operation Wolf, Rookie, Robot Attack, Bullseye)</description>
+		<description>Sinclair Action Pack - Lightgun Games</description>
 		<year>1989</year>
 		<publisher>Virgin Mastertronic Ltd</publisher>
+		<notes><![CDATA[
+Compilation contents:
+Side A - Game 1: Missile Ground Zero (original release)
+Side A - Game 2: Solar Invasion (original release)
+Side A - Game 3: Operation Wolf (Ocean)
+Side B - Game 1: Rookie (original release)
+Side B - Game 2: Robot Attack (original release)
+Side B - Game 3: Bullseye (Macsen Software)
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="166361">
 				<rom name="sinclair action pack - side a.tzx" size="166361" crc="a3a46e27" sha1="cbf48f9e63cf3d0685fea710a3aa718c755004ac"/>
@@ -35361,8 +35450,8 @@ Tape 2 - Side B:
 
 	<software name="su072">
 		<description>Sinclair User (Issue 072)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1988</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="35551">
 				<rom name="sinclair user (issue 072) - side a.tzx" size="35551" crc="46973202" sha1="09b9ac3a8d6be5732ff3827a83894c939ae0444c"/>
@@ -35378,7 +35467,7 @@ Tape 2 - Side B:
 	<software name="su073">
 		<description>Sinclair User (Issue 073) (Go Bear Go!, Poke City, The Bard's Tale (demo))</description>
 		<year>1988</year>
-		<publisher>Sinclair User</publisher>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Side 1 - Go Bear Go!, Poke City"/>
 			<dataarea name="cass" size="33502">
@@ -35395,8 +35484,8 @@ Tape 2 - Side B:
 
 	<software name="su074">
 		<description>Sinclair User (Issue 074)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1988</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="58130">
 				<rom name="sinclair user (issue 074) - side a.tzx" size="58130" crc="12544d55" sha1="affd70a7477f22a76bd2817a606155d4283d2d5a"/>
@@ -35411,8 +35500,8 @@ Tape 2 - Side B:
 
 	<software name="su075">
 		<description>Sinclair User (Issue 075)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1988</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="41998">
 				<rom name="sinclair user (issue 075) - side a.tzx" size="41998" crc="a6042ea7" sha1="212aadc4135e29b423a161b5695884e9435a52cf"/>
@@ -35427,8 +35516,8 @@ Tape 2 - Side B:
 
 	<software name="su076">
 		<description>Sinclair User (Issue 076)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1988</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="52928">
 				<rom name="sinclair user (issue 076) - side a.tzx" size="52928" crc="f0242244" sha1="5501a3fc916b4aed5219088d462e08dc7e3156d0"/>
@@ -35443,8 +35532,8 @@ Tape 2 - Side B:
 
 	<software name="su077">
 		<description>Sinclair User (Issue 077)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1988</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="93075">
 				<rom name="sinclair user (issue 077) - side a.tzx" size="93075" crc="8913e114" sha1="3ea41243aee84faab4389385907dd86e62fadda5"/>
@@ -35459,8 +35548,8 @@ Tape 2 - Side B:
 
 	<software name="su078">
 		<description>Sinclair User (Issue 078)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1988</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="53337">
 				<rom name="sinclair user (issue 078) - side a.tzx" size="53337" crc="68ab801c" sha1="bfa9bd715ed930db04c1d4d5f5c83b936b34e9a3"/>
@@ -35475,8 +35564,8 @@ Tape 2 - Side B:
 
 	<software name="su079">
 		<description>Sinclair User (Issue 079)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1988</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="55943">
 				<rom name="sinclair user (issue 079) - side a.tzx" size="55943" crc="04ce8089" sha1="909dfed0c922130bd418d784ce9524e9b347742d"/>
@@ -35492,7 +35581,7 @@ Tape 2 - Side B:
 	<software name="su080">
 		<description>Sinclair User (Issue 080) (Bear a Grudge, Operation Wolf (demo))</description>
 		<year>1988</year>
-		<publisher>Sinclair User</publisher>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Side 1 - Bear a Grudge"/>
 			<dataarea name="cass" size="40915">
@@ -35509,8 +35598,8 @@ Tape 2 - Side B:
 
 	<software name="su081">
 		<description>Sinclair User (Issue 081)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1988</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="97580">
 				<rom name="sinclair user (issue 081) - side a.tzx" size="97580" crc="e80e35b2" sha1="2912ec86fb92d0c0fd2ec9dd66241b09e13a6cde"/>
@@ -35525,8 +35614,8 @@ Tape 2 - Side B:
 
 	<software name="su082">
 		<description>Sinclair User (Issue 082)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="108515">
 				<rom name="sinclair user (issue 082) - side a.tzx" size="108515" crc="4bb5ab49" sha1="9ea207cde470310ef66c42ed121dd4c005fec7dd"/>
@@ -35541,8 +35630,8 @@ Tape 2 - Side B:
 
 	<software name="su083">
 		<description>Sinclair User (Issue 083)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="42254">
 				<rom name="sinclair user (issue 083) - side a.tzx" size="42254" crc="7566b395" sha1="fbf5736b0ae4d5894a7229f54114aff210548f84"/>
@@ -35557,8 +35646,8 @@ Tape 2 - Side B:
 
 	<software name="su084">
 		<description>Sinclair User (Issue 084)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="66492">
 				<rom name="sinclair user (issue 084) - side a.tzx" size="66492" crc="d20d1dce" sha1="2cc7dc86b7b257db2ba4f1d35114a4a0316737f0"/>
@@ -35573,8 +35662,8 @@ Tape 2 - Side B:
 
 	<software name="su085">
 		<description>Sinclair User (Issue 085)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="64721">
 				<rom name="sinclair user (issue 085) - side a.tzx" size="64721" crc="8bf9558d" sha1="852cb75fa904c610c82da372d31635c0fbb85415"/>
@@ -35589,8 +35678,8 @@ Tape 2 - Side B:
 
 	<software name="su086">
 		<description>Sinclair User (Issue 086)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="36787">
 				<rom name="sinclair user (issue 086) - side a.tzx" size="36787" crc="13382e20" sha1="28478f32b2a42d15ef3272cf29df258ed81d7846"/>
@@ -35606,7 +35695,7 @@ Tape 2 - Side B:
 	<software name="su087">
 		<description>Sinclair User (Issue 087) (Electro Bingo, Iron Soldier, Task Force (demo), Street Cred' Football (demo))</description>
 		<year>1989</year>
-		<publisher>Sinclair User</publisher>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Side 1 - Electro Bingo, Iron Soldier"/>
 			<dataarea name="cass" size="79828">
@@ -35623,8 +35712,8 @@ Tape 2 - Side B:
 
 	<software name="su088">
 		<description>Sinclair User (Issue 088)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="83471">
 				<rom name="sinclair user (issue 088) - side a.tzx" size="83471" crc="5933b02c" sha1="b1260f56107d2da31b5a7f624f7bc876a1b78fca"/>
@@ -35639,8 +35728,8 @@ Tape 2 - Side B:
 
 	<software name="su089">
 		<description>Sinclair User (Issue 089)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="72739">
 				<rom name="sinclair user (issue 089) - side a.tzx" size="72739" crc="909ff1ad" sha1="35f3c850f9110a2c80da0491cf2d85726ea15d89"/>
@@ -35655,8 +35744,8 @@ Tape 2 - Side B:
 
 	<software name="su090">
 		<description>Sinclair User (Issue 090)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="48946">
 				<rom name="sinclair user (issue 090) - side a.tzx" size="48946" crc="fddadb67" sha1="42075e150178b95ac6f1a20d2b234549c58ded59"/>
@@ -35671,8 +35760,8 @@ Tape 2 - Side B:
 
 	<software name="su091">
 		<description>Sinclair User (Issue 091)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="48663">
 				<rom name="sinclair user (issue 091) - side a.tzx" size="48663" crc="64467945" sha1="4f7f48a8497cee35f265389086171af1df9aaa73"/>
@@ -35687,8 +35776,8 @@ Tape 2 - Side B:
 
 	<software name="su092">
 		<description>Sinclair User (Issue 092)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="7377">
 				<rom name="sinclair user (issue 092) - side a.tzx" size="7377" crc="a07f0398" sha1="a4689176a1b4f2fa85e75c40cf6cbdb938af993e"/>
@@ -35703,8 +35792,8 @@ Tape 2 - Side B:
 
 	<software name="su093">
 		<description>Sinclair User (Issue 093)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="52097">
 				<rom name="sinclair user (issue 093) - side a.tzx" size="52097" crc="a55c7113" sha1="7b96304ca9b3393cb8d2dfce0efd9c280a902b19"/>
@@ -35719,8 +35808,8 @@ Tape 2 - Side B:
 
 	<software name="su094">
 		<description>Sinclair User (Issue 094)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1990</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="43604">
 				<rom name="sinclair user (issue 094) - side a.tzx" size="43604" crc="b8c4a927" sha1="d428d825917707a25358e7516538e9156eb3d430"/>
@@ -35735,8 +35824,8 @@ Tape 2 - Side B:
 
 	<software name="su095">
 		<description>Sinclair User (Issue 095)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1990</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="30844">
 				<rom name="sinclair user (issue 095) - side a.tzx" size="30844" crc="69fd452a" sha1="2e949a8a6ec3bf6717c044630135988a6ec1fa26"/>
@@ -35751,8 +35840,8 @@ Tape 2 - Side B:
 
 	<software name="su096">
 		<description>Sinclair User (Issue 096)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1990</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="38058">
 				<rom name="sinclair user (issue 096) - side a.tzx" size="38058" crc="bbd4a560" sha1="0adf8cc6682407efc4512e1849753d27e8ce5010"/>
@@ -35769,8 +35858,8 @@ Tape 2 - Side B:
 
 	<software name="su098">
 		<description>Sinclair User (Issue 098)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1990</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="88982">
 				<rom name="sinclair user (issue 098) - side a.tzx" size="88982" crc="dc253657" sha1="e57d869682283f715f18003ace1ee875f74702ee"/>
@@ -35785,8 +35874,8 @@ Tape 2 - Side B:
 
 	<software name="su099">
 		<description>Sinclair User (Issue 099)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1990</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="41628">
 				<rom name="sinclair user (issue 099) - side a.tzx" size="41628" crc="37a43822" sha1="fd47859153b069787d191b899438e03f49b57aac"/>
@@ -35801,8 +35890,8 @@ Tape 2 - Side B:
 
 	<software name="su100">
 		<description>Sinclair User (Issue 100)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1990</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="38743">
 				<rom name="sinclair user (issue 100) - side a.tzx" size="38743" crc="3eade578" sha1="7136be276b07833d6db36928bb9c59fc2bdb7a53"/>
@@ -35817,8 +35906,8 @@ Tape 2 - Side B:
 
 	<software name="su101">
 		<description>Sinclair User (Issue 101)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1990</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="103437">
 				<rom name="sinclair user (issue 101) - side a.tzx" size="103437" crc="e2946818" sha1="d8688aca684835c5495e585db9040256a9327acc"/>
@@ -35833,8 +35922,8 @@ Tape 2 - Side B:
 
 	<software name="su102">
 		<description>Sinclair User (Issue 102)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1990</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="66621">
 				<rom name="sinclair user (issue 102) - side a.tzx" size="66621" crc="31eab646" sha1="a19082e45dfa18b7a290133f2f9dbd9560e1fe73"/>
@@ -35849,8 +35938,8 @@ Tape 2 - Side B:
 
 	<software name="su103">
 		<description>Sinclair User (Issue 103)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1990</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="83855">
 				<rom name="sinclair user (issue 103) - side a.tzx" size="83855" crc="f148fcbb" sha1="5d6b2dbe8e23158e1f895aab7120b9f6af928db2"/>
@@ -35865,8 +35954,8 @@ Tape 2 - Side B:
 
 	<software name="su104">
 		<description>Sinclair User (Issue 104)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1990</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="51632">
 				<rom name="sinclair user (issue 104) - side a.tzx" size="51632" crc="37cb3b92" sha1="16a31b9d70ef347baafc9bdf9bc68e11d36b283f"/>
@@ -35881,8 +35970,8 @@ Tape 2 - Side B:
 
 	<software name="su105">
 		<description>Sinclair User (Issue 105)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1990</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="303460">
 				<rom name="sinclair user (issue 105) - side a.tzx" size="303460" crc="ac5a865b" sha1="e3ffee7e96600284178210db63ee29262df2c465"/>
@@ -35897,8 +35986,8 @@ Tape 2 - Side B:
 
 	<software name="su106">
 		<description>Sinclair User (Issue 106)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1990</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="141545">
 				<rom name="sinclair user (issue 106) - side a.tzx" size="141545" crc="e132e080" sha1="c842a2e19464c1f1c898bd271a0c516ec5f6eb5d"/>
@@ -35913,8 +36002,8 @@ Tape 2 - Side B:
 
 	<software name="su107">
 		<description>Sinclair User (Issue 107)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1991</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="132567">
 				<rom name="sinclair user (issue 107) - side a.tzx" size="132567" crc="1298ffb2" sha1="e5f0c03d1b09696015a3114973c74052efb41dd0"/>
@@ -35929,8 +36018,8 @@ Tape 2 - Side B:
 
 	<software name="su108">
 		<description>Sinclair User (Issue 108)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1991</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="209846">
 				<rom name="sinclair user (issue 108) - side a.tzx" size="209846" crc="5c62fa01" sha1="af7b59fe78bdd9a08c1bef714295b5f2f3285a0a"/>
@@ -35945,8 +36034,8 @@ Tape 2 - Side B:
 
 	<software name="su109">
 		<description>Sinclair User (Issue 109)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1991</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="158798">
 				<rom name="sinclair user (issue 109) - side a.tzx" size="158798" crc="0541a5f6" sha1="d748cd166c62f9c62431fc37035635b9d9102828"/>
@@ -35967,8 +36056,8 @@ Tape 2 - Side B:
 
 	<software name="su110">
 		<description>Sinclair User (Issue 110)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1991</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="75124">
 				<rom name="sinclair user (issue 110) - side a.tzx" size="75124" crc="5967adae" sha1="c3f69dca7363a75e282140f69b4ceaa516fa5a8f"/>
@@ -35983,8 +36072,8 @@ Tape 2 - Side B:
 
 	<software name="su111">
 		<description>Sinclair User (Issue 111)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1991</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="111182">
 				<rom name="sinclair user (issue 111) - side a.tzx" size="111182" crc="4d9d17e1" sha1="737c4ea7c165515b338682727b5f728bf73a8987"/>
@@ -35999,8 +36088,8 @@ Tape 2 - Side B:
 
 	<software name="su112">
 		<description>Sinclair User (Issue 112)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1991</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="192201">
 				<rom name="sinclair user (issue 112) - side a.tzx" size="192201" crc="7cd9e45b" sha1="86350e9875894c06e3422ac363a40627c62daeb7"/>
@@ -36015,8 +36104,8 @@ Tape 2 - Side B:
 
 	<software name="su113">
 		<description>Sinclair User (Issue 113)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1991</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="126668">
 				<rom name="sinclair user (issue 113) - enigma tape magazine - side a.tzx" size="126668" crc="846b9484" sha1="d75652e3ac8b730d58d6617fa393e12ceec39357"/>
@@ -36041,8 +36130,8 @@ Tape 2 - Side B:
 
 	<software name="su114">
 		<description>Sinclair User (Issue 114)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1991</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="55759">
 				<rom name="sinclair user (issue 114) - side a.tzx" size="55759" crc="92b4f89c" sha1="c4fdf44a9c2703b21a7ec27700d63ffa0457e343"/>
@@ -36057,8 +36146,8 @@ Tape 2 - Side B:
 
 	<software name="su115">
 		<description>Sinclair User (Issue 115)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1991</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="52656">
 				<rom name="sinclair user (issue 115) - side a.tzx" size="52656" crc="22636793" sha1="383fe071c91210327f55e567e3608e3e9eeb68fc"/>
@@ -36073,8 +36162,8 @@ Tape 2 - Side B:
 
 	<software name="su116">
 		<description>Sinclair User (Issue 116)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1991</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="207114">
 				<rom name="sinclair user (issue 116) - side a.tzx" size="207114" crc="a224b2f2" sha1="0edaabd0c6bf13e25f937eba28a57fb433d6a00c"/>
@@ -36089,8 +36178,8 @@ Tape 2 - Side B:
 
 	<software name="su117">
 		<description>Sinclair User (Issue 117)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1991</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="91584">
 				<rom name="sinclair user (issue 117) - side a.tzx" size="91584" crc="1fbef121" sha1="dbaa66bc3601c26dd4d87f755664229e6e8d1c5b"/>
@@ -36105,8 +36194,8 @@ Tape 2 - Side B:
 
 	<software name="su118">
 		<description>Sinclair User (Issue 118)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1991</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="137766">
 				<rom name="sinclair user (issue 118) - side a.tzx" size="137766" crc="411cb4e5" sha1="42c997e1ec32ff142792c6fa462ce277dfe47c41"/>
@@ -36121,8 +36210,8 @@ Tape 2 - Side B:
 
 	<software name="su119">
 		<description>Sinclair User (Issue 119)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1992</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="196359">
 				<rom name="sinclair user (issue 119) - side a.tzx" size="196359" crc="abd8d6e8" sha1="5a0d7740bbaa153cb591a9c830a6b1b92fd1733d"/>
@@ -36137,8 +36226,8 @@ Tape 2 - Side B:
 
 	<software name="su120">
 		<description>Sinclair User (Issue 120)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1992</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="100773">
 				<rom name="sinclair user (issue 120) - side a.tzx" size="100773" crc="a39c5be6" sha1="d62d24c3e0397eb95a6847adf20fb59435fdd4b4"/>
@@ -36153,8 +36242,8 @@ Tape 2 - Side B:
 
 	<software name="su121">
 		<description>Sinclair User (Issue 121)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1992</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="89406">
 				<rom name="sinclair user (issue 121) - side a.tzx" size="89406" crc="2f386a3d" sha1="55242bef9445fc776963b3dccb7b6c2e4f0f014b"/>
@@ -36169,8 +36258,8 @@ Tape 2 - Side B:
 
 	<software name="su122">
 		<description>Sinclair User (Issue 122)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1992</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="70429">
 				<rom name="sinclair user (issue 122) - side a.tzx" size="70429" crc="a0dd93e7" sha1="f705816a920369de27d1513cd26494e5f5b1f2ae"/>
@@ -36185,8 +36274,8 @@ Tape 2 - Side B:
 
 	<software name="su123">
 		<description>Sinclair User (Issue 123)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1992</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="137706">
 				<rom name="sinclair user (issue 123) - side a.tzx" size="137706" crc="0931a2cd" sha1="6537a174fe318ae327f3dd10e3a84689108c0527"/>
@@ -36201,8 +36290,8 @@ Tape 2 - Side B:
 
 	<software name="su124">
 		<description>Sinclair User (Issue 124)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1992</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="107132">
 				<rom name="sinclair user (issue 124) - side a.tzx" size="107132" crc="19e2b745" sha1="2f7023395f1fa2d4677af70d2fe01c7d559b5b91"/>
@@ -36217,8 +36306,8 @@ Tape 2 - Side B:
 
 	<software name="su125">
 		<description>Sinclair User (Issue 125)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1992</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="92611">
 				<rom name="sinclair user (issue 125) - side a.tzx" size="92611" crc="cb621306" sha1="c0fa72dd6576654797848b5734f297b383890377"/>
@@ -36233,8 +36322,8 @@ Tape 2 - Side B:
 
 	<software name="su126">
 		<description>Sinclair User (Issue 126)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1992</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="87549">
 				<rom name="sinclair user (issue 126) - side a.tzx" size="87549" crc="096a8534" sha1="36ea343512435c568fbdd25df671c55ac108d690"/>
@@ -36249,8 +36338,8 @@ Tape 2 - Side B:
 
 	<software name="su127">
 		<description>Sinclair User (Issue 127)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1992</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass"> <!-- password is 'DECODE' -->
 			<dataarea name="cass" size="93007">
 				<rom name="sinclair user (issue 127) - side a.tzx" size="93007" crc="e2a74f86" sha1="64dc9b2c2712ad751904f4c3c325fa578625566f"/>
@@ -36265,8 +36354,8 @@ Tape 2 - Side B:
 
 	<software name="su128">
 		<description>Sinclair User (Issue 128)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1992</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="125974">
 				<rom name="sinclair user (issue 128) - side a.tzx" size="125974" crc="19e643bd" sha1="7e5bf2ac2ec2af6c65d544edf66bf21c933efe13"/>
@@ -36281,8 +36370,8 @@ Tape 2 - Side B:
 
 	<software name="su129">
 		<description>Sinclair User (Issue 129)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1992</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="135635">
 				<rom name="sinclair user (issue 129) - side a.tzx" size="135635" crc="56503e1a" sha1="a4eb37ae1cf07336557e4d65b09130cde7890cfc"/>
@@ -36297,8 +36386,8 @@ Tape 2 - Side B:
 
 	<software name="su130">
 		<description>Sinclair User (Issue 130)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1992</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="160261">
 				<rom name="sinclair user (issue 130) - side a.tzx" size="160261" crc="5ee83a17" sha1="80861f1c3d0f09ef6ec37f9ff37ad1505ceff3d2"/>
@@ -36313,8 +36402,8 @@ Tape 2 - Side B:
 
 	<software name="su131">
 		<description>Sinclair User (Issue 131)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1993</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="73650">
 				<rom name="sinclair user (issue 131) - side a.tzx" size="73650" crc="4b955576" sha1="c1dafd5fe66d67d45945614a6e1feaf8821841cf"/>
@@ -36329,8 +36418,8 @@ Tape 2 - Side B:
 
 	<software name="su132">
 		<description>Sinclair User (Issue 132)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1993</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="42148">
 				<rom name="sinclair user (issue 132) - side a.tzx" size="42148" crc="7b019464" sha1="c565736938676435289d8195416968b5727e6ffb"/>
@@ -36343,12 +36432,41 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
-	<!-- issue 133 is missing -->
+	<software name="su133">
+		<description>Sinclair User (Issue 133)</description>
+		<year>1993</year>
+		<publisher>Magazine Sinclair User</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="38326">
+				<rom name="sinclair user (issue 133) - atac.tzx" size="38326" crc="c3d17a4e" sha1="2fe78b80ac5b74c832be041cf8a61dac59d9253b"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="36968">
+				<rom name="sinclair user (issue 133) - the axe of kolt - part 3.tzx" size="36968" crc="330f7b88" sha1="430986e78b303ca954ff2f8b772dd38569829a57"/>
+			</dataarea>
+		</part>
+		<part name="cass3" interface="spectrum_cass">
+			<dataarea name="cass" size="28362">
+				<rom name="sinclair user (issue 133) - dinosaurs.tzx" size="28362" crc="3a583152" sha1="3d3f4026a841365d1985b2b3820085be6cbce100"/>
+			</dataarea>
+		</part>
+		<part name="cass4" interface="spectrum_cass">
+			<dataarea name="cass" size="20100">
+				<rom name="sinclair user (issue 133) - theo's music demo.tzx" size="20100" crc="6a161eb7" sha1="5790520c59ca5f98f06de635dbd661dcfc807198"/>
+			</dataarea>
+		</part>
+		<part name="cass5" interface="spectrum_cass">
+			<dataarea name="cass" size="9855">
+				<rom name="sinclair user (issue 133) - pokemania 133.tzx" size="9855" crc="10011746" sha1="89321c213433c783fa45ca244d5ba1c6ceb937f6"/>
+			</dataarea>
+		</part>
+	</software>
 
 	<software name="su134">
 		<description>Sinclair User (Issue 134)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1993</year>
+		<publisher>Magazine Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="47518">
 				<rom name="sinclair user (issue 134) - side a.tzx" size="47518" crc="e846c2d9" sha1="2c8864162dc1bc67ff032d17aa187aaa7d524a8b"/>
@@ -36365,9 +36483,41 @@ Tape 2 - Side B:
 	      tapes from 'Sinclair User' Users Club
 	     ############################################################################################################################## -->
 
+	<software name="suc03">
+		<description>Sinclair User Club (Issue 03)</description>
+		<year>1983</year>
+		<publisher>Sinclair User</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="12818">
+				<rom name="sinclair user club (issue 03) - side 1.tzx" size="12818" crc="46da729c" sha1="b3826e7bef98bf6411d968380c91cddb07d4b950"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="14482">
+				<rom name="sinclair user club (issue 03) - side 2.tzx" size="14482" crc="d26438a0" sha1="bafed39b11654253d7eb2c069c501a9cea219923"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="suc04">
+		<description>Sinclair User Club (Issue 04)</description>
+		<year>1983</year>
+		<publisher>Sinclair User</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="17315">
+				<rom name="sinclair user club (issue 04) - side 1.tzx" size="17315" crc="ff53e443" sha1="d7708f684d0d502874195c8833f2f5e2ad281c9a"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="14120">
+				<rom name="sinclair user club (issue 04) - side 2.tzx" size="14120" crc="9b864a69" sha1="76f8a099f449d4a035659ce342b1706a8903bf2c"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="suc05">
 		<description>Sinclair User Club (Issue 05)</description>
-		<year>198?</year>
+		<year>1983</year>
 		<publisher>Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="12618">
@@ -36383,7 +36533,7 @@ Tape 2 - Side B:
 
 	<software name="suc06">
 		<description>Sinclair User Club (Issue 06)</description>
-		<year>198?</year>
+		<year>1983</year>
 		<publisher>Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="12429">
@@ -36399,7 +36549,7 @@ Tape 2 - Side B:
 
 	<software name="suc07">
 		<description>Sinclair User Club (Issue 07)</description>
-		<year>198?</year>
+		<year>1983</year>
 		<publisher>Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="9649">
@@ -36415,7 +36565,7 @@ Tape 2 - Side B:
 
 	<software name="suc08">
 		<description>Sinclair User Club (Issue 08)</description>
-		<year>198?</year>
+		<year>1983</year>
 		<publisher>Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="7401">
@@ -36431,7 +36581,7 @@ Tape 2 - Side B:
 
 	<software name="suc09">
 		<description>Sinclair User Club (Issue 09)</description>
-		<year>198?</year>
+		<year>1983</year>
 		<publisher>Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="20491">
@@ -36447,7 +36597,7 @@ Tape 2 - Side B:
 
 	<software name="suc10">
 		<description>Sinclair User Club (Issue 10)</description>
-		<year>198?</year>
+		<year>1983</year>
 		<publisher>Sinclair User</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="41444">
@@ -40523,6 +40673,28 @@ Tape 2 - Side B:
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="33399">
 				<rom name="a glasgow murder.tzx" size="33399" crc="09dfd839" sha1="68c9946b4ffccdcd3085e34a6cce7ffdb48d1ace"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="globgame">
+		<description>A Global Games Adventure</description>
+		<year>198?</year>
+		<publisher>Global Games</publisher>
+		<notes><![CDATA[
+Compilation contents:
+Side A: Number 6 in the Village
+Side B: Once Upon a Lily Pad
+]]></notes>
+
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="47902">
+				<rom name="number 6 - once upon a lilly pad - global games - side a.tzx" size="47902" crc="bef71947" sha1="15f9901e9605fa14eb19b777a71c6268b1a7022b"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="35110">
+				<rom name="number 6 - once upon a lilly pad - global games - side b.tzx" size="35110" crc="106a2c44" sha1="b4e354e7189369d1670bc4442d8ec26ca0b7ac93"/>
 			</dataarea>
 		</part>
 	</software>
@@ -59248,18 +59420,23 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="critical">
-		<description>Critical Mass (Encore)</description>
+		<description>Critical Mass</description>
 		<year>1985</year>
-		<publisher>Encore</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="44913">
-				<rom name="critical mass (encore).tzx" size="44913" crc="65f135ac" sha1="bc2509ac1c6fad43c1184d1347f427fa95b18359"/>
+		<publisher>Durell Software</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="46342">
+				<rom name="critical mass (durell) - side 1.tzx" size="46342" crc="ce1a934f" sha1="9eae8426af412965cfe87f87f1adc6c5c87b21ff"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="44932">
+				<rom name="critical mass (durell) - side 2.tzx" size="44932" crc="947410b7" sha1="2856410ec09c0af2196956e3fdb03932e704f041"/>
 			</dataarea>
 		</part>
 	</software>
 
 	<software name="critical_a" cloneof="critical">
-		<description>Critical Mass</description>
+		<description>Critical Mass (alt)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -59274,10 +59451,21 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
+	<software name="critical_b" cloneof="critical">
+		<description>Critical Mass (Encore)</description>
+		<year>1985</year>
+		<publisher>Encore</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="44913">
+				<rom name="critical mass (encore).tzx" size="44913" crc="65f135ac" sha1="bc2509ac1c6fad43c1184d1347f427fa95b18359"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="critical_c" cloneof="critical">
-		<description>Critical Mass - Small Case (Erbe - Serie Leyenda / Small Case)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Critical Mass (Erbe - Serie Leyenda, small case)</description>
+		<year>1985</year>
+		<publisher>IBSA</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="47576">
 				<rom name="critical mass - small case (erbe - serie leyenda) - side 1.tzx" size="47576" crc="6baeadb2" sha1="4405429448161873375b309bdde400faf1f583c1"/>
@@ -59286,6 +59474,17 @@ Tape 2 - Side B:
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="46068">
 				<rom name="critical mass - small case (erbe - serie leyenda) - side 2.tzx" size="46068" crc="3a81bb63" sha1="e4ceb9f4d3a316d24c2a58abfc1a33d70c7a6f95"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="critical_d" cloneof="critical">
+		<description>Critical Mass (Erbe, medium case)</description>
+		<year>1985</year>
+		<publisher>Erbe Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="45953">
+				<rom name="critical mass - medium case (Erbe).tzx" size="45953" crc="f1208a71" sha1="b0491f099ad010edb6d0597ea4877b3a8432fda3"/>
 			</dataarea>
 		</part>
 	</software>
@@ -59318,20 +59517,9 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="cronopio">
-		<description>Cronopios Y Famas - Deutsch</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="29408">
-				<rom name="cronopios y famas - deutsch.tzx" size="29408" crc="5367c6d9" sha1="f387c37f283486d444599e31d1d65d58e08448c0"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="cronopio_a" cloneof="cronopio">
-		<description>Cronopios Y Famas - English</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Cronopios y Famas (English)</description>
+		<year>2013</year>
+		<publisher>Alessandro Grussu</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="29325">
 				<rom name="cronopios y famas - english.tzx" size="29325" crc="1f774a57" sha1="415f411d6327a27106d5c03b7ab484bac345741c"/>
@@ -59339,10 +59527,21 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
+	<software name="cronopio_a" cloneof="cronopio">
+		<description>Cronopios y Famas (Deutsch)</description>
+		<year>2013</year>
+		<publisher>Alessandro Grussu</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="29408">
+				<rom name="cronopios y famas - deutsch.tzx" size="29408" crc="5367c6d9" sha1="f387c37f283486d444599e31d1d65d58e08448c0"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="cronopio_b" cloneof="cronopio">
-		<description>Cronopios Y Famas - Spanish</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Cronopios y Famas (Spanish)</description>
+		<year>2013</year>
+		<publisher>Alessandro Grussu</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="29367">
 				<rom name="cronopios y famas - spanish.tzx" size="29367" crc="56496f21" sha1="51c16ea03bcd74d7a401246bd51fcbe8c1501825"/>
@@ -59351,9 +59550,9 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="cronopio_c" cloneof="cronopio">
-		<description>Cronopios Y Famas - French</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Cronopios y Famas (French)</description>
+		<year>2013</year>
+		<publisher>Alessandro Grussu</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="29394">
 				<rom name="cronopios y famas - french.tzx" size="29394" crc="e439fea7" sha1="d4da5544e37cc74fb48fde72d60d6b0562dd2100"/>
@@ -59362,8 +59561,8 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="cronopio_d" cloneof="cronopio">
-		<description>Cronopios Y Famas - Italiano</description>
-		<year>19??</year>
+		<description>Cronopios y Famas (Italiano)</description>
+		<year>2013</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="29325">
@@ -59373,9 +59572,9 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="cronopio_e" cloneof="cronopio">
-		<description>Cronopios Y Famas - Portuguese</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Cronopios y Famas (Portuguese)</description>
+		<year>2013</year>
+		<publisher>Alessandro Grussu</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="29358">
 				<rom name="cronopios y famas - portuguese.tzx" size="29358" crc="8af2659e" sha1="5c61f1dbc9235fd1c75a423545e8210a1a66be31"/>
@@ -61795,7 +61994,7 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="datageni">
-		<description>Data Genie - Release 1</description>
+		<description>Data Genie (release 1)</description>
 		<year>1984</year>
 		<publisher>Audiogenic Software</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -61806,7 +62005,7 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="datageni_a" cloneof="datageni">
-		<description>Data Genie - Release 2 - 128k</description>
+		<description>Data Genie (release 2, 128K)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -61817,7 +62016,7 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="datageni_b" cloneof="datageni">
-		<description>Data Genie - Release 2 - 48k</description>
+		<description>Data Genie (release 2, 48K)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -64216,9 +64415,9 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="dirttracmast" cloneof="dirttrac">
-		<description>Dirt Track Racer (Mastering Tape)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Dirt Track Racer (master tape)</description>
+		<year>1991</year>
+		<publisher>Zeppelin Games</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48591">
 				<rom name="dirt track racer master tape.tzx" size="48591" crc="17262197" sha1="178e0391009d9a48acb0058755bf0f0ec4201988"/>
@@ -64582,18 +64781,18 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="donotpas">
-		<description>Do Not Pass Go (Riko Data)</description>
+		<description>Do Not Pass Go</description>
 		<year>1982</year>
-		<publisher>Riko Data</publisher>
+		<publisher>Work Force</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="29384">
-				<rom name="do not pass go (riko data).tzx" size="29384" crc="0fc5b0d8" sha1="2322d63e8388245ff1869e75d6fc0f94e0ddde9c"/>
+			<dataarea name="cass" size="30836">
+				<rom name="do not pass go - release 2.tzx" size="30836" crc="1ae9d54e" sha1="c43cb1242c95bba7c45eaf7bf7a36f239ef947ab"/>
 			</dataarea>
 		</part>
 	</software>
 
 	<software name="donotpas_a" cloneof="donotpas">
-		<description>Do Not Pass Go - Release 1</description>
+		<description>Do Not Pass Go (release 1)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -64604,12 +64803,12 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="donotpas_b" cloneof="donotpas">
-		<description>Do Not Pass Go - Release 2</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Do Not Pass Go (Riko Data)</description>
+		<year>1982</year>
+		<publisher>Riko Data</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="30836">
-				<rom name="do not pass go - release 2.tzx" size="30836" crc="1ae9d54e" sha1="c43cb1242c95bba7c45eaf7bf7a36f239ef947ab"/>
+			<dataarea name="cass" size="29384">
+				<rom name="do not pass go (riko data).tzx" size="29384" crc="0fc5b0d8" sha1="2322d63e8388245ff1869e75d6fc0f94e0ddde9c"/>
 			</dataarea>
 		</part>
 	</software>
@@ -64637,7 +64836,7 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="doctorgo">
-		<description>Doctor Goo And The Samorons (set 2)</description>
+		<description>Doctor Goo and the Samorons (set 2)</description>
 		<year>1988</year>
 		<publisher>Global Games</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -64653,9 +64852,9 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="doctorgo_b" cloneof="doctorgo">
-		<description>Doctor Goo And The Samorons</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Doctor Goo and the Samorons</description>
+		<year>1988</year>
+		<publisher>Global Games</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="123109">
 				<rom name="doctor goo and the samorons - side 1.tzx" size="123109" crc="2a67db3c" sha1="cccb8a95ae1c018c4826fb0c5fea69cef0dd23e5"/>
@@ -64692,8 +64891,8 @@ Tape 2 - Side B:
 
 	<software name="dodgecit_a" cloneof="dodgecit">
 		<description>Dodge City - Adventure Game</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1983</year>
+		<publisher>Phoenix</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="40839">
 				<rom name="dodge city - adventure game.tzx" size="40839" crc="3565ad5b" sha1="20fc3dd682447889038f35409d0b07fd9294e8fd"/>
@@ -64713,7 +64912,7 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="dodoandd">
-		<description>Dodo And Damn (set 2)</description>
+		<description>Dodo and Damn (set 2)</description>
 		<year>1989</year>
 		<publisher>R.C.L.</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -64724,9 +64923,9 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="dodoandd_a" cloneof="dodoandd">
-		<description>Dodo And Damn</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Dodo and Damn</description>
+		<year>1989</year>
+		<publisher>R.C.L. Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="40237">
 				<rom name="dodo and damn.tzx" size="40237" crc="49540ab3" sha1="2fa264d38066e146675d447f66cdcf782dc45f70"/>
@@ -74703,7 +74902,18 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="funkyfun">
-		<description>Funky Fungus - Deutsch</description>
+		<description>Funky Fungus (English)</description>
+		<year>2013</year>
+		<publisher>Alessandro Grussu </publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="69419">
+				<rom name="funky fungus - english.tzx" size="69419" crc="730e88d8" sha1="bbc34b8638c02dee89d1374a2deea9ee433dca70"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="funkyfun_a" cloneof="funkyfun">
+		<description>Funky Fungus (German)</description>
 		<year>2013</year>
 		<publisher>Alessandro Grussu</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -74713,21 +74923,10 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
-	<software name="funkyfun_a" cloneof="funkyfun">
-		<description>Funky Fungus - English</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="69419">
-				<rom name="funky fungus - english.tzx" size="69419" crc="730e88d8" sha1="bbc34b8638c02dee89d1374a2deea9ee433dca70"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<software name="funkyfun_b" cloneof="funkyfun">
-		<description>Funky Fungus - Spanish</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Funky Fungus (Spanish)</description>
+		<year>2013</year>
+		<publisher>Alessandro Grussu </publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="69452">
 				<rom name="funky fungus - spanish.tzx" size="69452" crc="496a12d2" sha1="24afb98842a7ab1e592932a428798ef61793052b"/>
@@ -74736,9 +74935,9 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="funkyfun_c" cloneof="funkyfun">
-		<description>Funky Fungus - Italiano</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Funky Fungus (Italian)</description>
+		<year>2013</year>
+		<publisher>Alessandro Grussu </publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="69436">
 				<rom name="funky fungus - italiano.tzx" size="69436" crc="852109e8" sha1="ed25702fb659f496e9248792f8fe0c8ef4843ca7"/>
@@ -74747,9 +74946,9 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="funkyfun_d" cloneof="funkyfun">
-		<description>Funky Fungus - Portuguese</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Funky Fungus (Portuguese)</description>
+		<year>2013</year>
+		<publisher>Alessandro Grussu </publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="69461">
 				<rom name="funky fungus - portuguese.tzx" size="69461" crc="75591bfa" sha1="a415681396509567fe59aa0fb78a7260040c588a"/>
@@ -74758,9 +74957,9 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="funkyfun_e" cloneof="funkyfun">
-		<description>Funky Fungus v1.1 - Deutsch</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Funky Fungus v1.1 (German)</description>
+		<year>2013</year>
+		<publisher>Alessandro Grussu </publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="69428">
 				<rom name="funky fungus v1.1 - deutsch.tzx" size="69428" crc="58ae6dbf" sha1="46ebae4919568fea7efa0f2637046151fe34501a"/>
@@ -74769,9 +74968,9 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="funkyfun_f" cloneof="funkyfun">
-		<description>Funky Fungus v1.1 - English</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Funky Fungus v1.1 (English)</description>
+		<year>2013</year>
+		<publisher>Alessandro Grussu </publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="69409">
 				<rom name="funky fungus v1.1 - english.tzx" size="69409" crc="d45cbbf2" sha1="f0608a9c5f084fe3589b964dbc732102b40c0476"/>
@@ -74780,9 +74979,9 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="funkyfun_g" cloneof="funkyfun">
-		<description>Funky Fungus v1.1 - Spanish</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Funky Fungus v1.1 (Spanish)</description>
+		<year>2013</year>
+		<publisher>Alessandro Grussu </publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="69424">
 				<rom name="funky fungus v1.1 - spanish.tzx" size="69424" crc="ef03c7bb" sha1="363b6e2bce6bad4115d7f4d0baaea612677d6a1f"/>
@@ -74791,9 +74990,9 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="funkyfun_h" cloneof="funkyfun">
-		<description>Funky Fungus v1.1 - French</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Funky Fungus v1.1 (French)</description>
+		<year>2013</year>
+		<publisher>Alessandro Grussu </publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="69455">
 				<rom name="funky fungus v1.1 - french.tzx" size="69455" crc="35c69d94" sha1="0552ca74889edcefcf83e60e7f5029caee66548e"/>
@@ -74802,9 +75001,9 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="funkyfun_i" cloneof="funkyfun">
-		<description>Funky Fungus v1.1 - Italiano</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Funky Fungus v1.1 (Italian)</description>
+		<year>2013</year>
+		<publisher>Alessandro Grussu </publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="69432">
 				<rom name="funky fungus v1.1 - italiano.tzx" size="69432" crc="5487ed80" sha1="f15823b0c678efc9d2d85f09c7bc8f7b06dba9a9"/>
@@ -74813,9 +75012,9 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="funkyfun_j" cloneof="funkyfun">
-		<description>Funky Fungus v1.1 - Portuguese</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Funky Fungus v1.1 (Portuguese)</description>
+		<year>2013</year>
+		<publisher>Alessandro Grussu </publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="69433">
 				<rom name="funky fungus v1.1 - portuguese.tzx" size="69433" crc="cbc3266e" sha1="070472abb6c53ccfcd10ec0fc37d8f114bc86f70"/>
@@ -76346,17 +76545,6 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
-	<software name="gazza2pr">
-		<description>Gazza 2 (Proein)</description>
-		<year>1990</year>
-		<publisher>Proein Soft Line</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="19041">
-				<rom name="gazza 2 (proein).tzx" size="19041" crc="354974ea" sha1="52dfac2400694b5a1570c1e8af2a480fc5e23c5c"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<software name="gazza2">
 		<description>Gazza 2</description>
 		<year>1990</year>
@@ -76368,21 +76556,32 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
-	<software name="gazzassu">
-		<description>Gazza's Super Soccer (Proein)</description>
+	<software name="gazza2pr" cloneof="gazza2">
+		<description>Gazza 2 (Proein)</description>
 		<year>1990</year>
 		<publisher>Proein Soft Line</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="42242">
-				<rom name="gazza_s super soccer (proein).tzx" size="42242" crc="63e03ac1" sha1="17ebd1efb365d98641f95f2d656c0736be7ef0f8"/>
+			<dataarea name="cass" size="19041">
+				<rom name="gazza 2 (proein).tzx" size="19041" crc="354974ea" sha1="52dfac2400694b5a1570c1e8af2a480fc5e23c5c"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="gazzassu">
+		<description>Gazza's Super Soccer</description>
+		<year>1990</year>
+		<publisher>Empire Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="42176">
+				<rom name="gazza_s super soccer.tzx" size="42176" crc="dcb214dc" sha1="5a0dd03b1e2b5a8fde6f7fff57db693aedb7bad8"/>
 			</dataarea>
 		</part>
 	</software>
 
 	<software name="gazzassu_a" cloneof="gazzassu">
-		<description>Gazza's Super Soccer (Touchdown)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Gazza's Super Soccer (Touch Down!)</description>
+		<year>1990</year>
+		<publisher>Touch Down!</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="42382">
 				<rom name="gazza_s super soccer (touchdown).tzx" size="42382" crc="3ecdd0f8" sha1="3e0ff5a3535073ad4d13d6c135baf0bbaf002f5a"/>
@@ -76391,12 +76590,12 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="gazzassu_b" cloneof="gazzassu">
-		<description>Gazza's Super Soccer</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Gazza's Super Soccer (Proein)</description>
+		<year>1990</year>
+		<publisher>Proein Soft Line</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="42176">
-				<rom name="gazza_s super soccer.tzx" size="42176" crc="dcb214dc" sha1="5a0dd03b1e2b5a8fde6f7fff57db693aedb7bad8"/>
+			<dataarea name="cass" size="42242">
+				<rom name="gazza_s super soccer (proein).tzx" size="42242" crc="63e03ac1" sha1="17ebd1efb365d98641f95f2d656c0736be7ef0f8"/>
 			</dataarea>
 		</part>
 	</software>
@@ -77006,47 +77205,8 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
-
-	<software name="gnasherm">
-		<description>Gnasher (Mastertronic) (set 2)</description>
-		<year>1984</year>
-		<publisher>Mastertronic</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="16911">
-				<rom name="gnasher (mastertronic) - alternate.tzx" size="16911" crc="686bbdd0" sha1="78bb50c987c5c075d33ed45cc07949c46197069d"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="gnasherm_a" cloneof="gnasherm">
-		<description>Gnasher (Mastertronic)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="16919">
-				<rom name="gnasher (mastertronic).tzx" size="16919" crc="d5c9c5cd" sha1="16a3b95cf6fec641c803db1be510d60a4829a382"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="gnasherp">
-		<description>Gnasher (Profisoft)</description>
-		<year>1984</year>
-		<publisher>Profisoft</publisher>
-		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="9026">
-				<rom name="gnasher (profisoft) - side a.tzx" size="9026" crc="61e4d369" sha1="dd01c5d9f3adf4230a7b4ddbd7f4d61dfdb4d5b1"/>
-			</dataarea>
-		</part>
-		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="8680">
-				<rom name="gnasher (profisoft) - side b.tzx" size="8680" crc="b4df5ee0" sha1="08bab0615238f2eb8bf1d614ff5d7ec31e087fd2"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<software name="gnasherr">
-		<description>Gnasher - Release 1</description>
+		<description>Gnasher (release 1)</description>
 		<year>1983</year>
 		<publisher>R&amp;R Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -77062,12 +77222,61 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="gnasherr_b" cloneof="gnasherr">
-		<description>Gnasher - Release 2</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Gnasher (release 2)</description>
+		<year>1983</year>
+		<publisher>R&amp;R Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="17711">
 				<rom name="gnasher - release 2.tzx" size="17711" crc="e8f84a32" sha1="31cec9eeb08fdea5d91f2b2171d1778a44675026"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="gnasherm" cloneof="gnasherr">
+		<description>Gnasher (Mastertronic) (set 2)</description>
+		<year>1984</year>
+		<publisher>Mastertronic</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="16911">
+				<rom name="gnasher (mastertronic) - alternate.tzx" size="16911" crc="686bbdd0" sha1="78bb50c987c5c075d33ed45cc07949c46197069d"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="gnasherm_a" cloneof="gnasherr">
+		<description>Gnasher (Mastertronic)</description>
+		<year>1984</year>
+		<publisher>Mastertronic</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="16919">
+				<rom name="gnasher (mastertronic).tzx" size="16919" crc="d5c9c5cd" sha1="16a3b95cf6fec641c803db1be510d60a4829a382"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="gnasherp" cloneof="gnasherr">
+		<description>Gnasher (Profisoft)</description>
+		<year>1984</year>
+		<publisher>Profisoft</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="9026">
+				<rom name="gnasher (profisoft) - side a.tzx" size="9026" crc="61e4d369" sha1="dd01c5d9f3adf4230a7b4ddbd7f4d61dfdb4d5b1"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="8680">
+				<rom name="gnasher (profisoft) - side b.tzx" size="8680" crc="b4df5ee0" sha1="08bab0615238f2eb8bf1d614ff5d7ec31e087fd2"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="gricko" cloneof="gnasherr">
+		<description>Gricko</description>
+		<year>1983</year>
+		<publisher>&lt;unknown&gt;</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="8856">
+				<rom name="gricko.tzx" size="8856" crc="91600edb" sha1="0f2811fc35074b7db52427586be2e869361e192a"/>
 			</dataarea>
 		</part>
 	</software>
@@ -99377,7 +99586,7 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="metropol">
+	<software name="metropol" cloneof="donotpas">
 		<description>Metropol (Zafiro)</description>
 		<year>1988</year>
 		<publisher>Zafiro Software Division</publisher>
@@ -100799,8 +101008,8 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="mithos12">
-		<description>Mithos - 128k</description>
+	<software name="mithos">
+		<description>Mithos (128K)</description>
 		<year>1990</year>
 		<publisher>Opera Soft</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -100810,8 +101019,8 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
-	<software name="mithos48">
-		<description>Mithos - 48k</description>
+	<software name="mithos48" cloneof="mithos">
+		<description>Mithos (48K)</description>
 		<year>1990</year>
 		<publisher>Opera Soft</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -100821,13 +101030,29 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		</part>
 	</software>
 
+	<software name="mithos_a" cloneof="mithos">
+		<description>Mithos (small cardboard case)</description>
+		<year>1988</year>
+		<publisher>Mark R. Jones</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="49292">
+				<rom name="mithos - small cardboard case - side 1.tzx" size="49292" crc="e1a446d1" sha1="a72a893ab429e952de11579eb347597b3c999ce7"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="49354">
+				<rom name="mithos - small cardboard case - side 2.tzx" size="49354" crc="6aed24af" sha1="ec9217c21bc5d1f646f187124e56c45a7279bf9e"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="mixandma">
 		<description>Mix And Match With Maggie</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1991</year>
+		<publisher>Scetlander</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="45688">
-				<rom name="mix and match with maggie.tzx" size="45688" crc="775e7828" sha1="55f6400f5cd8e8372fb533a66f96545a1573fd0b"/>
+			<dataarea name="cass" size="45716">
+				<rom name="mix and match with maggie - scetlander.tzx" size="45716" crc="5965c47a" sha1="45606090e9648c0e6832f4bbd85723aab2b705ec"/>
 			</dataarea>
 		</part>
 	</software>
@@ -119789,7 +120014,7 @@ Tape 2: Hero Quest: Return of the Witch Lord
 	<software name="theredli">
 		<description>The Red Lion (set 2)</description>
 		<year>1987</year>
-		<publisher>Mystic</publisher>
+		<publisher>Mystic Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="35442">
 				<rom name="the red lion - alternate.tzx" size="35442" crc="fe4f37c6" sha1="a1e3295f1bbe05c358a76db152fdb5d186a913f9"/>
@@ -119799,8 +120024,8 @@ Tape 2: Hero Quest: Return of the Witch Lord
 
 	<software name="theredli_a" cloneof="theredli">
 		<description>The Red Lion</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1987</year>
+		<publisher>Mystic Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="41658">
 				<rom name="the red lion.tzx" size="41658" crc="243fd0c5" sha1="6971c4226d0b66a2da059cb74269ae83aadc738f"/>
@@ -133688,7 +133913,29 @@ Tape 2: Hero Quest: Return of the Witch Lord
 	</software>
 
 	<software name="thesnowq">
-		<description>The Snow Queen (GI Games)</description>
+		<description>The Snow Queen</description>
+		<year>1985</year>
+		<publisher>Mosaic Publishing</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="96101">
+				<rom name="the snow queen.tzx" size="96101" crc="c997ae87" sha1="acd320cf471b49169fb382ff6fc0b5b7b03d6865"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="thesnowq_a" cloneof="thesnowq">
+		<description>The Snow Queen (alt)</description>
+		<year>1986</year>
+		<publisher>Mosaic Publishing</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="91352">
+				<rom name="the snow queen (alt).tzx" size="91352" crc="9772eb90" sha1="00a7fc4c668b0f71acce8219c390ca153663b806"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="thesnowq_b" cloneof="thesnowq">
+		<description>The Snow Queen (G.I. Games)</description>
 		<year>1985</year>
 		<publisher>G.I. Games</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -133699,17 +133946,6 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="43498">
 				<rom name="the snow queen - side 2 (gi games).tzx" size="43498" crc="6eba9e36" sha1="85d3938fd9522e700040a2efa3e15f2dd64256a5"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="thesnowq_b" cloneof="thesnowq">
-		<description>The Snow Queen</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="96101">
-				<rom name="the snow queen.tzx" size="96101" crc="c997ae87" sha1="acd320cf471b49169fb382ff6fc0b5b7b03d6865"/>
 			</dataarea>
 		</part>
 	</software>
@@ -133796,7 +134032,7 @@ Tape 2: Hero Quest: Return of the Witch Lord
 	</software>
 
 	<software name="thespani">
-		<description>The Spanish Tutor - Level A - Release 1</description>
+		<description>The Spanish Tutor - Level A (release 1)</description>
 		<year>1984</year>
 		<publisher>Kosmos</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -133812,7 +134048,7 @@ Tape 2: Hero Quest: Return of the Witch Lord
 	</software>
 
 	<software name="thespani_b" cloneof="thespani">
-		<description>The Spanish Tutor - Level B - Release 1</description>
+		<description>The Spanish Tutor - Level B (release 1)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -134005,6 +134241,52 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="119132">
 				<rom name="the spy who loved me - side b (the hit squad).tzx" size="119132" crc="8cf09631" sha1="25e6058d522824caf761ac936de1ce0b71d211da"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="squinuts">
+		<description>The Squirrel's Nuts</description>
+		<year>19??</year>
+		<publisher>Simon Avery</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="61363">
+				<rom name="the squirrels nuts - side 1.tzx" size="61363" crc="909bca27" sha1="2dbb8c6412506bdcdbd19942c335912fa97c1ea9"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="72905">
+				<rom name="the squirrels nuts - side 2.tzx" size="72905" crc="9d9410f6" sha1="1f8424da5030be593baa499ac6eb88e79b5cac79"/>
+			</dataarea>
+		</part>
+		<part name="cass3" interface="spectrum_cass">
+			<dataarea name="cass" size="65395">
+				<rom name="the squirrel's nuts 1 - side a.tzx" size="65395" crc="801b15b4" sha1="cb7b177ee5c29ce2c4105f84e7067a38396db663"/>
+			</dataarea>
+		</part>
+		<part name="cass4" interface="spectrum_cass">
+			<dataarea name="cass" size="54811">
+				<rom name="the squirrel's nuts 1 - side b.tzx" size="54811" crc="2c72ecb4" sha1="5ca9168684ea73b0f736f50e926589e509eb8ec0"/>
+			</dataarea>
+		</part>
+		<part name="cass5" interface="spectrum_cass">
+			<dataarea name="cass" size="61509">
+				<rom name="the squirrel's nuts 2 - side a.tzx" size="61509" crc="2d7b9ef8" sha1="e3a332c8d77e747a43400853a604805c08032d6d"/>
+			</dataarea>
+		</part>
+		<part name="cass6" interface="spectrum_cass">
+			<dataarea name="cass" size="59583">
+				<rom name="the squirrel's nuts 2 - side b.tzx" size="59583" crc="9b30eea9" sha1="f11e475219c4fca34840dd1fce825c1d957a9792"/>
+			</dataarea>
+		</part>
+		<part name="cass7" interface="spectrum_cass">
+			<dataarea name="cass" size="67513">
+				<rom name="the squirrel's nuts 3 - side a.tzx" size="67513" crc="8f6de0bb" sha1="05d9198c4a92f4d5c4fb0cfdfaf2231216f43ee0"/>
+			</dataarea>
+		</part>
+		<part name="cass8" interface="spectrum_cass">
+			<dataarea name="cass" size="65728">
+				<rom name="the squirrel's nuts 3 - side b.tzx" size="65728" crc="b1135390" sha1="7d89556c2398e7cea3da6b66b175c409ac57fa73"/>
 			</dataarea>
 		</part>
 	</software>
@@ -154222,7 +154504,7 @@ Tape 1 - Side B - Game 3: Bullseye
 	</software>
 
 	<software name="dgavctt1" cloneof="dgavctt">
-		<description>Desmond And Gertrude &amp; Aunt Velma Is Coming To Tea (Release 1)</description>
+		<description>Desmond and Gertrude &amp; Aunt Velma is Coming to Tea (release 1)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -154238,7 +154520,7 @@ Tape 1 - Side B - Game 3: Bullseye
 	</software>
 
 	<software name="dgavctt">
-		<description>Desmond And Gertrude &amp; Aunt Velma Is Coming To Tea (Release 2)</description>
+		<description>Desmond and Gertrude &amp; Aunt Velma is Coming to Tea (release 2)</description>
 		<year>1991</year>
 		<publisher>Delbert the Hamster</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -154254,7 +154536,7 @@ Tape 1 - Side B - Game 3: Bullseye
 	</software>
 
 	<software name="disenode">
-		<description>Diseno De Graficos Y Videojuegos</description>
+		<description>Diseno De Graficos y Videojuegos</description>
 		<year>1983</year>
 		<publisher>Ediciones Anaya Multimedia</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -154269,10 +154551,10 @@ Tape 1 - Side B - Game 3: Bullseye
 		</part>
 	</software>
 
-	<software name="divertim">
-		<description>Divertimentos (Issue 02)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="divert02">
+		<description>Divertimentos (issue 02)</description>
+		<year>1985</year>
+		<publisher>Creativos Editoriales S.A.</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="59435">
 				<rom name="divertimentos (issue 02) - side 1.tzx" size="59435" crc="ede393db" sha1="d91bb571aa96e40922947e54437c6d26884e99d7"/>
@@ -154285,10 +154567,10 @@ Tape 1 - Side B - Game 3: Bullseye
 		</part>
 	</software>
 
-	<software name="divertim_b" cloneof="divertim">
-		<description>Divertimentos (Issue 03)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="divert03">
+		<description>Divertimentos (issue 03)</description>
+		<year>1985</year>
+		<publisher>Creativos Editoriales S.A.</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="65579">
 				<rom name="divertimentos (issue 03) - side 1.tzx" size="65579" crc="a0ec2b9b" sha1="b876380c77a547c06f73cf0b8a09ff9d00a4ca1f"/>
@@ -154301,10 +154583,10 @@ Tape 1 - Side B - Game 3: Bullseye
 		</part>
 	</software>
 
-	<software name="divertim_d" cloneof="divertim">
-		<description>Divertimentos (Issue 04)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="divert04">
+		<description>Divertimentos (issue 04)</description>
+		<year>1985</year>
+		<publisher>Creativos Editoriales S.A.</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="56055">
 				<rom name="divertimentos (issue 04) - side 1.tzx" size="56055" crc="20b6bbdc" sha1="654af5f88de9d4d3190985b3c568f17511c2f80e"/>
@@ -154317,10 +154599,10 @@ Tape 1 - Side B - Game 3: Bullseye
 		</part>
 	</software>
 
-	<software name="divertim_f" cloneof="divertim">
-		<description>Divertimentos (Issue Extra)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="divertex">
+		<description>Divertimentos (issue extra)</description>
+		<year>1985</year>
+		<publisher>Creativos Editoriales S.A.</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="186092">
 				<rom name="divertimentos (issue extra) - side 1.tzx" size="186092" crc="c21ee0c8" sha1="b91c4d97e3a2df4d7c625c8b979532f5eacb61f2"/>
@@ -154399,7 +154681,13 @@ Tape 1 - Side B - Game 3: Bullseye
 	<software name="doomcell">
 		<description>Doomsday &amp; Cell of the Ridges</description>
 		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Quest Software</publisher>
+		<notes><![CDATA[
+Tape 1: "Doomsday" - Enclosed are 2 versions of this title. One Containing elements which some may find offensive, but which are felt valid within the context of the storyline.
+The other version is milder in tone.
+Tape 2: Cell of the Ridges
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="121016">
 				<rom name="doomsday _ cell of the ridges - tape 1 - side 1.tzx" size="121016" crc="04526355" sha1="7d455ed56a5569ac24c35260ed64db3504dfa96a"/>
@@ -155851,10 +156139,10 @@ Tape 1 - Side B - Game 3: Bullseye
 		</part>
 	</software>
 
-	<software name="gamesofs">
+	<software name="gamestra">
 		<description>Games of Strategy I</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1983</year>
+		<publisher>CCS</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="42833">
 				<rom name="games of strategy i - side 1.tzx" size="42833" crc="9728862e" sha1="41a19b7e0964e7bc1940cd8a058fccc9c9fd2c3f"/>
@@ -155867,10 +156155,10 @@ Tape 1 - Side B - Game 3: Bullseye
 		</part>
 	</software>
 
-	<software name="gamesofs_b" cloneof="gamesofs">
+	<software name="gamestr2">
 		<description>Games of Strategy II</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1983</year>
+		<publisher>CCS</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="39699">
 				<rom name="games of strategy ii - side 1.tzx" size="39699" crc="d111dd4c" sha1="d217f7b2d0316b21ac63386308e02281ceb4929c"/>
@@ -160453,8 +160741,24 @@ Tape 2 - Sida B: Star Wars
 		</part>
 	</software>
 
+	<software name="shake03">
+		<description>Shake! (issue 03)</description>
+		<year>1987</year>
+		<publisher>Keep Publishing</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="77118">
+				<rom name="shake (issue 03) - side 1.tzx" size="77118" crc="913986a5" sha1="5b22bebbc4f5c38c1ebe436f284fb7697990363a"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="6983">
+				<rom name="shake (issue 03) - side 2.tzx" size="6983" crc="77b46d2f" sha1="dd25890e6a96c4be1cf3e583553edf135e24a4be"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="shake04">
-		<description>Shake! (Issue 04)</description>
+		<description>Shake! (issue 04)</description>
 		<year>1987</year>
 		<publisher>Keep Publishing</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -160474,10 +160778,26 @@ Tape 2 - Sida B: Star Wars
 		</part>
 	</software>
 
+	<software name="shake09">
+		<description>Shake! (issue 09)</description>
+		<year>1987</year>
+		<publisher>Keep Publishing</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="88907">
+				<rom name="shake (issue 09) - side 1.tzx" size="88907" crc="d8ef6893" sha1="9a2766f36d123a5d8f93a5ce96b4f5925694c45d"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="7018">
+				<rom name="shake (issue 09) - side 2.tzx" size="7018" crc="472f0fba" sha1="c398ebe66d55a97642b6b516fa65a3addd42a474"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="shake10">
-		<description>Shake! (Issue 10)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Shake! (issue 10)</description>
+		<year>1987</year>
+		<publisher>Keep Publishing</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="92686">
 				<rom name="shake (issue 10).tzx" size="92686" crc="7d18ba64" sha1="28d0364a01a58b631c21c1e0a5e7a323ff097f14"/>
@@ -164485,6 +164805,14 @@ Tape 2 - Sida B: Star Wars
 		<description>The Lineker Collection</description>
 		<year>1992</year>
 		<publisher>Kixx</publisher>
+		<notes><![CDATA[
+Compilation contents:
+Tape 1 - Side A: Gary Lineker's Superskills (Gremlin Graphics Software)
+Tape 1 - Side B: Gary Lineker's Hot-Shot! (Gremlin Graphics Software)
+Tape 2 - Side A: Gary Lineker's Superstar Soccer (Gremlin Graphics Software)
+Tape 2 - Side B: Italy 1990 (U.S. Gold)
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="110320">
 				<rom name="the lineker collection - side 1.tzx" size="110320" crc="cc5c6a6f" sha1="6e1b91ea0a4188db3632de9549483a250f43e353"/>
@@ -164540,9 +164868,22 @@ Tape 2 - Sida B: Star Wars
 	</software>
 
 	<software name="themagni">
-		<description>The Magnificent 7</description>
+		<description>The Magnificent Seven</description>
 		<year>1987</year>
 		<publisher>Ocean</publisher>
+		<notes><![CDATA[
+Compilation contents:
+Tape 1 - Side A - Game 1: Wizball (Ocean)
+Tape 1 - Side A - Game 2: Head over Heels (Ocean)
+Tape 1 - Side B - Game 1: Arkanoid (Imagine Software)
+Tape 1 - Side B - Game 2: Cobra (Ocean)
+Tape 2 - Side A - Game 1: Frankie Goes to Hollywood (Ocean)
+Tape 2 - Side A - Game 2: The Great Escape (Ocean)
+Tape 2 - Side B - Game 1: Short Circuit (Ocean)
+Tape 2 - Side B - Game 2: Yie Ar Kung-Fu (Imagine Software)
+]]></notes>
+		<info name="alt_title" value="The Magnificent 7"/>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="105718">
 				<rom name="the magnificent 7 - tape 1 - side a.tzx" size="105718" crc="ebf17f9e" sha1="36643d22eb94d8b14a674b7a7c588878b70387a1"/>
