@@ -883,10 +883,9 @@ void m68000_device::state_interrupt_dpm()
 	// 236 itlx5
 	m_aob = m_at;
 	m_base_ssw = SSW_CPU | SSW_R | SSW_N;
-	[[fallthrough]]; case 3:
 	start_interrupt_vector_lookup();
+	[[fallthrough]]; case 3:
 	m_edb = m_cpu_space.read_interruptible(m_aob);
-	end_interrupt_vector_lookup();
 	m_icount -= 4;
 	if(m_icount <= m_bcount) {
 		if(access_to_be_redone()) {
@@ -897,6 +896,7 @@ void m68000_device::state_interrupt_dpm()
 		return;
 	}
 	[[fallthrough]]; case 4:
+	end_interrupt_vector_lookup();
 	if(m_aob & 1) {
 		m_icount -= 4;
 		m_inst_state = S_ADDRESS_ERROR;
