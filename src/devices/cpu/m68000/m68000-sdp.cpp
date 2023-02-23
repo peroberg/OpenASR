@@ -103257,12 +103257,9 @@ void m68000_device::tas_ais_dp() // 4ad0 fff8
 	if(!(m_aob & 1))
 		m_edb >>= 8;
 	m_icount -= 4;
-	if(m_icount <= 0) {
-		if(access_to_be_redone()) {
-			m_icount += 4;
-			m_inst_substate = 1;
-		} else
-			m_inst_substate = 2;
+	if(m_icount <= 0 && access_to_be_redone()) {
+		m_icount += 4;
+		m_inst_substate = 1;
 		return;
 	}
 	[[fallthrough]]; case 2:
@@ -103288,7 +103285,7 @@ void m68000_device::tas_ais_dp() // 4ad0 fff8
 	if(m_icount <= 0) {
 		if(access_to_be_redone()) {
 			m_icount += 4;
-			m_inst_substate = 3;
+			m_inst_substate = 1;
 		} else
 			m_inst_substate = 4;
 		return;
@@ -103358,12 +103355,9 @@ void m68000_device::tas_aips_dp() // 4ad8 fff8
 	if(!(m_aob & 1))
 		m_edb >>= 8;
 	m_icount -= 4;
-	if(m_icount <= 0) {
-		if(access_to_be_redone()) {
-			m_icount += 4;
-			m_inst_substate = 1;
-		} else
-			m_inst_substate = 2;
+	if(m_icount <= 0 && access_to_be_redone()) {
+		m_icount += 4;
+		m_inst_substate = 1;
 		return;
 	}
 	[[fallthrough]]; case 2:
@@ -103391,7 +103385,7 @@ void m68000_device::tas_aips_dp() // 4ad8 fff8
 	if(m_icount <= 0) {
 		if(access_to_be_redone()) {
 			m_icount += 4;
-			m_inst_substate = 3;
+			m_inst_substate = 1;
 		} else
 			m_inst_substate = 4;
 		return;
@@ -103462,12 +103456,9 @@ void m68000_device::tas_pais_dp() // 4ae0 fff8
 	if(!(m_aob & 1))
 		m_edb >>= 8;
 	m_icount -= 4;
-	if(m_icount <= 0) {
-		if(access_to_be_redone()) {
-			m_icount += 4;
-			m_inst_substate = 1;
-		} else
-			m_inst_substate = 2;
+	if(m_icount <= 0 && access_to_be_redone()) {
+		m_icount += 4;
+		m_inst_substate = 1;
 		return;
 	}
 	[[fallthrough]]; case 2:
@@ -103496,7 +103487,7 @@ void m68000_device::tas_pais_dp() // 4ae0 fff8
 	if(m_icount <= 0) {
 		if(access_to_be_redone()) {
 			m_icount += 4;
-			m_inst_substate = 3;
+			m_inst_substate = 1;
 		} else
 			m_inst_substate = 4;
 		return;
@@ -103589,12 +103580,9 @@ void m68000_device::tas_das_dp() // 4ae8 fff8
 	if(!(m_aob & 1))
 		m_edb >>= 8;
 	m_icount -= 4;
-	if(m_icount <= 0) {
-		if(access_to_be_redone()) {
-			m_icount += 4;
-			m_inst_substate = 3;
-		} else
-			m_inst_substate = 4;
+	if(m_icount <= 0 && access_to_be_redone()) {
+		m_icount += 4;
+		m_inst_substate = 3;
 		return;
 	}
 	[[fallthrough]]; case 4:
@@ -103620,7 +103608,7 @@ void m68000_device::tas_das_dp() // 4ae8 fff8
 	if(m_icount <= 0) {
 		if(access_to_be_redone()) {
 			m_icount += 4;
-			m_inst_substate = 5;
+			m_inst_substate = 3;
 		} else
 			m_inst_substate = 6;
 		return;
@@ -103756,12 +103744,9 @@ adsw2:
 	if(!(m_aob & 1))
 		m_edb >>= 8;
 	m_icount -= 4;
-	if(m_icount <= 0) {
-		if(access_to_be_redone()) {
-			m_icount += 4;
-			m_inst_substate = 3;
-		} else
-			m_inst_substate = 4;
+	if(m_icount <= 0 && access_to_be_redone()) {
+		m_icount += 4;
+		m_inst_substate = 3;
 		return;
 	}
 	[[fallthrough]]; case 4:
@@ -103787,7 +103772,7 @@ adsw2:
 	if(m_icount <= 0) {
 		if(access_to_be_redone()) {
 			m_icount += 4;
-			m_inst_substate = 5;
+			m_inst_substate = 3;
 		} else
 			m_inst_substate = 6;
 		return;
@@ -103878,12 +103863,9 @@ void m68000_device::tas_adr16_dp() // 4af8 ffff
 	if(!(m_aob & 1))
 		m_edb >>= 8;
 	m_icount -= 4;
-	if(m_icount <= 0) {
-		if(access_to_be_redone()) {
-			m_icount += 4;
-			m_inst_substate = 3;
-		} else
-			m_inst_substate = 4;
+	if(m_icount <= 0 && access_to_be_redone()) {
+		m_icount += 4;
+		m_inst_substate = 3;
 		return;
 	}
 	[[fallthrough]]; case 4:
@@ -103910,7 +103892,7 @@ void m68000_device::tas_adr16_dp() // 4af8 ffff
 	if(m_icount <= 0) {
 		if(access_to_be_redone()) {
 			m_icount += 4;
-			m_inst_substate = 5;
+			m_inst_substate = 3;
 		} else
 			m_inst_substate = 6;
 		return;
@@ -104026,12 +104008,9 @@ void m68000_device::tas_adr32_dp() // 4af9 ffff
 	if(!(m_aob & 1))
 		m_edb >>= 8;
 	m_icount -= 4;
-	if(m_icount <= 0) {
-		if(access_to_be_redone()) {
-			m_icount += 4;
-			m_inst_substate = 5;
-		} else
-			m_inst_substate = 6;
+	if(m_icount <= 0 && access_to_be_redone()) {
+		m_icount += 4;
+		m_inst_substate = 5;
 		return;
 	}
 	[[fallthrough]]; case 6:
@@ -104058,7 +104037,7 @@ void m68000_device::tas_adr32_dp() // 4af9 ffff
 	if(m_icount <= 0) {
 		if(access_to_be_redone()) {
 			m_icount += 4;
-			m_inst_substate = 7;
+			m_inst_substate = 5;
 		} else
 			m_inst_substate = 8;
 		return;
