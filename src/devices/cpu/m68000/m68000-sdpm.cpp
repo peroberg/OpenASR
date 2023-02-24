@@ -3221,7 +3221,7 @@ void m68000_device::ori_imm8_ccr_dpm() // 003c ffff
 	// alu r=14 c=0 m=.....  i=b...... ALU.or_ a=R.aluo:m_aluo d=none
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
+	m_sr = m_isr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
 	// alu r=14 c=0 m=.....  i=b...... ALU.or_ a=none d=none
 	m_icount -= 2;
 	// 1e1 malw3
@@ -4468,7 +4468,7 @@ void m68000_device::ori_i16u_sr_dpm() // 007c ffff
 	// alu r=14 c=0 m=.....  i=....... ALU.or_ a=R.aluo:m_aluo d=none
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = m_ftu & (SR_CCR|SR_SR);
+	m_sr = m_isr = m_ftu & (SR_CCR|SR_SR);
 	update_user_super();
 	update_interrupt();
 	// alu r=14 c=0 m=.....  i=....... ALU.or_ a=none d=none
@@ -11648,7 +11648,7 @@ void m68000_device::andi_imm8_ccr_dpm() // 023c ffff
 	// alu r=4 c=0 m=.....  i=b...... ALU.and_ a=R.aluo:m_aluo d=none
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
+	m_sr = m_isr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
 	// alu r=4 c=0 m=.....  i=b...... ALU.and_ a=none d=none
 	m_icount -= 2;
 	// 1e1 malw3
@@ -12895,7 +12895,7 @@ void m68000_device::andi_i16u_sr_dpm() // 027c ffff
 	// alu r=4 c=0 m=.....  i=....... ALU.and_ a=R.aluo:m_aluo d=none
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = m_ftu & (SR_CCR|SR_SR);
+	m_sr = m_isr = m_ftu & (SR_CCR|SR_SR);
 	update_user_super();
 	update_interrupt();
 	// alu r=4 c=0 m=.....  i=....... ALU.and_ a=none d=none
@@ -27859,7 +27859,7 @@ void m68000_device::eori_imm8_ccr_dpm() // 0a3c ffff
 	// alu r=13 c=0 m=.....  i=b...... ALU.eor a=R.aluo:m_aluo d=none
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
+	m_sr = m_isr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
 	// alu r=13 c=0 m=.....  i=b...... ALU.eor a=none d=none
 	m_icount -= 2;
 	// 1e1 malw3
@@ -29106,7 +29106,7 @@ void m68000_device::eori_i16u_sr_dpm() // 0a7c ffff
 	// alu r=13 c=0 m=.....  i=....... ALU.eor a=R.aluo:m_aluo d=none
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = m_ftu & (SR_CCR|SR_SR);
+	m_sr = m_isr = m_ftu & (SR_CCR|SR_SR);
 	update_user_super();
 	update_interrupt();
 	// alu r=13 c=0 m=.....  i=....... ALU.eor a=none d=none
@@ -91329,7 +91329,7 @@ void m68000_device::move_ds_ccr_dpm() // 44c0 fff8
 	m_au = m_au - 2;
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
+	m_sr = m_isr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
 	m_icount -= 2;
 	// 1e1 malw3
 	m_aob = m_au;
@@ -91434,7 +91434,7 @@ void m68000_device::move_ais_ccr_dpm() // 44d0 fff8
 	m_au = m_au - 2;
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
+	m_sr = m_isr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
 	m_icount -= 2;
 	// 1e1 malw3
 	m_aob = m_au;
@@ -91543,7 +91543,7 @@ void m68000_device::move_aips_ccr_dpm() // 44d8 fff8
 	m_au = m_au - 2;
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
+	m_sr = m_isr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
 	m_icount -= 2;
 	// 1e1 malw3
 	m_aob = m_au;
@@ -91654,7 +91654,7 @@ void m68000_device::move_pais_ccr_dpm() // 44e0 fff8
 	m_au = m_au - 2;
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
+	m_sr = m_isr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
 	m_icount -= 2;
 	// 1e1 malw3
 	m_aob = m_au;
@@ -91784,7 +91784,7 @@ void m68000_device::move_das_ccr_dpm() // 44e8 fff8
 	m_au = m_au - 2;
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
+	m_sr = m_isr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
 	m_icount -= 2;
 	// 1e1 malw3
 	m_aob = m_au;
@@ -91955,7 +91955,7 @@ adsw2:
 	m_au = m_au - 2;
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
+	m_sr = m_isr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
 	m_icount -= 2;
 	// 1e1 malw3
 	m_aob = m_au;
@@ -92084,7 +92084,7 @@ void m68000_device::move_adr16_ccr_dpm() // 44f8 ffff
 	m_au = m_au - 2;
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
+	m_sr = m_isr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
 	m_icount -= 2;
 	// 1e1 malw3
 	m_aob = m_au;
@@ -92237,7 +92237,7 @@ void m68000_device::move_adr32_ccr_dpm() // 44f9 ffff
 	m_au = m_au - 2;
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
+	m_sr = m_isr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
 	m_icount -= 2;
 	// 1e1 malw3
 	m_aob = m_au;
@@ -92366,7 +92366,7 @@ void m68000_device::move_dpc_ccr_dpm() // 44fa ffff
 	m_au = m_au - 2;
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
+	m_sr = m_isr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
 	m_icount -= 2;
 	// 1e1 malw3
 	m_aob = m_au;
@@ -92536,7 +92536,7 @@ adsw2:
 	m_au = m_au - 2;
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
+	m_sr = m_isr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
 	m_icount -= 2;
 	// 1e1 malw3
 	m_aob = m_au;
@@ -92640,7 +92640,7 @@ void m68000_device::move_imm8_ccr_dpm() // 44fc ffff
 	m_au = m_au - 2;
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
+	m_sr = m_isr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
 	m_icount -= 2;
 	// 1e1 malw3
 	m_aob = m_au;
@@ -95665,7 +95665,7 @@ void m68000_device::move_ds_sr_dpm() // 46c0 fff8
 	m_au = m_au - 2;
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = m_ftu & (SR_CCR|SR_SR);
+	m_sr = m_isr = m_ftu & (SR_CCR|SR_SR);
 	update_user_super();
 	update_interrupt();
 	m_icount -= 2;
@@ -95776,7 +95776,7 @@ void m68000_device::move_ais_sr_dpm() // 46d0 fff8
 	m_au = m_au - 2;
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = m_ftu & (SR_CCR|SR_SR);
+	m_sr = m_isr = m_ftu & (SR_CCR|SR_SR);
 	update_user_super();
 	update_interrupt();
 	m_icount -= 2;
@@ -95891,7 +95891,7 @@ void m68000_device::move_aips_sr_dpm() // 46d8 fff8
 	m_au = m_au - 2;
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = m_ftu & (SR_CCR|SR_SR);
+	m_sr = m_isr = m_ftu & (SR_CCR|SR_SR);
 	update_user_super();
 	update_interrupt();
 	m_icount -= 2;
@@ -96008,7 +96008,7 @@ void m68000_device::move_pais_sr_dpm() // 46e0 fff8
 	m_au = m_au - 2;
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = m_ftu & (SR_CCR|SR_SR);
+	m_sr = m_isr = m_ftu & (SR_CCR|SR_SR);
 	update_user_super();
 	update_interrupt();
 	m_icount -= 2;
@@ -96144,7 +96144,7 @@ void m68000_device::move_das_sr_dpm() // 46e8 fff8
 	m_au = m_au - 2;
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = m_ftu & (SR_CCR|SR_SR);
+	m_sr = m_isr = m_ftu & (SR_CCR|SR_SR);
 	update_user_super();
 	update_interrupt();
 	m_icount -= 2;
@@ -96321,7 +96321,7 @@ adsw2:
 	m_au = m_au - 2;
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = m_ftu & (SR_CCR|SR_SR);
+	m_sr = m_isr = m_ftu & (SR_CCR|SR_SR);
 	update_user_super();
 	update_interrupt();
 	m_icount -= 2;
@@ -96456,7 +96456,7 @@ void m68000_device::move_adr16_sr_dpm() // 46f8 ffff
 	m_au = m_au - 2;
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = m_ftu & (SR_CCR|SR_SR);
+	m_sr = m_isr = m_ftu & (SR_CCR|SR_SR);
 	update_user_super();
 	update_interrupt();
 	m_icount -= 2;
@@ -96615,7 +96615,7 @@ void m68000_device::move_adr32_sr_dpm() // 46f9 ffff
 	m_au = m_au - 2;
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = m_ftu & (SR_CCR|SR_SR);
+	m_sr = m_isr = m_ftu & (SR_CCR|SR_SR);
 	update_user_super();
 	update_interrupt();
 	m_icount -= 2;
@@ -96750,7 +96750,7 @@ void m68000_device::move_dpc_sr_dpm() // 46fa ffff
 	m_au = m_au - 2;
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = m_ftu & (SR_CCR|SR_SR);
+	m_sr = m_isr = m_ftu & (SR_CCR|SR_SR);
 	update_user_super();
 	update_interrupt();
 	m_icount -= 2;
@@ -96926,7 +96926,7 @@ adsw2:
 	m_au = m_au - 2;
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = m_ftu & (SR_CCR|SR_SR);
+	m_sr = m_isr = m_ftu & (SR_CCR|SR_SR);
 	update_user_super();
 	update_interrupt();
 	m_icount -= 2;
@@ -97036,7 +97036,7 @@ void m68000_device::move_i16u_sr_dpm() // 46fc ffff
 	m_au = m_au - 2;
 	m_icount -= 2;
 	// 321 stiw4
-	m_sr = m_ftu & (SR_CCR|SR_SR);
+	m_sr = m_isr = m_ftu & (SR_CCR|SR_SR);
 	update_user_super();
 	update_interrupt();
 	m_icount -= 2;
@@ -107562,7 +107562,7 @@ void m68000_device::stop_i16u_dpm() // 4e72 ffff
 	m_ird = m_ir;
 	if(m_next_state != S_TRACE) m_next_state = m_int_next_state;
 	m_pc = m_au;
-	m_sr = m_ftu & (SR_CCR|SR_SR);
+	m_sr = m_isr = m_ftu & (SR_CCR|SR_SR);
 	update_user_super();
 	update_interrupt();
 	m_au = m_au - 2;
@@ -107659,7 +107659,7 @@ void m68000_device::rte_dpm() // 4e73 ffff
 	}
 	set_16h(m_at, m_dbin);
 	m_da[m_sp] = m_au;
-	m_sr = m_ftu & (SR_CCR|SR_SR);
+	m_sr = m_isr = m_ftu & (SR_CCR|SR_SR);
 	update_user_super();
 	update_interrupt();
 	m_dbin = m_edb;
@@ -108184,7 +108184,7 @@ void m68000_device::rtr_dpm() // 4e77 ffff
 	}
 	set_16h(m_at, m_dbin);
 	m_da[m_sp] = m_au;
-	m_sr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
+	m_sr = m_isr = (m_ftu & SR_CCR) | (m_sr & SR_SR);
 	m_dbin = m_edb;
 	// 2b3 jmal2
 	m_aob = merge_16_32(high16(m_at), m_dbin);
