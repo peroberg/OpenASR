@@ -19,6 +19,7 @@ void m68000_device::state_reset_ipm()
 	if(m_sr & SR_T)
 		m_next_state = S_TRACE;
 	// 27e rstp5
+	debugger_exception_hook(0x00);
 	m_ftu = 0x0000;
 	m_icount -= 2;
 	// 27f rstp6
@@ -367,6 +368,7 @@ void m68000_device::state_bus_error_ipm()
 		return;
 	}
 	m_da[16] = m_au;
+	debugger_exception_hook(0x02);
 	m_ftu = 0x0008;
 	m_au = m_au + 2;
 	// alu r=0 c=1 m=.....  i=....... ALU.and_ a=R.pch:m_pc d=-1
@@ -681,6 +683,7 @@ void m68000_device::state_address_error_ipm()
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x03);
 	m_da[16] = m_au;
 	m_ftu = 0x000c;
 	m_au = m_au + 2;
@@ -938,6 +941,7 @@ void m68000_device::state_interrupt_ipm()
 		return;
 	}
 	m_da[16] = m_au;
+	debugger_exception_hook((m_int_vector) >> 2);
 	m_ftu = m_int_vector;
 	m_au = m_au + 2;
 	// alu r=0 c=1 m=.....  i=....... ALU.and_ a=R.pch:m_pc d=-1
@@ -1146,6 +1150,7 @@ void m68000_device::state_trace_ipm()
 		return;
 	}
 	m_da[16] = m_au;
+	debugger_exception_hook(0x09);
 	m_ftu = 0x0024;
 	m_au = m_au + 2;
 	// alu r=0 c=1 m=.....  i=....... ALU.and_ a=R.pch:m_pc d=-1
@@ -1354,6 +1359,7 @@ void m68000_device::state_illegal_ipm()
 		return;
 	}
 	m_da[16] = m_au;
+	debugger_exception_hook(0x04);
 	m_ftu = 0x0010;
 	m_au = m_au + 2;
 	// alu r=0 c=1 m=.....  i=....... ALU.and_ a=R.pch:m_pc d=-1
@@ -1561,6 +1567,7 @@ void m68000_device::state_priviledge_ipm()
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x08);
 	m_da[16] = m_au;
 	m_ftu = 0x0020;
 	m_au = m_au + 2;
@@ -1770,6 +1777,7 @@ void m68000_device::state_linea_ipm()
 		return;
 	}
 	m_da[16] = m_au;
+	debugger_exception_hook(0x0a);
 	m_ftu = 0x0028;
 	m_au = m_au + 2;
 	// alu r=0 c=1 m=.....  i=....... ALU.and_ a=R.pch:m_pc d=-1
@@ -1978,6 +1986,7 @@ void m68000_device::state_linef_ipm()
 		return;
 	}
 	m_da[16] = m_au;
+	debugger_exception_hook(0x0b);
 	m_ftu = 0x002c;
 	m_au = m_au + 2;
 	// alu r=0 c=1 m=.....  i=....... ALU.and_ a=R.pch:m_pc d=-1
@@ -81656,6 +81665,7 @@ trap1:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x06);
 	m_da[16] = m_au;
 	m_ftu = 0x0018;
 	m_au = m_au + 2;
@@ -81927,6 +81937,7 @@ trap1:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x06);
 	m_da[16] = m_au;
 	m_ftu = 0x0018;
 	m_au = m_au + 2;
@@ -82202,6 +82213,7 @@ trap1:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x06);
 	m_da[16] = m_au;
 	m_ftu = 0x0018;
 	m_au = m_au + 2;
@@ -82479,6 +82491,7 @@ trap1:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x06);
 	m_da[16] = m_au;
 	m_ftu = 0x0018;
 	m_au = m_au + 2;
@@ -82775,6 +82788,7 @@ trap1:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x06);
 	m_da[16] = m_au;
 	m_ftu = 0x0018;
 	m_au = m_au + 2;
@@ -83112,6 +83126,7 @@ trap1:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x06);
 	m_da[16] = m_au;
 	m_ftu = 0x0018;
 	m_au = m_au + 2;
@@ -83407,6 +83422,7 @@ trap1:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x06);
 	m_da[16] = m_au;
 	m_ftu = 0x0018;
 	m_au = m_au + 2;
@@ -83726,6 +83742,7 @@ trap1:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x06);
 	m_da[16] = m_au;
 	m_ftu = 0x0018;
 	m_au = m_au + 2;
@@ -84021,6 +84038,7 @@ trap1:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x06);
 	m_da[16] = m_au;
 	m_ftu = 0x0018;
 	m_au = m_au + 2;
@@ -84357,6 +84375,7 @@ trap1:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x06);
 	m_da[16] = m_au;
 	m_ftu = 0x0018;
 	m_au = m_au + 2;
@@ -84627,6 +84646,7 @@ trap1:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x06);
 	m_da[16] = m_au;
 	m_ftu = 0x0018;
 	m_au = m_au + 2;
@@ -106971,6 +106991,7 @@ void m68000_device::trap_imm4_ipm() // 4e40 fff0
 		return;
 	}
 	m_da[16] = m_au;
+	debugger_exception_hook((0x80 | ((m_ird & 0xf) << 2)) >> 2);
 	m_ftu = 0x80 | ((m_ird & 0xf) << 2);
 	m_au = m_au + 2;
 	// alu r=0 c=1 m=.....  i=....... ALU.and_ a=R.pch:m_pc d=-1
@@ -107961,6 +107982,7 @@ trpv3:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x07);
 	m_da[16] = m_au;
 	m_ftu = 0x001c;
 	m_au = m_au + 2;
@@ -144390,6 +144412,7 @@ dvur2:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x05);
 	m_da[16] = m_au;
 	m_ftu = 0x0014;
 	m_au = m_au + 2;
@@ -144829,6 +144852,7 @@ dvur2:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x05);
 	m_da[16] = m_au;
 	m_ftu = 0x0014;
 	m_au = m_au + 2;
@@ -145272,6 +145296,7 @@ dvur2:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x05);
 	m_da[16] = m_au;
 	m_ftu = 0x0014;
 	m_au = m_au + 2;
@@ -145717,6 +145742,7 @@ dvur2:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x05);
 	m_da[16] = m_au;
 	m_ftu = 0x0014;
 	m_au = m_au + 2;
@@ -146181,6 +146207,7 @@ dvur2:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x05);
 	m_da[16] = m_au;
 	m_ftu = 0x0014;
 	m_au = m_au + 2;
@@ -146686,6 +146713,7 @@ dvur2:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x05);
 	m_da[16] = m_au;
 	m_ftu = 0x0014;
 	m_au = m_au + 2;
@@ -147149,6 +147177,7 @@ dvur2:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x05);
 	m_da[16] = m_au;
 	m_ftu = 0x0014;
 	m_au = m_au + 2;
@@ -147636,6 +147665,7 @@ dvur2:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x05);
 	m_da[16] = m_au;
 	m_ftu = 0x0014;
 	m_au = m_au + 2;
@@ -148099,6 +148129,7 @@ dvur2:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x05);
 	m_da[16] = m_au;
 	m_ftu = 0x0014;
 	m_au = m_au + 2;
@@ -148603,6 +148634,7 @@ dvur2:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x05);
 	m_da[16] = m_au;
 	m_ftu = 0x0014;
 	m_au = m_au + 2;
@@ -149041,6 +149073,7 @@ dvur2:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x05);
 	m_da[16] = m_au;
 	m_ftu = 0x0014;
 	m_au = m_au + 2;
@@ -152513,6 +152546,7 @@ dvur2:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x05);
 	m_da[16] = m_au;
 	m_ftu = 0x0014;
 	m_au = m_au + 2;
@@ -153085,6 +153119,7 @@ dvur2:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x05);
 	m_da[16] = m_au;
 	m_ftu = 0x0014;
 	m_au = m_au + 2;
@@ -153661,6 +153696,7 @@ dvur2:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x05);
 	m_da[16] = m_au;
 	m_ftu = 0x0014;
 	m_au = m_au + 2;
@@ -154239,6 +154275,7 @@ dvur2:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x05);
 	m_da[16] = m_au;
 	m_ftu = 0x0014;
 	m_au = m_au + 2;
@@ -154836,6 +154873,7 @@ dvur2:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x05);
 	m_da[16] = m_au;
 	m_ftu = 0x0014;
 	m_au = m_au + 2;
@@ -155474,6 +155512,7 @@ dvur2:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x05);
 	m_da[16] = m_au;
 	m_ftu = 0x0014;
 	m_au = m_au + 2;
@@ -156070,6 +156109,7 @@ dvur2:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x05);
 	m_da[16] = m_au;
 	m_ftu = 0x0014;
 	m_au = m_au + 2;
@@ -156690,6 +156730,7 @@ dvur2:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x05);
 	m_da[16] = m_au;
 	m_ftu = 0x0014;
 	m_au = m_au + 2;
@@ -157286,6 +157327,7 @@ dvur2:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x05);
 	m_da[16] = m_au;
 	m_ftu = 0x0014;
 	m_au = m_au + 2;
@@ -157923,6 +157965,7 @@ dvur2:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x05);
 	m_da[16] = m_au;
 	m_ftu = 0x0014;
 	m_au = m_au + 2;
@@ -158494,6 +158537,7 @@ dvur2:
 		m_inst_substate = 0;
 		return;
 	}
+	debugger_exception_hook(0x05);
 	m_da[16] = m_au;
 	m_ftu = 0x0014;
 	m_au = m_au + 2;
