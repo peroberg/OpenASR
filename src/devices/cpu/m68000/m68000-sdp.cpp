@@ -367,8 +367,8 @@ void m68000_device::state_bus_error_dp()
 		m_inst_substate = 0;
 		return;
 	}
-	m_da[16] = m_au;
 	debugger_exception_hook(0x02);
+	m_da[16] = m_au;
 	m_ftu = 0x0008;
 	m_au = m_au + 2;
 	// alu r=0 c=1 m=.....  i=....... ALU.and_ a=R.pch:m_pc d=-1
@@ -940,8 +940,8 @@ void m68000_device::state_interrupt_dp()
 		m_inst_substate = 0;
 		return;
 	}
-	m_da[16] = m_au;
 	debugger_exception_hook((m_int_vector) >> 2);
+	m_da[16] = m_au;
 	m_ftu = m_int_vector;
 	m_au = m_au + 2;
 	// alu r=0 c=1 m=.....  i=....... ALU.and_ a=R.pch:m_pc d=-1
@@ -1149,8 +1149,8 @@ void m68000_device::state_trace_dp()
 		m_inst_substate = 0;
 		return;
 	}
-	m_da[16] = m_au;
 	debugger_exception_hook(0x09);
+	m_da[16] = m_au;
 	m_ftu = 0x0024;
 	m_au = m_au + 2;
 	// alu r=0 c=1 m=.....  i=....... ALU.and_ a=R.pch:m_pc d=-1
@@ -1358,8 +1358,8 @@ void m68000_device::state_illegal_dp()
 		m_inst_substate = 0;
 		return;
 	}
-	m_da[16] = m_au;
 	debugger_exception_hook(0x04);
+	m_da[16] = m_au;
 	m_ftu = 0x0010;
 	m_au = m_au + 2;
 	// alu r=0 c=1 m=.....  i=....... ALU.and_ a=R.pch:m_pc d=-1
@@ -1776,8 +1776,8 @@ void m68000_device::state_linea_dp()
 		m_inst_substate = 0;
 		return;
 	}
-	m_da[16] = m_au;
 	debugger_exception_hook(0x0a);
+	m_da[16] = m_au;
 	m_ftu = 0x0028;
 	m_au = m_au + 2;
 	// alu r=0 c=1 m=.....  i=....... ALU.and_ a=R.pch:m_pc d=-1
@@ -1985,8 +1985,8 @@ void m68000_device::state_linef_dp()
 		m_inst_substate = 0;
 		return;
 	}
-	m_da[16] = m_au;
 	debugger_exception_hook(0x0b);
+	m_da[16] = m_au;
 	m_ftu = 0x002c;
 	m_au = m_au + 2;
 	// alu r=0 c=1 m=.....  i=....... ALU.and_ a=R.pch:m_pc d=-1
@@ -106990,8 +106990,8 @@ void m68000_device::trap_imm4_dp() // 4e40 fff0
 		m_inst_substate = 0;
 		return;
 	}
-	m_da[16] = m_au;
 	debugger_exception_hook((0x80 | ((m_ird & 0xf) << 2)) >> 2);
+	m_da[16] = m_au;
 	m_ftu = 0x80 | ((m_ird & 0xf) << 2);
 	m_au = m_au + 2;
 	// alu r=0 c=1 m=.....  i=....... ALU.and_ a=R.pch:m_pc d=-1
