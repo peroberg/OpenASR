@@ -6162,10 +6162,8 @@ license:CC0-1.0
 		</part>
 	</software>
 
-
-
 	<software name="sci">
-		<description>Special Criminal Investigation - Chase HQ 2</description>
+		<description>Chase H.Q. II: Special Criminal Investigation</description>
 		<year>1990</year>
 		<publisher>Ocean</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -6176,12 +6174,25 @@ license:CC0-1.0
 	</software>
 
 	<software name="scia" cloneof="sci">
-		<description>Special Criminal Investigation - Chase HQ 2 (Erbe)</description>
+		<description>Chase H.Q. II: Special Criminal Investigation (Erbe)</description>
 		<year>1990</year>
-		<publisher>Ocean</publisher>
+		<publisher>Erbe Software</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="120141">
 				<rom name="chase hq 2 (erbe).tzx" size="120141" crc="73a875d3" sha1="19bdc80282fdcf9f386612b7830ac0c09e6999a4"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="scib" cloneof="sci">
+		<description>Chase H.Q. II: Special Criminal Investigation (Erbe, small cardboard case)</description>
+		<year>1990</year>
+		<publisher>Erbe Software</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="123002">
+				<rom name="chase hq 2 - small cardboard case (erbe).tzx" size="123002" crc="c0e15737" sha1="7ec2b82863729f7bdffd6ed7c80c50075c7c0916"/>
 			</dataarea>
 		</part>
 	</software>
@@ -28639,7 +28650,7 @@ Side B: Laser Shoot (original release)
 	</software>
 
 	<software name="untouch">
-		<description>The Untouchables (set 1)</description>
+		<description>The Untouchables</description>
 		<year>1989</year>
 		<publisher>Ocean</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -28655,9 +28666,9 @@ Side B: Laser Shoot (original release)
 	</software>
 
 	<software name="untouchhs" cloneof="untouch">
-		<description>The Untouchables (set 2, The Hit Squad)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>The Untouchables (The Hit Squad)</description>
+		<year>1991</year>
+		<publisher>The Hit Squad</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="180623">
 				<rom name="the untouchables (the hit squad).tzx" size="180623" crc="4753b53c" sha1="080e828d6c2586b3c912627658e624b0099823de"/>
@@ -28666,9 +28677,11 @@ Side B: Laser Shoot (original release)
 	</software>
 
 	<software name="untoucher" cloneof="untouch">
-		<description>The Untouchables (set 3, Los Intocables, Erbe - Musical 1)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>The Untouchables (Erbe - Musical 1)</description>
+		<year>1989</year>
+		<publisher>Musical 1 S.A.</publisher>
+		<info name="alt_title" value="Los Intocables"/>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="176269">
 				<rom name="los intocables - side 1 (erbe - musical 1).tzx" size="176269" crc="45ac9594" sha1="eb303573484f93e6858889cef515ef94caf9a351"/>
@@ -28682,9 +28695,11 @@ Side B: Laser Shoot (original release)
 	</software>
 
 	<software name="untouchsp" cloneof="untouch">
-		<description>The Untouchables (set 4, Los Intocables)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>The Untouchables (Erbe)</description>
+		<year>1989</year>
+		<publisher>Erbe Software</publisher>
+		<info name="alt_title" value="Los Intocables"/>
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="176148">
 				<rom name="los intocables.tzx" size="176148" crc="0249f15c" sha1="2f4e7e10bc688ef857406ad33e411d5106d8d843"/>
@@ -28693,7 +28708,7 @@ Side B: Laser Shoot (original release)
 	</software>
 
 	<software name="untoucha" cloneof="untouch">
-		<description>The Untouchables (set 5)</description>
+		<description>The Untouchables (alt)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -32718,8 +32733,9 @@ Tape 2 - Side B:
 
 	<software name="softord1">
 		<description>Softheque Ordinateur n.1</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1984</year>
+		<publisher>Promopublications</publisher>
+		<info name="region" value="France" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="75566">
 				<rom name="softheque ordinateur n.1 - side a.tzx" size="75566" crc="49d2f8b6" sha1="5d92f9a0d8579020b146ac2920d74a959c986c26"/>
@@ -32735,7 +32751,8 @@ Tape 2 - Side B:
 	<software name="softord2">
 		<description>Softheque Ordinateur n.2</description>
 		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Promopublications</publisher>
+		<info name="region" value="France" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="43734">
 				<rom name="softheque ordinateur n.2 - side a.tzx" size="43734" crc="b42f5b42" sha1="61f6f28c4fb235568a795572b2739f3996445e7b"/>
@@ -32751,7 +32768,8 @@ Tape 2 - Side B:
 	<software name="softord4">
 		<description>Softheque Ordinateur n.4</description>
 		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Promopublications</publisher>
+		<info name="region" value="France" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="46677">
 				<rom name="softheque ordinateur n.4 - side a.tzx" size="46677" crc="0c3c6762" sha1="800561051fc5484db70b68b6f75fc3a8ee31823e"/>
@@ -32767,7 +32785,8 @@ Tape 2 - Side B:
 	<software name="softord5">
 		<description>Softheque Ordinateur n.5</description>
 		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Promopublications</publisher>
+		<info name="region" value="France" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="77073">
 				<rom name="softheque ordinateur n.5 - side a.tzx" size="77073" crc="19cdd9c6" sha1="4710eb6d21499f4a0239660de0c38fb69e593c9d"/>
@@ -32783,7 +32802,8 @@ Tape 2 - Side B:
 	<software name="softord6">
 		<description>Softheque Ordinateur n.6</description>
 		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Promopublications</publisher>
+		<info name="region" value="France" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="95602">
 				<rom name="softheque ordinateur n.6 - side a.tzx" size="95602" crc="e80268be" sha1="8848e80cdaf87bb342109196e6620fd4170c6184"/>
@@ -32820,6 +32840,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 001-004)</description>
 		<year>1984</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="61405">
 				<rom name="microhobby semanal 1-4 - side a.tzx" size="61405" crc="e6e3f873" sha1="fd6d57c1426842dc391165b18a0718af556af1a3"/>
@@ -32836,6 +32857,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 005-008)</description>
 		<year>1984</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="68825">
 				<rom name="microhobby semanal 5-8 - side a.tzx" size="68825" crc="87ce9852" sha1="fba5fabffd6d0616de971240262959a9ee416342"/>
@@ -32852,6 +32874,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 009-012)</description>
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="90006">
 				<rom name="microhobby semanal 9-12 - side a.tzx" size="90006" crc="210d1151" sha1="2ac517b44f20e63362a3a297c87368d7dd87c497"/>
@@ -32868,6 +32891,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 013-016)</description>
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="74292">
 				<rom name="microhobby semanal 13-16 - side a.tzx" size="74292" crc="8f748ac7" sha1="023342788383ef198dbb2633b1fdec0c9975669a"/>
@@ -32884,6 +32908,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 017-020)</description>
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="82761">
 				<rom name="microhobby semanal 17-20 - side a.tzx" size="82761" crc="90dea1e3" sha1="6c0a26fd6bf47771424c2f49798fa0e016fa3eaf"/>
@@ -32900,6 +32925,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 021-024)</description>
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="70815">
 				<rom name="microhobby semanal 21-24 - side a.tzx" size="70815" crc="d16ea7a2" sha1="d8fd62a245fdda9686652e57d4461913fb9e0786"/>
@@ -32916,6 +32942,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 025-028)</description>
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="88048">
 				<rom name="microhobby semanal 25-28 - side a.tzx" size="88048" crc="faafc824" sha1="3be0576d79197a4b6d9aa674ecb8bbff345ef08e"/>
@@ -32932,6 +32959,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 029-032)</description>
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="83169">
 				<rom name="microhobby semanal 29-32 - side a.tzx" size="83169" crc="9fd8f7a0" sha1="36ca5bf3f60bb3a7401e6e904021070e14097eb9"/>
@@ -32948,6 +32976,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 033-036)</description>
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="96352">
 				<rom name="microhobby semanal 33-36 - side a.tzx" size="96352" crc="3353cf74" sha1="8bb29729d0ce1d0803034874b7a184fafc60cf1f"/>
@@ -32964,6 +32993,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 037-040)</description>
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="96080">
 				<rom name="microhobby semanal 37-40 - side a.tzx" size="96080" crc="f998f67b" sha1="000b9ff5083253a68a62e20a24c6d440324c86a8"/>
@@ -32980,6 +33010,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 041-044)</description>
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="90617">
 				<rom name="microhobby semanal 41-44 - side a.tzx" size="90617" crc="971384db" sha1="bd788aa9d731b96613c08fa160388bae7e4e7c6a"/>
@@ -32996,6 +33027,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 045-048)</description>
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="78510">
 				<rom name="microhobby semanal 45-48 - side a.tzx" size="78510" crc="d7f03479" sha1="d8c6c067b094fbd21aedae63402d42993e02354c"/>
@@ -33012,6 +33044,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 049-052)</description>
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="48077">
 				<rom name="microhobby semanal 49-52 - side a.tzx" size="48077" crc="681c2bd5" sha1="2200068d02535e91ca91aa5dc1c103a17f148939"/>
@@ -33028,6 +33061,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 053-056)</description>
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="53872">
 				<rom name="microhobby semanal 53-56 - side a.tzx" size="53872" crc="f85542da" sha1="23f71bdea8f7cf7831776de4b115e3fd368a5848"/>
@@ -33044,6 +33078,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 057-060)</description>
 		<year>1986</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="56134">
 				<rom name="microhobby semanal 57-60 - side a.tzx" size="56134" crc="ab5b1a1e" sha1="402026f17bd144b08d802778535306e9dffe5721"/>
@@ -33060,6 +33095,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 061-064)</description>
 		<year>1986</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="40140">
 				<rom name="microhobby semanal 61-64 - side a.tzx" size="40140" crc="dc000f02" sha1="1d5fdf1d8c4edd5e7ab877d85dad234fb91da6f3"/>
@@ -33076,6 +33112,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 065-068)</description>
 		<year>1986</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="55231">
 				<rom name="microhobby semanal 65-68 - side a.tzx" size="55231" crc="49fe3fd2" sha1="17779001cb55e443f4466a4ef284694677436496"/>
@@ -33092,6 +33129,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 069-072)</description>
 		<year>1986</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="48372">
 				<rom name="microhobby semanal 69-72 - side a.tzx" size="48372" crc="5792eb77" sha1="e34c3d282c263233106739c57783c80970d956f0"/>
@@ -33108,6 +33146,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 073-076)</description>
 		<year>1986</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="57711">
 				<rom name="microhobby semanal 73-76 - side a.tzx" size="57711" crc="294ee071" sha1="c6a66159c019cfe465dfa0bba7a38894d8c62288"/>
@@ -33124,6 +33163,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 077-080)</description>
 		<year>1986</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="54846">
 				<rom name="microhobby semanal 77-80 - side a.tzx" size="54846" crc="29578cd2" sha1="e13e22d10c4c46ea3232fa4f11dec071c7360ff2"/>
@@ -33140,6 +33180,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 081-084)</description>
 		<year>1986</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="39226">
 				<rom name="microhobby semanal 81-84 - side a.tzx" size="39226" crc="fef0ccba" sha1="e7abd2cbde227f57a157a714a994b7a6222b8914"/>
@@ -33156,6 +33197,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 085-088)</description>
 		<year>1986</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="37980">
 				<rom name="microhobby semanal 85-88 - side a.tzx" size="37980" crc="87fce371" sha1="a48b03b20eb9424336a78c44646a72ccf175d9be"/>
@@ -33172,6 +33214,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 089-092)</description>
 		<year>1986</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="33940">
 				<rom name="microhobby semanal 89-92 - side a.tzx" size="33940" crc="e650136f" sha1="b07abcb2fbe09427b3bbb8413df47ec9210fa345"/>
@@ -33188,6 +33231,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 093-096)</description>
 		<year>1986</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="57998">
 				<rom name="microhobby semanal 93-96 - side a.tzx" size="57998" crc="f5420fbe" sha1="e85e871bbecc579f7a834a0e3dd493292a6dd6a2"/>
@@ -33204,6 +33248,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 097-100)</description>
 		<year>1986</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="52212">
 				<rom name="microhobby semanal 97-100 - side a.tzx" size="52212" crc="cee43a9e" sha1="7ad52c33ccf87f0a0797aecd86aa4b85c4ccc87b"/>
@@ -33220,6 +33265,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 101-104)</description>
 		<year>1986</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="45193">
 				<rom name="microhobby semanal 101-104 - side a.tzx" size="45193" crc="618f53d0" sha1="5ee5c799e488a5a3cb473e663cbb1d47ad8550c0"/>
@@ -33236,6 +33282,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 105-108)</description>
 		<year>1986</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="58877">
 				<rom name="microhobby semanal 105-108 - side a.tzx" size="58877" crc="afb8cb0f" sha1="61065011c56a814251b814fd2ca56402068acc1b"/>
@@ -33252,6 +33299,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 109-112)</description>
 		<year>1987</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="49045">
 				<rom name="microhobby semanal 109-112 - side a.tzx" size="49045" crc="1f20bb77" sha1="ea7d59ffd4774343a6a40bc888995bb81d709cda"/>
@@ -33268,6 +33316,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 113-116)</description>
 		<year>1987</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="39999">
 				<rom name="microhobby semanal 113-116 - side a.tzx" size="39999" crc="03445e96" sha1="f8dbf3a92ab5f33613e12f551ed187e2d2331dee"/>
@@ -33284,6 +33333,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 117-120)</description>
 		<year>1987</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="30449">
 				<rom name="microhobby semanal 117-120 - side a.tzx" size="30449" crc="039acf1b" sha1="415f4532917088d08dd8a0b03a6185b4d526239d"/>
@@ -33300,6 +33350,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Semanal (Issues 121-124)</description>
 		<year>1987</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="29865">
 				<rom name="microhobby semanal 121-124 - side a.tzx" size="29865" crc="263b4bee" sha1="cb07c7a3824a0b6dd99299570a549124248c0458"/>
@@ -33320,6 +33371,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 015) Hobby Suerte + Moon Battle</description>
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Side A: Hobby Suerte"/>
 			<dataarea name="cass" size="37784">
@@ -33341,6 +33393,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 037) Discoflex</description>
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Side A: Wargame"/>
 			<dataarea name="cass" size="24600">
@@ -33360,6 +33413,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 182) Selección 01</description>
 		<year>1988</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="43320">
 				<rom name="microhobby issue 182 - tape 01 (side a).tzx" size="43320" crc="6156c595" sha1="96ddb20573e90d46828bfabf3bec7b132fd674de"/>
@@ -33377,6 +33431,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 183) Selección 02</description>
 		<year>1988</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="53206">
 				<rom name="microhobby issue 183 - tape 02 (side a).tzx" size="53206" crc="8d353c04" sha1="54ae5b41b1a5cd59e4800da9315de0e04a3facc1"/>
@@ -33393,6 +33448,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 184) Selección 03</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="42384">
 				<rom name="microhobby issue 184 - tape 03 (side a).tzx" size="42384" crc="72850ff7" sha1="546da15aff9dc44b1cb703dd58ae73fed3fec122"/>
@@ -33409,6 +33465,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 185) Selección 04</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="55428">
 				<rom name="microhobby issue 185 - tape 04 (side a).tzx" size="55428" crc="1d1ec7f1" sha1="5dfc862b8d05efe97084b878f09a81155740be34"/>
@@ -33425,6 +33482,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 186) Selección 05</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="44241">
 				<rom name="microhobby issue 186 - tape 05 (side a).tzx" size="44241" crc="0f7a3d7e" sha1="b09b1fcc44446f2f321fffde4fb3ea1c57f7db58"/>
@@ -33441,6 +33499,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 187) Selección 06</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="46702">
 				<rom name="microhobby issue 187 - tape 06 (side a).tzx" size="46702" crc="a6fa94d3" sha1="8300d9c6673a851431352dca1a878eda1fc0f5ce"/>
@@ -33457,6 +33516,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 188) Selección 07</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="46801">
 				<rom name="microhobby issue 188 - tape 07 (side a).tzx" size="46801" crc="088cde9f" sha1="8e1778babea75f6541db3d1eefe0d25b75f978d2"/>
@@ -33473,6 +33533,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 189) Selección 08</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="98977">
 				<rom name="microhobby issue 189 - tape 08 (side a).tzx" size="98977" crc="1bb93a77" sha1="3bb162568209d4122375677c8e0372b0369e66e3"/>
@@ -33489,6 +33550,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 190) Selección 09</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="93866">
 				<rom name="microhobby issue 190 - tape 09 (side a).tzx" size="93866" crc="accf9b83" sha1="9b28cc4f06b6c670d8bceecc171c923fac4a4780"/>
@@ -33505,6 +33567,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 190) Selección 10</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="52537">
 				<rom name="microhobby issue 190 - tape 10 (side a).tzx" size="52537" crc="7ff2c150" sha1="c15db418f042070490cbf0322f616e3b4dde4d27"/>
@@ -33521,6 +33584,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 191) Selección 11</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="100290">
 				<rom name="microhobby issue 191 - tape 11 (side a).tzx" size="100290" crc="f37ee66f" sha1="5e2d66e8ecc524c37332eacf8716f1590babc39d"/>
@@ -33537,6 +33601,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 192) Selección 12</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="78520">
 				<rom name="microhobby issue 192 - tape 12 (side a).tzx" size="78520" crc="b823176d" sha1="0eb033eb80dbee61d9a910e771a71856a810e38c"/>
@@ -33553,6 +33618,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 192) Selección 13</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="49272">
 				<rom name="microhobby issue 192 - tape 13 (side a).tzx" size="49272" crc="8720757a" sha1="f94fca363f58ef00a84a1a95afdaebec067c532e"/>
@@ -33569,6 +33635,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 193) Selección 14</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="96802">
 				<rom name="microhobby issue 193 - tape 14 (side a).tzx" size="96802" crc="1b139388" sha1="cc89d31ff65434fb2a2af7719fef642cbdc6325c"/>
@@ -33585,6 +33652,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 194) Selección 15</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="92561">
 				<rom name="microhobby issue 194 - tape 15 (side a).tzx" size="92561" crc="51a98ecd" sha1="e1b19e8f395ce00266d5c025340e00ba609ce049"/>
@@ -33601,6 +33669,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 194) Selección 16</description>
 		<year>1989</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="45644">
 				<rom name="microhobby issue 194 - tape 16 (side a).tzx" size="45644" crc="2ff7857f" sha1="b75baebf67e38a0aa98ac98bcd8651109ebfbf1d"/>
@@ -33617,6 +33686,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 195) Selección 17</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="98558">
 				<rom name="microhobby issue 195 - tape 17 (side a).tzx" size="98558" crc="a0cae78d" sha1="d4ec1977b9979c70a6d23300db9bf7286e6db038"/>
@@ -33633,6 +33703,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 195) Selección 18</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="46158">
 				<rom name="microhobby issue 195 - tape 18 (side a).tzx" size="46158" crc="2a5ab94c" sha1="dbb3a559c81e1160e0b6ba332bb70245517c1429"/>
@@ -33649,6 +33720,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 196) Selección 19</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="80686">
 				<rom name="microhobby issue 196 - tape 19 (side a).tzx" size="80686" crc="e4ef4713" sha1="1700f81ab55f3c700d7ef55442b69c1829b29a2d"/>
@@ -33665,6 +33737,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 197) Selección 20</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="91271">
 				<rom name="microhobby issue 197 - tape 20 (side a).tzx" size="91271" crc="d9cce4dc" sha1="5b49e9223d53330b97d42a62e7658f862e8fe155"/>
@@ -33681,6 +33754,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 198) Selección 21</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="87736">
 				<rom name="microhobby issue 198 - tape 21 (side a).tzx" size="87736" crc="82c16f1b" sha1="d246a581b54bf267e1fc7e5a6bcfadfc34a16a0a"/>
@@ -33697,6 +33771,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 199) Selección 22</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="72768">
 				<rom name="microhobby issue 199 - tape 22 (side a).tzx" size="72768" crc="482568d9" sha1="b5994959f61d93fcdc4e30dd372e34563215b92c"/>
@@ -33713,6 +33788,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 200) Selección 23</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="93157">
 				<rom name="microhobby issue 200 - tape 23 (side a).tzx" size="93157" crc="d9b61af4" sha1="a8a0876073f0504657e80551b9626cc83668de35"/>
@@ -33729,6 +33805,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 200) Selección 24</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="111513">
 				<rom name="microhobby issue 200 - tape 24 (side a).tzx" size="111513" crc="0456478c" sha1="4416e3db4aef2af84818fbf0ecdde139e8d88f3e"/>
@@ -33745,6 +33822,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 201) Selección 25</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="146914">
 				<rom name="microhobby issue 201 - tape 25 (side a).tzx" size="146914" crc="7d346830" sha1="0b8fcc205c001fa26f7216ccd9a087a784e80683"/>
@@ -33761,6 +33839,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 201) Selección 26</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="170443">
 				<rom name="microhobby issue 201 - tape 26 (side a).tzx" size="170443" crc="de8cf52f" sha1="ea0f30facab16ecc3b20c36168a33f7425cec8c4"/>
@@ -33777,6 +33856,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 202) Selección 27</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="92899">
 				<rom name="microhobby issue 202 - tape 27 (side a).tzx" size="92899" crc="401f7d8a" sha1="3dd0f93042266df47c20df43c1f4edd3de12705a"/>
@@ -33793,6 +33873,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 203) Selección 28</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="99323">
 				<rom name="microhobby issue 203 - tape 28 (side a).tzx" size="99323" crc="286606cb" sha1="5f4dcd2e1871aa84d41af76ad108f78c5c3cd625"/>
@@ -33809,6 +33890,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 204) Selección 29</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="191210">
 				<rom name="microhobby issue 204 - tape 29 (side a).tzx" size="191210" crc="e955c77f" sha1="9c3bc519c1fdf6b593ed12cefd877d43ac0a2d1d"/>
@@ -33825,6 +33907,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 204) Selección 30</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="83105">
 				<rom name="microhobby issue 204 - tape 30 (side a).tzx" size="83105" crc="895c9653" sha1="7f113ce03d810c20c6a1b7ec697ff293983f8700"/>
@@ -33841,6 +33924,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 205) Selección 31</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="71276">
 				<rom name="microhobby issue 205 - tape 31 (side a).tzx" size="71276" crc="0c9662c4" sha1="de58a0743a034a6844a526e54fd2f468cb388651"/>
@@ -33857,6 +33941,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 205) Selección 32</description>
 		<year>1990</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="98190">
 				<rom name="microhobby issue 205 - tape 32 (side a).tzx" size="98190" crc="238be4bf" sha1="1ed07776cd5500c01963e61d28c167092d2e1cf4"/>
@@ -33873,6 +33958,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 206) Selección 33</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="124491">
 				<rom name="microhobby issue 206 - tape 33 (side a).tzx" size="124491" crc="233dd689" sha1="626d979868589d5a62620efe0a32f8bf4cba2848"/>
@@ -33889,6 +33975,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 207) Selección 34</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="96852">
 				<rom name="microhobby issue 207 - tape 34 (side a).tzx" size="96852" crc="897a36b3" sha1="2890e103601f84a7273c78ec97d9c20e89d4eb6d"/>
@@ -33905,6 +33992,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 208) Selección 35</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="128403">
 				<rom name="microhobby issue 208 - tape 35 (side a).tzx" size="128403" crc="a585d960" sha1="652a7181d298a65f39286d6bfa075f8f639c80ec"/>
@@ -33921,6 +34009,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 209) Selección 36</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="58577">
 				<rom name="microhobby issue 209 - tape 36 (side a).tzx" size="58577" crc="05c381ab" sha1="312bb6fefb6619628b0050fbacae701cd3930a0a"/>
@@ -33937,6 +34026,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 210) Selección 37</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="90853">
 				<rom name="microhobby issue 210 - tape 37 (side a).tzx" size="90853" crc="912614db" sha1="7206a1cd28ada93b9daaa8112c7a6193b2a2b8fe"/>
@@ -33953,6 +34043,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 211) Selección 38</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="81814">
 				<rom name="microhobby issue 211 - tape 38 (side a).tzx" size="81814" crc="6e63d7f7" sha1="f8d9285fd0efeaaa8ffa77c88ab51ef98f6941af"/>
@@ -33969,6 +34060,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 211) Selección 39</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="98870">
 				<rom name="microhobby issue 211 - tape 39 (side a).tzx" size="98870" crc="f41e992c" sha1="dd8014238e5adf174e2b62ea02fedd4b882118e0"/>
@@ -33985,6 +34077,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 212) Selección 40</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="101867">
 				<rom name="microhobby issue 212 - tape 40 (side a).tzx" size="101867" crc="48107bac" sha1="4459ff4a79ef3bc84ca0839de0014fa8fdf14761"/>
@@ -34001,6 +34094,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 212) Selección 41</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="109190">
 				<rom name="microhobby issue 212 - tape 41 (side a).tzx" size="109190" crc="da2351a9" sha1="f3e61afc846aa952a564fc0f51aa52eb8ff282c9"/>
@@ -34017,6 +34111,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 213) Selección 42</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="88041">
 				<rom name="microhobby issue 213 - tape 42 (side a).tzx" size="88041" crc="236aa5e2" sha1="d2efe89074cd1d1edc214f8dce9ed1f216f9d02b"/>
@@ -34033,6 +34128,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 214) Selección 43</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="88043">
 				<rom name="microhobby issue 214 - tape 43 (side a).tzx" size="88043" crc="1cf0fc4e" sha1="a1ccd95f2f94b1546dd0c87aea838ae7aa86f9e9"/>
@@ -34049,6 +34145,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 215) Selección 44</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="81988">
 				<rom name="microhobby issue 215 - tape 44 (side a).tzx" size="81988" crc="ca17abd8" sha1="51b879ac9a9f085c0e0db978dacd0c02916db921"/>
@@ -34065,6 +34162,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 215) Selección 45</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="114507">
 				<rom name="microhobby issue 215 - tape 45 (side a).tzx" size="114507" crc="5f8a9d2c" sha1="956f9e87515253ee0e4657594260884f2eb0ae63"/>
@@ -34081,6 +34179,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 216) Selección 46</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="164895">
 				<rom name="microhobby issue 216 - tape 46 (side a).tzx" size="164895" crc="07f3b853" sha1="5933e89ba9299d1a37747d2c53da1f4142c14a6f"/>
@@ -34097,6 +34196,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 217) Selección 47</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="155366">
 				<rom name="microhobby issue 217 - tape 47 (side a).tzx" size="155366" crc="946ce907" sha1="e9ba7ccbb0491ed9c4fdcfde469d21c573491b41"/>
@@ -34113,6 +34213,7 @@ Tape 2 - Side B:
 		<description>MicroHobby (Issue 217) Selección 48</description>
 		<year>1991</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="73873">
 				<rom name="microhobby issue 217 - tape 48 (side a).tzx" size="73873" crc="28b13ca4" sha1="764bb98b21dd01abdb2620fa62f1c69bd3bc44af"/>
@@ -34133,6 +34234,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Cassette (Issue 01)</description>
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="60442">
 				<rom name="microhobby cassette (issue 01) - side a.tzx" size="60442" crc="7bb36d35" sha1="30105d56f9a28810b50b3a37e1250cdf4e8dd182"/>
@@ -34149,6 +34251,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Cassette (Issue 02)</description>
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="59160">
 				<rom name="microhobby cassette (issue 02) - side a.tzx" size="59160" crc="e41a4cf8" sha1="fdb6cfaf159bffd5e71927e1987ce33981722201"/>
@@ -34165,6 +34268,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Cassette (Issue 03)</description>
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="69226">
 				<rom name="microhobby cassette (issue 03) - side a.tzx" size="69226" crc="dbda4fe6" sha1="5370c578240c7c6c6eee45ca091df388baaabb1c"/>
@@ -34181,6 +34285,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Cassette (Issue 04)</description>
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="61657">
 				<rom name="microhobby cassette (issue 04) - side a.tzx" size="61657" crc="e9e09dcf" sha1="79eb025d73cc2183f5b6cd963123d0baded9d273"/>
@@ -34197,6 +34302,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Cassette (Issue 05)</description>
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="60511">
 				<rom name="microhobby cassette (issue 05) - side a.tzx" size="60511" crc="e7021274" sha1="cbd4c1e97f056351ae3385cf1d3e3775f24e1c3f"/>
@@ -34213,6 +34319,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Cassette (Issue 06)</description>
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="76734">
 				<rom name="microhobby cassette (issue 06) - side a.tzx" size="76734" crc="7810a705" sha1="cf285696f5349c8a643190ea9d5707f11f13f0f7"/>
@@ -34229,6 +34336,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Cassette (Issue 07)</description>
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="80385">
 				<rom name="microhobby cassette (issue 07) - side a.tzx" size="80385" crc="1b676dc6" sha1="926da6674c9fd992b6ea214bb97089882df85e44"/>
@@ -34245,6 +34353,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Cassette (Issue 08)</description>
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="105411">
 				<rom name="microhobby cassette (issue 08) - side a.tzx" size="105411" crc="d03a1ea5" sha1="efae28ac9cb9c5d0725873b894802383ccb49c3b"/>
@@ -34261,6 +34370,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Cassette (Issue 09)</description>
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="86979">
 				<rom name="microhobby cassette (issue 09) - side a.tzx" size="86979" crc="9d81f97b" sha1="3f2743ec6b12f4e61d15ead7ca9ab180f61ce0b1"/>
@@ -34277,6 +34387,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Cassette (Issue 10)</description>
 		<year>1985</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="131736">
 				<rom name="microhobby cassette (issue 10) - side a.tzx" size="131736" crc="743ad86e" sha1="05c87b688d38b6c574807739015268eaf1e904a2"/>
@@ -34293,6 +34404,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Cassette (Issue 11)</description>
 		<year>1986</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="99830">
 				<rom name="microhobby cassette (issue 11) - side a.tzx" size="99830" crc="0d8c8f35" sha1="ad70b0e0e5e8af90bb3ff815b0e421642a69b03d"/>
@@ -34309,6 +34421,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Cassette (Issue 12)</description>
 		<year>1986</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="104857">
 				<rom name="microhobby cassette (issue 12) - side a.tzx" size="104857" crc="c512d8d1" sha1="f2cf14c3906b2fd801eb687686ebc456109ae23b"/>
@@ -34325,6 +34438,7 @@ Tape 2 - Side B:
 		<description>MicroHobby Cassette (Issue 13)</description>
 		<year>1986</year>
 		<publisher>Hobby Press</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="127276">
 				<rom name="microhobby cassette (issue 13) - side a.tzx" size="127276" crc="900dbb6a" sha1="ff6720f376638e308e323dc71b0fcc118fe9f84c"/>
@@ -34351,6 +34465,7 @@ Tape 2 - Side B:
 		<description>Load'N'Run (Spain) (Issue 00)</description>
 		<year>1985</year>
 		<publisher>Mecsa / Inforpress</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="135078">
 				<rom name="load_n_run (spain) (issue 00) (side a).tzx" size="135078" crc="6e776021" sha1="a655810ebdae0c3b097f4e9768cf0a0899aad253"/>
@@ -34367,6 +34482,7 @@ Tape 2 - Side B:
 		<description>Load'N'Run (Spain) (Issue 01)</description>
 		<year>1985</year>
 		<publisher>Mecsa / Inforpress</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="70602">
 				<rom name="load_n_run (spain) (issue 01) (side a).tzx" size="70602" crc="85dd13cf" sha1="30298848c050bae1625e1c747184750c609a2fd8"/>
@@ -34383,6 +34499,7 @@ Tape 2 - Side B:
 		<description>Load'N'Run (Spain) (Issue 02)</description>
 		<year>1985</year>
 		<publisher>Mecsa / Inforpress</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="114586">
 				<rom name="load_n_run (spain) (issue 02) (side a).tzx" size="114586" crc="e2c4f627" sha1="024180a6ae71ff3043448e58d92ebe00f966e7c2"/>
@@ -34399,6 +34516,7 @@ Tape 2 - Side B:
 		<description>Load'N'Run (Spain) (Issue 03)</description>
 		<year>1985</year>
 		<publisher>Mecsa / Inforpress</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="180349">
 				<rom name="load_n_run (spain) (issue 03) (side a).tzx" size="180349" crc="cbff03e0" sha1="b5e4a1283736d35832b37265d13d9732811bdc9b"/>
@@ -34415,6 +34533,7 @@ Tape 2 - Side B:
 		<description>Load'N'Run (Spain) (Issue 04)</description>
 		<year>1985</year>
 		<publisher>Mecsa / Inforpress</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="145949">
 				<rom name="load_n_run (spain) (issue 04) (side a).tzx" size="145949" crc="e5917930" sha1="e1f5af533de0c2f9f405003b3032dd64f88ae0a2"/>
@@ -34432,6 +34551,7 @@ Tape 2 - Side B:
 		<description>Load'N'Run (Spain) (Issue 05)</description>
 		<year>1985</year>
 		<publisher>Mecsa / Inforpress</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="148350">
 				<rom name="load_n_run (spain) (issue 05) (side a).tzx" size="148350" crc="fdc7f4b1" sha1="9f4c44c0ecc2cd337f633c241dbc84800072e213"/>
@@ -34448,6 +34568,7 @@ Tape 2 - Side B:
 		<description>Load'N'Run (Spain) (Issue 06)</description>
 		<year>1985</year>
 		<publisher>Mecsa / Inforpress</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="245832">
 				<rom name="load_n_run (spain) (issue 06) (side a).tzx" size="245832" crc="c503cf0e" sha1="f29c51c89cf6ceb4d22120eba2a9b1bfeb5cf43e"/>
@@ -34464,6 +34585,7 @@ Tape 2 - Side B:
 		<description>Load'N'Run (Spain) (Issue 07)</description>
 		<year>1985</year>
 		<publisher>Mecsa / Inforpress</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="128542">
 				<rom name="load_n_run (spain) (issue 07) (side a).tzx" size="128542" crc="4dd5838a" sha1="0c099cae3ca431309dc86085debf677dbc8635e4"/>
@@ -34480,6 +34602,7 @@ Tape 2 - Side B:
 		<description>Load'N'Run (Spain) (Issue 08)</description>
 		<year>1985</year>
 		<publisher>Mecsa / Inforpress</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="148769">
 				<rom name="load_n_run (spain) (issue 08) (side a).tzx" size="148769" crc="915533b4" sha1="4175f1c281d820fba951b0c54790742af0ab095f"/>
@@ -34496,6 +34619,7 @@ Tape 2 - Side B:
 		<description>Load'N'Run (Spain) (Issue 09)</description>
 		<year>1985</year>
 		<publisher>Mecsa / Inforpress</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="168967">
 				<rom name="load_n_run (spain) (issue 09) (side a).tzx" size="168967" crc="1dda174c" sha1="72d9da3d7183182dd9dd92c93d252fcd5322eeb7"/>
@@ -34512,6 +34636,7 @@ Tape 2 - Side B:
 		<description>Load'N'Run (Spain) (Issue 10)</description>
 		<year>1985</year>
 		<publisher>Mecsa / Inforpress</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="157298">
 				<rom name="load_n_run (spain) (issue 10) (side a).tzx" size="157298" crc="f07d2967" sha1="580fb54b1166dfc997db9d87597cdc0095f9a4bc"/>
@@ -34528,6 +34653,7 @@ Tape 2 - Side B:
 		<description>Load'N'Run (Spain) (Issue 11)</description>
 		<year>1985</year>
 		<publisher>Mecsa / Inforpress</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="241319">
 				<rom name="load_n_run (spain) (issue 11) (side a).tzx" size="241319" crc="d25458fa" sha1="65bb2d7ff4905230185580ef679d49a1c2b052fe"/>
@@ -34546,6 +34672,7 @@ Tape 2 - Side B:
 		<description>Load'N'Run (Spain) (Especial)</description>
 		<year>1985</year>
 		<publisher>Mecsa / Inforpress</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="27410">
 				<rom name="load_n_run (spain) (especial).tzx" size="27410" crc="f0cdb6c9" sha1="4157c4aaa805801a9c7eeaf2a451a6dfe98ccf85"/>
@@ -34557,6 +34684,7 @@ Tape 2 - Side B:
 		<description>Load'N'Run 2ª época (Spain) (Issue 00)</description>
 		<year>1986</year>
 		<publisher>Audimicro</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="97942">
 				<rom name="load_n_run 2a epoca (spain) (issue 00) (side a).tzx" size="97942" crc="b943b7c2" sha1="6fb0ff63684619f5d75fa145cfcfeb18348bac85"/>
@@ -34573,6 +34701,7 @@ Tape 2 - Side B:
 		<description>Load'N'Run 2ª época (Spain) (Issue 01)</description>
 		<year>1986</year>
 		<publisher>Audimicro</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="65397">
 				<rom name="load_n_run 2a epoca (spain) (issue 01) (side a).tzx" size="65397" crc="ce3cf6ca" sha1="93bebcf922558dadbbeb8618832ca4fe38ff338d"/>
@@ -34589,6 +34718,7 @@ Tape 2 - Side B:
 		<description>Load'N'Run 2ª época (Spain) (Issue 02)</description>
 		<year>1986</year>
 		<publisher>Audimicro</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="120900">
 				<rom name="load_n_run 2a epoca (spain) (issue 02) (side a).tzx" size="120900" crc="ffd369f1" sha1="3754ca90d0ad2c16b16f3f3e965874890eb46b98"/>
@@ -34605,6 +34735,7 @@ Tape 2 - Side B:
 		<description>Load'N'Run 2ª época (Spain) (Issue 03)</description>
 		<year>1986</year>
 		<publisher>Audimicro</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="174747">
 				<rom name="load_n_run 2a epoca (spain) (issue 03) (side a).tzx" size="174747" crc="635b9406" sha1="00efb0bce43583fb218a06830424f4dbdea151af"/>
@@ -34621,6 +34752,7 @@ Tape 2 - Side B:
 		<description>Load'N'Run 2ª época (Spain) (Issue 04)</description>
 		<year>1986</year>
 		<publisher>Audimicro</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="162009">
 				<rom name="load_n_run 2a epoca (spain) (issue 04) (side a).tzx" size="162009" crc="0ddfe7f1" sha1="820f294c1baf91d1775ed0998eb2b25076ddcb19"/>
@@ -34637,6 +34769,7 @@ Tape 2 - Side B:
 		<description>Load'N'Run 2ª época (Spain) (Issue 05)</description>
 		<year>1986</year>
 		<publisher>Audimicro</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="130318">
 				<rom name="load_n_run 2a epoca (spain) (issue 05) (side a).tzx" size="130318" crc="8e075bbd" sha1="4f7640a667e2890a9ff3239320801a9c912b376f"/>
@@ -34653,6 +34786,7 @@ Tape 2 - Side B:
 		<description>Load'N'Run 2ª época (Spain) (Issue 06)</description>
 		<year>1986</year>
 		<publisher>Audimicro</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="212341">
 				<rom name="load_n_run 2a epoca (spain) (issue 06) (side a).tzx" size="212341" crc="fe4c5006" sha1="7face0bdbeb75d751971917050e91e848da6fab0"/>
@@ -34669,6 +34803,7 @@ Tape 2 - Side B:
 		<description>Load'N'Run 2ª época (Spain) (Issue 07)</description>
 		<year>1986</year>
 		<publisher>Audimicro</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="147048">
 				<rom name="load_n_run 2a epoca (spain) (issue 07) (side a).tzx" size="147048" crc="eb734673" sha1="1cc5c34cfb6233b978c633b905f69cd38cb60291"/>
@@ -34685,6 +34820,7 @@ Tape 2 - Side B:
 		<description>Load'N'Run 2ª época (Spain) (Issue 08)</description>
 		<year>1986</year>
 		<publisher>Audimicro</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="83196">
 				<rom name="load_n_run 2a epoca (spain) (issue 08) (side a).tzx" size="83196" crc="9071b92f" sha1="856fec3d42fa910fdcd37c9b41e3614ae46d7bfa"/>
@@ -40688,6 +40824,22 @@ Tape 2 - Side B:
 		</part>
 	</software>
 
+	<software name="afistful_b" cloneof="afistful">
+		<description>A Fistful of Blood Capsules (alt)</description>
+		<year>198?</year>
+		<publisher>Delbert the Hamster Software</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="119277">
+				<rom name="a fistful of blood capsules (delbert the hamster) - side 1.tzx" size="119277" crc="3228548b" sha1="647779a58ca9eb48f6b4cb31588a08bfd4cedfbb"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="51756">
+				<rom name="a fistful of blood capsules (delbert the hamster) - side 2.tzx" size="51756" crc="b5080dfd" sha1="8a519d677bc76a9194088ea6a92f312a82676f84"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="fistnecr">
 		<description>A Fistful of Necronomicons</description>
 		<year>1995</year>
@@ -43610,6 +43762,7 @@ Side B: Once Upon a Lily Pad
 		<description>Amazônia (bugfix release)</description>
 		<year>1985</year>
 		<publisher>Ciberne</publisher>
+		<info name="region" value="Brazil" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="27971">
 				<rom name="amazonia - bugfix.tzx" size="27971" crc="e89fde7e" sha1="f3dd2e939c6a524a2713da0e2c462e3af37bccc5"/>
@@ -43621,6 +43774,7 @@ Side B: Once Upon a Lily Pad
 		<description>Amazônia</description>
 		<year>1985</year>
 		<publisher>Ciberne</publisher>
+		<info name="region" value="Brazil" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="27422">
 				<rom name="amazonia.tzx" size="27422" crc="f4773a6e" sha1="ec3bce0aad8880da2a1a792b117ebf87949137ce"/>
@@ -53509,6 +53663,17 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
+	<software name="casemurd">
+		<description>A Case of Murder</description>
+		<year>2022</year>
+		<publisher>Taskmaster Software </publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="42878">
+				<rom name="a case of murder.tzx" size="42878" crc="d57375ca" sha1="e2a42e0647245744a35dbd00c56316123ace86c9"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="caseyjon">
 		<description>Casey Jones (Prism)</description>
 		<year>1984</year>
@@ -62738,23 +62903,23 @@ Side B: Once Upon a Lily Pad
 	</software>
 
 	<software name="deathwak">
+		<description>Death Wake</description>
+		<year>1985</year>
+		<publisher>Quicksilva</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="47543">
+				<rom name="death wake.tzx" size="47543" crc="7bc4d4a4" sha1="70b6f9c38b94b9658f7e44d31ceb78a0bdf42715"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="deathwak_a" cloneof="deathwak">
 		<description>Death Wake (Bug-Byte)</description>
 		<year>1985</year>
 		<publisher>Bug-Byte Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47766">
 				<rom name="death wake (bug-byte).tzx" size="47766" crc="42753e7c" sha1="72b7b506f15dd5a2a0ee56f835a190a9a2b4b08f"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="deathwak_a" cloneof="deathwak">
-		<description>Death Wake</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="47543">
-				<rom name="death wake.tzx" size="47543" crc="7bc4d4a4" sha1="70b6f9c38b94b9658f7e44d31ceb78a0bdf42715"/>
 			</dataarea>
 		</part>
 	</software>
@@ -62770,10 +62935,11 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
-	<software name="dwish3er" cloneof="dwish3">
+	<software name="dwish3_a" cloneof="dwish3">
 		<description>Death Wish 3 (set 2, Erbe - Serie Leyenda)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1987</year>
+		<publisher>IBSA</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="54322">
 				<rom name="death wish 3 (erbe - serie leyenda).tzx" size="54322" crc="562a8373" sha1="a25fb1fe54bfd6af5dfb4f342b5f532a521fc990"/>
@@ -62781,6 +62947,17 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
+	<software name="dwish3_b" cloneof="dwish3">
+		<description>Death Wish 3 (set 2, Erbe)</description>
+		<year>1987</year>
+		<publisher>Erbe Software</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="54116">
+				<rom name="death wish 3 (erbe).tzx" size="54116" crc="3dd135d1" sha1="128146f89fb249942a566e1b00eafcea9cee07ca"/>
+			</dataarea>
+		</part>
+	</software>
 
 	<software name="deathbal">
 		<description>Deathball 2000</description>
@@ -62908,9 +63085,9 @@ Side B: Once Upon a Lily Pad
 	</software>
 
 	<software name="deepprob">
-		<description>Deep Probe - +D Version</description>
+		<description>Deep Probe (+D version)</description>
 		<year>1992</year>
-		<publisher>Compass</publisher>
+		<publisher>Compass Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="46634">
 				<rom name="deep probe - +d version.tzx" size="46634" crc="deb90b54" sha1="5faff38bf6da288db7cc46d471f612b5dd506c75"/>
@@ -62919,9 +63096,9 @@ Side B: Once Upon a Lily Pad
 	</software>
 
 	<software name="deepprob_a" cloneof="deepprob">
-		<description>Deep Probe - Full FX</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Deep Probe (Full FX version)</description>
+		<year>1992</year>
+		<publisher>Compass Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47252">
 				<rom name="deep probe - full fx.tzx" size="47252" crc="32e4df79" sha1="cba0ab8b70a0bf7cf3716bb967843f5908ae7e84"/>
@@ -62931,8 +63108,8 @@ Side B: Once Upon a Lily Pad
 
 	<software name="deepprob_b" cloneof="deepprob">
 		<description>Deep Probe</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1992</year>
+		<publisher>Compass Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="39642">
 				<rom name="deep probe.tzx" size="39642" crc="8ba2a702" sha1="5e575b22f405443e0d170bd218f74e6fcffd0ec6"/>
@@ -62941,9 +63118,9 @@ Side B: Once Upon a Lily Pad
 	</software>
 
 	<software name="deepprobmast" cloneof="deepprob">
-		<description>Deep Probe (Mastering Tape)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Deep Probe (master tape)</description>
+		<year>1992</year>
+		<publisher>Compass Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="46763">
 				<rom name="deep probe master tape.tzx" size="46763" crc="e9519d0f" sha1="6bb2d87bbc38626665f331e6c3090f8b2abb6c8e"/>
@@ -62951,6 +63128,16 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
+	<software name="deepprob_c" cloneof="deepprob">
+		<description>Deep Probe (Adventure Workshop)</description>
+		<year>1992</year>
+		<publisher>The Adventure Workshop</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="46708">
+				<rom name="deep probe (the adventure workshop).tzx" size="46708" crc="082ea6d9" sha1="3b5f79891344ff4bc42e4783db742d2dfd0581c4"/>
+			</dataarea>
+		</part>
+	</software>
 
 	<software name="deepscan">
 		<description>Deep Scan (Octocom)</description>
@@ -65791,24 +65978,24 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
-	<software name="dragneta">
-		<description>Dragnet (set 2)</description>
+	<software name="dragnet">
+		<description>The Dragnet Case</description>
 		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Taskmaster Software</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="37911">
-				<rom name="dragnet - alternate.tzx" size="37911" crc="21b3a305" sha1="e914fc538496cca45ff1624569021eb9b58e9f79"/>
+			<dataarea name="cass" size="43014">
+				<rom name="dragnet.tzx" size="43014" crc="d03cc7bb" sha1="75b513d8dae0c32422bb14f32fa80ead371efbca"/>
 			</dataarea>
 		</part>
 	</software>
 
-	<software name="dragnet">
-		<description>Dragnet</description>
+	<software name="dragneta" cloneof="dragnet">
+		<description>The Dragnet Case (set 2)</description>
 		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Taskmaster Software</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="35876">
-				<rom name="dragnet.tzx" size="35876" crc="2932b8ac" sha1="a5b19084e0b80696831a1e247c6280eee4914a0d"/>
+			<dataarea name="cass" size="37911">
+				<rom name="dragnet - alternate.tzx" size="37911" crc="21b3a305" sha1="e914fc538496cca45ff1624569021eb9b58e9f79"/>
 			</dataarea>
 		</part>
 	</software>
@@ -71311,6 +71498,28 @@ Side B: Once Upon a Lily Pad
 	</software>
 
 	<software name="fairlydi">
+		<description>Fairly Difficult Mission</description>
+		<year>1988</year>
+		<publisher>Zodiac Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="154966">
+				<rom name="fairly difficult mission.tzx" size="154966" crc="96e82fcb" sha1="2b859e4d70363d97f5e1d8ea5961cfbc3e253388"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="fairlydi_a" cloneof="fairlydi">
+		<description>Fairly Difficult Mission (set 2)</description>
+		<year>1988</year>
+		<publisher>Zodiac Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="155010">
+				<rom name="fairly difficult mission - alternate.tzx" size="155010" crc="02913338" sha1="77fdbf9ee306c6f937adbe20efafa1175937355b"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="fairlydi_b" cloneof="fairlydi">
 		<description>Fairly Difficult Mission (Fantasy Software)</description>
 		<year>1989</year>
 		<publisher>Fantasy</publisher>
@@ -71321,24 +71530,18 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
-	<software name="fairlydi_a" cloneof="fairlydi">
-		<description>Fairly Difficult Mission (set 2)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="155010">
-				<rom name="fairly difficult mission - alternate.tzx" size="155010" crc="02913338" sha1="77fdbf9ee306c6f937adbe20efafa1175937355b"/>
+	<software name="fairlydi_c" cloneof="fairlydi">
+		<description>Fairly Difficult Mission (Delbert the Hamster)</description>
+		<year>1992</year>
+		<publisher>Delbert the Hamster Software</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="95597">
+				<rom name="fairly difficult mission (delbert the hamster) - side 1.tzx" size="95597" crc="d963f5cd" sha1="68d88a67547d8af031343b0744dcdaaa1b772b5b"/>
 			</dataarea>
 		</part>
-	</software>
-
-	<software name="fairlydi_b" cloneof="fairlydi">
-		<description>Fairly Difficult Mission</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="154966">
-				<rom name="fairly difficult mission.tzx" size="154966" crc="96e82fcb" sha1="2b859e4d70363d97f5e1d8ea5961cfbc3e253388"/>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="59450">
+				<rom name="fairly difficult mission (delbert the hamster) - side 2.tzx" size="59450" crc="383ac3c3" sha1="0ded376e9b970fd391b8b5df170ccd91344e84e9"/>
 			</dataarea>
 		</part>
 	</software>
@@ -73526,7 +73729,7 @@ Side B: Once Upon a Lily Pad
 	</software>
 
 	<software name="forestat">
-		<description>Forest At The Worlds End (set 2)</description>
+		<description>Forest at the Worlds End (set 2)</description>
 		<year>1984</year>
 		<publisher>Interceptor</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -73537,7 +73740,7 @@ Side B: Once Upon a Lily Pad
 	</software>
 
 	<software name="forestat_a" cloneof="forestat">
-		<description>Forest At The Worlds End</description>
+		<description>Forest at the Worlds End</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -73569,7 +73772,17 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
-
+	<software name="forestsh">
+		<description>The Forest of Shadows</description>
+		<year>1987</year>
+		<publisher>Vesúvio</publisher>
+		<info name="region" value="Portugal" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="25358">
+				<rom name="The Forest of Shadows.tzx" size="25358" crc="64ac2b94" sha1="c1b2c2fd9bca7499836340ccd0c0f939da3bdaff"/>
+			</dataarea>
+		</part>
+	</software>
 
 	<software name="fgtcity">
 		<description>Forgotten City (set 1)</description>
@@ -76903,10 +77116,53 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
+	<software name="geograpt">
+		<description>Geografia de Portugal</description>
+		<year>1985</year>
+		<publisher>JM Silva</publisher>
+		<notes>Homebrew</notes>
+		<info name="developer" value="J.M. Domingues Silva" />
+		<info name="region" value="Portugal" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="27674">
+				<rom name="geografia de portugal.tzx" size="27674" crc="82f0acb6" sha1="ae3a5d6a471a3bfb8187c9077c24b0de11283f5b"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="geograpt_a" cloneof="geograpt">
+		<description>Geografia de Portugal (prototype 1)</description>
+		<year>1985</year>
+		<publisher>JM Silva</publisher>
+		<notes>Homebrew</notes>
+		<info name="developer" value="J.M. Domingues Silva" />
+		<info name="region" value="Portugal" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="20504">
+				<rom name="geografia.tzx" size="20504" crc="3751b997" sha1="8a58f3c58816527847f496fcd38c34d09c15f0b9"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="geograpt_b" cloneof="geograpt">
+		<description>Geografia de Portugal (prototype 2)</description>
+		<year>1985</year>
+		<publisher>JM Silva</publisher>
+		<notes>Homebrew</notes>
+		<info name="developer" value="J.M. Domingues Silva" />
+		<info name="region" value="Portugal" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="20050">
+				<rom name="geografia 1.tzx" size="20050" crc="45446a40" sha1="af0aef8deeb39f957ea396a0a313b814b564ace7"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="geometri">
 		<description>Geometria (Software Spectrum)</description>
 		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Software Spectrum</publisher>
+		<info name="region" value="Italy" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="15587">
 				<rom name="geometria (software spectrum).tzx" size="15587" crc="a0ba4e4f" sha1="0713d3811c4f51eb5a2a342d2f4ffcc80cc8571c"/>
@@ -76914,10 +77170,11 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
-	<software name="geometri_a" cloneof="geometri">
+	<software name="przestrz">
 		<description>Geometria Przestrzenna 1</description>
 		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Polmer</publisher>
+		<info name="region" value="Poland" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="51916">
 				<rom name="geometria przestrzenna 1.tzx" size="51916" crc="753d1451" sha1="3cecc8fe28558e7c6016e1b99cddd8ea6d70bf94"/>
@@ -82575,6 +82832,7 @@ Tape 2: Hero Quest: Return of the Witch Lord
 		<year>1984</year>
 		<publisher>Avlisoft</publisher>
 		<info name="developer" value="J.M. Domingues Silva" />
+		<info name="region" value="Portugal" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="43379">
 				<rom name="Historia de Portugal - parte 1.tzx" size="43379" crc="63d58f29" sha1="d7d11e3411ac2ed83c1f4445350112111a50beee"/>
@@ -86459,6 +86717,17 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
+	<software name="islandof_a" cloneof="islandof">
+		<description>Island of Chaos (Adventure Workshop)</description>
+		<year>1990</year>
+		<publisher>The Adventure Workshop</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="27041">
+				<rom name="island of chaos (the adventure workshop).tzx" size="27041" crc="70921eab" sha1="f662ec7d1fffc6d5c070469cb0dd55dda6133cdd"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="island">
 		<description>Island</description>
 		<year>1983</year>
@@ -87019,7 +87288,7 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jaknipr">
-		<description>Jack The Nipper (set 1)</description>
+		<description>Jack the Nipper (set 1)</description>
 		<year>1986</year>
 		<publisher>Gremlin Graphics Software</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -87030,7 +87299,7 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jaknipra" cloneof="jaknipr">
-		<description>Jack The Nipper (set 2, Kixx)</description>
+		<description>Jack the Nipper (set 2, Kixx)</description>
 		<year>1986</year>
 		<publisher>Kixx</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -87041,7 +87310,7 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jacknip2">
-		<description>Jack The Nipper II: In Coconut Capers (set 1)</description>
+		<description>Jack the Nipper II: In Coconut Capers (set 1)</description>
 		<year>1987</year>
 		<publisher>Gremlin Graphics Software</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -87052,7 +87321,7 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jacknip2a" cloneof="jacknip2">
-		<description>Jack The Nipper II: In Coconut Capers (set 2, Kixx)</description>
+		<description>Jack the Nipper II: In Coconut Capers (set 2, Kixx)</description>
 		<year>1987</year>
 		<publisher>Kixx</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -87063,7 +87332,7 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jacknip2b" cloneof="jacknip2">
-		<description>Jack The Nipper II: In Coconut Capers (set 3, Kixx)</description>
+		<description>Jack the Nipper II: In Coconut Capers (set 3, Kixx)</description>
 		<year>1987</year>
 		<publisher>Kixx</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -87073,11 +87342,10 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-
 	<software name="jackripr">
-		<description>Jack The Ripper (set 1)</description>
+		<description>Jack the Ripper (set 1)</description>
 		<year>1987</year>
-		<publisher>CRL Group</publisher>
+		<publisher>CRL Group PLC</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="116474">
 				<rom name="jack the ripper - side a.tzx" size="116474" crc="09a12c85" sha1="1eb25570ad37499d5d6835eacf9a28630c4ccf60"/>
@@ -87091,9 +87359,9 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jackripra" cloneof="jackripr">
-		<description>Jack The Ripper (set 2)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Jack the Ripper (set 2)</description>
+		<year>1987</year>
+		<publisher>CRL Group PLC</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="85824">
 				<rom name="jack the ripper - alternate - side a.tzx" size="85824" crc="59ff7bd8" sha1="46753a86530d1861e3671833e9c13fe02550b5f5"/>
@@ -87107,9 +87375,9 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jackriprb" cloneof="jackripr">
-		<description>Jack The Ripper (set 3)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Jack the Ripper (set 3)</description>
+		<year>1987</year>
+		<publisher>CRL Group PLC</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="71294">
 				<rom name="jack the ripper - alternate #2 - side a.tzx" size="71294" crc="38e78012" sha1="5983226b13323d6b5e280c24135f6a874b7ac807"/>
@@ -87123,9 +87391,9 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jackriprc" cloneof="jackripr">
-		<description>Jack The Ripper (set 4, GI Games)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Jack the Ripper (set 4, G.I. Games)</description>
+		<year>1991</year>
+		<publisher>G.I. Games</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="36290">
 				<rom name="jack the ripper - side 1 (gi games).tzx" size="36290" crc="aa34339b" sha1="d3454ee269090e37e8f9e0e502ebf0c46e4911b5"/>
@@ -87140,8 +87408,8 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 
 	<software name="jackriprd" cloneof="jackripr">
 		<description>Jack The Ripper (set 5, Zenobi)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1992</year>
+		<publisher>Zenobi Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="37422">
 				<rom name="jack the ripper - side 1 (zenobi).tzx" size="37422" crc="5f276ee7" sha1="7a1dd5ee711644bf1cc30f10321bb4545628710a"/>
@@ -87155,7 +87423,7 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jackal">
-		<description>Jackal (set 1)</description>
+		<description>Jackal</description>
 		<year>1987</year>
 		<publisher>Konami</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -87166,9 +87434,10 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jackala" cloneof="jackal">
-		<description>Jackal (set 2, Serma)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Jackal (Serma)</description>
+		<year>1987</year>
+		<publisher>Serma Software</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="54078">
 				<rom name="jackal (serma).tzx" size="54078" crc="317d947d" sha1="4beca3d32c47c2a3fb05e302f95a89d24731976c"/>
@@ -87210,6 +87479,22 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jahangir">
+		<description>Jahangir Khan's World Championship Squash</description>
+		<year>1991</year>
+		<publisher>Krisalis Software</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="102880">
+				<rom name="jahangir khan_s world championship squash - club game.tzx" size="102880" crc="2cbfbde6" sha1="b417a9853b602857a1c64cf281dc8def34528d9b"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="109371">
+				<rom name="jahangir khan_s world championship squash - tournament game.tzx" size="109371" crc="dec945a8" sha1="eb4e13a8325f5c956148414a1407d602dac2441d"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="jahangir_a" cloneof="jahangir">
 		<description>Jahangir Khan's World Championship Squash (GBH)</description>
 		<year>1991</year>
 		<publisher>GBH</publisher>
@@ -87226,17 +87511,18 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jahangir_b" cloneof="jahangir">
-		<description>Jahangir Khan's World Championship Squash</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Jahangir Khan's World Championship Squash (System 4)</description>
+		<year>1991</year>
+		<publisher>System 4</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="102880">
-				<rom name="jahangir khan_s world championship squash - club game.tzx" size="102880" crc="2cbfbde6" sha1="b417a9853b602857a1c64cf281dc8def34528d9b"/>
+			<dataarea name="cass" size="102883">
+				<rom name="jahangir khan's world championship squash (system 4) - side a.tzx" size="102883" crc="03d467b9" sha1="6caeedc3b841025f680aeec25ccb0313b24e8532"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="109371">
-				<rom name="jahangir khan_s world championship squash - tournament game.tzx" size="109371" crc="dec945a8" sha1="eb4e13a8325f5c956148414a1407d602dac2441d"/>
+			<dataarea name="cass" size="109368">
+				<rom name="jahangir khan's world championship squash (system 4) - side b.tzx" size="109368" crc="645a3319" sha1="1b5a09c0f2c4ed47c6d9241f9fe605625b9218ab"/>
 			</dataarea>
 		</part>
 	</software>
@@ -87351,17 +87637,6 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="jawzdktr">
-		<description>Jawz (DK'Tronics)</description>
-		<year>1983</year>
-		<publisher>DK'Tronics</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="12313">
-				<rom name="jawz (dk_tronics).tzx" size="12313" crc="2fbee4c9" sha1="82f544591fd0942ecef03ca224794df4900a8658"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<software name="jawzmons">
 		<description>Jawz (Monser)</description>
 		<year>19??</year>
@@ -87373,10 +87648,33 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="jawzpris">
-		<description>Jawz (Prism)</description>
+	<software name="jawz">
+		<description>Jawz</description>
+		<year>1983</year>
+		<publisher>Elfin Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="25199">
+				<rom name="jawz.tzx" size="25199" crc="b4e4a49e" sha1="58d361705e3c45c0c4051d3b2a8e105c567433a0"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="jawz_a" cloneof="jawz">
+		<description>Jawz (DK'Tronics)</description>
+		<year>1983</year>
+		<publisher>DK'Tronics</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="12313">
+				<rom name="jawz (dk_tronics).tzx" size="12313" crc="2fbee4c9" sha1="82f544591fd0942ecef03ca224794df4900a8658"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="jawz_b" cloneof="jawz">
+		<description>Jawz (PRISM)</description>
 		<year>1983</year>
 		<publisher>PRISM Micro-informatique</publisher>
+		<info name="region" value="France" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="12327">
 				<rom name="jawz (prism).tzx" size="12327" crc="a138f4a6" sha1="493fb7421f2e0492f07495a0fd9d16c7d4710c2c"/>
@@ -87384,24 +87682,14 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="jawzprof">
+	<software name="jawz_c" cloneof="jawz">
 		<description>Jawz (Profisoft)</description>
 		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Profisoft</publisher>
+		<info name="region" value="Germany" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="12618">
 				<rom name="jawz (profisoft).tzx" size="12618" crc="66466bd2" sha1="117896d7d14135a41402ef764c7ae923660be06f"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="jawz">
-		<description>Jawz</description>
-		<year>1983</year>
-		<publisher>Elfin</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="25199">
-				<rom name="jawz.tzx" size="25199" crc="b4e4a49e" sha1="58d361705e3c45c0c4051d3b2a8e105c567433a0"/>
 			</dataarea>
 		</part>
 	</software>
@@ -87456,7 +87744,7 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jesterqu">
-		<description>Jester Quest - 128k (Zenobi)</description>
+		<description>Jester Quest (128K, Zenobi)</description>
 		<year>1988</year>
 		<publisher>Zenobi Software</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -87467,9 +87755,9 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jesterqu_c" cloneof="jesterqu">
-		<description>Jester Quest - 48k (Zenobi)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Jester Quest (48K, Zenobi)</description>
+		<year>1988</year>
+		<publisher>Zenobi Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="45310">
 				<rom name="jester quest - 48k (zenobi) - side 1.tzx" size="45310" crc="78607104" sha1="546c8cf2d04ceb97f42fbdfdb629c4c542231c7c"/>
@@ -87483,9 +87771,9 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jesterqu_a" cloneof="jesterqu">
-		<description>Jester Quest - 128k +2</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Jester Quest (128K, +2)</description>
+		<year>1988</year>
+		<publisher>Nebula Designs Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="126285">
 				<rom name="jester quest - 128k +2.tzx" size="126285" crc="d4ec2fe2" sha1="5e0f092c116ebbc81c08085fb4481a9f6870e769"/>
@@ -87494,9 +87782,9 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jesterqu_b" cloneof="jesterqu">
-		<description>Jester Quest - 128k</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Jester Quest (128K)</description>
+		<year>1988</year>
+		<publisher>Nebula Designs Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="126293">
 				<rom name="jester quest - 128k.tzx" size="126293" crc="26a40be6" sha1="8bf0dfe9ce2b7d0658d10cffce0d48d0124ab0f1"/>
@@ -87505,9 +87793,9 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jesterqu_e" cloneof="jesterqu">
-		<description>Jester Quest - 48k - Release 1</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Jester Quest (48K, release 1)</description>
+		<year>1988</year>
+		<publisher>Nebula Designs Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="49368">
 				<rom name="jester quest - 48k - release 1 - side 1.tzx" size="49368" crc="bf784662" sha1="cddfefa81b875b30e7d603f45ebee945c3a4a94f"/>
@@ -87521,9 +87809,9 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jesterqu_g" cloneof="jesterqu">
-		<description>Jester Quest - 48k - Release 2</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Jester Quest (48K, release 2)</description>
+		<year>1988</year>
+		<publisher>Nebula Designs Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="37686">
 				<rom name="jester quest - 48k - release 2 - side 1.tzx" size="37686" crc="4e4510e5" sha1="6042eaee6bc45700e532f747cd64a56d1e1d9636"/>
@@ -87537,9 +87825,9 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jesterqu_i" cloneof="jesterqu">
-		<description>Jester Quest - 48k - Release 3</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Jester Quest (48K, release 3)</description>
+		<year>1988</year>
+		<publisher>Nebula Designs Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="91378">
 				<rom name="jester quest - 48k - release 3.tzx" size="91378" crc="2204e90e" sha1="7f544a4a2e1fe5b1d0d1f98746be01263177dc6b"/>
@@ -88434,10 +88722,14 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="jetsetwi_ct" cloneof="jetsetwi">
+	<software name="jswedtmj">
 		<description>Jet Set Willy Editor (Mark Jeffries)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1985</year>
+		<publisher>Spectrum Computing</publisher>
+		<notes><![CDATA[
+Within e-magazine "Spectrum Computing 12"
+Created by Mark Jeffries
+]]></notes>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="39828">
 				<rom name="jet set willy editor (mark jeffries).tzx" size="39828" crc="296ef117" sha1="eabcf483ba8220b62689bbff24cb07464242864a"/>
@@ -88445,10 +88737,11 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="jetsetwi_cu" cloneof="jetsetwi">
-		<description>Jet Set Willy Editor - German</description>
+	<software name="jswedtmj_de">
+		<description>Jet Set Willy Editor (German)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
+		<info name="language" value="German" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="41708">
 				<rom name="jet set willy editor - german.tzx" size="41708" crc="2f78e5be" sha1="2a6b2c58cb79a5f9bf83cacab176afe867a4ffa5"/>
@@ -88456,10 +88749,10 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="jetsetwi_cv" cloneof="jetsetwi">
-		<description>Jet Set Willy Editor Mk2 (set 2)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="jswedmk2_a" cloneof="jswedmk2">
+		<description>Jet Set Willy Editor MK2 (set 2)</description>
+		<year>1984</year>
+		<publisher>Softricks</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="21665">
 				<rom name="jet set willy editor mk2 - alternate - side 1.tzx" size="21665" crc="9f887282" sha1="4990c3f7898e3885284c08716cc3598a243e5662"/>
@@ -88472,10 +88765,10 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="jetsetwi_cx" cloneof="jetsetwi">
-		<description>Jet Set Willy Editor Mk2</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="jswedmk2">
+		<description>Jet Set Willy Editor MK2</description>
+		<year>1984</year>
+		<publisher>Softricks</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="21800">
 				<rom name="jet set willy editor mk2.tzx" size="21800" crc="62b0e842" sha1="726f0966057799c934ebde2d0c259222e4d233f0"/>
@@ -88506,9 +88799,11 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jetsetwi_da" cloneof="jetsetwi">
-		<description>Jet Set Willy In Paris v4.0 - Deutsch</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Jet Set Willy in Paris (mod, v4.0, German)</description>
+		<year>2005</year>
+		<publisher>Herve Ast</publisher>
+		<info name="language" value="German" />
+		<info name="region" value="France" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="117946">
 				<rom name="jet set willy in paris v4.0 - deutsch.tzx" size="117946" crc="61042b31" sha1="b0a2479f744ff7807e720034f534f411efff9ab8"/>
@@ -88517,9 +88812,11 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jetsetwi_db" cloneof="jetsetwi">
-		<description>Jet Set Willy In Paris v4.0 - English</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Jet Set Willy in Paris (mod, v4.0, English)</description>
+		<year>2005</year>
+		<publisher>Herve Ast</publisher>
+		<info name="region" value="France" />
+		<info name="language" value="English" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="117946">
 				<rom name="jet set willy in paris v4.0 - english.tzx" size="117946" crc="e9e1078e" sha1="f6115a9aaf3efdaa6bb8c050272534709943deaa"/>
@@ -88528,9 +88825,11 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jetsetwi_dc" cloneof="jetsetwi">
-		<description>Jet Set Willy In Paris v4.0 - Espanol</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Jet Set Willy in Paris (mod, v4.0, Spanish)</description>
+		<year>2005</year>
+		<publisher>Herve Ast</publisher>
+		<info name="region" value="France" />
+		<info name="language" value="Spanish" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="117946">
 				<rom name="jet set willy in paris v4.0 - espanol.tzx" size="117946" crc="6eaeab3d" sha1="20dd4537ca7ee2cc964a4fad14fd5e83c1a96d0a"/>
@@ -88539,9 +88838,11 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jetsetwi_dd" cloneof="jetsetwi">
-		<description>Jet Set Willy In Paris v4.0 - Finnish</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Jet Set Willy in Paris (mod, v4.0, Finnish)</description>
+		<year>2005</year>
+		<publisher>Herve Ast</publisher>
+		<info name="region" value="France" />
+		<info name="language" value="Finnish" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="117946">
 				<rom name="jet set willy in paris v4.0 - finnish.tzx" size="117946" crc="7d3ae247" sha1="565c4a4e0ff344adf1558bddf66265a7e059dae0"/>
@@ -88550,9 +88851,11 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jetsetwi_de" cloneof="jetsetwi">
-		<description>Jet Set Willy In Paris v4.0 - Francais</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Jet Set Willy in Paris (mod, v4.0, French)</description>
+		<year>2005</year>
+		<publisher>Herve Ast</publisher>
+		<info name="region" value="France" />
+		<info name="language" value="French" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="117946">
 				<rom name="jet set willy in paris v4.0 - francais.tzx" size="117946" crc="f9b78a1b" sha1="8bac9d00e2a6da9f6685a9c5e5cd06cebbac77f3"/>
@@ -88561,9 +88864,11 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jetsetwi_df" cloneof="jetsetwi">
-		<description>Jet Set Willy In Paris v4.0 - Italiano</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Jet Set Willy in Paris (mod, v4.0, Italian)</description>
+		<year>2005</year>
+		<publisher>Herve Ast</publisher>
+		<info name="region" value="France" />
+		<info name="language" value="Italian" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="117946">
 				<rom name="jet set willy in paris v4.0 - italiano.tzx" size="117946" crc="8acc59ba" sha1="3bd29b45948aec1a2eaf6ef89cd63d5d9c1272f5"/>
@@ -88572,9 +88877,11 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jetsetwi_dg" cloneof="jetsetwi">
-		<description>Jet Set Willy In Paris v4.0 - Polski</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Jet Set Willy in Paris (mod, v4.0, Polish)</description>
+		<year>2005</year>
+		<publisher>Herve Ast</publisher>
+		<info name="region" value="France" />
+		<info name="language" value="Polish" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="117946">
 				<rom name="jet set willy in paris v4.0 - polski.tzx" size="117946" crc="91f0fe5e" sha1="d6ccd5c9b67032cef99e7690e0350dae7e0808dc"/>
@@ -88583,9 +88890,11 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jetsetwi_dh" cloneof="jetsetwi">
-		<description>Jet Set Willy In Paris v4.0 - Portugues</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Jet Set Willy in Paris (mod, v4.0, Portuguese)</description>
+		<year>2005</year>
+		<publisher>Herve Ast</publisher>
+		<info name="region" value="France" />
+		<info name="language" value="Portuguese" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="117946">
 				<rom name="jet set willy in paris v4.0 - portugues.tzx" size="117946" crc="6e27a30e" sha1="89ce12dac1f36da0a5fafa44c7266b8c99cd1315"/>
@@ -88594,9 +88903,11 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jetsetwi_di" cloneof="jetsetwi">
-		<description>Jet Set Willy In Paris v4.0 - Russian</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Jet Set Willy in Paris (mod, v4.0, Russian)</description>
+		<year>2005</year>
+		<publisher>Herve Ast</publisher>
+		<info name="region" value="France" />
+		<info name="language" value="Russian" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="117946">
 				<rom name="jet set willy in paris v4.0 - russian.tzx" size="117946" crc="76b85e6a" sha1="692b2bc2584b087554ffba499add088115bef2e3"/>
@@ -88605,9 +88916,10 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jetsetwi_dj" cloneof="jetsetwi">
-		<description>Jet Set Willy In Space</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Jet Set Willy in Space (mod)</description>
+		<year>1997</year>
+		<publisher>Halsoft</publisher>
+		<info name="region" value="UK" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="41943">
 				<rom name="jet set willy in space.tzx" size="41943" crc="77b3ee70" sha1="8574d01e8df3e02e6ba4bd4ddcd12c6799571590"/>
@@ -88616,8 +88928,8 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jetsetwi_dk" cloneof="jetsetwi">
-		<description>Jet Set Willy IV - Willy's New Hat</description>
-		<year>19??</year>
+		<description>Jet Set Willy IV - Willy's New Hat (mod)</description>
+		<year>1985</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="32914">
@@ -88627,9 +88939,9 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jetsetwi_dl" cloneof="jetsetwi">
-		<description>Jet Set Willy Meets Colossal Cave</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Jet Set Willy Meets Colossal Cave (mod)</description>
+		<year>2000</year>
+		<publisher>James Wyatt</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="32914">
 				<rom name="jet set willy meets colossal cave.tzx" size="32914" crc="d945c983" sha1="fe608b9893bc0030ac15144f96d447ed18990713"/>
@@ -88637,10 +88949,10 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="jetsetwi_du" cloneof="jetsetwi">
+	<software name="jswslibr">
 		<description>Jet Set Willy Sprite Library</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1985</year>
+		<publisher>R.D. Foord Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="51678">
 				<rom name="jet set willy sprite library.tzx" size="51678" crc="fa3a7de4" sha1="6bd0830a99d47045509c0a8595f26c11b9ed3cf4"/>
@@ -88672,9 +88984,9 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jetseted_a" cloneof="jetseted">
-		<description>JetSet Editor (release 2)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>JetSet Willy Editor (release 2)</description>
+		<year>1984</year>
+		<publisher>Spectrum Electronics</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="11513">
 				<rom name="jetset editor - release 2.tzx" size="11513" crc="57bb8ec3" sha1="6deb708e1b8e09291efcea7f81577fe2411ffd89"/>
@@ -88683,9 +88995,9 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="jetseted_b" cloneof="jetseted">
-		<description>JetSet Editor (release 3)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>JetSet Willy Editor (release 3)</description>
+		<year>1984</year>
+		<publisher>Spectrum Electronics</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="98929">
 				<rom name="jetset editor - release 3.tzx" size="98929" crc="99840ed3" sha1="0da5b04bcfcd8a70e0c144836d828e9bbb3add7a"/>
@@ -89148,7 +89460,7 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="journeyt">
-		<description>Journey To Death</description>
+		<description>Journey to Death</description>
 		<year>1992</year>
 		<publisher>The Guild</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -89158,10 +89470,10 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="journeyt_a" cloneof="journeyt">
-		<description>Journey To The Centre of Eddie Smith's Head (set 2)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="jceshead">
+		<description>Journey to the Centre of Eddie Smith's Head (set 2)</description>
+		<year>1986</year>
+		<publisher>Players Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47713">
 				<rom name="journey to the centre of eddie smith_s head - alternate.tzx" size="47713" crc="61e4a011" sha1="8618d517cc4865cb087e00f0bc33a5e7152ccbae"/>
@@ -89169,10 +89481,10 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="journeyt_b" cloneof="journeyt">
-		<description>Journey To The Centre of Eddie Smith's Head</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="jceshead_a" cloneof="jceshead">
+		<description>Journey to the Centre of Eddie Smith's Head</description>
+		<year>1986</year>
+		<publisher>Players Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48010">
 				<rom name="journey to the centre of eddie smith_s head.tzx" size="48010" crc="3ea08d47" sha1="c9dd6d884e9db130a5d01a19c51289ebc27fc2a6"/>
@@ -89180,10 +89492,10 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="journeyt_c" cloneof="journeyt">
-		<description>Journey To The Centre of the Earth</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="jcearth">
+		<description>Journey to the Centre of the Earth</description>
+		<year>2005</year>
+		<publisher>Carl Wilson</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="39558">
 				<rom name="journey to the centre of the earth.tzx" size="39558" crc="7418170b" sha1="82b942ac7a4d1f42051a7f8c3f9a1d9c02145480"/>
@@ -102811,6 +103123,16 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
+	<software name="mpprleag">
+		<description>Multi-Player Premier League</description>
+		<year>1993</year>
+		<publisher>P. Thomas</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="42126">
+				<rom name="multi-player premier league.tzx" size="42126" crc="cfcda754" sha1="032c790d3080c7647997dde5008b171b128ff346"/>
+			</dataarea>
+		</part>
+	</software>
 
 	<software name="mf1crkk">
 		<description>Multiface One Crack-Killer</description>
@@ -110861,6 +111183,17 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
+	<software name="pictbook">
+		<description>Picture Book (Triple R Education)</description>
+		<year>1992</year>
+		<publisher>Triple R Education</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="28276">
+				<rom name="PictureBook.tzx" size="28276" crc="b787889f" sha1="ff645c7ce580727b0e0590bf8cde9164e17199b9"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="picturel">
 		<description>Picture Logic</description>
 		<year>19??</year>
@@ -112037,6 +112370,23 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="7731">
 				<rom name="pools forecast.tzx" size="7731" crc="9d413af4" sha1="4c9e650552f3d1b9deace1ce040b73e37935847f"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="ppredict">
+		<description>Pools Predictions</description>
+		<year>1984</year>
+		<publisher>Mayfield Products</publisher>
+		<info name="alt_title" value="Soccer Forecasting"/>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="27643">
+				<rom name="pools predictions - side 1.tzx" size="27643" crc="a95eb8e5" sha1="6d9e9ec995b5b160ea8c1f07bcba35276a6f6545"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="9475">
+				<rom name="pools predictions - side 2.tzx" size="9475" crc="edda8b09" sha1="d75c3e8b49578ad869565c7a6f878afe1c2922f3"/>
 			</dataarea>
 		</part>
 	</software>
@@ -115157,6 +115507,22 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
+	<software name="questhjb" cloneof="questhj">
+		<description>Quest for the Holy Joystick (Delta 4, alt)</description>
+		<year>1984</year>
+		<publisher>Delta 4 Software</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="27801">
+				<rom name="the quest for the holy joystick (side 1).tzx" size="27801" crc="a5ba52f8" sha1="ea83ce770156a0781903d56d7f8adc6ba590ad5a"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="41602">
+				<rom name="the quest for the holy joystick (side 2).tzx" size="41602" crc="82696649" sha1="25eb72f83b32b480615c50139a8f765f64b56ce5"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="questsom">
 		<description>Quest for the Holy Something (alt)</description>
 		<year>1992</year>
@@ -117201,12 +117567,17 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="redridin">
-		<description>Red Riding Hood</description>
+		<description>Learning Box - Red Riding Hood</description>
 		<year>1984</year>
 		<publisher>Arrow</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="50190">
-				<rom name="red riding hood.tzx" size="50190" crc="70615581" sha1="2a2b0626b16cfc5e4d9540059ff84b26431aa245"/>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="24931372">
+				<rom name="red riding hood (side a - audio).wav" size="24931372" crc="46f5ae70" sha1="803f27079a895e2492a4713b498be3eab629b7b8"/>
+			</dataarea>
+		</part>
+		<part name="cass3" interface="spectrum_cass">
+			<dataarea name="cass" size="50168">
+				<rom name="red riding hood (side b).tzx" size="50168" crc="87d2e85b" sha1="83681bf9da61b200739d590f0e6891701f7fa3e0"/>
 			</dataarea>
 		</part>
 	</software>
@@ -120222,8 +120593,24 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="theretur">
-		<description>The Return of the Holy Joystick (G.I. Games)</description>
+		<description>The Return of the Holy Joystick</description>
 		<year>1984</year>
+		<publisher>Delta 4 Software</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="58728">
+				<rom name="return of the holy koystick - side 1.tzx" size="58728" crc="41ccfc2f" sha1="a13811b6eb6c18c053c3ba5b07af64293bcd7c19"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="48327">
+				<rom name="return of the holy koystick - side 2.tzx" size="48327" crc="275103b0" sha1="8e985212f6a59eb002fdece644552fd933defc41"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="theretur_a" cloneof="theretur">
+		<description>The Return of the Holy Joystick (G.I. Games)</description>
+		<year>1991</year>
 		<publisher>G.I. Games</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="42709">
@@ -125104,6 +125491,17 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="snookerm">
+		<description>Snooker Management</description>
+		<year>1989</year>
+		<publisher>D&amp;H Games</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="40726">
+				<rom name="snooker management.tzx" size="40726" crc="bdfd2531" sha1="fdeea2590f417e4411d5cab87157c0ee810c73a3"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="snookerm_a" cloneof="snookerm">
 		<description>Snooker Management (Cult)</description>
 		<year>1989</year>
 		<publisher>Cult Games</publisher>
@@ -125114,21 +125512,10 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="snookerm_a" cloneof="snookerm">
-		<description>Snooker Management</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="40726">
-				<rom name="snooker management.tzx" size="40726" crc="bdfd2531" sha1="fdeea2590f417e4411d5cab87157c0ee810c73a3"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="snookerm_b" cloneof="snookerm">
+	<software name="snookman">
 		<description>Snooker Manager</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>Image Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="44851">
 				<rom name="snooker manager.tzx" size="44851" crc="6e939653" sha1="14453ed3c0aba97d660f7a1c2467ba2bfe0e2f60"/>
@@ -125136,10 +125523,10 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="snookerm_c" cloneof="snookerm">
-		<description>Snooker Masters - 1988 Version</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="snookmast">
+		<description>Snooker Masters (1988 version)</description>
+		<year>1990</year>
+		<publisher>Lambourne Games</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="40668">
 				<rom name="snooker masters - 1988 version.tzx" size="40668" crc="62a1dd70" sha1="17e8dab362025f2633f71110b2d8003e6b70a60a"/>
@@ -125147,10 +125534,10 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="snookerm_d" cloneof="snookerm">
-		<description>Snooker Masters - 1989 Version</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="snookmast_a" cloneof="snookmast">
+		<description>Snooker Masters (1989 version)</description>
+		<year>1990</year>
+		<publisher>Lambourne Games</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="40668">
 				<rom name="snooker masters - 1989 version.tzx" size="40668" crc="c6ab5273" sha1="e9d9a290424fbbcc36c76ac2df78e70f6827d57a"/>
@@ -125321,17 +125708,6 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="soccer7e">
-		<description>Soccer 7 (EDOS)</description>
-		<year>1990</year>
-		<publisher>EDOS</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="40529">
-				<rom name="soccer 7 (edos).tzx" size="40529" crc="94efd779" sha1="ea8c55d569d55b4615668d84cd2c9091180595cc"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<software name="soccer7">
 		<description>Soccer 7</description>
 		<year>1989</year>
@@ -125339,6 +125715,17 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="40253">
 				<rom name="soccer 7.tzx" size="40253" crc="58f098c0" sha1="64682e07036d3e134487deb101d886209b55a357"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="soccer7e" cloneof="soccer7">
+		<description>Soccer 7 (EDOS)</description>
+		<year>1990</year>
+		<publisher>EDOS</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="40529">
+				<rom name="soccer 7 (edos).tzx" size="40529" crc="94efd779" sha1="ea8c55d569d55b4615668d84cd2c9091180595cc"/>
 			</dataarea>
 		</part>
 	</software>
@@ -125523,7 +125910,7 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="sodovthe">
-		<description>Sodov The Sorcerer</description>
+		<description>Sodov the Sorcerer</description>
 		<year>1986</year>
 		<publisher>Bug-Byte Software</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -128027,14 +128414,16 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 
 	<software name="speccric">
 		<description>Spectrum Cricket</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1984</year>
+		<publisher>Wizard Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
+			<feature name="part_id" value="Over Match"/>
 			<dataarea name="cass" size="44796">
 				<rom name="spectrum cricket - over match.tzx" size="44796" crc="c1206b85" sha1="ef29abd2525204e7aab6bf647367a4bf247ee8a3"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
+			<feature name="part_id" value="Test Match"/>
 			<dataarea name="cass" size="46281">
 				<rom name="spectrum cricket - test match.tzx" size="46281" crc="c0411d10" sha1="edab923400088a09e31bb2de63c818e209f3966d"/>
 			</dataarea>
@@ -129491,6 +129880,17 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="35250">
 				<rom name="sqij.tzx" size="35250" crc="3a3e1c82" sha1="0fbfd71327a062fc38f964f9be18220af428f4b3"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="sqrdance">
+		<description>Square Dance</description>
+		<year>1984</year>
+		<publisher>Cases Computer Simulations</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="29391">
+				<rom name="square dance.tzx" size="29391" crc="f92583cd" sha1="2bfce4dee63b182ad4066ffad72c48121e3e514d"/>
 			</dataarea>
 		</part>
 	</software>
@@ -131989,6 +132389,17 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
+	<software name="supapunta">
+		<description>Supapunta</description>
+		<year>1984</year>
+		<publisher>Red ROM Data</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="36752">
+				<rom name="supa punta.tzx" size="36752" crc="0c26db07" sha1="55c8040447c079d61763d055b71d5f8f363be718"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="super48k">
 		<description>Super 48k Box - 47 Loader</description>
 		<year>19??</year>
@@ -133766,10 +134177,10 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="thesearc_a" cloneof="thesearc">
+	<software name="srchneth">
 		<description>The Search For The Nether Regions</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1994</year>
+		<publisher>Zenobi Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="40817">
 				<rom name="the search for the nether regions - part 1.tzx" size="40817" crc="ac78e161" sha1="99a968230082c3df0d39280d474a516e5f7da778"/>
@@ -133782,10 +134193,10 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="thesearc_c" cloneof="thesearc">
-		<description>The Search For The Wonderful Whotsit (Adventure Probe)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="swhotsit">
+		<description>The Search For The Wonderful Whotsit</description>
+		<year>1996</year>
+		<publisher>Adventure Probe Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="56580">
 				<rom name="the search for the wonderful whotsit (adventure probe).tzx" size="56580" crc="1439f45e" sha1="95a11751336e889b959613baafb56191e897c0fe"/>
@@ -133793,8 +134204,8 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="thesearc_d" cloneof="thesearc">
-		<description>The Search For The Wonderful Whotsit</description>
+	<software name="swhotsit_a" cloneof="swhotsit">
+		<description>The Search For The Wonderful Whotsit (alt)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -134176,10 +134587,10 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="thesorce_a" cloneof="thesorce">
-		<description>The Sorcerer's Mountain</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="srcmount">
+		<description>Sorcerer's Mountain</description>
+		<year>1984</year>
+		<publisher>Martin Sykes</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="59513">
 				<rom name="the sorcerer_s mountain.tzx" size="59513" crc="93ff31c8" sha1="9f210ff133ea8375e87168934202d30e57fb6293"/>
@@ -134265,7 +134676,7 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	<software name="thespect">
 		<description>The Spectre of Booballyhoo</description>
 		<year>1987</year>
-		<publisher>Infected</publisher>
+		<publisher>Infected Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="38204">
 				<rom name="the spectre of booballyhoo.tzx" size="38204" crc="178ffca5" sha1="54905a5222f4fd622e59a371326d7a62e05a503d"/>
@@ -134273,42 +134684,10 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="thespect_a" cloneof="thespect">
-		<description>The Spectre of Castle Coris (Adventure Probe)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="73807">
-				<rom name="the spectre of castle coris (adventure probe) - side 1.tzx" size="73807" crc="f17278c7" sha1="05cc0c9195d5178cc5802570fc14db0a9dc23a6a"/>
-			</dataarea>
-		</part>
-		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="76603">
-				<rom name="the spectre of castle coris (adventure probe) - side 2.tzx" size="76603" crc="6f09ec7a" sha1="5087ee7a55c8ebd77988dad3a8d37cdade71c1b2"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="thespect_c" cloneof="thespect">
-		<description>The Spectre of Castle Coris (set 2)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="37094">
-				<rom name="the spectre of castle coris - alternate - part 1.tzx" size="37094" crc="69d07b26" sha1="20633bf3c05d4c6096fd9560c81dcf15d05bbf0a"/>
-			</dataarea>
-		</part>
-		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="37061">
-				<rom name="the spectre of castle coris - alternate - part 2.tzx" size="37061" crc="6a614670" sha1="a3d7caba1632f708599b5b0bb0fb8eb1fddc4b88"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="thespect_e" cloneof="thespect">
+	<software name="cstcoris">
 		<description>The Spectre of Castle Coris</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1992</year>
+		<publisher>FSF Adventures</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="37199">
 				<rom name="the spectre of castle coris - part 1.tzx" size="37199" crc="99fb5053" sha1="5bb3a231733c6ac10dd370fe11c8cddc8c3b3dff"/>
@@ -134321,10 +134700,42 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="thespect_g" cloneof="thespect">
+	<software name="cstcoris_a" cloneof="cstcoris">
+		<description>The Spectre of Castle Coris (alt)</description>
+		<year>1990</year>
+		<publisher>FSF Adventures</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="37094">
+				<rom name="the spectre of castle coris - alternate - part 1.tzx" size="37094" crc="69d07b26" sha1="20633bf3c05d4c6096fd9560c81dcf15d05bbf0a"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="37061">
+				<rom name="the spectre of castle coris - alternate - part 2.tzx" size="37061" crc="6a614670" sha1="a3d7caba1632f708599b5b0bb0fb8eb1fddc4b88"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="cstcoris_b" cloneof="cstcoris">
+		<description>The Spectre of Castle Coris (Adventure Probe)</description>
+		<year>1990</year>
+		<publisher>Adventure Probe Software</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="73807">
+				<rom name="the spectre of castle coris (adventure probe) - side 1.tzx" size="73807" crc="f17278c7" sha1="05cc0c9195d5178cc5802570fc14db0a9dc23a6a"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="76603">
+				<rom name="the spectre of castle coris (adventure probe) - side 2.tzx" size="76603" crc="6f09ec7a" sha1="5087ee7a55c8ebd77988dad3a8d37cdade71c1b2"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="horsfield">
 		<description>The Spectre of Larry Horsfield</description>
 		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>The Fly On The Wall</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="36920">
 				<rom name="the spectre of larry horsfield.tzx" size="36920" crc="20d78dc7" sha1="a5580f6580ff29e11055713dba8a70fbd1836269"/>
@@ -134332,7 +134743,7 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="thespect_i" cloneof="thespect">
+	<software name="graphkit">
 		<description>The Spectrum Graphics Kit</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
@@ -134353,10 +134764,11 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="thespect_k" cloneof="thespect">
+	<software name="investmon">
 		<description>The Spectrum Investment Monitor</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1987</year>
+		<publisher>Michael Slatford Software</publisher>
+		<info name="alt_title" value="The Investment Monitor"/>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="34968">
 				<rom name="the spectrum investment monitor - side 1.tzx" size="34968" crc="c34c489f" sha1="e07abd1148a793fc69108235ea13c8823062ba90"/>
@@ -136668,20 +137080,20 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="thetimem">
-		<description>The Time Machine (Channel 8)</description>
+		<description>The Time Machine (set 2)</description>
 		<year>1983</year>
-		<publisher>Channel 8</publisher>
+		<publisher>Digital Fantasia</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="37148">
-				<rom name="the time machine (channel 8).tzx" size="37148" crc="2c0ba7c9" sha1="4b0d5d2f85779214931e74420a1523d46dac5545"/>
+			<dataarea name="cass" size="37166">
+				<rom name="the time machine - alternate.tzx" size="37166" crc="63ccee7b" sha1="3d240f4df1f3bff1c515861d42612c33e71a54aa"/>
 			</dataarea>
 		</part>
 	</software>
 
 	<software name="thetimem_a" cloneof="thetimem">
 		<description>The Time Machine (Tynesoft)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1983</year>
+		<publisher>Tynesoft</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47175">
 				<rom name="the time machine (tynesoft).tzx" size="47175" crc="d2c7fc4e" sha1="2d0318fca16fb686f1069a75e930de89cf12109e"/>
@@ -136690,9 +137102,9 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="thetimem_b" cloneof="thetimem">
-		<description>The Time Machine (set 2) (Channel 8)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>The Time Machine (Channel 8, alt)</description>
+		<year>1983</year>
+		<publisher>Channel 8 Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47175">
 				<rom name="the time machine - alternate (channel 8).tzx" size="47175" crc="11c8ad32" sha1="03a4077e53fb835f4fadc70cb41265748ed34675"/>
@@ -136701,20 +137113,20 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="thetimem_c" cloneof="thetimem">
-		<description>The Time Machine (set 2)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>The Time Machine (Channel 8)</description>
+		<year>1983</year>
+		<publisher>Channel 8 Software</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="37166">
-				<rom name="the time machine - alternate.tzx" size="37166" crc="63ccee7b" sha1="3d240f4df1f3bff1c515861d42612c33e71a54aa"/>
+			<dataarea name="cass" size="37148">
+				<rom name="the time machine (channel 8).tzx" size="37148" crc="2c0ba7c9" sha1="4b0d5d2f85779214931e74420a1523d46dac5545"/>
 			</dataarea>
 		</part>
 	</software>
 
 	<software name="thetimem_d" cloneof="thetimem">
 		<description>The Time Machine</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1983</year>
+		<publisher>Digital Fantasia</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47145">
 				<rom name="the time machine.tzx" size="47145" crc="98b56676" sha1="f1421c6903a948a5146c3853629511aeab03152f"/>
@@ -136828,23 +137240,25 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="thetrain">
-		<description>The Train (Dro Soft)</description>
+		<description>The Train: Escape to Normandy</description>
 		<year>1988</year>
-		<publisher>Dro Soft</publisher>
+		<publisher>Electronic Arts</publisher>
+		<info name="region" value="USA" />
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="48316">
-				<rom name="the train (dro soft).tzx" size="48316" crc="8a1f42aa" sha1="7c886826d97e5eab716d91730e079a7ed5bbedc0"/>
+			<dataarea name="cass" size="48176">
+				<rom name="the train.tzx" size="48176" crc="018def66" sha1="244a185b35eab7f7a8288dca77f214ec5bb7f379"/>
 			</dataarea>
 		</part>
 	</software>
 
-	<software name="thetrain_d" cloneof="thetrain">
-		<description>The Train</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="thetrain_a" cloneof="thetrain">
+		<description>The Train (Dro Soft)</description>
+		<year>1988</year>
+		<publisher>Dro Soft</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="48176">
-				<rom name="the train.tzx" size="48176" crc="018def66" sha1="244a185b35eab7f7a8288dca77f214ec5bb7f379"/>
+			<dataarea name="cass" size="48316">
+				<rom name="the train (dro soft).tzx" size="48316" crc="8a1f42aa" sha1="7c886826d97e5eab716d91730e079a7ed5bbedc0"/>
 			</dataarea>
 		</part>
 	</software>
@@ -137001,7 +137415,18 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="thetubeb">
+	<software name="thetube">
+		<description>The Tube</description>
+		<year>1987</year>
+		<publisher>Quicksilva</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="50892">
+				<rom name="the tube.tzx" size="50892" crc="ababf317" sha1="99c42a8374966a4687f0d5391e2146eeb3e6fff0"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="thetubeb" cloneof="thetube">
 		<description>The Tube (Bug-Byte)</description>
 		<year>1987</year>
 		<publisher>Bug-Byte Software</publisher>
@@ -137012,13 +137437,13 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		</part>
 	</software>
 
-	<software name="thetube">
-		<description>The Tube</description>
-		<year>1987</year>
-		<publisher>Quicksilva</publisher>
+	<software name="thetubec" cloneof="thetube">
+		<description>The Tube (Zafiro)</description>
+		<year>1988</year>
+		<publisher>Zafiro Software Division</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="50892">
-				<rom name="the tube.tzx" size="50892" crc="ababf317" sha1="99c42a8374966a4687f0d5391e2146eeb3e6fff0"/>
+			<dataarea name="cass" size="51151">
+				<rom name="the tube (zafiro).tzx" size="51151" crc="9f554e27" sha1="ec1054b28d19e5a4c5ba612ad69bb873648fb7b4"/>
 			</dataarea>
 		</part>
 	</software>
@@ -139947,6 +140372,7 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 		<year>1986</year>
 		<publisher>Hello Games</publisher>
 		<notes>A pirated version from Portugal</notes>
+		<info name="region" value="Portugal" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="56247">
 				<rom name="tremor (hello games).tzx" size="56247" crc="3404c5fb" sha1="946a6fe1d72910339ed9b21a63f73dea80355f50"/>
@@ -144020,20 +144446,20 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="thewinge">
-		<description>The Winged Avenger Mk II (Profisoft)</description>
-		<year>1983</year>
-		<publisher>Profisoft</publisher>
+		<description>The Winged Avenger</description>
+		<year>1982</year>
+		<publisher>Work Force</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="6033">
-				<rom name="the winged avenger mk ii (profisoft).tzx" size="6033" crc="f7311d93" sha1="1fdfb04f1466ed2a5b1348b8f97900b068237ba9"/>
+			<dataarea name="cass" size="9379">
+				<rom name="the winged avenger.tzx" size="9379" crc="42ed9edc" sha1="5155dd1312842a999809851b790a57d5e28b34e5"/>
 			</dataarea>
 		</part>
 	</software>
 
 	<software name="thewinge_a" cloneof="thewinge">
-		<description>The Winged Avenger Mk II</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>The Winged Avenger (Mk II)</description>
+		<year>1983</year>
+		<publisher>Work Force</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="10868">
 				<rom name="the winged avenger mk ii.tzx" size="10868" crc="fcfcb433" sha1="326289d84f6b023f5dae9767be803a774cbebcfa"/>
@@ -144042,12 +144468,13 @@ Game 7: What's Your Name? Simulator (S.H. Eye-Tea Productions, 1994)
 	</software>
 
 	<software name="thewinge_b" cloneof="thewinge">
-		<description>The Winged Avenger</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>The Winged Avenger (Profisoft, Mk II)</description>
+		<year>1983</year>
+		<publisher>Profisoft</publisher>
+		<info name="region" value="Germany" />
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="9379">
-				<rom name="the winged avenger.tzx" size="9379" crc="42ed9edc" sha1="5155dd1312842a999809851b790a57d5e28b34e5"/>
+			<dataarea name="cass" size="6033">
+				<rom name="the winged avenger mk ii (profisoft).tzx" size="6033" crc="f7311d93" sha1="1fdfb04f1466ed2a5b1348b8f97900b068237ba9"/>
 			</dataarea>
 		</part>
 	</software>
@@ -156068,6 +156495,22 @@ Tape 2: Cell of the Ridges
 		</part>
 	</software>
 
+	<software name="fountpdc">
+		<description>Fountain PD Compilation</description>
+		<year>199?</year>
+		<publisher>Fountain PD</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="243692">
+				<rom name="Fountain PD Compilation - Fountain PD - Side A.tzx" size="243692" crc="ed98280f" sha1="64a4edb9b304ef56d3f599f15a05a5a4ea4e227f"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="268248">
+				<rom name="Fountain PD Compilation - Fountain PD - Side B.tzx" size="268248" crc="c667d005" sha1="a707e3704b619d1b4a43dd96647c400c6116e25f"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="fourgrea">
 		<description>Four Great Games</description>
 		<year>1987</year>
@@ -157524,7 +157967,7 @@ Tape 2 - Sida B: Star Wars
 	</software>
 
 	<software name="hwbm">
-		<description>Hollywood (Batman &amp; The Untouchables)</description>
+		<description>Hollywood featuring Batman &amp; The Untouchables</description>
 		<year>1989</year>
 		<publisher>Ocean</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -160597,6 +161040,22 @@ Tape 2 - Side A - Game 3: Hydrofool (Faster Than Light)
 		</part>
 	</software>
 
+	<software name="princeof_a" cloneof="princeof">
+		<description>Prince of Tyndal &amp; Jekyll and Hyde (alt)</description>
+		<year>19??</year>
+		<publisher>&lt;unknown&gt;</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="47045">
+				<rom name="Prince Of Tyndal &amp; Jekyll And Hyde - Jekyll And Hyde.tzx" size="47045" crc="2fdca736" sha1="a9cf4a6d8d08feb24b4c659c9b0d5e9c15fe81be"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="45984">
+				<rom name="Prince Of Tyndal &amp; Jekyll And Hyde - Prince Of Tyndal.tzx" size="45984" crc="12378589" sha1="a164a2d94efc42e5d1833fcd8b04be40a30f50f9"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="prisonbl">
 		<description>Prison Blues &amp; Magicians Apprentice</description>
 		<year>1990</year>
@@ -161390,7 +161849,7 @@ Tape 2 - Side A - Game 3: Hydrofool (Faster Than Light)
 	<software name="soapthig">
 		<description>Soap Land &amp; For Your Thighs Only</description>
 		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Delbert the Hamster Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="124178">
 				<rom name="soap land _ for your thighs only - side 1.tzx" size="124178" crc="4b26e7de" sha1="c2d19917828cb70ae010e2fb1c8633a7e254d4f2"/>
@@ -161422,7 +161881,7 @@ Tape 2 - Side A - Game 3: Hydrofool (Faster Than Light)
 	<software name="soccerdo">
 		<description>Soccer Double (Challenge)</description>
 		<year>1991</year>
-		<publisher>E&amp;J</publisher>
+		<publisher>Challenge Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="72572">
 				<rom name="soccer double (challenge).tzx" size="72572" crc="40bd0da0" sha1="501ac9416eb4059b1842aaf38ca83e694560ffad"/>
@@ -161430,10 +161889,10 @@ Tape 2 - Side A - Game 3: Hydrofool (Faster Than Light)
 		</part>
 	</software>
 
-	<software name="soccerdo_c" cloneof="soccerdo">
-		<description>Soccer Double</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="soccerdo_a" cloneof="soccerdo">
+		<description>Soccer Double (E&amp;J)</description>
+		<year>1991</year>
+		<publisher>E&amp;J Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="72609">
 				<rom name="soccer double.tzx" size="72609" crc="3b1a99ec" sha1="a22183b783e469cfd9babb0da57e6ea9481688b4"/>
@@ -161441,10 +161900,10 @@ Tape 2 - Side A - Game 3: Hydrofool (Faster Than Light)
 		</part>
 	</software>
 
-	<software name="soccerdo_a" cloneof="soccerdo">
+	<software name="soccerd2">
 		<description>Soccer Double 2</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1991</year>
+		<publisher>Challenge Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="73825">
 				<rom name="soccer double 2.tzx" size="73825" crc="1ee0d697" sha1="8c08f6ed047cf63d8b9f1b2d462eaef8e726ac99"/>
@@ -161452,10 +161911,10 @@ Tape 2 - Side A - Game 3: Hydrofool (Faster Than Light)
 		</part>
 	</software>
 
-	<software name="soccerdo_b" cloneof="soccerdo">
+	<software name="soccerd3">
 		<description>Soccer Double 3</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1991</year>
+		<publisher>Challenge Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="72578">
 				<rom name="soccer double 3.tzx" size="72578" crc="3415ecec" sha1="7a012a072f988992913cf10d12648fc84199e3a8"/>
@@ -161491,8 +161950,8 @@ Tape 2 - Side A - Game 3: Hydrofool (Faster Than Light)
 
 	<software name="soccerma_b" cloneof="soccerma">
 		<description>Soccer Mania (set 2)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1990</year>
+		<publisher>Addictive Games</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="50463">
 				<rom name="soccer mania - tape 1 - side a.tzx" size="50463" crc="8653e94d" sha1="50d9740ea4ce9c3d79fdd6ba9eb888369c3a9a4a"/>
@@ -161535,6 +161994,12 @@ Tape 2 - Side A - Game 3: Hydrofool (Faster Than Light)
 		<description>Soccer Stars (compilation)</description>
 		<year>1992</year>
 		<publisher>Empire</publisher>
+		<notes><![CDATA[
+Side A: Emlyn Hughes International Soccer (Audiogenic Software )
+Side A: Gazza II (Empire Software)
+Side B: Kick Off 2 (Anco Software)
+Side B: MicroProse Soccer (MicroProse Software)
+]]></notes>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="134184">
 				<rom name="soccer stars - side a.tzx" size="134184" crc="d354775e" sha1="4aa9f17fbf2b330001cdebd1f611a85ed62e0e95"/>
@@ -161563,10 +162028,42 @@ Tape 2 - Side A - Game 3: Hydrofool (Faster Than Light)
 		</part>
 	</software>
 
-	<software name="softspec">
-		<description>Soft Spectrum (Issue 05)</description>
+	<software name="softspec01">
+		<description>Soft Spectrum (issue 01)</description>
+		<year>1984</year>
+		<publisher>Magazine Soft Spectrum</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="56097">
+				<rom name="soft spectrum (issue 01) - side 1.tzx" size="56097" crc="e0a3c19f" sha1="57cafa2b4e6ce45a0e30f56e4927cf3734366274"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="55897">
+				<rom name="soft spectrum (issue 01) - side 2.tzx" size="55897" crc="8a362a1a" sha1="c0cd43c81b1d2fa1e4cf61e0c5ce228115cd8f01"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softspec02">
+		<description>Soft Spectrum (issue 02)</description>
+		<year>1985</year>
+		<publisher>Magazine Soft Spectrum</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="51061">
+				<rom name="soft spectrum (issue 02) - side 1.tzx" size="51061" crc="5b9855aa" sha1="ac43b4683ee11cb196ad746475ef47525034ea99"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="50399">
+				<rom name="soft spectrum (issue 02) - side 2.tzx" size="50399" crc="3e08cefe" sha1="b40c329fe7bb47040164b9707507700562055ee0"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softspec05">
+		<description>Soft Spectrum (issue 05)</description>
 		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Magazine Soft Spectrum</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="40607">
 				<rom name="soft spectrum (issue 05) - side 1.tzx" size="40607" crc="e96b1788" sha1="94c434ac87bad79fc346ffcf971af970000a716a"/>
@@ -161579,10 +162076,10 @@ Tape 2 - Side A - Game 3: Hydrofool (Faster Than Light)
 		</part>
 	</software>
 
-	<software name="softspec_b" cloneof="softspec">
+	<software name="softspec19">
 		<description>Soft Spectrum (Issue 19) - La Gruta De Los Cuatro Diamantes</description>
 		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Magazine Soft Spectrum</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="35533">
 				<rom name="soft spectrum (issue 19) - la gruta de los cuatro diamantes.tzx" size="35533" crc="e4eecbe2" sha1="fac9f9f97ebf09f15aa3f4bab6fb317982067eb5"/>
@@ -161590,10 +162087,10 @@ Tape 2 - Side A - Game 3: Hydrofool (Faster Than Light)
 		</part>
 	</software>
 
-	<software name="softspec_c" cloneof="softspec">
-		<description>Soft Spectrum (Issue 20) - Jack Y El Arca Maravillosa</description>
+	<software name="softspec20">
+		<description>Soft Spectrum (issue 20) - Jack Y El Arca Maravillosa</description>
 		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Magazine Soft Spectrum</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="22531">
 				<rom name="soft spectrum (issue 20) - jack y el arca maravillosa.tzx" size="22531" crc="462b8baa" sha1="35949ebf87b213ee01acbd5d04d085358a8f4ab5"/>
@@ -161601,10 +162098,10 @@ Tape 2 - Side A - Game 3: Hydrofool (Faster Than Light)
 		</part>
 	</software>
 
-	<software name="softspec_d" cloneof="softspec">
-		<description>Soft Spectrum (Issue 23) - Star Fighter</description>
+	<software name="softspec23">
+		<description>Soft Spectrum (issue 23) - Star Fighter</description>
 		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Magazine Soft Spectrum</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="14480">
 				<rom name="soft spectrum (issue 23) - star fighter.tzx" size="14480" crc="a203e0e7" sha1="7edc1020e72eed7a341619749ad0f018cce38181"/>
@@ -161612,10 +162109,10 @@ Tape 2 - Side A - Game 3: Hydrofool (Faster Than Light)
 		</part>
 	</software>
 
-	<software name="softspec_e" cloneof="softspec">
-		<description>Soft Spectrum (Issue 25) - Bomberos</description>
+	<software name="softspec25">
+		<description>Soft Spectrum (issue 25) - Bomberos</description>
 		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>Magazine Soft Spectrum</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="19962">
 				<rom name="soft spectrum (issue 25) - bomberos.tzx" size="19962" crc="233ccbe8" sha1="516f9166706c091efcb078fcf41c803f9e61dcc9"/>
@@ -161997,6 +162494,17 @@ Tape 2 - Side A - Game 3: Hydrofool (Faster Than Light)
 		</part>
 	</software>
 
+	<software name="spartsoft">
+		<description>Spartan Software Compilation</description>
+		<year>19??</year>
+		<publisher>&lt;unknown&gt;</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="31708">
+				<rom name="spartan software compilation.tzx" size="31708" crc="2c5c237f" sha1="a6702e51fc01fa9d5f7d6de623e3a815520e241e"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="specsocc">
 		<description>Spec Soccer (compilation)</description>
 		<year>1986</year>
@@ -162025,9 +162533,16 @@ Tape 2 - Side A - Game 3: Hydrofool (Faster Than Light)
 	</software>
 
 	<software name="spcatcn">
-		<description>Special Action</description>
+		<description>Special Action (Ocean)</description>
 		<year>1989</year>
 		<publisher>Ocean</publisher>
+		<notes><![CDATA[
+Game 1: Captain Blood (Exxos)
+Game 2: Driller (Incentive Software)
+Game 3: Daley Thompson's Olympic Challenge (Ocean Software)
+Game 4: SDI - Now the Odds Are Even (Activision)
+Game 5: The Vindicator (Imagine Software)
+]]></notes>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="168774">
 				<rom name="special action - tape 1 - side a.tzx" size="168774" crc="b7a3b443" sha1="359e370c21fa8864990ee379324c14c07140fd11"/>
@@ -162046,6 +162561,41 @@ Tape 2 - Side A - Game 3: Hydrofool (Faster Than Light)
 		<part name="cass4" interface="spectrum_cass">
 			<dataarea name="cass" size="129211">
 				<rom name="special action - tape 2 - side b.tzx" size="129211" crc="b387b55d" sha1="e615eb5fd3e11f5ce6c24698bac732a02ae40b4f"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="spaction">
+		<description>Special Action (Imagine)</description>
+		<year>1989</year>
+		<publisher>Imagine Software</publisher>
+		<notes><![CDATA[
+Tape 1 - Side A - Game 1: Target: Renegade (Imagine Software)
+Tape 1 - Side B - Game 1: Shao-Lin's Road Blood (The Edge)
+Tape 1 - Side B - Game 2: IK+ (System 3 Software)
+Tape 2 - Side A - Game 1: Gryzor 48K (Ocean Software)
+Tape 2 - Side A - Game 2: Gryzor 128K (Ocean Software)
+Tape 2 - Side B - Game 1: Salamander (Konami)
+Tape 2 - Side B - Game 2: Fernando Martin Basket Master (Dinamic Software)
+]]></notes>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="116710">
+				<rom name="special action (imagine) - tape 1 - side a.tzx" size="116710" crc="3ffb8494" sha1="e35ad90d250e42a5be62372f322e7e4eb7337e7d"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="100531">
+				<rom name="special action (imagine) - tape 1 - side b.tzx" size="100531" crc="f5f7c56c" sha1="4113396c1955277061383740d54b0fcdf27dc562"/>
+			</dataarea>
+		</part>
+		<part name="cass3" interface="spectrum_cass">
+			<dataarea name="cass" size="259261">
+				<rom name="special action (imagine) - tape 2 - side a.tzx" size="259261" crc="3d21551c" sha1="9fba63fbfcbe26e08bdfe7b92edf70f8ce477c81"/>
+			</dataarea>
+		</part>
+		<part name="cass4" interface="spectrum_cass">
+			<dataarea name="cass" size="102959">
+				<rom name="special action (imagine) - tape 2 - side b.tzx" size="102959" crc="2459c118" sha1="bca39b70ae956222d2a041f0dd8f88e1ec18ed4e"/>
 			</dataarea>
 		</part>
 	</software>
@@ -163642,10 +164192,26 @@ Tape 2 - Side A - Game 3: Hydrofool (Faster Than Light)
 		</part>
 	</software>
 
-	<software name="sfrpq1" cloneof="sfrpq">
-		<description>Star Flaws &amp; Raymond Pringle's Quest for the Fabled Jar of Pickled Cabbage - Release 1</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="sfrpq">
+		<description>Star Flaws &amp; Raymond Pringle's Quest for the Fabled Jar of Pickled Cabbage (release 3)</description>
+		<year>1991</year>
+		<publisher>Delbert the Hamster Software</publisher>
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="44577">
+				<rom name="star flaws _ raymond pringle_s quest for the fabled jar of pickled cabbage - release 3 - side 1.tzx" size="44577" crc="ca92b06a" sha1="9d2c35fef7ade018a719448e7a46fab6d89a1f49"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="35139">
+				<rom name="star flaws _ raymond pringle_s quest for the fabled jar of pickled cabbage - release 3 - side 2.tzx" size="35139" crc="31383b06" sha1="ed1202a20e8d35e2c6e92406110f02f247c174be"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="sfrpq_a" cloneof="sfrpq">
+		<description>Star Flaws &amp; Raymond Pringle's Quest for the Fabled Jar of Pickled Cabbage (release 1)</description>
+		<year>1991</year>
+		<publisher>Delbert the Hamster Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="44333">
 				<rom name="star flaws _ raymond pringle_s quest for the fabled jar of pickled cabbage - release 1 - side 1.tzx" size="44333" crc="1e423232" sha1="bc2131cb527ce3af46655bc02db069d0012c9fb9"/>
@@ -163658,10 +164224,10 @@ Tape 2 - Side A - Game 3: Hydrofool (Faster Than Light)
 		</part>
 	</software>
 
-	<software name="sfrpq">
-		<description>Star Flaws &amp; Raymond Pringle's Quest for the Fabled Jar of Pickled Cabbage - Release 2</description>
+	<software name="sfrpq_b" cloneof="sfrpq">
+		<description>Star Flaws &amp; Raymond Pringle's Quest for the Fabled Jar of Pickled Cabbage (release 2)</description>
 		<year>1991</year>
-		<publisher>Delbert the Hamster</publisher>
+		<publisher>Delbert the Hamster Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="35509">
 				<rom name="star flaws _ raymond pringle_s quest for the fabled jar of pickled cabbage - release 2 - side 1.tzx" size="35509" crc="f4278ef4" sha1="09b4a869a8d9657a80a9c80c7839fec21506c9a0"/>
@@ -164115,6 +164681,44 @@ Tape 2 - Side A - Game 3: Hydrofool (Faster Than Light)
 		</part>
 	</software>
 
+	<software name="superfig">
+		<description>Super Fighter</description>
+		<year>1993</year>
+		<publisher>Ocean</publisher>
+		<notes><![CDATA[
+Compilation contents:
+Tape 1 - Final Fight (U.S. Gold)
+Tape 2 - Pit-Fighter (Domark)
+Tape 3 - WWF WrestleMania (Ocean Software)
+]]></notes>
+
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="288923">
+				<rom name="Super Fighter - Tape 1.tzx" size="288923" crc="d99eaeeb" sha1="e8fcecc3732639880d492093678596b2fd4ff2ae"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="101765">
+				<rom name="Super Fighter - Tape 2 - Side 1.tzx" size="101765" crc="4cb42035" sha1="1564b80946c47d88c46afcf897d82fa46df9a296"/>
+			</dataarea>
+		</part>
+		<part name="cass3" interface="spectrum_cass">
+			<dataarea name="cass" size="94768">
+				<rom name="Super Fighter - Tape 2 - Side 2.tzx" size="94768" crc="1825b0c0" sha1="1985b91689dd92a69393631461f02e5cf592a551"/>
+			</dataarea>
+		</part>
+		<part name="cass4" interface="spectrum_cass">
+			<dataarea name="cass" size="96950">
+				<rom name="Super Fighter - Tape 3 - Side 1.tzx" size="96950" crc="0cf660a7" sha1="5d0e0bec8681a3d59b95f359dfed05e1cd5a4278"/>
+			</dataarea>
+		</part>
+		<part name="cass5" interface="spectrum_cass">
+			<dataarea name="cass" size="78714">
+				<rom name="Super Fighter - Tape 3 - Side 2.tzx" size="78714" crc="0530e7ee" sha1="080ccfde7062c3b3ed0a0eecec7b28ac4629629e"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="supersim">
 		<description>Super Sim Pack</description>
 		<year>1991</year>
@@ -164144,10 +164748,143 @@ Tape 2 - Side A - Game 3: Hydrofool (Faster Than Light)
 	<software name="supersin">
 		<description>Super Sinc</description>
 		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<publisher>J. Soft</publisher>
+		<info name="region" value="Italy" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="64470">
 				<rom name="super sinc.tzx" size="64470" crc="4d8ca089" sha1="09f51f38790afc32f74971fe94a9562baee88125"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="supersin3">
+		<description>Super Sinc 3</description>
+		<year>19??</year>
+		<publisher>J. Soft</publisher>
+		<info name="region" value="Italy" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="80838">
+				<rom name="Super Sinc 3.tzx" size="80838" crc="de0cb07d" sha1="ed2a6eb84d67596cb8b4a0c16f60fc75005b1ae0"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="supersin4">
+		<description>Super Sinc 4</description>
+		<year>19??</year>
+		<publisher>J. Soft</publisher>
+		<info name="region" value="Italy" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="70084">
+				<rom name="Super Sinc 4.tzx" size="70084" crc="2a45544d" sha1="7542faca2238be3a9a81a13a4736e0ccb64a8c61"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="supersin5">
+		<description>Super Sinc 5</description>
+		<year>19??</year>
+		<publisher>J. Soft</publisher>
+		<info name="region" value="Italy" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="24955">
+				<rom name="Super Sinc 5.tzx" size="24955" crc="523baef6" sha1="e7042dda20e9c0bc6bddd504439e605602583c5c"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="supersin6">
+		<description>Super Sinc 6</description>
+		<year>19??</year>
+		<publisher>J. Soft</publisher>
+		<info name="region" value="Italy" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="64102">
+				<rom name="Super Sinc 6.tzx" size="64102" crc="b2b54072" sha1="4f33e5454ed0484530947406d1e0badc6ce36c4f"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="sprsin1a2">
+		<description>Super Sinc 1 (Anno 2)</description>
+		<year>19??</year>
+		<publisher>J. Soft</publisher>
+		<info name="region" value="Italy" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="81252">
+				<rom name="Super Sinc 1 (Anno 2).tzx" size="81252" crc="de9aca09" sha1="69c40ed21127c6c0f5134e0876c3463d2dba6561"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="sprsin2a2">
+		<description>Super Sinc 2 (Anno 2)</description>
+		<year>19??</year>
+		<publisher>J. Soft</publisher>
+		<info name="region" value="Italy" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="114500">
+				<rom name="Super Sinc 2 (Anno 2).tzx" size="114500" crc="9cd6ad4e" sha1="99c5cb50c70a5fe597d4d8d4cde80ed5835321d3"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="sprsin3a2">
+		<description>Super Sinc 3 (Anno 2)</description>
+		<year>19??</year>
+		<publisher>J. Soft</publisher>
+		<info name="region" value="Italy" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="130494">
+				<rom name="Super Sinc 3 (Anno 2).tzx" size="130494" crc="47f9dfe7" sha1="481ba188f79d2ada5283dc228aa8e8d77a9ed21e"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="sprsin4a2">
+		<description>Super Sinc 4 (Anno 2)</description>
+		<year>19??</year>
+		<publisher>J. Soft</publisher>
+		<info name="region" value="Italy" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="70054">
+				<rom name="Super Sinc 4 (Anno 2).tzx" size="70054" crc="cf45f144" sha1="c31781b3ac2371346d8e111074a142cacde18ece"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="sprsin5a2">
+		<description>Super Sinc 5 (Anno 2)</description>
+		<year>19??</year>
+		<publisher>J. Soft</publisher>
+		<info name="region" value="Italy" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="143768">
+				<rom name="Super Sinc 5 (Anno 2).tzx" size="143768" crc="bc38d681" sha1="f02bf05508a0a49c501e544025dd2861e4b7a3fa"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="sprsin6a2">
+		<description>Super Sinc 6 (Anno 2)</description>
+		<year>19??</year>
+		<publisher>J. Soft</publisher>
+		<info name="region" value="Italy" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="104763">
+				<rom name="Super Sinc 6 (Anno 2).tzx" size="104763" crc="44a0b4d9" sha1="87559ce0e95b9dae719494bc9192e06f83c4dc13"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="sprsin7a2">
+		<description>Super Sinc 7 (Anno 2)</description>
+		<year>19??</year>
+		<publisher>J. Soft</publisher>
+		<info name="region" value="Italy" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="82471">
+				<rom name="Super Sinc 7 (Anno 2).tzx" size="82471" crc="1020d0f5" sha1="6fa0656d3521f4c769639559048541566b31cb9b"/>
 			</dataarea>
 		</part>
 	</software>
@@ -164243,6 +164980,40 @@ Tape 2 - Side A - Game 3: Hydrofool (Faster Than Light)
 		<part name="cass4" interface="spectrum_cass">
 			<dataarea name="cass" size="37430">
 				<rom name="supreme challenge - tape 2 - side 2.tzx" size="37430" crc="aacfcb9a" sha1="32b064c759ae2f3b870ec3ae08c5ab9c4d7d78bf"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="system3p">
+		<description>System 3 Pack</description>
+		<year>1991</year>
+		<publisher>U.S. Gold</publisher>
+		<notes><![CDATA[
+Compilation contents:
+Tape 1 - IK+ (System 3 Software)
+Tape 2 - Myth: History in the Making (System 3 Software)
+Tape 3 - Tusker ((System 3 Software)
+Tape 3 - Vendetta ((System 3 Software)
+]]></notes>
+
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="201039">
+				<rom name="System 3 Pack - Tape 1 - Side 1.tzx" size="201039" crc="7eb1032a" sha1="9565f32e8b09c613d009d0063b0fe732f80e9fb0"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="237489">
+				<rom name="System 3 Pack - Tape 1 - Side 2.tzx" size="237489" crc="efc4c7a9" sha1="7d10512ad2b0cac7dfecfe2a92d104a92430e7a7"/>
+			</dataarea>
+		</part>
+		<part name="cass3" interface="spectrum_cass">
+			<dataarea name="cass" size="138484">
+				<rom name="System 3 Pack - Tape 2 - Side 1.tzx" size="138484" crc="82d3186e" sha1="bfd2a8061b64195a5f991b45f662983e3a4020c9"/>
+			</dataarea>
+		</part>
+		<part name="cass4" interface="spectrum_cass">
+			<dataarea name="cass" size="53436">
+				<rom name="System 3 Pack - Tape 2 - Side 2.tzx" size="53436" crc="909b9285" sha1="ed23d7fe36ec2954bea384fbcd3592214e893435"/>
 			</dataarea>
 		</part>
 	</software>
