@@ -203350,18 +203350,6 @@ stick to CPC-Power disks, when available)
 		</part>
 	</software>
 
-	<!-- Identifying LASTMIV2w (nongoodcpc).dsk... --> <!-- NonGoodCPC -->
-	<software name="lastmiv2" supported="no">
-		<description>LASTMIV2w</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="flop1" interface="floppy_3">
-			<dataarea name="flop" size="368640">
-				<rom name="lastmiv2w (nongoodcpc).dsk" size="368640" crc="f8e14556" sha1="c80a8ba28f232ff0727aea0e2c103490f33d7bc0"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<!-- Identifying Last_Duel__MCSPE__Side_A (nongoodcpc).dsk... --> <!-- NonGoodCPC -->
 	<software name="lastduel07" cloneof="lastduel" supported="no">
 		<description>Last_Duel__MCSPE__Side_A</description>
@@ -204222,18 +204210,6 @@ stick to CPC-Power disks, when available)
 		<part name="flop1" interface="floppy_3">
 			<dataarea name="flop" size="194816">
 				<rom name="livingstone_supongo_2__(2005.01.27)__cngsoft (nongoodcpc).dsk" size="194816" crc="55ae48bf" sha1="33416202aac710356d3a61f5923d8630ca0da85a"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<!-- Identifying Livingv2 (nongoodcpc).dsk... --> <!-- NonGoodCPC -->
-	<software name="livingv2" supported="no">
-		<description>Livingv2</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="flop1" interface="floppy_3">
-			<dataarea name="flop" size="368640">
-				<rom name="livingv2 (nongoodcpc).dsk" size="368640" crc="8f80e3b7" sha1="429605bb0ec6285aaaeecc762c31fe234b9e269b"/>
 			</dataarea>
 		</part>
 	</software>
