@@ -67680,7 +67680,7 @@ Side B - Game 1: The Dragonstar Trilogy Part III (Delta 4 Software)
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="dragotri3">
 		<description>The Dragonstar Trilogy - Part III (Delta 4)</description>
 		<year>1984</year>
@@ -99867,7 +99867,7 @@ Lacks game introduction, bad dump or alternate version?
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="merlinpa_a" cloneof="merlinpa">
 		<description>Merlin (The Guild)</description>
 		<year>1992</year>
@@ -99878,7 +99878,7 @@ Lacks game introduction, bad dump or alternate version?
 			</dataarea>
 		</part>
 	</software>
-	
+
 	<software name="merlinpa_b" cloneof="merlinpa">
 		<description>Merlin (Adventure Workshop)</description>
 		<year>1992</year>
