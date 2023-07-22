@@ -682,17 +682,6 @@ license:CC0-1.0
 		</part>
 	</software>
 
-	<software name="infiltra" cloneof="android"> <!-- publisher needs verifying, copyright is different -->
-		<description>Infiltrado</description>
-		<year>1983</year>
-		<publisher>Monser</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="15587">
-				<rom name="infiltrado.tzx" size="15587" crc="a9864b08" sha1="1e5fba42869cfbd9f7613cebdf72d845f2e54520"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<software name="androidn" cloneof="android">
 		<description>Androide (pirate)</description>
 		<year>19??</year>
@@ -4606,6 +4595,8 @@ no loading screen, no custom loader
 		<description>BeTiled! (English)</description>
 		<year>2007</year>
 		<publisher>Computer Emuzone</publisher>
+		<info name="language" value="English" />
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="60341">
 				<rom name="betiled english.tzx" size="60341" crc="ec578401" sha1="fb162ebcd9982a5bb091801a60fdc0de78aa6f57"/>
@@ -4617,6 +4608,8 @@ no loading screen, no custom loader
 		<description>BeTiled! (Spanish)</description>
 		<year>2007</year>
 		<publisher>Computer Emuzone</publisher>
+		<info name="language" value="Spanish" />
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="60396">
 				<rom name="betiled espanol.tzx" size="60396" crc="8eabeb69" sha1="d7eeeda47f9b11b65155d95620794e212b8d783f"/>
@@ -4625,9 +4618,11 @@ no loading screen, no custom loader
 	</software>
 
 	<software name="betiledp" cloneof="betiled">
-		<description>BeTiled! (Physical Version)</description>
+		<description>BeTiled! (physical version)</description>
 		<year>2007</year>
 		<publisher>Computer Emuzone</publisher>
+		<info name="language" value="English" />
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="57988">
 				<rom name="betiled (physical version).tzx" size="57988" crc="d0222d97" sha1="f0975efbf3d6c46fbeaea6f6716e0c9f9a00f188"/>
@@ -4646,7 +4641,7 @@ no loading screen, no custom loader
 		</part>
 	</software>
 
-	<software name="bootyrma" cloneof="bootyrm" supported="no">  <!-- this set won't boot properly, but the others will?! -->
+	<software name="bootyrma" cloneof="bootyrm">
 		<description>Booty - The Remake (v1.2, TZX tape image)</description>
 		<year>2019</year>
 		<publisher>salvaKantero</publisher>
@@ -6097,7 +6092,7 @@ no loading screen, no custom loader
 	</software>
 
 	<software name="cleversm">
-		<description>Clever And Smart</description>
+		<description>Clever &amp; Smart</description>
 		<year>1988</year>
 		<publisher>Magic Bytes</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -6108,9 +6103,9 @@ no loading screen, no custom loader
 	</software>
 
 	<software name="mortfile" cloneof="cleversm">
-		<description>Mortadelo Y Filemon (Double Case) (Dro Soft)</description>
+		<description>Mortadelo y Filemon (Dro Soft, double case)</description>
 		<year>1988</year>
-		<publisher>Magic Bytes / Dro Soft</publisher>
+		<publisher>Dro Soft</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="50324">
 				<rom name="mortadelo y filemon - double case (dro soft).tzx" size="50324" crc="5a8f994d" sha1="77224630e8e9a79674f9ec3d60846bed0b1130f1"/>
@@ -6119,9 +6114,9 @@ no loading screen, no custom loader
 	</software>
 
 	<software name="mortfilea" cloneof="cleversm">
-		<description>Mortadelo Y Filemon (Small Case) (Dro Soft)</description>
+		<description>Mortadelo y Filemon (Dro Soft, small case)</description>
 		<year>1988</year>
-		<publisher>Magic Bytes / Dro Soft</publisher>
+		<publisher>Dro Soft</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="50304">
 				<rom name="mortadelo y filemon - small case (dro soft).tzx" size="50304" crc="3079e2e2" sha1="4820dd28964c6fca6998822b8dcb47d14b9679c5"/>
@@ -6795,7 +6790,18 @@ no loading screen, no custom loader
 	</software>
 
 	<software name="cherilgd">
-		<description>Cheril The Goddess (version 2)</description>
+		<description>Cheril The Goddess  (TZX tape image)</description>
+		<year>2012</year>
+		<publisher>The Mojon Twins</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="43579">
+				<rom name="cheril the goddess v2.0.tzx" size="43579" crc="86e67582" sha1="9d4ccc4194096d45a5e06431cd7f7ba893cecd34"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="cherilgd_a" cloneof="cherilgd">
+		<description>Cheril The Goddess (TAP tape image)</description>
 		<year>2012</year>
 		<publisher>The Mojon Twins</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -6806,9 +6812,11 @@ no loading screen, no custom loader
 	</software>
 
 	<software name="cadaveri">
-		<description>Cadaverion (set 1, English)</description>
+		<description>Cadaverion (English, TZX tape image)</description>
 		<year>2013</year>
 		<publisher>The Mojon Twins</publisher>
+		<info name="language" value="English" />
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="40601">
 				<rom name="mojon-twins--cadaverion--eng.tzx" size="40601" crc="1c7720ee" sha1="dc107881f4619c144d3a5594ab0bfed4b66860c2"/>
@@ -6817,9 +6825,11 @@ no loading screen, no custom loader
 	</software>
 
 	<software name="cadaveria" cloneof="cadaveri">
-		<description>Cadaverion (set 2, English)</description>
+		<description>Cadaverion (English, TAP tape image)</description>
 		<year>2013</year>
 		<publisher>The Mojon Twins</publisher>
+		<info name="language" value="English" />
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="40573">
 				<rom name="mojon-twins--cadaverion--eng.tap" size="40573" crc="ce3d8b7f" sha1="831b896909df871551da33b1b11a9a94329d3bf3"/>
@@ -6828,9 +6838,11 @@ no loading screen, no custom loader
 	</software>
 
 	<software name="cadaveris" cloneof="cadaveri">
-		<description>Cadaverion (set 3, Spanish)</description>
+		<description>Cadaverion (Spanish, TZX tape image)</description>
 		<year>2013</year>
 		<publisher>The Mojon Twins</publisher>
+		<info name="language" value="Spanish" />
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="40609">
 				<rom name="mojon-twins--cadaverion--esp.tzx" size="40609" crc="8996ee61" sha1="03eacab33e0d69002f0dc797158be507e4085dd0"/>
@@ -6839,9 +6851,11 @@ no loading screen, no custom loader
 	</software>
 
 	<software name="cadaverisa" cloneof="cadaveri">
-		<description>Cadaverion (set 4, Spanish)</description>
+		<description>Cadaverion (Spanish, TAP tape image)</description>
 		<year>2013</year>
 		<publisher>The Mojon Twins</publisher>
+		<info name="language" value="Spanish" />
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="40581">
 				<rom name="mojon-twins--cadaverion--esp.tap" size="40581" crc="53481358" sha1="69c09a3840d07c72a4b6bfd66fd54b582a473ad2"/>
@@ -6850,9 +6864,9 @@ no loading screen, no custom loader
 	</software>
 
 	<software name="mojcol">
-		<description>Columns (set 1, The Mojon Twins)</description>
+		<description>Columns</description>
 		<year>2005</year>
-		<publisher>Computer Emuzone / The Mojon Twins</publisher>
+		<publisher>Computer Emuzone</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="52013">
 				<rom name="mojon-twins--columns.tzx" size="52013" crc="0391d06b" sha1="1d33ad10f008634c07f532f10ad5b94a986024b9"/>
@@ -6861,9 +6875,9 @@ no loading screen, no custom loader
 	</software>
 
 	<software name="mojcola" cloneof="mojcol">
-		<description>Columns (set 2, Physical Version)</description>
+		<description>Columns (physical version)</description>
 		<year>2005</year>
-		<publisher>Computer Emuzone / The Mojon Twins</publisher>
+		<publisher>Computer Emuzone</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="52136">
 				<rom name="columns (physical version).tzx" size="52136" crc="7d5faed7" sha1="1eba9405538205c300dcc209f2f5cb582fd3824a"/>
@@ -10109,6 +10123,19 @@ Expects you to press a key after the title screen appears, or it will miss the n
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="66585">
 				<rom name="football glory (cronosoft).tzx" size="66585" crc="ee21fee3" sha1="427f93467c595d8e6ddcbed00bf006f0e6000a86"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="fungolf">
+		<description>Fun Golf</description>
+		<year>198?</year>
+		<publisher>Profisoft</publisher>
+		<info name="language" value="English" />
+		<info name="region" value="Germany" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="7673">
+				<rom name="Golf - Profisoft.tzx" size="7673" crc="bfcac21e	" sha1="52a34b240166267c28bf7adb69cd618a7d84a3ee"/>
 			</dataarea>
 		</part>
 	</software>
@@ -16133,17 +16160,6 @@ Side B: Laser Shoot (original release)
 		</part>
 	</software>
 
-	<software name="lunland">
-		<description>Lunar Landing (Hipocrates)</description>
-		<year>198?</year>
-		<publisher>Hipocrates / I.D.T.</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="10942">
-				<rom name="lunar landing.tzx" size="10942" crc="4aa0f636" sha1="c24cc3cd26cc1fbbf8e975f684d5a3c504932735"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<software name="loopz">
 		<description>Loopz</description>
 		<year>1991</year>
@@ -16767,7 +16783,7 @@ Side B: Laser Shoot (original release)
 	</software>
 
 	<software name="ldrag2">
-		<description>Little Dragon 2 (128k, AY Sounds)</description>
+		<description>Little Dragon 2 (128K, AY Sounds)</description>
 		<year>2014</year>
 		<publisher>Gabriele Amore</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -16778,7 +16794,7 @@ Side B: Laser Shoot (original release)
 	</software>
 
 	<software name="ldrag2a" cloneof="ldrag2">
-		<description>Little Dragon 2 (48k)</description>
+		<description>Little Dragon 2 (48K)</description>
 		<year>2014</year>
 		<publisher>Gabriele Amore</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -20118,8 +20134,8 @@ Side B: Laser Shoot (original release)
 
 	<software name="phantoma">
 		<description>Phantomas (English, Code Masters re-release)</description>
-		<year>19??</year>
-		<publisher>Dinamic / Code Masters</publisher>
+		<year>1986</year>
+		<publisher>Code Masters</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47717">
 				<rom name="phantomas.tzx" size="47717" crc="d204e811" sha1="a18bb18f8dc653a3e30d2a0a57d585ff473ed6ef"/>
@@ -20139,9 +20155,9 @@ Side B: Laser Shoot (original release)
 	</software>
 
 	<software name="phantomab" cloneof="phantoma"> <!-- custom loader -->
-		<description>Phantomas (Spanish, Small Orange Case)</description>
-		<year>1986</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Phantomas (Spanish, small orange case)</description>
+		<year>1988</year>
+		<publisher>Dinamic</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47773">
 				<rom name="phantomas - small orange case.tzx" size="47773" crc="4cbbc502" sha1="c4372230ce690e7510249ed273dd034668983107"/>
@@ -21575,7 +21591,9 @@ Side B: Laser Shoot (original release)
 	<software name="phantmsam">
 		<description>Phantomasa (v3.0)</description>
 		<year>2007</year>
-		<publisher>Computer Emuzone / The Mojon Twins</publisher>
+		<publisher>Computer Emuzone</publisher>
+		<info name="developer" value="The Mojon Twins" />
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="25989">
 				<rom name="mojon-twins--phantomasa-i-v.3.0--cara-a.tzx" size="25989" crc="4f75249d" sha1="8397a8aa1ee92aa09852997c93891b34690ffbf0"/>
@@ -21589,9 +21607,11 @@ Side B: Laser Shoot (original release)
 	</software>
 
 	<software name="phangw">
-		<description>Phantomasa 2 - In the Land of the Grunge Wizards (128k version, v2.0)</description>
+		<description>Phantomasa 2: In the Land of the Grunge Wizards (128k version, v2.0)</description>
 		<year>2006</year>
-		<publisher>Computer Emuzone / The Mojon Twins</publisher>
+		<publisher>Computer Emuzone</publisher>
+		<info name="developer" value="The Mojon Twins" />
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="46425">
 				<rom name="mojon-twins--phantomasa-in-the-land-of-the-grunge-wizards-v.2.0-128.tzx" size="46425" crc="5a5952d9" sha1="a5956a1129b15233648b2aca3c98563c4cb4fa51"/>
@@ -21600,9 +21620,11 @@ Side B: Laser Shoot (original release)
 	</software>
 
 	<software name="phangw48" cloneof="phangw">
-		<description>Phantomasa 2 - In the Land of the Grunge Wizards (48k version, v2.0)</description>
+		<description>Phantomasa 2: In the Land of the Grunge Wizards (48k version, v2.0)</description>
 		<year>2006</year>
-		<publisher>Computer Emuzone / The Mojon Twins</publisher>
+		<publisher>Computer Emuzone</publisher>
+		<info name="developer" value="The Mojon Twins" />
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="38364">
 				<rom name="mojon-twins--phantomasa-in-the-land-of-the-grunge-wizards-v.2.0-48.tzx" size="38364" crc="42de318e" sha1="6d6a4bee38c01ae0b7cce84287f5fa4b7beb8024"/>
@@ -21624,7 +21646,9 @@ Side B: Laser Shoot (original release)
 	<software name="phantomt1">
 		<description>Phantomas Tales #1 - Marsport</description>
 		<year>2009</year>
-		<publisher>Ubhres Productions / The Mojon Twins</publisher>
+		<publisher>Ubhres Productions</publisher>
+		<info name="developer" value="The Mojon Twins" />
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Side 1 - 128k"/>
 			<dataarea name="cass" size="54321">
@@ -21642,7 +21666,9 @@ Side B: Laser Shoot (original release)
 	<software name="phantomt4">
 		<description>Phantomas Tales #4 - Severin Sewers</description>
 		<year>2011</year>
-		<publisher>Ubhres Productions / The Mojon Twins</publisher>
+		<publisher>Ubhres Productions</publisher>
+		<info name="developer" value="The Mojon Twins" />
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="60741">
 				<rom name="mojon-twins--phantomas-tales-4--severin-sewers.tzx" size="60741" crc="afaef6f0" sha1="cdbcb2690a36024ad2e83daf2d858fc65dc1dc25"/>
@@ -21651,23 +21677,27 @@ Side B: Laser Shoot (original release)
 	</software>
 
 	<software name="phantms">
-		<description>Phantomas En El Museo (set 1)</description>
+		<description>Phantomas en el Museo (TZX tape image)</description>
 		<year>2012</year>
-		<publisher>Ubhres Productions / The Mojon Twins</publisher>
+		<publisher>Ubhres Productions</publisher>
+		<info name="developer" value="The Mojon Twins" />
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="39978">
-				<rom name="mojon-twins--phantomas-en-el-museo.tap" size="39978" crc="9b9f7ea2" sha1="4d94c13cb55e33d0d4186b47468275d0e64c14e7"/>
+			<dataarea name="cass" size="40012">
+				<rom name="mojon-twins--phantomas-en-el-museo.tzx" size="40012" crc="3084d960" sha1="04aa7cf545b4d49b25f61550bb06cb54e55fe3df"/>
 			</dataarea>
 		</part>
 	</software>
 
 	<software name="phantmsa" cloneof="phantms">
-		<description>Phantomas En El Museo (set 2)</description>
+		<description>Phantomas en el Museo (TAP tape image)</description>
 		<year>2012</year>
-		<publisher>Ubhres Productions / The Mojon Twins</publisher>
+		<publisher>Ubhres Productions</publisher>
+		<info name="developer" value="The Mojon Twins" />
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="40012">
-				<rom name="mojon-twins--phantomas-en-el-museo.tzx" size="40012" crc="3084d960" sha1="04aa7cf545b4d49b25f61550bb06cb54e55fe3df"/>
+			<dataarea name="cass" size="39978">
+				<rom name="mojon-twins--phantomas-en-el-museo.tap" size="39978" crc="9b9f7ea2" sha1="4d94c13cb55e33d0d4186b47468275d0e64c14e7"/>
 			</dataarea>
 		</part>
 	</software>
@@ -27959,7 +27989,7 @@ Side B: Laser Shoot (original release)
 	</software>
 
 	<software name="tigrroad">
-		<description>Tiger Road - 128k</description>
+		<description>Tiger Road (128K)</description>
 		<year>1988</year>
 		<publisher>Go!</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -27977,7 +28007,7 @@ Side B: Laser Shoot (original release)
 	<software name="tigrroadk" cloneof="tigrroad">
 		<description>Tiger Road (Kixx)</description>
 		<year>1988</year>
-		<publisher>Go! / Kixx</publisher>
+		<publisher>Kixx</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="53222">
 				<rom name="tiger road (kixx).tzx" size="53222" crc="9782266a" sha1="d0360cfc021a936336f6dfb503e2de982e48aeb5"/>
@@ -40525,23 +40555,23 @@ Tape 2 - Side B:
 	</software>
 
 	<software name="3dtankdu">
-		<description>3D Tank Duel (299)</description>
-		<year>1986</year>
-		<publisher>2.99 Classics</publisher>
+		<description>3D Tank Duel</description>
+		<year>1984</year>
+		<publisher>Realtime Games Software</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="42811">
-				<rom name="3d tank duel (299).tzx" size="42811" crc="fb1a342b" sha1="fd1cd2272cb1f6fb4116830f78e97c688394d184"/>
+			<dataarea name="cass" size="49154">
+				<rom name="3d tank duel.tzx" size="49154" crc="bd66b356" sha1="6b3246df50ccfd3c8d3056c0e438032755c7f427"/>
 			</dataarea>
 		</part>
 	</software>
 
 	<software name="3dtankdu_a" cloneof="3dtankdu">
-		<description>3D Tank Duel</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>3D Tank Duel (2.99 Classics)</description>
+		<year>1986</year>
+		<publisher>2.99 Classics</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="49154">
-				<rom name="3d tank duel.tzx" size="49154" crc="bd66b356" sha1="6b3246df50ccfd3c8d3056c0e438032755c7f427"/>
+			<dataarea name="cass" size="42811">
+				<rom name="3d tank duel (299).tzx" size="42811" crc="fb1a342b" sha1="fd1cd2272cb1f6fb4116830f78e97c688394d184"/>
 			</dataarea>
 		</part>
 	</software>
@@ -42563,7 +42593,7 @@ Side B: Once Upon a Lily Pad
 	<software name="adidasch">
 		<description>Adidas Championship Football</description>
 		<year>1990</year>
-		<publisher>Ocean Software</publisher>
+		<publisher>Ocean</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="103406">
 				<rom name="adidas championship football.tzx" size="103406" crc="2e0129b6" sha1="23304a40b401d827056ceb391e69deba8868f5ab"/>
@@ -42596,7 +42626,7 @@ Side B: Once Upon a Lily Pad
 	<software name="adidtieb">
 		<description>Adidas Championship Tie Break</description>
 		<year>1990</year>
-		<publisher>Ocean Software</publisher>
+		<publisher>Ocean</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="53732">
 				<rom name="adidas championship tie break.tzx" size="53732" crc="372c9d37" sha1="99ece0810fde86ff189a0c7d14d3809168de4cd5"/>
@@ -43130,17 +43160,6 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
-	<software name="aguaski">
-		<description>Agua Ski</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="22444">
-				<rom name="agua ski.tzx" size="22444" crc="84e341e7" sha1="3ffdaa3108b546a7fc80834c89c3722324e3eb4b"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<software name="ahdiddum">
 		<description>Ah Diddums (set 3)</description>
 		<year>1983</year>
@@ -43399,17 +43418,6 @@ Side B: Once Upon a Lily Pad
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="46829">
 				<rom name="airwolf 2.tzx" size="46829" crc="b908dc40" sha1="55a266cd1e4c622c9a94f8cbb7f1c72af2875673"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="ajedrezp">
-		<description>Ajedrez Para Maestros</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="20428">
-				<rom name="ajedrez para maestros.tzx" size="20428" crc="901d7ce9" sha1="13853b7a0f1c8d08d90adc6f34742b15a72cd3f3"/>
 			</dataarea>
 		</part>
 	</software>
@@ -48441,9 +48449,9 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
-	<software name="battleta">
+	<software name="battleta" cloneof="3dtankdu">
 		<description>Battle Tank Simulator</description>
-		<year>1984</year>
+		<year>1988</year>
 		<publisher>Zeppelin Games</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="43878">
@@ -48452,10 +48460,10 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
-	<software name="battletamast" cloneof="battleta">
-		<description>Battle Tank Simulator (Mastering Tape)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="battletamast" cloneof="3dtankdu">
+		<description>Battle Tank Simulator (master tape)</description>
+		<year>1988</year>
+		<publisher>Zeppelin Games</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="44309">
 				<rom name="battle tank master tape.tzx" size="44309" crc="032bc3f5" sha1="e3fe38f0c1b76215e0ec377b8db6d4162661d197"/>
@@ -49494,6 +49502,19 @@ Side B: Once Upon a Lily Pad
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="3149">
 				<rom name="bingo.tzx" size="3149" crc="aa8a4c1e" sha1="486e384f6380d18be5cbc3882d998f216a425fde"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="bingopar">
+		<description>Bingo Parlante!</description>
+		<year>1985</year>
+		<publisher>Creativos Editoriales</publisher>
+		<info name="language" value="Italian" />
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="27943">
+				<rom name="Bingo Parlante - Creativos Editoriales.tzx" size="27943" crc="56662f5f" sha1="190444e25639f54b5cf4ba109aef7575cfee63d3"/>
 			</dataarea>
 		</part>
 	</software>
@@ -51063,17 +51084,6 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
-	<software name="borerdeem" cloneof="borerdee">
-		<description>Borer Deep (Monser)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="13996">
-				<rom name="borer deep (monser).tzx" size="13996" crc="6f96dcad" sha1="401e56dceeed3661a11f4cee6ad2a8473644ac87"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<software name="borzakza">
 		<description>Borzak (Zafiro)</description>
 		<year>1984</year>
@@ -51852,6 +51862,8 @@ Side B: Once Upon a Lily Pad
 		<description>Brum Brum</description>
 		<year>1984</year>
 		<publisher>Astor Software</publisher>
+		<info name="language" value="Portuguese" />
+		<info name="region" value="Portugal" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="26101">
 				<rom name="brum brum.tzx" size="26101" crc="1e940a29" sha1="1b2ed966b8f3803481bbe3d020614758a9c93fe5"/>
@@ -51863,6 +51875,8 @@ Side B: Once Upon a Lily Pad
 		<description>Brum Brum (master tape)</description>
 		<year>1984</year>
 		<publisher>Astor Software</publisher>
+		<info name="language" value="Portuguese" />
+		<info name="region" value="Portugal" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="15510">
 				<rom name="brum brum (master).tzx" size="15510" crc="40278c89" sha1="72d35576f5beac6ff31239c679563bfe4646f3a2"/>
@@ -53984,6 +53998,19 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
+	<software name="casanpp">
+		<description>Casanova (Pizza e Pasta)</description>
+		<year>2018</year>
+		<publisher>Topo Siglo XXI</publisher>
+		<info name="language" value="Portuguese" />
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="48017">
+				<rom name="Casanova (2018)(Por).tzx" size="48017" crc="7c9140f9" sha1="162b2720ce5063669a920d317c4310c76d2200ec"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="cascamue">
 		<description>Cascamuelas</description>
 		<year>2004</year>
@@ -54298,17 +54325,6 @@ Side B: Once Upon a Lily Pad
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="45345">
 				<rom name="castle quest.tzx" size="45345" crc="0f436740" sha1="f7523f4cb3f9b694b58dc0940e5c0b72ee9c42de"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="castlequm" cloneof="castlequ">
-		<description>Castle Quest (Monser)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="39482">
-				<rom name="castle quest (monser).tzx" size="39482" crc="3d58b44b" sha1="668c6c2e191fe6d62fcf6850eba06485f73fb300"/>
 			</dataarea>
 		</part>
 	</software>
@@ -55757,17 +55773,6 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
-	<software name="cherilth">
-		<description>Cheril The Goddess v2.0</description>
-		<year>2012</year>
-		<publisher>The Mojon Twins</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="43579">
-				<rom name="cheril the goddess v2.0.tzx" size="43579" crc="86e67582" sha1="9d4ccc4194096d45a5e06431cd7f7ba893cecd34"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<software name="chess299">
 		<description>Chess (299)</description>
 		<year>1986</year>
@@ -55791,9 +55796,12 @@ Side B: Once Upon a Lily Pad
 	</software>
 
 	<software name="chessthe">
-		<description>Chess - The Turk - French Version</description>
+		<description>Chess - The Turk - Version Francaise</description>
 		<year>1983</year>
 		<publisher>Oxford Computer Publishing</publisher>
+		<info name="alt_title" value="Chess - Le Turc" />
+		<info name="language" value="French" />
+		<info name="region" value="UK" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="49428">
 				<rom name="chess - the turk - french version.tzx" size="49428" crc="50a79944" sha1="a3202da9f9723b4b57ec58eec21505f0a70a9e76"/>
@@ -55803,8 +55811,10 @@ Side B: Once Upon a Lily Pad
 
 	<software name="chessthe_a" cloneof="chessthe">
 		<description>Chess - The Turk</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1983</year>
+		<publisher>Oxford Computer Publishing</publisher>
+		<info name="language" value="French" />
+		<info name="region" value="UK" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="81771">
 				<rom name="chess - the turk.tzx" size="81771" crc="c14c1f48" sha1="3dbbfc94b18d187ae1b1248c46d2e5176e64c73b"/>
@@ -55812,6 +55822,31 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
+	<software name="chessthe_b" cloneof="chessthe">
+		<description>Chess - The Turk (ABC Soft)</description>
+		<year>1983</year>
+		<publisher>ABC Soft</publisher>
+		<info name="language" value="Spanish" />
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="49317">
+				<rom name="Chess - The Turk (ABC Analog).tzx" size="49317" crc="fdc6aac4" sha1="b7a918160e02569b15ef58d24496fa04bcf14747"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="chessthe_c" cloneof="chessthe">
+		<description>Schach</description>
+		<year>1983</year>
+		<publisher>Individual Software Service</publisher>
+		<info name="language" value="English" />
+		<info name="region" value="Germany" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="81705">
+				<rom name="Chess-TheTurk(Schach)(Individual Software Service).tzx" size="81705" crc="897caf8b" sha1="a945e8b572111f033ff65878bf786d8aad70b671"/>
+			</dataarea>
+		</part>
+	</software>
 
 	<software name="chesspla">
 		<description>Chess Player 2150</description>
@@ -55866,9 +55901,24 @@ Side B: Once Upon a Lily Pad
 		<description>Scacchi</description>
 		<year>1983</year>
 		<publisher>Rebit Computer</publisher>
+		<info name="language" value="Italian" />
+		<info name="region" value="Italy" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="18342">
 				<rom name="scacchi.tzx" size="18342" crc="d49f81d7" sha1="16acd5a6b16dcf20a9b131231e6475b425a016dc"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="sscacchi" cloneof="chess">
+		<description>Super Scacchi (pirate)</description>
+		<year>19??</year>
+		<publisher>Nuova Newel Software</publisher>
+		<info name="language" value="Italian" />
+		<info name="region" value="Italy" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="24592">
+				<rom name="Super Scacchi (Nuova Newel Software).tzx" size="24592" crc="364f93db" sha1="40294f057ac0af6f1fcd0deabab5169e34a9a1ea"/>
 			</dataarea>
 		</part>
 	</software>
@@ -55877,6 +55927,8 @@ Side B: Once Upon a Lily Pad
 		<description>Xadrez</description>
 		<year>1983</year>
 		<publisher>Timex Portugal</publisher>
+		<info name="language" value="Portuguese" />
+		<info name="region" value="Portugal" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="27028">
 				<rom name="xadrez.tzx" size="27028" crc="cc7f6535" sha1="dd332fa59c862d2310a6d57d6cfcadb07b0e3561"/>
@@ -55885,7 +55937,7 @@ Side B: Once Upon a Lily Pad
 	</software>
 
 	<software name="chicago3">
-		<description>Chicago 30's (US Gold)</description>
+		<description>Chicago 30's (U.S. Gold)</description>
 		<year>1988</year>
 		<publisher>U.S. Gold</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -72549,6 +72601,8 @@ Side B - Game 1: The Dragonstar Trilogy Part III (Delta 4 Software)
 		<description>Ficheiro Astor</description>
 		<year>19??</year>
 		<publisher>Astor Software</publisher>
+		<info name="language" value="Portuguese" />
+		<info name="region" value="Portugal" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="13364">
 				<rom name="ficheiro astor.tzx" size="13364" crc="3cf9c098" sha1="c8b21665a97fde6bb4ffa23ddd0a93e09d3eba13"/>
@@ -72888,6 +72942,18 @@ Side B - Game 1: The Dragonstar Trilogy Part III (Delta 4 Software)
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="16974">
 				<rom name="Firebirds (Nuova Newel Software).tzx" size="16974" crc="c326a9ca" sha1="4bcf12387748dbaf1aad5e663588128df49f82ee"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="firebird_c" cloneof="firebird">
+		<description>Firebirds (Tronk)</description>
+		<year>19??</year>
+		<publisher>Tronk</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="16587">
+				<rom name="Firebirds - Tronk.tzx" size="16587" crc="f06b7a3d" sha1="e6bfa4688e84b777cea7141c08c362608ae61648"/>
 			</dataarea>
 		</part>
 	</software>
@@ -74801,9 +74867,9 @@ Side B - Game 1: The Dragonstar Trilogy Part III (Delta 4 Software)
 	</software>
 
 	<software name="freezbee">
-		<description>Freez' Bees (set 1)</description>
+		<description>Freez' Bees</description>
 		<year>1984</year>
-		<publisher>Silversoft Ltd</publisher>
+		<publisher>Silversoft</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="15687">
 				<rom name="freez_ bees.tzx" size="15687" crc="74acaf5b" sha1="e31881ca1983c45af7ea3d0842a6c242ae0beaa8"/>
@@ -74812,9 +74878,9 @@ Side B - Game 1: The Dragonstar Trilogy Part III (Delta 4 Software)
 	</software>
 
 	<software name="freezbeea" cloneof="freezbee">
-		<description>Freez' Bees (set 2, Prism Leisure)</description>
+		<description>Freez' Bees (Prism Leisure)</description>
 		<year>1984</year>
-		<publisher>Silversoft Ltd / Prism Leisure Corporation PLC</publisher>
+		<publisher>Prism Leisure Corporation</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="15687">
 				<rom name="freez_ bees (prism leisure).tzx" size="15687" crc="4c065913" sha1="d52d2989719956af8ea224d9e28074684c2c0dd6"/>
@@ -74826,10 +74892,23 @@ Side B - Game 1: The Dragonstar Trilogy Part III (Delta 4 Software)
 	<software name="frozenpe" cloneof="freezbee">
 		<description>Frozen Penguin (St. Michael Games Pack)</description>
 		<year>1984</year>
-		<publisher>Silversoft Ltd / St. Michael / Marks and Spencers</publisher>
+		<publisher>St. Michael / Marks and Spencers</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="25769">
 				<rom name="frozen penguin.tzx" size="25769" crc="455c070a" sha1="beedfeb6e15fde273c8f52ef5b7f6371507a91dd"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="freezbeeb" cloneof="freezbee">
+		<description>Freez' Bees (Aackosoft)</description>
+		<year>1984</year>
+		<publisher>Aackosoft</publisher>
+		<info name="language" value="English" />
+		<info name="region" value="Netherlands" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="15687">
+				<rom name="FreezBees(Aackosoft).tzx" size="15687" crc="1fd835e2" sha1="0a05056286f3614e190ea72a0ad30a9680048bdf"/>
 			</dataarea>
 		</part>
 	</software>
@@ -76718,19 +76797,6 @@ Side B - Game 1: The Dragonstar Trilogy Part III (Delta 4 Software)
 		</part>
 	</software>
 
-	<software name="galax">
-		<description>Galax</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="45049">
-				<rom name="galax.tzx" size="45049" crc="a078dac2" sha1="b74776a48867e793ac3f4cfd8a6e99a1b1c5c81f"/>
-			</dataarea>
-		</part>
-	</software>
-
-
-
 	<software name="galaxian">
 		<description>Galaxian</description>
 		<year>1984</year>
@@ -78244,12 +78310,24 @@ Side B - Game 1: The Dragonstar Trilogy Part III (Delta 4 Software)
 	</software>
 
 	<software name="gobbleag">
-		<description>Gobble A Ghost</description>
+		<description>Gobble a Ghost</description>
 		<year>1982</year>
 		<publisher>CDS Microsystems</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="30102">
 				<rom name="gobble a ghost.tzx" size="30102" crc="da414071" sha1="b6f86f436ec088beaf2e4a50a049fd8f0230995f"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="gobbleag_a" cloneof="gobbleag">
+		<description>Uccidi Gli Spiriti (pirate)</description>
+		<year>198?</year>
+		<publisher>Nuova Newel Software</publisher>
+		<info name="region" value="Italy" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="15243">
+				<rom name="Uccidi Gli Spiriti (Nuova Newel Software).tzx" size="15243" crc="3572652a" sha1="34e62f6ac57bc1a408224929bdcb44ba2cc0ffe5"/>
 			</dataarea>
 		</part>
 	</software>
@@ -78693,17 +78771,6 @@ Tape 1 - Side B:
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="18869">
 				<rom name="golf (monser).tzx" size="18869" crc="3f06d604" sha1="5d997bc038ee5319194f890e938ca17a4286a124"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="golfmonsa" cloneof="golfmons">
-		<description>Golf (Monser) (set 2)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="18934">
-				<rom name="golf (monser) (alt).tzx" size="18934" crc="04024d96" sha1="7929f2cb116798bfc55fcda58a4a1535c6d41415"/>
 			</dataarea>
 		</part>
 	</software>
@@ -79655,9 +79722,22 @@ Tape 1 - Side B:
 		<description>Gremlins 2: La Nueva Generacion</description>
 		<year>1990</year>
 		<publisher>Topo Soft</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="167707">
 				<rom name="gremlins 2 - la nueva generacion.tzx" size="167707" crc="b403821c" sha1="71f11ef2b5a654fda40423adec5fbf2084047c70"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="gremlins2_pt" cloneof="gremlins2">
+		<description>Gremlins 2: A Nova Geração</description>
+		<year>2020</year>
+		<publisher>Topo Siglo XXI</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="172379">
+				<rom name="Gremlins-2-30-Aniversario-Portugues.tzx" size="172379" crc="6ebaf962" sha1="8234c53216d20bc53bcdc0c1a3ae00d5eadd897f"/>
 			</dataarea>
 		</part>
 	</software>
@@ -90171,17 +90251,6 @@ Created by Mark Jeffries
 		</part>
 	</software>
 
-	<software name="jumblyc" cloneof="jumbly">
-		<description>Jumbly (set 4, Monser)</description>
-		<year>1983</year>
-		<publisher>DK'Tronics Ltd / Monser</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="40534">
-				<rom name="jumbly (monser) (alt).tzx" size="40534" crc="2b1d705b" sha1="45e468dde669baf1ca751b07a3e6ac074142b32a"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<software name="jumpzig">
 		<description>Jump (Zigurat)</description>
 		<year>1991</year>
@@ -94807,6 +94876,19 @@ Lacks game introduction, bad dump or alternate version?
 		</part>
 	</software>
 
+	<software name="lobosoli">
+		<description>Lobo Solitário</description>
+		<year>1986</year>
+		<publisher>Cláudio Graça</publisher>
+		<info name="language" value="Portuguese" />
+		<info name="region" value="Portugal" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="33807">
+				<rom name="Lobo Solitario.tzx" size="33807" crc="809d5729" sha1="6ee29078909337e3cf5fd0b9389fc0a32e85e469"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="lochness">
 		<description>Loch Ness Monster</description>
 		<year>1983</year>
@@ -95408,10 +95490,138 @@ Lacks game introduction, bad dump or alternate version?
 		</part>
 	</software>
 
-	<software name="losamore">
-		<description>Los Amores de Brunilda (English)</description>
+	<software name="lorna_pt" cloneof="lorna">
+		<description>Lorna (Portuguese)</description>
+		<year>2018</year>
+		<publisher>Topo Siglo XXI</publisher>
+		<info name="language" value="Portuguese" />
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="132305">
+				<rom name="Lorna-2018-portugues-30-Aniv.tzx" size="132305" crc="6b0515f9" sha1="0b6c8279968f9fd0414b0aa7a40f8c5e3e118851"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="brunilda">
+		<description>Los Amores de Brunilda (v1.4, English)</description>
+		<year>2014</year>
+		<publisher>Retroworks</publisher>
+		<info name="language" value="English" />
+		<info name="region" value="Spain" />
+		<info name="version" value="v1.4"/>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="85319">
+				<rom name="OABEA_ENG.tzx" size="85319" crc="6b46c041" sha1="34424a1040fa601ed5e2b75ad88ca5f1a40e6f0d"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="brunilda_es" cloneof="brunilda">
+		<description>Los Amores de Brunilda (v1.4, Spanish)</description>
+		<year>2014</year>
+		<publisher>Retroworks</publisher>
+		<info name="language" value="Spanish" />
+		<info name="region" value="Spain" />
+		<info name="version" value="v1.4"/>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="85406">
+				<rom name="OABEA_ESP.tzx" size="85406" crc="6906ccf6" sha1="e2b1f3d827e72d70e24d39e43cfb0f213cc20500"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="brunilda_gal" cloneof="brunilda">
+		<description>Los Amores de Brunilda (v1.4, Galician)</description>
+		<year>2014</year>
+		<publisher>Retroworks</publisher>
+		<info name="language" value="Spanish" />
+		<info name="region" value="Spain" />
+		<info name="version" value="v1.4"/>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="85081">
+				<rom name="OABEA_GAL.tzx" size="85081" crc="36d4c493" sha1="678efb5276829ec59b2dc2110f5049a7fcecce4e"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="brunilda_cat" cloneof="brunilda">
+		<description>Los Amores de Brunilda (v1.4, Catalan)</description>
+		<year>2014</year>
+		<publisher>Retroworks</publisher>
+		<info name="language" value="Spanish" />
+		<info name="region" value="Spain" />
+		<info name="version" value="v1.4"/>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="96561">
+				<rom name="OABEA_CAT.tzx" size="96561" crc="bea35ba5" sha1="c48eb89e46ed70643d34c7bf812d13fb956bb7d3"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="brunilda_cata" cloneof="brunilda">
+		<description>Los Amores de Brunilda (v1.4, Catalan, alt)</description>
+		<year>2014</year>
+		<publisher>Retroworks</publisher>
+		<info name="language" value="Spanish" />
+		<info name="region" value="Spain" />
+		<info name="version" value="v1.4"/>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="96549">
+				<rom name="OABEA_CAT2.tzx" size="96549" crc="66e75d85" sha1="d89c7829fbb229ac0cbe070d14f28dbcd462cf1a"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="brunilda_eus" cloneof="brunilda">
+		<description>Los Amores de Brunilda (v1.4, Basque)</description>
+		<year>2014</year>
+		<publisher>Retroworks</publisher>
+		<info name="language" value="Spanish" />
+		<info name="region" value="Spain" />
+		<info name="version" value="v1.4"/>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="96640">
+				<rom name="OABEA_EUS.tzx" size="96640" crc="20ebb66c" sha1="eb59dcf75d0de41a7d66bf7dceecaae4b643b1b4"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="brunilda_it" cloneof="brunilda">
+		<description>Los Amores de Brunilda (v1.4, Italian)</description>
+		<year>2014</year>
+		<publisher>Retroworks</publisher>
+		<info name="language" value="Italian" />
+		<info name="region" value="Spain" />
+		<info name="version" value="v1.4"/>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="96632">
+				<rom name="OABEA_ITA.tzx" size="96632" crc="4f2cb5af" sha1="a4b752b75abcae9ea251d0456032603d57dcf478"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="brunilda_ru" cloneof="brunilda">
+		<description>Los Amores de Brunilda (v1.4, Russian)</description>
+		<year>2014</year>
+		<publisher>Retroworks</publisher>
+		<info name="language" value="Russian" />
+		<info name="region" value="Spain" />
+		<info name="version" value="v1.4"/>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="96258">
+				<rom name="OABEA.tzx" size="96258" crc="bebf6c75" sha1="3882b96ab64880550f54d8264c4b8955b63cc630"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="brunilda12_en" cloneof="brunilda">
+		<description>Los Amores de Brunilda (v1.2, English)</description>
 		<year>2013</year>
 		<publisher>RetroWorks</publisher>
+		<info name="language" value="English" />
+		<info name="region" value="Spain" />
+		<info name="version" value="v1.2" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="82619">
 				<rom name="los amores de brunilda - english.tzx" size="82619" crc="ed9d3ba9" sha1="dd22ab28a19da0230c729a2bbf04509d50dcbeb7"/>
@@ -95419,10 +95629,13 @@ Lacks game introduction, bad dump or alternate version?
 		</part>
 	</software>
 
-	<software name="losamore_a" cloneof="losamore">
-		<description>Los Amores de Brunilda (Spanish)</description>
+	<software name="brunilda12_es" cloneof="brunilda">
+		<description>Los Amores de Brunilda (v1.2, Spanish)</description>
 		<year>2013</year>
 		<publisher>RetroWorks</publisher>
+		<info name="language" value="Spanish" />
+		<info name="region" value="Spain" />
+		<info name="version" value="v1.2" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="82981">
 				<rom name="los amores de brunilda - spanish.tzx" size="82981" crc="bfcddbd0" sha1="baca28cbfa9b91677e45218aa5679c6dba7bf811"/>
@@ -95557,6 +95770,45 @@ Lacks game introduction, bad dump or alternate version?
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="42388">
 				<rom name="lost caves - side 2.tzx" size="42388" crc="3e6bc988" sha1="b833a6767ca6b25926d124ceb8b047bc74115bea"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="losttulum">
+		<description>Los Tesoros Perdidos de Tulum (v1.1, Spanish)</description>
+		<year>2020</year>
+		<publisher>Retroworks</publisher>
+		<info name="language" value="Spanish" />
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="76045">
+				<rom name="Tulum_esV1.1.tzx" size="76045" crc="1d8c1f9c" sha1="0f0b19c0e9e24cbed757c42fbee332546958cf23"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="losttulum_a" cloneof="losttulum">
+		<description>The Lost Treasures of Tulum (v1.0, English)</description>
+		<year>2020</year>
+		<publisher>Retroworks</publisher>
+		<info name="language" value="English" />
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="76033">
+				<rom name="tulum_en.tzx" size="76033" crc="4841588d" sha1="6cbb2ea66d66a7647c3d19a8bca2b426208c149a"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="losttulum_b" cloneof="losttulum">
+		<description>Los Tesoros Perdidos de Tulum (v1.0, Spanish)</description>
+		<year>2020</year>
+		<publisher>Retroworks</publisher>
+		<info name="language" value="Spanish" />
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="76033">
+				<rom name="tulum_es.tzx" size="76033" crc="2b8ee45d" sha1="97d2048efe6e67351b5042ba459eb0d7978d37ac"/>
 			</dataarea>
 		</part>
 	</software>
@@ -97108,21 +97360,12 @@ Lacks game introduction, bad dump or alternate version?
 		</part>
 	</software>
 
+	<!-- Added a Topo Soft's anti-drugs loading screen -->
 	<software name="madmix2">
-		<description>Mad Mix 2 (set 1)</description>
+		<description>Mad Mix 2: En el Castillo de los Fantasmas (alt)</description>
 		<year>1990</year>
 		<publisher>Topo Soft</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="66327">
-				<rom name="mad mix 2.tzx" size="66327" crc="cf5035c6" sha1="beb52c88dda1fa6035d95e95ffa12da667db3ed5"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="madmix2a" cloneof="madmix2">
-		<description>Mad Mix 2 (set 2)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="80786">
 				<rom name="mad mix 2 (alt).tzx" size="80786" crc="93ac536b" sha1="25702d30578f9b8a314ac677dfdade79ace9aef8"/>
@@ -97130,6 +97373,29 @@ Lacks game introduction, bad dump or alternate version?
 		</part>
 	</software>
 
+	<software name="madmix2a" cloneof="madmix2">
+		<description>Mad Mix 2: En el Castillo de los Fantasmas</description>
+		<year>1990</year>
+		<publisher>Topo Soft</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="66327">
+				<rom name="mad mix 2.tzx" size="66327" crc="cf5035c6" sha1="beb52c88dda1fa6035d95e95ffa12da667db3ed5"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="madmix2_pt" cloneof="madmix2">
+		<description>Mad Mix 2: No Castelo dos Fantasmas (Portuguese)</description>
+		<year>2018</year>
+		<publisher>Topo Siglo XXI</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="80671">
+				<rom name="Mad-Mix-2-Por-30-aniv-final.tzx" size="80671" crc="86c000cf" sha1="388f34e18e1738973e251d2d01c3330728ee3726"/>
+			</dataarea>
+		</part>
+	</software>
 
 	<software name="madmix">
 		<description>Mad Mix Game - The Pepsi Challenge</description>
@@ -98966,8 +99232,8 @@ Lacks game introduction, bad dump or alternate version?
 
 	<software name="masterfi_a" cloneof="masterfi">
 		<description>Masterfile v06</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1982</year>
+		<publisher>Campbell Systems</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="10608">
 				<rom name="masterfile v06.tzx" size="10608" crc="3067e445" sha1="ff5eb8cf0ab30f7a9f08a32439a2065afc81892b"/>
@@ -98977,8 +99243,9 @@ Lacks game introduction, bad dump or alternate version?
 
 	<software name="masterfi_b" cloneof="masterfi">
 		<description>Masterfile v09 (Aackosoft)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1982</year>
+		<publisher>Aackosoft</publisher>
+		<info name="region" value="Netherlands" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="16359">
 				<rom name="masterfile v09 (aackosoft).tzx" size="16359" crc="3ada313e" sha1="593ebc1faa8a3d4274dc0824fb290724e16d7d70"/>
@@ -98988,8 +99255,9 @@ Lacks game introduction, bad dump or alternate version?
 
 	<software name="masterfi_c" cloneof="masterfi">
 		<description>Masterfile v09 (Edizioni JCE)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1984</year>
+		<publisher>Edizioni JCE</publisher>
+		<info name="region" value="Italy" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="39592">
 				<rom name="masterfile v09 (edizioni jce) - side a.tzx" size="39592" crc="3801d0d6" sha1="8cfca8a8aaf3a9c9622800c37c233b3fc72c3882"/>
@@ -99002,10 +99270,28 @@ Lacks game introduction, bad dump or alternate version?
 		</part>
 	</software>
 
+	<software name="masterfi_d" cloneof="masterfi">
+		<description>Masterfile v08 (Logiciels)</description>
+		<year>1982</year>
+		<publisher>Logiciels</publisher>
+		<info name="region" value="France" />
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="11734">
+				<rom name="Multifichiers_SideA.tzx" size="11734" crc="9ce121fa" sha1="cb31755877c4c7f154838f66df5ddf96877ad249"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="11911">
+				<rom name="Multifichiers_SideB.tzx" size="11911" crc="e01fa1b5" sha1="f9f19af2602b8c8338e5a0d1e850c2c89a0a3c41"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="masterfi_e" cloneof="masterfi">
 		<description>Masterfile v09 (Profisoft)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1982</year>
+		<publisher>Profisoft</publisher>
+		<info name="region" value="Germany" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="15327">
 				<rom name="masterfile v09 (profisoft).tzx" size="15327" crc="d725f687" sha1="97b7dafa0e6a70abc94a132570808017f6975732"/>
@@ -99015,8 +99301,8 @@ Lacks game introduction, bad dump or alternate version?
 
 	<software name="masterfi_f" cloneof="masterfi">
 		<description>Masterfile v09</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1982</year>
+		<publisher>Campbell Systems</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="16606">
 				<rom name="masterfile v09.tzx" size="16606" crc="dbdd412f" sha1="f6945292a72f7984fdd98437e6ab0638138b0910"/>
@@ -99024,13 +99310,14 @@ Lacks game introduction, bad dump or alternate version?
 		</part>
 	</software>
 
-	<software name="masterso">
-		<description>Masters of the Universe (Erbe)</description>
-		<year>1987</year>
-		<publisher>Erbe Software</publisher>
+	<software name="masterfi_g" cloneof="masterfi">
+		<description>Masterfile (Plansoft)</description>
+		<year>1982</year>
+		<publisher>Plansoft</publisher>
+		<info name="region" value="Brazil" />
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="44833">
-				<rom name="masters of the universe (erbe).tzx" size="44833" crc="9a58fdf0" sha1="b0e1bcb2665219df4572576c1f806c4c2b5ce430"/>
+			<dataarea name="cass" size="9727">
+				<rom name="Masterfile(Plansoft).tzx" size="9727" crc="a57ec61c" sha1="1cadbdbe0615195f608e82487e3893967bb0db28"/>
 			</dataarea>
 		</part>
 	</software>
@@ -99086,6 +99373,17 @@ Lacks game introduction, bad dump or alternate version?
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="44745">
 				<rom name="masters of the universe - the movie (kixx).tzx" size="44745" crc="fa57e573" sha1="7c914f053e8ea6d2401b04490dc6637c0d9ceebf"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="mastersc" cloneof="mastunim">
+		<description>Masters of the Universe (Erbe)</description>
+		<year>1987</year>
+		<publisher>Erbe Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="44833">
+				<rom name="masters of the universe (erbe).tzx" size="44833" crc="9a58fdf0" sha1="b0e1bcb2665219df4572576c1f806c4c2b5ce430"/>
 			</dataarea>
 		</part>
 	</software>
@@ -100685,7 +100983,7 @@ Nothing happens after loading the cassette
 	</software>
 
 	<software name="michelfu">
-		<description>Michel Futbol Master - Large Case</description>
+		<description>Michel Futbol Master (large case)</description>
 		<year>1989</year>
 		<publisher>Dinamic Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -100702,8 +101000,8 @@ Nothing happens after loading the cassette
 
 	<software name="michelfu_b" cloneof="michelfu">
 		<description>Michel Futbol Master</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1989</year>
+		<publisher>Dinamic Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="53936">
 				<rom name="michel futbol master - side a.tzx" size="53936" crc="e111e5d3" sha1="96108091233d295812d2dfe5b9c45aaedd188569"/>
@@ -101628,17 +101926,6 @@ Nothing happens after loading the cassette
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="23610">
 				<rom name="campo minado (investronica).tzx" size="23610" crc="4c4c7601" sha1="140368533d211cefe3d1da4b8b30b3cdeebd3e63"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="campomin_a" cloneof="minedout">
-		<description>Campo Minado (alt)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="30338">
-				<rom name="campo minado.tzx" size="30338" crc="e8659312" sha1="cf1eaf0d91c50a661c537f3c3fba031c55eddc37"/>
 			</dataarea>
 		</part>
 	</software>
@@ -108770,12 +109057,12 @@ Nothing happens after loading the cassette
 	</software>
 
 	<software name="orbiterr">
-		<description>Orbiter (release 1)</description>
+		<description>Orbiter (release 3)</description>
 		<year>1982</year>
 		<publisher>Silversoft</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="9341">
-				<rom name="orbiter - release 1.tzx" size="9341" crc="0216ee4b" sha1="fae94015185d1f2d38e2864490021a8bdd3b9cf4"/>
+			<dataarea name="cass" size="8359">
+				<rom name="orbiter - release 3.tzx" size="8359" crc="dee2e01f" sha1="59a787ae1347e70678e175a5878f12500a9c5ccf"/>
 			</dataarea>
 		</part>
 	</software>
@@ -108791,13 +109078,13 @@ Nothing happens after loading the cassette
 		</part>
 	</software>
 
-	<software name="orbiterr_b" cloneof="orbiterr">
-		<description>Orbiter (release 3)</description>
+	<software name="orbiterr_b" cloneof="orbiterr" supported="no">
+		<description>Orbiter (release 1)</description>
 		<year>1982</year>
 		<publisher>Silversoft</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="8359">
-				<rom name="orbiter - release 3.tzx" size="8359" crc="dee2e01f" sha1="59a787ae1347e70678e175a5878f12500a9c5ccf"/>
+			<dataarea name="cass" size="9341">
+				<rom name="orbiter - release 1.tzx" size="9341" crc="0216ee4b" sha1="fae94015185d1f2d38e2864490021a8bdd3b9cf4"/>
 			</dataarea>
 		</part>
 	</software>
@@ -109390,6 +109677,8 @@ Nothing happens after loading the cassette
 		<description>O Globo da Luz</description>
 		<year>19??</year>
 		<publisher>Astor Software</publisher>
+		<info name="language" value="Portuguese" />
+		<info name="region" value="Portugal" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="29924">
 				<rom name="o globo da luz.tzx" size="29924" crc="ca32dc83" sha1="08e2f1effb172cdfdafb8b9a97c6a38ca89b98b7"/>
@@ -114945,7 +115234,6 @@ Nothing happens after loading the cassette
 		</part>
 	</software>
 
-
 	<software name="pulsewar">
 		<description>Pulse Warrior</description>
 		<year>1988</year>
@@ -114969,7 +115257,7 @@ Nothing happens after loading the cassette
 	</software>
 
 	<software name="punchand">
-		<description>Punch And Judy</description>
+		<description>Punch &amp; Judy</description>
 		<year>1989</year>
 		<publisher>Alternative Software</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -114978,8 +115266,6 @@ Nothing happens after loading the cassette
 			</dataarea>
 		</part>
 	</software>
-
-
 
 	<software name="punchy">
 		<description>Punchy (set 1)</description>
@@ -116467,17 +116753,6 @@ Nothing happens after loading the cassette
 		</part>
 	</software>
 
-	<software name="solquin">
-		<description>Solucion de Quinielas</description>
-		<year>1984</year>
-		<publisher>Hipocrates Soft</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="28839">
-				<rom name="quinielas.tzx" size="28839" crc="60228b19" sha1="388e87ec48ff8175533d874c7bbafc8971f0de41"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<software name="quizofeu">
 		<description>Quiz of Europe</description>
 		<year>19??</year>
@@ -117341,13 +117616,26 @@ Nothing happens after loading the cassette
 		</part>
 	</software>
 
-	<software name="rama" cloneof="ram">
-		<description>R.A.M. (set 2)</description>
+	<software name="ram_a" cloneof="ram">
+		<description>R.A.M. (alt)</description>
 		<year>1990</year>
 		<publisher>Topo Soft</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="62633">
 				<rom name="ram.tzx" size="62633" crc="190457fb" sha1="e2f97ba3c63ca06a82b1df486a1c99480fbfa77d"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="ram_pt" cloneof="ram">
+		<description>R.A.M. (Portuguese)</description>
+		<year>2018</year>
+		<publisher>Topo Siglo XXI</publisher>
+		<info name="language" value="Portuguese" />
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="62633">
+				<rom name="RAM-2018-por-30-Aniversario.tzx" size="62633" crc="f35348bf" sha1="9f06d21d0ed892feb61dbe303c527a1927608218"/>
 			</dataarea>
 		</part>
 	</software>
@@ -123180,6 +123468,45 @@ Nothing happens after loading the cassette
 		</part>
 	</software>
 
+	<software name="searchmt">
+		<description>Searching for Mort (English)</description>
+		<year>2017</year>
+		<publisher>Topo Siglo XXI</publisher>
+		<info name="language" value="English" />
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="37845">
+				<rom name="SearchingForMort(English).tap" size="37845" crc="c63d672f" sha1="fd904189ab3f0d7f3a2d2d6de76392acbfd90e93"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="buscamrt_pt" cloneof="searchmt">
+		<description>Em Busca do Mortadela (Portuguese)</description>
+		<year>2017</year>
+		<publisher>Topo Siglo XXI</publisher>
+		<info name="language" value="Portuguese" />
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="37852">
+				<rom name="EmBuscaDoMortadela(Portuguese).tap" size="37852" crc="5cd78db5" sha1="5813ddc81eae9b968afd1336e140cf12cc4e430d"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="buscamrt_es" cloneof="searchmt">
+		<description>En Busca de Mortadelo (Spanish)</description>
+		<year>2017</year>
+		<publisher>Topo Siglo XXI</publisher>
+		<info name="language" value="Spanish" />
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="37850">
+				<rom name="EnBuscaDeMortadelo(Spanish).tap" size="37850" crc="ca9b8bf8" sha1="ef10845532242095e94a0cc24eb586a6ca547785"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="seasofbl">
 		<description>Seas of Blood (set 2)</description>
 		<year>1985</year>
@@ -123709,25 +124036,25 @@ Nothing happens after loading the cassette
 	</software>
 
 	<software name="shadowwa">
-		<description>Shadow Warriors (Erbe)</description>
+		<description>Shadow Warriors</description>
 		<year>1990</year>
-		<publisher>Erbe Software</publisher>
+		<publisher>Ocean</publisher>
 		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="132918">
-				<rom name="shadow warriors - side 1 (erbe).tzx" size="132918" crc="f895c3bc" sha1="efb7553f4b3995bfa4927d1511f2db1836e12a88"/>
+			<dataarea name="cass" size="131360">
+				<rom name="shadow warriors - side 1.tzx" size="131360" crc="5b509f42" sha1="39b4d6d8a72996fba8d9a1002a852156e0f1b290"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="155196">
-				<rom name="shadow warriors - side 2 (erbe).tzx" size="155196" crc="03c4445b" sha1="ebfafcec184cb84d569ddb89686bbe9ee21292f2"/>
+			<dataarea name="cass" size="155110">
+				<rom name="shadow warriors - side 2.tzx" size="155110" crc="ad2e3353" sha1="30338debc168385223b3065404de6fe71c0c246c"/>
 			</dataarea>
 		</part>
 	</software>
 
 	<software name="shadowwa_a" cloneof="shadowwa">
 		<description>Shadow Warriors (The Hit Squad)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1990</year>
+		<publisher>The Hit Squad</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="131349">
 				<rom name="shadow warriors - side 1 (the hit squad).tzx" size="131349" crc="c5b6db2a" sha1="b41bb0be9a6d1040b1b1551bd4551c061ae4ba1a"/>
@@ -123741,17 +124068,35 @@ Nothing happens after loading the cassette
 	</software>
 
 	<software name="shadowwa_b" cloneof="shadowwa">
-		<description>Shadow Warriors</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Shadow Warriors (Erbe)</description>
+		<year>1990</year>
+		<publisher>Erbe Software</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
-			<dataarea name="cass" size="131360">
-				<rom name="shadow warriors - side 1.tzx" size="131360" crc="5b509f42" sha1="39b4d6d8a72996fba8d9a1002a852156e0f1b290"/>
+			<dataarea name="cass" size="132918">
+				<rom name="shadow warriors - side 1 (erbe).tzx" size="132918" crc="f895c3bc" sha1="efb7553f4b3995bfa4927d1511f2db1836e12a88"/>
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
-			<dataarea name="cass" size="155110">
-				<rom name="shadow warriors - side 2.tzx" size="155110" crc="ad2e3353" sha1="30338debc168385223b3065404de6fe71c0c246c"/>
+			<dataarea name="cass" size="155196">
+				<rom name="shadow warriors - side 2 (erbe).tzx" size="155196" crc="03c4445b" sha1="ebfafcec184cb84d569ddb89686bbe9ee21292f2"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="shadowwa_c" cloneof="shadowwa">
+		<description>Shadow Warriors (Musical)</description>
+		<year>1990</year>
+		<publisher>Musical 1</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="133079">
+				<rom name="Shadow Warriors - Side 1 (Musical 1).tzx" size="133079" crc="5514ef97" sha1="c4916b9bd136f15df33ee2a0712d5f9dffa014e9"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="155369">
+				<rom name="Shadow Warriors - Side 2 (Musical 1).tzx" size="155369" crc="89f741a3" sha1="09385ae34889c7822ba358bfa55b90347f28f61c"/>
 			</dataarea>
 		</part>
 	</software>
@@ -125630,20 +125975,20 @@ Nothing happens after loading the cassette
 	</software>
 
 	<software name="slippery">
-		<description>Slippery Sid (Forward Software)</description>
+		<description>Slippery Sid</description>
 		<year>1983</year>
-		<publisher>Forward</publisher>
+		<publisher>Silversoft</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="16515">
-				<rom name="slippery sid (forward software).tzx" size="16515" crc="447cdee2" sha1="5aa3ad03cfe71ef74a9f9cda1ffe382dd3025e12"/>
+			<dataarea name="cass" size="7917">
+				<rom name="slippery sid.tzx" size="7917" crc="cf02b2fc" sha1="325b3555b18277543fc7b0cf48877b96d9dfe694"/>
 			</dataarea>
 		</part>
 	</software>
 
 	<software name="slippery_a" cloneof="slippery">
 		<description>Slippery Sid (Paxman)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1983</year>
+		<publisher>Paxman Promotions</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="9645">
 				<rom name="slippery sid (paxman).tzx" size="9645" crc="b1f27938" sha1="efca9fe1a68e7231c5b37db23159377421308fbe"/>
@@ -125652,12 +125997,23 @@ Nothing happens after loading the cassette
 	</software>
 
 	<software name="slippery_b" cloneof="slippery">
-		<description>Slippery Sid</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Slippery Sid (Forward Software)</description>
+		<year>1983</year>
+		<publisher>Forward Software</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="7917">
-				<rom name="slippery sid.tzx" size="7917" crc="cf02b2fc" sha1="325b3555b18277543fc7b0cf48877b96d9dfe694"/>
+			<dataarea name="cass" size="16515">
+				<rom name="slippery sid (forward software).tzx" size="16515" crc="447cdee2" sha1="5aa3ad03cfe71ef74a9f9cda1ffe382dd3025e12"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="slippery_c" cloneof="slippery">
+		<description>Slippery Sid (pirate)</description>
+		<year>19??</year>
+		<publisher>Nuova Newel Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="7790">
+				<rom name="Slippery Sid (Nuova Newel Software).tzx" size="7790" crc="51a1ebf8" sha1="650f9de42481695e618e83618fca8048f49ef457"/>
 			</dataarea>
 		</part>
 	</software>
@@ -134542,12 +134898,24 @@ Nothing happens after loading the cassette
 	</software>
 
 	<software name="swordand">
-		<description>Sword And Shield</description>
+		<description>Sword and Shield</description>
 		<year>1988</year>
 		<publisher>The Power House</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="55016">
 				<rom name="sword and shield.tzx" size="55016" crc="d1b5abb8" sha1="6f5f179bf684f43d1a354b8dd09284e3c1428d64"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="swianna">
+		<description>The Sword of Ianna</description>
+		<year>2017</year>
+		<publisher>Retroworks</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="212617">
+				<rom name="SwordOfIlana.tap" size="212617" crc="448410cc" sha1="4d3e8e7d7c08d8d6b4eb8e2c4444d7b5d5332b0e"/>
 			</dataarea>
 		</part>
 	</software>
@@ -138989,7 +139357,7 @@ Nothing happens after loading the cassette
 	</software>
 
 	<software name="thunderc_c" cloneof="thunderc">
-		<description>Thundercats (Elite, alternate)</description>
+		<description>Thundercats (Elite, alt)</description>
 		<year>1987</year>
 		<publisher>Elite System</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -139098,23 +139466,23 @@ Nothing happens after loading the cassette
 	</software>
 
 	<software name="timeflie">
+		<description>Time Flies</description>
+		<year>1988</year>
+		<publisher>Firebird Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="49251">
+				<rom name="time flies.tzx" size="49251" crc="dcab96c9" sha1="4be919a873aceb1ac57e00e9ac0adf8e774156b5"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="timeflie_a" cloneof="timeflie">
 		<description>Time Flies (MCM)</description>
 		<year>1988</year>
 		<publisher>MCM Software</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="49157">
 				<rom name="time flies (mcm).tzx" size="49157" crc="6520fe0d" sha1="a5e417428bccca1848e9808e7ec01a4cfd401f8f"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="timeflie_a" cloneof="timeflie">
-		<description>Time Flies</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="49251">
-				<rom name="time flies.tzx" size="49251" crc="dcab96c9" sha1="4be919a873aceb1ac57e00e9ac0adf8e774156b5"/>
 			</dataarea>
 		</part>
 	</software>
@@ -139200,6 +139568,19 @@ Nothing happens after loading the cassette
 		</part>
 	</software>
 
+	<software name="timegate_f" cloneof="timegate">
+		<description>Time-Gate (pirate)</description>
+		<year>198?</year>
+		<publisher>Nuova Newel Software</publisher>
+		<info name="language" value="Italian" />
+		<info name="region" value="Italy" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="40504">
+				<rom name="Time-Gate (Nuova Newel Software).tzx" size="40504" crc="b8a3c8f8" sha1="176fe75e5afbd65e22dfa197be3c49e8f0cd5953"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="timemach">
 		<description>Time Machine (Activision)</description>
 		<year>1990</year>
@@ -139234,9 +139615,9 @@ Nothing happens after loading the cassette
 	</software>
 
 	<software name="timqsts">
-		<description>Time Quest (1985, Scorpio) (set 1)</description>
+		<description>Time Quest (1985, Scorpio)</description>
 		<year>1985</year>
-		<publisher>Scorpio Gamesworld Ltd</publisher>
+		<publisher>Scorpio Gamesworld</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="46776">
 				<rom name="time quest (scorpio gamesworld).tzx" size="46776" crc="1bb3db4e" sha1="d504672e053e24ab13819ceede59ef2fe4076c26"/>
@@ -139245,9 +139626,9 @@ Nothing happens after loading the cassette
 	</software>
 
 	<software name="timqstsa" cloneof="timqsts">
-		<description>Time Quest (1985, Scorpio) (set 2, Adventureworld)</description>
+		<description>Time Quest (1985, Adventureworld)</description>
 		<year>1985</year>
-		<publisher>Scorpio Gamesworld Ltd / Adventureworld</publisher>
+		<publisher>Adventureworld</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="46773">
 				<rom name="time quest (adventureworld).tzx" size="46773" crc="c20b29c0" sha1="52ca30d59d45a934843f0fb98521567148947bc9"/>
@@ -139431,7 +139812,7 @@ Nothing happens after loading the cassette
 	</software>
 
 	<software name="timewarr">
-		<description>Time Warrior (set 1, 128k)</description>
+		<description>Time Warrior (128K)</description>
 		<year>1991</year>
 		<publisher>Zenobi Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -139447,9 +139828,9 @@ Nothing happens after loading the cassette
 	</software>
 
 	<software name="timewarra" cloneof="timewarr">
-		<description>Time Warrior (set 2, 128k)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Time Warrior (128K, alt)</description>
+		<year>1991</year>
+		<publisher>Zenobi Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="112870">
 				<rom name="time warrior - 128k - alternate - part 1.tzx" size="112870" crc="824b5fa9" sha1="9f1d70e3bdb4194cd30612836b1e8de5447a96c7"/>
@@ -139468,9 +139849,9 @@ Nothing happens after loading the cassette
 	</software>
 
 	<software name="timewarr48" cloneof="timewarr">
-		<description>Time Warrior (set 3, 48k)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Time Warrior (48K)</description>
+		<year>1991</year>
+		<publisher>Zenobi Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="81775">
 				<rom name="time warrior - 48k - side 1.tzx" size="81775" crc="c8b461c7" sha1="7c9bd799d303a249183ab91ee682fe7bbad9237f"/>
@@ -139863,6 +140244,19 @@ Nothing happens after loading the cassette
 		</part>
 	</software>
 
+	<software name="toadrunn_a" cloneof="toadrunn">
+		<description>Toad Runner (Dro Soft)</description>
+		<year>1986</year>
+		<publisher>Dro Soft</publisher>
+		<info name="language" value="Spanish" />
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="44421">
+				<rom name="Toad Runner (DRO Soft).tzx" size="44421" crc="f5ff9c4a" sha1="7654d7bc0d656932403d2a1aefb3d9d0c73376a8"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="toboradd">
 		<description>Tobor (Add-On Electronics)</description>
 		<year>1983</year>
@@ -139878,6 +140272,7 @@ Nothing happens after loading the cassette
 		<description>Tobor (Profisoft)</description>
 		<year>1982</year>
 		<publisher>Profisoft</publisher>
+		<info name="region" value="Germany" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="27542">
 				<rom name="tobor (profisoft).tzx" size="27542" crc="9d68c979" sha1="48a55c3c1880c7ae71434dfce15481414c98e1e3"/>
@@ -140162,8 +140557,20 @@ Nothing happens after loading the cassette
 		</part>
 	</software>
 
+	<software name="topmixgm">
+		<description>Topo Mix Game (Portuguese)</description>
+		<year>2017</year>
+		<publisher>Topo Siglo XXI</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="37851">
+				<rom name="Topo-MIX-GAME-Port2017-Master.tap" size="37851" crc="e020abf0" sha1="bd7067acae01889cc3e838384a396c766cefd8f8"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="topsandt">
-		<description>Tops And Tails</description>
+		<description>Tops and Tails</description>
 		<year>1985</year>
 		<publisher>Macmillan</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -141159,7 +141566,6 @@ Nothing happens after loading the cassette
 		<description>Tremor (pirate)</description>
 		<year>1986</year>
 		<publisher>Hello Games</publisher>
-		<notes>A pirated version from Portugal</notes>
 		<info name="region" value="Portugal" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="56247">
@@ -144051,6 +144457,7 @@ Version without loading screen, maybe a pre-release
 		<description>Viaje al Centro de la Tierra</description>
 		<year>1989</year>
 		<publisher>Topo Soft</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="125750">
 				<rom name="viaje al centro de la tierra (1989)(topo soft)(es)[a4].tzx" size="125750" crc="2048dc1b" sha1="d418770a9768530e8328cc49abaa7edbdaaa7116"/>
@@ -144062,6 +144469,7 @@ Version without loading screen, maybe a pre-release
 		<description>Viaje al Centro de la Tierra (Serie 5 Estrellas)</description>
 		<year>1989</year>
 		<publisher>Topo Soft</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="125847">
 				<rom name="viaje al centro de la tierra (serie 5 estrellas).tzx" size="125847" crc="8129a929" sha1="6e7a0d5e1a67b7c5198f2a6ba580f099e227b43d"/>
@@ -144073,6 +144481,7 @@ Version without loading screen, maybe a pre-release
 		<description>Viaje al Centro de la Tierra - Versión Extendida</description>
 		<year>2008</year>
 		<publisher>Topo Siglo XXI</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="196599">
 				<rom name="viaje al centro de la tierra - version extendida (2007)(topo siglo xxi)(48k-128k)(es)[pack 5 fases].tzx" size="196599" crc="fb46783f" sha1="696b414d390423152839908022ba888cdab1ed2e" />
@@ -144084,6 +144493,7 @@ Version without loading screen, maybe a pre-release
 		<description>Viaje al Centro de la Tierra - Versión Extendida (levels 4 and 5)</description>
 		<year>2008</year>
 		<publisher>Topo Siglo XXI</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="89849">
 				<rom name="viaje al centro de la tierra - version extendida (2007)(topo siglo xxi)(48k-128k)(es).tzx" size="89849" crc="d1fa8d71" sha1="9b55da70989ed474e7255a84b925b6e547d60389" />
@@ -144092,15 +144502,44 @@ Version without loading screen, maybe a pre-release
 	</software>
 
 	<software name="viajealcext10" cloneof="viajealc">
-		<description>Viaje al Centro de la Tierra - Versión Extendida (10 Aniversario)</description>
+		<description>Viaje al Centro de la Tierra - Versión Extendida (10 Aniversario, Spanish)</description>
 		<year>2018</year>
 		<publisher>Topo Siglo XXI</publisher>
+		<info name="language" value="Spanish" />
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="196613">
-				<rom name="Viaje Al Centro De La Tierra - Version Extendida (10 Aniversario).tzx" size="196613" crc="f5681a3a" sha1="d234a5d13d8ec49b6e645ad957e5041363bb01f1"/>
+				<rom name="Viaje al Centro de la Tierra V.E. - (2018)(5 fases) 10 aniver.tzx" size="196613" crc="f5681a3a" sha1="d234a5d13d8ec49b6e645ad957e5041363bb01f1"/>
 			</dataarea>
 		</part>
 	</software>
+
+	<software name="journeyext10_en" cloneof="viajealc">
+		<description>Journey to the Centre of the Earth - Extended Version (10 Anniversary, English)</description>
+		<year>2018</year>
+		<publisher>Topo Siglo XXI</publisher>
+		<info name="language" value="English" />
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="203532">
+				<rom name="Journey to the Centre of the Earth -V.E. - (2018)(5 fases).tzx" size="203532" crc="384d5670" sha1="8c25e2670f7d591b3cf90755675f44943d25beb8"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="viagemext10_pt" cloneof="viajealc">
+		<description>Viagem ao Centro da Terra - Versão Estendida (10 Aniversário, Portuguese)</description>
+		<year>2018</year>
+		<publisher>Topo Siglo XXI</publisher>
+		<info name="language" value="Portuguese" />
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="196599">
+				<rom name="Viagem ao Centro da Terra -V.E. - (2018)(5 fases).tzx" size="196599" crc="4824484e" sha1="8d525b49f758873a719cdc3a1dfdb1bd7271b7e6"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="vicevers">
 		<description>Vice Versa</description>
 		<year>1987</year>
@@ -147491,6 +147930,32 @@ Version without loading screen, maybe a pre-release
 		</part>
 	</software>
 
+	<software name="dizzyviii">
+		<description>Wonderful Dizzy (v1.5)</description>
+		<year>2021</year>
+		<publisher>Team Yolkfolk</publisher>
+		<info name="developer" value="The Oliver Twins" />
+		<info name="release" value="24-08-2021" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="117886">
+				<rom name="Dizzy VIII - Wonderful Dizzy (2021) v1.5.tap" size="117886" crc="263088bc" sha1="0cbf18767458ddccfbf00e9438f3c2213c522a67"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="dizzyviii_a" cloneof="dizzyviii">
+		<description>Wonderful Dizzy (v1.0)</description>
+		<year>2020</year>
+		<publisher>Team Yolkfolk</publisher>
+		<info name="developer" value="The Oliver Twins" />
+		<info name="release" value="18-12-2020" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="116323">
+				<rom name="DizzyVIII.tap" size="116323" crc="0f8b91f8" sha1="2adef342b7947701cb64b50a39f1f9eb25c82166"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="wonderwm">
 		<description>Wonderworm</description>
 		<year>1984</year>
@@ -148733,10 +149198,12 @@ Version without loading screen, maybe a pre-release
 		</part>
 	</software>
 
-	<software name="xadomfkw" cloneof="xadom">
+	<software name="xadomfkw" cloneof="xadom" supported="no">
 		<description>Xadom (F+K Ware)</description>
 		<year>1983</year>
 		<publisher>F+K Ware</publisher>
+		<info name="language" value="German" />
+		<info name="region" value="Germany" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48601">
 				<rom name="xadom (f+k-ware).tzx" size="48601" crc="47438387" sha1="83171dfc0d09f4f233ca0971b23ba07ed90f3cbd"/>
@@ -149332,6 +149799,19 @@ Version without loading screen, maybe a pre-release
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="24904">
 				<rom name="yatzee.tzx" size="24904" crc="a586ecce" sha1="e58690695371830834b186ef936c40434ee12713"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="yatzy">
+		<description>Yatzy</description>
+		<year>1984</year>
+		<publisher>ZX Data</publisher>
+		<info name="language" value="Danish" />
+		<info name="region" value="Denmark" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="15471">
+				<rom name="Yatzy (ZX Data).tzx" size="15471" crc="296cf4c5" sha1="aa8d63dcd985d7db008ccb8949d7f5e7289c9397"/>
 			</dataarea>
 		</part>
 	</software>
@@ -149937,8 +150417,19 @@ Version without loading screen, maybe a pre-release
 		</part>
 	</software>
 
-	<software name="zipzapal">
-		<description>Zip-Zap (set 2)</description>
+	<software name="zipzap">
+		<description>Zip-Zap</description>
+		<year>1983</year>
+		<publisher>Imagine Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="37271">
+				<rom name="zip-zap.tzx" size="37271" crc="3bd74180" sha1="62543a6e906379e13d78d852ff8a175974597fbb"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="zipzap_a" cloneof="zipzap">
+		<description>Zip-Zap (alt)</description>
 		<year>1983</year>
 		<publisher>Imagine Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -149953,13 +150444,26 @@ Version without loading screen, maybe a pre-release
 		</part>
 	</software>
 
-	<software name="zipzap">
-		<description>Zip-Zap</description>
-		<year>1983</year>
-		<publisher>Imagine Software</publisher>
+	<software name="zipzap_b" cloneof="zipzap">
+		<description>Zip-Zap (PRISM)</description>
+		<year>198?</year>
+		<publisher>PRISM Micro-informatique</publisher>
+		<info name="region" value="France" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="37271">
-				<rom name="zip-zap.tzx" size="37271" crc="3bd74180" sha1="62543a6e906379e13d78d852ff8a175974597fbb"/>
+				<rom name="Zip-Zap(PRISMMicro-informatiqueSA).tzx" size="37271" crc="f4b49fd8" sha1="a173ea6c2afcf57427982756f152b1450c3ca5b0"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="zipzap_c" cloneof="zipzap">
+		<description>Zip-Zap (pirate)</description>
+		<year>198?</year>
+		<publisher>Nuova Newel Software</publisher>
+		<info name="region" value="Italy" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="37271">
+				<rom name="Zip-Zap (Nuova Newel Software).tzx" size="37271" crc="e68a9ddc" sha1="1b66b83d63047ae5124f1b3895f2842105980d36"/>
 			</dataarea>
 		</part>
 	</software>
@@ -150114,6 +150618,19 @@ Version without loading screen, maybe a pre-release
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="76665">
 				<rom name="zona 0.tzx" size="76665" crc="1bd3e75e" sha1="c9fd2e84591e7630f760c20c3d1d0fdc9e6f51f5"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="zona0_pt" cloneof="zona0">
+		<description>Zona 0 (Portuguese)</description>
+		<year>2019</year>
+		<publisher>Topo Siglo XXI</publisher>
+		<info name="language" value="Portuguese" />
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="90752">
+				<rom name="Zona-2018-Portu-30-Aniversario-2.tzx" size="90752" crc="895fde04" sha1="e0581b7c03d626c85afcd6a60d8a626b46341ce9"/>
 			</dataarea>
 		</part>
 	</software>
@@ -150740,34 +151257,12 @@ Version without loading screen, maybe a pre-release
 	</software>
 
 	<software name="zybexmast" cloneof="zybex">
-		<description>Zybex (Mastering Tape)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Zybex (master tape)</description>
+		<year>1989</year>
+		<publisher>Zeppelin Games</publisher>
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="42869">
 				<rom name="zybex master tape.tzx" size="42869" crc="eaedbcac" sha1="a1fd63495c9cea1a3fe621e1e9dda61b924f362c"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="zynapser">
-		<description>Zynaps (Erbe)</description>
-		<year>1987</year>
-		<publisher>Erbe Software</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="45767">
-				<rom name="zynaps (erbe).tzx" size="45767" crc="7284adac" sha1="276cb076dfe2fdeb8564d4220f86fea195c41c58"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="zynapsno">
-		<description>Zynaps - Non-Playing Version</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="45644">
-				<rom name="zynaps - non-playing version.tzx" size="45644" crc="8d3add39" sha1="fe1051d08a09a4b65e8a2c2935c616f16c2b927b"/>
 			</dataarea>
 		</part>
 	</software>
@@ -150783,6 +151278,39 @@ Version without loading screen, maybe a pre-release
 		</part>
 	</software>
 
+	<software name="zynaps_a" cloneof="zynaps">
+		<description>Zynaps (Erbe)</description>
+		<year>1987</year>
+		<publisher>Erbe Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="45767">
+				<rom name="zynaps (erbe).tzx" size="45767" crc="7284adac" sha1="276cb076dfe2fdeb8564d4220f86fea195c41c58"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="zynaps_b" cloneof="zynaps">
+		<description>Zynaps (IBSA)</description>
+		<year>1987</year>
+		<publisher>IBSA</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="45730">
+				<rom name="Zynaps (Erbe - Serie Leyenda).tzx" size="45730" crc="58635b78" sha1="f1d03f1f2e2020279c67a5543a1f206866613e23"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="zynaps_c" cloneof="zynaps">
+		<description>Zynaps (non-playing version)</description>
+		<year>1987</year>
+		<publisher>Hewson Consultants</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="45644">
+				<rom name="zynaps - non-playing version.tzx" size="45644" crc="8d3add39" sha1="fe1051d08a09a4b65e8a2c2935c616f16c2b927b"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="zythum">
 		<description>Zythum</description>
 		<year>1986</year>
@@ -150790,28 +151318,6 @@ Version without loading screen, maybe a pre-release
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="43912">
 				<rom name="zythum.tzx" size="43912" crc="53238629" sha1="5e1118f3cd940c4a77b970baa34cb6690cd891b4"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="zzoomalt">
-		<description>Zzoom (set 2)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="22714">
-				<rom name="zzoom - alternate.tzx" size="22714" crc="a97d40f2" sha1="d811b3fa558f5445bb36980788c8f6426d3bf2fc"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="zzoombig">
-		<description>Zzoom - Big Box Release</description>
-		<year>1983</year>
-		<publisher>Imagine Software</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="22669">
-				<rom name="zzoom - big box release.tzx" size="22669" crc="5bbe019c" sha1="96212443d26bb70fea8fafa8081337ccc32520b5"/>
 			</dataarea>
 		</part>
 	</software>
@@ -150832,13 +151338,24 @@ Version without loading screen, maybe a pre-release
 		</part>
 	</software>
 
-	<software name="zzzzzeno">
-		<description>Zzzz (Zenobi)</description>
-		<year>1986</year>
-		<publisher>Zenobi Software</publisher>
+	<software name="zzoom_a" cloneof="zzoom">
+		<description>Zzoom (big box release)</description>
+		<year>1983</year>
+		<publisher>Imagine Software</publisher>
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="47896">
-				<rom name="zzzz (zenobi).tzx" size="47896" crc="cf03a61c" sha1="1a5ae34a6d987d745e6121196df316c521e0f39b"/>
+			<dataarea name="cass" size="22669">
+				<rom name="zzoom - big box release.tzx" size="22669" crc="5bbe019c" sha1="96212443d26bb70fea8fafa8081337ccc32520b5"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="zzoom_b" cloneof="zzoom">
+		<description>Zzoom (alt)</description>
+		<year>198?</year>
+		<publisher>&lt;unknown&gt;</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="22714">
+				<rom name="zzoom - alternate.tzx" size="22714" crc="a97d40f2" sha1="d811b3fa558f5445bb36980788c8f6426d3bf2fc"/>
 			</dataarea>
 		</part>
 	</software>
@@ -150850,6 +151367,17 @@ Version without loading screen, maybe a pre-release
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47761">
 				<rom name="zzzz.tzx" size="47761" crc="2e12fe4e" sha1="606aa63fba05d9d3e35fb43cd350dc05a52de35d"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="zzzz_a" cloneof="zzzz">
+		<description>Zzzz (Zenobi)</description>
+		<year>1986</year>
+		<publisher>Zenobi Software</publisher>
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="47896">
+				<rom name="zzzz (zenobi).tzx" size="47896" crc="cf03a61c" sha1="1a5ae34a6d987d745e6121196df316c521e0f39b"/>
 			</dataarea>
 		</part>
 	</software>
@@ -154067,17 +154595,6 @@ Tape 1 - Side B - Game 3: Bullseye
 		</part>
 	</software>
 
-	<software name="anttown3">
-		<description>Anttown-3D (Monser)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="96360">
-				<rom name="anttown-3d (monser).tzx" size="96360" crc="f9905f53" sha1="257d8d9e5b8c4f042afc06e89b552bfaa9927989"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<software name="arcadecl">
 		<description>Arcade Classics (MCM)</description>
 		<year>1988</year>
@@ -155564,17 +156081,6 @@ Tape 1 - Side B - Game 3: Bullseye
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="13693">
 				<rom name="clown _ highwire - side 2.tzx" size="13693" crc="869b7dec" sha1="cf191bb57e6c539fdebf5d9df1308c9aa652895d"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="codigose">
-		<description>Codigo Secreto (Monser)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="15933">
-				<rom name="codigo secreto (monser).tzx" size="15933" crc="8c57fe42" sha1="0a223003a59d09cdfdb7367edffaf32b094cf0a6"/>
 			</dataarea>
 		</part>
 	</software>
@@ -160366,10 +160872,10 @@ Side B - Game 3: Capricornio 1 [Galaxians] (Artic Computing Ltd)
 		</part>
 	</software>
 
-	<software name="microsof">
+	<software name="microsof04">
 		<description>Microsoftware Magazine (Issue 04)</description>
 		<year>1983</year>
-		<publisher>Infinite</publisher>
+		<publisher>Infinite Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="52660">
 				<rom name="microsoftware magazine (issue 04) - side 1.tzx" size="52660" crc="86e3ebd3" sha1="edea7812208c803c7f3962c39c31c92ec3bde62e"/>
@@ -160382,10 +160888,10 @@ Side B - Game 3: Capricornio 1 [Galaxians] (Artic Computing Ltd)
 		</part>
 	</software>
 
-	<software name="microsof_b" cloneof="microsof">
+	<software name="microsof05">
 		<description>Microsoftware Magazine (Issue 05)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1984</year>
+		<publisher>Infinite Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="56652">
 				<rom name="microsoftware magazine (issue 05) - side 1.tzx" size="56652" crc="19f3213e" sha1="df2a820613b48b61049f908de313a5e07ff0bd27"/>
@@ -160398,10 +160904,10 @@ Side B - Game 3: Capricornio 1 [Galaxians] (Artic Computing Ltd)
 		</part>
 	</software>
 
-	<software name="microsof_d" cloneof="microsof">
+	<software name="microsof06">
 		<description>Microsoftware Magazine (Issue 06)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1984</year>
+		<publisher>Infinite Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="54435">
 				<rom name="microsoftware magazine (issue 06) - side 1.tzx" size="54435" crc="614b3db4" sha1="d115de6e277336b840a4941a5bd79bca904aca5e"/>
@@ -160414,10 +160920,10 @@ Side B - Game 3: Capricornio 1 [Galaxians] (Artic Computing Ltd)
 		</part>
 	</software>
 
-	<software name="microsof_f" cloneof="microsof">
+	<software name="microsof07">
 		<description>Microsoftware Magazine (Issue 07)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<year>1984</year>
+		<publisher>Infinite Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="44837">
 				<rom name="microsoftware magazine (issue 07) - side 1.tzx" size="44837" crc="519a3d0f" sha1="0fa908f00ca08e4418f35db50df852ce3ee74be9"/>
@@ -160430,10 +160936,10 @@ Side B - Game 3: Capricornio 1 [Galaxians] (Artic Computing Ltd)
 		</part>
 	</software>
 
-	<software name="microsof_h" cloneof="microsof">
-		<description>Microsoftware Magazine (Vol.2 Issue 01)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="microsofv2n1">
+		<description>Microsoftware Magazine (Volume 2 № 1)</description>
+		<year>1984</year>
+		<publisher>Infinite Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="92694">
 				<rom name="microsoftware magazine (vol.2 issue 01) - side 1.tzx" size="92694" crc="88139c1c" sha1="51a3a93dd02efd5a09cb7db5ef5fe813b096cafe"/>
@@ -160446,10 +160952,10 @@ Side B - Game 3: Capricornio 1 [Galaxians] (Artic Computing Ltd)
 		</part>
 	</software>
 
-	<software name="microsof_j" cloneof="microsof">
-		<description>Microsoftware Magazine (Vol.2 Issue 02)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="microsofv2n2">
+		<description>Microsoftware Magazine (Volume 2 № 2)</description>
+		<year>1985</year>
+		<publisher>Infinite Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="85211">
 				<rom name="microsoftware magazine (vol.2 issue 02) - side 1.tzx" size="85211" crc="fdc17457" sha1="22626a2805f4be2308a648f09bfb21d6ac303379"/>
@@ -160462,10 +160968,10 @@ Side B - Game 3: Capricornio 1 [Galaxians] (Artic Computing Ltd)
 		</part>
 	</software>
 
-	<software name="microsof_l" cloneof="microsof">
-		<description>Microsoftware Magazine (Vol.2 Issue 03)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="microsofv2n3">
+		<description>Microsoftware Magazine (Volume 2 № 3)</description>
+		<year>1985</year>
+		<publisher>Infinite Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="104755">
 				<rom name="microsoftware magazine (vol.2 issue 03) - side 1.tzx" size="104755" crc="fc4d9f12" sha1="6a9d9082b9d207c894a04868d4b2281199686b10"/>
@@ -160765,17 +161271,6 @@ Side B - Game 3: Capricornio 1 [Galaxians] (Artic Computing Ltd)
 		<part name="cass4" interface="spectrum_cass">
 			<dataarea name="cass" size="98272">
 				<rom name="mot tape 2 - side b.tzx" size="98272" crc="e5a1255c" sha1="d2443afc1c042addc48283aa057d584b84ec3094"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="motorall">
-		<description>Moto Rallye</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="46248">
-				<rom name="moto rallye.tzx" size="46248" crc="f0055656" sha1="fcdd7e3b2c52b9639b45bd451d79428492fea0bd"/>
 			</dataarea>
 		</part>
 	</software>
@@ -161549,17 +162044,6 @@ Side B - Game 3: Capricornio 1 [Galaxians] (Artic Computing Ltd)
 		</part>
 	</software>
 
-	<software name="panicoen">
-		<description>Panico en el Express (Monser)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="50770">
-				<rom name="panico en el express (monser).tzx" size="50770" crc="df4a4577" sha1="1fc6b39a94c86123367f117865dffad3b6a85934"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<software name="panzer3d">
 		<description>Panzer 3D</description>
 		<year>19??</year>
@@ -162316,17 +162800,6 @@ Tape 3: Rainbow Islands (Ocean Software)
 		</part>
 	</software>
 
-	<software name="rodillo">
-		<description>Rodillo</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="16218">
-				<rom name="rodillo.tzx" size="16218" crc="bf988eb1" sha1="de14766004779a230043e8aa61c5dbb4e57e53cc"/>
-			</dataarea>
-		</part>
-	</software>
-
 	<software name="rubikscu">
 		<description>Rubik's Cube &amp; Hangman</description>
 		<year>19??</year>
@@ -162398,17 +162871,6 @@ Tape 3: Rainbow Islands (Ocean Software)
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="323723">
 				<rom name="run international (issue 10) - side b.tzx" size="323723" crc="76f710e6" sha1="08f79ec6d565cd05426102fc0a3328ac00cd1191"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="saltaber">
-		<description>Saltabert (Monser)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="49366">
-				<rom name="saltabert (monser).tzx" size="49366" crc="ac4f4205" sha1="780d653e7aea47d218b4839de14e4a70276a5cc6"/>
 			</dataarea>
 		</part>
 	</software>
@@ -163127,142 +163589,143 @@ Side B: MicroProse Soccer (MicroProse Software)
 		</part>
 	</software>
 
-	<software name="software">
-		<description>Software Magazine 10a - 3D Speed Duel</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="softmag0">
+		<description>Software Magazine №0 - Quinielas</description>
+		<year>1984</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="25577">
-				<rom name="software magazine 10a - 3d speed duel.tzx" size="25577" crc="9de49443" sha1="d7576e8fb3f177419eec4d0b2c496f8603cb0976"/>
+			<dataarea name="cass" size="28839">
+				<rom name="quinielas.tzx" size="28839" crc="60228b19" sha1="388e87ec48ff8175533d874c7bbafc8971f0de41"/>
 			</dataarea>
 		</part>
 	</software>
 
-	<software name="software_b" cloneof="software">
-		<description>Software Magazine 10b - Road Toad</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="softmag2a">
+		<description>Software Magazine №2A - Anttown-3D</description>
+		<year>1984</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="13304">
-				<rom name="software magazine 10b - road toad.tzx" size="13304" crc="815cc68f" sha1="fa7dc9e550f3a836d7ada812d97e3e378cb6cc1d"/>
+			<dataarea name="cass" size="96360">
+				<rom name="anttown-3d (monser).tzx" size="96360" crc="f9905f53" sha1="257d8d9e5b8c4f042afc06e89b552bfaa9927989"/>
 			</dataarea>
 		</part>
 	</software>
 
-	<software name="software_c" cloneof="software">
-		<description>Software Magazine 11a - Gorila</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="softmag2b">
+		<description>Software Magazine №2B - Ajedrez Para Maestros</description>
+		<year>1984</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="45875">
-				<rom name="software magazine 11a - gorila.tzx" size="45875" crc="9a343fde" sha1="02894a14d4ee6145efd1760eabe6235f954ed01a"/>
+			<dataarea name="cass" size="20428">
+				<rom name="ajedrez para maestros.tzx" size="20428" crc="901d7ce9" sha1="13853b7a0f1c8d08d90adc6f34742b15a72cd3f3"/>
 			</dataarea>
 		</part>
 	</software>
 
-	<software name="software_d" cloneof="software">
-		<description>Software Magazine 11c - Snake Maze</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="softmag3a">
+		<description>Software Magazine №3A - Galax</description>
+		<year>1984</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="31927">
-				<rom name="software magazine 11c - snake maze.tzx" size="31927" crc="c174d127" sha1="953a1e1535d39f4ab1db7f286b0cf3480293170c"/>
+			<dataarea name="cass" size="45049">
+				<rom name="galax.tzx" size="45049" crc="a078dac2" sha1="b74776a48867e793ac3f4cfd8a6e99a1b1c5c81f"/>
 			</dataarea>
 		</part>
 	</software>
 
-	<software name="software_e" cloneof="software">
-		<description>Software Magazine 12b - Pincel-3D</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="softmag3b" cloneof="borerdee">
+		<description>Software Magazine №3B - Borer Deep</description>
+		<year>1984</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="46093">
-				<rom name="software magazine 12b - pincel-3d.tzx" size="46093" crc="3971f045" sha1="e4d902eec6b09d687e7bd307cf2805682e6f8e17"/>
+			<dataarea name="cass" size="13996">
+				<rom name="borer deep (monser).tzx" size="13996" crc="6f96dcad" sha1="401e56dceeed3661a11f4cee6ad2a8473644ac87"/>
 			</dataarea>
 		</part>
 	</software>
 
-	<software name="software_f" cloneof="software">
-		<description>Software Magazine 13b - Ghost Hunt</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="softmag4a">
+		<description>Software Magazine №4A - Infiltrado</description>
+		<year>1984</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="5909">
-				<rom name="software magazine 13b - ghost hunt.tzx" size="5909" crc="f297083a" sha1="cc39edd7ac81b3727ac2c36accc927dfe9d2a730"/>
+			<dataarea name="cass" size="15587">
+				<rom name="infiltrado.tzx" size="15587" crc="a9864b08" sha1="1e5fba42869cfbd9f7613cebdf72d845f2e54520"/>
 			</dataarea>
 		</part>
 	</software>
 
-	<software name="software_g" cloneof="software">
-		<description>Software Magazine 14a - Jefe De Estacion</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="softmag4b">
+		<description>Software Magazine №4B - Lunar Landing</description>
+		<year>1984</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="14533">
-				<rom name="software magazine 14a - jefe de estacion.tzx" size="14533" crc="fc344a1c" sha1="05106908c6d40c11da85f96ae1fb6f23593e31e7"/>
+			<dataarea name="cass" size="10942">
+				<rom name="lunar landing.tzx" size="10942" crc="4aa0f636" sha1="c24cc3cd26cc1fbbf8e975f684d5a3c504932735"/>
 			</dataarea>
 		</part>
 	</software>
 
-	<software name="software_h" cloneof="software">
-		<description>Software Magazine 14b - Tension</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="softmag5a">
+		<description>Software Magazine №5A - Aguaski</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="14694">
-				<rom name="software magazine 14b - tension.tzx" size="14694" crc="b0131bbf" sha1="f8a8782142cd63805f085be521437024afa7a34d"/>
+			<dataarea name="cass" size="22444">
+				<rom name="agua ski.tzx" size="22444" crc="84e341e7" sha1="3ffdaa3108b546a7fc80834c89c3722324e3eb4b"/>
 			</dataarea>
 		</part>
 	</software>
 
-	<software name="software_i" cloneof="software">
-		<description>Software Magazine 15a - Lazer Cycles</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="softmag5b">
+		<description>Software Magazine №5B - Campo Minado</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="15019">
-				<rom name="software magazine 15a - lazer cycles.tzx" size="15019" crc="fbccfec6" sha1="71b71300c832187c65310221cabb201177fdd2ff"/>
+			<dataarea name="cass" size="30338">
+				<rom name="campo minado.tzx" size="30338" crc="e8659312" sha1="cf1eaf0d91c50a661c537f3c3fba031c55eddc37"/>
 			</dataarea>
 		</part>
 	</software>
 
-	<software name="software_j" cloneof="software">
-		<description>Software Magazine 15b - Les Flics</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="softmag6a">
+		<description>Software Magazine №6A - Panico en el Express</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="46484">
-				<rom name="software magazine 15b - les flics.tzx" size="46484" crc="17cde226" sha1="fb9689de05e3c7bd642f038a2e98989ec7cde0f3"/>
+			<dataarea name="cass" size="50770">
+				<rom name="panico en el express (monser).tzx" size="50770" crc="df4a4577" sha1="1fc6b39a94c86123367f117865dffad3b6a85934"/>
 			</dataarea>
 		</part>
 	</software>
 
-	<software name="software_k" cloneof="software">
-		<description>Software Magazine 18a - Training</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="softmag7a">
+		<description>Software Magazine №7A - Golf</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="43435">
-				<rom name="software magazine 18a - training.tzx" size="43435" crc="c6acf91f" sha1="e1feafd3c86012f2b9222996724f592cfd0288f2"/>
+			<dataarea name="cass" size="18934">
+				<rom name="golf (monser) (alt).tzx" size="18934" crc="04024d96" sha1="7929f2cb116798bfc55fcda58a4a1535c6d41415"/>
 			</dataarea>
 		</part>
 	</software>
 
-	<software name="software_l" cloneof="software">
-		<description>Software Magazine 18b - Back</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
-		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="36949">
-				<rom name="software magazine 18b - back.tzx" size="36949" crc="d935d944" sha1="a749af030dcb54a45a850fe9e4f5e2c0167425a0"/>
-			</dataarea>
-		</part>
-	</software>
-
-	<software name="software_m" cloneof="software">
-		<description>Software Magazine 7b - Fruit Machine</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="softmag7b">
+		<description>Software Magazine №7B - Fruit Machine</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="15530">
 				<rom name="software magazine 7b - fruit machine.tzx" size="15530" crc="5d41eb25" sha1="bd31626d53d89c33ce2577328dac6f600a5a752a"/>
@@ -163270,10 +163733,11 @@ Side B: MicroProse Soccer (MicroProse Software)
 		</part>
 	</software>
 
-	<software name="software_n" cloneof="software">
-		<description>Software Magazine 8a - Zig-Zag</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="softmag8a">
+		<description>Software Magazine №8A - Zig-Zag</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="32934">
 				<rom name="software magazine 8a - zig-zag.tzx" size="32934" crc="c8aa7923" sha1="70346389856458d5388dd68d000b3a7f48b0a3e4"/>
@@ -163281,21 +163745,40 @@ Side B: MicroProse Soccer (MicroProse Software)
 		</part>
 	</software>
 
-	<software name="swmag9b">
-		<description>Software Magazine 9b - Jawz (set 1)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="softmag8b">
+		<description>Software Magazine №8B - Jumbly</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
-			<dataarea name="cass" size="12313">
-				<rom name="software magazine 9b - jawz.tzx" size="12313" crc="3442924a" sha1="e4d621eb570d2dea76300ce29507201f08947565"/>
+			<dataarea name="cass" size="40534">
+				<rom name="jumbly (monser) (alt).tzx" size="40534" crc="2b1d705b" sha1="45e468dde669baf1ca751b07a3e6ac074142b32a"/>
 			</dataarea>
 		</part>
 	</software>
 
-	<software name="swmag9ba" cloneof="swmag9b">
-		<description>Software Magazine 9b - Jawz (set 2)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+	<software name="softmag9a">
+		<description>Software Magazine №9A - Gold Mine</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass1" interface="spectrum_cass">
+			<dataarea name="cass" size="9524">
+				<rom name="Software Magazine 9a - Gold Mine - Side 1.tzx" size="9524" crc="7a1c2545" sha1="e519eb57db70622874692cd49077f3d01f1f4f90"/>
+			</dataarea>
+		</part>
+		<part name="cass2" interface="spectrum_cass">
+			<dataarea name="cass" size="9741">
+				<rom name="Software Magazine 9a - Gold Mine - Side 2.tzx" size="9741" crc="afb858dc" sha1="4752301e7c78e1b44847d65264b28f6f86e2f699"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softmag9b">
+		<description>Software Magazine №9B - Jawz</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="12458">
 				<rom name="software magazine 9b - jawz (alt).tzx" size="12458" crc="a46c58b2" sha1="7d74a01d6e0fb79e2a063630bbabc42527e13dd4"/>
@@ -163303,10 +163786,275 @@ Side B: MicroProse Soccer (MicroProse Software)
 		</part>
 	</software>
 
-	<software name="software_p" cloneof="software">
-		<description>Software Service No 10</description>
+	<software name="softmag9b_a">
+		<description>Software Magazine №9B - Jawz (alt)</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="12313">
+				<rom name="software magazine 9b - jawz.tzx" size="12313" crc="3442924a" sha1="e4d621eb570d2dea76300ce29507201f08947565"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softmag10a">
+		<description>Software Magazine №10A - 3D Speed Duel</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="25577">
+				<rom name="software magazine 10a - 3d speed duel.tzx" size="25577" crc="9de49443" sha1="d7576e8fb3f177419eec4d0b2c496f8603cb0976"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softmag10b">
+		<description>Software Magazine №10B - Road Toad</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="13304">
+				<rom name="software magazine 10b - road toad.tzx" size="13304" crc="815cc68f" sha1="fa7dc9e550f3a836d7ada812d97e3e378cb6cc1d"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softmag11a">
+		<description>Software Magazine №11A - Gorila</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="45875">
+				<rom name="software magazine 11a - gorila.tzx" size="45875" crc="9a343fde" sha1="02894a14d4ee6145efd1760eabe6235f954ed01a"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softmag11b">
+		<description>Software Magazine №11B - Patin-Man</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="23546">
+				<rom name="Software Magazine 11b - Patin-Man.tzx" size="23546" crc="5c312029" sha1="8acb8f4dbd314374b4f5027771825171494ec002"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softmag11c">
+		<description>Software Magazine №11C - Snake Maze</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="31927">
+				<rom name="software magazine 11c - snake maze.tzx" size="31927" crc="c174d127" sha1="953a1e1535d39f4ab1db7f286b0cf3480293170c"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softmag12a">
+		<description>Software Magazine №12A - Castle Quest</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="39482">
+				<rom name="castle quest (monser).tzx" size="39482" crc="3d58b44b" sha1="668c6c2e191fe6d62fcf6850eba06485f73fb300"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softmag12b">
+		<description>Software Magazine №12B - Pincel-3D</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="46244">
+				<rom name="Software Magazine 12b - Pincel-3D.tzx" size="46244" crc="3bb7b11f" sha1="0939a07f6847fc1a6818cc02c4e02eea963738de"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softmag12b_a" cloneof="softmag12b">
+		<description>Software Magazine №12B - Pincel-3D (alt)</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="46093">
+				<rom name="software magazine 12b - pincel-3d (alt).tzx" size="46093" crc="3971f045" sha1="e4d902eec6b09d687e7bd307cf2805682e6f8e17"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softmag13a">
+		<description>Software Magazine №13A - The Guardian</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="19406">
+				<rom name="Software Magazine 13a - The Guardian.tzx" size="19406" crc="fc8b3654" sha1="6b5b79e1240b93a5ad818510a7e6475b96f0dd05"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softmag13b">
+		<description>Software Magazine №13B - Ghost Hunt</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="5909">
+				<rom name="software magazine 13b - ghost hunt.tzx" size="5909" crc="f297083a" sha1="cc39edd7ac81b3727ac2c36accc927dfe9d2a730"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softmag13b_a" cloneof="softmag13b">
+		<description>Software Magazine №13B - Ghost Hunt (alt)</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="6061">
+				<rom name="software magazine 13b - ghost hunt (alt).tzx" size="6061" crc="78599a47" sha1="ee0d3c764bf9ee6e1e7c079272158e9a0fd04731"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softmag14a">
+		<description>Software Magazine №14A - Jefe De Estacion</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="14533">
+				<rom name="software magazine 14a - jefe de estacion.tzx" size="14533" crc="fc344a1c" sha1="05106908c6d40c11da85f96ae1fb6f23593e31e7"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softmag14b">
+		<description>Software Magazine №14B - Tension</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="14694">
+				<rom name="software magazine 14b - tension.tzx" size="14694" crc="b0131bbf" sha1="f8a8782142cd63805f085be521437024afa7a34d"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softmag15a">
+		<description>Software Magazine №15A - Lazer Cycles</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="15019">
+				<rom name="software magazine 15a - lazer cycles.tzx" size="15019" crc="fbccfec6" sha1="71b71300c832187c65310221cabb201177fdd2ff"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softmag15b">
+		<description>Software Magazine №15B - Les Flics</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="46484">
+				<rom name="software magazine 15b - les flics.tzx" size="46484" crc="17cde226" sha1="fb9689de05e3c7bd642f038a2e98989ec7cde0f3"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softmag16a">
+		<description>Software Magazine №16A - Saltabert</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="49366">
+				<rom name="saltabert (monser).tzx" size="49366" crc="ac4f4205" sha1="780d653e7aea47d218b4839de14e4a70276a5cc6"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softmag16b">
+		<description>Software Magazine №16B - Rodillo</description>
+		<year>1985</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="16218">
+				<rom name="rodillo.tzx" size="16218" crc="bf988eb1" sha1="de14766004779a230043e8aa61c5dbb4e57e53cc"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softmag17a">
+		<description>Software Magazine №17A - Moto Rallye</description>
+		<year>1986</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="46248">
+				<rom name="moto rallye.tzx" size="46248" crc="f0055656" sha1="fcdd7e3b2c52b9639b45bd451d79428492fea0bd"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softmag17b">
+		<description>Software Magazine №17B - Codigo Secreto</description>
+		<year>1986</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="15933">
+				<rom name="codigo secreto (monser).tzx" size="15933" crc="8c57fe42" sha1="0a223003a59d09cdfdb7367edffaf32b094cf0a6"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softmag18a">
+		<description>Software Magazine №18A - Training</description>
+		<year>1986</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="43435">
+				<rom name="software magazine 18a - training.tzx" size="43435" crc="c6acf91f" sha1="e1feafd3c86012f2b9222996724f592cfd0288f2"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softmag18b">
+		<description>Software Magazine №18B - Back</description>
+		<year>1986</year>
+		<publisher>Monser</publisher>
+		<info name="region" value="Spain" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="36949">
+				<rom name="software magazine 18b - back.tzx" size="36949" crc="d935d944" sha1="a749af030dcb54a45a850fe9e4f5e2c0167425a0"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="softserv10">
+		<description>Software Service №10</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
+		<info name="language" value="German" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="37911">
 				<rom name="software service no 10.tzx" size="37911" crc="a65a4ff7" sha1="63eea1561010f3d436cf68df9e74cf7a20563708"/>
@@ -163314,10 +164062,11 @@ Side B: MicroProse Soccer (MicroProse Software)
 		</part>
 	</software>
 
-	<software name="software_q" cloneof="software">
-		<description>Software Service No 3</description>
+	<software name="softserv3">
+		<description>Software Service №3</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
+		<info name="language" value="German" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="69846">
 				<rom name="software service no 3.tzx" size="69846" crc="4e266680" sha1="4945bd3c461e1427dedd570dde5aa348deaffc22"/>
@@ -163325,10 +164074,11 @@ Side B: MicroProse Soccer (MicroProse Software)
 		</part>
 	</software>
 
-	<software name="software_r" cloneof="software">
-		<description>Software Service No 7</description>
+	<software name="softserv7">
+		<description>Software Service №7</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
+		<info name="language" value="German" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="61351">
 				<rom name="software service no 7.tzx" size="61351" crc="1ec92263" sha1="7d552b88208f5d3ff72891985b8da8b2cdc76db9"/>
@@ -163336,10 +164086,11 @@ Side B: MicroProse Soccer (MicroProse Software)
 		</part>
 	</software>
 
-	<software name="software_s" cloneof="software">
-		<description>Software Service No 8</description>
+	<software name="softserv8">
+		<description>Software Service №8</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
+		<info name="language" value="German" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="75754">
 				<rom name="software service no 8.tzx" size="75754" crc="3778a016" sha1="7073558d3dda9567704584cd634a36556f795133"/>
@@ -163347,10 +164098,11 @@ Side B: MicroProse Soccer (MicroProse Software)
 		</part>
 	</software>
 
-	<software name="software_t" cloneof="software">
-		<description>Software Service No 9</description>
+	<software name="softserv9">
+		<description>Software Service №9</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
+		<info name="language" value="German" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="60596">
 				<rom name="software service no 9.tzx" size="60596" crc="3952bf15" sha1="4d95f28034bd1b9a93dc0c169b2aec9a8594e207"/>
@@ -165435,7 +166187,7 @@ Tape 2 - Side A: Spy vs Spy III: Arctic Antics (Databyte)
 		</part>
 	</software>
 
-	<software name="starsspu" cloneof="starsspe">
+	<software name="starsspu">
 		<description>Stars Spectrum - Utilidades (Issue 01)</description>
 		<year>1985</year>
 		<publisher>Magazine Stars Spectrum</publisher>
@@ -167862,9 +168614,15 @@ Tape 2 - Side B - Game 2: Yie Ar Kung-Fu (Imagine Software)
 	</software>
 
 	<software name="timemagi">
-		<description>Time And Magik (compilation)</description>
+		<description>Time and Magik</description>
 		<year>1988</year>
 		<publisher>Mandarin</publisher>
+		<notes><![CDATA[
+Tape 1: Lords of Time (Level 9 Computing)
+Tape 2: Red Moon (Level 9 Computing)
+Tape 3: The Price of Magik (Level 9 Computing)
+]]></notes>
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="42004">
 				<rom name="time and magik - tape 1 - side a.tzx" size="42004" crc="25dcd6fa" sha1="09ce25efcbef18ed1a5523db2582eeb7729738a9"/>
@@ -167898,9 +168656,9 @@ Tape 2 - Side B - Game 2: Yie Ar Kung-Fu (Imagine Software)
 	</software>
 
 	<software name="timemoti">
-		<description>Time And Motion (compilation)</description>
-		<year>19??</year>
-		<publisher>&lt;unknown&gt;</publisher>
+		<description>Time &amp; Motion</description>
+		<year>1986</year>
+		<publisher>Design Design Software</publisher>
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="112004">
 				<rom name="time and motion - tape 1 - side a.tzx" size="112004" crc="50118170" sha1="5946368a871c0cec40abfca1843adae3c918cf16"/>
