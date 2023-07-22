@@ -10135,7 +10135,7 @@ Expects you to press a key after the title screen appears, or it will miss the n
 		<info name="region" value="Germany" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="7673">
-				<rom name="Golf - Profisoft.tzx" size="7673" crc="bfcac21e	" sha1="52a34b240166267c28bf7adb69cd618a7d84a3ee"/>
+				<rom name="Golf - Profisoft.tzx" size="7673" crc="bfcac21e" sha1="52a34b240166267c28bf7adb69cd618a7d84a3ee"/>
 			</dataarea>
 		</part>
 	</software>
