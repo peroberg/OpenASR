@@ -23910,7 +23910,7 @@ Side B: Laser Shoot (original release)
 			</dataarea>
 		</part>
 		<part name="cass2" interface="spectrum_cass">
-			<feature name="part_id" value="128K"/>			
+			<feature name="part_id" value="128K"/>
 			<dataarea name="cass" size="64323">
 				<rom name="RetroForce(128K).tap" size="64323" crc="c1c7cf3e" sha1="32ef8497ac652b9166ebbb4d8bd05dc85ebe9164"/>
 			</dataarea>
@@ -139449,7 +139449,7 @@ Nothing happens after loading the cassette
 	<software name="teodoro_ru" cloneof="teodoro">
 		<description>Teodoro no Sabe Volar (Russian, TAP tape image)</description>
 		<year>2010</year>
-		<publisher>Retroworks</publisher>	
+		<publisher>Retroworks</publisher>
 		<info name="language" value="Russian" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="45440">
