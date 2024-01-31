@@ -77736,7 +77736,7 @@ Side B - Game 1: The Dragonstar Trilogy Part III (Delta 4 Software)
 
 	<software name="ffungusr">
 		<description>Funky Fungus Reloaded (English, v1.0)</description>
-		<year>2020</year>
+		<year>2019</year>
 		<publisher>Alessandro Grussu</publisher>
 		<info name="developer" value="Alessandro Grussu" />
 		<info name="language" value="English" />
@@ -77749,7 +77749,7 @@ Side B - Game 1: The Dragonstar Trilogy Part III (Delta 4 Software)
 
 	<software name="ffungusr_de" cloneof="ffungusr">
 		<description>Funky Fungus Reloaded (German, v1.0)</description>
-		<year>2020</year>
+		<year>2019</year>
 		<publisher>Alessandro Grussu</publisher>
 		<info name="developer" value="Alessandro Grussu" />
 		<info name="language" value="German" />
@@ -77762,7 +77762,7 @@ Side B - Game 1: The Dragonstar Trilogy Part III (Delta 4 Software)
 
 	<software name="ffungusr_es" cloneof="ffungusr">
 		<description>Funky Fungus Reloaded (Spanish, v1.0)</description>
-		<year>2020</year>
+		<year>2019</year>
 		<publisher>Alessandro Grussu</publisher>
 		<info name="developer" value="Alessandro Grussu" />
 		<info name="language" value="Spanish" />
@@ -77775,7 +77775,7 @@ Side B - Game 1: The Dragonstar Trilogy Part III (Delta 4 Software)
 
 	<software name="ffungusr_fr" cloneof="ffungusr">
 		<description>Funky Fungus Reloaded (French, v1.0)</description>
-		<year>2020</year>
+		<year>2019</year>
 		<publisher>Alessandro Grussu</publisher>
 		<info name="developer" value="Alessandro Grussu" />
 		<info name="language" value="French" />
@@ -77788,7 +77788,7 @@ Side B - Game 1: The Dragonstar Trilogy Part III (Delta 4 Software)
 
 	<software name="ffungusr_it" cloneof="ffungusr">
 		<description>Funky Fungus Reloaded (Italian, v1.0)</description>
-		<year>2020</year>
+		<year>2019</year>
 		<publisher>Alessandro Grussu</publisher>
 		<info name="developer" value="Alessandro Grussu" />
 		<info name="language" value="Italian" />
@@ -77801,7 +77801,7 @@ Side B - Game 1: The Dragonstar Trilogy Part III (Delta 4 Software)
 
 	<software name="ffungusr_pt" cloneof="ffungusr">
 		<description>Funky Fungus Reloaded (Portuguese, v1.0)</description>
-		<year>2020</year>
+		<year>2019</year>
 		<publisher>Alessandro Grussu</publisher>
 		<info name="developer" value="Alessandro Grussu" />
 		<info name="language" value="Portuguese" />
