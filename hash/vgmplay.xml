@@ -308709,9 +308709,9 @@ license:CC0-1.0
 			</dataarea>
 		</part>
 		<part name="018" interface="vgm_quik">
-			<feature name="part_id" value="18 powerful waves (boss interior -powerup-,  last boss).vgz" />
+			<feature name="part_id" value="18 powerful waves (boss interior -powerup- last boss).vgz" />
 			<dataarea name="quik" size="16535">
-				<rom name="18 powerful waves (boss interior -powerup-,  last boss).vgz" size="16535" crc="7a3b078a" sha1="f684bd9d7c53078e80d5737c984a04ae73447298" offset="0" />
+				<rom name="18 powerful waves (boss interior -powerup- last boss).vgz" size="16535" crc="7a3b078a" sha1="f684bd9d7c53078e80d5737c984a04ae73447298" offset="0" />
 			</dataarea>
 		</part>
 		<part name="019" interface="vgm_quik">

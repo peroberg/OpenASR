@@ -6572,7 +6572,7 @@ no loading screen, no custom loader
 		</part>
 	</software>
 
-	<software name="colywobl"> <!-- the majority (all?) other Pirate Software (Harry S. Price) games are hacks of either magazine type-ins or other commercial releases.  Is this an original, or the source game just not figured out? -->
+	<software name="colywobl"> <!-- the majority (all?) other Pirate Software (Harry S. Price) games are hacks of either magazine type-ins or other commercial releases. Is this an original, or the source game just not figured out? -->
 		<description>Collywobbles</description>
 		<year>1987</year>
 		<publisher>Pirate Software Ltd</publisher>
@@ -6965,7 +6965,7 @@ no loading screen, no custom loader
 	</software>
 
 	<software name="cherilgd">
-		<description>Cheril The Goddess  (TZX tape image)</description>
+		<description>Cheril The Goddess (TZX tape image)</description>
 		<year>2012</year>
 		<publisher>The Mojon Twins</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -95230,7 +95230,7 @@ Created by Mark Jeffries
 	</software>
 
 	<software name="laserwar_c" cloneof="laserwar">
-		<description>Laserwarp  (release 2, alt 2)</description>
+		<description>Laserwarp (release 2, alt 2)</description>
 		<year>1983</year>
 		<publisher>Mikro-Gen</publisher>
 		<part name="cass1" interface="spectrum_cass">
