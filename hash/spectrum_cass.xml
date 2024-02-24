@@ -16452,7 +16452,7 @@ Side B: Laser Shoot (original release)
 		<description>La Diosa de Cozumel (Retro Gamer edition)</description>
 		<year>2013</year>
 		<publisher>Axel Springer / Matra Computer Automations</publisher>
-		<info name="alt_title" value="Diosa de Cozumel"/>	<!-- in-game title -->
+		<info name="alt_title" value="Diosa de Cozumel"/>   <!-- in-game title -->
 		<info name="author" value="Andrés Samudio (Samusoft)"/>
 		<info name="language" value="Spanish" />
 		<info name="usage" value="48K" />
@@ -16467,7 +16467,7 @@ Side B: Laser Shoot (original release)
 		<description>La Diosa de Cozumel (Matra edition)</description>
 		<year>2015</year>
 		<publisher>Matra Computer Automations</publisher>
-		<info name="alt_title" value="Diosa de Cozumel"/>	<!-- in-game title -->
+		<info name="alt_title" value="Diosa de Cozumel"/>   <!-- in-game title -->
 		<info name="author" value="Andrés Samudio (Samusoft)"/>
 		<info name="language" value="Spanish" />
 		<info name="usage" value="48K" />
@@ -66218,7 +66218,7 @@ Side A doesn't work.
 		<description>Desdobramentos de Totobola</description>
 		<year>198?</year>
 		<publisher>Astor Software</publisher>
-		<info name="alt_title" value="Desdobramento de Totobola"/>	<!-- in-game title -->
+		<info name="alt_title" value="Desdobramento de Totobola"/>  <!-- in-game title -->
 		<info name="author" value="J. Branco / N. Tiago"/>
 		<info name="language" value="Portuguese" />
 		<info name="usage" value="48K" />
