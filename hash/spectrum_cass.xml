@@ -19259,7 +19259,7 @@ Side B: Laser Shoot (original release)
 		</part>
 	</software>
 
-	<software name="mysterio_a" cloneof="mysterio">
+	<software name="mysterio_48" cloneof="mysterio">
 		<description>Mysterious Dimensions (48K)</description>
 		<year>2016</year>
 		<publisher>Hooy-Program</publisher>
@@ -24496,7 +24496,7 @@ Side B: Laser Shoot (original release)
 		</part>
 	</software>
 
-	<software name="rabnwlnd48s" cloneof="rabnwlnd">
+	<software name="rabnwlnd_48_es" cloneof="rabnwlnd">
 		<description>Rabbit in Wonderland (48K, Spanish)</description>
 		<year>2015</year>
 		<publisher>Javier Fopiani</publisher>
@@ -24508,7 +24508,7 @@ Side B: Laser Shoot (original release)
 		</part>
 	</software>
 
-	<software name="rabnwlnd48e" cloneof="rabnwlnd">
+	<software name="rabnwlnd_48_en" cloneof="rabnwlnd">
 		<description>Rabbit in Wonderland (48K, English)</description>
 		<year>2015</year>
 		<publisher>Javier Fopiani</publisher>
@@ -98117,7 +98117,7 @@ Lacks game introduction, bad dump or alternate version?
 		</part>
 	</software>
 
-	<software name="brunilda_gal" cloneof="brunilda">
+	<software name="brunilda_gl" cloneof="brunilda">
 		<description>Los Amores de Brunilda (v1.4, Galician)</description>
 		<year>2014</year>
 		<publisher>RetroWorks</publisher>
@@ -98130,7 +98130,7 @@ Lacks game introduction, bad dump or alternate version?
 		</part>
 	</software>
 
-	<software name="brunilda_cat" cloneof="brunilda">
+	<software name="brunilda_ca" cloneof="brunilda">
 		<description>Los Amores de Brunilda (v1.4, Catalan)</description>
 		<year>2014</year>
 		<publisher>RetroWorks</publisher>
@@ -98143,7 +98143,7 @@ Lacks game introduction, bad dump or alternate version?
 		</part>
 	</software>
 
-	<software name="brunilda_cata" cloneof="brunilda">
+	<software name="brunilda_ca_a" cloneof="brunilda">
 		<description>Los Amores de Brunilda (v1.4, Catalan, alt)</description>
 		<year>2014</year>
 		<publisher>RetroWorks</publisher>
@@ -98156,7 +98156,7 @@ Lacks game introduction, bad dump or alternate version?
 		</part>
 	</software>
 
-	<software name="brunilda_eus" cloneof="brunilda">
+	<software name="brunilda_eu" cloneof="brunilda">
 		<description>Los Amores de Brunilda (v1.4, Basque)</description>
 		<year>2014</year>
 		<publisher>RetroWorks</publisher>
