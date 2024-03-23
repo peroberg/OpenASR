@@ -126928,7 +126928,7 @@ Nothing happens after loading the cassette
 	<software name="scramina">
 		<description>Scrabble + Campo de Minas</description>
 		<year>198?</year>
-		<publisher>Microbaite Software</publisher>	<!-- The inlay says "Microbaite" but the loading screen says "Microbyte" -->
+		<publisher>Microbaite Software</publisher>  <!-- The inlay says "Microbaite" but the loading screen says "Microbyte" -->
 		<info name="language" value="English/Portuguese" />
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="A - Campo de Minas"/>
