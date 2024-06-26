@@ -54223,7 +54223,7 @@ Side B: Once Upon a Lily Pad
 	</software>
 
 	<software name="bruxolc_en_dm1" cloneof="bruxolc">
-		<description>Bruxólico (demo 1.0, English)</description>
+		<description>Bruxólico (English, demo 1.0)</description>
 		<year>2022</year>
 		<publisher>Amaweks</publisher>
 		<info name="language" value="English" />
@@ -54235,7 +54235,7 @@ Side B: Once Upon a Lily Pad
 	</software>
 
 	<software name="bruxolc_pt_dm1" cloneof="bruxolc">
-		<description>Bruxólico (demo 1.0, Portuguese)</description>
+		<description>Bruxólico (Portuguese, demo 1.0)</description>
 		<year>2022</year>
 		<publisher>Amaweks</publisher>
 		<info name="language" value="Portuguese (Brazil)" />
