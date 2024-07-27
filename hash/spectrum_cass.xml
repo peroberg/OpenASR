@@ -164427,7 +164427,7 @@ Side B - Game 1: Cauldron II: The Pumpkin Strikes Back (Palace Software)
 Side B - Game 2: Quazatron (Hewson Consultants)
 Side B - Game 3: Strike Force Cobra (Piranha)
 ]]></notes>
-	
+
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="134771">
 				<rom name="five star games 2 - side a.tzx" size="134771" crc="fcaef142" sha1="45941de1ad9817ae2b59621d89a824a5d2d0bfd9"/>
