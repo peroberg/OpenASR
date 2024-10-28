@@ -70067,7 +70067,7 @@ Side A doesn't work.
 	</software>
 
 	<software name="dragonso">
-		<description>Dragons of Flame</description>
+		<description>Advanced Dungeons &amp; Dragons - Dragons of Flame</description>
 		<year>1990</year>
 		<publisher>U.S. Gold</publisher>
 		<info name="copy_protection" value="Manual required" />
@@ -70079,7 +70079,7 @@ Side A doesn't work.
 	</software>
 
 	<software name="dragonso_a" cloneof="dragonso">
-		<description>Dragons of Flame (Kixx)</description>
+		<description>Advanced Dungeons &amp; Dragons - Dragons of Flame (Kixx)</description>
 		<year>1990</year>
 		<publisher>Kixx</publisher>
 		<info name="copy_protection" value="Manual required" />
@@ -70091,7 +70091,7 @@ Side A doesn't work.
 	</software>
 
 	<software name="dragonso_b" cloneof="dragonso">
-		<description>Dragons of Flame (Erbe)</description>
+		<description>Advanced Dungeons &amp; Dragons - Dragons of Flame (Erbe)</description>
 		<year>1990</year>
 		<publisher>Erbe Software</publisher>
 		<info name="copy_protection" value="Manual required" />
@@ -86860,7 +86860,7 @@ Tape 2: Hero Quest: Return of the Witch Lord
 
 
 	<software name="herolnce">
-		<description>Heroes of the Lance</description>
+		<description>Advanced Dungeons &amp; Dragons - Heroes of the Lance</description>
 		<year>1988</year>
 		<publisher>U.S. Gold</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -86876,7 +86876,7 @@ Tape 2: Hero Quest: Return of the Witch Lord
 	</software>
 
 	<software name="herolncea" cloneof="herolnce">
-		<description>Heroes of the Lance (Kixx)</description>
+		<description>Advanced Dungeons &amp; Dragons - Heroes of the Lance (Kixx)</description>
 		<year>1988</year>
 		<publisher>Kixx</publisher>
 		<part name="cass1" interface="spectrum_cass">

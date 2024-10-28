@@ -32703,7 +32703,7 @@ stick to CPC-Power disks, when available)
 
 	<!-- Identifying Dragons Of Flame (UK) (2 faces) (1989) [Original].zip... --> <!-- CPC Power -->
 	<software name="dragonso" supported="no">
-		<description>Dragons of Flame (UK) (2 faces) [Original]</description>
+		<description>Advanced Dungeons &amp; Dragons - Dragons of Flame (UK) (2 faces) [Original]</description>
 		<year>1989</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
@@ -42755,7 +42755,7 @@ stick to CPC-Power disks, when available)
 
 	<!-- Identifying Heroes Of The Lance (UK) (2 faces) (1988) (CPM) [Original].zip... --> <!-- CPC Power -->
 	<software name="heroesof01" cloneof="heroesof" supported="no">
-		<description>Heroes of the Lance (UK) (2 faces) (CPM) [Original]</description>
+		<description>Advanced Dungeons &amp; Dragons - Heroes of the Lance (UK) (2 faces) (CPM) [Original]</description>
 		<year>1988</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
@@ -106470,7 +106470,7 @@ stick to CPC-Power disks, when available)
 
 	<!-- Identifying Heroes of the Lance (E) - Disk 1A.dsk... --> <!-- CPC Base -->
 	<software name="heroesof02" cloneof="heroesof" supported="no">
-		<description>Heroes of the Lance (Euro) - Disk 1A</description>
+		<description>Advanced Dungeons &amp; Dragons - Heroes of the Lance (Euro) - Disk 1A</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
@@ -106482,7 +106482,7 @@ stick to CPC-Power disks, when available)
 
 	<!-- Identifying Heroes of the Lance (E) - Disk 1B.dsk... --> <!-- CPC Base -->
 	<software name="heroesof03" cloneof="heroesof" supported="no">
-		<description>Heroes of the Lance (Euro) - Disk 1B</description>
+		<description>Advanced Dungeons &amp; Dragons - Heroes of the Lance (Euro) - Disk 1B</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
@@ -118024,7 +118024,7 @@ stick to CPC-Power disks, when available)
 
 	<!-- Identifying Dragons of Flame (1990)(US Gold)[cr GPA][t GPA].dsk... --> <!-- Mostly GoodCPC -->
 	<software name="dragonso01" cloneof="dragonso" supported="no">
-		<description>Dragons of Flame (US Gold)[cr GPA][t GPA]</description>
+		<description>Advanced Dungeons &amp; Dragons - Dragons of Flame (US Gold)[cr GPA][t GPA]</description>
 		<year>1990</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
@@ -124882,7 +124882,7 @@ stick to CPC-Power disks, when available)
 
 	<!-- Identifying Heroes of the Lance (1988)(US Gold)(Disk 1 of 2)[cpm version].dsk... --> <!-- Mostly GoodCPC -->
 	<software name="heroesof05" cloneof="heroesof" supported="no">
-		<description>Heroes of the Lance (US Gold)(Disk 1 of 2)[cpm version]</description>
+		<description>Advanced Dungeons &amp; Dragons - Heroes of the Lance (US Gold)(Disk 1 of 2)[cpm version]</description>
 		<year>1988</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
@@ -124894,7 +124894,7 @@ stick to CPC-Power disks, when available)
 
 	<!-- Identifying Heroes of the Lance (1988)(US Gold)(Disk 2 of 2)[cpm version].dsk... --> <!-- Mostly GoodCPC -->
 	<software name="heroesof06" cloneof="heroesof" supported="no">
-		<description>Heroes of the Lance (US Gold)(Disk 2 of 2)[cpm version]</description>
+		<description>Advanced Dungeons &amp; Dragons - Heroes of the Lance (US Gold)(Disk 2 of 2)[cpm version]</description>
 		<year>1988</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
@@ -167425,7 +167425,7 @@ stick to CPC-Power disks, when available)
 
 	<!-- Identifying Heroes of the Lance (UK) (1988) (Disk 1 of 2).dsk... --> <!-- GoodCPC -->
 	<software name="heroesof07" cloneof="heroesof" supported="no">
-		<description>Heroes of the Lance (UK) (Disk 1 of 2)</description>
+		<description>Advanced Dungeons &amp; Dragons - Heroes of the Lance (UK) (Disk 1 of 2)</description>
 		<year>1988</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
@@ -167437,7 +167437,7 @@ stick to CPC-Power disks, when available)
 
 	<!-- Identifying Heroes of the Lance (UK) (1988) (Disk 2 of 2).dsk... --> <!-- GoodCPC -->
 	<software name="heroesof08" cloneof="heroesof" supported="no">
-		<description>Heroes of the Lance (UK) (Disk 2 of 2)</description>
+		<description>Advanced Dungeons &amp; Dragons - Heroes of the Lance (UK) (Disk 2 of 2)</description>
 		<year>1988</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
@@ -201440,7 +201440,7 @@ stick to CPC-Power disks, when available)
 
 	<!-- Identifying Heroes of the Lance (1 de 2) (nongoodcpc).dsk... --> <!-- NonGoodCPC -->
 	<software name="heroesof09" cloneof="heroesof" supported="no">
-		<description>Heroes of the Lance (1 de 2)</description>
+		<description>Advanced Dungeons &amp; Dragons - Heroes of the Lance (1 de 2)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
@@ -201452,7 +201452,7 @@ stick to CPC-Power disks, when available)
 
 	<!-- Identifying Heroes of the Lance (2 de 2) (nongoodcpc).dsk... --> <!-- NonGoodCPC -->
 	<software name="heroesof0a" cloneof="heroesof" supported="no">
-		<description>Heroes of the Lance (2 de 2)</description>
+		<description>Advanced Dungeons &amp; Dragons - Heroes of the Lance (2 de 2)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
