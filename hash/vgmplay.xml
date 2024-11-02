@@ -151427,7 +151427,7 @@ license:CC0-1.0
 	</software>
 
 	<software name="eyebeho3_98o">
-		<description>Advanced Dungeons &amp; Dragons - Eye of the Beholder III - Assault on Myth Drannor (NEC PC-9801, OPN)</description>
+		<description>Advanced Dungeons &amp; Dragons - Eye of the Beholder III: Assault on Myth Drannor (NEC PC-9801, OPN)</description>
 		<year>1994</year>
 		<publisher>Ving</publisher>
 		<info name="cores" value="YM2203"/>
@@ -151590,7 +151590,7 @@ license:CC0-1.0
 	</software>
 
 	<software name="eyebeho3_98oa">
-		<description>Advanced Dungeons &amp; Dragons - Eye of the Beholder III - Assault on Myth Drannor (NEC PC-9801, OPNA)</description>
+		<description>Advanced Dungeons &amp; Dragons - Eye of the Beholder III: Assault on Myth Drannor (NEC PC-9801, OPNA)</description>
 		<year>1994</year>
 		<publisher>Ving</publisher>
 		<info name="cores" value="YM2608"/>
@@ -188290,7 +188290,7 @@ license:CC0-1.0
 	</software>
 
 	<software name="eyebeho3_pc">
-		<description>Advanced Dungeons &amp; Dragons - Eye of the Beholder III - Assault on Myth Drannor (IBM PC AT)</description>
+		<description>Advanced Dungeons &amp; Dragons - Eye of the Beholder III: Assault on Myth Drannor (IBM PC AT)</description>
 		<year>1990</year>
 		<publisher>SSI, Inc./TSR, Inc.</publisher>
 		<info name="cores" value="Adlib / OPL2 (YM3812)"/>
@@ -188453,7 +188453,7 @@ license:CC0-1.0
 	</software>
 
 	<software name="eyebeho2_pc">
-		<description>Advanced Dungeons &amp; Dragons - Eye of the Beholder II - The Legend of Darkmoon (IBM PC AT)</description>
+		<description>Advanced Dungeons &amp; Dragons - Eye of the Beholder II: The Legend of Darkmoon (IBM PC AT)</description>
 		<year>1991</year>
 		<publisher>Strategic Simulations Inc.</publisher>
 		<info name="cores" value="YM3812"/>
