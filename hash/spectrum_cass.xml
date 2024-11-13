@@ -12,40 +12,34 @@ license:CC0-1.0
     Ramsoft, Dunny, Woody, Mikie and many many others.
 
 
-    to load software in 16/48K mode you must use the following sequence at the prompt
+    To load software in 16/48K mode you must use the following sequence at the prompt
+    "J" "shift+P" "shift+P" "enter"  (in non-MAME emulators this is often "ctrl+P")
+    this will enter the command LOAD "" and execute it
+    You must then of course play the tape from the menu in MAME (you'll need to turn SCRLOCK off and hit TAB to get the MAME menu)
 
-     "J" "shift+P" "shift+P" "enter"  (in non-MAME emulators this is often "ctrl+P")
-
-     this will enter the command LOAD "" and execute it
-
-     You must then of course play the tape from the menu in MAME (you'll need to turn SCRLOCK off and hit TAB to get the MAME menu)
 
     COMPATIBILITY
 
-     The MAME emulation at the time of writing isn't very good.  Some things are dangerously wrong with the emulation in ways which
-     can affect tape loading when compared to the notes at
-     https://www.worldofspectrum.org/faq/reference/48kreference.htm
-     for example our EAR/MIC handling is completely wrong (especially if you select 'issue 3' handling)
-     the edge detection should be 0 line crossing based on those notes, not actual polarity.
+    Some things are wrong with the emulation in ways which can affect tape loading when compared to the notes at
+    https://www.worldofspectrum.org/faq/reference/48kreference.htm
+    for example our EAR/MIC handling is completely wrong (especially if you select 'issue 3' handling)
+    the edge detection should be 0 line crossing based on those notes, not actual polarity.
 
-     In addition to MAME the following emulators are used to determine how things should work.
+    In addition to MAME the following emulators are used to determine how things should work.
 
       EmuZWin (v2.7 release 2.8)         - Closed Source, runs some images (Gremlin 2 type*) which fail on the emulators below  - http://kolmck.net/apps/EmuZWin_Eng.htm
       Fuse (Free Unix Spectrum Emulator) - Free, High Compatibility can run some of the trickier images, Windows port available - http://fuse-emulator.sourceforge.net/
       Spectaculator                      - Commercial, a bit more user friendly than above, similar compatibility               - http://www.spectaculator.com/
 
-     Note, even with those emulators you'll have to turn off some of the speed cheats on loading to get good compatibility for example, in Fuse
+    Note, even with those emulators you'll have to turn off some of the speed cheats on loading to get good compatibility for example, in Fuse
       Use Tape Traps
       Fastloading
       Detect Loaders
       Accelerate Loaders
 
-     MAME doesn't have any accelerated loading so some games which require the tricks to be disabled in other emulators work in MAME without trickery, eg Xanthius
-
-     http://newton.sunderland.ac.uk/~specfreak/Schemes/schemes.html is a rather outdated guide mentioning some of the custom loaders, and showing disassemblies of them.
-
-     legacy emulators including Real Spectrum ( http://zxm.speccy.cz/realspec/ ) appear to struggle with some of the more complex tape protections
-
+    MAME doesn't have any accelerated loading so some games which require the tricks to be disabled in other emulators work in MAME without trickery, eg Xanthius
+    http://newton.sunderland.ac.uk/~specfreak/Schemes/schemes.html is a rather outdated guide mentioning some of the custom loaders, and showing disassemblies of them.
+    legacy emulators including Real Spectrum ( http://zxm.speccy.cz/realspec/ ) appear to struggle with some of the more complex tape protections
      * Gremlin 2 type images include 'M.A.S.K' and 'Basil The Great Mouse Detective'
 
     Notes:
@@ -408,11 +402,11 @@ license:CC0-1.0
 		</part>
 	</software>
 
-	<!-- must be loaded with LOAD "" CODE -->
 	<software name="astrobla">
 		<description>Astro Blaster</description>
 		<year>1983</year>
 		<publisher>Quicksilva</publisher>
+		<info name="usage" value="load with LOAD &quot;&quot;CODE" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="7671">
 				<rom name="astro blaster.tzx" size="7671" crc="253c9cf8" sha1="ec5183cf66e336c6d2f8789e3edad3f5c6d2f141"/>
@@ -444,10 +438,11 @@ license:CC0-1.0
 		</part>
 	</software>
 
-	<software name="astrobla_c" cloneof="astrobla" supported="no">
+	<software name="astrobla_c" cloneof="astrobla">
 		<description>Astro Blaster (pirate)</description>
 		<year>198?</year>
 		<publisher>Nuova Newel Software</publisher>
+		<info name="usage" value="load with LOAD &quot;&quot;CODE" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="7671">
 				<rom name="Astro Blaster (Nuova Newel Software).tzx" size="7671" crc="0605ca37" sha1="c87547f9ad2812c89f417fcbdb96abafb6483310"/>
@@ -467,10 +462,11 @@ license:CC0-1.0
 		</part>
 	</software>
 
-	<software name="astblstrs" supported="no">
+	<software name="astblstrs">
 		<description>Astroblasters</description>
 		<year>1985</year>
 		<publisher>Nigel Stuart</publisher>
+		<info name="usage" value="load with CLEAR 44995: LOAD &quot;&quot;" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="40484">
 				<rom name="astroblasters.tzx" size="40484" crc="d4727e73" sha1="6512679efce0ab1735b4993215e2bb8eae3f4e34"/>
@@ -855,11 +851,11 @@ license:CC0-1.0
 		</part>
 	</software>
 
-	<!-- LOAD "" CODE -->
 	<software name="androids">
 		<description>Androids</description>
 		<year>1982</year>
 		<publisher>Sunshine Books</publisher>
+		<info name="usage" value="load with LOAD &quot;&quot;CODE" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="16131">
 				<rom name="androids.tzx" size="16131" crc="2c9de9c0" sha1="966b9225dedcb8d85e9e500cf8da8d0e874ae05c"/>
@@ -867,11 +863,12 @@ license:CC0-1.0
 		</part>
 	</software>
 
-	<!-- LOAD "" CODE , earlier version? no title screen, less presentation -->
+	<!-- earlier version? no title screen, less presentation -->
 	<software name="androidsf" cloneof="androids">
 		<description>Androids (Firefly Software)</description>
 		<year>1982</year>
 		<publisher>Firefly Software</publisher>
+		<info name="usage" value="load with LOAD &quot;&quot;CODE" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="17647">
 				<rom name="androids (firefly software).tzx" size="17647" crc="1c68fadc" sha1="7a48eab98be778a0cefe27d770f3a5ba7fbe70ba"/>
@@ -2378,8 +2375,7 @@ license:CC0-1.0
 		</part>
 	</software>
 
-	<!-- Unsupported block type (0x19 - Generalized Data Block) encountered -->
-	<software name="batmanc" cloneof="batman" supported ="no">
+	<software name="batmanc" cloneof="batman">
 		<description>Batman (set 4)</description>
 		<year>1986</year>
 		<publisher>Ocean</publisher>
@@ -3002,11 +2998,11 @@ no loading screen, no custom loader
 		</part>
 	</software>
 
-	<!-- use LOAD "" CODE in 48k mode -->
 	<software name="bombscad" cloneof="shrtfuse">
 		<description>Bombscare (Dollarsoft)</description>
 		<year>1984</year>
 		<publisher>&lt;unknown&gt;</publisher>
+		<info name="usage" value="48K; load with LOAD &quot;&quot;CODE" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48157">
 				<rom name="bombscare (dollarsoft).tzx" size="48157" crc="f8085df5" sha1="0668778480941eb7d523703151bb9f4b9770258f"/>
@@ -3405,11 +3401,11 @@ no loading screen, no custom loader
 		</part>
 	</software>
 
-	<!-- LOAD "" CODE -->
 	<software name="birds">
 		<description>The Birds</description>
 		<year>1983</year>
 		<publisher>Rabbit Software</publisher>
+		<info name="usage" value="load with LOAD &quot;&quot;CODE" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="7258">
 				<rom name="the birds.tzx" size="7258" crc="5e46146a" sha1="0f20e74bc3b96f33ef13a9288bc766e737a08dac"/>
@@ -3417,11 +3413,11 @@ no loading screen, no custom loader
 		</part>
 	</software>
 
-	<!-- LOAD "" CODE -->
 	<software name="bombirds" cloneof="birds">
 		<description>Bomber Birds (The Birds)</description>
 		<year>1983</year>
 		<publisher>Rabbit Software</publisher>
+		<info name="usage" value="load with LOAD &quot;&quot;CODE" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="7071">
 				<rom name="bomber birds.tzx" size="7071" crc="f66e29a6" sha1="76f796a7db8a77201f098cbb8c7c515ab72bbec4"/>
@@ -10161,7 +10157,7 @@ Expects you to press a key after the title screen appears, or it will miss the n
 		</part>
 	</software>
 
-	<software name="eddducka" cloneof="eddduck" supported="no"> <!-- fails to load, last block issue? -->
+	<software name="eddducka" cloneof="eddduck">
 		<description>Edd the Duck!</description>
 		<year>1990</year>
 		<publisher>Impulze</publisher>
@@ -10172,7 +10168,7 @@ Expects you to press a key after the title screen appears, or it will miss the n
 		</part>
 	</software>
 
-	<software name="eddduckb" cloneof="eddduck" supported="no"> <!-- fails to load, last block issue? -->
+	<software name="eddduckb" cloneof="eddduck">
 		<description>Edd the Duck! (Zeppelin)</description>
 		<year>1990</year>
 		<publisher>Zeppelin Games</publisher>
@@ -11195,11 +11191,11 @@ Expects you to press a key after the title screen appears, or it will miss the n
 	</software>
 
 
-	<!-- LOAD "" CODE -->
 	<software name="frenzy">
 		<description>Frenzy (Spectrum Games)</description>
 		<year>1983</year>
 		<publisher>Spectrum Games</publisher>
+		<info name="usage" value="load with LOAD &quot;&quot;CODE" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="11557">
 				<rom name="frenzy (spectrum games).tzx" size="11557" crc="7984eb2d" sha1="7d89d357372e552a893282ee9a4e60ea3849b510"/>
@@ -11207,11 +11203,11 @@ Expects you to press a key after the title screen appears, or it will miss the n
 		</part>
 	</software>
 
-	<!-- LOAD "" CODE -->
 	<software name="robotics" cloneof="frenzy">
 		<description>Robotics</description>
 		<year>1983</year>
 		<publisher>Spectrum Games</publisher>
+		<info name="usage" value="load with LOAD &quot;&quot;CODE" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="11557">
 				<rom name="robotics.tzx" size="11557" crc="7c16c836" sha1="ea544eeb68380d8eedac444dae787116a9356d62"/>
@@ -11219,11 +11215,11 @@ Expects you to press a key after the title screen appears, or it will miss the n
 		</part>
 	</software>
 
-	<!-- LOAD "" CODE -->
 	<software name="frenzyqs">
 		<description>Frenzy (Quicksilva)</description>
 		<year>1982</year>
 		<publisher>Quicksilva</publisher>
+		<info name="usage" value="load with LOAD &quot;&quot;CODE" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="9071">
 				<rom name="frenzy.tzx" size="9071" crc="6699ab01" sha1="d6284de356af5c4a01295561d5f8f41b6d488628"/>
@@ -13894,11 +13890,11 @@ Expects you to press a key after the title screen appears, or it will miss the n
 		</part>
 	</software>
 
-	<!-- LOAD "" CODE -->
 	<software name="hallthng">
 		<description>Halls of the Things (set 1, clam case)</description>
 		<year>1983</year>
 		<publisher>Crystal Computing</publisher>
+		<info name="usage" value="load with LOAD &quot;&quot;CODE" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="32017">
 				<rom name="halls of the things - clam case.tzx" size="32017" crc="f5ad389d" sha1="ed7373174a13cf0826d0641785f3a3e70401567b"/>
@@ -13906,11 +13902,12 @@ Expects you to press a key after the title screen appears, or it will miss the n
 		</part>
 	</software>
 
-	<!-- LOAD "" CODE --> <!-- loader name is Fruit Cake? -->
+	<!-- loader name is Fruit Cake? -->
 	<software name="hallthngd" cloneof="hallthng">
 		<description>Halls of the Things (set 2, Design Design)</description>
 		<year>1983</year>
 		<publisher>Design Design Software</publisher>
+		<info name="usage" value="load with LOAD &quot;&quot;CODE" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="29774">
 				<rom name="halls of the things (design design).tzx" size="29774" crc="cd980e08" sha1="743f5dede1b2630a4af85bb6f2cc2b1263818ddb"/>
@@ -13929,11 +13926,12 @@ Expects you to press a key after the title screen appears, or it will miss the n
 		</part>
 	</software>
 
-	<!-- LOAD "" CODE --> <!-- loader name is Fruit Cake? -->
+	<!-- loader name is Fruit Cake? -->
 	<software name="hallthngh" cloneof="hallthng">
 		<description>Halls of the Things (set 4)</description>
 		<year>1983</year>
 		<publisher>Crystal Computing</publisher>
+		<info name="usage" value="load with LOAD &quot;&quot;CODE" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="29774">
 				<rom name="halls of the things.tzx" size="29774" crc="a51349cd" sha1="6641f2405d0c42ce0b570bce744a8df71b5eccfa"/>
@@ -18087,11 +18085,11 @@ Side B: Laser Shoot (original release)
 		</part>
 	</software>
 
-	<!-- use LOAD "" CODE -->
 	<software name="moonbugv">
 		<description>Moon Buggy (Visions Software)</description>
 		<year>1983</year>
 		<publisher>Visions Software Factory</publisher>
+		<info name="usage" value="load with LOAD &quot;&quot;CODE" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="16455">
 				<rom name="moon buggy.tzx" size="16455" crc="151294bb" sha1="a6f24cd99f8722abb7bec040c60b40043395ef24"/>
@@ -18855,11 +18853,11 @@ Side B: Laser Shoot (original release)
 		</part>
 	</software>
 
-	<!-- LOAD "" CODE -->
 	<software name="missdef">
 		<description>Missile Defence</description>
 		<year>1983</year>
 		<publisher>Anirog Software</publisher>
+		<info name="usage" value="load with LOAD &quot;&quot;CODE" />
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Side 1 - 16K"/>
 			<dataarea name="cass" size="15983">
@@ -18929,11 +18927,11 @@ Side B: Laser Shoot (original release)
 		</part>
 	</software>
 
-	<!-- LOAD "" CODE -->
 	<software name="munchmas">
 		<description>Munch-Man (Astro Software)</description>
 		<year>1983</year>
 		<publisher>Astro Software</publisher>
+		<info name="usage" value="load with LOAD &quot;&quot;CODE" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="19635">
 				<rom name="munch-man.tzx" size="19635" crc="bdf6290b" sha1="027498721080518deb7dfa36520cdc52e0aeb0e6"/>
@@ -19495,7 +19493,7 @@ Side B: Laser Shoot (original release)
 		</part>
 	</software>
 
-	<software name="misterkf" supported="no">
+	<software name="misterkf">
 		<description>Mister Kung-Fu (set 1, v1.3)</description>
 		<year>2017</year>
 		<publisher>Uprising Soft</publisher>
@@ -19506,7 +19504,7 @@ Side B: Laser Shoot (original release)
 		</part>
 	</software>
 
-	<software name="misterkfa" cloneof="misterkf" supported="no">
+	<software name="misterkfa" cloneof="misterkf">
 		<description>Mister Kung-Fu (set 2, v1.3)</description>
 		<year>2017</year>
 		<publisher>Uprising Soft</publisher>
@@ -19517,7 +19515,7 @@ Side B: Laser Shoot (original release)
 		</part>
 	</software>
 
-	<software name="misterkfb" cloneof="misterkf" supported="no">
+	<software name="misterkfb" cloneof="misterkf">
 		<description>Mister Kung-Fu (set 3, v1.3, Plus 2a / Plus 3)</description>
 		<year>2017</year>
 		<publisher>Uprising Soft</publisher>
@@ -19528,7 +19526,7 @@ Side B: Laser Shoot (original release)
 		</part>
 	</software>
 
-	<software name="misterkfc" cloneof="misterkf" supported="no">
+	<software name="misterkfc" cloneof="misterkf">
 		<description>Mister Kung-Fu (set 4, Plus 2a / Plus 3)</description>
 		<year>2017</year>
 		<publisher>Uprising Soft</publisher>
@@ -21746,11 +21744,11 @@ Side B: Laser Shoot (original release)
 		</part>
 	</software>
 
-	<!-- LOAD "" CODE in 48k mode-->
 	<software name="pheenixr">
 		<description>Pheenix (set 2)</description>
 		<year>1983</year>
 		<publisher>Megadodo Software /Rico Data / Martin W. Ward</publisher>
+		<info name="usage" value="48K; load with LOAD &quot;&quot;CODE" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="9186">
 				<rom name="pheenix (rico data).tzx" size="9186" crc="3ce4eed6" sha1="febfd7baefaa2aed217cf633c5a17348f5e1ba4b"/>
@@ -21758,11 +21756,11 @@ Side B: Laser Shoot (original release)
 		</part>
 	</software>
 
-	<!-- LOAD "" CODE in 48k mode-->
 	<software name="pheenixa" cloneof="pheenix">
 		<description>Pheenix (set 3)</description>
 		<year>1983</year>
 		<publisher>Megadodo Software / Martin W. Ward</publisher>
+		<info name="usage" value="48K; load with LOAD &quot;&quot;CODE" />
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Side 1"/>
 			<dataarea name="cass" size="8745">
@@ -21777,11 +21775,11 @@ Side B: Laser Shoot (original release)
 		</part>
 	</software>
 
-	<!-- LOAD "" CODE in 48k mode-->
 	<software name="pheenixb" cloneof="pheenix">
 		<description>Pheenix (set 4)</description>
 		<year>1983</year>
 		<publisher>Megadodo Software / Martin W. Ward</publisher>
+		<info name="usage" value="48K; load with LOAD &quot;&quot;CODE" />
 		<part name="cass1" interface="spectrum_cass">
 			<feature name="part_id" value="Side 1"/>
 			<dataarea name="cass" size="8745">
@@ -47808,11 +47806,11 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
-	<!-- LOAD "" CODE -->
 	<software name="armagedo">
 		<description>Armageddon (1983, Ocean, set 1)</description>
 		<year>1983</year>
 		<publisher>Ocean</publisher>
+		<info name="usage" value="load with LOAD &quot;&quot;CODE" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="13827">
 				<rom name="armageddon.tzx" size="13827" crc="3f86015f" sha1="1123e8f7e7ad2edcafd93e4172186494f4620efc"/>
@@ -47820,12 +47818,12 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
-	<!-- LOAD "" CODE -->
 	<!-- on tape 4 times, twice on each side -->
 	<software name="armagedoa" cloneof="armagedo">
 		<description>Armageddon (1983, Ocean, set 2)</description>
 		<year>1983</year>
 		<publisher>Ocean</publisher>
+		<info name="usage" value="load with LOAD &quot;&quot;CODE" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="27716">
 				<rom name="armageddon - alternate - side 1.tzx" size="27716" crc="6c48a7dd" sha1="2a101835553f5ac783d221db97d1f0c50a4803db"/>
@@ -47838,11 +47836,11 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
-	<!-- LOAD "" CODE -->
 	<software name="armagedob" cloneof="armagedo">
 		<description>Armageddon (1983, Ocean, set 3)</description>
 		<year>1983</year>
 		<publisher>Ocean</publisher>
+		<info name="usage" value="load with LOAD &quot;&quot;CODE" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="27617">
 				<rom name="armageddon - alternate #2.tzx" size="27617" crc="ba801d03" sha1="746487aec0593509b184f49522817ca15a8a9133"/>
@@ -61796,7 +61794,7 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
-	<software name="cosmicco" supported="no">
+	<software name="cosmicco">
 		<description>Comercio Cosmico</description>
 		<year>1987</year>
 		<publisher>ZX-SOFT Brasil</publisher>
@@ -61807,7 +61805,7 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
-	<software name="cosmicco_a" cloneof="cosmicco" supported="no">
+	<software name="cosmicco_a" cloneof="cosmicco">
 		<description>Cosmic Commerce (English)</description>
 		<year>1987</year>
 		<publisher>Einar Saukas</publisher>
@@ -61818,7 +61816,7 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
-	<software name="cosmicco_b" cloneof="cosmicco" supported="no">
+	<software name="cosmicco_b" cloneof="cosmicco">
 		<description>Cosmic Commerce (English, alt)</description>
 		<year>1987</year>
 		<publisher>Einar Saukas</publisher>
@@ -63407,14 +63405,11 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
-	<software name="cruising" supported="no">
+	<software name="cruising">
 		<description>Cruising On Broadway</description>
 		<year>1983</year>
 		<publisher>Solarsoft</publisher>
-		<notes><![CDATA[
-Nothing happens after loading the cassette
-]]></notes>
-
+		<info name="usage" value="load with LOAD &quot;&quot;CODE" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="10193">
 				<rom name="cruising on broadway.tzx" size="10193" crc="33934c42" sha1="abbedf9f2b885456f47ccda624750d533f30f362"/>
@@ -63422,14 +63417,11 @@ Nothing happens after loading the cassette
 		</part>
 	</software>
 
-	<software name="cruising_a" cloneof="cruising" supported="no">
+	<software name="cruising_a" cloneof="cruising">
 		<description>Cruising On Broadway (Sunshine)</description>
 		<year>1983</year>
 		<publisher>Sunshine Books</publisher>
-		<notes><![CDATA[
-Nothing happens after loading the cassette
-]]></notes>
-
+		<info name="usage" value="load with LOAD &quot;&quot;CODE" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="10190">
 				<rom name="cruising (sunshine).tzx" size="10190" crc="7d79d23e" sha1="507fe87f89bbdb4fd3908598990c338c53bb1899"/>
@@ -63437,14 +63429,11 @@ Nothing happens after loading the cassette
 		</part>
 	</software>
 
-	<software name="cruising_b" cloneof="cruising" supported="no">
+	<software name="cruising_b" cloneof="cruising">
 		<description>Cruising On Broadway (pirate)</description>
 		<year>19??</year>
 		<publisher>Nuova Newel Software</publisher>
-		<notes><![CDATA[
-Nothing happens after loading the cassette
-]]></notes>
-
+		<info name="usage" value="load with LOAD &quot;&quot;CODE" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="5115">
 				<rom name="Cruising On Broadway (Nuova Newel Software).tzx" size="5115" crc="d043f6bc" sha1="fda342e9028cdc559286623e2ed70d26e8368b8c"/>
@@ -63463,15 +63452,11 @@ Nothing happens after loading the cassette
 		</part>
 	</software>
 
-	<software name="cruseon" supported="no">
+	<software name="cruseon">
 		<description>Cruse On</description>
 		<year>1984</year>
 		<publisher>Mushroomsoft</publisher>
-		<notes><![CDATA[
-Side A doesn't work.
-]]></notes>
-
-		<info name="usage" value="48K" />
+		<info name="usage" value="48K; load with LOAD &quot;&quot;CODE" />
 		<part name="cass1" interface="spectrum_cass">
 			<dataarea name="cass" size="43935">
 				<rom name="Cruise On - Mushroom Soft - Side A.tzx" size="43935" crc="c924565d" sha1="717f590c62fac961c52fb059d78373de624306f9"/>
@@ -67997,10 +67982,11 @@ Side A doesn't work.
 		</part>
 	</software>
 
-	<software name="dictator" supported="no">
+	<software name="dictator">
 		<description>Dictator</description>
 		<year>1983</year>
 		<publisher>DK'Tronics</publisher>
+		<info name="usage" value="load with LOAD &quot;&quot;CODE" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="25241">
 				<rom name="dictator.tzx" size="25241" crc="2ccc8180" sha1="724deda21ea78cf93cdb40f66498a313a5a23b38"/>
@@ -68019,10 +68005,11 @@ Side A doesn't work.
 		</part>
 	</software>
 
-	<software name="dictator_b" cloneof="dictator" supported="no">
+	<software name="dictator_b" cloneof="dictator">
 		<description>Dictator (pirate)</description>
 		<year>19??</year>
 		<publisher>Nuova Newel Software</publisher>
+		<info name="usage" value="load with LOAD &quot;&quot;CODE" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="25271">
 				<rom name="Dictator (Nuova Newel Software).tzx" size="25271" crc="552976b5" sha1="e07be8fbb24d618c0eb455e3543a45569bac17cd"/>
@@ -72534,12 +72521,11 @@ Side B - Game 1: The Dragonstar Trilogy Part III (Delta 4 Software)
 		</part>
 	</software>
 
-
-	<!-- must be loaded with LOAD "" CODE -->
 	<software name="elekstrm">
 		<description>Elektro Storm (set 1, PSS)</description>
 		<year>1984</year>
 		<publisher>PSS</publisher>
+		<info name="usage" value="load with LOAD &quot;&quot;CODE" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="49222">
 				<rom name="elektro storm.tzx" size="49222" crc="c9e703ea" sha1="f70d57cc85fa1254debf5f4349ce052450bd4446"/>
