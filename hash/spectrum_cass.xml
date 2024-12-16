@@ -6572,9 +6572,11 @@ no loading screen, no custom loader
 	</software>
 
 	<software name="cmndolr">
-		<description>Commando (Loriciels)</description>
+		<description>Commando (Sprites)</description>
 		<year>1984</year>
-		<publisher>Loriciels</publisher>
+		<publisher>Sprites</publisher>
+		<info name="author" value="Eric Charton" />
+		<info name="serial" value="SP 011" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47883">
 				<rom name="commando (1984)(loriciels)(fr).tzx" size="47883" crc="7d3166f7" sha1="5d9e801de3f8b7e54573ea681624995ee1c15a07"/>
@@ -81815,7 +81817,9 @@ Side B - Game 1: The Dragonstar Trilogy Part III (Delta 4 Software)
 		<description>Gestion de Stock</description>
 		<year>1984</year>
 		<publisher>Sprites</publisher>
+		<info name="author" value="Matoy Amilton" />
 		<info name="language" value="French" />
+		<info name="serial" value="SP 008" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="20656">
 				<rom name="Gestion de Stock - Sprites.tzx" size="20656" crc="eac2d8fc" sha1="e43fa09b59959493959aa59b132ff7381600b1b0"/>
@@ -97318,7 +97322,9 @@ Created by Mark Jeffries
 		<description>La Grande Boucle</description>
 		<year>1985</year>
 		<publisher>Sprites</publisher>
+		<info name="author" value="Eric Charton" />
 		<info name="language" value="French" />
+		<info name="serial" value="SP 010" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47988">
 				<rom name="la grande boucle.tzx" size="47988" crc="b93ce7ba" sha1="c238e351f9c0d050c85ccc58eafd6332253455f6"/>
@@ -98909,9 +98915,12 @@ Lacks game introduction, bad dump or alternate version?
 
 	<software name="lesdiama">
 		<description>Les Diamants de Kheops</description>
-		<year>19??</year>
+		<year>198?</year>
 		<publisher>Sprites</publisher>
+		<info name="alt_title" value="Le Diamant de Kheops" />
+		<info name="author" value="Eric Charton" />
 		<info name="language" value="French" />
+		<info name="serial" value="SP 012" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="48760">
 				<rom name="les diamants de kheops.tzx" size="48760" crc="874079a1" sha1="b85f954458b348f2602e3fd1ba08775f51457bad"/>
@@ -140559,6 +140568,8 @@ Game 4 - Char-Wallah
 		<description>Super Sabre</description>
 		<year>1984</year>
 		<publisher>Sprites</publisher>
+		<info name="author" value="M.V. Elias" />
+		<info name="serial" value="SP 001" />
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="56300">
 				<rom name="super sabre.tzx" size="56300" crc="34555ead" sha1="1a461386ffc986dcdcf852480c489b8bc2b9554b"/>
