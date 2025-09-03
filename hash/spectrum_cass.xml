@@ -1399,6 +1399,18 @@ license:CC0-1.0
 		</part>
 	</software>
 
+	<software name="asymmetry">
+		<description>Asymmetry (Party Version)</description>
+		<year>2025</year>
+		<publisher>YRGB</publisher>
+		<info name="developer" value="MANU &amp; KIT" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="68795">
+				<rom name="asymmetry.tap" size="68795" crc="d3e7cb46" sha1="cd951a2b7d435ee6edd3ed39f1e0bc69e45d5963"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="alterego">
 		<description>Alter Ego (TZX tape image, custom loader)</description>
 		<year>2011</year>
@@ -30464,6 +30476,19 @@ Side B: Laser Shoot (original release)
 		</part>
 	</software>
 
+	<software name="twilightcastle">
+		<description>Escape from the Twilight Castle (Party Version)</description>
+		<year>2025</year>
+		<publisher>YRGB</publisher>
+		<info name="developer" value="Miguetelo" />
+		<info name="usage" value="128K" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="51206">
+				<rom name="twilight_castle_128k_miguetelo2025.tap" size="51206" crc="9d6ff436" sha1="a3bb300bedf39108306af168f881b5efee3be531"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="twinligh">
 		<description>Twinlight</description>
 		<year>2017</year>
@@ -43773,6 +43798,22 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
+	<software name="ataka">
+		<description>Attack (Party Version, English, Russian)</description>
+		<year>2025</year>
+		<publisher>YRGB</publisher>
+		<info name="alt_title" value="Атака" />
+		<info name="developer" value="Макурин Борис Васильевич" />
+		<info name="language" value="English" />
+		<info name="language" value="Russian" />
+		<info name="usage" value="128K" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="101448">
+				<rom name="ATAKA.tzx" size="101448" crc="4ad21206" sha1="d311b58a78dca5dd1992c6e1b8b667dda2248be2"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="atalltal">
 		<description>A Tall Tale</description>
 		<year>19??</year>
@@ -53497,6 +53538,18 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
+	<software name="bodyguard">
+		<description>DS. Bodyguard (Party Version)</description>
+		<year>2025</year>
+		<publisher>YRGB</publisher>
+		<info name="developer" value="sega-man" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="34151">
+				<rom name="bodyguard.tap" size="34151" crc="1e02e3af" sha1="9def97a8d4d17c4f9cf56aa9512bec3736333ad9"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="bodywork">
 		<description>Body Works</description>
 		<year>1985</year>
@@ -59606,7 +59659,19 @@ Side B: Once Upon a Lily Pad
 		</part>
 	</software>
 
-
+	<software name="cindy">
+		<description>Cindy Block (Party Version)</description>
+		<year>2025</year>
+		<publisher>YRGB</publisher>
+		<info name="developer" value="Grongy" />
+		<info name="developer" value="Art-top" />
+		<info name="developer" value="n1k-o" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="42018">
+				<rom name="cindy.tap" size="42018" crc="1726dd76" sha1="39334c48352bca40d68858237dd7a55c6d5ec145"/>
+			</dataarea>
+		</part>
+	</software>
 
 	<software name="circuitd">
 		<description>Circuit Diagrams</description>
@@ -64109,6 +64174,19 @@ Side B: Once Upon a Lily Pad
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="33928">
 				<rom name="cubey.tzx" size="33928" crc="4387e2cb" sha1="f9e123d2b4d0b5c841009f6c202f0ae249c16939"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="cubix">
+		<description>Cubix (Party Version)</description>
+		<year>2025</year>
+		<publisher>YRGB</publisher>
+		<info name="developer" value="Gogin" />
+		<info name="usage" value="128K" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="127070">
+				<rom name="cubix_release.tap" size="127070" crc="863f4169" sha1="b4ee56422af8c97bc5b6a72fc9d35a835b616c5f"/>
 			</dataarea>
 		</part>
 	</software>
@@ -79452,6 +79530,32 @@ Side B - Game 1: The Dragonstar Trilogy Part III (Delta 4 Software)
 		</part>
 	</software>
 
+	<software name="frostland_en">
+		<description>Frostland (Party Version, English)</description>
+		<year>2025</year>
+		<publisher>YRGB</publisher>
+		<info name="developer" value="Roman Skorik" />
+		<info name="language" value="English" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="44149">
+				<rom name="frost_en.tap" size="44149" crc="cf081134" sha1="147e0ee3a28f34f4bbac2d1abe0b88e23c501ae6"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="frostland_ru">
+		<description>Frostland (Party Version, Russian)</description>
+		<year>2025</year>
+		<publisher>YRGB</publisher>
+		<info name="developer" value="Roman Skorik" />
+		<info name="language" value="Russian" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="44238">
+				<rom name="frost_ru.tap" size="44238" crc="36d22073" sha1="cc069dbb2b14c6e2f5cd97ab34276d8d4ade5e34"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="frt2000">
 		<description>Fruit 2000</description>
 		<year>1985</year>
@@ -80948,6 +81052,19 @@ Side B - Game 1: The Dragonstar Trilogy Part III (Delta 4 Software)
 		</part>
 	</software>
 
+	<software name="galacicnexus">
+		<description>Galacic Nexus (Party Version)</description>
+		<year>2025</year>
+		<publisher>YRGB</publisher>
+		<info name="developer" value="Tartessos Games" />
+		<info name="usage" value="128K" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="81184">
+				<rom name="galacic_nexus_en.tap" size="81184" crc="4afe81c9" sha1="97eda4b1b7891231b3d74597a5440c6ef364050e"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="galabdct">
 		<description>Galactic Abductors</description>
 		<year>1983</year>
@@ -81909,6 +82026,20 @@ Side B - Game 1: The Dragonstar Trilogy Part III (Delta 4 Software)
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="29070">
 				<rom name="general statistics.tzx" size="29070" crc="16f5e99a" sha1="186b0ac820e08210e2d3b366fa02f2e090ccb209"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="generaly">
+		<description>Generals (Party Version)</description>
+		<year>2025</year>
+		<publisher>YRGB</publisher>
+		<info name="alt_title" value="Генералы" />
+		<info name="developer" value="Макурин Борис Васильеви" />
+		<info name="usage" value="128K" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="141575">
+				<rom name="generals.tzx" size="141575" crc="5e96fe82" sha1="acf1262ac2ad7e525881b07726863218ef4b36d8"/>
 			</dataarea>
 		</part>
 	</software>
@@ -84644,6 +84775,18 @@ Tape 1 - Side B:
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="55211">
 				<rom name="gunfighter.tzx" size="55211" crc="1318ce24" sha1="489a5b3950f5240512e1d7622e0808d36f6a5cda"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="gunmanmessiah">
+		<description>Gunman Messiah (Party Version)</description>
+		<year>2025</year>
+		<publisher>YRGB</publisher>
+		<info name="developer" value="Krappygamez" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="15591">
+				<rom name="gunman_messiah.tap" size="15591" crc="5ece3be1" sha1="89414db32c954ce0f74b553e1eb5fb9f75560c8f"/>
 			</dataarea>
 		</part>
 	</software>
@@ -97258,6 +97401,32 @@ Created by Mark Jeffries
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="26520">
 				<rom name="krypton raiders.tzx" size="26520" crc="9c59b305" sha1="71c49edbb919d4bfe2c5791b9ae71079d40d80ff"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="kubanoid_en">
+		<description>Kubanoid (Party Version, English)</description>
+		<year>2025</year>
+		<publisher>YRGB</publisher>
+		<info name="developer" value="Stardust" />
+		<info name="language" value="English" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="20943">
+				<rom name="kubanoid_eng.tap" size="20943" crc="da23233a" sha1="b77b265c4fc36095c0cd91c5dc5b4013272d0448"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="kubanoid_ru">
+		<description>Kubanoid (Party Version, Russian)</description>
+		<year>2025</year>
+		<publisher>YRGB</publisher>
+		<info name="developer" value="Stardust" />
+		<info name="language" value="Russian" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="21002">
+				<rom name="kubanoid_rus.tap" size="21002" crc="d1f2eb52" sha1="c8d6f8318885e7f3f5f5a64e3aa1702f0032e7e3"/>
 			</dataarea>
 		</part>
 	</software>
@@ -112753,6 +112922,22 @@ Nothing happens after loading the cassette
 		</part>
 	</software>
 
+	<software name="nighttrain">
+		<description>Night Train Deluxe (Party Version, English, German, Russian)</description>
+		<year>2025</year>
+		<publisher>YRGB</publisher>
+		<info name="developer" value="Undefined Crew" />
+		<info name="usage" value="128K" />
+		<info name="language" value="English" />
+		<info name="language" value="German" />
+		<info name="language" value="Russian" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="27651">
+				<rom name="night_train.tap" size="27651" crc="cc79df3b" sha1="3d9e77871cd1239f0d10c0f8ee56074633686e9c"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="nightfli">
 		<description>Nightflite (diferent cover)</description>
 		<year>1982</year>
@@ -127810,6 +127995,34 @@ Game 4 - Char-Wallah
 		</part>
 	</software>
 
+	<software name="runnose_en">
+		<description>Run Away Nose (Party Version, English)</description>
+		<year>2025</year>
+		<publisher>YRGB</publisher>
+		<info name="alt_title" value="Беглый нос" />
+		<info name="developer" value="Chentzilla" />
+		<info name="language" value="English" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="39193">
+				<rom name="RUN_NOSE_EN-14.tap" size="39193" crc="9612d679" sha1="8e202d112efdd535cd437d57fd6a22f5929384bb"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="runnose_ru">
+		<description>Run Away Nose (Party Version, Russian)</description>
+		<year>2025</year>
+		<publisher>YRGB</publisher>
+		<info name="alt_title" value="Беглый нос" />
+		<info name="developer" value="Chentzilla" />
+		<info name="language" value="Russian" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="39201">
+				<rom name="RUN_NOSE_RU-14.tap" size="39201" crc="56201040" sha1="3467ba98a859f2c3732be4fc96a601adddb68a80"/>
+			</dataarea>
+		</part>
+	</software>
+
 	<software name="runrabbi">
 		<description>Run Rabbit Run (Hill MacGibbon)</description>
 		<year>19??</year>
@@ -131612,6 +131825,20 @@ Game 4 - Char-Wallah
 		<part name="cass" interface="spectrum_cass">
 			<dataarea name="cass" size="47405">
 				<rom name="shutdown.tzx" size="47405" crc="d75480cf" sha1="53b8d3b64dc728485b0dfced48cad49dd613da8b"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="sibcity">
+		<description>SibCity (Party Version, English, Russian)</description>
+		<year>2025</year>
+		<publisher>YRGB</publisher>
+		<info name="developer" value="Andrew771" />
+		<info name="language" value="English" />
+		<info name="language" value="Russian" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="47015">
+				<rom name="sibcity.tap" size="47015" crc="934b409f" sha1="f3ff4356c1acff7751a8b9f82038d4daf23b2ba0"/>
 			</dataarea>
 		</part>
 	</software>
@@ -178133,6 +178360,18 @@ Tape 2 - Side B - Game 2: Drazen Petrovic Basket
 		<part name="cass2" interface="spectrum_cass">
 			<dataarea name="cass" size="78675">
 				<rom name="traveller_s tales - side 2.tzx" size="78675" crc="1fc059d2" sha1="a899c4a9c0de4c992a4c467eeabad07483f070ea"/>
+			</dataarea>
+		</part>
+	</software>
+
+	<software name="travelunlimited">
+		<description>Travel Unlimited (Party Version)</description>
+		<year>2025</year>
+		<publisher>YRGB</publisher>
+		<info name="developer" value="MANU &amp; KIT" />
+		<part name="cass" interface="spectrum_cass">
+			<dataarea name="cass" size="64464">
+				<rom name="travel_unlimited.tap" size="64464" crc="4d5a3183" sha1="d70c0b100bbda1be53f5499db7fcf31cae4aa561"/>
 			</dataarea>
 		</part>
 	</software>
