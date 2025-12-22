@@ -24283,7 +24283,7 @@ Side B: Laser Shoot (original release)
 	</software>
 
 	<software name="rbislande" cloneof="rbisland">
-		<description>Rainbow Islands (alternative)</description>
+		<description>Rainbow Islands (alt)</description>
 		<year>1990</year>
 		<publisher>Ocean</publisher>
 		<part name="cass1" interface="spectrum_cass">
@@ -67831,7 +67831,7 @@ Side B: Once Upon a Lily Pad
 	</software>
 
 	<software name="defcrown">
-		<description>Defender of the Crown (alternative)</description>
+		<description>Defender of the Crown</description>
 		<year>1989</year>
 		<publisher>The Cat</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -67842,7 +67842,7 @@ Side B: Once Upon a Lily Pad
 	</software>
 
 	<software name="defcrowna" cloneof="defcrown">
-		<description>Defender of the Crown</description>
+		<description>Defender of the Crown (alt)</description>
 		<year>1989</year>
 		<publisher>The Cat</publisher>
 		<part name="cass" interface="spectrum_cass">
@@ -151824,7 +151824,7 @@ Game 4 - Char-Wallah
 	</software>
 
 	<software name="uridiuma" cloneof="uridium">
-		<description>Uridium (set 2 - alternative)</description>
+		<description>Uridium (set 2)</description>
 		<year>1987</year>
 		<publisher>Hewson Consultants</publisher>
 		<part name="cass1" interface="spectrum_cass">
