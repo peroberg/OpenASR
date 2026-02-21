@@ -12,7 +12,8 @@ References:
 
 TODO:
 - Stub, enough to make it surpass initial POST and nothing else;
-- Lack specific documentation for AIC-7860, we base on AIC-7890 for now;
+- What "SCSI Disk Utilities" does in SCSI Select, scan LUNs for HDD format?
+- aha2940au: Lack specific documentation for AIC-7860, we base on AIC-7890 for now;
 
 **************************************************************************************************/
 
@@ -63,8 +64,7 @@ void aha2940_scsi_device::device_add_mconfig(machine_config &config)
 {
 	// AIC-7870
 
-	// C06/C46/C56/C66 compatible
-	// TODO: doesn't seem to work properly, wrong type?
+	// C06/C46/C56/C66 compatible, confirmed C46 in this case
 	EEPROM_93C46_16BIT(config, m_eeprom);
 }
 
@@ -139,9 +139,14 @@ void aha2940_scsi_device::io_map(address_map &map)
 		}),
 		NAME([this] (offs_t offset, u8 data) {
 			LOG("SEECTL %02x\n", data);
-			m_eeprom->di_write(BIT(data, 1));
-			m_eeprom->clk_write(BIT(data, 2));
-			m_eeprom->cs_write(BIT(data, 3));
+			// SEEMS (Serial EEPROM Mode Select) must be selected for r/w to actually work
+			// (at least in SCSI Select menu)
+			if (BIT(data, 5))
+			{
+				m_eeprom->di_write(BIT(data, 1));
+				m_eeprom->clk_write(BIT(data, 2));
+				m_eeprom->cs_write(BIT(data, 3));
+			}
 		})
 	);
 	// HCNTRL
