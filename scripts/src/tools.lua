@@ -784,6 +784,12 @@ if (_OPTIONS["osd"] == "sdl") or (_OPTIONS["osd"] == "sdl3") then
 		targetdir(MAME_DIR)
 	end
 
+	if _OPTIONS["osd"] == "sdl3" then
+		defines {
+			"SDLMAME_SDL3",
+		}
+	end
+
 	links {
 		"utils",
 		"ocore_" .. _OPTIONS["osd"],
