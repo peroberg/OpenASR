@@ -44332,6 +44332,9 @@ rvoicepc
 @source:skeleton/sacstate.cpp
 sacstate
 
+@source:skeleton/sammy_pachislo_z80.cpp
+ultracl3
+
 @source:skeleton/sansa_fuze.cpp
 sanfuze2
 

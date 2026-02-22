@@ -8,6 +8,8 @@ Only hardware info available:
 
 CPU   : Z-80
 SOUND : YM2413
+
+Possibly only sound programs?
 */
 
 
