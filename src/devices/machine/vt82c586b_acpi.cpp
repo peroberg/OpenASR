@@ -26,7 +26,7 @@ TODO:
 #define LOG_ACPI   (1U << 1) // log ACPI internals
 #define LOG_ACPIEX (1U << 2) // verbose ACPI internals
 #define LOG_GPIO   (1U << 3)
-#define LOG_PMTMR  (1U << 4) // verbose timer reads
+#define LOG_PMTMR  (1U << 4) // verbose timer reads and processor levels
 
 #define VERBOSE (LOG_GENERAL | LOG_ACPI | LOG_ACPIEX | LOG_GPIO)
 //#define LOG_OUTPUT_FUNC osd_printf_warning
@@ -369,10 +369,10 @@ void acpi_pipc_device::map(address_map &map)
 		NAME([this] (offs_t offset, u16 mem_mask) {
 			if (!machine().side_effects_disabled())
 			{
-				LOGACPI("PLVL%d read\n", offset + 2);
+				LOGPMTR("PLVL%d read\n", offset + 2);
 				// Must be byte access
 				if (mem_mask == 0xffff)
-					LOG("\tInvalid word access!\n");
+					LOG("\tPLVL%d Invalid word access!\n", offset + 2);
 			}
 			return 0;
 		})

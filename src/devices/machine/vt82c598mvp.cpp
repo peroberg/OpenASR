@@ -36,7 +36,7 @@ void vt82c598mvp_host_device::device_start()
 
 	m_ram.resize(m_ram_size/4);
 	// TODO: special, uses register 84h to define the size
-//  add_map(256 * 1024 * 1024, M_MEM | M_PREF, FUNC(vt82c598mvp_host_device::aperture_map));
+	add_map(64 * 1024 * 1024, M_MEM | M_PREF, FUNC(vt82c598mvp_host_device::aperture_map));
 
 	save_item(NAME(m_cache_control_1));
 	save_item(NAME(m_cache_control_2));
@@ -378,6 +378,10 @@ void vt82c598mvp_host_device::config_map(address_map &map)
 		})
 	);
 	// 0xfc ~ 0xff <reserved>
+}
+
+void vt82c598mvp_host_device::aperture_map(address_map &map)
+{
 }
 
 void vt82c598mvp_host_device::map_shadowram(address_space *memory_space, offs_t start_offs, offs_t end_offs, u8 setting)
