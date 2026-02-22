@@ -221,7 +221,7 @@ void it8661f_device::remap(int space_id, offs_t start, offs_t end)
 		// can't map below 0x100
 		if (m_activate[3] & 1 && m_lpt_address & 0xf00)
 		{
-			m_isa->install_device(m_lpt_address, m_lpt_address + 3, read8sm_delegate(*m_lpt, FUNC(pc_lpt_device::read)), write8sm_delegate(*m_lpt, FUNC(pc_lpt_device::write)));
+			m_isa->install_device(m_lpt_address, m_lpt_address + 3, *m_lpt, &pc_lpt_device::isa_map);
 		}
 
 		// TODO: GPIO (with a variable configuration ID because IT8671F moves around)
@@ -236,6 +236,7 @@ void it8661f_device::port_map(address_map &map)
 	map(0x0a79, 0x0a79).w(FUNC(it8661f_device::pnp_write_data_w));
 }
 
+// TODO: implement extra LFSR writes for ISA PnP mode
 void it8661f_device::pnp_address_w(offs_t offset, u8 data)
 {
 	if (m_config_phase == config_phase_t::WAIT_FOR_KEY)
@@ -472,13 +473,16 @@ void it8661f_device::config_map(address_map &map)
 	m_logical_view[0](0x31, 0x31).rw(FUNC(it8661f_device::iorange_check_r<0>), FUNC(it8661f_device::iorange_check_w<0>));
 	m_logical_view[0](0x60, 0x61).lrw8(
 		NAME([this] (offs_t offset) {
-			return (m_fdc_address >> (offset * 8)) & 0xff;
+			if (offset)
+				return m_fdc_address & 0xf8;
+
+			return (m_fdc_address >> 8) & 0xf;
 		}),
 		NAME([this] (offs_t offset, u8 data) {
 			const u8 shift = offset * 8;
 			m_fdc_address &= 0xff << shift;
 			m_fdc_address |= data << (shift ^ 8);
-			m_fdc_address &= ~0xf007;
+			m_fdc_address &= 0x0ff8;
 			LOG("LDN0 (FDC): remap %04x ([%d] %02x)\n", m_fdc_address, offset, data);
 
 			remap(AS_IO, 0, 0xfff);
