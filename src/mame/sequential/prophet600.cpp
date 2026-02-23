@@ -168,16 +168,15 @@ void prophet600_state::dac_w(offs_t offset, uint8_t data)
 	m_dac |= data;
 }
 
-// also selects LEDs and keyboard keys to check
 void prophet600_state::scanrow_w(uint8_t data)
 {
+	// selects LEDs and keyboard keys to check
 	m_scanrow = data;
 
 	// scanrow 0x10 = LEDs, 0x20 = 7-segment #1, 0x40 = 7-segment #2
 	m_display->write_my(data >> 4 & 7);
 }
 
-// scanrow 0x10 = LEDs, 0x20 = 7-segment #1, 0x40 = 7-segment #2
 void prophet600_state::led_w(uint8_t data)
 {
 	// LEDs in row 0x10 are Seq1=0, Seq2=1, ArpUD=2, ArpAssign=3, Preset=4, Record=5, ToTape=6, FromTape=7
@@ -208,10 +207,10 @@ void prophet600_state::cv_w(uint8_t data)
 {
 	int cvnum = data & 7;
 
-	if (!(cvnum & 0x08)) m_CVs[cvnum] = m_dac;
-	if (!(cvnum & 0x10)) m_CVs[cvnum+8] = m_dac;
-	if (!(cvnum & 0x20)) m_CVs[cvnum+16] = m_dac;
-	if (!(cvnum & 0x40)) m_CVs[cvnum+24] = m_dac;
+	if (!(data & 0x08)) m_CVs[cvnum] = m_dac;
+	if (!(data & 0x10)) m_CVs[cvnum+8] = m_dac;
+	if (!(data & 0x20)) m_CVs[cvnum+16] = m_dac;
+	if (!(data & 0x40)) m_CVs[cvnum+24] = m_dac;
 }
 
 void prophet600_state::gate_w(uint8_t data)
@@ -252,13 +251,14 @@ void prophet600_state::cpu_map(address_map &map)
 
 void prophet600_state::io_map(address_map &map)
 {
-	map(0x00, 0x07).mirror(0xff00).rw("pit", FUNC(pit8253_device::read), FUNC(pit8253_device::write));
-	map(0x08, 0x08).mirror(0xff00).w(FUNC(prophet600_state::scanrow_w));
-	map(0x09, 0x09).mirror(0xff00).rw(FUNC(prophet600_state::comparitor_r), FUNC(prophet600_state::led_w));
-	map(0x0a, 0x0a).mirror(0xff00).rw(FUNC(prophet600_state::scan_r), FUNC(prophet600_state::potmux_w));
-	map(0x0b, 0x0b).mirror(0xff00).w(FUNC(prophet600_state::gate_w));
-	map(0x0d, 0x0d).mirror(0xff00).w(FUNC(prophet600_state::cv_w));
-	map(0x0e, 0x0e).mirror(0xff00).w(FUNC(prophet600_state::mask_w));
+	map.global_mask(0xff);
+	map(0x00, 0x07).rw("pit", FUNC(pit8253_device::read), FUNC(pit8253_device::write));
+	map(0x08, 0x08).w(FUNC(prophet600_state::scanrow_w));
+	map(0x09, 0x09).rw(FUNC(prophet600_state::comparitor_r), FUNC(prophet600_state::led_w));
+	map(0x0a, 0x0a).rw(FUNC(prophet600_state::scan_r), FUNC(prophet600_state::potmux_w));
+	map(0x0b, 0x0b).w(FUNC(prophet600_state::gate_w));
+	map(0x0d, 0x0d).w(FUNC(prophet600_state::cv_w));
+	map(0x0e, 0x0e).w(FUNC(prophet600_state::mask_w));
 }
 
 void prophet600_state::machine_start()
@@ -288,7 +288,7 @@ void prophet600_state::prophet600(machine_config &config)
 
 	MIDI_PORT(config, "mdout", midiout_slot, "midiout");
 
-	clock_device &acia_clock(CLOCK(config, "acia_clock", XTAL(8'000'000)/16));  // 500kHz = 16 times the MIDI rate
+	clock_device &acia_clock(CLOCK(config, "acia_clock", XTAL(8'000'000)/16)); // 500kHz = 16 times the MIDI rate
 	acia_clock.signal_handler().set(FUNC(prophet600_state::acia_clock_w));
 
 	PWM_DISPLAY(config, m_display).set_size(3, 8);
