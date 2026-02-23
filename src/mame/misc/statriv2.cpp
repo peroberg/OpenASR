@@ -968,6 +968,34 @@ ROM_START( statriv2v )
 	ROM_LOAD( "dm74s282.u22", 0x0040, 0x0100, CRC(0421b8e0) SHA1(8b786eed86397a1463ad37b9b011edf83d76dd63) ) /* Soldered in */
 ROM_END
 
+ROM_START( statriv3 ) // Triv Quiz III ROM PCB. All labels removed. In the labels below, a stands for main PCB, b for ROM PCB.
+	ROM_REGION( 0x10000, "maincpu", 0 )
+	ROM_LOAD( "a.u7", 0x00000, 0x01000, CRC(b82e76b7) SHA1(f6e0705f12e9804a897ad4f3a83f40793c7ef6ec) )
+	ROM_LOAD( "a.u8", 0x01000, 0x01000, CRC(a58d83e2) SHA1(b6e88305b61af1ea8949282589d53c30b1e95939) )
+	ROM_LOAD( "a.u9", 0x02000, 0x01000, CRC(db630ef9) SHA1(1c9eb49426d095f9681cde52e5439b5aaaea59a0) )
+
+	ROM_REGION( 0x1000,  "tiles", ROMREGION_INVERT )
+	ROM_LOAD( "a.u36", 0x00000, 0x01000, CRC(af5f434a) SHA1(1e7ae7ad7ea697007a30f5ba89127802a835eddc) )
+
+	ROM_REGION( 0x10000, "questions", 0 )
+	ROM_LOAD( "b.u1", 0x00000, 0x02000, CRC(63e3744c) SHA1(7be1d6d9dc546fec05f4a631bcd40d16de53faee) )
+	ROM_LOAD( "b.u2", 0x02000, 0x02000, CRC(8b5837c3) SHA1(ca3a1d8eedd1036d66088922bfe7879acf533d6a) )
+	ROM_LOAD( "b.u3", 0x04000, 0x02000, CRC(b5896a53) SHA1(ce1ad5c91a7b8c0af09936b5e312ef03913d2e45) )
+	ROM_LOAD( "b.u4", 0x06000, 0x02000, CRC(e3137ffc) SHA1(d3fea66fbfbecf951d7c2b6ff88b1698226fd6f3) )
+	ROM_LOAD( "b.u5", 0x08000, 0x02000, CRC(f84612e7) SHA1(01ed349d6eaa296a3fe27b82a875976075ee9a20) )
+	ROM_LOAD( "b.u6", 0x0a000, 0x02000, CRC(69917d9a) SHA1(ced5be682484a3bcf98a38500c0d1e3f6a29cc75) )
+	ROM_LOAD( "b.u7", 0x0c000, 0x02000, CRC(7b65f147) SHA1(352a81b70b03a78e36af583586d80e1ee7b0fb72) )
+	ROM_LOAD( "b.u8", 0x0e000, 0x02000, CRC(e7577c53) SHA1(e3373c17bcfc45142ec4972f9803b57349a0c5f4) )
+
+	ROM_REGION( 0x0100, "nvram", 0 )
+	ROM_LOAD( "statriv3.nv", 0x0000, 0x0100, CRC(60c9b350) SHA1(a2085230fe90f2dbb3dca8b8ae7ca126b4b27188) )
+
+	ROM_REGION( 0x0140, "proms", 0 )
+	ROM_LOAD( "74s288.u17", 0x0000, 0x0020, CRC(63b8a63e) SHA1(d59ad84edd583f7befce73b79e12dfb58a204c4f) ) /* Socketed, verified */
+	ROM_LOAD( "74s288.u21", 0x0020, 0x0020, CRC(e8f60d23) SHA1(2070b8201b75a13e416f597d6b2473d0027f420c) ) /* Soldered in (Color?) */
+	ROM_LOAD( "74s287.u22", 0x0040, 0x0100, CRC(0421b8e0) SHA1(8b786eed86397a1463ad37b9b011edf83d76dd63) ) /* Soldered in */
+ROM_END
+
 ROM_START( statriv4 )
 	ROM_REGION( 0x10000, "maincpu", 0 )
 	ROM_LOAD( "triv4.u07",    0x00000, 0x01000, CRC(38800e01) SHA1(3d174c4194169eae7c033e8bb30bd02779170d42) )
@@ -1723,6 +1751,7 @@ GAME( 1984, hangman,    0,        statriv2,  hangman,  statriv2_state, init_addr
 GAME( 1984, trivquiz,   0,        statriv2,  statriv2, statriv2_state, init_addr_lhx,  ROT0,  "Status Games",       "Triv Quiz",                             MACHINE_SUPPORTS_SAVE )
 GAME( 1984, statriv2,   0,        statriv2,  statriv2, statriv2_state, init_addr_xlh,  ROT0,  "Status Games",       "Triv Two",                              MACHINE_SUPPORTS_SAVE )
 GAME( 1985, statriv2v,  statriv2, statriv2v, statriv2, statriv2_state, init_addr_xlh,  ROT90, "Status Games",       "Triv Two (Vertical)",                   MACHINE_SUPPORTS_SAVE )
+GAME( 1985, statriv3,   0,        statriv2,  statriv2, statriv2_state, init_addr_xhl,  ROT0,  "Status Games",       "Triv III",                              MACHINE_SUPPORTS_SAVE )
 GAME( 1985, statriv4,   0,        statriv2,  statriv4, statriv2_state, init_addr_xhl,  ROT0,  "Status Games",       "Triv Four",                             MACHINE_SUPPORTS_SAVE )
 GAME( 1985, statriv5se, statriv4, statriv2,  statriv4, statriv2_state, init_addr_xhl,  ROT0,  "Status Games",       "Triv Five Special Edition",             MACHINE_SUPPORTS_SAVE | MACHINE_NOT_WORKING ) // missing questions' ROMs
 GAME( 1985, sextriv,    0,        statriv2,  sextriv,  statriv2_state, init_addr_lhx,  ROT0,  "Status Games",       "Sex Triv",                              MACHINE_SUPPORTS_SAVE )
