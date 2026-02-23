@@ -84,6 +84,8 @@ ALLOW_SAVE_TYPE(it8661f_device::config_phase_t);
 void it8661f_device::device_start()
 {
 	set_isa_device();
+	m_last_dma_line = -1;
+
 	m_isa->set_dma_channel(0, this, true);
 	m_isa->set_dma_channel(1, this, true);
 	m_isa->set_dma_channel(2, this, true);

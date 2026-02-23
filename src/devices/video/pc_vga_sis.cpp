@@ -248,7 +248,26 @@ void sis6326_vga_device::sequencer_map(address_map &map)
 			m_ext_sr0c = data;
 		})
 	);
-	//map(0x0e, 0x0f) Ext. Config Status (r/o)
+	//map(0x0d, 0x0e) Ext. Config Status (r/o)
+	map(0x0d, 0x0d).lr8(
+		// x--- ---- MD23 Enable 64K ROM
+		// -x-- ---- MD22 Clock Generator Select (0) internal (1) external (test only)
+		// --x- ---- MD21 AGP 2X Transfer enable
+		// ---x ---- MD20 AGP bus enable
+		// ---- x--- MD19 <reserved>
+		// ---- -x-- MD18 NTSC (0) PAL (1)
+		// ---- --x- MD17 Video subsystem power-on disable
+		// ---- ---x MD16 Video subsystem port (0) $3c3 (1) $46e8
+		NAME([] () { return 0x80 | 0x20 | 0x10 | 1; })
+	);
+	map(0x0e, 0x0e).lr8(
+		// xxx- ---- MD31~MD29 DRAM speed setting (000) SGRAM 66 MHz
+		// ---x ---- MD28 disable VMI interface
+		// ---- x--- MD27 INTA# enable
+		// ---- -x-- MD26 BIOS ROM disable
+		// ---- --xx MD25~MD24 <reserved>
+		NAME([] () { return 8; })
+	);
 	map(0x0f, 0x10).lrw8(
 		NAME([this] (offs_t offset) {
 			return m_ext_scratch[offset];
@@ -602,6 +621,7 @@ void sis630_vga_device::sequencer_map(address_map &map)
 			vga.crtc.start_addr_latch |= data << 16;
 		})
 	);
+	map(0x0e, 0x0e).unmapr();
 	map(0x0e, 0x0e).lw8(
 		NAME([this] (offs_t offset, u8 data) {
 			LOG("SR0E: Extended pitch register %02x\n", data);

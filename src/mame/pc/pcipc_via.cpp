@@ -10,6 +10,7 @@
  *
  * TODO:
  * - win98se: resource conflict between ACPI BIOS and AGP card(s), PCI cards works fine;
+ * - freedos13: APMDOS hangs system with JEMMEX preloaded, works when issued standalone;
  *
  */
 
@@ -58,6 +59,7 @@ private:
 	static void ite_superio_config(device_t *device);
 };
 
+// NOTE: something between these two will corrupt the Energy Star logo if mapped low
 void mvp3_state::main_map(address_map &map)
 {
 	map.unmap_value_high();
@@ -130,7 +132,7 @@ void mvp3_state::mvp3(machine_config &config)
 	VT82C586B_ACPI(config, "pci:07.3", 0);
 	acpi_pipc_device &acpi_dev(ACPI_PIPC     (config, "pci:07.3:acpi"));
 	acpi_dev.smi().set_inputline("maincpu", INPUT_LINE_SMI);
-	//acpi_dev.sci().
+//	acpi_dev.sci().set("pci:07.0", FUNC(vt82c586b_isa_device::pc_irq12m_w));
 
 	PCI_SLOT(config, "pci:01.0:0", agp_cards, 0, 0, 1, 2, 3, "sis6326_agp");
 
