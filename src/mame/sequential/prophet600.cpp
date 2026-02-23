@@ -55,6 +55,7 @@
 #include "machine/6850acia.h"
 #include "machine/clock.h"
 #include "machine/pit8253.h"
+#include "video/pwm.h"
 
 #include "prophet600.lh"
 
@@ -79,11 +80,7 @@ public:
 		driver_device(mconfig, type, tag),
 		m_maincpu(*this, "maincpu"),
 		m_acia(*this, "uart"),
-		m_digits(*this, "digit%u", 0U),
-		m_dac(0),
-		m_scanrow(0),
-		m_comparitor(0),
-		m_nmi_gate(false)
+		m_display(*this, "display")
 	{ }
 
 	void prophet600(machine_config &config);
@@ -112,17 +109,22 @@ private:
 
 	required_device<cpu_device> m_maincpu;
 	required_device<acia6850_device> m_acia;
+	required_device<pwm_display_device> m_display;
 
-	output_finder<2> m_digits;
+	uint16_t m_dac = 0;
+	uint8_t m_scanrow = 0;
+	uint8_t m_comparitor = 0;
 
-	uint16_t m_dac;
-	uint8_t m_scanrow;
-	uint8_t m_comparitor;
-
-	bool m_nmi_gate;
+	bool m_nmi_gate = false;
 
 	// gates
-	bool m_ASaw = false, m_ATri = false, m_Sync = false, m_BSaw = false, m_BTri = false, m_PModFA = false, m_PModFil = false;
+	bool m_ASaw = false;
+	bool m_ATri = false;
+	bool m_Sync = false;
+	bool m_BSaw = false;
+	bool m_BTri = false;
+	bool m_PModFA = false;
+	bool m_PModFil = false;
 
 	// control voltages
 	uint16_t m_CVs[CV_MAX]{};
@@ -170,23 +172,16 @@ void prophet600_state::dac_w(offs_t offset, uint8_t data)
 void prophet600_state::scanrow_w(uint8_t data)
 {
 	m_scanrow = data;
+
+	// scanrow 0x10 = LEDs, 0x20 = 7-segment #1, 0x40 = 7-segment #2
+	m_display->write_my(data >> 4 & 7);
 }
 
 // scanrow 0x10 = LEDs, 0x20 = 7-segment #1, 0x40 = 7-segment #2
 void prophet600_state::led_w(uint8_t data)
 {
-	if (m_scanrow & 0x10)
-	{
-		// LEDs in row 0x10 are Seq1=0, Seq2=1, ArpUD=2, ArpAssign=3, Preset=4, Record=5, ToTape=6, FromTape=7
-	}
-	else if (m_scanrow & 0x20)
-	{
-		m_digits[0] = data;
-	}
-	else if (m_scanrow & 0x40)
-	{
-		m_digits[1] = data;
-	}
+	// LEDs in row 0x10 are Seq1=0, Seq2=1, ArpUD=2, ArpAssign=3, Preset=4, Record=5, ToTape=6, FromTape=7
+	m_display->write_mx(data);
 }
 
 uint8_t prophet600_state::scan_r()
@@ -268,7 +263,7 @@ void prophet600_state::io_map(address_map &map)
 
 void prophet600_state::machine_start()
 {
-	m_digits.resolve();
+	// TODO: savestate
 }
 
 // master crystal is 8 MHz, all clocks derived from there
@@ -277,8 +272,6 @@ void prophet600_state::prophet600(machine_config &config)
 	Z80(config, m_maincpu, XTAL(8'000'000)/2);
 	m_maincpu->set_addrmap(AS_PROGRAM, &prophet600_state::cpu_map);
 	m_maincpu->set_addrmap(AS_IO, &prophet600_state::io_map);
-
-	config.set_default_layout(layout_prophet600);
 
 	pit8253_device &pit8253(PIT8253(config, "pit", XTAL(8'000'000)/4));
 	pit8253.set_clk<0>(XTAL(8'000'000)/4);
@@ -297,6 +290,11 @@ void prophet600_state::prophet600(machine_config &config)
 
 	clock_device &acia_clock(CLOCK(config, "acia_clock", XTAL(8'000'000)/16));  // 500kHz = 16 times the MIDI rate
 	acia_clock.signal_handler().set(FUNC(prophet600_state::acia_clock_w));
+
+	PWM_DISPLAY(config, m_display).set_size(3, 8);
+	m_display->set_segmask(0x6, 0xff);
+
+	config.set_default_layout(layout_prophet600);
 }
 
 static INPUT_PORTS_START( prophet600 )
