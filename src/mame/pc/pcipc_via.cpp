@@ -7,7 +7,9 @@
  *
  * Notes:
  * - need to map_first the IDE for make it recognize both that and floppy disks;
- * - Serial Port "Auto" doesn't seem to work off the bat, need manual setup in CMOS;
+ *
+ * TODO:
+ * - win98se: resource conflict between ACPI BIOS and AGP card(s), PCI cards works fine;
  *
  */
 
@@ -130,7 +132,7 @@ void mvp3_state::mvp3(machine_config &config)
 	acpi_dev.smi().set_inputline("maincpu", INPUT_LINE_SMI);
 	//acpi_dev.sci().
 
-	PCI_SLOT(config, "pci:01.0:1", agp_cards, 1, 0, 1, 2, 3, "sis6326_agp");
+	PCI_SLOT(config, "pci:01.0:0", agp_cards, 0, 0, 1, 2, 3, "sis6326_agp");
 
 	PCI_SLOT(config, "pci:1", pci_cards, 13, 0, 1, 2, 3, nullptr);
 	PCI_SLOT(config, "pci:2", pci_cards, 14, 1, 2, 3, 0, nullptr);

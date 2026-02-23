@@ -77,7 +77,7 @@ void sis6326_agp_device::device_start()
 {
 	pci_card_device::device_start();
 
-	add_map(4*1024*1024, M_MEM, FUNC(sis6326_agp_device::vram_aperture_map));
+	add_map(4*1024*1024, M_MEM | M_PREF, FUNC(sis6326_agp_device::vram_aperture_map));
 	add_map(64*1024, M_MEM, FUNC(sis6326_agp_device::mmio_map));
 	add_map(16, M_IO, FUNC(sis6326_agp_device::vmi_map));
 
@@ -154,7 +154,7 @@ void sis6326_agp_device::config_map(address_map &map)
 
 void sis6326_agp_device::vram_aperture_map(address_map &map)
 {
-	map(0x0000000, 0x3ffffff).rw(m_vga, FUNC(sis6326_vga_device::mem_linear_r), FUNC(sis6326_vga_device::mem_linear_w));
+	map(0x0000000, 0x3f'ffff).rw(m_vga, FUNC(sis6326_vga_device::mem_linear_r), FUNC(sis6326_vga_device::mem_linear_w));
 }
 
 void sis6326_agp_device::mmio_map(address_map &map)

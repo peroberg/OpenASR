@@ -513,6 +513,11 @@ void vt82c598mvp_bridge_device::device_reset()
 {
 	pci_bridge_device::device_reset();
 
+	command = 0x0007;
+	command_mask = 0x0047;
+	// Medium DEVSEL#, 66 MHz Capable
+	status = 0x0220;
+
 	std::fill(std::begin(m_pci2_flow_control), std::end(m_pci2_flow_control), 0);
 	m_pci2_master_control = 0;
 }
