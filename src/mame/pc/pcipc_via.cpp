@@ -10,6 +10,8 @@
  *
  * TODO:
  * - win98se: resource conflict between ACPI BIOS and AGP card(s), PCI cards works fine;
+ * - win98se: PS/2 keyboard becomes unresponsive after a while;
+ * - win98se: ACPI has issues on power off and reboot (workaround: use restart in MSDOS mode);
  * - freedos13: APMDOS hangs system with JEMMEX preloaded, works when issued standalone;
  *
  */
@@ -134,9 +136,9 @@ void mvp3_state::mvp3(machine_config &config)
 	acpi_dev.smi().set_inputline("maincpu", INPUT_LINE_SMI);
 //	acpi_dev.sci().set("pci:07.0", FUNC(vt82c586b_isa_device::pc_irq12m_w));
 
-	PCI_SLOT(config, "pci:01.0:0", agp_cards, 0, 0, 1, 2, 3, "sis6326_agp");
+	PCI_SLOT(config, "pci:01.0:0", agp_cards, 0, 0, 1, 2, 3, nullptr);
 
-	PCI_SLOT(config, "pci:1", pci_cards, 13, 0, 1, 2, 3, nullptr);
+	PCI_SLOT(config, "pci:1", pci_cards, 13, 0, 1, 2, 3, "sis6326_pci");
 	PCI_SLOT(config, "pci:2", pci_cards, 14, 1, 2, 3, 0, nullptr);
 	PCI_SLOT(config, "pci:3", pci_cards, 15, 2, 3, 0, 1, nullptr);
 	PCI_SLOT(config, "pci:4", pci_cards, 16, 3, 0, 1, 2, nullptr);
@@ -176,5 +178,6 @@ ROM_START( ls5amvp3 )
 ROM_END
 
 } // anonymous namespace
+
 
 COMP(1998, ls5amvp3,    0,     0, mvp3,   0, mvp3_state, empty_init, "Lucky Star", "5AMVP3 (VIA MVP3 chipset)", MACHINE_NOT_WORKING | MACHINE_NO_SOUND )
