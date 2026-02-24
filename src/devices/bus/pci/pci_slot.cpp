@@ -137,6 +137,7 @@ void pci_cards(device_slot_interface &device)
 	device.option_add("promotion3210",  PROMOTION3210);
 	device.option_add("gd5446",         GD5446_PCI);
 	device.option_add("oti64111",       OTI64111_PCI);
+	device.option_add("sis6326_pci",    SIS6326_PCI);
 	device.option_add("wd9710",         WD9710_PCI);
 
 	// 0x04 - multimedia controllers

@@ -9,7 +9,8 @@
  * - need to map_first the IDE for make it recognize both that and floppy disks;
  *
  * TODO:
- * - win98se: resource conflict between ACPI BIOS and AGP card(s), PCI cards works fine;
+ * - win98se/win98me: resource conflict between ACPI BIOS and AGP card(s), PCI cards works fine.
+ *   Bridge memory/io bases not passed properly?
  * - win98se: PS/2 keyboard becomes unresponsive after a while;
  * - win98se: ACPI has issues on power off and reboot (workaround: use restart in MSDOS mode);
  * - freedos13: APMDOS hangs system with JEMMEX preloaded, works when issued standalone;
