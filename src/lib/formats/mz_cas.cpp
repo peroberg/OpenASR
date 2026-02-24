@@ -127,7 +127,7 @@ int fill_wave_b(int16_t *buffer, int offs, int byte)
 template <const mz_cass_params &Params>
 int fill_wave(int16_t *buffer, int length, const uint8_t *code, int)
 {
-	const int BYTE_SAMPLES = Params.LONG_PULSE + (8 * Params.LONG_PULSE);
+	const int BYTE_SAMPLES = Params.byte_samples();
 
 	static int16_t *beg;
 	static uint16_t csum = 0;
