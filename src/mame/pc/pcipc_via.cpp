@@ -7,6 +7,9 @@
  *
  * Notes:
  * - need to map_first the IDE for make it recognize both that and floppy disks;
+ * - win98se: none of the via4in1 drivers seems to actually work with this BIOS. It will return
+ *   "registry error, please reboot", with CD-ROM drive becoming non-functional afterwards.
+ *   winme acts mostly the same, except that it manages to install with v4.17
  *
  * TODO:
  * - win98se/win98me: resource conflict between ACPI BIOS and AGP card(s), PCI cards works fine.

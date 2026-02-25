@@ -345,7 +345,7 @@ void sis6326_vga_device::sequencer_map(address_map &map)
 		// ---- x--- MD27 INTA# enable
 		// ---- -x-- MD26 BIOS ROM disable
 		// ---- --xx MD25~MD24 <reserved>
-		NAME([this] () { return (0 << 3); })
+		NAME([] () { return (0 << 3); })
 	);
 	map(0x0f, 0x10).lrw8(
 		NAME([this] (offs_t offset) {

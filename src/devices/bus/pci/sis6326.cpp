@@ -93,7 +93,8 @@ void sis6326_pci_device::device_reset()
 	// bus master (hardwired)
 	command = 0x0004;
 	command_mask = 0x23;
-	// medium DEVSEL#, 66 MHz capable, has capabilities list
+	// medium DEVSEL#
+	// assume capability list & 66 MHz disabled in this variant
 	status = 0x0200;
 
 	remap_cb();
