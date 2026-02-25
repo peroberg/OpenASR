@@ -35,6 +35,14 @@ kaneko_grap2_device::kaneko_grap2_device(const machine_config &mconfig, const ch
 	: device_t(mconfig, KANEKO_GRAP2, tag, owner, clock)
 	, device_rom_interface(mconfig, *this)
 	, device_palette_interface(mconfig, *this)
+	, m_framebuffer_scrolly(0)
+	, m_framebuffer_scrollx(0)
+	, m_framebuffer_enable(0)
+	, m_regs1_i(0)
+	, m_framebuffer_bright1(0)
+	, m_framebuffer_bright2(0)
+	, m_regs1_address_regs{ 0, 0 }
+	, m_regs2(0)
 {
 }
 

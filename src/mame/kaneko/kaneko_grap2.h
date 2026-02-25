@@ -64,22 +64,21 @@ private:
 	void do_rle(u32 address, u32 dstaddress);
 	void set_color_555(pen_t color, int rshift, int gshift, int bshift, u16 data);
 
-	u16 m_framebuffer_scrolly = 0;
-	u16 m_framebuffer_scrollx = 0;
-	u16 m_framebuffer_enable = 0;
-	u8 m_regs1_i = 0;
+	u16 m_framebuffer_scrolly;
+	u16 m_framebuffer_scrollx;
+	u16 m_framebuffer_enable;
+	u8 m_regs1_i;
 
-	u16 m_framebuffer_bright1 = 0;
-	u16 m_framebuffer_bright2 = 0;
+	u16 m_framebuffer_bright1;
+	u16 m_framebuffer_bright2;
 
-	u16 m_regs1_address_regs[0x2]{};
-	u16 m_regs2 = 0;
+	u16 m_regs1_address_regs[0x2];
+	u16 m_regs2;
 
 	std::unique_ptr<u16[]> m_framebuffer;
 	std::unique_ptr<u16[]> m_framebuffer_palette;
 	std::unique_ptr<u16[]> m_framebuffer_unk1;
 	std::unique_ptr<u16[]> m_framebuffer_unk2;
-
 };
 
 

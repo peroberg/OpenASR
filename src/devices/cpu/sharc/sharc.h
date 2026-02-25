@@ -30,7 +30,7 @@ public:
 	virtual ~adsp21062_device() override;
 
 	// configuration helpers
-	template <unsigned N> auto flag_out() { return m_flag_out[N].bind(); }
+	template <unsigned N> auto flag_out() { return m_flag_out_cb[N].bind(); }
 
 	void set_boot_mode(const sharc_boot_mode boot_mode) { m_boot_mode = boot_mode; }
 	void enable_recompiler();
