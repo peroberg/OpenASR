@@ -40612,10 +40612,10 @@ drmicro
 @source:sanritsu/jantotsu.cpp
 jantotsu
 
-@source:kiwako/jongkyo.cpp
+@source:sanritsu/jongkyo.cpp
 jongkyo
 
-@source:kiwako/koikoi.cpp
+@source:sanritsu/koikoi.cpp
 koikoi
 koikoip2
 
@@ -40627,7 +40627,7 @@ yachtmn
 @source:sanritsu/mjkjidai.cpp
 mjkjidai
 
-@source:kiwako/mrjong.cpp
+@source:sanritsu/mrjong.cpp
 blkbustr
 crazyblk
 mrjong
@@ -40635,7 +40635,7 @@ mrjong
 @source:sanritsu/ron.cpp
 ron2
 
-@source:misc/sprcros2.cpp
+@source:sanritsu/sprcros2.cpp
 sprcros2
 sprcros2a
 
