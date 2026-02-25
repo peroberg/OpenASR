@@ -62,7 +62,9 @@ U22 is a soldered in 74s287 (compatible with 82s129)
 PROM use is unknown
 
 
-Issues:
+TODO:
+ * all - verify CPU speed, 8085AH-1 can run at 6MHz (12MHz XTAL), but PCBs have
+   a standard 8085A? Most games will run too slow at 6MHz, eg. try with hangman
  * statusbj - very glitchy, bad video, seems to spin
  * hangman - keys are weird, spinner is busted
  * quaquiz2 - no inputs, needs NVRAM
@@ -269,6 +271,7 @@ void casino_state::machine_start()
 	save_item(NAME(m_last_coin));
 }
 
+
 /*************************************
  *
  *  Interrupt generation
@@ -299,6 +302,7 @@ INTERRUPT_GEN_MEMBER(casino_state::rst55_interrupt)
 	device.execute().set_input_line(I8085_RST55_LINE, ASSERT_LINE);
 	device.execute().set_input_line(I8085_RST55_LINE, CLEAR_LINE);
 }
+
 
 /*************************************
  *
@@ -687,6 +691,7 @@ static INPUT_PORTS_START( bbchall )
 	PORT_BIT( 0xff, IP_ACTIVE_HIGH, IPT_UNUSED )
 INPUT_PORTS_END
 
+
 /*************************************
  *
  *  Graphics decoding
@@ -723,7 +728,6 @@ GFXDECODE_END
 void casino_state::statusbj(machine_config &config)
 {
 	// basic machine hardware
-	// FIXME: The 8085A had a max clock of 6MHz, internally divided by 2!
 	I8085A(config, m_maincpu, 12.44_MHz_XTAL);
 	m_maincpu->set_addrmap(AS_PROGRAM, &casino_state::program_map);
 	m_maincpu->set_addrmap(AS_IO, &casino_state::io_map);
@@ -769,7 +773,6 @@ void trivia_state::statriv2v(machine_config &config)
 	statriv2(config);
 
 	// basic machine hardware
-
 	subdevice<screen_device>("screen")->set_raw(12.44_MHz_XTAL / 2, 392, 0, 256, 262, 0, 256);
 
 	MCFG_VIDEO_START_OVERRIDE(trivia_state, vertical)
@@ -781,8 +784,7 @@ void casino_state::funcsino(machine_config &config)
 	statusbj(config);
 
 	// basic machine hardware
-
-	m_maincpu->set_clock(12.44_MHz_XTAL / 2);  // 3 MHz?? seems accurate
+	m_maincpu->set_clock(12.44_MHz_XTAL / 2); // 6 MHz? seems accurate
 }
 
 void casino_state::tripdraw(machine_config &config)

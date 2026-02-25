@@ -2,19 +2,28 @@
 // copyright-holders:Angelo Salese
 /*
 
-    Super Cross II (c) 1987 GM Shoji
+Super Cross II (c) 1986 GM Shoji
 
-    driver by Angelo Salese, based on "wiped off due to not anymore
-    licenseable" driver by insideoutboy.
+driver by Angelo Salese, based on "wiped off due to not anymore
+licenseable" driver by insideoutboy.
 
-    TODO:
-    - scanline renderer, or change to tilemaps;
-    - understand irq 0 source;
-    - output bit 0 might be watchdog armed bit/sprite start DMA instead of
-      irq enable;
-    - weird visible area resolution, 224 or 240 x 224? Maybe it's really just
-      256 x 224 and then it's supposed to show garbage/nothing on the edges?
-    - verify hsync/vsync, current screen raw params are guessed
+TODO:
+- scanline renderer, or change to tilemaps;
+- understand irq 0 source;
+- output bit 0 might be watchdog armed bit/sprite start DMA instead of irq
+  enable;
+- weird visible area resolution, 224 or 240 x 224? Maybe it's really just
+  256 x 224 and then it's supposed to show garbage/nothing on the edges?
+- verify hsync/vsync, current screen raw params are guessed;
+- verify Z80 frequency, it has slowdowns at 2.5MHz, and Z80B is rated 6MHz
+
+The hardware has similarities with Sanritsu's Bank Panic, PCB label is similar
+as well: C2-00170-A for Bank Panic, C2-00171-D/C2-00172-D for Super Cross II.
+There's also an unused SEGA logo in the gfx0 region.
+
+GM Shoji is not a game developer. It's probably an old Sanritsu game that was
+canceled/rejected by Sega. Sanritsu's involvement is also mentioned in a
+preview in the Japanese magazine GAME FREAK Vol 21.
 
 ===================================
 
@@ -574,5 +583,5 @@ ROM_END
 } // anonymous namespace
 
 
-GAME( 1986, sprcros2,  0,        sprcros2, sprcros2, sprcros2_state, empty_init, ROT0, "GM Shoji", "Super Cross II (Japan, set 1)", MACHINE_SUPPORTS_SAVE )
-GAME( 1986, sprcros2a, sprcros2, sprcros2, sprcros2, sprcros2_state, empty_init, ROT0, "GM Shoji", "Super Cross II (Japan, set 2)", MACHINE_SUPPORTS_SAVE )
+GAME( 1986, sprcros2,  0,        sprcros2, sprcros2, sprcros2_state, empty_init, ROT0, "Sanritsu / GM Shoji", "Super Cross II (Japan, set 1)", MACHINE_SUPPORTS_SAVE )
+GAME( 1986, sprcros2a, sprcros2, sprcros2, sprcros2, sprcros2_state, empty_init, ROT0, "Sanritsu / GM Shoji", "Super Cross II (Japan, set 2)", MACHINE_SUPPORTS_SAVE )
