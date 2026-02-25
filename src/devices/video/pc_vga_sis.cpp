@@ -34,6 +34,8 @@ TODO:
 
 #include "logmacro.h"
 
+#define DEBUG_VRAM_VIEWER 0
+
 // TODO: later variant of 5598
 // (definitely doesn't have dual segment mode for instance)
 DEFINE_DEVICE_TYPE(SIS6326_VGA, sis6326_vga_device, "sis6326_vga", "SiS 6326 VGA i/f")
@@ -91,6 +93,16 @@ void sis6326_vga_device::device_start()
 	save_item(NAME(m_ext_ge27));
 	save_item(NAME(m_linear_address));
 
+	save_item(STRUCT_MEMBER(m_cursor, address_base));
+	save_item(STRUCT_MEMBER(m_cursor, color_cache));
+	save_item(STRUCT_MEMBER(m_cursor, color));
+	save_item(STRUCT_MEMBER(m_cursor, x));
+	save_item(STRUCT_MEMBER(m_cursor, y));
+	save_item(STRUCT_MEMBER(m_cursor, x_preset));
+	save_item(STRUCT_MEMBER(m_cursor, y_preset));
+	save_item(STRUCT_MEMBER(m_cursor, pattern_select));
+	save_item(STRUCT_MEMBER(m_cursor, side_pattern_enable));
+
 	save_item(STRUCT_MEMBER(m_tv, pycin));
 	save_item(STRUCT_MEMBER(m_tv, enyf));
 	save_item(STRUCT_MEMBER(m_tv, encf));
@@ -106,6 +118,12 @@ void sis6326_vga_device::device_reset()
 	m_ext_sr07 = m_ext_sr0b = m_ext_sr0c = m_ext_sr23 = m_ext_sr33 = 0;
 	m_ext_sr34 = m_ext_sr35 = m_ext_sr38 = m_ext_sr39 = m_ext_sr3c = 0;
 	m_ext_ge26 = m_ext_ge27 = 0;
+
+	// everything else shouldn't matter for cursor
+	// initialize fixed part here: HW cannot set any other bit beyond 21 ~ 18.
+	// On win98se this will map at bottom of VRAM i.e. at $3f'fc00 on 4MiB cards
+	m_cursor.address_base = 0x03'fc00;
+
 	m_linear_address[0] = 0;
 	m_linear_address[1] = 0;
 	m_ext_ddc = 0;
@@ -370,11 +388,63 @@ void sis6326_vga_device::sequencer_map(address_map &map)
 
 	//map(0x12, 0x12) Ext. Horizontal Overflow
 	//map(0x13, 0x13) Ext. Clock Generator / 25MHz/28MHz Video Clock
-	//map(0x14, 0x16) HW Cursor Color 0
-	//map(0x17, 0x19) HW Cursor Color 1
-	//map(0x1a, 0x1b) HW Cursor Horizontal Start 0/1
+	// HW Cursor Color 0/1
+	map(0x14, 0x19).lrw8(
+		NAME([this] (offs_t offset) {
+			return m_cursor.color_cache[offset];
+		}),
+		NAME([this] (offs_t offset, u8 data) {
+			m_cursor.color_cache[offset] = data;
+			const u8 pen_color = offset / 3;
+			const u8 pal_offset = pen_color * 3;
+			// RGB555 format
+			m_cursor.color[pen_color] = (
+				  (pal5bit(m_cursor.color_cache[0 + pal_offset]) << 16)
+				| (pal5bit(m_cursor.color_cache[1 + pal_offset]) << 8)
+				| (pal5bit(m_cursor.color_cache[2 + pal_offset]) << 0)
+			);
+		})
+	);
+	// HW Cursor Horizontal Start 0/1
+	map(0x1a, 0x1b).lrw8(
+		NAME([this] (offs_t offset) { return (offset) ? m_cursor.x >> 8 : m_cursor.x & 0xff; }),
+		NAME([this] (offs_t offset, u8 data) {
+			if (offset)
+			{
+				m_cursor.x &= 0x00ff;
+				m_cursor.x |= (data & 0x07) << 8;
+			}
+			else
+			{
+				m_cursor.x &= 0xff00;
+				m_cursor.x |= data & 0xff;
+			}
+		})
+	);
 	//map(0x1c, 0x1c) HW Cursor Horizontal Preset
-	//map(0x1d, 0x1e) HW Cursor Vertical Start 0/1
+	// HW Cursor Vertical Start 0/1
+	map(0x1d, 0x1e).lrw8(
+		NAME([this] (offs_t offset) {
+			if (offset)
+				return (m_cursor.pattern_select << 4) | (m_cursor.side_pattern_enable << 3) | ((m_cursor.y >> 8) & 7);
+			return m_cursor.y & 0xff;
+		}),
+		NAME([this] (offs_t offset, u8 data) {
+			if (offset)
+			{
+				m_cursor.y &= 0x00ff;
+				m_cursor.y |= (data & 0x07) << 8;
+				m_cursor.side_pattern_enable = !!BIT(data, 3);
+				m_cursor.pattern_select = (data >> 4) & 0x0f;
+			}
+			else
+			{
+				m_cursor.y &= 0xff00;
+				m_cursor.y |= data & 0xff;
+			}
+		})
+	);
+
 	//map(0x1f, 0x1f) HW Cursor Vertical Preset
 	//map(0x20, 0x21) Linear Addressing Base Address 0/1
 	map(0x20, 0x21).lrw8(
@@ -527,6 +597,8 @@ void sis6326_vga_device::sequencer_map(address_map &map)
 		NAME([this] (offs_t offset, u8 data) {
 			LOG("SR38: Extended Misc. Control 7 %02x\n", data);
 			m_ext_sr38 = data;
+			m_cursor.address_base &= ~0x3c'0000;
+			m_cursor.address_base |= (data >> 4) << 18;
 		})
 	);
 	// ---x ---- Select external TVCLK as internal TVCLK enable
@@ -682,6 +754,113 @@ uint32_t sis6326_vga_device::latch_start_addr()
 	return vga.crtc.start_addr_latch << (svga.rgb8_en ? 2 : 0);
 }
 
+// undocumented, win98se access this for X/Y positions to actually work
+// [1]/[3] are probably X/Y preset registers (byte accesses)
+void sis6326_vga_device::cursor_mmio_w(offs_t offset, u16 data, u16 mem_mask)
+{
+	switch(offset)
+	{
+		case 0:
+			COMBINE_DATA(&m_cursor.x);
+			break;
+		case 2:
+			COMBINE_DATA(&m_cursor.y);
+			break;
+	}
+}
+
+uint32_t sis6326_vga_device::screen_update(screen_device &screen, bitmap_rgb32 &bitmap, const rectangle &cliprect)
+{
+	svga_device::screen_update(screen, bitmap, cliprect);
+
+	// HW cursor
+	if (BIT(m_ramdac_mode, 6))
+	{
+		// TODO: preliminary, likely using pattern_select for switching modes
+		// Drawing specifics aren't really documented beyond what the register does.
+
+		const u32 base_offs = (m_cursor.address_base);
+		const u8 transparent_pen = 2;
+
+		for (int y = 0; y < 64; y ++)
+		{
+			int res_y = y + m_cursor.y;
+			for (int x = 0; x < 64; x++)
+			{
+				int res_x = x + m_cursor.x;
+				if (!cliprect.contains(res_x, res_y))
+					continue;
+				const u32 cursor_address = ((x >> 2) + y * 16) + base_offs;
+				const int xi = (3 - (x & 3)) * 2;
+				u8 cursor_gfx =  (vga.memory[(cursor_address) % vga.svga_intf.vram_size] >> (xi) & 3);
+
+				if (cursor_gfx == transparent_pen)
+					continue;
+
+				bitmap.pix(res_y, res_x) = m_cursor.color[cursor_gfx & 1];
+			}
+		}
+	}
+
+#if DEBUG_VRAM_VIEWER
+	static int m_test_x = 640, m_start_offs;
+	static int m_test_trigger = 1;
+	const int m_test_y = cliprect.max_y;
+
+	if(machine().input().code_pressed(KEYCODE_RIGHT))
+		m_test_x += 1 << (machine().input().code_pressed(JOYCODE_BUTTON2) ? 4 : 0);
+
+	if(machine().input().code_pressed(KEYCODE_LEFT))
+		m_test_x -= 1 << (machine().input().code_pressed(JOYCODE_BUTTON2) ? 4 : 0);
+
+	//if(machine().input().code_pressed(JOYCODE_Y_DOWN_SWITCH))
+	//  m_test_y++;
+
+	//if(machine().input().code_pressed(JOYCODE_Y_UP_SWITCH))
+	//  m_test_y--;
+
+	if(machine().input().code_pressed(KEYCODE_DOWN))
+		m_start_offs+= 0x100 << (machine().input().code_pressed(JOYCODE_BUTTON2) ? 8 : 0);
+
+	if(machine().input().code_pressed(KEYCODE_UP))
+		m_start_offs-= 0x100 << (machine().input().code_pressed(JOYCODE_BUTTON2) ? 8 : 0);
+
+	m_start_offs %= vga.svga_intf.vram_size;
+
+	if(machine().input().code_pressed_once(JOYCODE_BUTTON1))
+		m_test_trigger ^= 1;
+
+	if (!m_test_trigger)
+		return 0;
+
+	popmessage("%d %d %04x", m_test_x, m_test_y, m_start_offs);
+
+	bitmap.fill(0, cliprect);
+
+	int count = m_start_offs;
+
+	for(int y = 0; y < m_test_y; y++)
+	{
+		for(int x = 0; x < m_test_x; x ++)
+		{
+			u8 color = vga.memory[count % vga.svga_intf.vram_size];
+
+			if(cliprect.contains(x, y))
+			{
+				//bitmap.pix(y, x) = pal565(color, 11, 5, 0);
+				bitmap.pix(y, x) = pen(color);
+			}
+
+			count ++;
+			// count += 2;
+		}
+	}
+#endif
+
+
+	return 0;
+}
+
 
 /*
  * SiS630 overrides
@@ -818,6 +997,7 @@ void sis630_vga_device::sequencer_map(address_map &map)
 		})
 	);
 	//map(0x1d, 0x1d) Segment Selection Overflow
+	map(0x15, 0x1d).unmaprw();
 	map(0x1e, 0x1e).lw8(
 		NAME([this] (offs_t offset, u8 data) {
 			if (BIT(data, 6))

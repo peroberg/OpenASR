@@ -27,6 +27,10 @@ public:
 	// Enable 64K ROM
 	auto md23_cb() { return m_md23_cb.bind(); }
 
+	virtual uint32_t screen_update(screen_device &screen, bitmap_rgb32 &bitmap, const rectangle &cliprect) override;
+
+	void cursor_mmio_w(offs_t offset, u16 data, u16 mem_mask);
+
 protected:
 	sis6326_vga_device(const machine_config &mconfig, device_type type, const char *tag, device_t *owner, uint32_t clock);
 
@@ -64,6 +68,19 @@ protected:
 	u8 m_ext_sr3c;
 	u8 m_ext_ge26;
 	u8 m_ext_ge27;
+
+	struct {
+		u32 address_base;
+		u8 color_cache[6];
+		u32 color[2];
+		u16 x;
+		u16 y;
+		u8 x_preset;
+		u8 y_preset;
+		u8 pattern_select;
+		bool side_pattern_enable;
+	} m_cursor;
+
 	//u16 m_ext_config_status = 0;
 	u8 m_ext_scratch[5]{};
 	u8 m_ext_vert_overflow = 0;

@@ -115,6 +115,8 @@ void sis6326_pci_device::mmio_map(address_map &map)
 {
 	// HACK: fake Turbo Queue so to not lockup windows
 	map(0x82a8, 0x82ab).lr32(NAME([] () { return 0x8000'0100; }));
+
+	map(0x8378, 0x837f).w(m_vga, FUNC(sis6326_vga_device::cursor_mmio_w));
 	// Same deal, 3D Engine Status
 	map(0x89fc, 0x89ff).lr32(NAME([] () { return (0x3ff << 16) | 3; }));
 }
