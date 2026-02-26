@@ -31,6 +31,16 @@ public:
 
 	void cursor_mmio_w(offs_t offset, u16 data, u16 mem_mask);
 
+	u8 read_memory(u32 address)
+	{
+		return vga.memory[address % vga.svga_intf.vram_size];
+	}
+
+	void write_memory(u32 address, u8 data)
+	{
+		vga.memory[address % vga.svga_intf.vram_size] = data;
+	}
+
 protected:
 	sis6326_vga_device(const machine_config &mconfig, device_type type, const char *tag, device_t *owner, uint32_t clock);
 

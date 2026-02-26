@@ -78,6 +78,7 @@ void sis6326_vga_device::device_start()
 
 	save_item(NAME(m_crtc_unlock_reg));
 	save_item(NAME(m_seq_unlock_reg));
+	save_item(NAME(m_ramdac_mode));
 	save_item(NAME(m_ext_sr07));
 	save_item(NAME(m_ext_sr0b));
 	save_item(NAME(m_ext_sr0c));
@@ -115,6 +116,7 @@ void sis6326_vga_device::device_reset()
 
 	m_crtc_unlock_reg = false;
 	m_seq_unlock_reg = false;
+	m_ramdac_mode = 0;
 	m_ext_sr07 = m_ext_sr0b = m_ext_sr0c = m_ext_sr23 = m_ext_sr33 = 0;
 	m_ext_sr34 = m_ext_sr35 = m_ext_sr38 = m_ext_sr39 = m_ext_sr3c = 0;
 	m_ext_ge26 = m_ext_ge27 = 0;
@@ -803,26 +805,26 @@ uint32_t sis6326_vga_device::screen_update(screen_device &screen, bitmap_rgb32 &
 	}
 
 #if DEBUG_VRAM_VIEWER
-	static int m_test_x = 640, m_start_offs;
+	static int m_test_x = 1024, m_start_offs;
 	static int m_test_trigger = 1;
 	const int m_test_y = cliprect.max_y;
 
-	if(machine().input().code_pressed(KEYCODE_RIGHT))
+	if(machine().input().code_pressed(JOYCODE_HAT1RIGHT))
 		m_test_x += 1 << (machine().input().code_pressed(JOYCODE_BUTTON2) ? 4 : 0);
 
-	if(machine().input().code_pressed(KEYCODE_LEFT))
+	if(machine().input().code_pressed(JOYCODE_HAT1LEFT))
 		m_test_x -= 1 << (machine().input().code_pressed(JOYCODE_BUTTON2) ? 4 : 0);
 
-	//if(machine().input().code_pressed(JOYCODE_Y_DOWN_SWITCH))
+	//if(machine().input().code_pressed(JOYCODE_HAT1DOWN))
 	//  m_test_y++;
 
-	//if(machine().input().code_pressed(JOYCODE_Y_UP_SWITCH))
+	//if(machine().input().code_pressed(JOYCODE_HAT1UP))
 	//  m_test_y--;
 
-	if(machine().input().code_pressed(KEYCODE_DOWN))
+	if(machine().input().code_pressed(JOYCODE_HAT1DOWN))
 		m_start_offs+= 0x100 << (machine().input().code_pressed(JOYCODE_BUTTON2) ? 8 : 0);
 
-	if(machine().input().code_pressed(KEYCODE_UP))
+	if(machine().input().code_pressed(JOYCODE_HAT1UP))
 		m_start_offs-= 0x100 << (machine().input().code_pressed(JOYCODE_BUTTON2) ? 8 : 0);
 
 	m_start_offs %= vga.svga_intf.vram_size;
