@@ -154,7 +154,6 @@ public:
 	{ }
 
 	void mario_base(machine_config &config);
-	void masao(machine_config &config);
 	void mario(machine_config &config);
 
 	DECLARE_INPUT_CHANGED_MEMBER(adjust_palette) { set_palette(newval); }
@@ -166,7 +165,38 @@ protected:
 	virtual void sound_start() override ATTR_COLD;
 	virtual void sound_reset() override ATTR_COLD;
 
-private:
+	// handlers
+	uint8_t tune_r(offs_t offset);
+	void dac_w(uint8_t data) { m_audio_dac->write(data); }
+	TIMER_CALLBACK_MEMBER(walk_off) { m_audio_snd[param & 1]->write(1); }
+	template<int N> void walk_w(uint8_t data);
+	void samples_w(offs_t offset, uint8_t data);
+
+	TILE_GET_INFO_MEMBER(get_bg_tile_info);
+	void set_palette(int monitor);
+	void palette(palette_device &palette);
+	uint32_t screen_update(screen_device &screen, bitmap_ind16 &bitmap, const rectangle &cliprect);
+	void draw_sprites(bitmap_ind16 &bitmap, const rectangle &cliprect);
+
+	void videoram_w(offs_t offset, uint8_t data);
+	void gfx_bank_w(int state);
+	void palette_bank_w(int state);
+	void scroll_w(uint8_t data);
+	void nmi_mask_w(int state);
+	void coin_counter_1_w(int state);
+	void coin_counter_2_w(int state);
+	void vblank_irq(int state);
+	uint8_t memory_read_byte(offs_t offset);
+	void memory_write_byte(offs_t offset, uint8_t data);
+
+	// address maps
+	void base_map(address_map &map) ATTR_COLD;
+	void mario_map(address_map &map) ATTR_COLD;
+	void mario_io_map(address_map &map) ATTR_COLD;
+
+	void mario_sound_map(address_map &map) ATTR_COLD;
+	void mario_sound_io_map(address_map &map) ATTR_COLD;
+
 	// devices
 	required_device<z80_device> m_maincpu;
 	required_device<cpu_device> m_audiocpu;
@@ -190,42 +220,29 @@ private:
 	// misc
 	bool m_nmi_mask = false;
 	bool m_z80_sync = false;
-	uint8_t m_soundirq = false;
 	emu_timer *m_walk_timer[2] = { };
+};
 
-	// handlers
-	uint8_t tune_r(offs_t offset);
-	void dac_w(uint8_t data) { m_audio_dac->write(data); }
-	TIMER_CALLBACK_MEMBER(walk_off) { m_audio_snd[param & 1]->write(1); }
-	template<int N> void walk_w(uint8_t data);
-	void samples_w(offs_t offset, uint8_t data);
-	void masao_soundirq_w(uint8_t data);
+// different sound hardware
+class masao_state : public mario_state
+{
+public:
+	masao_state(const machine_config &mconfig, device_type type, const char *tag) :
+		mario_state(mconfig, type, tag)
+	{ }
 
-	TILE_GET_INFO_MEMBER(get_bg_tile_info);
-	void set_palette(int monitor);
-	void palette(palette_device &palette);
-	uint32_t screen_update(screen_device &screen, bitmap_ind16 &bitmap, const rectangle &cliprect);
-	void draw_sprites(bitmap_ind16 &bitmap, const rectangle &cliprect);
+	void masao(machine_config &config);
 
-	void videoram_w(offs_t offset, uint8_t data);
-	void gfx_bank_w(int state);
-	void palette_bank_w(int state);
-	void scroll_w(uint8_t data);
-	void nmi_mask_w(int state);
-	void coin_counter_1_w(int state);
-	void coin_counter_2_w(int state);
-	void vblank_irq(int state);
-	uint8_t memory_read_byte(offs_t offset);
-	void memory_write_byte(offs_t offset, uint8_t data);
+protected:
+	virtual void sound_start() override ATTR_COLD;
+	virtual void sound_reset() override ATTR_COLD;
 
-	void base_map(address_map &map) ATTR_COLD;
-	void mario_map(address_map &map) ATTR_COLD;
+	void soundirq_w(uint8_t data);
+
 	void masao_map(address_map &map) ATTR_COLD;
-	void mario_io_map(address_map &map) ATTR_COLD;
-
-	void mario_sound_map(address_map &map) ATTR_COLD;
-	void mario_sound_io_map(address_map &map) ATTR_COLD;
 	void masao_sound_map(address_map &map) ATTR_COLD;
+
+	bool m_soundirq = false;
 };
 
 
@@ -256,17 +273,12 @@ void mario_state::machine_reset()
 
 void mario_state::sound_start()
 {
-	if (m_audiocpu->type() != Z80)
-	{
-		uint8_t *SND = memregion("audiocpu")->base();
+	uint8_t *SND = memregion("audiocpu")->base();
 
-		// Hack to bootstrap MCU program into external MB1
-		SND[0x0000] = 0xf5;
-		SND[0x0001] = 0x04;
-		SND[0x0002] = 0x00;
-	}
-
-	save_item(NAME(m_soundirq));
+	// Hack to bootstrap MCU program into external MB1
+	SND[0x0000] = 0xf5;
+	SND[0x0001] = 0x04;
+	SND[0x0002] = 0x00;
 
 	for (int i = 0; i < 2; i++)
 		m_walk_timer[i] = timer_alloc(FUNC(mario_state::walk_off), this);
@@ -275,9 +287,25 @@ void mario_state::sound_start()
 void mario_state::sound_reset()
 {
 	m_soundlatch[0]->clear_w();
-	if (m_soundlatch[1]) m_soundlatch[1]->clear_w();
-	if (m_soundlatch[3]) m_soundlatch[3]->clear_w();
+	m_soundlatch[1]->clear_w();
+	m_soundlatch[3]->clear_w();
 
+	m_audio_snd[0]->write(1);
+	m_audio_snd[1]->write(1);
+}
+
+void masao_state::sound_start()
+{
+	//mario_state::sound_start(); // don't
+
+	save_item(NAME(m_soundirq));
+}
+
+void masao_state::sound_reset()
+{
+	//mario_state::sound_reset(); // don't
+
+	m_soundlatch[0]->clear_w();
 	m_soundirq = false;
 }
 
@@ -350,7 +378,7 @@ void mario_state::samples_w(offs_t offset, uint8_t data)
 	}
 }
 
-void mario_state::masao_soundirq_w(uint8_t data)
+void masao_state::soundirq_w(uint8_t data)
 {
 	data &= 1;
 
@@ -625,10 +653,10 @@ void mario_state::mario_map(address_map &map)
 	map(0x7f00, 0x7f07).w(FUNC(mario_state::samples_w)); // misc samples
 }
 
-void mario_state::masao_map(address_map &map)
+void masao_state::masao_map(address_map &map)
 {
 	base_map(map);
-	map(0x7f00, 0x7f00).w(FUNC(mario_state::masao_soundirq_w));
+	map(0x7f00, 0x7f00).w(FUNC(masao_state::soundirq_w));
 }
 
 void mario_state::mario_io_map(address_map &map)
@@ -649,7 +677,7 @@ void mario_state::mario_sound_io_map(address_map &map)
 	map(0x00, 0xff).r(FUNC(mario_state::tune_r)).w(FUNC(mario_state::dac_w));
 }
 
-void mario_state::masao_sound_map(address_map &map)
+void masao_state::masao_sound_map(address_map &map)
 {
 	map(0x0000, 0x0fff).rom();
 	map(0x2000, 0x23ff).ram();
@@ -863,16 +891,16 @@ void mario_state::mario(machine_config &config)
 	NETLIST_STREAM_OUTPUT(config, "snd_nl:cout0", 0, "ROUT.1").set_mult_offset(150000.0 / 32768.0, 0.0);
 }
 
-void mario_state::masao(machine_config &config)
+void masao_state::masao(machine_config &config)
 {
 	mario_base(config);
 
 	m_maincpu->set_clock(4'000'000); // 4MHz?
-	m_maincpu->set_addrmap(AS_PROGRAM, &mario_state::masao_map);
+	m_maincpu->set_addrmap(AS_PROGRAM, &masao_state::masao_map);
 
 	// sound hardware
 	Z80(config, m_audiocpu, 14'318'181 / 8); // 1.79MHz?
-	m_audiocpu->set_addrmap(AS_PROGRAM, &mario_state::masao_sound_map);
+	m_audiocpu->set_addrmap(AS_PROGRAM, &masao_state::masao_sound_map);
 
 	SPEAKER(config, "mono").front_center();
 
@@ -1090,4 +1118,4 @@ GAME( 1983, mariog,  mario, mario, mario,  mario_state, empty_init, ROT0, "Ninte
 GAME( 1983, mariof,  mario, mario, mariof, mario_state, empty_init, ROT0, "Nintendo of America", "Mario Bros. (US, revision F)",    MACHINE_SUPPORTS_SAVE )
 GAME( 1983, marioj,  mario, mario, marioj, mario_state, empty_init, ROT0, "Nintendo",            "Mario Bros. (Japan, revision C)", MACHINE_SUPPORTS_SAVE ) // probably newer than US revision E
 GAME( 1983, marioja, mario, mario, mariof, mario_state, empty_init, ROT0, "Nintendo",            "Mario Bros. (Japan, older)",      MACHINE_SUPPORTS_SAVE )
-GAME( 1983, masao,   mario, masao, mario,  mario_state, empty_init, ROT0, "bootleg",             "Masao",                           MACHINE_SUPPORTS_SAVE )
+GAME( 1983, masao,   mario, masao, mario,  masao_state, empty_init, ROT0, "bootleg",             "Masao",                           MACHINE_SUPPORTS_SAVE )
