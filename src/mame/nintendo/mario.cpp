@@ -146,9 +146,7 @@ public:
 		m_palette(*this, "palette"),
 		m_z80dma(*this, "z80dma"),
 		m_soundlatch(*this, "soundlatch%u", 0),
-		m_audio_snd0(*this, "snd_nl:snd0"),
-		m_audio_snd1(*this, "snd_nl:snd1"),
-		m_audio_snd7(*this, "snd_nl:snd7"),
+		m_audio_snd(*this, { { "snd_nl:snd0", "snd_nl:snd1", "snd_nl:snd7" } }),
 		m_audio_dac(*this, "snd_nl:dac"),
 		m_soundrom(*this, "soundrom"),
 		m_spriteram(*this, "spriteram"),
@@ -176,9 +174,7 @@ private:
 	required_device<palette_device> m_palette;
 	required_device<z80dma_device> m_z80dma;
 	optional_device_array<generic_latch_8_device, 4> m_soundlatch;
-	optional_device<netlist_mame_logic_input_device> m_audio_snd0;
-	optional_device<netlist_mame_logic_input_device> m_audio_snd1;
-	optional_device<netlist_mame_logic_input_device> m_audio_snd7;
+	optional_device_array<netlist_mame_logic_input_device, 3> m_audio_snd;
 	optional_device<netlist_mame_int_input_device> m_audio_dac;
 
 	// memory pointers
@@ -192,17 +188,18 @@ private:
 	tilemap_t *m_bg_tilemap = nullptr;
 
 	// misc
-	uint8_t m_irq_clock = 0;
 	bool m_nmi_mask = false;
 	bool m_z80_sync = false;
+	uint8_t m_soundirq = false;
+	emu_timer *m_walk_timer[2] = { };
 
 	// handlers
-	uint8_t mario_sh_tune_r(offs_t offset);
-	void mario_sh_sound_w(uint8_t data);
-	void masao_sh_irqtrigger_w(uint8_t data);
-	void mario_sh1_w(uint8_t data) { m_audio_snd0->write(data); }
-	void mario_sh2_w(uint8_t data) { m_audio_snd1->write(data); }
-	void mario_sh3_w(offs_t offset, uint8_t data);
+	uint8_t tune_r(offs_t offset);
+	void dac_w(uint8_t data) { m_audio_dac->write(data); }
+	TIMER_CALLBACK_MEMBER(walk_off) { m_audio_snd[param & 1]->write(1); }
+	template<int N> void walk_w(uint8_t data);
+	void samples_w(offs_t offset, uint8_t data);
+	void masao_soundirq_w(uint8_t data);
 
 	TILE_GET_INFO_MEMBER(get_bg_tile_info);
 	void set_palette(int monitor);
@@ -269,7 +266,10 @@ void mario_state::sound_start()
 		SND[0x0002] = 0x00;
 	}
 
-	save_item(NAME(m_irq_clock));
+	save_item(NAME(m_soundirq));
+
+	for (int i = 0; i < 2; i++)
+		m_walk_timer[i] = timer_alloc(FUNC(mario_state::walk_off), this);
 }
 
 void mario_state::sound_reset()
@@ -278,7 +278,7 @@ void mario_state::sound_reset()
 	if (m_soundlatch[1]) m_soundlatch[1]->clear_w();
 	if (m_soundlatch[3]) m_soundlatch[3]->clear_w();
 
-	m_irq_clock = 0;
+	m_soundirq = false;
 }
 
 
@@ -288,7 +288,7 @@ void mario_state::sound_reset()
  *
  *************************************/
 
-uint8_t mario_state::mario_sh_tune_r(offs_t offset)
+uint8_t mario_state::tune_r(offs_t offset)
 {
 	if (!machine().side_effects_disabled())
 	{
@@ -307,24 +307,16 @@ uint8_t mario_state::mario_sh_tune_r(offs_t offset)
 		return m_soundrom[(p2 & 0x0f) << 8 | offset];
 }
 
-void mario_state::mario_sh_sound_w(uint8_t data)
+template<int N>
+void mario_state::walk_w(uint8_t data)
 {
-	m_audio_dac->write(data);
+	m_audio_snd[N]->write(0);
+
+	// WR is asserted for 3 cycles
+	m_walk_timer[N]->adjust(attotime::from_ticks(3, m_maincpu->clock()), N);
 }
 
-void mario_state::masao_sh_irqtrigger_w(uint8_t data)
-{
-	data &= 1;
-
-	// setting bit 0 high then low triggers IRQ on the sound CPU
-	if (m_irq_clock && !data)
-		m_audiocpu->set_input_line(0, HOLD_LINE);
-
-	m_irq_clock = data;
-}
-
-
-void mario_state::mario_sh3_w(offs_t offset, uint8_t data)
+void mario_state::samples_w(offs_t offset, uint8_t data)
 {
 	data &= 1;
 
@@ -353,9 +345,20 @@ void mario_state::mario_sh3_w(offs_t offset, uint8_t data)
 
 		// skid
 		case 7:
-			m_audio_snd7->write(data ^ 1);
+			m_audio_snd[2]->write(data ^ 1);
 			break;
 	}
+}
+
+void mario_state::masao_soundirq_w(uint8_t data)
+{
+	data &= 1;
+
+	// setting bit 0 high then low triggers IRQ on the sound CPU
+	if (m_soundirq && !data)
+		m_audiocpu->set_input_line(0, HOLD_LINE);
+
+	m_soundirq = bool(data);
 }
 
 
@@ -496,21 +499,21 @@ void mario_state::scroll_w(uint8_t data)
 
 void mario_state::draw_sprites(bitmap_ind16 &bitmap, const rectangle &cliprect)
 {
-	const bool flip = flip_screen();
+	const uint8_t flip = flip_screen() ? 0xff : 0;
 	int offs = 0;
 
 	while (offs != m_spriteram.bytes())
 	{
 		if (m_spriteram[offs])
 		{
-			// from schematics ....
+			// from schematics...
 			int y = (m_spriteram[offs + 0] + (flip ? 0xf7 : 0xf9) + 1) & 0xff;
 			int x = m_spriteram[offs + 3];
 			// sprite will be drawn if (y + scanline) & 0xF0 = 0xF0
 			y = 240 - y; // logical screen position
 
-			y = y ^ (flip ? 0xff : 0x00); // physical screen location
-			x = x ^ (flip ? 0xff : 0x00); // physical screen location
+			y ^= flip; // physical screen location
+			x ^= flip; // physical screen location
 
 			int code = m_spriteram[offs + 2];
 			int color = (m_spriteram[offs + 1] & 0x0f) + 16 * m_palette_bank;
@@ -521,6 +524,8 @@ void mario_state::draw_sprites(bitmap_ind16 &bitmap, const rectangle &cliprect)
 			{
 				y -= 14;
 				x -= 7;
+				flipx = !flipx;
+				flipy = !flipy;
 			}
 			else
 			{
@@ -528,22 +533,11 @@ void mario_state::draw_sprites(bitmap_ind16 &bitmap, const rectangle &cliprect)
 				x -= 8;
 			}
 
-			if (flip)
-			{
-				m_gfxdecode->gfx(1)->transpen(bitmap, cliprect,
-					code,
-					color,
-					!flipx, !flipy,
-					x, y, 0);
-			}
-			else
-			{
-				m_gfxdecode->gfx(1)->transpen(bitmap, cliprect,
+			m_gfxdecode->gfx(1)->transpen(bitmap, cliprect,
 					code,
 					color,
 					flipx, flipy,
 					x, y, 0);
-			}
 		}
 
 		offs += 4;
@@ -626,15 +620,15 @@ void mario_state::base_map(address_map &map)
 void mario_state::mario_map(address_map &map)
 {
 	base_map(map);
-	map(0x7c00, 0x7c00).w(FUNC(mario_state::mario_sh1_w)); // Mario run sample
-	map(0x7c80, 0x7c80).w(FUNC(mario_state::mario_sh2_w)); // Luigi run sample
-	map(0x7f00, 0x7f07).w(FUNC(mario_state::mario_sh3_w)); // misc samples
+	map(0x7c00, 0x7c00).w(FUNC(mario_state::walk_w<0>)); // Mario walk sample
+	map(0x7c80, 0x7c80).w(FUNC(mario_state::walk_w<1>)); // Luigi walk sample
+	map(0x7f00, 0x7f07).w(FUNC(mario_state::samples_w)); // misc samples
 }
 
 void mario_state::masao_map(address_map &map)
 {
 	base_map(map);
-	map(0x7f00, 0x7f00).w(FUNC(mario_state::masao_sh_irqtrigger_w));
+	map(0x7f00, 0x7f00).w(FUNC(mario_state::masao_soundirq_w));
 }
 
 void mario_state::mario_io_map(address_map &map)
@@ -652,7 +646,7 @@ void mario_state::mario_sound_map(address_map &map)
 
 void mario_state::mario_sound_io_map(address_map &map)
 {
-	map(0x00, 0xff).r(FUNC(mario_state::mario_sh_tune_r)).w(FUNC(mario_state::mario_sh_sound_w));
+	map(0x00, 0xff).r(FUNC(mario_state::tune_r)).w(FUNC(mario_state::dac_w));
 }
 
 void mario_state::masao_sound_map(address_map &map)
@@ -859,13 +853,11 @@ void mario_state::mario(machine_config &config)
 	for (int i = 0; i < 4; i++)
 		GENERIC_LATCH_8(config, m_soundlatch[i]);
 
-	NETLIST_SOUND(config, "snd_nl", 48000)
-		.set_source(netlist_mario)
-		.add_route(ALL_OUTPUTS, "mono", 0.5);
+	NETLIST_SOUND(config, "snd_nl", 48000).set_source(netlist_mario).add_route(ALL_OUTPUTS, "mono", 0.5);
 
-	NETLIST_LOGIC_INPUT(config, m_audio_snd0, "SOUND0.IN", 0);
-	NETLIST_LOGIC_INPUT(config, m_audio_snd1, "SOUND1.IN", 0);
-	NETLIST_LOGIC_INPUT(config, m_audio_snd7, "SOUND7.IN", 0);
+	NETLIST_LOGIC_INPUT(config, m_audio_snd[0], "SOUND0.IN", 0);
+	NETLIST_LOGIC_INPUT(config, m_audio_snd[1], "SOUND1.IN", 0);
+	NETLIST_LOGIC_INPUT(config, m_audio_snd[2], "SOUND7.IN", 0);
 	NETLIST_INT_INPUT(config, m_audio_dac, "DAC.VAL", 0, 255);
 
 	NETLIST_STREAM_OUTPUT(config, "snd_nl:cout0", 0, "ROUT.1").set_mult_offset(150000.0 / 32768.0, 0.0);
