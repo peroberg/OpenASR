@@ -96,6 +96,8 @@ driver modified by Hau
 #include "emu.h"
 #include "metro.h"
 
+#include "mahjong.h"
+
 #include "cpu/h8/h83006.h"
 #include "cpu/m68000/m68000.h"
 #include "cpu/upd7810/upd7810.h"
@@ -702,14 +704,14 @@ void gakusai_state::oki_bank_lo_w(u8 data)
 u16 gakusai_state::input_r()
 {
 	u16 const input_sel = *m_input_sel;
-	u16 result = 0xffff;
+	u16 result = 0x003f;
 	// Bit 0 ??
 	if (!BIT(input_sel, 1)) result &= m_io_key[0]->read();
 	if (!BIT(input_sel, 2)) result &= m_io_key[1]->read();
 	if (!BIT(input_sel, 3)) result &= m_io_key[2]->read();
 	if (!BIT(input_sel, 4)) result &= m_io_key[3]->read();
 	if (!BIT(input_sel, 5)) result &= m_io_key[4]->read();
-	return result;
+	return (result << 1) | 0xff81;
 }
 
 u8 gakusai_state::gakusai_eeprom_r()
@@ -1994,56 +1996,13 @@ INPUT_PORTS_END
 
 
 /***************************************************************************
-                            Mahjong Doukyuusei
+                        Mahjong Gakuensai 1 & 2
 ***************************************************************************/
 
-static INPUT_PORTS_START( mj_panel )
-	PORT_START("KEY0")
-	PORT_BIT( 0x0001, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT( 0x0002, IP_ACTIVE_LOW, IPT_MAHJONG_A )
-	PORT_BIT( 0x0004, IP_ACTIVE_LOW, IPT_MAHJONG_E )
-	PORT_BIT( 0x0008, IP_ACTIVE_LOW, IPT_MAHJONG_I )
-	PORT_BIT( 0x0010, IP_ACTIVE_LOW, IPT_MAHJONG_M )
-	PORT_BIT( 0x0020, IP_ACTIVE_LOW, IPT_MAHJONG_KAN )
-	PORT_BIT( 0x0040, IP_ACTIVE_LOW, IPT_START1  )
-	PORT_BIT( 0x0080, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT( 0xff00, IP_ACTIVE_LOW, IPT_UNKNOWN )
+// Same as dokyusei, without the DSWs (these games have an EEPROM)
 
-	PORT_START("KEY1")
-	PORT_BIT( 0x0001, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT( 0x0002, IP_ACTIVE_LOW, IPT_MAHJONG_B )
-	PORT_BIT( 0x0004, IP_ACTIVE_LOW, IPT_MAHJONG_F )
-	PORT_BIT( 0x0008, IP_ACTIVE_LOW, IPT_MAHJONG_J )
-	PORT_BIT( 0x0010, IP_ACTIVE_LOW, IPT_MAHJONG_N )
-	PORT_BIT( 0x0020, IP_ACTIVE_LOW, IPT_MAHJONG_REACH )
-	PORT_BIT( 0x0040, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT( 0x0080, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT( 0xff00, IP_ACTIVE_LOW, IPT_UNKNOWN )
-
-	PORT_START("KEY2")
-	PORT_BIT( 0x0001, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT( 0x0002, IP_ACTIVE_LOW, IPT_MAHJONG_C )
-	PORT_BIT( 0x0004, IP_ACTIVE_LOW, IPT_MAHJONG_G )
-	PORT_BIT( 0x0008, IP_ACTIVE_LOW, IPT_MAHJONG_K )
-	PORT_BIT( 0x0010, IP_ACTIVE_LOW, IPT_MAHJONG_CHI )
-	PORT_BIT( 0x0020, IP_ACTIVE_LOW, IPT_MAHJONG_RON )
-	PORT_BIT( 0x0040, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT( 0x0080, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT( 0xff00, IP_ACTIVE_LOW, IPT_UNKNOWN )
-
-	PORT_START("KEY3")
-	PORT_BIT( 0x0001, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT( 0x0002, IP_ACTIVE_LOW, IPT_MAHJONG_D )
-	PORT_BIT( 0x0004, IP_ACTIVE_LOW, IPT_MAHJONG_H )
-	PORT_BIT( 0x0008, IP_ACTIVE_LOW, IPT_MAHJONG_L )
-	PORT_BIT( 0x0010, IP_ACTIVE_LOW, IPT_MAHJONG_PON )
-	PORT_BIT( 0x0020, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT( 0x0040, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT( 0x0080, IP_ACTIVE_LOW, IPT_UNKNOWN )
-	PORT_BIT( 0xff00, IP_ACTIVE_LOW, IPT_UNKNOWN )
-
-	PORT_START("KEY4")
-	PORT_BIT( 0xffff, IP_ACTIVE_LOW, IPT_UNKNOWN )
+static INPUT_PORTS_START( gakusai )
+	PORT_INCLUDE( mahjong_matrix_1p )
 
 	PORT_START("IN0")
 	PORT_BIT( 0x0001, IP_ACTIVE_LOW, IPT_UNKNOWN )
@@ -2057,8 +2016,15 @@ static INPUT_PORTS_START( mj_panel )
 	PORT_BIT( 0xff00, IP_ACTIVE_LOW, IPT_UNKNOWN )
 INPUT_PORTS_END
 
+
+/***************************************************************************
+                            Mahjong Doukyuusei
+***************************************************************************/
+
+// Same as gakusai, with DSWs (these games have no EEPROM)
+
 static INPUT_PORTS_START( dokyusei )
-	PORT_INCLUDE( mj_panel )
+	PORT_INCLUDE( gakusai )
 
 	PORT_START("DSW0")  // $478884.w
 	PORT_DIPNAME( 0x0300, 0x0300, DEF_STR( Difficulty ) )       PORT_DIPLOCATION("SW1:1,2")
@@ -2108,19 +2074,6 @@ static INPUT_PORTS_START( dokyusei )
 	PORT_DIPNAME( 0x8000, 0x8000, "Unknown 2-8" )           PORT_DIPLOCATION("SW2:8")
 	PORT_DIPSETTING(      0x8000, DEF_STR( Off ) )
 	PORT_DIPSETTING(      0x0000, DEF_STR( On ) )
-INPUT_PORTS_END
-
-
-/***************************************************************************
-                        Mahjong Gakuensai 1 & 2
-***************************************************************************/
-
-// Same as dokyusei, without the DSWs (these games have an eeprom)
-
-static INPUT_PORTS_START( gakusai )
-
-	PORT_INCLUDE( mj_panel )
-
 INPUT_PORTS_END
 
 
@@ -5491,7 +5444,7 @@ GAME( 1993, moegonta,  ladykill, karatour,  moegonta,   metro_upd7810_state, ini
 GAME( 1994, lastfort,  0,        lastfort,  lastfort,   metro_upd7810_state, empty_init,    ROT0,   "Metro",                                           "Last Fortress - Toride (Japan, VG420 PCB)", MACHINE_SUPPORTS_SAVE ) // VG420 PCB
 GAME( 1994, lastforte, lastfort, lastfort,  lastfero,   metro_upd7810_state, empty_init,    ROT0,   "Metro",                                           "Last Fortress - Toride (China, Rev C)", MACHINE_SUPPORTS_SAVE )
 GAME( 1994, lastfortea,lastfort, lastfort,  lastfero,   metro_upd7810_state, empty_init,    ROT0,   "Metro",                                           "Last Fortress - Toride (China, Rev A)", MACHINE_SUPPORTS_SAVE )
-GAME( 1994, lastfortk, lastfort, lastfort,  lastfero,   metro_upd7810_state, empty_init,    ROT0,   "Metro (Grand Computer license)",                  "Last Fortress - Toride (Korea)", MACHINE_SUPPORTS_SAVE ) // distributor name is korean (그랜드컴퓨터)
+GAME( 1994, lastfortk, lastfort, lastfort,  lastfero,   metro_upd7810_state, empty_init,    ROT0,   "Metro (Grand Computer license)",                  "Last Fortress - Toride (Korea)", MACHINE_SUPPORTS_SAVE ) // distributor name is Korean (그랜드컴퓨터)
 GAME( 1994, lastfortj, lastfort, lastforg,  ladykill,   metro_upd7810_state, init_karatour, ROT0,   "Metro",                                           "Last Fortress - Toride (Japan, VG460 PCB)", MACHINE_SUPPORTS_SAVE ) // VG460-(A) PCB
 // Germany set has Mah-Jong subtitle
 GAME( 1994, lastfortg, lastfort, lastforg,  ladykill,   metro_upd7810_state, init_karatour, ROT0,   "Metro",                                           "Last Fortress - Toride: Mah-jong (Germany)", MACHINE_SUPPORTS_SAVE ) // VG460-(A) PCB
