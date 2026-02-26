@@ -132,26 +132,26 @@ void sis6326_pci_device::mmio_map(address_map &map)
 	map(0x8288, 0x8289).lw16(
 		NAME([this] (offs_t offset, u16 data, u16 mem_mask) {
 			COMBINE_DATA(&m_src_pitch);
-			m_src_pitch &= 0x7ff;
+			m_src_pitch &= 0xfff;
 		})
 	);
 	map(0x828a, 0x828b).lw16(
 		NAME([this] (offs_t offset, u16 data, u16 mem_mask) {
 			COMBINE_DATA(&m_dst_pitch);
-			m_dst_pitch &= 0x7ff;
+			m_dst_pitch &= 0xfff;
 		})
 	);
 	map(0x828c, 0x828d).lw16(
 		NAME([this] (offs_t offset, u16 data, u16 mem_mask) {
 			COMBINE_DATA(&m_rect_width);
-			m_rect_width &= 0x7ff;
+			m_rect_width &= 0xfff;
 			m_rect_width ++;
 		})
 	);
 	map(0x828e, 0x828f).lw16(
 		NAME([this] (offs_t offset, u16 data, u16 mem_mask) {
 			COMBINE_DATA(&m_rect_height);
-			m_rect_height &= 0x7ff;
+			m_rect_height &= 0xfff;
 			m_rect_height ++;
 		})
 	);
@@ -175,25 +175,25 @@ void sis6326_pci_device::mmio_map(address_map &map)
 	map(0x82a0, 0x82a1).lw16(
 		NAME([this] (offs_t offset, u16 data, u16 mem_mask) {
 			COMBINE_DATA(&m_clip_left);
-			m_clip_left &= 0x7ff;
+			m_clip_left &= 0xfff;
 		})
 	);
 	map(0x82a2, 0x82a3).lw16(
 		NAME([this] (offs_t offset, u16 data, u16 mem_mask) {
 			COMBINE_DATA(&m_clip_top);
-			m_clip_top &= 0x7ff;
+			m_clip_top &= 0xfff;
 		})
 	);
 	map(0x82a4, 0x82a5).lw16(
 		NAME([this] (offs_t offset, u16 data, u16 mem_mask) {
 			COMBINE_DATA(&m_clip_right);
-			m_clip_right &= 0x7ff;
+			m_clip_right &= 0xfff;
 		})
 	);
 	map(0x82a6, 0x82a7).lw16(
 		NAME([this] (offs_t offset, u16 data, u16 mem_mask) {
 			COMBINE_DATA(&m_clip_bottom);
-			m_clip_bottom &= 0x7ff;
+			m_clip_bottom &= 0xfff;
 		})
 	);
 

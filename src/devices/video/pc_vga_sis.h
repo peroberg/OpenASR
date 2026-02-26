@@ -116,6 +116,8 @@ protected:
 	virtual std::tuple<u8, u8> flush_true_color_mode();
 	// TODO: 1024x768x16bpp wants it, mapped odd/even
 	//virtual bool get_interlace_mode() override { return BIT(m_ramdac_mode, 5); }
+
+	virtual u16 line_compare_mask() override;
 };
 
 class sis630_vga_device : public sis6326_vga_device

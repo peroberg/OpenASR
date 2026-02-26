@@ -2,25 +2,28 @@
 // copyright-holders:Angelo Salese
 /**************************************************************************************************
 
-Implementation of SiS family (S)VGA chipset (SiS630)
+Implementation of SiS family (S)VGA chipset
 
-VBE 3.0, Multi Buffering & Virtual Scrolling available
+SiS6326: VBE 2.0, Multi Buffering & Virtual Scrolling available
+SiS630:  VBE 3.0, Multi Buffering & Virtual Scrolling available
 
 TODO:
 - Extended 4bpp modes don't work (cfr. SDD item);
 - Refresh rate for extended modes;
-- interlace;
-- linear addressing;
-- HW cursor;
-- Output scaling, cfr. xubuntu 6.10 splash screen at 1024x768x32;
+- interlace scaling;
+- linear addressing
+\- currently hardwired in BAR0, which matches the setup done here. What happens when it don't?
 - Interrupts;
 - Verify single segment mode;
-- AGP/HostBus/Turbo Queue i/f;
-- 2D/3D pipeline;
+- AGP/HostBus/Turbo Queue i/f (as separate device, currently in sis6326 PCI);
 - DDC;
-- Bridge with a secondary TV out (SiS301);
-- Verify matches with other SiS PCI cards, backport;
-- sis630: fails banked modes (different setup?), fails extended start addresses;
+- Bridge with a secondary TV out (SiS301 for '630);
+- Verify matches with earlier SiS PCI cards, backport;
+- win98se: dxdiag eventually craps out at the end of Direct Draw testing, why?
+
+TODO (sis630):
+- Output scaling, cfr. xubuntu 6.10 splash screen at 1024x768x32 (really interlace as above?);
+- fails banked modes (different setup?), fails extended start addresses;
 
 **************************************************************************************************/
 
@@ -36,10 +39,17 @@ TODO:
 
 #define DEBUG_VRAM_VIEWER 0
 
-// TODO: later variant of 5598
-// (definitely doesn't have dual segment mode for instance)
-DEFINE_DEVICE_TYPE(SIS6326_VGA, sis6326_vga_device, "sis6326_vga", "SiS 6326 VGA i/f")
-DEFINE_DEVICE_TYPE(SIS630_VGA, sis630_vga_device, "sis630_vga", "SiS 630 VGA i/f")
+// NOTE: several of these are actually MB integrated with different names
+
+// retroactively known as 6201 in drivers
+//DEFINE_DEVICE_TYPE(SIS86C201_VGA, sis86c201_vga_device, "sis86c201_vga", "SiS 86C201 VGA i/f")
+//DEFINE_DEVICE_TYPE(SIS6202_VGA,   sis6202_vga_device,   "sis6202_vga",   "SiS 6202 VGA i/f")
+//DEFINE_DEVICE_TYPE(SIS6205_VGA,   sis6205_vga_device,   "sis6205_vga",   "SiS 6205 VGA i/f")
+//DEFINE_DEVICE_TYPE(SIS6225_VGA,   sis6225_vga_device,   "sis6225_vga",   "SiS 6225 VGA i/f")
+//DEFINE_DEVICE_TYPE(SIS6215_VGA,   sis6215_vga_device,   "sis6215_vga",   "SiS 6215 VGA i/f")
+
+DEFINE_DEVICE_TYPE(SIS6326_VGA,   sis6326_vga_device,   "sis6326_vga",   "SiS 6326 VGA i/f")
+DEFINE_DEVICE_TYPE(SIS630_VGA,    sis630_vga_device,    "sis630_vga",    "SiS 630 VGA i/f")
 
 sis6326_vga_device::sis6326_vga_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock)
 	: sis6326_vga_device(mconfig, SIS6326_VGA, tag, owner, clock)
@@ -601,6 +611,10 @@ void sis6326_vga_device::sequencer_map(address_map &map)
 			m_ext_sr38 = data;
 			m_cursor.address_base &= ~0x3c'0000;
 			m_cursor.address_base |= (data >> 4) << 18;
+			// TODO: doc claims to be line compare disable, may just be bit 10 really?
+			// testable at 1600x1200, needs HW test
+			vga.crtc.line_compare = (vga.crtc.line_compare & 0x3ff) | (BIT(data, 2) * 0xfc00);
+			//vga.crtc.line_compare = (vga.crtc.line_compare & 0x3ff) | (BIT(data, 2) << 10);
 		})
 	);
 	// ---x ---- Select external TVCLK as internal TVCLK enable
@@ -731,6 +745,13 @@ uint16_t sis6326_vga_device::offset()
 	if (svga.rgb8_en || svga.rgb15_en || svga.rgb16_en || svga.rgb24_en || svga.rgb32_en)
 		return vga.crtc.offset << 3;
 	return svga_device::offset();
+}
+
+u16 sis6326_vga_device::line_compare_mask()
+{
+	// trick to make line compare to never occur
+	// (assuming it's true, cfr. above)
+	return 0x3ff | (vga.crtc.line_compare & 0xfc00);
 }
 
 uint8_t sis6326_vga_device::mem_r(offs_t offset)
