@@ -312,11 +312,10 @@ u8 sis6326_pci_device::get_pat_fgcol(u32 y, u32 x)
 	return m_fg_color;
 }
 
-// TODO: not yet sure about how this works either
 // testable in win98se shutdown options
 u8 sis6326_pci_device::get_pat_regs(u32 y, u32 x)
 {
-	return m_pattern_data[x & 3];
+	return m_pattern_data[((y & 7) << 3) | (x & 7)];
 }
 
 // TODO: this is special, uses regs in a different way

@@ -10,7 +10,7 @@ TODO:
 - At startup it needs a missing soft reset trigger;
 - It then draw a basic Phoenix BIOS but afterwards it accesses a missing BAR I/O
   which craps out the flash memory somehow;
-- In shutms11 HDD image just resets during loading;
+- In shutms11 HDD image just triple faults during loading;
 
 ===================================================================================================
 
