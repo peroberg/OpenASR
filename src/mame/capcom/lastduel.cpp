@@ -449,7 +449,7 @@ void lastduel_state::vctrl_w(offs_t offset, uint16_t data, uint16_t mem_mask)
 		case 1: m_tilemap[0]->set_scrollx(0, data); break;
 		case 2: m_tilemap[1]->set_scrolly(0, data); break;
 		case 3: m_tilemap[1]->set_scrollx(0, data); break;
-		//case 4: sprite DMA trigger
+		case 4: m_spriteram->copy(); break;
 		case 7: m_tilemap_priority = data; break;
 		default:
 			logerror("Unmapped video write %d %04x\n", offset, data);
@@ -856,7 +856,6 @@ void lastduel_state::lastduel(machine_config &config)
 	screen.set_raw(24_MHz_XTAL / 3, 512, 64, 448, 272, 8, 248);
 	screen.set_screen_update(FUNC(lastduel_state::screen_update_lastduel));
 	screen.screen_vblank().set(FUNC(lastduel_state::lastduel_interrupt));
-	screen.screen_vblank().append("spriteram", FUNC(buffered_spriteram16_device::vblank_copy_rising));
 	screen.set_palette(m_palette);
 
 	BUFFERED_SPRITERAM16(config, m_spriteram);
@@ -893,7 +892,6 @@ void lastduel_state::madgear(machine_config &config)
 	screen.set_raw(24_MHz_XTAL / 3, 512, 64, 448, 272, 8, 248); // measured 57.4444Hz
 	screen.set_screen_update(FUNC(lastduel_state::screen_update_madgear));
 	screen.screen_vblank().set(FUNC(lastduel_state::madgear_interrupt));
-	screen.screen_vblank().append("spriteram", FUNC(buffered_spriteram16_device::vblank_copy_rising));
 	screen.set_palette(m_palette);
 
 	BUFFERED_SPRITERAM16(config, m_spriteram);
