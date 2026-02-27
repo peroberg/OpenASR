@@ -240,6 +240,7 @@ protected:
 	virtual void sound_start() override ATTR_COLD;
 	virtual void sound_reset() override ATTR_COLD;
 
+private:
 	void soundirq_w(uint8_t data);
 
 	void masao_map(address_map &map) ATTR_COLD;
