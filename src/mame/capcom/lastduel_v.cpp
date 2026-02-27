@@ -85,10 +85,6 @@ VIDEO_START_MEMBER(lastduel_state,lastduel)
 	m_tilemap[0]->set_transmask(0, 0xffff, 0x0001);
 	m_tilemap[0]->set_transmask(1, 0xf07f, 0x0f81);
 	m_tx_tilemap->set_transparent_pen(3);
-
-	m_sprite_flipy_mask = 0x40;
-	m_sprite_pri_mask = 0x00;
-	m_tilemap_priority = 0;
 }
 
 VIDEO_START_MEMBER(lastduel_state,madgear)
@@ -101,9 +97,6 @@ VIDEO_START_MEMBER(lastduel_state,madgear)
 	m_tilemap[0]->set_transmask(1, 0x80ff, 0xff00);
 	m_tx_tilemap->set_transparent_pen(3);
 	m_tilemap[1]->set_transparent_pen(15);
-
-	m_sprite_flipy_mask = 0x80;
-	m_sprite_pri_mask = 0x10;
 }
 
 
@@ -159,40 +152,36 @@ rgb_t lastduel_state::lastduel_RRRRGGGGBBBBIIII(uint32_t raw)
 	return rgb_t(red, green, blue);
 }
 
+
 /***************************************************************************
 
   Display refresh
 
 ***************************************************************************/
 
-void lastduel_state::draw_sprites( bitmap_ind16 &bitmap, const rectangle &cliprect, int pri )
+void lastduel_state::draw_sprites(bitmap_ind16 &bitmap, const rectangle &cliprect, int pri, int pri_mask, int flipy_mask)
 {
-	uint16_t const *const buffered_spriteram16 = m_spriteram->buffer();
-	int offs;
+	uint16_t const *const spriteram = m_spriteram->buffer();
 
-	if (!m_sprite_pri_mask)
-		if (pri == 1)
-			return; /* only low priority sprites in lastduel */
-
-	for (offs = 0x400 - 4; offs >= 0; offs -= 4)
+	for (int offs = 0x400 - 4; offs >= 0; offs -= 4)
 	{
-		int const attr = buffered_spriteram16[offs + 1];
-		if (m_sprite_pri_mask)   /* only madgear seems to have this */
+		int const attr = spriteram[offs + 1];
+		if (pri_mask) // only madgear seems to have this
 		{
-			if (pri == 1 && (attr & m_sprite_pri_mask))
+			if (pri == 1 && (attr & pri_mask))
 				continue;
-			if (pri == 0 && !(attr & m_sprite_pri_mask))
+			if (pri == 0 && !(attr & pri_mask))
 				continue;
 		}
 
-		int const code = buffered_spriteram16[offs];
-		int sx = buffered_spriteram16[offs + 3] & 0x1ff;
-		int sy = buffered_spriteram16[offs + 2] & 0x1ff;
+		int const code = spriteram[offs];
+		int sx = spriteram[offs + 3] & 0x1ff;
+		int sy = spriteram[offs + 2] & 0x1ff;
 		if (sy > 0x100)
 			sy -= 0x200;
 
 		int flipx = attr & 0x20;
-		int flipy = attr & m_sprite_flipy_mask;  /* 0x40 for lastduel, 0x80 for madgear */
+		int flipy = attr & flipy_mask; // 0x40 for lastduel, 0x80 for madgear
 		int const color = attr & 0x0f;
 
 		if (flip_screen())
@@ -213,33 +202,34 @@ void lastduel_state::draw_sprites( bitmap_ind16 &bitmap, const rectangle &clipre
 
 uint32_t lastduel_state::screen_update_lastduel(screen_device &screen, bitmap_ind16 &bitmap, const rectangle &cliprect)
 {
-	m_tilemap[1]->draw(screen, bitmap, cliprect, 0, 0);
+	m_tilemap[1]->draw(screen, bitmap, cliprect, TILEMAP_DRAW_OPAQUE, 0);
 	m_tilemap[0]->draw(screen, bitmap, cliprect, TILEMAP_DRAW_LAYER1, 0);
-	draw_sprites(bitmap, cliprect, 0);
+	draw_sprites(bitmap, cliprect, 0, 0, 0x40);
 	m_tilemap[0]->draw(screen, bitmap, cliprect, TILEMAP_DRAW_LAYER0, 0);
-	draw_sprites(bitmap, cliprect, 1);
 	m_tx_tilemap->draw(screen, bitmap, cliprect, 0, 0);
+
 	return 0;
 }
 
 uint32_t lastduel_state::screen_update_madgear(screen_device &screen, bitmap_ind16 &bitmap, const rectangle &cliprect)
 {
-	if (m_tilemap_priority)
+	if (m_tilemap_priority & 0x80)
 	{
 		m_tilemap[0]->draw(screen, bitmap, cliprect, TILEMAP_DRAW_LAYER1 | TILEMAP_DRAW_OPAQUE, 0);
-		draw_sprites(bitmap, cliprect, 0);
+		draw_sprites(bitmap, cliprect, 0, 0x10, 0x80);
 		m_tilemap[0]->draw(screen, bitmap, cliprect, TILEMAP_DRAW_LAYER0, 0);
 		m_tilemap[1]->draw(screen, bitmap, cliprect, 0, 0);
-		draw_sprites(bitmap, cliprect, 1);
+		draw_sprites(bitmap, cliprect, 1, 0x10, 0x80);
 	}
 	else
 	{
 		m_tilemap[1]->draw(screen, bitmap, cliprect, TILEMAP_DRAW_OPAQUE, 0);
 		m_tilemap[0]->draw(screen, bitmap, cliprect, TILEMAP_DRAW_LAYER1, 0);
-		draw_sprites(bitmap, cliprect, 0);
+		draw_sprites(bitmap, cliprect, 0, 0x10, 0x80);
 		m_tilemap[0]->draw(screen, bitmap, cliprect, TILEMAP_DRAW_LAYER0, 0);
-		draw_sprites(bitmap, cliprect, 1);
+		draw_sprites(bitmap, cliprect, 1, 0x10, 0x80);
 	}
 	m_tx_tilemap->draw(screen, bitmap, cliprect, 0, 0);
+
 	return 0;
 }

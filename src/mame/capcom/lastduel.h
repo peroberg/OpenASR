@@ -53,9 +53,7 @@ private:
 	tilemap_t   *m_tilemap[2]{};
 	tilemap_t   *m_tx_tilemap = nullptr;
 	uint16_t    m_vctrl[8]{};
-	int         m_sprite_flipy_mask = 0;
-	int         m_sprite_pri_mask = 0;
-	int         m_tilemap_priority = 0;
+	uint16_t    m_tilemap_priority = 0;
 
 	void mg_bankswitch_w(uint8_t data);
 	void flip_w(uint8_t data);
@@ -78,7 +76,7 @@ private:
 	uint32_t screen_update_madgear(screen_device &screen, bitmap_ind16 &bitmap, const rectangle &cliprect);
 	void lastduel_interrupt(int state);
 	void madgear_interrupt(int state);
-	void draw_sprites(bitmap_ind16 &bitmap, const rectangle &cliprect, int pri);
+	void draw_sprites(bitmap_ind16 &bitmap, const rectangle &cliprect, int pri, int pri_mask, int flipy_mask);
 	void lastduel_map(address_map &map) ATTR_COLD;
 	void madgear_map(address_map &map) ATTR_COLD;
 	void madgear_sound_map(address_map &map) ATTR_COLD;

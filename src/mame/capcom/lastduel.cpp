@@ -504,7 +504,6 @@ MACHINE_START_MEMBER(lastduel_state,lastduel)
 MACHINE_START_MEMBER(lastduel_state,madgear)
 {
 	uint8_t *ROM = memregion("audiocpu")->base();
-
 	m_audiobank->configure_entries(0, 2, &ROM[0x8000], 0x4000);
 
 	MACHINE_START_CALL_MEMBER(lastduel);
@@ -540,7 +539,7 @@ void lastduel_state::lastduel(machine_config &config)
 	BUFFERED_SPRITERAM16(config, m_spriteram);
 
 	GFXDECODE(config, m_gfxdecode, m_palette, gfx_lastduel);
-	PALETTE(config, m_palette).set_format(2, &lastduel_state::lastduel_RRRRGGGGBBBBIIII, 1024);
+	PALETTE(config, m_palette, palette_device::BLACK).set_format(2, &lastduel_state::lastduel_RRRRGGGGBBBBIIII, 1024);
 
 	MCFG_VIDEO_START_OVERRIDE(lastduel_state,lastduel)
 
@@ -579,7 +578,7 @@ void lastduel_state::madgear(machine_config &config)
 	BUFFERED_SPRITERAM16(config, m_spriteram);
 
 	GFXDECODE(config, m_gfxdecode, m_palette, gfx_lastduel);
-	PALETTE(config, m_palette).set_format(2, &lastduel_state::lastduel_RRRRGGGGBBBBIIII, 1024);
+	PALETTE(config, m_palette, palette_device::BLACK).set_format(2, &lastduel_state::lastduel_RRRRGGGGBBBBIIII, 1024);
 
 	MCFG_VIDEO_START_OVERRIDE(lastduel_state,madgear)
 
