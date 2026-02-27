@@ -42,6 +42,7 @@ TODO:
 #include "machine/sis7001_usb.h"
 #include "machine/sis7018_audio.h"
 #include "machine/sis900_eth.h"
+#include "machine/sis950_acpi.h"
 #include "machine/sis950_lpc.h"
 #include "machine/sis950_smbus.h"
 
@@ -109,7 +110,7 @@ void gfamily_state::gfamily(machine_config &config)
 	// Actually an Intel Celeron SL6SC 1.7GHz (with the config found with the default BIOS)
 	PENTIUM4(config, m_maincpu, 100'000'000); //1'700'000'000);
 	m_maincpu->set_irq_acknowledge_callback("pci:01.0:pic_master", FUNC(pic8259_device::inta_cb));
-//  m_maincpu->smiact().set("pci:00.0", FUNC(sis950_lpc_device::smi_act_w));
+	m_maincpu->smiact().set("pci:00.0", FUNC(sis630_host_device::smi_act_w));
 
 	// TODO: everything below needs upgrading to SiS651
 	// TODO: unknown flash ROM types
@@ -131,7 +132,8 @@ void gfamily_state::gfamily(machine_config &config)
 		if (state)
 			machine().schedule_soft_reset();
 	});
-	LPC_ACPI(config, "pci:01.0:acpi", 0);
+	sis950_acpi_device &acpi(SIS950_ACPI(config, "pci:01.0:acpi", 0));
+	acpi.smi().set_inputline("maincpu", INPUT_LINE_SMI);
 	SIS950_SMBUS(config, "pci:01.0:smbus", 0);
 
 	SIS900_ETH(config, "pci:01.1", 0);
