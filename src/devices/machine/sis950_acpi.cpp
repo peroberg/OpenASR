@@ -9,6 +9,7 @@ Based on lpc-acpi
 TODO:
 - basically ported over plus the extra register required by SMI to work;
 - gamecstl: still fails BIOS boot after entering SMI from here at 0xf3cf2 (on jp $-2)
+- win2k based HDDs wants an event at $[50]04 to not throw an ACPI BSoD after a while
 
 **************************************************************************************************/
 
