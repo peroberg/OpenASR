@@ -349,7 +349,7 @@ void lastduel_state::draw_sprites(bitmap_ind16 &bitmap, const rectangle &cliprec
 {
 	uint16_t const *const spriteram = m_spriteram->buffer();
 
-	for (int offs = 0x400 - 4; offs >= 0; offs -= 4)
+	for (int offs = m_spriteram->length() - 4; offs >= 0; offs -= 4)
 	{
 		int const attr = spriteram[offs + 1];
 		if (pri_mask) // only madgear seems to have this
@@ -503,8 +503,8 @@ void lastduel_state::madgear_interrupt(int state)
 void lastduel_state::lastduel_map(address_map &map)
 {
 	map(0x000000, 0x05ffff).rom();
-	map(0xfc0000, 0xfc0003).nopw(); // written rarely
-	map(0xfc0800, 0xfc0fff).ram().share("spriteram");
+	map(0xfc0000, 0xfc07ff).mirror(0x003000).ram(); // unused
+	map(0xfc0800, 0xfc0fff).mirror(0x003000).ram().share("spriteram");
 	map(0xfc4000, 0xfc4001).portr("P1_P2");
 	map(0xfc4001, 0xfc4001).w(FUNC(lastduel_state::flip_w));
 	map(0xfc4002, 0xfc4003).portr("SYSTEM");
@@ -522,7 +522,8 @@ void lastduel_state::lastduel_map(address_map &map)
 void lastduel_state::madgear_map(address_map &map)
 {
 	map(0x000000, 0x07ffff).rom();
-	map(0xfc1800, 0xfc1fff).ram().share("spriteram");
+	map(0xfc0000, 0xfc07ff).mirror(0x003000).ram(); // unused
+	map(0xfc0800, 0xfc0fff).mirror(0x003000).ram().share("spriteram");
 	map(0xfc4000, 0xfc4001).portr("DSW1");
 	map(0xfc4001, 0xfc4001).w(FUNC(lastduel_state::flip_w));
 	map(0xfc4002, 0xfc4003).portr("DSW2");
