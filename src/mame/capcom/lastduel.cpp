@@ -25,8 +25,6 @@ To advance test mode screens:
 TODO:
 - There seem to be minor priority issues in Mad Gear, but the game might just
   be like that. The priority PROM is dumped but currently not used.
-- Verify lastduel clocks, XTALs on photos are the same as leds2011 PCB notes
-  below, so: 10MHz, 3.57MHz, 24MHz, CPU is MC68000P10.
 
 **************************************************************************
 
