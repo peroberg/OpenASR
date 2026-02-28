@@ -8,10 +8,12 @@ driver by Angelo Salese, based on "wiped off due to not anymore licenseable"
 driver by insideoutboy.
 
 TODO:
-- verify screen timing, it's either 320*264, or if bankp is accurate, then
-  it's 330*256 - visible width is probably correct
-- verify Z80 frequency, it runs laggy at 2.5MHz that isn't evident on PCB
-  video, and Z80B is rated 6MHz, maybe there are waitstates though?
+- Verify screen timing, it's either 320*264, or if bankp is accurate, then it's
+  330*256. Visible width is probably correct.
+- Verify Z80 frequency, it runs too laggy at 2.5MHz which isn't evident on PCB
+  video, and Z80B is rated 6MHz. Maybe there are waitstates though?
+  Also note that if it's clocked at 2.5MHz, it will sometimes write wrong tiles
+  to bg_vram, see MT 09395.
 
 BTANB:
 - occasional 1-frame sprite glitches at the edge of the screen
