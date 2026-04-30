@@ -5,7 +5,7 @@
 Driver's Eyes
     not yet working
 
-see http://www.tvspels-nostalgi.com/driverseye.htm for details about setup
+see http://www.tvspels-nostalgi.com/driverseye.htm for details about setup (go to archive.org)
 
 2008/06/11, by Naibo(translated to English by Mameplus team):
 
@@ -20,6 +20,7 @@ NOTES:
 TODO:
 - add communications for Left and Right screen (linked C139 or something else?)
 - same flickering polygon glitches as namcos21.cpp
+- verify video timing, it's assumed to be the same as namcos21 with a different XTAL
 - are the left and right PCB sound outputs N/C?
 
 */
@@ -161,10 +162,10 @@ void namco_de_pcbstack_device::device_add_mconfig(machine_config &config)
 	M68000(config, m_slave, 49.152_MHz_XTAL / 4); // Slave
 	m_slave->set_addrmap(AS_PROGRAM, &namco_de_pcbstack_device::driveyes_slave_map);
 
-	MC6809E(config, m_audiocpu, 3072000); // Sound
+	MC6809E(config, m_audiocpu, 49.152_MHz_XTAL / 24); // Sound
 	m_audiocpu->set_addrmap(AS_PROGRAM, &namco_de_pcbstack_device::sound_map);
 
-	NAMCOC68(config, m_c68, 8000000);
+	NAMCOC68(config, m_c68, 49.152_MHz_XTAL / 6);
 	m_c68->in_pb_callback().set_ioport("MCUB");
 	m_c68->in_pc_callback().set_ioport("MCUC");
 	m_c68->in_ph_callback().set_ioport("MCUH");
@@ -203,8 +204,7 @@ void namco_de_pcbstack_device::device_add_mconfig(machine_config &config)
 
 	// video hardware
 	SCREEN(config, m_screen, SCREEN_TYPE_RASTER);
-	// TODO: basic parameters to get 60.606060 Hz, x2 is for interlace
-	m_screen->set_raw(49.152_MHz_XTAL / 4 * 2, 768, 0, 496, 264*2, 0, 480);
+	m_screen->set_raw(38.76922_MHz_XTAL / 4 * 2, 616, 0, 496, 262 + 263, 0, 480); // x2 is for interlace
 	m_screen->set_screen_update(FUNC(namco_de_pcbstack_device::screen_update));
 	m_screen->set_palette(m_palette);
 
