@@ -10,8 +10,7 @@ TODO:
 - map and test any remaining input ports
 - fix skybump random resets (MT09453)
 - fix loopinguc random resets, same bug?
-- is the COP420 the same for all sets? (in other words, same internal ROM),
-  we only know the label for loopinguc
+- is the COP420 internal ROM the same for all sets? (ref: "NJD" label)
 
 ---------------------------------------------------------------
 
@@ -844,7 +843,7 @@ ROM_START( loopingub ) // all labels handwritten unless otherwise specified
 	ROM_LOAD( "11a",           0x2800, 0x1000, CRC(61c74c79) SHA1(9f34d18a919446dd76857b851cea23fc1526f3c2) ) // blank label
 
 	ROM_REGION( 0x0400, "mcu", 0 ) // COP420 microcontroller code
-	ROM_LOAD( "cop.bin",       0x0000, 0x0400, CRC(d47fecec) SHA1(7eeedcb40f4cd50e1e259c6b01744a3fc97b60aa) )
+	ROM_LOAD( "cop420-njd_n",  0x0000, 0x0400, CRC(d47fecec) SHA1(7eeedcb40f4cd50e1e259c6b01744a3fc97b60aa) ) // taken from the other sets
 
 	ROM_REGION( 0x1000, "gfx", 0 )
 	ROM_LOAD( "8a",            0x0000, 0x0800, CRC(ef3284ac) SHA1(8719c9df8c972a56c306b3c707aaa53092ffa2d6) ) // no label
@@ -855,8 +854,7 @@ ROM_START( loopingub ) // all labels handwritten unless otherwise specified
 ROM_END
 
 // I/O BOARD 1250 + NR. 1110-X + NR. 1150-B REV 4 + 1150A-REV2
-// resets after a while due to timing problems. Maybe would need different COP code?
-// or is it caused by the imperfect comms? program ROM dumps seem good.
+// resets after a while due to timing problems. Is it caused by the imperfect comms? program ROM dumps seem good.
 ROM_START( loopinguc )
 	ROM_REGION( 0x8000, "maincpu", 0 ) // TMS9995 code
 	ROM_LOAD( "lo401.a2",      0x0000, 0x1000, CRC(55106ad6) SHA1(503d0a3ab215952c1d07898c78cf8046e5d8e2c7) )
