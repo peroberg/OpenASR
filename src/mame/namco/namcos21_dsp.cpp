@@ -42,7 +42,7 @@ void namcos21_dsp_device::device_start()
 	m_dsp_complete = 0;
 
 	std::fill(std::begin(m_dspcomram_control), std::end(m_dspcomram_control), 0);
-	std::fill(std::begin(m_poly_buf), std::end(m_poly_buf), 0);
+	std::fill(std::begin(m_poly_buf), std::end(m_poly_buf), 0xffff);
 
 	m_dspcomram = make_unique_clear<u16[]>(0x1000*2);
 	save_pointer(NAME(m_dspcomram), 0x1000*2);
@@ -73,7 +73,6 @@ void namcos21_dsp_device::device_reset()
 	m_suspend_timer->adjust(attotime::zero);
 
 	m_poly_index = 0;
-	m_poly_size = 0;
 }
 
 
@@ -135,16 +134,23 @@ void namcos21_dsp_device::dsp_render_w(u16 data)
 	{
 		const u16 *source = m_poly_buf;
 		u16 color = *source++;
+		int size = 0;
 
 		if (color & 0x8000)
 		{
 			// direct-draw
 			m_renderer->draw_direct_quad(source, color);
+			size = 12;
 		}
 		else
 		{
-			m_renderer->draw_quads(source, m_pointram.get(), PTRAM_SIZE, color);
+			size = m_renderer->draw_quads(source, m_pointram.get(), PTRAM_SIZE, color);
 		}
+
+		if (m_poly_size != size + 1)
+			logerror("dsp_render_w size mismatch (%d, expected %d)\n", size + 1, m_poly_size);
+
+		std::fill_n(m_poly_buf, m_poly_index, 0xffff);
 		m_poly_index = 0;
 	}
 }
@@ -181,7 +187,6 @@ void namcos21_dsp_device::dsp_complete_w(u16 data)
 		m_renderer->swap_and_clear_poly_framebuffer();
 
 		m_poly_index = 0;
-		m_poly_size = 0;
 	}
 
 	m_dsp_complete = data;
