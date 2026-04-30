@@ -14,6 +14,8 @@ TODO:
   and on pilot parachuting with a time over;
 - aircomb: missing background on attract mode ranking screen (masking? cfr. shared/namco_c355spr.cpp);
 - aircomb: bad sprite colors on debriefing medal screen;
+- aircomb: may show glitches when pressing start at the intro sequence, it forgot to turn off video_enable?
+  namcos21_dsp_c67_device::render_slave_output size mismatch also triggers here (not a regression);
 - aircomb: are the depthcue banks actually used? it looks fine with the depth cue embedded in palette;
 - solvalou: service mode polygon test is crashy when testing invalid polygons (the good old IDC overflow);
 - solvalou: sprite blend is wrong during water stages (look at the blaster/score panel), the palette
@@ -864,7 +866,7 @@ void namcos21_c67_state::namcos21(machine_config &config)
 	NAMCOS21_DSP_C67(config, m_namcos21_dsp_c67, 0);
 	m_namcos21_dsp_c67->set_renderer_tag("namcos21_3d");
 
-	config.set_maximum_quantum(attotime::from_hz(12000));
+	config.set_maximum_quantum(attotime::from_hz(20000));
 
 	NVRAM(config, "nvram", nvram_device::DEFAULT_ALL_0);
 
