@@ -425,6 +425,14 @@ u16 namcos21_state::gpu_register_r(offs_t offset)
 
 void namcos21_state::gpu_register_w(offs_t offset, u16 data, u16 mem_mask)
 {
+	// GPU registers:
+	// 0: x scroll
+	// 1: y scroll relative to vpos
+	// 2: always [reg 0] + 1 (not counting initial value)
+	// 5: always 0xa
+	// 6: commit/apply?
+	// other: unused
+
 	m_screen->update_partial(m_screen->vpos() - 1);
 	COMBINE_DATA(&m_gpu_register[offset]);
 }
@@ -459,7 +467,7 @@ u16 namcos21_state::gpu_videoram_r(offs_t offset)
 
 void namcos21_state::bitmap_draw(bitmap_ind16 &bitmap, const rectangle &cliprect)
 {
-	// show gpu registers & related
+	// show GPU registers & related
 #if 0
 	printf("%3d %3d (%3d %3d) - ", cliprect.top(), cliprect.bottom(), m_screen->vpos(), m_posirq_line);
 	for (int i = 0; i < 8; i++)
