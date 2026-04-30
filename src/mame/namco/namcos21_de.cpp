@@ -21,7 +21,6 @@ TODO:
 - add communications for Left and Right screen (linked C139 or something else?)
 - same flickering polygon glitches as namcos21.cpp
 - verify video timing, it's assumed to be the same as namcos21 with a different XTAL
-- are the left and right PCB sound outputs N/C?
 
 */
 
@@ -59,7 +58,7 @@ class namco_de_pcbstack_device : public device_t
 {
 public:
 	// construction/destruction
-	namco_de_pcbstack_device(const machine_config &mconfig, const char *tag, device_t *owner, u32 clock);
+	namco_de_pcbstack_device(const machine_config &mconfig, const char *tag, device_t *owner, u8 pcb, u32 clock = 0);
 
 protected:
 	virtual void device_add_mconfig(machine_config &config) override ATTR_COLD;
@@ -67,8 +66,6 @@ protected:
 	virtual void device_reset() override ATTR_COLD;
 
 private:
-	INTERRUPT_GEN_MEMBER(irq0_line_hold) { device.execute().set_input_line(0, HOLD_LINE); }
-
 	required_device<cpu_device> m_maincpu;
 	required_device<cpu_device> m_audiocpu;
 	required_device<cpu_device> m_slave;
@@ -80,7 +77,7 @@ private:
 	required_device<c140_device> m_c140;
 	required_device<ym2151_device> m_ym2151;
 	required_device_array<mb87077_device, 2> m_mb87077;
-	required_device_array<mixer_device, 2> m_mixer;
+	optional_device_array<mixer_device, 2> m_mixer;
 	required_device<namco_c355spr_device> m_c355spr;
 	required_device<palette_device> m_palette;
 	required_device<screen_device> m_screen;
@@ -90,6 +87,7 @@ private:
 	required_device<namcos21_3d_device> m_namcos21_3d;
 	required_device<namcos21_dsp_device> m_namcos21_dsp;
 
+	u8 m_pcb = 0;
 	u16 m_video_enable = 0;
 
 	u16 video_enable_r();
@@ -127,7 +125,7 @@ private:
 DEFINE_DEVICE_TYPE(NAMCO_DE_PCB, namco_de_pcbstack_device, "namco_de_pcb", "Namco Driver's Eyes PCB stack")
 
 
-namco_de_pcbstack_device::namco_de_pcbstack_device(const machine_config &mconfig, const char *tag, device_t *owner, u32 clock) :
+namco_de_pcbstack_device::namco_de_pcbstack_device(const machine_config &mconfig, const char *tag, device_t *owner, u8 pcb, u32 clock) :
 	device_t(mconfig, NAMCO_DE_PCB, tag, owner, clock),
 	m_maincpu(*this, "maincpu"),
 	m_audiocpu(*this, "audiocpu"),
@@ -148,7 +146,8 @@ namco_de_pcbstack_device::namco_de_pcbstack_device(const machine_config &mconfig
 	m_c140_region(*this, "c140"),
 	m_dpram(*this, "dpram"),
 	m_namcos21_3d(*this, "namcos21_3d"),
-	m_namcos21_dsp(*this, "namcos21dsp")
+	m_namcos21_dsp(*this, "namcos21dsp"),
+	m_pcb(pcb)
 {
 }
 
@@ -224,10 +223,8 @@ void namco_de_pcbstack_device::device_add_mconfig(machine_config &config)
 	m_c355spr->set_external_prifill(true);
 
 	// sound hardware
-	SPEAKER(config, "speaker", 4).corners();
-
-	MB87077(config, m_mb87077[0]).gain_changed().set(FUNC(namco_de_pcbstack_device::mb87077_gain_changed<0>));
-	MB87077(config, m_mb87077[1]).gain_changed().set(FUNC(namco_de_pcbstack_device::mb87077_gain_changed<1>));
+	MB87077(config, m_mb87077[0]);
+	MB87077(config, m_mb87077[1]);
 
 	C140(config, m_c140, 49.152_MHz_XTAL / 384 / 6);
 	m_c140->set_addrmap(0, &namco_de_pcbstack_device::c140_map);
@@ -235,17 +232,26 @@ void namco_de_pcbstack_device::device_add_mconfig(machine_config &config)
 
 	YM2151(config, m_ym2151, 3.579545_MHz_XTAL);
 
-	for (int i = 0; i < 4; i++)
+	// left and right PCBs don't output sound
+	if (m_pcb == 1)
 	{
-		m_c140->add_route(i & 1, m_mixer[0], 0.50, i);
-		m_ym2151->add_route(i & 1, m_mixer[1], 0.30, i);
+		SPEAKER(config, "speaker", 4).corners();
+
+		m_mb87077[0]->gain_changed().set(FUNC(namco_de_pcbstack_device::mb87077_gain_changed<0>));
+		m_mb87077[1]->gain_changed().set(FUNC(namco_de_pcbstack_device::mb87077_gain_changed<1>));
+
+		for (int i = 0; i < 4; i++)
+		{
+			m_c140->add_route(i & 1, m_mixer[0], 0.50, i);
+			m_ym2151->add_route(i & 1, m_mixer[1], 0.30, i);
+		}
+
+		MIXER(config, m_mixer[0]);
+		MIXER(config, m_mixer[1]);
+
+		for (int i = 0; i < 8; i++)
+			m_mixer[i / 4]->add_route(i & 3, "speaker", 0.50, i & 3);
 	}
-
-	MIXER(config, m_mixer[0]);
-	MIXER(config, m_mixer[1]);
-
-	for (int i = 0; i < 8; i++)
-		m_mixer[i / 4]->add_route(i & 3, "speaker", 0.50, i & 3);
 }
 
 
@@ -510,10 +516,10 @@ private:
 void namcos21_de_state::driveyes(machine_config &config)
 {
 	NAMCO_DE_PCB(config, m_pcb[0], 0);
-	NAMCO_DE_PCB(config, m_pcb[1], 0);
-	NAMCO_DE_PCB(config, m_pcb[2], 0);
+	NAMCO_DE_PCB(config, m_pcb[1], 1);
+	NAMCO_DE_PCB(config, m_pcb[2], 2);
 
-	NAMCOIO_GEARBOX(config, m_io_gearbox, 0);
+	NAMCOIO_GEARBOX(config, m_io_gearbox);
 }
 
 // stacks with the DSWs set to left or right screen will show 'receive error' because they want comms from the main screen
