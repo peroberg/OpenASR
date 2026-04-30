@@ -7,8 +7,8 @@ used by Winning Run series, Driver's Eyes
 
 TODO:
 - handle protection properly and with callbacks
-- poly_reset_r (the DSP BIO pin) can't be for flushing polys, it's most likely
-  a busy signal from the renderer
+- how does the real hw send data to the renderer without telling the number of words
+  it's going to send?
 
 */
 
@@ -37,10 +37,12 @@ void namcos21_dsp_device::device_start()
 	m_pointram_idx = 0;
 	m_pointram_control = 0;
 	m_poly_index = 0;
+	m_poly_size = 0;
 	m_pointrom_addr = 0;
 	m_dsp_complete = 0;
 
 	std::fill(std::begin(m_dspcomram_control), std::end(m_dspcomram_control), 0);
+	std::fill(std::begin(m_poly_buf), std::end(m_poly_buf), 0);
 
 	m_dspcomram = make_unique_clear<u16[]>(0x1000*2);
 	save_pointer(NAME(m_dspcomram), 0x1000*2);
@@ -55,6 +57,7 @@ void namcos21_dsp_device::device_start()
 	save_item(NAME(m_dspcomram_control));
 	save_item(NAME(m_poly_buf));
 	save_item(NAME(m_poly_index));
+	save_item(NAME(m_poly_size));
 	save_item(NAME(m_pointrom_addr));
 	save_item(NAME(m_dsp_complete));
 }
@@ -68,6 +71,9 @@ void namcos21_dsp_device::device_reset()
 {
 	// can't suspend directly from here, needs to be on a timer?
 	m_suspend_timer->adjust(attotime::zero);
+
+	m_poly_index = 0;
+	m_poly_size = 0;
 }
 
 
@@ -110,12 +116,26 @@ void namcos21_dsp_device::cuskey_w(u16 data)
 {
 }
 
-void namcos21_dsp_device::flush_poly()
+void namcos21_dsp_device::dsp_render_w(u16 data)
 {
-	if (m_poly_index > 0)
+	if (m_poly_index >= MAX_POLY_PARAM)
+	{
+		fatalerror("POLY_OVERFLOW\n");
+	}
+
+	// unlike namcos21_dsp_c67_device, it doesn't publish the number of words it's going to write,
+	// but we still need to know it before sending data to the renderer
+	if (m_poly_index == 0)
+		m_poly_size = (m_dsp->state_int(TMS320C2X_AR1) + 1) * 3 + 1;
+
+	m_poly_buf[m_poly_index++] = data;
+
+	// draw quads
+	if (m_poly_index == m_poly_size)
 	{
 		const u16 *source = m_poly_buf;
 		u16 color = *source++;
+
 		if (color & 0x8000)
 		{
 			// direct-draw
@@ -126,26 +146,6 @@ void namcos21_dsp_device::flush_poly()
 			m_renderer->draw_quads(source, m_pointram.get(), PTRAM_SIZE, color);
 		}
 		m_poly_index = 0;
-	}
-}
-
-u16 namcos21_dsp_device::poly_reset_r()
-{
-	if (!machine().side_effects_disabled())
-		flush_poly();
-
-	return 0;
-}
-
-void namcos21_dsp_device::dsp_render_w(u16 data)
-{
-	if (m_poly_index < MAX_POLY_PARAM)
-	{
-		m_poly_buf[m_poly_index++] = data;
-	}
-	else
-	{
-		logerror("POLY_OVERFLOW\n");
 	}
 }
 
@@ -177,9 +177,11 @@ void namcos21_dsp_device::dsp_complete_w(u16 data)
 {
 	if (~m_dsp_complete & data & 1)
 	{
-		flush_poly();
 		m_dsp->pulse_input_line(INPUT_LINE_RESET, attotime::zero);
 		m_renderer->swap_and_clear_poly_framebuffer();
+
+		m_poly_index = 0;
+		m_poly_size = 0;
 	}
 
 	m_dsp_complete = data;
@@ -256,7 +258,7 @@ void namcos21_dsp_device::device_add_mconfig(machine_config &config)
 	m_dsp->set_addrmap(AS_PROGRAM, &namcos21_dsp_device::dsp_program);
 	m_dsp->set_addrmap(AS_DATA, &namcos21_dsp_device::dsp_data);
 	m_dsp->set_addrmap(AS_IO, &namcos21_dsp_device::dsp_io);
-	m_dsp->bio_in_cb().set(FUNC(namcos21_dsp_device::poly_reset_r));
+	m_dsp->bio_in_cb().set_constant(0);
 	m_dsp->xf_out_cb().set_nop();
 }
 

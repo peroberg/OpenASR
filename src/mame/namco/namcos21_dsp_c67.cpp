@@ -8,6 +8,7 @@ Namco programming (marked C67) in a 1x Master, 4x Slave configuration
 used by Star Blade, Solvalou, Cybersled, Air Combat
 
 TODO:
+- add DSP idle loop speedup hacks?
 - handle protection properly and with callbacks
 - handle splitting of workload across slaves
 - remove hacks!
