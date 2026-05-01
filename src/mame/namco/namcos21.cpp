@@ -476,7 +476,7 @@ void namcos21_state::bitmap_draw(bitmap_ind16 &bitmap, const rectangle &cliprect
 	printf("| %04x\n", m_gpu_color);
 #endif
 
-	int const yscroll = -cliprect.top() + (s16)m_gpu_register[1];
+	int const yscroll = m_gpu_register[1] - cliprect.top();
 	int const xscroll = m_gpu_register[0] & 0xff;
 	int const base = 0x1000 | (m_gpu_color << 8 & 0xf00);
 
@@ -866,6 +866,8 @@ void namcos21_state::winrun(machine_config &config)
 	m_slave_intc->link_c148_device(m_master_intc);
 
 	NAMCO_C148(config, m_gpu_intc, 0, m_gpu, false);
+	m_gpu_intc->in_ext_callback().set([this](){ return m_screen->frame_number() & 1; });
+
 	NAMCO_C139(config, m_sci, 0);
 
 	config.set_maximum_quantum(attotime::from_hz(60000));
