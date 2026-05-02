@@ -279,7 +279,7 @@ void menu_file_manager::force_file_manager(mame_ui_manager &mui, render_target &
 	// drop any existing menus and start the file manager
 	menu::stack_reset(mui);
 	menu::stack_push_special_main<menu_file_manager>(mui, target, std::move(warnings));
-	mui.show_menu();
+	mui.show_menu(target);
 
 	// make sure MAME is paused
 	mui.machine().pause();

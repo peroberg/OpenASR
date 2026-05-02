@@ -880,12 +880,14 @@ void mame_ui_manager::display_startup_screens(bool first_time)
 	// if we're the empty driver, force the menus on
 	if (ui::menu::stack_has_special_main_menu(*this))
 	{
-		show_menu();
+		m_ui_target = &machine().render().ui_target();
+		activate_menu();
 	}
 	else if (config_menu)
 	{
-		ui::menu::stack_push<ui::menu_main>(*this, machine().render().ui_target());
-		show_menu();
+		m_ui_target = &machine().render().ui_target();
+		ui::menu::stack_push<ui::menu_main>(*this, *m_ui_target);
+		activate_menu();
 
 		// loop while we have a handler
 		while (m_handler_callback_type != ui_callback_type::GENERAL && !machine().scheduled_event_pending())
@@ -1356,7 +1358,29 @@ bool mame_ui_manager::show_profiler() const
 //  show_menu - show the menus
 //-------------------------------------------------
 
-void mame_ui_manager::show_menu()
+bool mame_ui_manager::show_menu()
+{
+	return show_menu(current_ui_target());
+}
+
+bool mame_ui_manager::show_menu(render_target &target)
+{
+	if (ui_callback_type::GENERAL != m_handler_callback_type)
+		return false;
+
+	m_ui_target = &target;
+	if (ui::menu::stack_empty(*this))
+		ui::menu::stack_push<ui::menu_main>(*this, *m_ui_target);
+	activate_menu();
+	return true;
+}
+
+
+//-------------------------------------------------
+//  activate_menu - show the menus
+//-------------------------------------------------
+
+void mame_ui_manager::activate_menu()
 {
 	assert(m_ui_target);
 
@@ -1710,7 +1734,7 @@ uint32_t mame_ui_manager::handler_ingame()
 		}
 		if (ui::menu::stack_empty(*this))
 			ui::menu::stack_push<ui::menu_main>(*this, *m_ui_target);
-		show_menu();
+		activate_menu();
 		return 0;
 	}
 
@@ -1719,7 +1743,7 @@ uint32_t mame_ui_manager::handler_ingame()
 	{
 		m_ui_target = &current_ui_target();
 		ui::menu::stack_push<ui::menu_sliders>(*this, *m_ui_target, true);
-		show_menu();
+		activate_menu();
 		return 0;
 	}
 
@@ -1774,7 +1798,7 @@ uint32_t mame_ui_manager::handler_ingame()
 	{
 		m_ui_target = &current_ui_target();
 		ui::menu::stack_push<ui::menu_save_state>(*this, *m_ui_target, true);
-		show_menu();
+		activate_menu();
 		return 0;
 	}
 
@@ -1783,7 +1807,7 @@ uint32_t mame_ui_manager::handler_ingame()
 	{
 		m_ui_target = &current_ui_target();
 		ui::menu::stack_push<ui::menu_load_state>(*this, *m_ui_target, true);
-		show_menu();
+		activate_menu();
 		return 0;
 	}
 
@@ -1889,7 +1913,7 @@ void mame_ui_manager::request_quit()
 			m_paused_for_menu = true;
 		}
 		ui::menu::stack_push<ui::menu_confirm_quit>(*this, *m_ui_target);
-		show_menu();
+		activate_menu();
 	}
 }
 

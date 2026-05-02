@@ -463,7 +463,7 @@ void simple_menu_select_game::force_game_select(mame_ui_manager &mui, render_tar
 	// drop any existing menus and start the system selection menu
 	menu::stack_reset(mui);
 	menu::stack_push_special_main<simple_menu_select_game>(mui, target, gamename);
-	mui.show_menu();
+	mui.show_menu(target);
 
 	// make sure MAME is paused
 	mui.machine().pause();

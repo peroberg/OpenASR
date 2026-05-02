@@ -1913,6 +1913,7 @@ void menu::activate_menu(render_target &target)
 {
 	if (&target != m_target)
 	{
+		assert(target.ui_container());
 		m_target = &target;
 		m_last_aspect = 0.0F;
 	}

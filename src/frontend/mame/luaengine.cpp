@@ -943,11 +943,10 @@ void lua_engine::initialize()
 			m_menu.push_back(name);
 		};
 	emu["show_menu"] =
-		[this](const char *name)
+		[] (const char *name)
 		{
 			mame_ui_manager &mui = mame_machine_manager::instance()->ui();
-			render_target &target = machine().render().ui_target(); // FIXME: it should really ask the UI manager where to show this
-			ui::menu_plugin::show_menu(mui, target, name);
+			ui::menu_plugin::show_menu(mui, name);
 		};
 	emu["register_callback"] =
 		[this] (sol::function cb, const std::string &name)
@@ -2243,7 +2242,7 @@ void lua_engine::initialize()
 	ui_type["image_display_enabled"] = sol::property(&mame_ui_manager::image_display_enabled, &mame_ui_manager::set_image_display_enabled);
 
 	// undocumented/unsupported
-	ui_type["show_menu"] = &mame_ui_manager::show_menu; // FIXME: this is dangerous - it doesn't give a proper chance for the current UI handler to clean up
+	ui_type["show_menu"] = static_cast<bool (mame_ui_manager::*)()>(&mame_ui_manager::show_menu);
 
 
 /* rom_entry library

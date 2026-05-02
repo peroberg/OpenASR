@@ -43,10 +43,10 @@ void menu_plugin::populate()
 	item_append(menu_item_type::SEPARATOR);
 }
 
-void menu_plugin::show_menu(mame_ui_manager &mui, render_target &target, std::string_view menu)
+void menu_plugin::show_menu(mame_ui_manager &mui, std::string_view menu)
 {
 	// add the plugin menu entry
-	menu::stack_push<menu_plugin_opt>(mui, target, menu, true);
+	menu::stack_push<menu_plugin_opt>(mui, mui.machine().render().ui_target(), menu, true);
 
 	// force the menus on
 	mui.show_menu();

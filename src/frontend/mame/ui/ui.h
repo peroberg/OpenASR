@@ -202,7 +202,8 @@ public:
 	bool show_fps_counter();
 	void set_show_profiler(bool show);
 	bool show_profiler() const;
-	void show_menu();
+	bool show_menu();
+	bool show_menu(render_target &target);
 	virtual bool is_menu_active() override;
 	bool can_paste();
 	void image_handler_ingame();
@@ -340,6 +341,7 @@ private:
 
 	// private methods
 	void set_handler(ui_callback_type callback_type, handler_callback_func &&callback);
+	void activate_menu();
 	void frame_update();
 	void exit();
 	void increase_frameskip();
