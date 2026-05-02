@@ -6,8 +6,8 @@
 
 *******************************************************************************/
 
-#ifndef MAME_BUS_SAITEK_OSA_BFORCE_H
-#define MAME_BUS_SAITEK_OSA_BFORCE_H
+#ifndef MAME_BUS_SAITEK_OSA_BRUTEFORCE_H
+#define MAME_BUS_SAITEK_OSA_BRUTEFORCE_H
 
 #pragma once
 
@@ -15,4 +15,4 @@
 
 DECLARE_DEVICE_TYPE(OSA_BFORCE, device_saitekosa_expansion_interface)
 
-#endif // MAME_BUS_SAITEK_OSA_BFORCE_H
+#endif // MAME_BUS_SAITEK_OSA_BRUTEFORCE_H
