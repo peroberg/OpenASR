@@ -4992,6 +4992,8 @@ if BUSES["SAITEK_OSA"] then
 	files {
 		MAME_DIR .. "src/devices/bus/saitek_osa/expansion.cpp",
 		MAME_DIR .. "src/devices/bus/saitek_osa/expansion.h",
+		MAME_DIR .. "src/devices/bus/saitek_osa/bruteforce.cpp",
+		MAME_DIR .. "src/devices/bus/saitek_osa/bruteforce.h",
 		MAME_DIR .. "src/devices/bus/saitek_osa/maestro.cpp",
 		MAME_DIR .. "src/devices/bus/saitek_osa/maestro.h",
 		MAME_DIR .. "src/devices/bus/saitek_osa/maestroa.cpp",
