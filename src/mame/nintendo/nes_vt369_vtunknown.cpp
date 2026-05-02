@@ -131,7 +131,6 @@ public:
 	void vt36x_swap_2mb(machine_config &config) ATTR_COLD;
 	void vt36x_swap_4mb(machine_config &config) ATTR_COLD;
 	void vt36x_swap_8mb(machine_config &config) ATTR_COLD;
-	void vt36x_swap_16mb(machine_config &config) ATTR_COLD;
 	void vt36x_swap_512kb(machine_config &config) ATTR_COLD;
 
 	void vt36x_altswap(machine_config &config) ATTR_COLD;
@@ -480,12 +479,6 @@ void vt36x_state::vt36x_swap_8mb(machine_config &config)
 {
 	vt36x_swap(config);
 	m_soc->set_addrmap(AS_PROGRAM, &vt36x_state::vt_external_space_map_8mbyte);
-}
-
-void vt36x_state::vt36x_swap_16mb(machine_config &config)
-{
-	vt36x_swap(config);
-	m_soc->set_addrmap(AS_PROGRAM, &vt36x_state::vt_external_space_map_16mbyte);
 }
 
 void vt36x_state::vt36x_altswap(machine_config &config)
