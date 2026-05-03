@@ -105,60 +105,48 @@ public:
 	{
 	}
 
-	void common(machine_config &config);
-	void sound_ym_oki(machine_config &config);
-	void sound_ym_banked_oki(machine_config &config);
-	void sound_suplup(machine_config &config);
-	void sound_qs1000(machine_config &config);
-	void mrdig(machine_config &config);
-	void suplup(machine_config &config);
-	void vamphalf(machine_config &config);
-	void boonggab(machine_config &config);
-	void jmpbreak(machine_config &config);
-	void newxpang(machine_config &config);
-	void worldadv(machine_config &config);
-	void aoh(machine_config &config);
-	void coolmini(machine_config &config);
-	void mrkicker(machine_config &config);
-	void solitaire(machine_config &config);
+	void sound_ym_oki(machine_config &config) ATTR_COLD;
+	void sound_ym_banked_oki(machine_config &config) ATTR_COLD;
+	void sound_suplup(machine_config &config) ATTR_COLD;
+	void sound_qs1000(machine_config &config) ATTR_COLD;
+	void mrdig(machine_config &config) ATTR_COLD;
+	void suplup(machine_config &config) ATTR_COLD;
+	void vamphalf(machine_config &config) ATTR_COLD;
+	void boonggab(machine_config &config) ATTR_COLD;
+	void jmpbreak(machine_config &config) ATTR_COLD;
+	void newxpang(machine_config &config) ATTR_COLD;
+	void worldadv(machine_config &config) ATTR_COLD;
+	void aoh(machine_config &config) ATTR_COLD;
+	void coolmini(machine_config &config) ATTR_COLD;
+	void mrkicker(machine_config &config) ATTR_COLD;
+	void solitaire(machine_config &config) ATTR_COLD;
 
-	void init_vamphalf();
-	void init_vamphalfr1();
-	void init_vamphafk();
-	void init_coolmini();
-	void init_coolminii();
-	void init_mrdig();
-	void init_jmpbreak();
-	void init_jmpbreaka();
-	void init_poosho();
-	void init_newxpang();
-	void init_newxpanga();
-	void init_worldadv();
-	void init_dtfamily();
-	void init_dquizgo2();
-	void init_suplup();
-	void init_luplup();
-	void init_luplup29();
-	void init_luplup10();
-	void init_puzlbang();
-	void init_toyland();
-	void init_aoh();
-	void init_boonggab();
-	void init_mrkicker();
-	void init_solitaire();
+	void init_vamphalf() ATTR_COLD;
+	void init_vamphalfr1() ATTR_COLD;
+	void init_vamphafk() ATTR_COLD;
+	void init_coolmini() ATTR_COLD;
+	void init_coolminii() ATTR_COLD;
+	void init_mrdig() ATTR_COLD;
+	void init_jmpbreak() ATTR_COLD;
+	void init_jmpbreaka() ATTR_COLD;
+	void init_poosho() ATTR_COLD;
+	void init_newxpang() ATTR_COLD;
+	void init_newxpanga() ATTR_COLD;
+	void init_worldadv() ATTR_COLD;
+	void init_dtfamily() ATTR_COLD;
+	void init_dquizgo2() ATTR_COLD;
+	void init_suplup() ATTR_COLD;
+	void init_luplup() ATTR_COLD;
+	void init_luplup29() ATTR_COLD;
+	void init_luplup10() ATTR_COLD;
+	void init_puzlbang() ATTR_COLD;
+	void init_toyland() ATTR_COLD;
+	void init_aoh() ATTR_COLD;
+	void init_boonggab() ATTR_COLD;
+	void init_mrkicker() ATTR_COLD;
+	void init_solitaire() ATTR_COLD;
 
 	ioport_value boonggab_photo_sensors_r();
-
-	u16 eeprom_r();
-	void eeprom_w(u16 data);
-	void flipscreen_w(u16 data);
-	u16 vram_r(offs_t offset) { return m_tiles[offset]; }
-	void vram_w(offs_t offset, u16 data, u16 mem_mask = ~0) { COMBINE_DATA(&m_tiles[offset]); }
-
-	void banked_oki(int chip);
-
-	void common_map(address_map &map) ATTR_COLD;
-	void common_32bit_map(address_map &map) ATTR_COLD;
 
 	static constexpr u16 HTOTAL = 448;
 	static constexpr u16 HBEND = 31;
@@ -169,6 +157,19 @@ public:
 
 protected:
 	virtual void video_start() override ATTR_COLD;
+
+	void common(machine_config &config) ATTR_COLD;
+
+	void banked_oki(int chip) ATTR_COLD;
+
+	u16 eeprom_r();
+	void eeprom_w(u16 data);
+	void flipscreen_w(u16 data);
+	u16 vram_r(offs_t offset) { return m_tiles[offset]; }
+	void vram_w(offs_t offset, u16 data, u16 mem_mask = ~0) { COMBINE_DATA(&m_tiles[offset]); }
+
+	void common_map(address_map &map) ATTR_COLD;
+	void common_32bit_map(address_map &map) ATTR_COLD;
 
 	required_device<cpu_device> m_maincpu;
 	required_device<palette_device> m_palette;
@@ -249,13 +250,13 @@ public:
 	{
 	}
 
-	void misncrft(machine_config &config);
-	void wyvernwg(machine_config &config);
-	void yorijori(machine_config &config);
+	void misncrft(machine_config &config) ATTR_COLD;
+	void wyvernwg(machine_config &config) ATTR_COLD;
+	void yorijori(machine_config &config) ATTR_COLD;
 
-	void init_misncrft();
-	void init_wyvernwg();
-	void init_yorijori();
+	void init_misncrft() ATTR_COLD;
+	void init_wyvernwg() ATTR_COLD;
+	void init_yorijori() ATTR_COLD;
 
 private:
 	required_device<i8052_device> m_qdsp_cpu;
@@ -280,11 +281,11 @@ public:
 	{
 	}
 
-	void finalgdr(machine_config &config);
-	void mrkickera(machine_config &config);
+	void finalgdr(machine_config &config) ATTR_COLD;
+	void mrkickera(machine_config &config) ATTR_COLD;
 
-	void init_mrkickera();
-	void init_finalgdr();
+	void init_mrkickera() ATTR_COLD;
+	void init_finalgdr() ATTR_COLD;
 
 private:
 	required_device<nvram_device> m_nvram;
@@ -487,7 +488,7 @@ void vamphalf_state::common_32bit_map(address_map &map)
 void vamphalf_qdsp_state::yorijori_32bit_map(address_map &map)
 {
 	map(0x00000000, 0x001fffff).ram().share(m_wram32);
-	map(0x40000000, 0x4003ffff).rw(FUNC(vamphalf_state::vram_r), FUNC(vamphalf_state::vram_w));
+	map(0x40000000, 0x4003ffff).rw(FUNC(vamphalf_qdsp_state::vram_r), FUNC(vamphalf_qdsp_state::vram_w));
 	map(0x80000000, 0x8000ffff).ram().w(m_palette, FUNC(palette_device::write32)).share("palette");
 	map(0xffe00000, 0xffffffff).rom().region("maincpu", 0);
 }
@@ -497,21 +498,21 @@ void vamphalf_state::vamphalf_io(address_map &map)
 	map(0x030, 0x030).umask16(0x00ff).rw("oki1", FUNC(okim6295_device::read), FUNC(okim6295_device::write));
 	map(0x050, 0x050).umask16(0x00ff).w("ymsnd", FUNC(ym2151_device::address_w));
 	map(0x051, 0x051).umask16(0x00ff).rw("ymsnd", FUNC(ym2151_device::status_r), FUNC(ym2151_device::data_w));
-	map(0x070, 0x070).r(FUNC(vamphalf_state::eeprom_r));
-	map(0x090, 0x090).w(FUNC(vamphalf_state::flipscreen_w));
+	map(0x070, 0x070).r(FUNC(vamphalf_qdsp_state::eeprom_r));
+	map(0x090, 0x090).w(FUNC(vamphalf_qdsp_state::flipscreen_w));
 	map(0x180, 0x180).portr("SYSTEM");
 	map(0x181, 0x181).portr("P1_P2");
-	map(0x182, 0x182).w(FUNC(vamphalf_state::eeprom_w));
+	map(0x182, 0x182).w(FUNC(vamphalf_qdsp_state::eeprom_w));
 }
 
 void vamphalf_qdsp_state::misncrft_io(address_map &map)
 {
-	map(0x040, 0x040).w(FUNC(vamphalf_state::flipscreen_w));
+	map(0x040, 0x040).w(FUNC(vamphalf_qdsp_state::flipscreen_w));
 	map(0x080, 0x080).portr("P1_P2");
 	map(0x090, 0x090).portr("SYSTEM");
-	map(0x0f0, 0x0f0).w(FUNC(vamphalf_state::eeprom_w));
+	map(0x0f0, 0x0f0).w(FUNC(vamphalf_qdsp_state::eeprom_w));
 	map(0x100, 0x100).umask16(0x00ff).w(m_soundlatch, FUNC(generic_latch_8_device::write));
-	map(0x160, 0x161).r(FUNC(vamphalf_state::eeprom_r));
+	map(0x160, 0x161).r(FUNC(vamphalf_qdsp_state::eeprom_r));
 }
 
 void vamphalf_state::coolmini_io(address_map &map)
@@ -547,12 +548,12 @@ void vamphalf_state::suplup_io(address_map &map)
 void vamphalf_qdsp_state::wyvernwg_io(address_map &map)
 {
 	map(0x0600, 0x0600).rw(FUNC(vamphalf_qdsp_state::prot_r<0x0001>), FUNC(vamphalf_qdsp_state::wyvernwg_prot_w));
-	map(0x0800, 0x0800).umask32(0x0000ffff).w(FUNC(vamphalf_state::flipscreen_w));
+	map(0x0800, 0x0800).umask32(0x0000ffff).w(FUNC(vamphalf_qdsp_state::flipscreen_w));
 	map(0x0a00, 0x0a00).portr("P1_P2");
 	map(0x0c00, 0x0c00).portr("SYSTEM");
 	map(0x1500, 0x1500).umask32(0x000000ff).w(m_soundlatch, FUNC(generic_latch_8_device::write));
-	map(0x1c00, 0x1c00).umask32(0x0000ffff).w(FUNC(vamphalf_state::eeprom_w));
-	map(0x1f00, 0x1f00).umask32(0x0000ffff).r(FUNC(vamphalf_state::eeprom_r));
+	map(0x1c00, 0x1c00).umask32(0x0000ffff).w(FUNC(vamphalf_qdsp_state::eeprom_w));
+	map(0x1f00, 0x1f00).umask32(0x0000ffff).r(FUNC(vamphalf_qdsp_state::eeprom_r));
 }
 
 void vamphalf_nvram_state::finalgdr_io(address_map &map)
@@ -564,7 +565,7 @@ void vamphalf_nvram_state::finalgdr_io(address_map &map)
 	map(0x0d00, 0x0d00).umask32(0x0000ff00).rw("oki1", FUNC(okim6295_device::read), FUNC(okim6295_device::write));
 	map(0x0e00, 0x0e00).portr("P1_P2");
 	map(0x0f00, 0x0f00).portr("SYSTEM");
-	map(0x1100, 0x1100).umask32(0x0000ffff).r(FUNC(vamphalf_state::eeprom_r));
+	map(0x1100, 0x1100).umask32(0x0000ffff).r(FUNC(vamphalf_nvram_state::eeprom_r));
 	map(0x1800, 0x1800).nopr(); //?
 	map(0x1800, 0x1800).w(FUNC(vamphalf_nvram_state::finalgdr_eeprom_w));
 	map(0x1810, 0x1810).w(FUNC(vamphalf_nvram_state::finalgdr_prot_w));
@@ -575,7 +576,7 @@ void vamphalf_nvram_state::finalgdr_io(address_map &map)
 
 void vamphalf_nvram_state::mrkickera_io(address_map &map)
 {
-	map(0x0900, 0x0900).umask32(0x0000ffff).r(FUNC(vamphalf_state::eeprom_r));
+	map(0x0900, 0x0900).umask32(0x0000ffff).r(FUNC(vamphalf_nvram_state::eeprom_r));
 	map(0x1000, 0x1000).nopr(); //?
 	map(0x1000, 0x1000).w(FUNC(vamphalf_nvram_state::finalgdr_eeprom_w));
 	map(0x1010, 0x1010).w(FUNC(vamphalf_nvram_state::finalgdr_prot_w));
@@ -676,7 +677,7 @@ void vamphalf_qdsp_state::yorijori_io(address_map &map)
 	map(0x0d00, 0x0d00).portr("P1_P2");
 	map(0x0e00, 0x0e00).umask32(0x0000ff00).w(m_soundlatch, FUNC(generic_latch_8_device::write));
 	map(0x0f00, 0x0f00).portr("SYSTEM");
-	map(0x1100, 0x1100).umask32(0x0000ffff).r(FUNC(vamphalf_state::eeprom_r));
+	map(0x1100, 0x1100).umask32(0x0000ffff).r(FUNC(vamphalf_qdsp_state::eeprom_r));
 	map(0x1800, 0x1800).nopr(); //?
 	map(0x1800, 0x1800).w(FUNC(vamphalf_qdsp_state::yorijori_eeprom_w));
 	map(0x1810, 0x1810).w(FUNC(vamphalf_qdsp_state::finalgdr_prot_w));

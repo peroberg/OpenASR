@@ -111,12 +111,12 @@ public:
 	{ }
 
 
-	void luckboom(machine_config &config);
-	void pmroulet(machine_config &config);
-	void sderby(machine_config &config);
-	void sderbya(machine_config &config);
-	void shinygld(machine_config &config);
-	void spacewin(machine_config &config);
+	void luckboom(machine_config &config) ATTR_COLD;
+	void pmroulet(machine_config &config) ATTR_COLD;
+	void sderby(machine_config &config) ATTR_COLD;
+	void sderbya(machine_config &config) ATTR_COLD;
+	void shinygld(machine_config &config) ATTR_COLD;
+	void spacewin(machine_config &config) ATTR_COLD;
 
 protected:
 	virtual void machine_start() override { m_lamps.resolve(); }
@@ -160,6 +160,7 @@ protected:
 	uint32_t screen_update(screen_device &screen, bitmap_ind16 &bitmap, const rectangle &cliprect);
 	uint32_t screen_update_pmroulet(screen_device &screen, bitmap_ind16 &bitmap, const rectangle &cliprect);
 	void draw_sprites(bitmap_ind16 &bitmap, const rectangle &cliprect);
+
 	void luckboom_map(address_map &map) ATTR_COLD;
 	void roulette_map(address_map &map) ATTR_COLD;
 	void sderby_map(address_map &map) ATTR_COLD;
@@ -173,7 +174,7 @@ class zw3_state : public sderby_state
 public:
 	using sderby_state::sderby_state;
 
-	void zw3(machine_config &config);
+	void zw3(machine_config &config) ATTR_COLD;
 
 protected:
 	virtual void video_start() override ATTR_COLD;

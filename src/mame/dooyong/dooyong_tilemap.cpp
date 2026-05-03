@@ -98,7 +98,7 @@ void dooyong_rom_tilemap_device::ctrl_w(offs_t offset, u8 data)
 		default: // Other addresses are used but function is unknown
 			// 0x05 and 0x07 are initialised on startup
 			// 0x02 is initialised on startup by some games and written to continuously by others
-			// printf("Unknown %s tilemap control: 0x%02x = 0x%02x\n", tag(), u32(offset), u32(data));
+			//logerror("%s: Unknown tilemap control: 0x%02x = 0x%02x\n", machine().describe_context(), offset, data);
 			break;
 		}
 	}

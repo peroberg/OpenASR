@@ -35,9 +35,9 @@ public:
 		, m_bg_yoffset(0)
 	{ }
 
-	void init_powerbal();
+	void init_powerbal() ATTR_COLD;
 
-	void powerbal(machine_config &config);
+	void powerbal(machine_config &config) ATTR_COLD;
 
 protected:
 	virtual void machine_start() override ATTR_COLD;
@@ -68,7 +68,7 @@ public:
 		: powerbal_state(mconfig, type, tag)
 	{ }
 
-	void atombjt(machine_config &config);
+	void atombjt(machine_config &config) ATTR_COLD;
 
 protected:
 	virtual void video_start() override ATTR_COLD;
@@ -89,9 +89,9 @@ public:
 		, m_token(*this, "token")
 	{ }
 
-	void init_magicstk();
+	void init_magicstk() ATTR_COLD;
 
-	void magicstk(machine_config &config);
+	void magicstk(machine_config &config) ATTR_COLD;
 
 private:
 	required_device<eeprom_serial_93cxx_device> m_eeprom;

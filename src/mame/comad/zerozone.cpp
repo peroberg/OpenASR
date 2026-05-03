@@ -84,7 +84,7 @@ public:
 		, m_vram(*this, "videoram")
 	{ }
 
-	void zerozone(machine_config &config);
+	void zerozone(machine_config &config) ATTR_COLD;
 
 protected:
 	// driver_device overrides

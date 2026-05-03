@@ -107,7 +107,7 @@ protected:
 	{
 	}
 
-	void sound_2151(machine_config &config, XTAL ymclk, XTAL okiclk);
+	void sound_2151(machine_config &config, XTAL ymclk, XTAL okiclk) ATTR_COLD;
 	void bluehawk_sound_map(address_map &map) ATTR_COLD;
 
 	required_device<cpu_device> m_maincpu;
@@ -129,9 +129,9 @@ public:
 	{
 	}
 
-	void bluehawk(machine_config &config);
-	void flytiger(machine_config &config);
-	void primella(machine_config &config);
+	void bluehawk(machine_config &config) ATTR_COLD;
+	void flytiger(machine_config &config) ATTR_COLD;
+	void primella(machine_config &config) ATTR_COLD;
 
 protected:
 	enum
@@ -198,9 +198,9 @@ protected:
 	u32 screen_update_flytiger(screen_device &screen, bitmap_ind16 &bitmap, const rectangle &cliprect);
 	u32 screen_update_primella(screen_device &screen, bitmap_ind16 &bitmap, const rectangle &cliprect);
 
-	void init_banked_paletteram()
+	void init_banked_paletteram() ATTR_COLD
 	{
-		m_paletteram_flytiger = make_unique_clear<u8[]>(0x1000);
+		m_paletteram_flytiger = make_unique_clear<u8 []>(0x1000);
 		m_palette->basemem().set(m_paletteram_flytiger.get(), 0x1000, 8, ENDIANNESS_LITTLE, 2);
 		save_pointer(NAME(m_paletteram_flytiger), 0x1000);
 	}
@@ -242,7 +242,7 @@ protected:
 	void flytiger_map(address_map &map) ATTR_COLD;
 	void primella_map(address_map &map) ATTR_COLD;
 
-	std::unique_ptr<u8[]> m_paletteram_flytiger;
+	std::unique_ptr<u8 []> m_paletteram_flytiger;
 	u8 m_sprites_disabled = 0;
 	u8 m_flytiger_pri = 0;
 	u8 m_tx_pri = 0;
@@ -262,9 +262,9 @@ public:
 	{
 	}
 
-	void lastday(machine_config &config);
-	void gulfstrm(machine_config &config);
-	void pollux(machine_config &config);
+	void lastday(machine_config &config) ATTR_COLD;
+	void gulfstrm(machine_config &config) ATTR_COLD;
+	void pollux(machine_config &config) ATTR_COLD;
 
 protected:
 	void lastday_ctrl_w(u8 data);
@@ -348,14 +348,16 @@ public:
 	{
 	}
 
-	void rshark(machine_config &config);
-	void superx(machine_config &config);
+	void rshark(machine_config &config) ATTR_COLD;
+	void superx(machine_config &config) ATTR_COLD;
 
 protected:
 	u32 screen_update_rshark(screen_device &screen, bitmap_ind16 &bitmap, const rectangle &cliprect);
 
-	virtual void video_start() override
+	virtual void video_start() override ATTR_COLD
 	{
+		dooyong_68k_state::video_start();
+
 		// Register for save/restore
 		save_item(NAME(m_bg2_priority));
 	}
@@ -366,7 +368,7 @@ protected:
 		color = 0; // use external ROM
 	}
 
-	void dooyong_68k(machine_config &config);
+	void dooyong_68k(machine_config &config) ATTR_COLD;
 
 	void rshark_map(address_map &map) ATTR_COLD;
 	void superx_map(address_map &map) ATTR_COLD;
@@ -382,13 +384,15 @@ public:
 	{
 	}
 
-	void popbingo(machine_config &config);
+	void popbingo(machine_config &config) ATTR_COLD;
 
 protected:
 	u32 screen_update_popbingo(screen_device &screen, bitmap_ind16 &bitmap, const rectangle &cliprect);
 
-	virtual void video_start() override
+	virtual void video_start() override ATTR_COLD
 	{
+		dooyong_68k_state::video_start();
+
 		m_screen->register_screen_bitmap(m_bg_bitmap[0]);
 		m_screen->register_screen_bitmap(m_bg_bitmap[1]);
 
@@ -430,7 +434,7 @@ void dooyong_z80_ym2203_state::lastday_ctrl_w(u8 data)
 
 void dooyong_z80_ym2203_state::pollux_ctrl_w(u8 data)
 {
-//  printf("pollux_ctrl_w %02x\n", data);
+	//logerror("pollux_ctrl_w %02x\n", data);
 
 	/* bit 0 is flip screen */
 	flip_screen_set(BIT(data, 0));
@@ -716,7 +720,7 @@ void dooyong_68k_state::draw_sprites(screen_device &screen, bitmap_ind16 &bitmap
 
 			const bool flip = flip_screen();
 			int sx = spriteram[offs + 4] & 0x01ff;
-			int sy = (s16)spriteram[offs + 6] & 0x01ff;
+			int sy = s16(spriteram[offs + 6]) & 0x01ff;
 			sy = util::sext(sy, 9);    // Correctly sign-extend 9-bit number
 			if (flip)
 			{

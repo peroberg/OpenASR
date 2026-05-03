@@ -113,23 +113,25 @@ TIMER_CALLBACK_MEMBER(huc6260_device::update_events)
 		{
 		case HUC6260_HSYNC_START:       /* Start of HSync */
 			m_hsync_changed_cb(0);
-//          if (v == 0)
-//          {
-//              /* Check if the screen should be resized */
-//              m_height = LPF - (m_blur ? 1 : 0);
-//              if (m_height != video_screen_get_height(m_screen))
-//              {
-//                  rectangle visible_area;
-//
-//                  /* TODO: Set proper visible area parameters */
-//                  visible_area.min_x = 64;
-//                  visible_area.min_y = 18;
-//                  visible_area.max_x = 64 + 1024 + 64 - 1;
-//                  visible_area.max_y = 18 + 242 - 1;
-//
-//                  video_screen_configure(m_screen, WPF, m_height, &visible_area, HZ_TO_ATTOSECONDS(device->clock / (WPF * m_height)));
-//              }
-//          }
+#if 0
+			if (v == 0)
+			{
+				/* Check if the screen should be resized */
+				m_height = LPF - (m_blur ? 1 : 0);
+				if (m_height != video_screen_get_height(m_screen))
+				{
+					rectangle visible_area;
+
+					/* TODO: Set proper visible area parameters */
+					visible_area.min_x = 64;
+					visible_area.min_y = 18;
+					visible_area.max_x = 64 + 1024 + 64 - 1;
+					visible_area.max_y = 18 + 242 - 1;
+
+					video_screen_configure(m_screen, WPF, m_height, &visible_area, HZ_TO_ATTOSECONDS(device->clock / (WPF * m_height)));
+				}
+			}
+#endif
 			break;
 
 		case 0:     /* End of HSync */
@@ -256,19 +258,19 @@ void huc6260_device::write(offs_t offset, u8 data)
 			break;
 
 		case 0x02:  /* Color table address LSB */
-			m_address = (m_address & 0x100) | data;
+			m_address = (m_address & 0x100) | u16(data);
 			break;
 
 		case 0x03:  /* Color table address MSB */
-			m_address = ((m_address & 0x0ff) | (BIT(data, 0) << 8)) & 0x1ff;
+			m_address = (m_address & 0x0ff) | (u16(BIT(data, 0)) << 8);
 			break;
 
 		case 0x04:  /* Color table data LSB */
-			m_palette[m_address] = (m_palette[m_address] & 0x100) | data;
+			m_palette[m_address] = (m_palette[m_address] & 0x100) | u16(data);
 			break;
 
 		case 0x05:  /* Color table data MSB */
-			m_palette[m_address] = ((m_palette[m_address] & 0x0ff) | (BIT(data, 0) << 8)) & 0x1ff;
+			m_palette[m_address] = (m_palette[m_address] & 0x0ff) | (u16(BIT(data, 0)) << 8);
 
 			/* Increment internal address */
 			m_address = (m_address + 1) & 0x1ff;

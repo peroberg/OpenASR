@@ -58,8 +58,8 @@ public:
 		m_vramview(*this, "vramview")
 	{ }
 
-	void init_bwing();
-	void bwing(machine_config &config);
+	void init_bwing() ATTR_COLD;
+	void bwing(machine_config &config) ATTR_COLD;
 
 	DECLARE_INPUT_CHANGED_MEMBER(coin_inserted);
 	DECLARE_INPUT_CHANGED_MEMBER(tilt_pressed);
@@ -118,11 +118,12 @@ private:
 	void draw_sprites(screen_device &screen, bitmap_ind16 &bmp, const rectangle &clip);
 
 	INTERRUPT_GEN_MEMBER(sound_interrupt);
+
 	void bank_map(address_map &map) ATTR_COLD;
 	void main_map(address_map &map) ATTR_COLD;
 	void sub_map(address_map &map) ATTR_COLD;
-	void sound_io_map(address_map &map) ATTR_COLD;
 	void sound_map(address_map &map) ATTR_COLD;
+	void sound_io_map(address_map &map) ATTR_COLD;
 };
 
 
@@ -270,26 +271,29 @@ void bwing_state::draw_sprites(screen_device &screen, bitmap_ind16 &bmp, const r
 
 		// single/double
 		if (!BIT(attrib, 4))
+		{
 			gfx->prio_transpen(bmp, clip,
 					code, color,
 					fx, fy,
 					x, y,
 					screen.priority(), primask, 0);
+		}
 		else
+		{
 			gfx->prio_zoom_transpen(bmp, clip,
 					code, color,
 					fx, fy,
 					x, y,
 					1 << 16, 2 << 16,
 					screen.priority(), primask, 0);
+		}
 	}
 }
 
 
 uint32_t bwing_state::screen_update(screen_device &screen, bitmap_ind16 &bitmap, const rectangle &cliprect)
 {
-	u32 flip, x, y, shiftx;
-
+	u32 flip, shiftx;
 	if (BIT(m_mapmask, 5))
 	{
 		flip = TILEMAP_FLIPX;
@@ -307,9 +311,9 @@ uint32_t bwing_state::screen_update(screen_device &screen, bitmap_ind16 &bitmap,
 	if (!BIT(m_mapmask, 0))
 	{
 		m_bgmap->set_flip(flip);
-		x = ((m_sreg[1] << 2 & 0x300) + m_sreg[2] + shiftx) & 0x3ff;
+		const u32 x = ((m_sreg[1] << 2 & 0x300) + m_sreg[2] + shiftx) & 0x3ff;
 		m_bgmap->set_scrollx(0, x);
-		y = (m_sreg[1] << 4 & 0x300) + m_sreg[3];
+		const u32 y = (m_sreg[1] << 4 & 0x300) + m_sreg[3];
 		m_bgmap->set_scrolly(0, y);
 		m_bgmap->draw(screen, bitmap, cliprect, 0, 1);
 	}
@@ -320,9 +324,9 @@ uint32_t bwing_state::screen_update(screen_device &screen, bitmap_ind16 &bitmap,
 	if (!BIT(m_mapmask, 1))
 	{
 		m_fgmap->set_flip(flip);
-		x = ((m_sreg[1] << 6 & 0x300) + m_sreg[4] + shiftx) & 0x3ff;
+		const u32 x = ((m_sreg[1] << 6 & 0x300) + m_sreg[4] + shiftx) & 0x3ff;
 		m_fgmap->set_scrollx(0, x);
-		y = (m_sreg[1] << 8 & 0x300) + m_sreg[5];
+		const u32 y = (m_sreg[1] << 8 & 0x300) + m_sreg[5];
 		m_fgmap->set_scrolly(0, y);
 		m_fgmap->draw(screen, bitmap, cliprect, 0, 2);
 	}

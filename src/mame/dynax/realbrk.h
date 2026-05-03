@@ -31,10 +31,10 @@ public:
 		m_player_io(*this, "P%u", 1U)
 	{ }
 
-	void pkgnsh(machine_config &config);
-	void dai2kaku(machine_config &config);
-	void realbrk(machine_config &config);
-	void pkgnshdx(machine_config &config);
+	void pkgnsh(machine_config &config) ATTR_COLD;
+	void dai2kaku(machine_config &config) ATTR_COLD;
+	void realbrk(machine_config &config) ATTR_COLD;
+	void pkgnshdx(machine_config &config) ATTR_COLD;
 
 protected:
 	virtual void video_start() override ATTR_COLD;
@@ -87,6 +87,7 @@ private:
 	template <bool Rotatable> void draw_sprites(bitmap_ind16 &bitmap,const rectangle &cliprect, bitmap_ind8 &priority);
 
 	void vblank_irq(int state);
+
 	void base_mem(address_map &map) ATTR_COLD;
 	void dai2kaku_mem(address_map &map) ATTR_COLD;
 	void pkgnsh_mem(address_map &map) ATTR_COLD;

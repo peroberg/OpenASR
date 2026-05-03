@@ -39,16 +39,16 @@ public:
 		m_io_an(*this, "AN%u", 0U)
 	{ }
 
-	void dec0_base(machine_config &config);
-	void dec0(machine_config &config);
-	void dec1(machine_config &config);
-	void ffantasybl(machine_config &config);
-	void midres(machine_config &config);
-	void midresbj(machine_config &config);
-	void midresb(machine_config &config);
-	void robocopb(machine_config &config);
+	void dec0_base(machine_config &config) ATTR_COLD;
+	void dec0(machine_config &config) ATTR_COLD;
+	void dec1(machine_config &config) ATTR_COLD;
+	void ffantasybl(machine_config &config) ATTR_COLD;
+	void midres(machine_config &config) ATTR_COLD;
+	void midresbj(machine_config &config) ATTR_COLD;
+	void midresb(machine_config &config) ATTR_COLD;
+	void robocopb(machine_config &config) ATTR_COLD;
 
-	void init_ffantasybl();
+	void init_ffantasybl() ATTR_COLD;
 
 protected:
 	virtual void dec0_control_w(offs_t offset, u16 data, u16 mem_mask = ~0);
@@ -74,7 +74,7 @@ protected:
 
 	void set_screen_raw_params(machine_config &config);
 
-	void h6280_decrypt(const char *cputag);
+	void h6280_decrypt(const char *cputag) ATTR_COLD;
 
 	void dec0_map(address_map &map) ATTR_COLD;
 	void dec0_s_map(address_map &map) ATTR_COLD;
@@ -114,7 +114,7 @@ public:
 		dec0_state(mconfig, type, tag)
 	{ }
 
-	void drgninjab(machine_config &config);
+	void drgninjab(machine_config &config) ATTR_COLD;
 
 protected:
 	virtual void machine_start() override ATTR_COLD;
@@ -143,10 +143,10 @@ public:
 		drgninjab_state(mconfig, type, tag)
 	{ }
 
-	void birdtry(machine_config &config);
-	void bandit(machine_config &config);
-	void baddudes(machine_config &config);
-	void hbarrel(machine_config &config);
+	void birdtry(machine_config &config) ATTR_COLD;
+	void bandit(machine_config &config) ATTR_COLD;
+	void baddudes(machine_config &config) ATTR_COLD;
+	void hbarrel(machine_config &config) ATTR_COLD;
 
 protected:
 	virtual void dec0_i8751_w(u16 data) override;
@@ -178,7 +178,7 @@ public:
 		m_subcpu(*this, "sub")
 	{ }
 
-	void robocop(machine_config &config);
+	void robocop(machine_config &config) ATTR_COLD;
 
 protected:
 	required_device<h6280_device> m_subcpu;
@@ -198,9 +198,9 @@ public:
 		m_sharedram(*this, "sharedram")
 	{ }
 
-	void hippodrm(machine_config &config);
+	void hippodrm(machine_config &config) ATTR_COLD;
 
-	void init_hippodrm();
+	void init_hippodrm() ATTR_COLD;
 
 private:
 	u8 prot_r(offs_t offset);
@@ -229,9 +229,9 @@ public:
 		m_sndview(*this, "sndview")
 	{ }
 
-	void slyspy(machine_config &config);
+	void slyspy(machine_config &config) ATTR_COLD;
 
-	void init_slyspy();
+	void init_slyspy() ATTR_COLD;
 
 protected:
 	virtual void machine_reset() override ATTR_COLD;
@@ -268,8 +268,8 @@ public:
 		std::fill(std::begin(m_automat_scroll_regs), std::end(m_automat_scroll_regs), 0);
 	}
 
-	void secretab(machine_config &config);
-	void automat(machine_config &config);
+	void secretab(machine_config &config) ATTR_COLD;
+	void automat(machine_config &config) ATTR_COLD;
 
 protected:
 	virtual void machine_start() override ATTR_COLD;

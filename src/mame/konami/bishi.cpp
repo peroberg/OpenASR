@@ -244,10 +244,10 @@ void bishi_state::lamp_w(offs_t offset, uint16_t data, uint16_t mem_mask)
 	{
 		// Only 1st and 3rd player in the 2 player variant.
 		if (i == 1 && m_is_2players) continue;
-		m_red_button_lamps[lamp_index] = (new_state >> (i * 3 + 0)) & 1;
-		m_green_button_lamps[lamp_index] = (new_state >> (i * 3 + 1)) & 1;
-		m_blue_button_lamps[lamp_index] = (new_state >> (i * 3 + 2)) & 1;
-		m_start_button_lamps[lamp_index] = (new_state >> (i + 9)) & 1;
+		m_red_button_lamps[lamp_index] = BIT(new_state, i * 3 + 0);
+		m_green_button_lamps[lamp_index] = BIT(new_state, i * 3 + 1);
+		m_blue_button_lamps[lamp_index] = BIT(new_state, i * 3 + 2);
+		m_start_button_lamps[lamp_index] = BIT(new_state, i + 9);
 		lamp_index++;
 	}
 }

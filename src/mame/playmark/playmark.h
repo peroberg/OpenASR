@@ -34,7 +34,7 @@ protected:
 		m_oki_numbanks(0)
 	{ }
 
-	void configure_oki_banks();
+	void configure_oki_banks() ATTR_COLD;
 
 	// devices
 	required_device<okim6295_device> m_oki;
@@ -80,12 +80,12 @@ public:
 		m_dispenser_latch(0)
 	{ }
 
-	void hrdtimes(machine_config &config);
-	void luckboomh(machine_config &config);
-	void hotmind(machine_config &config);
-	void bigtwinb(machine_config &config);
+	void hrdtimes(machine_config &config) ATTR_COLD;
+	void luckboomh(machine_config &config) ATTR_COLD;
+	void hotmind(machine_config &config) ATTR_COLD;
+	void bigtwinb(machine_config &config) ATTR_COLD;
 
-	void init_pic_decode();
+	void init_pic_decode() ATTR_COLD;
 
 protected:
 	virtual void machine_start() override ATTR_COLD;
@@ -166,8 +166,8 @@ public:
 		m_bg_full_size(false)
 	{ }
 
-	void bigtwin(machine_config &config);
-	void excelsr(machine_config &config);
+	void bigtwin(machine_config &config) ATTR_COLD;
+	void excelsr(machine_config &config) ATTR_COLD;
 
 protected:
 	virtual void machine_reset() override ATTR_COLD;
@@ -207,7 +207,7 @@ public:
 		m_fg_rowscroll_enable(false)
 	{ }
 
-	void wbeachvl_pic(machine_config &config);
+	void wbeachvl_pic(machine_config &config) ATTR_COLD;
 
 protected:
 	virtual void machine_reset() override ATTR_COLD;
@@ -229,7 +229,7 @@ protected:
 
 	void wbeachvl_main_map(address_map &map) ATTR_COLD;
 
-	void wbeachvl_base(machine_config &config);
+	void wbeachvl_base(machine_config &config) ATTR_COLD;
 };
 
 // uses MCS-51 MCU for audio
@@ -241,7 +241,7 @@ public:
 		m_audio_mcs(*this, "audiomcs")
 	{ }
 
-	void wbeachvl_mcs(machine_config &config);
+	void wbeachvl_mcs(machine_config &config) ATTR_COLD;
 
 private:
 	// devices

@@ -184,8 +184,8 @@ public:
 		m_flipswitch(*this, "FLIP")
 	{ }
 
-	void brkthru(machine_config &config);
-	void darwin(machine_config &config);
+	void brkthru(machine_config &config) ATTR_COLD;
+	void darwin(machine_config &config) ATTR_COLD;
 
 	DECLARE_INPUT_CHANGED_MEMBER(coin_inserted);
 	DECLARE_INPUT_CHANGED_MEMBER(flipscreen_switch) { flipscreen_w(m_flipscreen); }

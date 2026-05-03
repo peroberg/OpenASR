@@ -142,6 +142,7 @@ void playmark_state::luckboomh_dispenser_w(u8 data)
 {
 //  if (data & 0x87) logerror("%s: Writing unknown bits %02x to the Coin/EEPROM port\n", machine().describe_context(), data);
 
+	// FIXME: this can't be right - checking all the bits, including the counter and ticket motor outputs, makes no sense
 	if (data)
 	{
 		if (!BIT(m_dispenser_latch, 7))
@@ -1035,6 +1036,7 @@ void playmark_base_state::configure_oki_banks()
 		u8 *rgn = memregion("oki")->base();
 
 		m_oki_numbanks = len / 0x20000;
+		assert(!(m_oki_numbanks & (m_oki_numbanks - 1))); // uses (m_oki_numbanks - 1) as a mask
 
 		m_okibank->configure_entries(0, m_oki_numbanks, rgn, 0x20000);
 		m_okibank->set_entry(1);
@@ -1776,7 +1778,7 @@ ROM_START( hotmind ) // PCB marked Hard Times 28-06-94
 
 	ROM_REGION( 0x3000, "pic_hex", 0 )
 	ROM_LOAD( "hotmind_pic16c57-hs_io15.hex", 0x0000, 0x2d4c, BAD_DUMP CRC(f3300d13) SHA1(78892453c7374ea3d1606cdb81197cc466e2a8c5) )  // protected, contains upper nibble?
-	ROM_LOAD( "hotmind_pic16c57.hex",         0x0000, 0x2d4c, BAD_DUMP CRC(11957803) SHA1(c2f87659819bfcf3a5b43fbccf81988c43b9c9c8) )  // Using modified Excelsior PIC code to make it suite this game
+	ROM_LOAD( "hotmind_pic16c57.hex",         0x0000, 0x2d4c, BAD_DUMP CRC(11957803) SHA1(c2f87659819bfcf3a5b43fbccf81988c43b9c9c8) )  // Using modified Excelsior PIC code to make it suit this game
 
 	ROM_REGION( 0x080000, "tiles", 0 )
 	ROM_LOAD16_BYTE( "23.u36",       0x000000, 0x10000, CRC(ddcf60b9) SHA1(0c0fbc44131cb7d36c21bf5aead87b498c5684f5) )
@@ -1816,7 +1818,7 @@ ROM_START( hotmindc ) // PCB marked Hard Times 28-06-94
 
 	ROM_REGION( 0x3000, "pic_hex", 0 )
 	ROM_LOAD( "hotmind_pic16c57-hs_io15.hex", 0x0000, 0x2d4c, BAD_DUMP CRC(f3300d13) SHA1(78892453c7374ea3d1606cdb81197cc466e2a8c5) )  // protected, contains upper nibble?
-	ROM_LOAD( "hotmind_pic16c57.hex",         0x0000, 0x2d4c, BAD_DUMP CRC(11957803) SHA1(c2f87659819bfcf3a5b43fbccf81988c43b9c9c8) )  // Using modified Excelsior PIC code to make it suite this game
+	ROM_LOAD( "hotmind_pic16c57.hex",         0x0000, 0x2d4c, BAD_DUMP CRC(11957803) SHA1(c2f87659819bfcf3a5b43fbccf81988c43b9c9c8) )  // Using modified Excelsior PIC code to make it suit this game
 
 	ROM_REGION( 0x080000, "tiles", 0 )
 	ROM_LOAD16_BYTE( "23.u36",       0x000000, 0x10000, CRC(ddcf60b9) SHA1(0c0fbc44131cb7d36c21bf5aead87b498c5684f5) )
@@ -1856,7 +1858,7 @@ ROM_START( luckboomh )
 	ROM_LOAD( "luckyboom_pic16c57-hs_io15.bin",  0x00000, 0x2000, BAD_DUMP CRC(c4b9c78e) SHA1(e85766383b22a62f19bf272d86d53c7fb1eb5ac4) ) // protected, contains upper nibble?
 
 	ROM_REGION( 0x3000, "pic_hex", 0 )
-	ROM_LOAD( "luckyboom_pic16c57.hex", 0x0000, 0x2d4c, BAD_DUMP CRC(5c4b5c39) SHA1(d24a097bb4a134406dd95d3ad5ed912f81a6a849) )  // Using modified Excelsior PIC code to make it suite this game
+	ROM_LOAD( "luckyboom_pic16c57.hex", 0x0000, 0x2d4c, BAD_DUMP CRC(5c4b5c39) SHA1(d24a097bb4a134406dd95d3ad5ed912f81a6a849) )  // Using modified Excelsior PIC code to make it suit this game
 
 	ROM_REGION( 0x080000, "tiles", 0 )
 	ROM_LOAD16_BYTE( "23.u36",       0x000000, 0x10000, CRC(71840dd9) SHA1(9d0a75555dedb6fd28bb7c04b863f3ef5a1f8aac) )

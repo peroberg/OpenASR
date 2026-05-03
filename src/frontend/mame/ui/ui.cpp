@@ -1170,7 +1170,7 @@ void mame_ui_manager::draw_text_full(
 			x, y, origwrapwidth,
 			justify, wrap,
 			draw, fgcolor, bgcolor,
-			totalwidth, totalwidth,
+			totalwidth, totalheight,
 			text_size, machine().render().ui_aspect(target));
 }
 
@@ -1189,7 +1189,7 @@ void mame_ui_manager::draw_text_full(
 			x, y, origwrapwidth,
 			justify, wrap,
 			draw, fgcolor, bgcolor,
-			totalwidth, totalwidth,
+			totalwidth, totalheight,
 			text_size, machine().render().ui_aspect(container));
 }
 
@@ -1763,15 +1763,14 @@ uint32_t mame_ui_manager::handler_ingame()
 		}
 
 		if (!is_paused)
+		{
 			machine().pause();
+			m_paused_for_menu = true;
+		}
 		m_ui_target = &current_ui_target();
 		set_handler(
 				ui_callback_type::MENU,
-				handler_callback_func(
-					[this, is_paused] () -> uint32_t
-					{
-						return ui_gfx_ui_handler(*m_ui_target, *this, is_paused);
-					}));
+				handler_callback_func([this] () { return ui_gfx_ui_handler(*m_ui_target, *this); }));
 		return 0;
 	}
 
