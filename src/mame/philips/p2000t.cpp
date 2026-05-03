@@ -7,7 +7,7 @@ Philips P2000T/P2000M
 TODO:
 - Floppy drive (unknown type);
 - Second cart slot (no ROM, auxiliary I/O map for first cart slot);
-- Hookup p2000_cass & p2000_flop SW lists;
+- Hookup p2000_cass, p2000_flop and p2000_quik SW lists;
 - CTC;
 - Fix RAM hookup (can crash at lower sizes);
 - Joystick (cfr. brkwall)
@@ -636,3 +636,4 @@ ROM_END
 //    YEAR  NAME    PARENT  COMPAT  MACHINE  INPUT   CLASS         INIT        COMPANY    FULLNAME          FLAGS
 COMP( 1980, p2000t, 0,      0,      p2000t,  p2000t, p2000t_state, empty_init, "Philips", "P2000T", MACHINE_NOT_WORKING )
 COMP( 1980, p2000m, p2000t, 0,      p2000m,  p2000t, p2000m_state, empty_init, "Philips", "P2000M", MACHINE_NOT_WORKING )
+// P2000C, portable version
