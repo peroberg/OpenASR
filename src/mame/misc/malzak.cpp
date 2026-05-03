@@ -101,24 +101,14 @@ public:
 		, m_mainbank(*this, "mainbank")
 	{ }
 
-	void malzak(machine_config &config);
-	void malzak2(machine_config &config);
+	void malzak(machine_config &config) ATTR_COLD;
+	void malzak2(machine_config &config) ATTR_COLD;
 
 protected:
 	virtual void machine_start() override ATTR_COLD;
 	virtual void machine_reset() override ATTR_COLD;
 
 private:
-	/* devices */
-	required_device<s2650_device> m_maincpu;
-	required_device_array<s2636_device, 2> m_s2636;
-	required_device<saa5050_device> m_trom;
-	required_shared_ptr<uint8_t> m_videoram;
-	required_device<gfxdecode_device> m_gfxdecode;
-	required_device<screen_device> m_screen;
-	required_device<palette_device> m_palette;
-	required_memory_bank m_mainbank;
-
 	uint8_t fake_VRLE_r();
 	uint8_t s2636_portA_r();
 	uint8_t s2650_data_r();
@@ -139,8 +129,19 @@ private:
 	void malzak_map(address_map &map) ATTR_COLD;
 
 	TILE_GET_INFO_MEMBER(get_tile_info);
-	std::unique_ptr<bitmap_rgb32> m_trom_bitmap;
-	std::unique_ptr<bitmap_rgb32> m_playfield_bitmap;
+
+	/* devices */
+	required_device<s2650_device> m_maincpu;
+	required_device_array<s2636_device, 2> m_s2636;
+	required_device<saa5050_device> m_trom;
+	required_shared_ptr<uint8_t> m_videoram;
+	required_device<gfxdecode_device> m_gfxdecode;
+	required_device<screen_device> m_screen;
+	required_device<palette_device> m_palette;
+	required_memory_bank m_mainbank;
+
+	bitmap_rgb32 m_trom_bitmap;
+	bitmap_rgb32 m_playfield_bitmap;
 	tilemap_t *m_playfield_tilemap = nullptr;
 	int m_playfield_code[256]{};
 	int m_scrollx = 0;
@@ -173,8 +174,8 @@ void malzak_state::video_start()
 
 	int width = m_screen->width();
 	int height = m_screen->height();
-	m_trom_bitmap = std::make_unique<bitmap_rgb32>(width, height);
-	m_playfield_bitmap = std::make_unique<bitmap_rgb32>(width, height);
+	m_trom_bitmap.allocate(width, height);
+	m_playfield_bitmap.allocate(width, height);
 	m_playfield_tilemap = &machine().tilemap().create(*m_gfxdecode, tilemap_get_info_delegate(*this, FUNC(malzak_state::get_tile_info)), TILEMAP_SCAN_COLS, 16, 16, 16, 16);
 }
 
@@ -226,8 +227,8 @@ uint32_t malzak_state::screen_update(screen_device &screen, bitmap_rgb32 &bitmap
 	bitmap.fill(rgb_t::black(), cliprect);
 
 	// prepare bitmaps
-	m_trom->screen_update(screen, *m_trom_bitmap, cliprect);
-	m_playfield_tilemap->draw(screen, *m_playfield_bitmap, cliprect, 0, 0);
+	m_trom->screen_update(screen, m_trom_bitmap, cliprect);
+	m_playfield_tilemap->draw(screen, m_playfield_bitmap, cliprect, 0, 0);
 	bitmap_ind16 const &s2636_0_bitmap = m_s2636[0]->update(cliprect);
 	bitmap_ind16 const &s2636_1_bitmap = m_s2636[1]->update(cliprect);
 
@@ -241,8 +242,8 @@ uint32_t malzak_state::screen_update(screen_device &screen, bitmap_rgb32 &bitmap
 			int sx = x / 2;
 			int s2636_pix_0 = s2636_0_bitmap.pix(sy, sx);
 			int s2636_pix_1 = s2636_1_bitmap.pix(sy, sx);
-			rgb_t trom_pix = m_trom_bitmap->pix(y, x);
-			rgb_t play_pix = m_playfield_bitmap->pix(sy, sx);
+			rgb_t trom_pix = m_trom_bitmap.pix(y, x);
+			rgb_t play_pix = m_playfield_bitmap.pix(sy, sx);
 
 			// SAA5050 > s2636[1] > s2636[0] > playfield
 			if (trom_pix != rgb_t::black())

@@ -115,12 +115,9 @@ void leland_state::init_vram()
 	save_pointer(NAME(m_video_ram), VRAM_SIZE);
 	save_item(NAME(m_xscroll));
 	save_item(NAME(m_yscroll));
-	for (u8 i = 0; i < 2; i++)
-	{
-		save_item(NAME(m_vram_state[i].m_buffer), i);
-		save_item(NAME(m_vram_state[i].m_addr), i);
-		save_item(NAME(m_vram_state[i].m_latch), i);
-	}
+	save_item(STRUCT_MEMBER(m_vram_state, m_buffer));
+	save_item(STRUCT_MEMBER(m_vram_state, m_addr));
+	save_item(STRUCT_MEMBER(m_vram_state, m_latch));
 }
 
 void leland_state::video_start()

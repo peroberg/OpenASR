@@ -49,19 +49,31 @@ public:
 		, m_bg_prom(*this, "bg_prom")
 	{ }
 
-	void leland(machine_config &config);
-	void leland_video(machine_config &config);
+	void leland(machine_config &config) ATTR_COLD;
 
-	void init_dblplay();
-	void init_dangerz();
-	void init_mayhem();
-	void init_alleymas();
-	void init_strkzone();
-	void init_wseries();
-	void init_powrplay();
-	void init_basebal2();
-	void init_upyoural();
-	void init_cerberus();
+	void init_dblplay() ATTR_COLD;
+	void init_dangerz() ATTR_COLD;
+	void init_mayhem() ATTR_COLD;
+	void init_alleymas() ATTR_COLD;
+	void init_strkzone() ATTR_COLD;
+	void init_wseries() ATTR_COLD;
+	void init_powrplay() ATTR_COLD;
+	void init_basebal2() ATTR_COLD;
+	void init_upyoural() ATTR_COLD;
+	void init_cerberus() ATTR_COLD;
+
+protected:
+	static constexpr u8 SERIAL_TYPE_NONE        = 0;
+	static constexpr u8 SERIAL_TYPE_ADD         = 1;
+	static constexpr u8 SERIAL_TYPE_ADD_XOR     = 2;
+	static constexpr u8 SERIAL_TYPE_ENCRYPT     = 3;
+	static constexpr u8 SERIAL_TYPE_ENCRYPT_XOR = 4;
+
+	virtual void machine_start() override ATTR_COLD;
+	virtual void machine_reset() override ATTR_COLD;
+	virtual void video_start() override ATTR_COLD;
+
+	void rotate_memory(const char *cpuname) ATTR_COLD;
 
 	void cerberus_bankswitch();
 	void mayhem_bankswitch();
@@ -72,54 +84,8 @@ public:
 	void viper_bankswitch();
 	void offroad_bankswitch();
 
-protected:
-	required_device<cpu_device> m_master;
-	required_device<cpu_device> m_slave;
-	required_shared_ptr<u8> m_mainram;
-	required_memory_bank m_master_bankslot;
-	required_region_ptr<u8> m_master_base;
-	required_memory_bank m_slave_bankslot;
-	required_region_ptr<u8> m_slave_base;
-	required_device<eeprom_serial_93cxx_device> m_eeprom;
-	required_shared_ptr<u8> m_battery_ram;
-	required_device<palette_device> m_palette;
-	required_device<screen_device> m_screen;
-	required_device<gfxdecode_device> m_gfxdecode;
-	memory_view m_palette_view;
-	memory_view m_battery_ram_view;
-
-	optional_ioport_array<4> m_io_in;
-	optional_ioport_array<6> m_io_an;
-
-	emu_timer *m_master_int_timer = nullptr;
-
-	u8 m_dial_last_input[4]{};
-	u8 m_dial_last_result[4]{};
-	u8 m_analog_result = 0U;
-
-	s32 m_dangerz_x = 0;
-	s32 m_dangerz_y = 0;
-
-	tilemap_t *m_tilemap = nullptr;
-	u16 m_xscroll = 0U;
-	u16 m_yscroll = 0U;
-
-	std::unique_ptr<u8[]> m_video_ram;
-
-	struct vram_state_data
-	{
-		u8   m_buffer = 0U; // MSB of address
-		u16  m_addr = 0U;
-		u8   m_latch[2]{};
-	};
-
-	struct vram_state_data m_vram_state[2];
-
-	void rotate_memory(const char *cpuname);
-
 	int dial_compute_value(int new_val, int indx);
 	void init_master_ports(u8 mvram_base, u8 io_base);
-	void (leland_state::*m_update_master_bank)();
 
 	void update_battery_ram_view(bool enable);
 
@@ -143,30 +109,54 @@ protected:
 	void slave_large_banksw_w(u8 data);
 	void master_video_addr_w(offs_t offset, u8 data);
 
+	void leland_video(machine_config &config) ATTR_COLD;
 	void master_common_map_program(address_map &map) ATTR_COLD;
 
+	required_device<cpu_device> m_master;
+	required_device<cpu_device> m_slave;
+	required_shared_ptr<u8> m_mainram;
+	required_memory_bank m_master_bankslot;
+	required_region_ptr<u8> m_master_base;
+	required_memory_bank m_slave_bankslot;
+	required_region_ptr<u8> m_slave_base;
+	required_device<eeprom_serial_93cxx_device> m_eeprom;
+	required_shared_ptr<u8> m_battery_ram;
+	required_device<palette_device> m_palette;
+	required_device<screen_device> m_screen;
+	required_device<gfxdecode_device> m_gfxdecode;
+	memory_view m_palette_view;
+	memory_view m_battery_ram_view;
+
+	optional_ioport_array<4> m_io_in;
+	optional_ioport_array<6> m_io_an;
+
+	void (leland_state::*m_update_master_bank)();
+
+	emu_timer *m_master_int_timer = nullptr;
+
+	u8 m_dial_last_input[4]{};
+	u8 m_dial_last_result[4]{};
+	u8 m_analog_result = 0U;
+
+	s32 m_dangerz_x = 0;
+	s32 m_dangerz_y = 0;
+
+	tilemap_t *m_tilemap = nullptr;
+	u16 m_xscroll = 0U;
+	u16 m_yscroll = 0U;
+
+	std::unique_ptr<u8[]> m_video_ram;
+
+	struct vram_state_data
+	{
+		u8   m_buffer = 0U; // MSB of address
+		u16  m_addr = 0U;
+		u8   m_latch[2]{};
+	};
+
+	vram_state_data m_vram_state[2];
+
 private:
-	optional_device_array<dac_byte_interface, 2> m_dac;
-	optional_device<ay8910_device> m_ay8910;
-	optional_device<ay8912_device> m_ay8912;
-
-	required_region_ptr<u8> m_bg_gfxrom;
-	optional_region_ptr<u8> m_bg_prom;
-
-	u8 m_dac_control = 0U;
-	u8 *m_alleymas_kludge_mem = nullptr;
-	u8 m_gfx_control = 0U;
-	u8 m_keycard_shift = 0U;
-	u8 m_keycard_bit = 0U;
-	u8 m_keycard_state = 0U;
-	u8 m_keycard_clock = 0U;
-	u8 m_keycard_command[3]{};
-	u8 m_top_board_bank = 0U;
-	u8 m_sound_port_bank = 0U;
-	u8 m_alternate_bank = 0U;
-	u8 m_gfxbank = 0U;
-	emu_timer *m_scanline_timer = nullptr;
-
 	u8 cerberus_dial_1_r();
 	u8 cerberus_dial_2_r();
 	void alleymas_joystick_kludge_w(u8 data);
@@ -180,10 +170,6 @@ private:
 	u8 sound_port_r();
 	void sound_port_w(u8 data);
 	void gfx_port_w(u8 data);
-
-	virtual void machine_start() override ATTR_COLD;
-	virtual void machine_reset() override ATTR_COLD;
-	virtual void video_start() override ATTR_COLD;
 
 	TILEMAP_MAPPER_MEMBER(leland_scan);
 	TILE_GET_INFO_MEMBER(leland_get_tile_info);
@@ -204,6 +190,27 @@ private:
 	void master_map_program(address_map &map) ATTR_COLD;
 	void slave_map_io(address_map &map) ATTR_COLD;
 	void slave_small_map_program(address_map &map) ATTR_COLD;
+
+	optional_device_array<dac_byte_interface, 2> m_dac;
+	optional_device<ay8910_device> m_ay8910;
+	optional_device<ay8912_device> m_ay8912;
+
+	required_region_ptr<u8> m_bg_gfxrom;
+	optional_region_ptr<u8> m_bg_prom;
+
+	u8 m_dac_control = 0U;
+	u8 *m_alleymas_kludge_mem = nullptr;
+	u8 m_gfx_control = 0U;
+	u8 m_keycard_shift = 0U;
+	u8 m_keycard_bit = 0U;
+	u8 m_keycard_state = 0U;
+	u8 m_keycard_clock = 0U;
+	u8 m_keycard_command[3]{};
+	u8 m_top_board_bank = 0U;
+	u8 m_sound_port_bank = 0U;
+	u8 m_alternate_bank = 0U;
+	u8 m_gfxbank = 0U;
+	emu_timer *m_scanline_timer = nullptr;
 };
 
 
@@ -216,20 +223,20 @@ public:
 	{
 	}
 
-	void init_redlin2p();
-	void init_quarterb();
-	void init_viper();
-	void init_teamqb();
-	void init_aafb();
-	void init_aafbb();
-	void init_aafbd2p();
-	void init_offroad();
-	void init_offroadt();
-	void init_pigout();
+	void init_redlin2p() ATTR_COLD;
+	void init_quarterb() ATTR_COLD;
+	void init_viper() ATTR_COLD;
+	void init_teamqb() ATTR_COLD;
+	void init_aafb() ATTR_COLD;
+	void init_aafbb() ATTR_COLD;
+	void init_aafbd2p() ATTR_COLD;
+	void init_offroad() ATTR_COLD;
+	void init_offroadt() ATTR_COLD;
+	void init_pigout() ATTR_COLD;
 
-	void redline(machine_config &config);
-	void quarterb(machine_config &config);
-	void lelandi(machine_config &config);
+	void redline(machine_config &config) ATTR_COLD;
+	void quarterb(machine_config &config) ATTR_COLD;
+	void lelandi(machine_config &config) ATTR_COLD;
 
 private:
 	u8 redline_pedal_1_r();
@@ -261,15 +268,15 @@ public:
 	{
 	}
 
-	void init_ataxx();
-	void init_wsf();
-	void init_indyheat();
-	void init_brutforc();
-	void init_asylum();
+	void init_ataxx() ATTR_COLD;
+	void init_wsf() ATTR_COLD;
+	void init_indyheat() ATTR_COLD;
+	void init_brutforc() ATTR_COLD;
+	void init_asylum() ATTR_COLD;
 
-	void ataxx(machine_config &config);
-	void wsf(machine_config &config);
-	void asylum(machine_config &config);
+	void ataxx(machine_config &config) ATTR_COLD;
+	void wsf(machine_config &config) ATTR_COLD;
+	void asylum(machine_config &config) ATTR_COLD;
 
 protected:
 	virtual void machine_start() override ATTR_COLD;
@@ -319,12 +326,5 @@ private:
 	u8 m_master_bank = 0U;
 	u32 m_xrom_addr[2]{};
 };
-
-
-#define SERIAL_TYPE_NONE        0
-#define SERIAL_TYPE_ADD         1
-#define SERIAL_TYPE_ADD_XOR     2
-#define SERIAL_TYPE_ENCRYPT     3
-#define SERIAL_TYPE_ENCRYPT_XOR 4
 
 #endif // MAME_CINEMATRONICS_LELAND_H

@@ -3349,7 +3349,7 @@ void leland_state::init_strkzone()
 void redline_state::init_redlin2p()
 {
 	/* master CPU bankswitching */
-	m_update_master_bank = &leland_state::redline_bankswitch;
+	m_update_master_bank = &redline_state::redline_bankswitch;
 
 	rotate_memory("master");
 
@@ -3367,7 +3367,7 @@ void redline_state::init_redlin2p()
 void redline_state::init_quarterb()
 {
 	/* master CPU bankswitching */
-	m_update_master_bank = &leland_state::viper_bankswitch;
+	m_update_master_bank = &redline_state::viper_bankswitch;
 
 	rotate_memory("master");
 
@@ -3379,7 +3379,7 @@ void redline_state::init_quarterb()
 void redline_state::init_viper()
 {
 	/* master CPU bankswitching */
-	m_update_master_bank = &leland_state::viper_bankswitch;
+	m_update_master_bank = &redline_state::viper_bankswitch;
 
 	rotate_memory("master");
 	rotate_memory("slave");
@@ -3401,7 +3401,7 @@ void redline_state::init_viper()
 void redline_state::init_teamqb()
 {
 	/* master CPU bankswitching */
-	m_update_master_bank = &leland_state::viper_bankswitch;
+	m_update_master_bank = &redline_state::viper_bankswitch;
 
 	rotate_memory("master");
 	rotate_memory("slave");
@@ -3419,7 +3419,7 @@ void redline_state::init_teamqb()
 void redline_state::init_aafb()
 {
 	/* master CPU bankswitching */
-	m_update_master_bank = &leland_state::viper_bankswitch;
+	m_update_master_bank = &redline_state::viper_bankswitch;
 
 	rotate_memory("master");
 	rotate_memory("slave");
@@ -3437,7 +3437,7 @@ void redline_state::init_aafb()
 void redline_state::init_aafbb()
 {
 	/* master CPU bankswitching */
-	m_update_master_bank = &leland_state::viper_bankswitch;
+	m_update_master_bank = &redline_state::viper_bankswitch;
 
 	rotate_memory("master");
 	rotate_memory("slave");
@@ -3455,7 +3455,7 @@ void redline_state::init_aafbb()
 void redline_state::init_aafbd2p()
 {
 	/* master CPU bankswitching */
-	m_update_master_bank = &leland_state::viper_bankswitch;
+	m_update_master_bank = &redline_state::viper_bankswitch;
 
 	rotate_memory("master");
 	rotate_memory("slave");
@@ -3473,7 +3473,7 @@ void redline_state::init_aafbd2p()
 void redline_state::init_offroad()
 {
 	/* master CPU bankswitching */
-	m_update_master_bank = &leland_state::offroad_bankswitch;
+	m_update_master_bank = &redline_state::offroad_bankswitch;
 
 	rotate_memory("master");
 	rotate_memory("slave");
@@ -3493,7 +3493,7 @@ void redline_state::init_offroad()
 void redline_state::init_offroadt()
 {
 	/* master CPU bankswitching */
-	m_update_master_bank = &leland_state::offroad_bankswitch;
+	m_update_master_bank = &redline_state::offroad_bankswitch;
 
 	rotate_memory("master");
 	rotate_memory("slave");
@@ -3512,7 +3512,7 @@ void redline_state::init_offroadt()
 void redline_state::init_pigout()
 {
 	/* master CPU bankswitching */
-	m_update_master_bank = &leland_state::offroad_bankswitch;
+	m_update_master_bank = &redline_state::offroad_bankswitch;
 
 	rotate_memory("master");
 	rotate_memory("slave");
