@@ -1,6 +1,22 @@
 // license:BSD-3-Clause
 // copyright-holders:Paul Daniels
-/************************************************************************
+/**************************************************************************************************
+
+Philips P2000T/P2000M
+
+TODO:
+- Floppy drive (unknown type);
+- Second cart slot (no ROM, auxiliary I/O map for first cart slot);
+- Hookup p2000_cass & p2000_flop SW lists;
+- CTC;
+- Fix RAM hookup (can crash at lower sizes);
+- Joystick (cfr. brkwall)
+- p2000t: GFX offset when no SW is in;
+- p2000m: fix screen size;
+- QA testing;
+
+===================================================================================================
+
 Philips P2000 1 Memory map
 
     CPU: Z80
@@ -26,7 +42,21 @@ Philips P2000 1 Memory map
 
     Display: SAA5050
 
-************************************************************************/
+SLOT1 ROM header:
+[$1000]
+0101 ---- signature for checking if cart is inserted
+---- x--- If 0 cart is mirrored (not 16KiB)
+---- -x-- If 0 contains maintenance program, otherwise standard cart
+---- --x- If 1 monitor (re-)start should load the disk control software from disk before starting
+          cart itself
+---- ---x Always 0
+[$1001-$1002] program length
+[$1003-$1004] checksum
+[$1005-$100c] Program name, in Viewdata code.
+[$100d] Release number
+[$100e-$100f] <reserved>
+
+**************************************************************************************************/
 
 #include "emu.h"
 
@@ -44,27 +74,6 @@ Philips P2000 1 Memory map
 #include "speaker.h"
 
 namespace {
-
-#define P2000M_101F_CASDAT 0x01
-#define P2000M_101F_CASCMD 0x02
-#define P2000M_101F_CASREW 0x04
-#define P2000M_101F_CASFOR 0x08
-#define P2000M_101F_KEYINT 0x40
-#define P2000M_101F_PRNOUT 0x80
-
-#define P2000M_202F_PINPUT 0x01
-#define P2000M_202F_PREADY 0x02
-#define P2000M_202F_STRAPN 0x04
-#define P2000M_202F_CASENB 0x08
-#define P2000M_202F_CASPOS 0x10
-#define P2000M_202F_CASEND 0x20
-#define P2000M_202F_CASCLK 0x40
-#define P2000M_202F_CASDAT 0x80
-
-#define P2000M_303F_VIDEO 0x01
-
-#define P2000M_707F_DISA 0x01
-
 
 class p2000t_state : public driver_device
 {
@@ -90,8 +99,6 @@ protected:
 	void p2000t_port_303f_w(uint8_t data);
 	void p2000t_port_505f_w(uint8_t data);
 	void p2000t_port_707f_w(uint8_t data);
-	void p2000t_port_888b_w(uint8_t data);
-	void p2000t_port_8c90_w(uint8_t data);
 	void p2000t_port_9494_w(uint8_t data);
 	uint8_t videoram_r(offs_t offset);
 	virtual void machine_start() override ATTR_COLD;
@@ -111,7 +118,7 @@ protected:
 
 private:
 	required_ioport_array<10> m_keyboard;
-	uint8_t m_port_101f;
+	bool m_keyboard_int_enable;
 	uint8_t m_port_303f;
 	uint8_t m_port_707f;
 };
@@ -209,12 +216,13 @@ uint32_t p2000m_state::screen_update_p2000m(screen_device &screen, bitmap_ind16 
 */
 uint8_t p2000t_state::p2000t_port_000f_r(offs_t offset)
 {
-	if (m_port_101f & P2000M_101F_KEYINT)
+	if (m_keyboard_int_enable)
 	{
-		return (m_keyboard[0]->read() & m_keyboard[1]->read() & m_keyboard[2]->read()
-				& m_keyboard[3]->read() & m_keyboard[4]->read() & m_keyboard[5]->read()
-				& m_keyboard[6]->read() & m_keyboard[7]->read() & m_keyboard[8]->read()
-				& m_keyboard[9]->read());
+		uint8_t res = 0xff;
+		for (int i = 0; i < 10; i++)
+			res &= m_keyboard[i]->read();
+
+		return res;
 	}
 	else if (offset < 10)
 	{
@@ -264,7 +272,7 @@ uint8_t p2000t_state::p2000t_port_202f_r()
 */
 void p2000t_state::p2000t_port_101f_w(uint8_t data)
 {
-	m_port_101f = data;
+	m_keyboard_int_enable = BIT(data, 6);
 	m_mdcr->wda(BIT(data, 0));
 	m_mdcr->wdc(BIT(data, 1));
 	m_mdcr->rev(BIT(data, 2));
@@ -317,9 +325,6 @@ void p2000t_state::p2000t_port_505f_w(uint8_t data) { m_speaker->level_w(BIT(dat
 */
 void p2000t_state::p2000t_port_707f_w(uint8_t data) { m_port_707f = data; }
 
-void p2000t_state::p2000t_port_888b_w(uint8_t data) {}
-void p2000t_state::p2000t_port_8c90_w(uint8_t data) {}
-
 
 void p2000t_state::p2000t_port_9494_w(uint8_t data) {
 	//  The memory region E000-FFFF (8k) is bank switched
@@ -356,8 +361,8 @@ void p2000t_state::p2000t_io(address_map &map)
 	map(0x30, 0x3f).w(FUNC(p2000t_state::p2000t_port_303f_w));
 	map(0x50, 0x5f).w(FUNC(p2000t_state::p2000t_port_505f_w));
 	map(0x70, 0x7f).w(FUNC(p2000t_state::p2000t_port_707f_w));
-	map(0x88, 0x8b).w(FUNC(p2000t_state::p2000t_port_888b_w));
-	map(0x8c, 0x90).w(FUNC(p2000t_state::p2000t_port_8c90_w));
+//  map(0x88, 0x8b) CTC
+//  map(0x8c, 0x90) FDC
 	map(0x94, 0x94).w(FUNC(p2000t_state::p2000t_port_9494_w));
 }
 
@@ -503,29 +508,29 @@ INPUT_PORTS_END
 
 void p2000t_state::machine_start()
 {
-		auto program = &m_maincpu->space(AS_PROGRAM);
-		auto ramsize = m_ram->size();
-		switch(ramsize) {
-			case 0x4000: // 16kb
-				program->unmap_readwrite(0xa000, 0xffff);
-				break;
-			case 0x8000: // 32kb
-				program->unmap_readwrite(0xe000, 0xffff);
-				break;
-			default: // more.. (48kb, 64kb, 102kb)
-				// In this case we have a set of 8kb memory banks.
-				uint8_t *ram = m_ram->pointer();
-				auto available_banks = (ramsize - 0xe000) / 0x2000;
-				for(int i = 0; i < available_banks; i++)
-					m_bank->configure_entry(i, ram + (i * 0x2000));
-				break;
-		}
+	auto program = &m_maincpu->space(AS_PROGRAM);
+	auto ramsize = m_ram->size();
+	switch(ramsize) {
+		case 0x4000: // 16kb
+			program->unmap_readwrite(0xa000, 0xffff);
+			break;
+		case 0x8000: // 32kb
+			program->unmap_readwrite(0xe000, 0xffff);
+			break;
+		default: // more.. (48kb, 64kb, 102kb)
+			// In this case we have a set of 8kb memory banks.
+			uint8_t *ram = m_ram->pointer();
+			auto available_banks = (ramsize - 0xe000) / 0x2000;
+			for(int i = 0; i < available_banks; i++)
+				m_bank->configure_entry(i, ram + (i * 0x2000));
+			break;
+	}
 }
 
-
+// TODO: vblank can't be keyboard source
 INTERRUPT_GEN_MEMBER(p2000t_state::p2000_interrupt)
 {
-	if (BIT(m_port_101f, 6))
+	if (m_keyboard_int_enable)
 		m_maincpu->set_input_line(0, HOLD_LINE);
 }
 
