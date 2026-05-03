@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE softwarelist SYSTEM "softwarelist.dtd">
+<!--
+license:CC0-1.0
+
+TODO:
+- Check RAM requirements for each SW;
+- Check if p2000m can really run everything here or it warrants a sharedfeat;
+
+-->
+<softwarelist name="p2000_cart" description="Philips P2000T/P2000M cartridges">
+
+	<software name="basicnl">
+		<description>Cassette Basic (v1.1, Netherlands)</description>
+		<year>198?</year>
+		<publisher>Philips</publisher>
+		<part name="cart" interface="p2000_cart">
+			<dataarea name="rom" size="0x4000">
+				<rom name="basic.rom" size="0x4000" crc="9d9d38f9" sha1="fb5100436c99634a2592a10dff867f85bcff7aec"/>
+			</dataarea>
+		</part>
+	</software>
+
+</softwarelist>

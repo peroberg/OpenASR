@@ -5,7 +5,7 @@ Philips P2000 1 Memory map
 
     CPU: Z80
         0000-0fff   ROM
-        1000-4fff   ROM (appl)
+        1000-4fff   ROM (cartslot)
         5000-57ff   RAM (Screen T ver)
         5000-5fff   RAM (Screen M ver)
         6000-9fff   RAM (system)
@@ -30,6 +30,8 @@ Philips P2000 1 Memory map
 
 #include "emu.h"
 
+#include "bus/generic/carts.h"
+#include "bus/generic/slot.h"
 #include "cpu/z80/z80.h"
 #include "machine/mdcr.h"
 #include "machine/ram.h"
@@ -38,6 +40,7 @@ Philips P2000 1 Memory map
 
 #include "emupal.h"
 #include "screen.h"
+#include "softlist_dev.h"
 #include "speaker.h"
 
 namespace {
@@ -109,7 +112,6 @@ protected:
 private:
 	required_ioport_array<10> m_keyboard;
 	uint8_t m_port_101f;
-	uint8_t m_port_202f;
 	uint8_t m_port_303f;
 	uint8_t m_port_707f;
 };
@@ -326,6 +328,24 @@ void p2000t_state::p2000t_port_9494_w(uint8_t data) {
 		m_bank->set_entry(data);
 }
 
+void p2000t_state::p2000t_mem(address_map &map)
+{
+	map(0x0000, 0x0fff).rom();
+	map(0x1000, 0x4fff).r("cartslot", FUNC(generic_slot_device::read_rom));
+	map(0x5000, 0x57ff).ram().share("videoram");
+	map(0x5800, 0xdfff).ram();
+	map(0xe000, 0xffff).bankrw(m_bank);
+}
+
+void p2000m_state::p2000m_mem(address_map &map)
+{
+	map(0x0000, 0x0fff).rom();
+	map(0x1000, 0x4fff).r("cartslot", FUNC(generic_slot_device::read_rom));
+	map(0x5000, 0x5fff).ram().share("videoram");
+	map(0x6000, 0xdfff).ram();
+	map(0xe000, 0xffff).bankrw(m_bank);
+}
+
 /* port i/o functions */
 void p2000t_state::p2000t_io(address_map &map)
 {
@@ -339,25 +359,6 @@ void p2000t_state::p2000t_io(address_map &map)
 	map(0x88, 0x8b).w(FUNC(p2000t_state::p2000t_port_888b_w));
 	map(0x8c, 0x90).w(FUNC(p2000t_state::p2000t_port_8c90_w));
 	map(0x94, 0x94).w(FUNC(p2000t_state::p2000t_port_9494_w));
-}
-
-/* Memory w/r functions */
-void p2000t_state::p2000t_mem(address_map &map)
-{
-	map(0x0000, 0x0fff).rom();
-	map(0x1000, 0x4fff).rom();
-	map(0x5000, 0x57ff).ram().share("videoram");
-	map(0x5800, 0xdfff).ram();
-	map(0xe000, 0xffff).bankrw(m_bank);
-}
-
-void p2000m_state::p2000m_mem(address_map &map)
-{
-	map(0x0000, 0x0fff).rom();
-	map(0x1000, 0x4fff).rom();
-	map(0x5000, 0x5fff).ram().share("videoram");
-	map(0x6000, 0xdfff).ram();
-	map(0xe000, 0xffff).bankrw(m_bank);
 }
 
 /* graphics output */
@@ -536,6 +537,7 @@ uint8_t p2000t_state::videoram_r(offs_t offset)
 
 
 /* Machine definition */
+// TODO: merge defs
 void p2000t_state::p2000t(machine_config &config)
 {
 	/* basic machine hardware */
@@ -556,15 +558,19 @@ void p2000t_state::p2000t(machine_config &config)
 	saa5050.d_cb().set(FUNC(p2000t_state::videoram_r));
 	saa5050.set_screen_size(40, 24, 80);
 
-	/* sound hardware */
-	SPEAKER(config, "mono").front_center();
-	SPEAKER_SOUND(config, m_speaker).add_route(ALL_OUTPUTS, "mono", 0.25);
-
 	/* the mini cassette driver */
 	MDCR(config, m_mdcr, 0);
 
 	/* internal ram */
 	RAM(config, m_ram).set_default_size("16K").set_extra_options("16K,32K,48K,64K,80K,102K");
+
+	GENERIC_CARTSLOT(config, "cartslot", generic_plain_slot, "p2000_cart", "bin,rom");
+
+	SOFTWARE_LIST(config, "cart_list").set_original("p2000_cart");
+
+	/* sound hardware */
+	SPEAKER(config, "mono").front_center();
+	SPEAKER_SOUND(config, m_speaker).add_route(ALL_OUTPUTS, "mono", 0.25);
 }
 
 
@@ -590,14 +596,19 @@ void p2000m_state::p2000m(machine_config &config)
 	GFXDECODE(config, m_gfxdecode, m_palette, gfx_p2000m);
 	PALETTE(config, m_palette, FUNC(p2000m_state::p2000m_palette), 4);
 
+	/* the mini cassette driver */
+	MDCR(config, m_mdcr, 0);
+
+	/* internal ram */
+	RAM(config, m_ram).set_default_size("16K").set_extra_options("16K,32K,48K,64K,80K,102K");
+
+	GENERIC_CARTSLOT(config, "cartslot", generic_plain_slot, "p2000_cart", "bin,rom");
+
+	SOFTWARE_LIST(config, "cart_list").set_original("p2000_cart");
+
 	/* sound hardware */
 	SPEAKER(config, "mono").front_center();
 	SPEAKER_SOUND(config, m_speaker).add_route(ALL_OUTPUTS, "mono", 0.25);
-
-	/* the mini cassette driver */
-	MDCR(config, m_mdcr, 0);
-	/* internal ram */
-	RAM(config, m_ram).set_default_size("16K").set_extra_options("16K,32K,48K,64K,80K,102K");
 }
 
 } // anonymous namespace
@@ -605,18 +616,16 @@ void p2000m_state::p2000m(machine_config &config)
 ROM_START(p2000t)
 	ROM_REGION(0x10000, "maincpu",0)
 	ROM_LOAD("p2000.rom", 0x0000, 0x1000, CRC(650784a3) SHA1(4dbb28adad30587f2ea536ba116898d459faccac))
-	ROM_LOAD("basic.rom", 0x1000, 0x4000, CRC(9d9d38f9) SHA1(fb5100436c99634a2592a10dff867f85bcff7aec))
 ROM_END
 
 ROM_START(p2000m)
 	ROM_REGION(0x10000, "maincpu",0)
 	ROM_LOAD("p2000.rom", 0x0000, 0x1000, CRC(650784a3) SHA1(4dbb28adad30587f2ea536ba116898d459faccac))
-	ROM_LOAD("basic.rom", 0x1000, 0x4000, CRC(9d9d38f9) SHA1(fb5100436c99634a2592a10dff867f85bcff7aec))
 
 	ROM_REGION(0x01000, "gfx1",0)
 	ROM_LOAD("p2000.chr", 0x0140, 0x08c0, BAD_DUMP CRC(78c17e3e) SHA1(4e1c59dc484505de1dc0b1ba7e5f70a54b0d4ccc))
 ROM_END
 
 //    YEAR  NAME    PARENT  COMPAT  MACHINE  INPUT   CLASS         INIT        COMPANY    FULLNAME          FLAGS
-COMP( 1980, p2000t, 0,      0,      p2000t,  p2000t, p2000t_state, empty_init, "Philips", "P2000T", 0 )
-COMP( 1980, p2000m, p2000t, 0,      p2000m,  p2000t, p2000m_state, empty_init, "Philips", "P2000M", 0 )
+COMP( 1980, p2000t, 0,      0,      p2000t,  p2000t, p2000t_state, empty_init, "Philips", "P2000T", MACHINE_NOT_WORKING )
+COMP( 1980, p2000m, p2000t, 0,      p2000m,  p2000t, p2000m_state, empty_init, "Philips", "P2000M", MACHINE_NOT_WORKING )
