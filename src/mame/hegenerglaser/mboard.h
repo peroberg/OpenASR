@@ -43,7 +43,7 @@ public:
 	void cb_en_w(int state);
 
 protected:
-	// device-level overrides
+	// device_t implementation
 	virtual void device_start() override ATTR_COLD;
 	virtual void device_reset() override ATTR_COLD;
 
