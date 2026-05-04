@@ -388,7 +388,7 @@ Not extensively tested
 		</part>
 	</software>
 
-	<software name="asm56" cloneof="asm56" supported="no">
+	<software name="asm56" supported="no">
 		<description>P2000 Assembler (v5.6)</description>
 		<year>198?</year>
 		<!-- Ron Eijnthoven -->
@@ -483,7 +483,7 @@ Various unsupported features
 		</part>
 	</software>
 
-	<software name="main1a" cloneof="main1">
+	<software name="main1a">
 		<description>Maintenance (Release 1, alt)</description>
 		<year>198?</year>
 		<publisher>Philips</publisher>
