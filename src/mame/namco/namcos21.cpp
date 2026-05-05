@@ -36,8 +36,6 @@ is used to shade quads according to their depth.
 -------------------
 
 TODO:
-- posirq is iffy, see winrun/winrungp after confirming selection screen, where it's probably supposed
-  to do multiple posirq to draw blank strips
 - some z-fighting issues, eg. signs and car rearwing (the problem is in namcos21_3d_device)
 - verify video timing, PCB videos do suggest exactly 60Hz
 - is it possible to remove the ROM hacks? see init functions, perfect quantum won't help (winrungp works
@@ -449,12 +447,14 @@ void namcos21_state::gpu_register_w(offs_t offset, u16 data, u16 mem_mask)
 
 u8 namcos21_state::gpu_posirq_r()
 {
-	return m_posirq_line;
+	return 0;
 }
 
 void namcos21_state::gpu_posirq_w(u8 data)
 {
-	m_posirq_line = data;
+	// new posirq line relative to current vpos
+	const u8 vpos = m_screen->vblank() ? 0 : (m_screen->vpos() / 2);
+	m_posirq_line = vpos + ~data;
 }
 
 void namcos21_state::gpu_videoram_w(offs_t offset, u16 data, u16 mem_mask)
@@ -825,7 +825,7 @@ TIMER_DEVICE_CALLBACK_MEMBER(namcos21_state::screen_scanline)
 		m_c65->ext_interrupt(HOLD_LINE);
 	}
 
-	if (scanline == (m_posirq_line ^ 0xff) * 2)
+	if (scanline == m_posirq_line * 2)
 		m_gpu_intc->pos_irq_trigger();
 }
 
