@@ -87293,7 +87293,7 @@ stick to CPC-Power disks, when available)
 
 	<!-- Identifying Usagi Yojimbo (UK) (1988) (CPM) [Original].zip... --> <!-- CPC Power -->
 	<software name="usagiyoj" supported="no">
-		<description>Usagi Yojimbo (UK) (CPM) [Original]</description>
+		<description>Samurai Warrior: The Battles of... Usagi Yojimbo (UK) (CPM) [Original]</description>
 		<year>1988</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
@@ -87305,7 +87305,7 @@ stick to CPC-Power disks, when available)
 
 	<!-- Identifying Usagi Yojimbo (UK) (1988) (v2) (CPM) [Original].zip... --> <!-- CPC Power -->
 	<software name="usagiyoj01" cloneof="usagiyoj" supported="no">
-		<description>Usagi Yojimbo (UK) (v2) (CPM) [Original]</description>
+		<description>Samurai Warrior: The Battles of... Usagi Yojimbo (UK) (v2) (CPM) [Original]</description>
 		<year>1988</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
@@ -87317,7 +87317,7 @@ stick to CPC-Power disks, when available)
 
 	<!-- Identifying Usagi Yojimbo (UK) (1988).zip... --> <!-- CPC Power -->
 	<software name="usagiyoj02" cloneof="usagiyoj" supported="no">
-		<description>Usagi Yojimbo (UK)</description>
+		<description>Samurai Warrior: The Battles of... Usagi Yojimbo (UK)</description>
 		<year>1988</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
@@ -189196,7 +189196,7 @@ stick to CPC-Power disks, when available)
 
 	<!-- Identifying Usagi Yojimbo (UK) (19xx).dsk... --> <!-- GoodCPC -->
 	<software name="usagiyoj03" cloneof="usagiyoj" supported="no">
-		<description>Usagi Yojimbo (UK, Alt)</description>
+		<description>Samurai Warrior: The Battles of... Usagi Yojimbo (UK, Alt)</description>
 		<year>19??</year>
 		<publisher>&lt;unknown&gt;</publisher>
 		<part name="flop1" interface="floppy_3">
