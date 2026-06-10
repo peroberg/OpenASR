@@ -144,6 +144,7 @@ void esqvfd_device::device_start()
 	save_item(NAME(m_dirty));
 	save_item(NAME(m_lastchar));
 	save_item(NAME(m_blink_on));
+	m_vfds->resolve();
 }
 
 void esqvfd_device::device_reset()
@@ -155,7 +156,7 @@ void esqvfd_device::device_reset()
 	m_blink_on = false;
 	memset(m_chars, 0, sizeof(m_chars));
 	memset(m_attrs, 0, sizeof(m_attrs));
-	memset(m_dirty, 1, sizeof(m_attrs));
+	memset(m_dirty, 1, sizeof(m_dirty));
 }
 
 // generic display update; can override from child classes if not good enough
@@ -397,17 +398,6 @@ bool esq2x40_device::write_contents(std::ostream &o)
 	return true;
 }
 
-
-esq2x40_device::esq2x40_device(const machine_config &mconfig, device_type type, const char *tag, device_t *owner, uint32_t clock) :
-	esqvfd_device(mconfig, type, tag, owner, clock, make_dimensions<2, 40>(*this))
-{
-}
-
-esq2x40_device::esq2x40_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :
-	esq2x40_device(mconfig, ESQ2X40, tag, owner, clock)
-{
-}
-
 ROM_START( esq2x40_vfx_device )
 	ROM_REGION16_BE( 192, "font", 0 )
 	ROM_LOAD( "esqvfd_font_vfx.bin", 0, 192, CRC(58dc335b) SHA1(097fc3e1930a49ab61f73ea7a6191c892004f823) )
@@ -418,8 +408,12 @@ const tiny_rom_entry *esq2x40_vfx_device::device_rom_region() const
 	return ROM_NAME( esq2x40_vfx_device );
 }
 
-esq2x40_vfx_device::esq2x40_vfx_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :
-	esq2x40_device(mconfig, ESQ2X40_VFX, tag, owner, clock),
+esq2x40_vfx_device::esq2x40_vfx_device(
+	const machine_config &mconfig,
+	const char *tag,
+	device_t *owner,
+	uint32_t clock) :
+	esq2x40_device(mconfig, ESQ2X40_VFX, tag, owner, clock, make_dimensions<2, 40>(*this)),
 	m_font(*this, "font")
 {
 }
@@ -557,4 +551,34 @@ esq2x40_sq1_device::esq2x40_sq1_device(const machine_config &mconfig, const char
 {
 	m_wait87shift = false;
 	m_wait88shift = false;
+}
+
+esq2x40_device::esq2x40_device(
+	const machine_config &mconfig,
+	device_type type,
+	const char *tag,
+	device_t *owner,
+	uint32_t clock,
+	dimensions_param &&dimensions) :
+	esqvfd_device(mconfig, type, tag, owner, clock, std::move(dimensions))
+{
+}
+
+esq2x40_device::esq2x40_device(
+	const machine_config &mconfig,
+	device_type type,
+	const char *tag,
+	device_t *owner,
+	uint32_t clock) :
+	esq2x40_device(mconfig, type, tag, owner, clock, make_dimensions<2, 40>(*this))
+{
+}
+
+esq2x40_device::esq2x40_device(
+	const machine_config &mconfig,
+	const char *tag,
+	device_t *owner,
+	uint32_t clock) :
+	esq2x40_device(mconfig, ESQ2X40, tag, owner, clock)
+{
 }
