@@ -1,25 +1,40 @@
 // license:BSD-3-Clause
 // copyright-holders:
+
 /***************************************************************************
-
-    Ensoniq ASR-10 boot harness
-
-    Experimental upstream-MAME-oriented boot tracer for the ASR-10 1.5B ROM.
-    This is not a full ASR-10 driver and not an emulator contract.
-
-    Canonical project references:
-    - docs/hardware-identity.md
-    - docs/address-model.md
-    - docs/mame-asr10-boot-harness.md
-
-    Current conservative model:
-    - ASR-10 1.5B EPROM pair
-    - 68000-compatible big-endian boot code on likely MC68302-family board
-    - $fc68xx is board/MMIO
-    - $fc6830 is control_register_candidate
-    - high-runtime alias behavior is an experiment, not proven hardware
-
-***************************************************************************/
+ *
+ *     Ensoniq ASR-10 boot harness
+ *
+ *	Experimental upstream-MAME-oriented boot tracer for the ASR-10 1.5B ROM.
+ *	This is not a full ASR-10 driver and not an emulator contract.
+ *
+ *	Canonical project references:
+ *	- docs/hardware-identity.md
+ *	- docs/address-model.md
+ *	- docs/mame-asr10-boot-harness.md
+ *
+ *	Current conservative model:
+ *	- ASR-10 1.5B EPROM pair
+ *	- 68000-compatible big-endian boot code on likely MC68302-family board
+ *	- $fc68xx is board/MMIO
+ *	- $fc6830 is control_register_candidate
+ *	- high-runtime alias behavior is an experiment, not proven hardware
+ *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ *  68302 CPU address space
+ *   $0000f2/$0000f4    initial BAR/SCR
+ *   $fc6000-$fc6fff    68302 internal DPRAM/register block candidate
+ *   ?                  ES5506 host regs, small window
+ *   ?                  ES5510 host regs, ~0x200 window
+ *   ?                  floppy controller
+ *   ?                  SCSI controller
+ *   ?                  frontpanel/display/keyscan/glue
+ *   ?                  sample RAM window / main sample RAM
+ *   ?                  work RAM / high RAM
+ *   ?                  ROM / high alias
+ *
+ **************************************************************************/
 
 #include "emu.h"
 
@@ -51,6 +66,9 @@ private:
 	static constexpr u32 PROBE_OR_ALIAS_REGION_COUNT = 4;
 	static constexpr u32 TRACE_SLOT_COUNT = 64;
 	static constexpr u32 MAX_PC_POLLS = 4'000'000;
+
+	// True forces the ROM into the SCSI-installed/searching path;
+	// False lets the ROM fall through to "PLEASE INSERT DISK"
 	static constexpr bool ASR10_FAKE_SCSI_INSTALLED = false;
 
 	enum class trace_region : u8
@@ -870,18 +888,3 @@ ROM_END
 
 
 CONS(1992, asr10booth, 0, 0, asr10_boot, asr10_boot, asr10_boot_state, empty_init, "Ensoniq", "ASR-10 boot harness (experiment)", MACHINE_NOT_WORKING | MACHINE_NO_SOUND)
-
-/**
- *
- * 68302 CPU address space
- *  $0000f2/$0000f4    initial BAR/SCR
- *  $fc6000-$fc6fff    68302 internal DPRAM/register block candidate
- *  ?                  ES5506 host regs, small window
- *  ?                  ES5510 host regs, ~0x200 window
- *  ?                  floppy controller
- *  ?                  SCSI controller
- *  ?                  frontpanel/display/keyscan/glue
- *  ?                  sample RAM window / main sample RAM
- *  ?                  work RAM / high RAM
- *  ?                  ROM / high alias
- */
