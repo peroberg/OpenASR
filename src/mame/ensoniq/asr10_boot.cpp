@@ -51,6 +51,7 @@ private:
 	static constexpr u32 PROBE_OR_ALIAS_REGION_COUNT = 4;
 	static constexpr u32 TRACE_SLOT_COUNT = 64;
 	static constexpr u32 MAX_PC_POLLS = 4'000'000;
+	static constexpr bool ASR10_FAKE_SCSI_INSTALLED = false;
 
 	enum class trace_region : u8
 	{
@@ -396,6 +397,14 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 	const u32 word = offset & 0x0f;
 	COMBINE_DATA(&m_duart_panel_asr_shadow[word]);
 	const u32 address = (0x00fc4800 | (offset << 1)) | (ACCESSING_BITS_0_7 ? 1 : 0);
+	if (address == 0x00fc4817 && ACCESSING_BITS_0_7)
+	{
+		const u8 character = u8(data);
+		if (character >= 0x20 && character <= 0x7e)
+			logerror("ASR10PANEL char='%c' hex=%02x pc=%06x\n", character, character, m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff);
+		else
+			logerror("ASR10PANEL control=%02x pc=%06x\n", character, m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff);
+	}
 	trace_access(trace_region::DUART_PANEL_ASR_CANDIDATE, true, address, data, mem_mask, m_duart_panel_asr_shadow[word]);
 }
 
@@ -405,11 +414,16 @@ u16 asr10_boot_state::scsi_asr_candidate_r(offs_t offset, u16 mem_mask)
 	const u32 word = offset & 0x0f;
 	const u32 address = 0x00fc5000 | (offset << 1);
 
-	// The ROM waits for bit 7 at $fc5001 during SCSI installation.
-	if (address == 0x00fc5000 && ACCESSING_BITS_0_7)
-		m_scsi_asr_shadow[word] |= 0x0080;
+	u16 data = 0;
+	if (ASR10_FAKE_SCSI_INSTALLED)
+	{
+		// Preserve the original harness behavior for path comparison.
+		if (address == 0x00fc5000 && ACCESSING_BITS_0_7)
+			m_scsi_asr_shadow[word] |= 0x0080;
+		data = m_scsi_asr_shadow[word];
+	}
 
-	const u16 data = m_scsi_asr_shadow[word] & mem_mask;
+	data &= mem_mask;
 	trace_access(trace_region::SCSI_ASR_CANDIDATE, false, address | (ACCESSING_BITS_0_7 ? 1 : 0), data, mem_mask, m_scsi_asr_shadow[word]);
 	return data;
 }
@@ -603,7 +617,11 @@ void asr10_boot_state::trace_access(trace_region region, bool write, u32 address
 			detail = ((address & 0x1f) == 0x13) ? "channel_b_status_rx_ready_stub" :
 				((address & 0x1f) == 0x17) ? "channel_b_transmit_buffer" : "duart_register_unknown";
 		else if (region == trace_region::SCSI_ASR_CANDIDATE)
-			detail = ((address & 0x1f) == 0x01) ? "status_bit_7_ready_stub" : "scsi_register_unknown";
+			detail = ((address & 0x1f) == 0x01) ?
+				(ASR10_FAKE_SCSI_INSTALLED ? "status_control_candidate_fake_installed" : "status_control_candidate_no_scsi") :
+				((address & 0x1f) == 0x03) ?
+					(ASR10_FAKE_SCSI_INSTALLED ? "data_scratch_candidate_fake_installed" : "data_scratch_candidate_no_scsi") :
+					"scsi_register_unknown";
 		logerror("ASR10TRACE pc=%06x addr=%06x rw=%c data=%04x mem_mask=%04x last_write=%04x region=%s detail=%s repeats=%u\n",
 			pc, address, write ? 'W' : 'R', data, mem_mask, last_write, region_name(region), detail, repeats);
 	}
