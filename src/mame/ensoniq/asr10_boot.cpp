@@ -73,6 +73,7 @@ private:
 	static constexpr bool ASR10_FAKE_SCSI_INSTALLED = false;
 	static constexpr u8 ASR10_DUART_INPUT_CHANGE_STUB = 0x00;
 	static constexpr bool ASR10_PULSE_DUART_INPUT_BIT4_AT_SEMANTIC_READER = false;
+	static constexpr bool ASR10_FC4001_COMMAND_36_READY = true;
 
 	enum class trace_region : u8
 	{
@@ -80,6 +81,7 @@ private:
 		BUS_PROBE,
 		HIGH_ROM_ALIAS,
 		M68302_INTERNAL,
+		FC400X_COMMAND_STATUS_CANDIDATE,
 		DUART_PANEL_ASR_CANDIDATE,
 		SCSI_ASR_CANDIDATE,
 		ES550X_VFX_CANDIDATE,
@@ -109,6 +111,9 @@ private:
 	std::unique_ptr<u16[]> m_lowmem_shadow;
 	u16 m_probe_or_alias_region_shadow[PROBE_OR_ALIAS_REGION_COUNT][2]{};
 	u16 m_m68302_internal_shadow[0x80]{};
+	u8 m_fc4001_last_command = 0;
+	u8 m_fc4001_status = 0;
+	u8 m_fc4003_data = 0;
 	u16 m_duart_panel_asr_shadow[0x10]{};
 	u16 m_scsi_asr_shadow[0x10]{};
 	u16 m_es550x_vfx_shadow[0x40]{};
@@ -129,7 +134,7 @@ private:
 	u32 m_pc_repeat_count = 0;
 	u32 m_pc_change_count = 0;
 	u32 m_dispatcher_hits = 0;
-	u32 m_context_hits[15]{};
+	u32 m_context_hits[20]{};
 
 	virtual void machine_start() override ATTR_COLD;
 	virtual void machine_reset() override ATTR_COLD;
@@ -148,6 +153,8 @@ private:
 	void high_alias_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 	u16 m68302_internal_r(offs_t offset, u16 mem_mask = ~0);
 	void m68302_internal_w(offs_t offset, u16 data, u16 mem_mask = ~0);
+	u16 fc400x_candidate_r(offs_t offset, u16 mem_mask = ~0);
+	void fc400x_candidate_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 	u16 duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask = ~0);
 	void duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 	u16 scsi_asr_candidate_r(offs_t offset, u16 mem_mask = ~0);
@@ -199,6 +206,9 @@ void asr10_boot_state::machine_start()
 	save_pointer(NAME(m_lowmem_shadow), LOWMEM_WORDS);
 	save_item(NAME(m_probe_or_alias_region_shadow));
 	save_item(NAME(m_m68302_internal_shadow));
+	save_item(NAME(m_fc4001_last_command));
+	save_item(NAME(m_fc4001_status));
+	save_item(NAME(m_fc4003_data));
 	save_item(NAME(m_duart_panel_asr_shadow));
 	save_item(NAME(m_scsi_asr_shadow));
 	save_item(NAME(m_es550x_vfx_shadow));
@@ -240,6 +250,9 @@ void asr10_boot_state::machine_reset()
 	for (auto &entry : m_probe_or_alias_region_shadow)
 		std::fill(std::begin(entry), std::end(entry), 0);
 	std::fill(std::begin(m_m68302_internal_shadow), std::end(m_m68302_internal_shadow), 0);
+	m_fc4001_last_command = 0;
+	m_fc4001_status = ASR10_FC4001_COMMAND_36_READY ? 0x80 : 0x00;
+	m_fc4003_data = 0;
 	std::fill(std::begin(m_duart_panel_asr_shadow), std::end(m_duart_panel_asr_shadow), 0);
 	std::fill(std::begin(m_scsi_asr_shadow), std::end(m_scsi_asr_shadow), 0);
 	std::fill(std::begin(m_es550x_vfx_shadow), std::end(m_es550x_vfx_shadow), 0);
@@ -280,7 +293,9 @@ void asr10_boot_state::mem_map(address_map &map)
 
 	map(0xf00000, 0xf7ffff).ram();
 	map(0xf80000, 0xfbffff).rw(FUNC(asr10_boot_state::high_alias_r), FUNC(asr10_boot_state::high_alias_w));
-	map(0xfc0000, 0xfc47ff).ram();
+	map(0xfc0000, 0xfc3fff).ram();
+	map(0xfc4000, 0xfc4003).rw(FUNC(asr10_boot_state::fc400x_candidate_r), FUNC(asr10_boot_state::fc400x_candidate_w));
+	map(0xfc4004, 0xfc47ff).ram();
 	map(0xfc4800, 0xfc481f).rw(FUNC(asr10_boot_state::duart_panel_asr_candidate_r), FUNC(asr10_boot_state::duart_panel_asr_candidate_w));
 	map(0xfc4820, 0xfc4fff).ram();
 	map(0xfc5000, 0xfc501f).rw(FUNC(asr10_boot_state::scsi_asr_candidate_r), FUNC(asr10_boot_state::scsi_asr_candidate_w));
@@ -428,6 +443,59 @@ void asr10_boot_state::m68302_internal_w(offs_t offset, u16 data, u16 mem_mask)
 }
 
 
+u16 asr10_boot_state::fc400x_candidate_r(offs_t offset, u16 mem_mask)
+{
+	const u32 address = (0x00fc4000 | (offset << 1)) | (ACCESSING_BITS_0_7 ? 1 : 0);
+	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+	log_cpu_context(pc);
+
+	u16 raw_data = 0;
+	const char *detail = "fc400x_register_unknown";
+	if ((address & 3) == 1)
+	{
+		raw_data = m_fc4001_status;
+		detail = "command_status_port";
+	}
+	else if ((address & 3) == 3)
+	{
+		raw_data = m_fc4003_data;
+		detail = "data_port_candidate";
+	}
+
+	const u16 result = raw_data & mem_mask;
+	logerror("ASR10FC400X pc=%06x addr=%06x rw=R data=%04x mem_mask=%04x last_command=%02x status=%02x detail=%s\n",
+		pc, address, result, mem_mask, m_fc4001_last_command, m_fc4001_status, detail);
+	trace_access(trace_region::FC400X_COMMAND_STATUS_CANDIDATE, false, address, result, mem_mask, m_fc4001_last_command);
+	return result;
+}
+
+
+void asr10_boot_state::fc400x_candidate_w(offs_t offset, u16 data, u16 mem_mask)
+{
+	const u32 address = (0x00fc4000 | (offset << 1)) | (ACCESSING_BITS_0_7 ? 1 : 0);
+	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+	log_cpu_context(pc);
+
+	const char *detail = "fc400x_register_unknown";
+	if ((address & 3) == 1 && ACCESSING_BITS_0_7)
+	{
+		m_fc4001_last_command = u8(data);
+		if (ASR10_FC4001_COMMAND_36_READY && m_fc4001_last_command == 0x36)
+			m_fc4001_status = 0x80;
+		detail = (m_fc4001_last_command == 0x36) ? "command_36_ready_stub" : "command_port";
+	}
+	else if ((address & 3) == 3 && ACCESSING_BITS_0_7)
+	{
+		m_fc4003_data = u8(data);
+		detail = "data_port_candidate";
+	}
+
+	logerror("ASR10FC400X pc=%06x addr=%06x rw=W data=%04x mem_mask=%04x last_command=%02x status=%02x detail=%s\n",
+		pc, address, data, mem_mask, m_fc4001_last_command, m_fc4001_status, detail);
+	trace_access(trace_region::FC400X_COMMAND_STATUS_CANDIDATE, true, address, data, mem_mask, m_fc4001_last_command);
+}
+
+
 u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 {
 	const u32 word = offset & 0x0f;
@@ -533,6 +601,7 @@ void asr10_boot_state::log_cpu_context(u32 pc)
 		0x00fb7c30, 0x00fb7c7a, 0x00fb7c9c,
 		0x00fb9104, 0x00fb9184, 0x00fb9188,
 		0x00fb92ce, 0x00fb92d2, 0x00fb92d8, 0x00fb9344, 0x00fb9342,
+		0x00fb9358, 0x00fb9376, 0x00fb937e, 0x00fb9382, 0x00fb93c2,
 		0x00f88030, 0x00f87fd2, 0x00f89c48, 0x00f89cb0
 	};
 	u32 landmark = std::size(landmarks);
@@ -853,6 +922,9 @@ const char *asr10_boot_state::trace_detail(trace_region region, u32 address)
 {
 	if (region == trace_region::M68302_INTERNAL)
 		return m68302_register_name(address);
+	if (region == trace_region::FC400X_COMMAND_STATUS_CANDIDATE)
+		return ((address & 3) == 1) ? "command_status_port" :
+			((address & 3) == 3) ? "data_port_candidate" : "fc400x_register_unknown";
 	if (region == trace_region::DUART_PANEL_ASR_CANDIDATE)
 	{
 		switch (address & 0x1f)
@@ -893,6 +965,7 @@ const char *asr10_boot_state::region_name(trace_region region)
 	case trace_region::BUS_PROBE: return "ram_chip_select_probe";
 	case trace_region::HIGH_ROM_ALIAS: return "rom_high_alias";
 	case trace_region::M68302_INTERNAL: return "m68302_internal_candidate";
+	case trace_region::FC400X_COMMAND_STATUS_CANDIDATE: return "fc400x_command_status_candidate";
 	case trace_region::DUART_PANEL_ASR_CANDIDATE: return "duart_panel_asr_candidate";
 	case trace_region::SCSI_ASR_CANDIDATE: return "scsi_asr_candidate";
 	case trace_region::ES550X_VFX_CANDIDATE: return "es5505_es5506_vfx_reference";
@@ -918,6 +991,7 @@ const char *asr10_boot_state::address_region_guess(u32 address)
 	if (address >= 0x380000 && address <= 0x3801ff) return "es5510_ts_reference";
 	if (address >= 0xf00000 && address <= 0xf7ffff) return "high_ram";
 	if (address >= 0xf80000 && address <= 0xfbffff) return "rom_high_alias";
+	if (address >= 0xfc4000 && address <= 0xfc4003) return "fc400x_command_status_candidate";
 	if (address >= 0xfc4800 && address <= 0xfc481f) return "duart_panel_asr_candidate";
 	if (address >= 0xfc5000 && address <= 0xfc501f) return "scsi_asr_candidate";
 	if (address >= 0xfc6800 && address <= 0xfc68ff) return "m68302_internal_candidate";
