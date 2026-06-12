@@ -15,6 +15,7 @@
 #define LOGDC(...) LOGMASKED(LOG_DISPLAY_COMMANDS, __VA_ARGS__)
 
 // #define VERBOSE LOG_DISPLAY_COMMANDS
+#define LOG_VFD_TEXT 0
 
 #include "logmacro.h"
 
@@ -124,12 +125,17 @@ static const uint16_t font[] = {
 	0x0000, // 0000 0000 0000 0000 (DEL)
 };
 
-esqvfd_device::esqvfd_device(const machine_config &mconfig, device_type type, const char *tag, device_t *owner, uint32_t clock, dimensions_param &&dimensions) :
-	device_t(mconfig, type, tag, owner, clock),
-	m_vfds(std::move(std::get<0>(dimensions))),
-	m_rows(std::get<1>(dimensions)),
-	m_cols(std::get<2>(dimensions))
-{
+esqvfd_device::esqvfd_device(
+	const machine_config &mconfig,
+	device_type type,
+	const char *tag,
+	device_t *owner,
+	uint32_t clock,
+	int rows,
+	int cols) : device_t(mconfig, type, tag, owner, clock),
+	            m_vfds(owner ? *owner : *this, "vfd%u", 0U),
+	            m_rows(rows),
+	            m_cols(cols) {
 }
 
 void esqvfd_device::device_start()
@@ -144,7 +150,6 @@ void esqvfd_device::device_start()
 	save_item(NAME(m_dirty));
 	save_item(NAME(m_lastchar));
 	save_item(NAME(m_blink_on));
-	m_vfds->resolve();
 }
 
 void esqvfd_device::device_reset()
@@ -168,10 +173,10 @@ void esqvfd_device::update_display()
 				uint32_t segdata = conv_segments(font[m_chars[row][col]]);
 
 				// digits:
-				m_vfds->set((row * m_cols) + col, segdata);
+				m_vfds[(row * m_cols) + col] = segdata;
 
 				// underlines:
-				m_vfds->set((row * m_cols) + col + (m_rows * m_cols), (m_attrs[row][col] & AT_UNDERLINE) ? 1 : 0);
+				m_vfds[(row * m_cols) + col + (m_rows * m_cols)] = (m_attrs[row][col] & AT_UNDERLINE) ? 1 : 0;
 
 				m_dirty[row][col] = 0;
 			}
@@ -413,7 +418,7 @@ esq2x40_vfx_device::esq2x40_vfx_device(
 	const char *tag,
 	device_t *owner,
 	uint32_t clock) :
-	esq2x40_device(mconfig, ESQ2X40_VFX, tag, owner, clock, make_dimensions<2, 40>(*this)),
+	esq2x40_device(mconfig, ESQ2X40_VFX, tag, owner, clock),
 	m_font(*this, "font")
 {
 }
@@ -428,36 +433,57 @@ void esq2x40_vfx_device::device_add_mconfig(machine_config &config)
 // Handles blinking of underline and of entire character,
 void esq2x40_vfx_device::update_display()
 {
-	for (int row = 0; row < m_rows; row++) {
-		for (int col = 0; col < m_cols; col++) {
-			if (m_dirty[row][col]) {
+#if LOG_VFD_TEXT
+	if (!machine().side_effects_disabled())
+	{
+		char line0[41]{};
+		char line1[41]{};
+
+		for (int col = 0; col < 40; col++)
+		{
+			line0[col] = char(m_chars[0][col] + ' ');
+			line1[col] = char(m_chars[1][col] + ' ');
+		}
+
+		logerror("VFD0: [%s]\n", line0);
+		logerror("VFD1: [%s]\n", line1);
+	}
+#endif
+
+	for (int row = 0; row < m_rows; row++)
+	{
+		for (int col = 0; col < m_cols; col++)
+		{
+			if (m_dirty[row][col])
+			{
 				uint8_t c = m_chars[row][col];
 
 				uint16_t char_segments = m_font[c < 96 ? c : 0];
 				auto attr = m_attrs[row][col];
 				uint16_t segments;
 
-				if ((attr & AT_BLINK) && !m_blink_on) {
-					// something is blinked off
-					if (attr & AT_UNDERLINE) // blink the underline off
+				if ((attr & AT_BLINK) && !m_blink_on)
+				{
+					if (attr & AT_UNDERLINE)
 						segments = char_segments;
-					else // there is no underline, blink the entire character
+					else
 						segments = 0;
-				} else {
+				}
+				else
+				{
 					if (attr & AT_UNDERLINE)
 						segments = char_segments | 0x8000;
 					else
 						segments = char_segments;
 				}
 
-				m_vfds->set((row * m_cols) + col, segments);
+				m_vfds[(row * m_cols) + col] = segments;
 
 				m_dirty[row][col] = 0;
 			}
 		}
 	}
 }
-
 
 /* 1x22 display from the VFX (not right, but it'll do for now) */
 
@@ -498,7 +524,7 @@ void esq1x22_device::write_char(uint8_t data)
 }
 
 esq1x22_device::esq1x22_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :
-	esqvfd_device(mconfig, ESQ1X22, tag, owner, clock, make_dimensions<1, 22>(*this))
+	esqvfd_device(mconfig, ESQ1X22, tag, owner, clock, 1, 22)
 {
 }
 
@@ -547,7 +573,7 @@ void esq2x40_sq1_device::write_char(uint8_t data)
 }
 
 esq2x40_sq1_device::esq2x40_sq1_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :
-	esqvfd_device(mconfig, ESQ2X40_SQ1, tag, owner, clock, make_dimensions<2, 40>(*this))
+	esqvfd_device(mconfig, ESQ2X40_SQ1, tag, owner, clock, 2, 40)
 {
 	m_wait87shift = false;
 	m_wait88shift = false;
@@ -558,19 +584,8 @@ esq2x40_device::esq2x40_device(
 	device_type type,
 	const char *tag,
 	device_t *owner,
-	uint32_t clock,
-	dimensions_param &&dimensions) :
-	esqvfd_device(mconfig, type, tag, owner, clock, std::move(dimensions))
-{
-}
-
-esq2x40_device::esq2x40_device(
-	const machine_config &mconfig,
-	device_type type,
-	const char *tag,
-	device_t *owner,
 	uint32_t clock) :
-	esq2x40_device(mconfig, type, tag, owner, clock, make_dimensions<2, 40>(*this))
+	esqvfd_device(mconfig, type, tag, owner, clock, 2, 40)
 {
 }
 
