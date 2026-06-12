@@ -65,11 +65,13 @@ private:
 	static constexpr u32 CONTROL_REGISTER_CANDIDATE = 0x00fc6830;
 	static constexpr u32 PROBE_OR_ALIAS_REGION_COUNT = 4;
 	static constexpr u32 TRACE_SLOT_COUNT = 64;
+	static constexpr u32 PANEL_TEXT_LENGTH = 64;
 	static constexpr u32 MAX_PC_POLLS = 4'000'000;
 
 	// True forces the ROM into the SCSI-installed/searching path;
 	// False lets the ROM fall through to "PLEASE INSERT DISK"
 	static constexpr bool ASR10_FAKE_SCSI_INSTALLED = false;
+	static constexpr u8 ASR10_DUART_INPUT_CHANGE_STUB = 0x00;
 
 	enum class trace_region : u8
 	{
@@ -115,8 +117,11 @@ private:
 	u16 m_es5506_ts_shadow[0x40]{};
 	u16 m_es5510_ts_shadow[0x100]{};
 	std::array<trace_slot, TRACE_SLOT_COUNT> m_trace_slots{};
+	char m_panel_text[PANEL_TEXT_LENGTH]{};
+	u32 m_panel_text_length = 0;
 	bool m_high_alias_enabled = false;
 	bool m_lowmem_overlay_enabled = false;
+	bool m_seen_insert_disk_prompt = false;
 	u64 m_pc_poll_count = 0;
 	u32 m_last_pc = 0xffffffffU;
 	u32 m_last_distinct_pc = 0xffffffffU;
@@ -167,9 +172,12 @@ private:
 	void candidate_w(u32 base, offs_t offset, u16 data, u16 mem_mask, u16 *shadow, u32 words, trace_region region);
 	void trace_access(trace_region region, bool write, u32 address, u16 data, u16 mem_mask, u16 last_write);
 	void dump_repeated_accesses();
+	void panel_text_byte(u8 data, u32 pc);
+	void flush_panel_text();
 	void log_pc_summary(const char *reason, u32 pc);
 	void log_watched_pc(u32 pc);
 	static const char *address_region_guess(u32 address);
+	static const char *trace_detail(trace_region region, u32 address);
 	static const char *region_name(trace_region region);
 	static const char *m68302_register_name(u32 address);
 	u16 read_code_word(u32 address) const;
@@ -192,8 +200,11 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_fdc_vfx_shadow));
 	save_item(NAME(m_es5506_ts_shadow));
 	save_item(NAME(m_es5510_ts_shadow));
+	save_item(NAME(m_panel_text));
+	save_item(NAME(m_panel_text_length));
 	save_item(NAME(m_high_alias_enabled));
 	save_item(NAME(m_lowmem_overlay_enabled));
+	save_item(NAME(m_seen_insert_disk_prompt));
 	save_item(NAME(m_pc_poll_count));
 	save_item(NAME(m_last_pc));
 	save_item(NAME(m_last_distinct_pc));
@@ -207,6 +218,9 @@ void asr10_boot_state::machine_reset()
 {
 	m_high_alias_enabled = false;
 	m_lowmem_overlay_enabled = false;
+	m_seen_insert_disk_prompt = false;
+	m_panel_text_length = 0;
+	std::fill(std::begin(m_panel_text), std::end(m_panel_text), 0);
 	m_pc_poll_count = 0;
 	m_last_pc = 0xffffffffU;
 	m_last_distinct_pc = 0xffffffffU;
@@ -404,7 +418,18 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 	if (address == 0x00fc4812 && ACCESSING_BITS_0_7)
 		m_duart_panel_asr_shadow[word] = 0x0001;
 
-	const u16 data = ((address == 0x00fc4816) ? 0 : m_duart_panel_asr_shadow[word]) & mem_mask;
+	u16 raw_data = (address == 0x00fc4816) ? 0 : m_duart_panel_asr_shadow[word];
+	if (address == 0x00fc4808 && ACCESSING_BITS_0_7)
+	{
+		raw_data = ASR10_DUART_INPUT_CHANGE_STUB;
+		if (m_seen_insert_disk_prompt)
+		{
+			logerror("ASR10DUART_INPUT_BRANCH pc=%06x value=%02x instruction=tst.b tested_mask=none local_branch=none next_pc=fb7c36 side_effect=ack_input_change_then_set_04ee_ff\n",
+				m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff, ASR10_DUART_INPUT_CHANGE_STUB);
+		}
+	}
+
+	const u16 data = raw_data & mem_mask;
 	trace_access(trace_region::DUART_PANEL_ASR_CANDIDATE, false, address | (ACCESSING_BITS_0_7 ? 1 : 0), data, mem_mask, m_duart_panel_asr_shadow[word]);
 	return data;
 }
@@ -418,12 +443,47 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 	if (address == 0x00fc4817 && ACCESSING_BITS_0_7)
 	{
 		const u8 character = u8(data);
+		const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 		if (character >= 0x20 && character <= 0x7e)
-			logerror("ASR10PANEL char='%c' hex=%02x pc=%06x\n", character, character, m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff);
+			logerror("ASR10PANEL char='%c' hex=%02x pc=%06x\n", character, character, pc);
 		else
-			logerror("ASR10PANEL control=%02x pc=%06x\n", character, m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff);
+			logerror("ASR10PANEL control=%02x pc=%06x\n", character, pc);
+		panel_text_byte(character, pc);
 	}
 	trace_access(trace_region::DUART_PANEL_ASR_CANDIDATE, true, address, data, mem_mask, m_duart_panel_asr_shadow[word]);
+}
+
+
+void asr10_boot_state::panel_text_byte(u8 data, u32 pc)
+{
+	if (pc != 0x00f89cb0 || data < 0x20 || data > 0x7e)
+	{
+		flush_panel_text();
+		return;
+	}
+
+	if (m_panel_text_length == PANEL_TEXT_LENGTH - 1)
+		flush_panel_text();
+
+	m_panel_text[m_panel_text_length++] = char(data);
+	m_panel_text[m_panel_text_length] = 0;
+
+	if (!m_seen_insert_disk_prompt && strstr(m_panel_text, "PLEASE INSERT DISK"))
+	{
+		m_seen_insert_disk_prompt = true;
+		m_trace_slots = {};
+		logerror("ASR10PHASE phase=post_insert_disk_prompt pc=%06x\n", pc);
+	}
+}
+
+
+void asr10_boot_state::flush_panel_text()
+{
+	if (m_panel_text_length)
+		logerror("ASR10PANEL text=\"%s\"\n", m_panel_text);
+
+	m_panel_text_length = 0;
+	m_panel_text[0] = 0;
 }
 
 
@@ -628,20 +688,14 @@ void asr10_boot_state::trace_access(trace_region region, bool write, u32 address
 	const u32 repeats = slot->repeat_count;
 	if ((repeats == 1) || ((repeats & (repeats - 1)) == 0))
 	{
-		const char *detail = "register_unknown";
-		if (region == trace_region::M68302_INTERNAL)
-			detail = m68302_register_name(address);
-		else if (region == trace_region::DUART_PANEL_ASR_CANDIDATE)
-			detail = ((address & 0x1f) == 0x13) ? "channel_b_status_rx_ready_stub" :
-				((address & 0x1f) == 0x17) ? "channel_b_transmit_buffer" : "duart_register_unknown";
-		else if (region == trace_region::SCSI_ASR_CANDIDATE)
-			detail = ((address & 0x1f) == 0x01) ?
-				(ASR10_FAKE_SCSI_INSTALLED ? "status_control_candidate_fake_installed" : "status_control_candidate_no_scsi") :
-				((address & 0x1f) == 0x03) ?
-					(ASR10_FAKE_SCSI_INSTALLED ? "data_scratch_candidate_fake_installed" : "data_scratch_candidate_no_scsi") :
-					"scsi_register_unknown";
+		const char *const detail = trace_detail(region, address);
 		logerror("ASR10TRACE pc=%06x addr=%06x rw=%c data=%04x mem_mask=%04x last_write=%04x region=%s detail=%s repeats=%u\n",
 			pc, address, write ? 'W' : 'R', data, mem_mask, last_write, region_name(region), detail, repeats);
+		if (m_seen_insert_disk_prompt)
+		{
+			logerror("ASR10POSTDISK pc=%06x addr=%06x rw=%c data=%04x mem_mask=%04x region=%s detail=%s repeats=%u\n",
+				pc, address, write ? 'W' : 'R', data, mem_mask, region_name(region), detail, repeats);
+		}
 	}
 }
 
@@ -654,8 +708,50 @@ void asr10_boot_state::dump_repeated_accesses()
 		{
 			logerror("ASR10POLL pc=%06x addr=%06x rw=%c data=%04x mem_mask=%04x last_write=%04x region=%s repeats=%u\n",
 				slot.pc, slot.address, slot.write ? 'W' : 'R', slot.data, slot.mem_mask, slot.last_write, region_name(slot.region), slot.repeat_count);
+			if (m_seen_insert_disk_prompt)
+			{
+				logerror("ASR10POSTDISK summary=repeat pc=%06x addr=%06x rw=%c data=%04x mem_mask=%04x region=%s detail=%s repeats=%u\n",
+					slot.pc, slot.address, slot.write ? 'W' : 'R', slot.data, slot.mem_mask,
+					region_name(slot.region), trace_detail(slot.region, slot.address), slot.repeat_count);
+			}
 		}
 	}
+}
+
+
+const char *asr10_boot_state::trace_detail(trace_region region, u32 address)
+{
+	if (region == trace_region::M68302_INTERNAL)
+		return m68302_register_name(address);
+	if (region == trace_region::DUART_PANEL_ASR_CANDIDATE)
+	{
+		switch (address & 0x1f)
+		{
+		case 0x09: return "input_port_change_candidate";
+		case 0x13: return "channel_b_status_rx_ready_stub";
+		case 0x17: return "channel_b_rx_tx_buffer";
+		default: return "duart_register_unknown";
+		}
+	}
+	if (region == trace_region::SCSI_ASR_CANDIDATE)
+	{
+		if ((address & 0x1f) == 0x01)
+			return ASR10_FAKE_SCSI_INSTALLED ? "status_control_candidate_fake_installed" : "status_control_candidate_no_scsi";
+		if ((address & 0x1f) == 0x03)
+			return ASR10_FAKE_SCSI_INSTALLED ? "data_scratch_candidate_fake_installed" : "data_scratch_candidate_no_scsi";
+		return "scsi_register_unknown";
+	}
+	if (region == trace_region::FDC_VFX_CANDIDATE)
+	{
+		switch ((address >> 1) & 3)
+		{
+		case 0: return "vfx_reference_fdc_status_command";
+		case 1: return "vfx_reference_fdc_track";
+		case 2: return "vfx_reference_fdc_sector";
+		case 3: return "vfx_reference_fdc_data";
+		}
+	}
+	return "register_unknown";
 }
 
 
