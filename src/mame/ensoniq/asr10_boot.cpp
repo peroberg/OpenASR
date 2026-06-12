@@ -72,6 +72,7 @@ private:
 	// False lets the ROM fall through to "PLEASE INSERT DISK"
 	static constexpr bool ASR10_FAKE_SCSI_INSTALLED = false;
 	static constexpr u8 ASR10_DUART_INPUT_CHANGE_STUB = 0x00;
+	static constexpr bool ASR10_PULSE_DUART_INPUT_BIT4_AT_SEMANTIC_READER = false;
 
 	enum class trace_region : u8
 	{
@@ -128,7 +129,7 @@ private:
 	u32 m_pc_repeat_count = 0;
 	u32 m_pc_change_count = 0;
 	u32 m_dispatcher_hits = 0;
-	u32 m_context_hits[7]{};
+	u32 m_context_hits[15]{};
 
 	virtual void machine_start() override ATTR_COLD;
 	virtual void machine_reset() override ATTR_COLD;
@@ -177,6 +178,7 @@ private:
 	void flush_panel_text();
 	void log_cpu_context(u32 pc);
 	void log_lowmem_04ee(bool write, u16 previous, u16 current, u16 mem_mask);
+	void log_lowmem_049d(bool write, u16 previous, u16 current, u16 mem_mask);
 	void log_pc_summary(const char *reason, u32 pc);
 	void log_watched_pc(u32 pc);
 	u32 read_stack_long(u32 address);
@@ -305,6 +307,8 @@ u16 asr10_boot_state::low_rom_or_lowmem_r(offs_t offset, u16 mem_mask)
 		const u16 data = m_lowmem_shadow[offset] & mem_mask;
 		if (byte_address == 0x04ee && !machine().side_effects_disabled())
 			log_lowmem_04ee(false, m_lowmem_shadow[offset], m_lowmem_shadow[offset], mem_mask);
+		else if (byte_address == 0x049c && !machine().side_effects_disabled())
+			log_lowmem_049d(false, m_lowmem_shadow[offset], m_lowmem_shadow[offset], mem_mask);
 		return data;
 	}
 
@@ -330,6 +334,8 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 	COMBINE_DATA(&m_lowmem_shadow[offset]);
 	if (byte_address == 0x04ee)
 		log_lowmem_04ee(true, previous, m_lowmem_shadow[offset], mem_mask);
+	else if (byte_address == 0x049c)
+		log_lowmem_049d(true, previous, m_lowmem_shadow[offset], mem_mask);
 
 	if (byte_address < LOWMEM_LOG_END || byte_address == 0x00ea || byte_address == 0x0b7a || byte_address == 0x0b7c || byte_address == 0x0b7e)
 		trace_access(trace_region::LOWMEM, true, byte_address, data, mem_mask, m_lowmem_shadow[offset]);
@@ -439,6 +445,8 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 	if (address == 0x00fc4808 && ACCESSING_BITS_0_7)
 	{
 		raw_data = ASR10_DUART_INPUT_CHANGE_STUB;
+		if (ASR10_PULSE_DUART_INPUT_BIT4_AT_SEMANTIC_READER && pc == 0x00fb7c84)
+			raw_data |= 0x10;
 		if (m_seen_insert_disk_prompt)
 		{
 			logerror("ASR10DUART_INPUT_BRANCH pc=%06x value=%02x instruction=tst.b tested_mask=none local_branch=none next_pc=fb7c36 side_effect=ack_input_change_then_set_04ee_ff\n",
@@ -521,7 +529,12 @@ bool asr10_boot_state::likely_rom_address(u32 address)
 
 void asr10_boot_state::log_cpu_context(u32 pc)
 {
-	static constexpr u32 landmarks[] = { 0x00fb7c30, 0x00fb7c7a, 0x00f88030, 0x00f87fd2, 0x00f89c48, 0x00f89cb0, 0x00f89cbe };
+	static constexpr u32 landmarks[] = {
+		0x00fb7c30, 0x00fb7c7a, 0x00fb7c9c,
+		0x00fb9104, 0x00fb9184, 0x00fb9188,
+		0x00fb92ce, 0x00fb92d2, 0x00fb92d8, 0x00fb9344, 0x00fb9342,
+		0x00f88030, 0x00f87fd2, 0x00f89c48, 0x00f89cb0
+	};
 	u32 landmark = std::size(landmarks);
 	for (u32 index = 0; index < std::size(landmarks); index++)
 	{
@@ -535,7 +548,7 @@ void asr10_boot_state::log_cpu_context(u32 pc)
 		return;
 
 	const u32 hits = ++m_context_hits[landmark];
-	if (pc != 0x00fb7c30 && hits != 1 && (hits & (hits - 1)) != 0)
+	if (pc != 0x00fb7c30 && pc != 0x00fb7c7a && hits != 1 && (hits & (hits - 1)) != 0)
 		return;
 
 	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
@@ -561,6 +574,16 @@ void asr10_boot_state::log_cpu_context(u32 pc)
 			"callsite=fb9184 containing_routine=fb9104 path=normal_bsr_nested_return_fb90ee\n",
 			return_address, stack0);
 	}
+	else if (pc == 0x00fb7c7a)
+	{
+		const u8 lowmem_04ee = u8(m_lowmem_shadow[0x04ee / 2] >> 8);
+		logerror("ASR10SEMANTICREADER pc=fb7c7a lowmem_04ee=%02x negative=%u "
+			"duart_fc4809=%02x bit4=%u gate_bpl_target=fb7c9c return=%08x\n",
+			lowmem_04ee, BIT(lowmem_04ee, 7), ASR10_DUART_INPUT_CHANGE_STUB |
+				(ASR10_PULSE_DUART_INPUT_BIT4_AT_SEMANTIC_READER ? 0x10 : 0),
+			ASR10_PULSE_DUART_INPUT_BIT4_AT_SEMANTIC_READER ? 1 : BIT(ASR10_DUART_INPUT_CHANGE_STUB, 4),
+			return_address);
+	}
 }
 
 
@@ -576,6 +599,21 @@ void asr10_boot_state::log_lowmem_04ee(bool write, u16 previous, u16 current, u1
 		"phase=%s sp=%06x stack0=%08x stack1=%08x stack2=%08x\n",
 		pc, write ? 'W' : 'R', current & mem_mask, previous, current, mem_mask,
 		m_seen_insert_disk_prompt ? "post_insert_disk" : "boot", sp, stack0, stack1, stack2);
+}
+
+
+void asr10_boot_state::log_lowmem_049d(bool write, u16 previous, u16 current, u16 mem_mask)
+{
+	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+	log_cpu_context(pc);
+	const u8 previous_byte = u8(previous);
+	const u8 current_byte = u8(current);
+	if (ACCESSING_BITS_0_7)
+	{
+		logerror("ASR10STATE049D pc=%06x rw=%c previous=%02x current=%02x phase=%s\n",
+			pc, write ? 'W' : 'R', previous_byte, current_byte,
+			m_seen_insert_disk_prompt ? "post_insert_disk" : "boot");
+	}
 }
 
 
