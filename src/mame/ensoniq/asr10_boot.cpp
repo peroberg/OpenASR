@@ -128,6 +128,7 @@ private:
 	u32 m_pc_repeat_count = 0;
 	u32 m_pc_change_count = 0;
 	u32 m_dispatcher_hits = 0;
+	u32 m_context_hits[7]{};
 
 	virtual void machine_start() override ATTR_COLD;
 	virtual void machine_reset() override ATTR_COLD;
@@ -174,8 +175,12 @@ private:
 	void dump_repeated_accesses();
 	void panel_text_byte(u8 data, u32 pc);
 	void flush_panel_text();
+	void log_cpu_context(u32 pc);
+	void log_lowmem_04ee(bool write, u16 previous, u16 current, u16 mem_mask);
 	void log_pc_summary(const char *reason, u32 pc);
 	void log_watched_pc(u32 pc);
+	u32 read_stack_long(u32 address);
+	static bool likely_rom_address(u32 address);
 	static const char *address_region_guess(u32 address);
 	static const char *trace_detail(trace_region region, u32 address);
 	static const char *region_name(trace_region region);
@@ -211,6 +216,7 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_pc_repeat_count));
 	save_item(NAME(m_pc_change_count));
 	save_item(NAME(m_dispatcher_hits));
+	save_item(NAME(m_context_hits));
 }
 
 
@@ -227,6 +233,7 @@ void asr10_boot_state::machine_reset()
 	m_pc_repeat_count = 0;
 	m_pc_change_count = 0;
 	m_dispatcher_hits = 0;
+	std::fill(std::begin(m_context_hits), std::end(m_context_hits), 0);
 	std::fill_n(m_lowmem_shadow.get(), LOWMEM_WORDS, 0);
 	for (auto &entry : m_probe_or_alias_region_shadow)
 		std::fill(std::begin(entry), std::end(entry), 0);
@@ -294,7 +301,12 @@ u16 asr10_boot_state::low_rom_or_lowmem_r(offs_t offset, u16 mem_mask)
 	}
 
 	if (m_lowmem_overlay_enabled)
-		return m_lowmem_shadow[offset] & mem_mask;
+	{
+		const u16 data = m_lowmem_shadow[offset] & mem_mask;
+		if (byte_address == 0x04ee && !machine().side_effects_disabled())
+			log_lowmem_04ee(false, m_lowmem_shadow[offset], m_lowmem_shadow[offset], mem_mask);
+		return data;
+	}
 
 	const u8 *rom = m_rom->base();
 	const u32 rom_offset = byte_address & ROM_MASK;
@@ -314,7 +326,10 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 		return;
 	}
 
+	const u16 previous = m_lowmem_shadow[offset];
 	COMBINE_DATA(&m_lowmem_shadow[offset]);
+	if (byte_address == 0x04ee)
+		log_lowmem_04ee(true, previous, m_lowmem_shadow[offset], mem_mask);
 
 	if (byte_address < LOWMEM_LOG_END || byte_address == 0x00ea || byte_address == 0x0b7a || byte_address == 0x0b7c || byte_address == 0x0b7e)
 		trace_access(trace_region::LOWMEM, true, byte_address, data, mem_mask, m_lowmem_shadow[offset]);
@@ -411,6 +426,8 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 {
 	const u32 word = offset & 0x0f;
 	const u32 address = 0x00fc4800 | (offset << 1);
+	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+	log_cpu_context(pc);
 
 	// Channel B carries panel traffic on VFX-SD/SD-1 and TS-10. The ASR ROM
 	// writes the channel-B TX buffer at +0x17, then polls bit 0 at +0x13.
@@ -425,7 +442,7 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 		if (m_seen_insert_disk_prompt)
 		{
 			logerror("ASR10DUART_INPUT_BRANCH pc=%06x value=%02x instruction=tst.b tested_mask=none local_branch=none next_pc=fb7c36 side_effect=ack_input_change_then_set_04ee_ff\n",
-				m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff, ASR10_DUART_INPUT_CHANGE_STUB);
+				pc, ASR10_DUART_INPUT_CHANGE_STUB);
 		}
 	}
 
@@ -440,10 +457,11 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 	const u32 word = offset & 0x0f;
 	COMBINE_DATA(&m_duart_panel_asr_shadow[word]);
 	const u32 address = (0x00fc4800 | (offset << 1)) | (ACCESSING_BITS_0_7 ? 1 : 0);
+	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+	log_cpu_context(pc);
 	if (address == 0x00fc4817 && ACCESSING_BITS_0_7)
 	{
 		const u8 character = u8(data);
-		const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 		if (character >= 0x20 && character <= 0x7e)
 			logerror("ASR10PANEL char='%c' hex=%02x pc=%06x\n", character, character, pc);
 		else
@@ -484,6 +502,80 @@ void asr10_boot_state::flush_panel_text()
 
 	m_panel_text_length = 0;
 	m_panel_text[0] = 0;
+}
+
+
+u32 asr10_boot_state::read_stack_long(u32 address)
+{
+	auto const disable_side_effects = machine().disable_side_effects();
+	return m_maincpu->space(AS_PROGRAM).read_dword(address & 0x00ffffff);
+}
+
+
+bool asr10_boot_state::likely_rom_address(u32 address)
+{
+	address &= 0x00ffffff;
+	return address >= 0x00f80000 && address <= 0x00fbffff;
+}
+
+
+void asr10_boot_state::log_cpu_context(u32 pc)
+{
+	static constexpr u32 landmarks[] = { 0x00fb7c30, 0x00fb7c7a, 0x00f88030, 0x00f87fd2, 0x00f89c48, 0x00f89cb0, 0x00f89cbe };
+	u32 landmark = std::size(landmarks);
+	for (u32 index = 0; index < std::size(landmarks); index++)
+	{
+		if (pc == landmarks[index])
+		{
+			landmark = index;
+			break;
+		}
+	}
+	if (landmark == std::size(landmarks))
+		return;
+
+	const u32 hits = ++m_context_hits[landmark];
+	if (pc != 0x00fb7c30 && hits != 1 && (hits & (hits - 1)) != 0)
+		return;
+
+	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+	const u32 stack0 = read_stack_long(sp);
+	const u32 stack1 = read_stack_long(sp + 4);
+	const u32 stack2 = read_stack_long(sp + 8);
+	const u32 return_address = likely_rom_address(stack0) ? (stack0 & 0x00ffffff) : 0xffffffffU;
+
+	logerror("ASR10CPUCONTEXT pc=%06x previous_pc=%06x opcode=%04x sr=%04x "
+		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x "
+		"sp=%06x stack0=%08x stack1=%08x stack2=%08x guessed_return=%08x phase=%s hits=%u\n",
+		pc, m_last_distinct_pc, read_code_word(pc), u16(m_maincpu->state_int(M68K_SR)),
+		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
+		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
+		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
+		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
+		sp, stack0, stack1, stack2, return_address,
+		m_seen_insert_disk_prompt ? "post_insert_disk" : "boot", hits);
+
+	if (pc == 0x00fb7c30 && return_address != 0xffffffffU)
+	{
+		logerror("ASR10CALLCONTEXT callee=fb7c30 return=%06x stack0=%08x "
+			"callsite=fb9184 containing_routine=fb9104 path=normal_bsr_nested_return_fb90ee\n",
+			return_address, stack0);
+	}
+}
+
+
+void asr10_boot_state::log_lowmem_04ee(bool write, u16 previous, u16 current, u16 mem_mask)
+{
+	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+	log_cpu_context(pc);
+	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+	const u32 stack0 = read_stack_long(sp);
+	const u32 stack1 = read_stack_long(sp + 4);
+	const u32 stack2 = read_stack_long(sp + 8);
+	logerror("ASR10LOWMEM04EE pc=%06x rw=%c value=%04x previous=%04x current=%04x mem_mask=%04x "
+		"phase=%s sp=%06x stack0=%08x stack1=%08x stack2=%08x\n",
+		pc, write ? 'W' : 'R', current & mem_mask, previous, current, mem_mask,
+		m_seen_insert_disk_prompt ? "post_insert_disk" : "boot", sp, stack0, stack1, stack2);
 }
 
 
@@ -828,6 +920,8 @@ const char *asr10_boot_state::m68302_register_name(u32 address)
 
 void asr10_boot_state::log_watched_pc(u32 pc)
 {
+	log_cpu_context(pc);
+
 	switch (pc)
 	{
 	case 0x00fb8e06:
