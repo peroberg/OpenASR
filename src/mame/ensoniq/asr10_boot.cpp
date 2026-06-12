@@ -39,6 +39,7 @@
 #include "emu.h"
 
 #include "cpu/m68000/m68000.h"
+#include "machine/upd765.h"
 
 #include <algorithm>
 #include <array>
@@ -52,6 +53,7 @@ public:
 	asr10_boot_state(const machine_config &mconfig, device_type type, const char *tag)
 		: driver_device(mconfig, type, tag)
 		, m_maincpu(*this, "maincpu")
+		, m_fdc(*this, "fdc")
 		, m_rom(*this, "maincpu")
 	{
 	}
@@ -73,9 +75,6 @@ private:
 	static constexpr bool ASR10_FAKE_SCSI_INSTALLED = false;
 	static constexpr u8 ASR10_DUART_INPUT_CHANGE_STUB = 0x00;
 	static constexpr bool ASR10_PULSE_DUART_INPUT_BIT4_AT_SEMANTIC_READER = false;
-	static constexpr bool ASR10_FC4001_COMMAND_36_READY = true;
-	static constexpr bool ASR10_FC400X_AUX_RESPONSE_STUB = true;
-	static constexpr u8 ASR10_FC4003_RESPONSE_STUB = 0x80;
 
 	enum class trace_region : u8
 	{
@@ -83,7 +82,7 @@ private:
 		BUS_PROBE,
 		HIGH_ROM_ALIAS,
 		M68302_INTERNAL,
-		FC400X_COMMAND_STATUS_CANDIDATE,
+		UPD72069_FDC_CANDIDATE,
 		DUART_PANEL_ASR_CANDIDATE,
 		SCSI_ASR_CANDIDATE,
 		ES550X_VFX_CANDIDATE,
@@ -107,22 +106,21 @@ private:
 	};
 
 	required_device<m68000_device> m_maincpu;
+	required_device<upd72069_device> m_fdc;
 	required_memory_region m_rom;
 
 	emu_timer *m_pc_timer = nullptr;
 	std::unique_ptr<u16[]> m_lowmem_shadow;
 	u16 m_probe_or_alias_region_shadow[PROBE_OR_ALIAS_REGION_COUNT][2]{};
 	u16 m_m68302_internal_shadow[0x80]{};
-	u8 m_fc4001_last_command = 0;
-	u8 m_fc4001_status = 0;
-	u8 m_fc4003_last_read = 0;
-	u8 m_fc4003_last_write = 0;
-	u64 m_fc400x_sequence = 0;
-	u32 m_fc400x_transaction = 0;
-	u32 m_fc400x_transaction_access = 0;
-	u8 m_fc4003_transaction_reads = 0;
-	u8 m_fc4003_result_bytes_pending = 0;
-	u8 m_fc4003_lowmem_watch = 0;
+	u8 m_fdc_last_aux_command = 0;
+	u8 m_fdc_last_fifo_read = 0;
+	u8 m_fdc_last_fifo_write = 0;
+	u64 m_fdc_trace_sequence = 0;
+	u32 m_fdc_transaction = 0;
+	u32 m_fdc_transaction_access = 0;
+	u8 m_fdc_fifo_transaction_reads = 0;
+	u8 m_fdc_lowmem_watch = 0;
 	u16 m_duart_panel_asr_shadow[0x10]{};
 	u16 m_scsi_asr_shadow[0x10]{};
 	u16 m_es550x_vfx_shadow[0x40]{};
@@ -162,8 +160,8 @@ private:
 	void high_alias_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 	u16 m68302_internal_r(offs_t offset, u16 mem_mask = ~0);
 	void m68302_internal_w(offs_t offset, u16 data, u16 mem_mask = ~0);
-	u16 fc400x_candidate_r(offs_t offset, u16 mem_mask = ~0);
-	void fc400x_candidate_w(offs_t offset, u16 data, u16 mem_mask = ~0);
+	u16 upd72069_fdc_r(offs_t offset, u16 mem_mask = ~0);
+	void upd72069_fdc_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 	u16 duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask = ~0);
 	void duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 	u16 scsi_asr_candidate_r(offs_t offset, u16 mem_mask = ~0);
@@ -215,16 +213,14 @@ void asr10_boot_state::machine_start()
 	save_pointer(NAME(m_lowmem_shadow), LOWMEM_WORDS);
 	save_item(NAME(m_probe_or_alias_region_shadow));
 	save_item(NAME(m_m68302_internal_shadow));
-	save_item(NAME(m_fc4001_last_command));
-	save_item(NAME(m_fc4001_status));
-	save_item(NAME(m_fc4003_last_read));
-	save_item(NAME(m_fc4003_last_write));
-	save_item(NAME(m_fc400x_sequence));
-	save_item(NAME(m_fc400x_transaction));
-	save_item(NAME(m_fc400x_transaction_access));
-	save_item(NAME(m_fc4003_transaction_reads));
-	save_item(NAME(m_fc4003_result_bytes_pending));
-	save_item(NAME(m_fc4003_lowmem_watch));
+	save_item(NAME(m_fdc_last_aux_command));
+	save_item(NAME(m_fdc_last_fifo_read));
+	save_item(NAME(m_fdc_last_fifo_write));
+	save_item(NAME(m_fdc_trace_sequence));
+	save_item(NAME(m_fdc_transaction));
+	save_item(NAME(m_fdc_transaction_access));
+	save_item(NAME(m_fdc_fifo_transaction_reads));
+	save_item(NAME(m_fdc_lowmem_watch));
 	save_item(NAME(m_duart_panel_asr_shadow));
 	save_item(NAME(m_scsi_asr_shadow));
 	save_item(NAME(m_es550x_vfx_shadow));
@@ -266,16 +262,14 @@ void asr10_boot_state::machine_reset()
 	for (auto &entry : m_probe_or_alias_region_shadow)
 		std::fill(std::begin(entry), std::end(entry), 0);
 	std::fill(std::begin(m_m68302_internal_shadow), std::end(m_m68302_internal_shadow), 0);
-	m_fc4001_last_command = 0;
-	m_fc4001_status = ASR10_FC4001_COMMAND_36_READY ? 0x80 : 0x00;
-	m_fc4003_last_read = 0;
-	m_fc4003_last_write = 0;
-	m_fc400x_sequence = 0;
-	m_fc400x_transaction = 0;
-	m_fc400x_transaction_access = 0;
-	m_fc4003_transaction_reads = 0;
-	m_fc4003_result_bytes_pending = 0;
-	m_fc4003_lowmem_watch = 0;
+	m_fdc_last_aux_command = 0;
+	m_fdc_last_fifo_read = 0;
+	m_fdc_last_fifo_write = 0;
+	m_fdc_trace_sequence = 0;
+	m_fdc_transaction = 0;
+	m_fdc_transaction_access = 0;
+	m_fdc_fifo_transaction_reads = 0;
+	m_fdc_lowmem_watch = 0;
 	std::fill(std::begin(m_duart_panel_asr_shadow), std::end(m_duart_panel_asr_shadow), 0);
 	std::fill(std::begin(m_scsi_asr_shadow), std::end(m_scsi_asr_shadow), 0);
 	std::fill(std::begin(m_es550x_vfx_shadow), std::end(m_es550x_vfx_shadow), 0);
@@ -317,7 +311,7 @@ void asr10_boot_state::mem_map(address_map &map)
 	map(0xf00000, 0xf7ffff).ram();
 	map(0xf80000, 0xfbffff).rw(FUNC(asr10_boot_state::high_alias_r), FUNC(asr10_boot_state::high_alias_w));
 	map(0xfc0000, 0xfc3fff).ram();
-	map(0xfc4000, 0xfc4003).rw(FUNC(asr10_boot_state::fc400x_candidate_r), FUNC(asr10_boot_state::fc400x_candidate_w));
+	map(0xfc4000, 0xfc4003).rw(FUNC(asr10_boot_state::upd72069_fdc_r), FUNC(asr10_boot_state::upd72069_fdc_w));
 	map(0xfc4004, 0xfc47ff).ram();
 	map(0xfc4800, 0xfc481f).rw(FUNC(asr10_boot_state::duart_panel_asr_candidate_r), FUNC(asr10_boot_state::duart_panel_asr_candidate_w));
 	map(0xfc4820, 0xfc4fff).ram();
@@ -374,14 +368,14 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 		log_lowmem_04ee(true, previous, m_lowmem_shadow[offset], mem_mask);
 	else if (byte_address == 0x049c)
 		log_lowmem_049d(true, previous, m_lowmem_shadow[offset], mem_mask);
-	else if (m_seen_insert_disk_prompt && m_fc4003_lowmem_watch && byte_address >= 0x0480 && byte_address <= 0x04fe)
+	else if (m_seen_insert_disk_prompt && m_fdc_lowmem_watch && byte_address >= 0x0480 && byte_address <= 0x04fe)
 	{
 		const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-		logerror("ASR10FC400XLOWMEM time=%s seq=%llu txn=%u pc=%06x addr=%06x data=%04x mem_mask=%04x "
+		logerror("ASR10FDCLOWMEM time=%s seq=%llu txn=%u pc=%06x addr=%06x data=%04x mem_mask=%04x "
 			"previous=%04x current=%04x last_command=%02x\n",
-			machine().time().to_string(), (unsigned long long)m_fc400x_sequence, m_fc400x_transaction,
-			pc, byte_address, data, mem_mask, previous, m_lowmem_shadow[offset], m_fc4001_last_command);
-		m_fc4003_lowmem_watch--;
+			machine().time().to_string(), (unsigned long long)m_fdc_trace_sequence, m_fdc_transaction,
+			pc, byte_address, data, mem_mask, previous, m_lowmem_shadow[offset], m_fdc_last_aux_command);
+		m_fdc_lowmem_watch--;
 	}
 
 	if (byte_address < LOWMEM_LOG_END || byte_address == 0x00ea || byte_address == 0x0b7a || byte_address == 0x0b7c || byte_address == 0x0b7e)
@@ -475,19 +469,19 @@ void asr10_boot_state::m68302_internal_w(offs_t offset, u16 data, u16 mem_mask)
 }
 
 
-u16 asr10_boot_state::fc400x_candidate_r(offs_t offset, u16 mem_mask)
+u16 asr10_boot_state::upd72069_fdc_r(offs_t offset, u16 mem_mask)
 {
 	const u32 address = (0x00fc4000 | (offset << 1)) | (ACCESSING_BITS_0_7 ? 1 : 0);
 	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 	log_cpu_context(pc);
-	const u64 sequence = ++m_fc400x_sequence;
-	const u32 transaction_access = ++m_fc400x_transaction_access;
+	const u64 sequence = ++m_fdc_trace_sequence;
+	const u32 transaction_access = ++m_fdc_transaction_access;
 
-	u16 raw_data = 0;
-	const char *detail = "fc400x_register_unknown";
+	u8 raw_data = 0;
+	const char *detail = "upd72069_register_unknown";
 	if ((address & 3) == 1)
 	{
-		raw_data = m_fc4001_status;
+		raw_data = m_fdc->msr_r();
 		switch (pc)
 		{
 		case 0x00fb8d1e:
@@ -503,88 +497,69 @@ u16 asr10_boot_state::fc400x_candidate_r(offs_t offset, u16 mem_mask)
 			detail = "status_bit7_receive_ready_must_set";
 			break;
 		case 0x00fb8da8:
-			if (m_fc4003_result_bytes_pending)
-				raw_data |= 0x40;
 			detail = "status_bit6_receive_data_present";
 			break;
 		default:
-			detail = "command_status_port";
+			detail = "upd72069_msr";
 			break;
 		}
 	}
 	else if ((address & 3) == 3)
 	{
-		// uPD72069 auxiliary commands return a one-byte ST0_UNK result.
-		raw_data = ASR10_FC4003_RESPONSE_STUB;
-		m_fc4003_last_read = u8(raw_data);
-		m_fc4003_transaction_reads++;
-		if (m_fc4003_result_bytes_pending)
-			m_fc4003_result_bytes_pending--;
-		m_fc4003_lowmem_watch = 8;
-		detail = "upd72069_fifo_candidate";
+		raw_data = m_fdc->fifo_r();
+		m_fdc_last_fifo_read = raw_data;
+		m_fdc_fifo_transaction_reads++;
+		m_fdc_lowmem_watch = 8;
+		detail = "upd72069_fifo_read";
 	}
 
 	const u16 result = raw_data & mem_mask;
-	const u8 effective_status = ((address & 3) == 1) ? u8(raw_data) : m_fc4001_status;
-	logerror("ASR10FC400X time=%s seq=%llu txn=%u txn_access=%u pc=%06x addr=%06x rw=R data=%04x "
-		"mem_mask=%04x last_command=%02x status=%02x base_status=%02x last_data_read=%02x last_data_write=%02x "
-		"transaction_reads=%u result_pending=%u phase=%s panel=\"%s\" detail=%s\n",
-		machine().time().to_string(), (unsigned long long)sequence, m_fc400x_transaction, transaction_access,
-		pc, address, result, mem_mask, m_fc4001_last_command, effective_status, m_fc4001_status,
-		m_fc4003_last_read, m_fc4003_last_write, m_fc4003_transaction_reads, m_fc4003_result_bytes_pending,
+	logerror("ASR10FDC time=%s seq=%llu txn=%u txn_access=%u pc=%06x addr=%06x rw=R data=%04x "
+		"mem_mask=%04x last_aux_command=%02x last_data_read=%02x last_data_write=%02x "
+		"transaction_reads=%u phase=%s panel=\"%s\" detail=%s\n",
+		machine().time().to_string(), (unsigned long long)sequence, m_fdc_transaction, transaction_access,
+		pc, address, result, mem_mask, m_fdc_last_aux_command,
+		m_fdc_last_fifo_read, m_fdc_last_fifo_write, m_fdc_fifo_transaction_reads,
 		m_seen_insert_disk_prompt ? "post_insert_disk" : "boot", m_panel_text, detail);
-	trace_access(trace_region::FC400X_COMMAND_STATUS_CANDIDATE, false, address, result, mem_mask, m_fc4001_last_command);
+	trace_access(trace_region::UPD72069_FDC_CANDIDATE, false, address, result, mem_mask, m_fdc_last_aux_command);
 	return result;
 }
 
 
-void asr10_boot_state::fc400x_candidate_w(offs_t offset, u16 data, u16 mem_mask)
+void asr10_boot_state::upd72069_fdc_w(offs_t offset, u16 data, u16 mem_mask)
 {
 	const u32 address = (0x00fc4000 | (offset << 1)) | (ACCESSING_BITS_0_7 ? 1 : 0);
 	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 	log_cpu_context(pc);
-	const u64 sequence = ++m_fc400x_sequence;
+	const u64 sequence = ++m_fdc_trace_sequence;
 
-	const char *detail = "fc400x_register_unknown";
+	const char *detail = "upd72069_register_unknown";
 	if ((address & 3) == 1 && ACCESSING_BITS_0_7)
 	{
-		m_fc400x_transaction++;
-		m_fc400x_transaction_access = 0;
-		m_fc4003_transaction_reads = 0;
-		m_fc4001_last_command = u8(data);
-		m_fc4003_result_bytes_pending = 0;
-		if (ASR10_FC4001_COMMAND_36_READY && m_fc4001_last_command == 0x36)
-			m_fc4001_status = 0x80;
-		if (ASR10_FC400X_AUX_RESPONSE_STUB)
-		{
-			switch (m_fc4001_last_command)
-			{
-			case 0x0b: // control internal mode, 250 kbps
-			case 0x4f: // select IBM format
-			case 0x1e: // enable motor 0
-			case 0x0e: // disable all motors
-				m_fc4003_result_bytes_pending = 1;
-				break;
-			}
-		}
-		detail = (m_fc4001_last_command == 0x36) ? "upd72069_software_reset" : "upd72069_aux_command";
+		m_fdc_transaction++;
+		m_fdc_transaction_access = 0;
+		m_fdc_fifo_transaction_reads = 0;
+		m_fdc_last_aux_command = u8(data);
+		m_fdc->auxcmd_w(m_fdc_last_aux_command);
+		detail = (m_fdc_last_aux_command == 0x36) ? "upd72069_software_reset" : "upd72069_aux_command";
 	}
 	else if ((address & 3) == 3 && ACCESSING_BITS_0_7)
 	{
-		m_fc4003_last_write = u8(data);
-		m_fc4003_lowmem_watch = 8;
-		detail = "upd72069_fifo_candidate";
+		m_fdc_last_fifo_write = u8(data);
+		m_fdc->fifo_w(m_fdc_last_fifo_write);
+		m_fdc_lowmem_watch = 8;
+		detail = "upd72069_fifo";
 	}
-	const u32 transaction_access = ++m_fc400x_transaction_access;
+	const u32 transaction_access = ++m_fdc_transaction_access;
 
-	logerror("ASR10FC400X time=%s seq=%llu txn=%u txn_access=%u pc=%06x addr=%06x rw=W data=%04x "
-		"mem_mask=%04x last_command=%02x status=%02x last_data_read=%02x last_data_write=%02x "
-		"transaction_reads=%u result_pending=%u phase=%s panel=\"%s\" detail=%s\n",
-		machine().time().to_string(), (unsigned long long)sequence, m_fc400x_transaction, transaction_access,
-		pc, address, data, mem_mask, m_fc4001_last_command, m_fc4001_status,
-		m_fc4003_last_read, m_fc4003_last_write, m_fc4003_transaction_reads, m_fc4003_result_bytes_pending,
+	logerror("ASR10FDC time=%s seq=%llu txn=%u txn_access=%u pc=%06x addr=%06x rw=W data=%04x "
+		"mem_mask=%04x last_aux_command=%02x last_data_read=%02x last_data_write=%02x "
+		"transaction_reads=%u phase=%s panel=\"%s\" detail=%s\n",
+		machine().time().to_string(), (unsigned long long)sequence, m_fdc_transaction, transaction_access,
+		pc, address, data, mem_mask, m_fdc_last_aux_command,
+		m_fdc_last_fifo_read, m_fdc_last_fifo_write, m_fdc_fifo_transaction_reads,
 		m_seen_insert_disk_prompt ? "post_insert_disk" : "boot", m_panel_text, detail);
-	trace_access(trace_region::FC400X_COMMAND_STATUS_CANDIDATE, true, address, data, mem_mask, m_fc4001_last_command);
+	trace_access(trace_region::UPD72069_FDC_CANDIDATE, true, address, data, mem_mask, m_fdc_last_aux_command);
 }
 
 
@@ -1014,9 +989,9 @@ const char *asr10_boot_state::trace_detail(trace_region region, u32 address)
 {
 	if (region == trace_region::M68302_INTERNAL)
 		return m68302_register_name(address);
-	if (region == trace_region::FC400X_COMMAND_STATUS_CANDIDATE)
+	if (region == trace_region::UPD72069_FDC_CANDIDATE)
 		return ((address & 3) == 1) ? "upd72069_msr_auxcmd_candidate" :
-			((address & 3) == 3) ? "upd72069_fifo_candidate" : "fc400x_register_unknown";
+			((address & 3) == 3) ? "upd72069_fifo_candidate" : "upd72069_register_unknown";
 	if (region == trace_region::DUART_PANEL_ASR_CANDIDATE)
 	{
 		switch (address & 0x1f)
@@ -1057,7 +1032,7 @@ const char *asr10_boot_state::region_name(trace_region region)
 	case trace_region::BUS_PROBE: return "ram_chip_select_probe";
 	case trace_region::HIGH_ROM_ALIAS: return "rom_high_alias";
 	case trace_region::M68302_INTERNAL: return "m68302_internal_candidate";
-	case trace_region::FC400X_COMMAND_STATUS_CANDIDATE: return "upd72069_fdc_candidate";
+	case trace_region::UPD72069_FDC_CANDIDATE: return "upd72069_fdc_candidate";
 	case trace_region::DUART_PANEL_ASR_CANDIDATE: return "duart_panel_asr_candidate";
 	case trace_region::SCSI_ASR_CANDIDATE: return "scsi_asr_candidate";
 	case trace_region::ES550X_VFX_CANDIDATE: return "es5505_es5506_vfx_reference";
@@ -1269,6 +1244,8 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 {
 	M68000(config, m_maincpu, XTAL(16'000'000)); // 68000-compatible stand-in for likely MC68302-family board
 	m_maincpu->set_addrmap(AS_PROGRAM, &asr10_boot_state::mem_map);
+
+	UPD72069(config, m_fdc, XTAL(16'000'000)); // clock unknown; placeholder for boot tracing
 }
 
 
