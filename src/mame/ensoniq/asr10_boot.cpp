@@ -201,6 +201,7 @@ private:
 	static const char *trace_detail(trace_region region, u32 address);
 	static const char *region_name(trace_region region);
 	static const char *m68302_register_name(u32 address);
+	static const char *fdc_state_field_name(u32 address);
 	u16 read_code_word(u32 address) const;
 };
 
@@ -371,10 +372,11 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 	else if (m_seen_insert_disk_prompt && m_fdc_lowmem_watch && byte_address >= 0x0480 && byte_address <= 0x04fe)
 	{
 		const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-		logerror("ASR10FDCLOWMEM time=%s seq=%llu txn=%u pc=%06x addr=%06x data=%04x mem_mask=%04x "
+		logerror("ASR10FDCSTATE time=%s seq=%llu txn=%u pc=%06x addr=%06x field=%s data=%04x mem_mask=%04x "
 			"previous=%04x current=%04x last_command=%02x\n",
 			machine().time().to_string(), (unsigned long long)m_fdc_trace_sequence, m_fdc_transaction,
-			pc, byte_address, data, mem_mask, previous, m_lowmem_shadow[offset], m_fdc_last_aux_command);
+			pc, byte_address, fdc_state_field_name(byte_address), data, mem_mask,
+			previous, m_lowmem_shadow[offset], m_fdc_last_aux_command);
 		m_fdc_lowmem_watch--;
 	}
 
@@ -1093,6 +1095,24 @@ const char *asr10_boot_state::m68302_register_name(u32 address)
 	case 0x50: return "timer_1_mode_candidate";
 	case 0x52: return "timer_1_reference_candidate";
 	default: return "internal_register_unknown";
+	}
+}
+
+
+const char *asr10_boot_state::fdc_state_field_name(u32 address)
+{
+	switch (address)
+	{
+	case 0x04a6: return "media_probe_field_04a6";
+	case 0x04ae: return "media_probe_field_04ae";
+	case 0x04b0: return "media_probe_field_04b0";
+	case 0x04b4: return "media_probe_field_04b4";
+	case 0x04b6: return "media_probe_field_04b6";
+	case 0x04c4: return "media_probe_field_04c4";
+	case 0x04c6: return "media_probe_field_04c6";
+	case 0x04d6: return "media_probe_field_04d6";
+	case 0x04e6: return "media_probe_field_04e6";
+	default: return "media_probe_field_unknown";
 	}
 }
 
