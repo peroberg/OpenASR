@@ -89,6 +89,8 @@ private:
 	static constexpr bool ASR10_LOG_FDC_04B0_CONTEXT = false;
 	static constexpr bool ASR10_LOG_PANEL_BYTES = false;
 	static constexpr bool ASR10_EXPERIMENT_CMD88_RATE_500K = true;
+	static constexpr bool ASR10_EXPERIMENT_FC6860_CLEAR_BUSY_BIT0_AFTER_WRITE = true;
+	static constexpr u8 ASR10_EXPERIMENT_FC6860_CLEAR_BUSY_READ_DELAY = 2;
 	static constexpr bool ASR10_EXPERIMENT_STUB_CMD1E_RESULTS = false;
 	static constexpr u8 ASR10_STUB_CMD1E_RESULT_BYTE0 = 0x00;
 	static constexpr u8 ASR10_STUB_CMD1E_RESULT_BYTE1 = 0x00;
@@ -134,6 +136,8 @@ private:
 	std::unique_ptr<u16[]> m_lowmem_shadow;
 	u16 m_probe_or_alias_region_shadow[PROBE_OR_ALIAS_REGION_COUNT][2]{};
 	u16 m_m68302_internal_shadow[0x80]{};
+	u8 m_fc6860_reads_after_write = 0;
+	bool m_fc6860_busy_clear_logged = false;
 	u8 m_fdc_last_aux_command = 0;
 	u8 m_fdc_last_msr = 0;
 	u8 m_fdc_last_fifo_read = 0;
@@ -282,6 +286,8 @@ void asr10_boot_state::machine_start()
 	save_pointer(NAME(m_lowmem_shadow), LOWMEM_WORDS);
 	save_item(NAME(m_probe_or_alias_region_shadow));
 	save_item(NAME(m_m68302_internal_shadow));
+	save_item(NAME(m_fc6860_reads_after_write));
+	save_item(NAME(m_fc6860_busy_clear_logged));
 	save_item(NAME(m_fdc_last_aux_command));
 	save_item(NAME(m_fdc_last_msr));
 	save_item(NAME(m_fdc_last_fifo_read));
@@ -361,6 +367,8 @@ void asr10_boot_state::machine_reset()
 	for (auto &entry : m_probe_or_alias_region_shadow)
 		std::fill(std::begin(entry), std::end(entry), 0);
 	std::fill(std::begin(m_m68302_internal_shadow), std::end(m_m68302_internal_shadow), 0);
+	m_fc6860_reads_after_write = 0;
+	m_fc6860_busy_clear_logged = false;
 	m_fdc_last_aux_command = 0;
 	m_fdc_last_msr = 0;
 	m_fdc_last_fifo_read = 0;
@@ -617,8 +625,40 @@ void asr10_boot_state::high_alias_w(offs_t offset, u16 data, u16 mem_mask)
 u16 asr10_boot_state::m68302_internal_r(offs_t offset, u16 mem_mask)
 {
 	const u32 address = 0x00fc6800 | (offset << 1);
-	const u16 data = m_m68302_internal_shadow[offset & 0x7f] & mem_mask;
-	trace_access(trace_region::M68302_INTERNAL, false, address, data, mem_mask, m_m68302_internal_shadow[offset & 0x7f]);
+	const u16 shadow = m_m68302_internal_shadow[offset & 0x7f];
+	u16 effective = shadow;
+	if (ASR10_EXPERIMENT_FC6860_CLEAR_BUSY_BIT0_AFTER_WRITE && address == 0x00fc6860 && mem_mask == 0xff00 &&
+		!machine().side_effects_disabled())
+	{
+		const u8 original_byte = u8(shadow >> 8);
+		if (m_fc6860_reads_after_write < ASR10_EXPERIMENT_FC6860_CLEAR_BUSY_READ_DELAY)
+		{
+			m_fc6860_reads_after_write++;
+		}
+		else if (BIT(original_byte, 0))
+		{
+			const u8 effective_byte = original_byte & ~u8(0x01);
+			effective = (shadow & 0x00ff) | (u16(effective_byte) << 8);
+			if (!m_fc6860_busy_clear_logged && !machine().side_effects_disabled())
+			{
+				const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+				logerror("ASR10_EXPERIMENT_FC6860_CLEAR_BUSY bit0 1->0 original=%02x effective=%02x pc=%06x\n",
+					original_byte, effective_byte, pc);
+				m_fc6860_busy_clear_logged = true;
+			}
+		}
+	}
+	const u16 data = effective & mem_mask;
+	trace_access(trace_region::M68302_INTERNAL, false, address, data, mem_mask, shadow);
+	if (address == 0x00fc6860 && !machine().side_effects_disabled())
+	{
+		const u8 relevant_byte = (mem_mask & 0xff00) ? u8(effective >> 8) : u8(effective);
+		const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+		logerror("ASR10_M68302_6860 pc=%06x rw=R data=%04x mem_mask=%04x relevant_byte=%02x "
+			"bit0=%u last_write=%04x opcode=%04x detail=%s\n",
+			pc, data, mem_mask, relevant_byte, BIT(relevant_byte, 0), shadow,
+			read_code_word(pc), m68302_register_name(address));
+	}
 	return data;
 }
 
@@ -628,6 +668,21 @@ void asr10_boot_state::m68302_internal_w(offs_t offset, u16 data, u16 mem_mask)
 	const u32 address = 0x00fc6800 | (offset << 1);
 	COMBINE_DATA(&m_m68302_internal_shadow[offset & 0x7f]);
 	trace_access(trace_region::M68302_INTERNAL, true, address, data, mem_mask, m_m68302_internal_shadow[offset & 0x7f]);
+	if (address == 0x00fc6860 && !machine().side_effects_disabled())
+	{
+		const u16 shadow = m_m68302_internal_shadow[offset & 0x7f];
+		const u8 relevant_byte = (mem_mask & 0xff00) ? u8(shadow >> 8) : u8(shadow);
+		if (ASR10_EXPERIMENT_FC6860_CLEAR_BUSY_BIT0_AFTER_WRITE && mem_mask == 0xff00)
+		{
+			m_fc6860_reads_after_write = 0;
+			m_fc6860_busy_clear_logged = false;
+		}
+		const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+		logerror("ASR10_M68302_6860 pc=%06x rw=W data=%04x mem_mask=%04x relevant_byte=%02x "
+			"bit0=%u last_write=%04x d0=%08x opcode=%04x detail=%s\n",
+			pc, data, mem_mask, relevant_byte, BIT(relevant_byte, 0), shadow,
+			u32(m_maincpu->state_int(M68K_D0)), read_code_word(pc), m68302_register_name(address));
+	}
 
 	if (address == CONTROL_REGISTER_CANDIDATE && ACCESSING_BITS_0_15)
 	{
@@ -2134,6 +2189,7 @@ const char *asr10_boot_state::m68302_register_name(u32 address)
 	case 0x4a: return "timer_or_clock_candidate";
 	case 0x50: return "timer_1_mode_candidate";
 	case 0x52: return "timer_1_reference_candidate";
+	case 0x60: return "unknown_0x60_busy_bit0_candidate";
 	default: return "internal_register_unknown";
 	}
 }
@@ -2226,6 +2282,11 @@ void asr10_boot_state::log_pc_summary(const char *reason, u32 pc)
 	u32 branch_pc = 0xffffffffU;
 	u32 accessed_address = 0xffffffffU;
 	s32 tested_bit = -1;
+	u16 poll_value = 0xffff;
+	u16 poll_mem_mask = 0;
+	u16 shadow_last_write = 0xffff;
+	u8 relevant_byte = 0xff;
+	s32 bit_state = -1;
 	const char *branch_kind = "not_decoded";
 	const char *loop_guess = "unknown";
 
@@ -2265,6 +2326,43 @@ void asr10_boot_state::log_pc_summary(const char *reason, u32 pc)
 		}
 	}
 
+	const u32 poll_pc = (branch_target != 0xffffffffU && branch_target <= pc) ? branch_target : pc;
+	const u16 poll_opcode = read_code_word(poll_pc);
+	if (poll_opcode == 0x0839)
+	{
+		tested_bit = read_code_word(poll_pc + 2) & 7;
+		accessed_address = (u32(read_code_word(poll_pc + 4)) << 16) | read_code_word(poll_pc + 6);
+	}
+	else if (poll_opcode == 0x1039)
+	{
+		accessed_address = (u32(read_code_word(poll_pc + 2)) << 16) | read_code_word(poll_pc + 4);
+	}
+	else if ((poll_opcode & 0xfff8) == 0x0810)
+	{
+		accessed_address = m_maincpu->state_int(M68K_A0 + (poll_opcode & 7)) & 0x00ffffff;
+		tested_bit = read_code_word(poll_pc + 2) & 7;
+	}
+
+	if (accessed_address != 0xffffffffU)
+	{
+		const trace_slot *poll_slot = nullptr;
+		for (trace_slot const &slot : m_trace_slots)
+		{
+			if (slot.repeat_count && !slot.write && slot.address == accessed_address &&
+				(!poll_slot || slot.repeat_count > poll_slot->repeat_count))
+				poll_slot = &slot;
+		}
+		if (poll_slot)
+		{
+			poll_value = poll_slot->data;
+			poll_mem_mask = poll_slot->mem_mask;
+			shadow_last_write = poll_slot->last_write;
+			relevant_byte = (poll_mem_mask & 0xff00) ? u8(poll_value >> 8) : u8(poll_value);
+			if (tested_bit >= 0)
+				bit_state = BIT(relevant_byte, tested_bit & 7);
+		}
+	}
+
 	for (u32 candidate = pc - std::min<u32>(pc, 8); candidate <= pc; candidate += 2)
 	{
 		if (read_code_word(candidate) == 0xb683 && read_code_word(candidate + 2) == 0x2f03 &&
@@ -2280,9 +2378,14 @@ void asr10_boot_state::log_pc_summary(const char *reason, u32 pc)
 		loop_guess = "device_or_memory_poll";
 	}
 
-	logerror("ASR10HANG reason=%s pc=%06x previous_pc=%06x opcode=%04x accessed_address=%08x tested_bit=%d region_guess=%s loop_guess=%s d3=%08x branch_pc=%06x branch_kind=%s branch_target=%06x pc_repeat_count=%u poll_count=%u\n",
-		reason, pc, m_last_distinct_pc, opcode, accessed_address, tested_bit, address_region_guess(accessed_address),
-		loop_guess, u32(m_maincpu->state_int(M68K_D3)), branch_pc, branch_kind, branch_target, m_pc_repeat_count, u32(m_pc_poll_count));
+	logerror("ASR10HANG reason=%s pc=%06x previous_pc=%06x opcode=%04x accessed_address=%08x "
+		"poll_address=%08x tested_bit=%d region_guess=%s poll_value=%04x poll_mem_mask=%04x "
+		"relevant_byte=%02x bit_state=%d shadow_last_write=%04x loop_guess=%s d3=%08x "
+		"branch_pc=%06x branch_kind=%s branch_target=%06x pc_repeat_count=%u poll_count=%u\n",
+		reason, pc, m_last_distinct_pc, opcode, accessed_address,
+		accessed_address, tested_bit, address_region_guess(accessed_address), poll_value, poll_mem_mask,
+		relevant_byte, bit_state, shadow_last_write, loop_guess, u32(m_maincpu->state_int(M68K_D3)), branch_pc,
+		branch_kind, branch_target, m_pc_repeat_count, u32(m_pc_poll_count));
 	dump_repeated_accesses();
 }
 
