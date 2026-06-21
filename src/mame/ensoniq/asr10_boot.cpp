@@ -91,6 +91,8 @@ private:
 	static constexpr bool ASR10_EXPERIMENT_CMD88_RATE_500K = true;
 	static constexpr bool ASR10_EXPERIMENT_FC6860_CLEAR_BUSY_BIT0_AFTER_WRITE = true;
 	static constexpr u8 ASR10_EXPERIMENT_FC6860_CLEAR_BUSY_READ_DELAY = 2;
+	static constexpr bool ASR10_EXPERIMENT_68302_LRCLK_BIT3_TOGGLE = true;
+	static constexpr u8 ASR10_EXPERIMENT_68302_LRCLK_PHASE2_READ_DELAY = 4;
 	static constexpr bool ASR10_EXPERIMENT_PANEL_REBOOT_CONFIRM_RAW_21 = false;
 	static constexpr bool ASR10_EXPERIMENT_STUB_CMD1E_RESULTS = false;
 	static constexpr u8 ASR10_STUB_CMD1E_RESULT_BYTE0 = 0x00;
@@ -139,6 +141,8 @@ private:
 	u16 m_m68302_internal_shadow[0x80]{};
 	u8 m_fc6860_reads_after_write = 0;
 	bool m_fc6860_busy_clear_logged = false;
+	u8 m_lrclk_phase2_reads = 0;
+	bool m_lrclk_toggle_logged = false;
 	u8 m_fdc_last_aux_command = 0;
 	u8 m_fdc_last_msr = 0;
 	u8 m_fdc_last_fifo_read = 0;
@@ -191,6 +195,8 @@ private:
 	bool m_panel_reboot_confirm_injected = false;
 	bool m_error009_origin_logged = false;
 	u32 m_lrclk_trace_count = 0;
+	u32 m_post_lrclk_poll_count = 0;
+	bool m_post_lrclk_disassembly_logged = false;
 	bool m_high_alias_enabled = false;
 	bool m_lowmem_overlay_enabled = false;
 	bool m_seen_insert_disk_prompt = false;
@@ -266,6 +272,7 @@ private:
 	void log_04c6_origin(const char *landmark, u32 pc, u8 value, bool branch_taken, u32 branch_target);
 	void log_error009_context(const char *source, u32 pc, u16 value, u16 mem_mask);
 	void log_lrclk_candidate(bool write, u32 address, u16 data, u16 mem_mask, u16 shadow);
+	void log_post_lrclk_poll_candidate(u32 address, u16 data, u16 mem_mask, u16 shadow);
 	void log_lowmem_04ee(bool write, u16 previous, u16 current, u16 mem_mask);
 	void log_lowmem_049d(bool write, u16 previous, u16 current, u16 mem_mask);
 	void log_pc_summary(const char *reason, u32 pc);
@@ -281,6 +288,7 @@ private:
 	static const char *fdc_state_field_name(u32 address);
 	static bool is_fdc_state_field(u32 address);
 	u16 read_code_word(u32 address) const;
+	u16 read_loaded_word(u32 address) const;
 };
 
 
@@ -295,6 +303,8 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_m68302_internal_shadow));
 	save_item(NAME(m_fc6860_reads_after_write));
 	save_item(NAME(m_fc6860_busy_clear_logged));
+	save_item(NAME(m_lrclk_phase2_reads));
+	save_item(NAME(m_lrclk_toggle_logged));
 	save_item(NAME(m_fdc_last_aux_command));
 	save_item(NAME(m_fdc_last_msr));
 	save_item(NAME(m_fdc_last_fifo_read));
@@ -346,6 +356,8 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_panel_reboot_confirm_injected));
 	save_item(NAME(m_error009_origin_logged));
 	save_item(NAME(m_lrclk_trace_count));
+	save_item(NAME(m_post_lrclk_poll_count));
+	save_item(NAME(m_post_lrclk_disassembly_logged));
 	save_item(NAME(m_high_alias_enabled));
 	save_item(NAME(m_lowmem_overlay_enabled));
 	save_item(NAME(m_seen_insert_disk_prompt));
@@ -370,6 +382,8 @@ void asr10_boot_state::machine_reset()
 	m_panel_reboot_confirm_injected = false;
 	m_error009_origin_logged = false;
 	m_lrclk_trace_count = 0;
+	m_post_lrclk_poll_count = 0;
+	m_post_lrclk_disassembly_logged = false;
 	std::fill(std::begin(m_panel_text), std::end(m_panel_text), 0);
 	m_pc_poll_count = 0;
 	m_last_pc = 0xffffffffU;
@@ -384,6 +398,8 @@ void asr10_boot_state::machine_reset()
 	std::fill(std::begin(m_m68302_internal_shadow), std::end(m_m68302_internal_shadow), 0);
 	m_fc6860_reads_after_write = 0;
 	m_fc6860_busy_clear_logged = false;
+	m_lrclk_phase2_reads = 0;
+	m_lrclk_toggle_logged = false;
 	m_fdc_last_aux_command = 0;
 	m_fdc_last_msr = 0;
 	m_fdc_last_fifo_read = 0;
@@ -665,6 +681,7 @@ u16 asr10_boot_state::m68302_internal_r(offs_t offset, u16 mem_mask)
 	const u32 address = 0x00fc6800 | (offset << 1);
 	const u16 shadow = m_m68302_internal_shadow[offset & 0x7f];
 	u16 effective = shadow;
+	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 	if (ASR10_EXPERIMENT_FC6860_CLEAR_BUSY_BIT0_AFTER_WRITE && address == 0x00fc6860 && mem_mask == 0xff00 &&
 		!machine().side_effects_disabled())
 	{
@@ -679,20 +696,49 @@ u16 asr10_boot_state::m68302_internal_r(offs_t offset, u16 mem_mask)
 			effective = (shadow & 0x00ff) | (u16(effective_byte) << 8);
 			if (!m_fc6860_busy_clear_logged && !machine().side_effects_disabled())
 			{
-				const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 				logerror("ASR10_EXPERIMENT_FC6860_CLEAR_BUSY bit0 1->0 original=%02x effective=%02x pc=%06x\n",
 					original_byte, effective_byte, pc);
 				m_fc6860_busy_clear_logged = true;
 			}
 		}
 	}
+	if (ASR10_EXPERIMENT_68302_LRCLK_BIT3_TOGGLE && address == 0x00fc6828 && mem_mask == 0x00ff &&
+		pc >= 0x00f8c142 && pc <= 0x00f8c16a && !machine().side_effects_disabled())
+	{
+		const u8 original_byte = u8(effective);
+		u8 effective_byte = original_byte;
+		if (pc == 0x00f8c14e)
+		{
+			effective_byte &= ~u8(0x08);
+			m_lrclk_phase2_reads = 0;
+			m_lrclk_toggle_logged = false;
+		}
+		else if (pc == 0x00f8c160)
+		{
+			if (m_lrclk_phase2_reads < ASR10_EXPERIMENT_68302_LRCLK_PHASE2_READ_DELAY)
+			{
+				m_lrclk_phase2_reads++;
+			}
+			else
+			{
+				effective_byte |= 0x08;
+				if (!m_lrclk_toggle_logged && !BIT(original_byte, 3))
+				{
+					logerror("ASR10_EXPERIMENT_LRCLK_TOGGLE pc=f8c160 original=%02x effective=%02x bit3 0->1\n",
+						original_byte, effective_byte);
+					m_lrclk_toggle_logged = true;
+				}
+			}
+		}
+		effective = (effective & 0xff00) | effective_byte;
+	}
 	const u16 data = effective & mem_mask;
 	trace_access(trace_region::M68302_INTERNAL, false, address, data, mem_mask, shadow);
 	log_lrclk_candidate(false, address, data, mem_mask, shadow);
+	log_post_lrclk_poll_candidate(address, data, mem_mask, shadow);
 	if (address == 0x00fc6860 && !machine().side_effects_disabled())
 	{
 		const u8 relevant_byte = (mem_mask & 0xff00) ? u8(effective >> 8) : u8(effective);
-		const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 		logerror("ASR10_M68302_6860 pc=%06x rw=R data=%04x mem_mask=%04x relevant_byte=%02x "
 			"bit0=%u last_write=%04x opcode=%04x detail=%s\n",
 			pc, data, mem_mask, relevant_byte, BIT(relevant_byte, 0), shadow,
@@ -1591,6 +1637,55 @@ void asr10_boot_state::log_lrclk_candidate(bool write, u32 address, u16 data, u1
 		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
 		u32(m_maincpu->state_int(M68K_A2)), u16(m_maincpu->state_int(M68K_SR)),
 		sp, read_stack_long(sp), read_stack_long(sp + 4), m_lrclk_trace_count);
+}
+
+
+void asr10_boot_state::log_post_lrclk_poll_candidate(u32 address, u16 data, u16 mem_mask, u16 shadow)
+{
+	if (machine().side_effects_disabled())
+		return;
+
+	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+	if (pc < 0x0000bfb8 || pc > 0x0000bfe8 || address != 0x00fc6828 || mem_mask != 0x00ff)
+		return;
+
+	if (!m_post_lrclk_disassembly_logged)
+	{
+		std::string words;
+		for (u32 cursor = 0x0000bfb8; cursor <= 0x0000bfe8; cursor += 2)
+		{
+			if (cursor != 0x0000bfb8)
+				words += ',';
+			words += util::string_format("%06x:%04x", cursor, read_loaded_word(cursor));
+		}
+		logerror("ASR10_POST_LRCLK_CODE_DUMP words=\"%s\"\n", words.c_str());
+		m_post_lrclk_disassembly_logged = true;
+	}
+
+	m_post_lrclk_poll_count++;
+	if (m_post_lrclk_poll_count > 96 && (m_post_lrclk_poll_count & (m_post_lrclk_poll_count - 1)))
+		return;
+
+	const u8 relevant_byte = u8(data);
+	const u8 shadow_byte = u8(shadow);
+	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+
+	logerror("ASR10_POST_LRCLK_POLL pc=%06x previous_pc=%06x opcode=%04x "
+		"op_m8=%04x op_m6=%04x op_m4=%04x op_m2=%04x op_0=%04x op_p2=%04x op_p4=%04x op_p6=%04x op_p8=%04x "
+		"addr=%06x data=%04x mem_mask=%04x relevant_byte=%02x bit3=%u shadow=%04x shadow_relevant_byte=%02x "
+		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x sr=%04x "
+		"sp=%06x stack0=%08x stack1=%08x stack2=%08x stack3=%08x poll_count=%u\n",
+		pc, m_last_distinct_pc, read_loaded_word(pc),
+		read_loaded_word(pc - 8), read_loaded_word(pc - 6), read_loaded_word(pc - 4),
+		read_loaded_word(pc - 2), read_loaded_word(pc), read_loaded_word(pc + 2),
+		read_loaded_word(pc + 4), read_loaded_word(pc + 6), read_loaded_word(pc + 8),
+		address, data, mem_mask, relevant_byte, BIT(relevant_byte, 3), shadow, shadow_byte,
+		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
+		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
+		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
+		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
+		u16(m_maincpu->state_int(M68K_SR)), sp, read_stack_long(sp), read_stack_long(sp + 4),
+		read_stack_long(sp + 8), read_stack_long(sp + 12), m_post_lrclk_poll_count);
 }
 
 
@@ -2499,10 +2594,19 @@ u16 asr10_boot_state::read_code_word(u32 address) const
 	return 0xffff;
 }
 
+
+u16 asr10_boot_state::read_loaded_word(u32 address) const
+{
+	address &= 0x00ffffff;
+	if (address < 0x00100000 && m_lowmem_overlay_enabled)
+		return m_lowmem_shadow[(address >> 1) & (LOWMEM_WORDS - 1)];
+	return read_code_word(address);
+}
+
 // hängning
 void asr10_boot_state::log_pc_summary(const char *reason, u32 pc)
 {
-	const u16 opcode = read_code_word(pc);
+	const u16 opcode = read_loaded_word(pc);
 	u32 branch_target = 0xffffffffU;
 	u32 branch_pc = 0xffffffffU;
 	u32 accessed_address = 0xffffffffU;
@@ -2516,16 +2620,16 @@ void asr10_boot_state::log_pc_summary(const char *reason, u32 pc)
 	const char *loop_guess = "unknown";
 
 	if (opcode == 0x1039)
-		accessed_address = (u32(read_code_word(pc + 2)) << 16) | read_code_word(pc + 4);
+		accessed_address = (u32(read_loaded_word(pc + 2)) << 16) | read_loaded_word(pc + 4);
 	else if ((opcode & 0xfff8) == 0x0810)
 	{
 		accessed_address = m_maincpu->state_int(M68K_A0 + (opcode & 7)) & 0x00ffffff;
-		tested_bit = read_code_word(pc + 2) & 7;
+		tested_bit = read_loaded_word(pc + 2) & 7;
 	}
 
 	for (u32 candidate = pc; candidate < pc + 0x20; candidate += 2)
 	{
-		const u16 candidate_opcode = read_code_word(candidate);
+		const u16 candidate_opcode = read_loaded_word(candidate);
 		u32 candidate_target = 0xffffffffU;
 		const char *candidate_kind = nullptr;
 		if ((candidate_opcode & 0xf000) == 0x6000)
@@ -2534,12 +2638,12 @@ void asr10_boot_state::log_pc_summary(const char *reason, u32 pc)
 			candidate_kind = "bcc_bra_bsr";
 			candidate_target = displacement ?
 				((candidate + 2 + displacement) & 0x00ffffff) :
-				((candidate + 2 + s16(read_code_word(candidate + 2))) & 0x00ffffff);
+				((candidate + 2 + s16(read_loaded_word(candidate + 2))) & 0x00ffffff);
 		}
 		else if ((candidate_opcode & 0xf0f8) == 0x50c8)
 		{
 			candidate_kind = "dbcc";
-			candidate_target = (candidate + 2 + s16(read_code_word(candidate + 2))) & 0x00ffffff;
+			candidate_target = (candidate + 2 + s16(read_loaded_word(candidate + 2))) & 0x00ffffff;
 		}
 
 		if (candidate_kind && candidate_target <= pc)
@@ -2552,20 +2656,20 @@ void asr10_boot_state::log_pc_summary(const char *reason, u32 pc)
 	}
 
 	const u32 poll_pc = (branch_target != 0xffffffffU && branch_target <= pc) ? branch_target : pc;
-	const u16 poll_opcode = read_code_word(poll_pc);
+	const u16 poll_opcode = read_loaded_word(poll_pc);
 	if (poll_opcode == 0x0839)
 	{
-		tested_bit = read_code_word(poll_pc + 2) & 7;
-		accessed_address = (u32(read_code_word(poll_pc + 4)) << 16) | read_code_word(poll_pc + 6);
+		tested_bit = read_loaded_word(poll_pc + 2) & 7;
+		accessed_address = (u32(read_loaded_word(poll_pc + 4)) << 16) | read_loaded_word(poll_pc + 6);
 	}
 	else if (poll_opcode == 0x1039)
 	{
-		accessed_address = (u32(read_code_word(poll_pc + 2)) << 16) | read_code_word(poll_pc + 4);
+		accessed_address = (u32(read_loaded_word(poll_pc + 2)) << 16) | read_loaded_word(poll_pc + 4);
 	}
 	else if ((poll_opcode & 0xfff8) == 0x0810)
 	{
 		accessed_address = m_maincpu->state_int(M68K_A0 + (poll_opcode & 7)) & 0x00ffffff;
-		tested_bit = read_code_word(poll_pc + 2) & 7;
+		tested_bit = read_loaded_word(poll_pc + 2) & 7;
 	}
 
 	if (accessed_address != 0xffffffffU)
@@ -2590,8 +2694,8 @@ void asr10_boot_state::log_pc_summary(const char *reason, u32 pc)
 
 	for (u32 candidate = pc - std::min<u32>(pc, 8); candidate <= pc; candidate += 2)
 	{
-		if (read_code_word(candidate) == 0xb683 && read_code_word(candidate + 2) == 0x2f03 &&
-			read_code_word(candidate + 4) == 0x261f && read_code_word(candidate + 6) == 0x5383 &&
+		if (read_loaded_word(candidate) == 0xb683 && read_loaded_word(candidate + 2) == 0x2f03 &&
+			read_loaded_word(candidate + 4) == 0x261f && read_loaded_word(candidate + 6) == 0x5383 &&
 			pc <= candidate + 8)
 		{
 			loop_guess = "d3_register_countdown_not_mmio";
