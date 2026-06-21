@@ -2302,13 +2302,14 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::pc_poll)
 
 void asr10_boot_state::floppy_drives(device_slot_interface &device)
 {
-	device.option_add_internal("35dd", FLOPPY_35_DD);
+	device.option_add_internal("35hd", FLOPPY_35_HD);
 }
 
 
 void asr10_boot_state::floppy_formats(format_registration &fr)
 {
 	fr.add_mfm_containers();
+	fr.add(FLOPPY_ASR10IMG_FORMAT);
 	fr.add(FLOPPY_ESQIMG_FORMAT);
 	fr.add(FLOPPY_HFE_FORMAT);
 }
@@ -2327,7 +2328,7 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 
 	// The uPD72069 sees this child connector as drive 0 via the conventional "fdc:0" tag.
 	// Mounted HFE media changes Recalibrate/Sense from 68,00 (not ready) to 20,00.
-	FLOPPY_CONNECTOR(config, m_floppy_connector, asr10_boot_state::floppy_drives, "35dd", asr10_boot_state::floppy_formats, true);
+	FLOPPY_CONNECTOR(config, m_floppy_connector, asr10_boot_state::floppy_drives, "35hd", asr10_boot_state::floppy_formats, true);
 }
 
 

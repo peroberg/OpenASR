@@ -152,3 +152,33 @@ bool esqimg_format::save(util::random_read_write &io, const std::vector<uint32_t
 }
 
 const esqimg_format FLOPPY_ESQIMG_FORMAT;
+
+
+asr10img_format::asr10img_format() : upd765_format(formats)
+{
+}
+
+const char *asr10img_format::name() const noexcept
+{
+	return "asr10";
+}
+
+const char *asr10img_format::description() const noexcept
+{
+	return "Ensoniq ASR-10 floppy disk image";
+}
+
+const char *asr10img_format::extensions() const noexcept
+{
+	return "img";
+}
+
+const asr10img_format::format asr10img_format::formats[] = {
+	{
+		floppy_image::FF_35, floppy_image::DSHD, floppy_image::MFM,
+		1000, 20, 80, 2, 512, {}, 1, {}, 80, 50, 22, 36
+	},
+	{}
+};
+
+const asr10img_format FLOPPY_ASR10IMG_FORMAT;

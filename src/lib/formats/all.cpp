@@ -1078,6 +1078,7 @@ void mame_formats_full_list(mame_formats_enumerator &en)
 	en.category("Ensoniq");
 #ifdef HAS_FORMATS_ESQ16_DSK
 	en.add(FLOPPY_ESQIMG_FORMAT); // esq16_dsk.h
+	en.add(FLOPPY_ASR10IMG_FORMAT); // esq16_dsk.h
 #endif
 #ifdef HAS_FORMATS_ESQ8_DSK
 	en.add(FLOPPY_ESQ8IMG_FORMAT); // esq8_dsk.h
