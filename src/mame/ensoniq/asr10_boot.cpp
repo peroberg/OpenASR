@@ -1014,6 +1014,31 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 	}
 
 	const u16 data = raw_data & mem_mask;
+	if (!machine().side_effects_disabled())
+	{
+		if (pc == 0x00f89cd8 && address == 0x00fc4812 && ACCESSING_BITS_0_7)
+		{
+			const u8 status = u8(data);
+			const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+			logerror("ASR10_PANEL_INPUT_STATUS pc=%06x data=%04x mem_mask=%04x bit0_ready=%u "
+				"d0=%08x d1=%08x sp=%06x stack0=%08x stack1=%08x stack2=%08x\n",
+				pc, data, mem_mask, BIT(status, 0),
+				u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
+				sp, read_stack_long(sp), read_stack_long(sp + 4), read_stack_long(sp + 8));
+		}
+		else if (pc == 0x00f89cea && address == 0x00fc4816 && ACCESSING_BITS_0_7)
+		{
+			const u8 raw_byte = u8(data);
+			const u32 mapped_address = 0x00f82484 + raw_byte;
+			const u16 mapped_word = read_code_word(mapped_address & ~1U);
+			const u8 mapped_byte = BIT(mapped_address, 0) ? u8(mapped_word) : u8(mapped_word >> 8);
+			logerror("ASR10_PANEL_INPUT_BYTE pc=%06x raw=%02x mapped=%02x "
+				"accepted_reboot_confirm=%u mapped_23=%u mapped_40=%u mapped_17=%u mapped_16=%u\n",
+				pc, raw_byte, mapped_byte, mapped_byte == 0x23 ? 1 : 0,
+				mapped_byte == 0x23 ? 1 : 0, mapped_byte == 0x40 ? 1 : 0,
+				mapped_byte == 0x17 ? 1 : 0, mapped_byte == 0x16 ? 1 : 0);
+		}
+	}
 	trace_access(trace_region::DUART_PANEL_ASR_CANDIDATE, false, address | (ACCESSING_BITS_0_7 ? 1 : 0), data, mem_mask, m_duart_panel_asr_shadow[word]);
 	return data;
 }
@@ -2372,6 +2397,10 @@ void asr10_boot_state::log_pc_summary(const char *reason, u32 pc)
 			loop_guess = "d3_register_countdown_not_mmio";
 			break;
 		}
+	}
+	if (pc == 0x00f89cd4)
+	{
+		loop_guess = "panel_input_poll_delay";
 	}
 	if (!strcmp(loop_guess, "unknown") && accessed_address != 0xffffffffU)
 	{
