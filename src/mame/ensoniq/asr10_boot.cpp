@@ -137,6 +137,8 @@ private:
 	u8 m_fdc_last_msr = 0;
 	u8 m_fdc_last_fifo_read = 0;
 	u8 m_fdc_last_fifo_write = 0;
+	u32 m_fdc_data_rate = 250000;
+	u8 m_fdc_data_rate_source = 0;
 	u64 m_fdc_trace_sequence = 0;
 	u32 m_fdc_transaction = 0;
 	u32 m_fdc_transaction_access = 0;
@@ -283,6 +285,8 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_fdc_last_msr));
 	save_item(NAME(m_fdc_last_fifo_read));
 	save_item(NAME(m_fdc_last_fifo_write));
+	save_item(NAME(m_fdc_data_rate));
+	save_item(NAME(m_fdc_data_rate_source));
 	save_item(NAME(m_fdc_trace_sequence));
 	save_item(NAME(m_fdc_transaction));
 	save_item(NAME(m_fdc_transaction_access));
@@ -360,6 +364,8 @@ void asr10_boot_state::machine_reset()
 	m_fdc_last_msr = 0;
 	m_fdc_last_fifo_read = 0;
 	m_fdc_last_fifo_write = 0;
+	m_fdc_data_rate = 250000;
+	m_fdc_data_rate_source = 0;
 	m_fdc_trace_sequence = 0;
 	m_fdc_transaction = 0;
 	m_fdc_transaction_access = 0;
@@ -792,6 +798,33 @@ void asr10_boot_state::upd72069_fdc_w(offs_t offset, u16 data, u16 mem_mask)
 			m_fdc_last_aux_command == 0x88 ||
 			m_fdc_last_aux_command == 0xf3;
 		m_fdc_cmd0e_active = (m_fdc_last_aux_command == 0x0e);
+		if ((m_fdc_last_aux_command & 0x0f) == 0x08)
+		{
+			switch (m_fdc_last_aux_command & 0x70)
+			{
+			case 0x00:
+				m_fdc_data_rate = 250000;
+				break;
+			case 0x10:
+			case 0x40:
+				m_fdc_data_rate = 500000;
+				break;
+			case 0x20:
+			case 0x70:
+				m_fdc_data_rate = 600000;
+				break;
+			case 0x30:
+				m_fdc_data_rate = 300000;
+				break;
+			case 0x50:
+				m_fdc_data_rate = 1000000;
+				break;
+			case 0x60:
+				m_fdc_data_rate = 1250000;
+				break;
+			}
+			m_fdc_data_rate_source = m_fdc_last_aux_command;
+		}
 		if (m_fdc_cmd0e_active)
 		{
 			m_prompt_select_trace_mask = 0;
@@ -834,12 +867,14 @@ void asr10_boot_state::upd72069_fdc_w(offs_t offset, u16 data, u16 mem_mask)
 			m_fdc_cmd46_result_complete = false;
 			logerror("ASR10_FDC_CMD46 txn=%u event=start pc=%06x "
 				"format=%s media_mounted=%u ready=%u motor=%u current_cylinder=%d current_side=%u "
-				"drive_sides=%d density=%s data_rate_aux=88\n",
+				"drive_sides=%d density=%s data_rate=%u data_rate_source=%02x "
+				"read_source=upd72069_device stubbed=0\n",
 				m_fdc_cmd46_transaction, pc, format ? format->name() : "none",
 				floppy && floppy->exists() ? 1 : 0, floppy && !floppy->ready_r() ? 1 : 0,
 				floppy && !floppy->mon_r() ? 1 : 0, floppy ? floppy->get_cyl() : -1,
 				floppy ? floppy->ss_r() : 0, floppy ? floppy->get_sides() : 0,
-				floppy && floppy->floppy_is_hd() ? "hd" : "dd");
+				floppy && floppy->floppy_is_hd() ? "hd" : "dd",
+				m_fdc_data_rate, m_fdc_data_rate_source);
 		}
 		if (m_fdc_cmd46_active && m_fdc_cmd46_write_count < m_fdc_cmd46_write_bytes.size())
 		{
@@ -1514,30 +1549,44 @@ void asr10_boot_state::log_fdc_cmd46_summary()
 
 	floppy_image_device *const floppy = m_floppy_connector->get_device();
 	const floppy_image_format_t *const format = floppy ? floppy->get_load_format() : nullptr;
+	const u8 command = m_fdc_cmd46_write_bytes[0];
 	const u8 select = m_fdc_cmd46_write_bytes[1];
+	const u8 c = m_fdc_cmd46_write_bytes[2];
+	const u8 h = m_fdc_cmd46_write_bytes[3];
+	const u8 r = m_fdc_cmd46_write_bytes[4];
 	const u8 n = m_fdc_cmd46_write_bytes[5];
+	const u8 eot = m_fdc_cmd46_write_bytes[6];
+	const u8 gpl = m_fdc_cmd46_write_bytes[7];
+	const u8 dtl = m_fdc_cmd46_write_bytes[8];
+	const u8 st0 = m_fdc_cmd46_result_bytes[0];
+	const u8 st1 = m_fdc_cmd46_result_bytes[1];
+	const u8 st2 = m_fdc_cmd46_result_bytes[2];
+	const u8 result_c = m_fdc_cmd46_result_bytes[3];
+	const u8 result_h = m_fdc_cmd46_result_bytes[4];
+	const u8 result_r = m_fdc_cmd46_result_bytes[5];
+	const u8 result_n = m_fdc_cmd46_result_bytes[6];
 	logerror("ASR10_FDC_CMD46 txn=%u event=summary "
-		"fifo_writes=\"%s\" fifo_write_pcs=\"%s\" "
-		"command=%02x drive=%u head_select=%u C=%02x H=%02x R=%02x N=%02x "
-		"sector_size=%u EOT=%02x GPL=%02x DTL=%02x mfm=%u mt=%u sk=%u "
-		"fifo_results=\"%s\" fifo_result_pcs=\"%s\" "
-		"ST0=%02x ST1=%02x ST2=%02x result_C=%02x result_H=%02x result_R=%02x result_N=%02x "
+		"data_rate=%u data_rate_source=%02x "
+		"command_bytes=\"%s\" fifo_write_pcs=\"%s\" "
+		"command_byte=%02x drive_head_byte=%02x C_byte=%02x H_byte=%02x R_byte=%02x N_byte=%02x "
+		"EOT_byte=%02x GPL_byte=%02x DTL_byte=%02x "
+		"decoded_drive=%u decoded_head_select=%u decoded_C=%02x decoded_H=%02x decoded_R=%02x decoded_N=%02x "
+		"decoded_sector_size=%u decoded_EOT=%02x decoded_GPL=%02x decoded_DTL=%02x mfm=%u mt=%u sk=%u "
+		"result_bytes=\"%s\" fifo_result_pcs=\"%s\" "
+		"ST0=%02x ST1=%02x ST2=%02x result_C_byte=%02x result_H_byte=%02x result_R_byte=%02x result_N_byte=%02x "
+		"decoded_result_C=%02x decoded_result_H=%02x decoded_result_R=%02x decoded_result_N=%02x "
 		"lowmem_ST0_04c6=%02x lowmem_ST1_04c7=%02x lowmem_ST2_04c8=%02x "
 		"lowmem_C_04c9=%02x lowmem_H_04ca=%02x lowmem_R_04cb=%02x lowmem_N_04cc=%02x "
 		"format=%s image_geometry=not_exposed current_cylinder=%d current_side=%u drive_sides=%d "
-		"media_mounted=%u ready=%u motor=%u density=%s data_rate=250000\n",
-		m_fdc_cmd46_transaction, write_bytes.c_str(), write_pcs.c_str(),
-		m_fdc_cmd46_write_bytes[0], select & 3, BIT(select, 2),
-		m_fdc_cmd46_write_bytes[2], m_fdc_cmd46_write_bytes[3],
-		m_fdc_cmd46_write_bytes[4], n, n <= 7 ? 128U << n : 0,
-		m_fdc_cmd46_write_bytes[6], m_fdc_cmd46_write_bytes[7],
-		m_fdc_cmd46_write_bytes[8], BIT(m_fdc_cmd46_write_bytes[0], 6),
-		BIT(m_fdc_cmd46_write_bytes[0], 7), BIT(m_fdc_cmd46_write_bytes[0], 5),
+		"media_mounted=%u ready=%u motor=%u density=%s read_source=upd72069_device stubbed=0\n",
+		m_fdc_cmd46_transaction, m_fdc_data_rate, m_fdc_data_rate_source,
+		write_bytes.c_str(), write_pcs.c_str(),
+		command, select, c, h, r, n, eot, gpl, dtl,
+		select & 3, BIT(select, 2), c, h, r, n, n <= 7 ? 128U << n : 0,
+		eot, gpl, dtl, BIT(command, 6), BIT(command, 7), BIT(command, 5),
 		result_bytes.c_str(), result_pcs.c_str(),
-		m_fdc_cmd46_result_bytes[0], m_fdc_cmd46_result_bytes[1],
-		m_fdc_cmd46_result_bytes[2], m_fdc_cmd46_result_bytes[3],
-		m_fdc_cmd46_result_bytes[4], m_fdc_cmd46_result_bytes[5],
-		m_fdc_cmd46_result_bytes[6],
+		st0, st1, st2, result_c, result_h, result_r, result_n,
+		result_c, result_h, result_r, result_n,
 		u8(m_lowmem_shadow[0x04c6 >> 1] >> 8), u8(m_lowmem_shadow[0x04c6 >> 1]),
 		u8(m_lowmem_shadow[0x04c8 >> 1] >> 8), u8(m_lowmem_shadow[0x04c8 >> 1]),
 		u8(m_lowmem_shadow[0x04ca >> 1] >> 8), u8(m_lowmem_shadow[0x04ca >> 1]),
