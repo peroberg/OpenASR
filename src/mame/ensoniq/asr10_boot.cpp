@@ -91,6 +91,7 @@ private:
 	static constexpr bool ASR10_EXPERIMENT_CMD88_RATE_500K = true;
 	static constexpr bool ASR10_EXPERIMENT_FC6860_CLEAR_BUSY_BIT0_AFTER_WRITE = true;
 	static constexpr u8 ASR10_EXPERIMENT_FC6860_CLEAR_BUSY_READ_DELAY = 2;
+	static constexpr bool ASR10_EXPERIMENT_PANEL_REBOOT_CONFIRM_RAW_21 = false;
 	static constexpr bool ASR10_EXPERIMENT_STUB_CMD1E_RESULTS = false;
 	static constexpr u8 ASR10_STUB_CMD1E_RESULT_BYTE0 = 0x00;
 	static constexpr u8 ASR10_STUB_CMD1E_RESULT_BYTE1 = 0x00;
@@ -186,6 +187,10 @@ private:
 	char m_panel_text[PANEL_TEXT_LENGTH]{};
 	u32 m_panel_text_length = 0;
 	bool m_insert_disk_decision_logged = false;
+	bool m_seen_error_reboot_prompt = false;
+	bool m_panel_reboot_confirm_injected = false;
+	bool m_error009_origin_logged = false;
+	u32 m_lrclk_trace_count = 0;
 	bool m_high_alias_enabled = false;
 	bool m_lowmem_overlay_enabled = false;
 	bool m_seen_insert_disk_prompt = false;
@@ -259,6 +264,8 @@ private:
 	void log_fb81b4_path(const char *landmark, u32 pc, u8 tested_value, bool branch_taken,
 		u32 branch_target, u16 sr_override = 0xffff, u32 d2_override = 0xffffffff);
 	void log_04c6_origin(const char *landmark, u32 pc, u8 value, bool branch_taken, u32 branch_target);
+	void log_error009_context(const char *source, u32 pc, u16 value, u16 mem_mask);
+	void log_lrclk_candidate(bool write, u32 address, u16 data, u16 mem_mask, u16 shadow);
 	void log_lowmem_04ee(bool write, u16 previous, u16 current, u16 mem_mask);
 	void log_lowmem_049d(bool write, u16 previous, u16 current, u16 mem_mask);
 	void log_pc_summary(const char *reason, u32 pc);
@@ -335,6 +342,10 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_panel_text));
 	save_item(NAME(m_panel_text_length));
 	save_item(NAME(m_insert_disk_decision_logged));
+	save_item(NAME(m_seen_error_reboot_prompt));
+	save_item(NAME(m_panel_reboot_confirm_injected));
+	save_item(NAME(m_error009_origin_logged));
+	save_item(NAME(m_lrclk_trace_count));
 	save_item(NAME(m_high_alias_enabled));
 	save_item(NAME(m_lowmem_overlay_enabled));
 	save_item(NAME(m_seen_insert_disk_prompt));
@@ -355,6 +366,10 @@ void asr10_boot_state::machine_reset()
 	m_seen_insert_disk_prompt = false;
 	m_panel_text_length = 0;
 	m_insert_disk_decision_logged = false;
+	m_seen_error_reboot_prompt = false;
+	m_panel_reboot_confirm_injected = false;
+	m_error009_origin_logged = false;
+	m_lrclk_trace_count = 0;
 	std::fill(std::begin(m_panel_text), std::end(m_panel_text), 0);
 	m_pc_poll_count = 0;
 	m_last_pc = 0xffffffffU;
@@ -537,6 +552,29 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 	}
 	if (byte_address == 0x04b0)
 		log_04b0_countdown(m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff, 'W', previous, m_lowmem_shadow[offset]);
+	if ((byte_address == 0x0b7e || byte_address == 0x0b80) &&
+		(m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff) == 0x00f882de)
+	{
+		const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+		const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+		logerror("ASR10_ERROR_ENTRY_STUB pc=%06x previous_pc=%06x addr=%06x data=%04x mem_mask=%04x "
+			"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x sr=%04x "
+			"sp=%06x stack0=%08x stack1=%08x stack2=%08x stack3=%08x "
+			"lowmem_00c0=%04x lowmem_04c6=%04x lowmem_04c8=%04x lowmem_04ca=%04x lowmem_04cc=%04x\n",
+			pc, m_last_distinct_pc, byte_address, data, mem_mask,
+			u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
+			u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
+			u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
+			u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
+			u16(m_maincpu->state_int(M68K_SR)), sp, read_stack_long(sp), read_stack_long(sp + 4),
+			read_stack_long(sp + 8), read_stack_long(sp + 12),
+			m_lowmem_shadow[0x00c0 >> 1], m_lowmem_shadow[0x04c6 >> 1],
+			m_lowmem_shadow[0x04c8 >> 1], m_lowmem_shadow[0x04ca >> 1],
+			m_lowmem_shadow[0x04cc >> 1]);
+	}
+	if (byte_address == 0x00c0)
+		log_error009_context("error_number_write_00c0", m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff,
+			m_lowmem_shadow[offset], mem_mask);
 	if (byte_address == 0x04ee)
 		log_lowmem_04ee(true, previous, m_lowmem_shadow[offset], mem_mask);
 	else if (byte_address == 0x049c)
@@ -650,6 +688,7 @@ u16 asr10_boot_state::m68302_internal_r(offs_t offset, u16 mem_mask)
 	}
 	const u16 data = effective & mem_mask;
 	trace_access(trace_region::M68302_INTERNAL, false, address, data, mem_mask, shadow);
+	log_lrclk_candidate(false, address, data, mem_mask, shadow);
 	if (address == 0x00fc6860 && !machine().side_effects_disabled())
 	{
 		const u8 relevant_byte = (mem_mask & 0xff00) ? u8(effective >> 8) : u8(effective);
@@ -668,6 +707,7 @@ void asr10_boot_state::m68302_internal_w(offs_t offset, u16 data, u16 mem_mask)
 	const u32 address = 0x00fc6800 | (offset << 1);
 	COMBINE_DATA(&m_m68302_internal_shadow[offset & 0x7f]);
 	trace_access(trace_region::M68302_INTERNAL, true, address, data, mem_mask, m_m68302_internal_shadow[offset & 0x7f]);
+	log_lrclk_candidate(true, address, data, mem_mask, m_m68302_internal_shadow[offset & 0x7f]);
 	if (address == 0x00fc6860 && !machine().side_effects_disabled())
 	{
 		const u16 shadow = m_m68302_internal_shadow[offset & 0x7f];
@@ -1012,6 +1052,15 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 					u8(raw_data), BIT(raw_data, 4) ? 0 : 1);
 		}
 	}
+	if (ASR10_EXPERIMENT_PANEL_REBOOT_CONFIRM_RAW_21 &&
+		pc == 0x00f89cea && address == 0x00fc4816 && ACCESSING_BITS_0_7 &&
+		m_seen_error_reboot_prompt && !m_panel_reboot_confirm_injected &&
+		!machine().side_effects_disabled())
+	{
+		raw_data = 0x21;
+		m_panel_reboot_confirm_injected = true;
+		logerror("ASR10_EXPERIMENT_PANEL_REBOOT_CONFIRM raw=21 mapped=23 pc=f89cea\n");
+	}
 
 	const u16 data = raw_data & mem_mask;
 	if (!machine().side_effects_disabled())
@@ -1098,7 +1147,16 @@ void asr10_boot_state::panel_text_byte(u8 data, u32 pc)
 void asr10_boot_state::flush_panel_text()
 {
 	if (m_panel_text_length)
+	{
 		logerror("ASR10PANEL text=\"%s\"\n", m_panel_text);
+		if (strstr(m_panel_text, "ERROR 009 - REBOOT ?"))
+		{
+			m_seen_error_reboot_prompt = true;
+			log_error009_context("panel_error009_text",
+				m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff,
+				m_lowmem_shadow[0x00c0 >> 1], 0xffff);
+		}
+	}
 
 	m_panel_text_length = 0;
 	m_insert_disk_decision_logged = false;
@@ -1429,6 +1487,113 @@ void asr10_boot_state::log_04c6_origin(const char *landmark, u32 pc, u8 value, b
 }
 
 
+void asr10_boot_state::log_error009_context(const char *source, u32 pc, u16 value, u16 mem_mask)
+{
+	if (m_error009_origin_logged && strcmp(source, "panel_error009_text"))
+		return;
+
+	const u8 error_number = u8(value);
+	if (error_number != 0x09 && strcmp(source, "panel_error009_text"))
+		return;
+
+	if (strcmp(source, "panel_error009_text"))
+		m_error009_origin_logged = true;
+
+	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+	std::string command_sequence;
+	const u8 first = (m_fdc_command_ring_next + m_fdc_command_ring.size() - m_fdc_command_ring_count) % m_fdc_command_ring.size();
+	for (u8 index = 0; index < m_fdc_command_ring_count; index++)
+	{
+		if (index)
+			command_sequence += ',';
+		command_sequence += util::string_format("%02x", m_fdc_command_ring[(first + index) % m_fdc_command_ring.size()]);
+	}
+
+	const u8 last_st0 = m_fdc_cmd46_result_bytes[0];
+	const u8 last_st1 = m_fdc_cmd46_result_bytes[1];
+	const u8 last_st2 = m_fdc_cmd46_result_bytes[2];
+
+	logerror("ASR10_ERROR009_CONTEXT source=%s pc=%06x previous_pc=%06x opcode=%04x value=%04x mem_mask=%04x "
+		"error_number=%02x sr=%04x d0=%08x d1=%08x d2=%08x d3=%08x "
+		"a0=%08x a1=%08x a2=%08x a3=%08x sp=%06x "
+		"stack0=%08x stack1=%08x stack2=%08x stack3=%08x stack4=%08x stack5=%08x "
+		"lowmem_00c0=%04x lowmem_049d=%02x lowmem_04ae=%04x lowmem_04b0=%04x "
+		"lowmem_04c6=%04x lowmem_04c8=%04x lowmem_04ca=%04x lowmem_04cc=%04x "
+		"lowmem_04ee=%02x panel=\"%s\" "
+		"last_fdc_txn=%u last_aux=%02x last_fifo_read=%02x last_fifo_write=%02x recent_commands=\"%s\" "
+		"last_cmd46_bytes=%02x,%02x,%02x,%02x,%02x,%02x,%02x,%02x,%02x "
+		"last_cmd46_result=%02x,%02x,%02x,%02x,%02x,%02x,%02x "
+		"last_ST0_invalid=%u last_ST0_abnormal=%u last_ST0_seek_end=%u last_ST0_equipment_check=%u last_ST0_not_ready=%u "
+		"last_ST1_end_of_cylinder=%u last_ST1_data_error=%u last_ST1_overrun=%u last_ST1_no_data=%u "
+		"last_ST1_not_writable=%u last_ST1_missing_address_mark=%u "
+		"last_ST2_control_mark=%u last_ST2_data_error=%u last_ST2_wrong_cylinder=%u last_ST2_scan_equal=%u "
+		"last_ST2_scan_not_satisfied=%u last_ST2_bad_cylinder=%u last_ST2_missing_data_address_mark=%u "
+		"data_rate=%u data_rate_source=%02x\n",
+		source, pc, m_last_distinct_pc, read_code_word(pc), value, mem_mask, error_number,
+		u16(m_maincpu->state_int(M68K_SR)),
+		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
+		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
+		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
+		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
+		sp, read_stack_long(sp), read_stack_long(sp + 4), read_stack_long(sp + 8),
+		read_stack_long(sp + 12), read_stack_long(sp + 16), read_stack_long(sp + 20),
+		m_lowmem_shadow[0x00c0 >> 1], u8(m_lowmem_shadow[0x049c >> 1]),
+		m_lowmem_shadow[0x04ae >> 1], m_lowmem_shadow[0x04b0 >> 1],
+		m_lowmem_shadow[0x04c6 >> 1], m_lowmem_shadow[0x04c8 >> 1],
+		m_lowmem_shadow[0x04ca >> 1], m_lowmem_shadow[0x04cc >> 1],
+		u8(m_lowmem_shadow[0x04ee >> 1] >> 8), m_panel_text,
+		m_fdc_cmd46_transaction, m_fdc_last_aux_command, m_fdc_last_fifo_read,
+		m_fdc_last_fifo_write, command_sequence.c_str(),
+		m_fdc_cmd46_write_bytes[0], m_fdc_cmd46_write_bytes[1], m_fdc_cmd46_write_bytes[2],
+		m_fdc_cmd46_write_bytes[3], m_fdc_cmd46_write_bytes[4], m_fdc_cmd46_write_bytes[5],
+		m_fdc_cmd46_write_bytes[6], m_fdc_cmd46_write_bytes[7], m_fdc_cmd46_write_bytes[8],
+		last_st0, last_st1, last_st2,
+		m_fdc_cmd46_result_bytes[3], m_fdc_cmd46_result_bytes[4], m_fdc_cmd46_result_bytes[5],
+		m_fdc_cmd46_result_bytes[6],
+		BIT(last_st0, 7), BIT(last_st0, 6), BIT(last_st0, 5), BIT(last_st0, 4), BIT(last_st0, 3),
+		BIT(last_st1, 7), BIT(last_st1, 5), BIT(last_st1, 4), BIT(last_st1, 2), BIT(last_st1, 1), BIT(last_st1, 0),
+		BIT(last_st2, 6), BIT(last_st2, 5), BIT(last_st2, 4), BIT(last_st2, 3), BIT(last_st2, 2), BIT(last_st2, 1), BIT(last_st2, 0),
+		m_fdc_data_rate, m_fdc_data_rate_source);
+}
+
+
+void asr10_boot_state::log_lrclk_candidate(bool write, u32 address, u16 data, u16 mem_mask, u16 shadow)
+{
+	if (machine().side_effects_disabled())
+		return;
+
+	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+	if (pc < 0x00f8c100 || pc > 0x00f8c180)
+		return;
+
+	m_lrclk_trace_count++;
+	if (m_lrclk_trace_count > 96 && (m_lrclk_trace_count & (m_lrclk_trace_count - 1)))
+		return;
+
+	const bool low_byte = bool(mem_mask & 0x00ff);
+	const bool high_byte = bool(mem_mask & 0xff00);
+	const u8 relevant_byte = low_byte ? u8(data) : u8(data >> 8);
+	const u8 shadow_byte = low_byte ? u8(shadow) : u8(shadow >> 8);
+	const bool lrclk_candidate = (address == 0x00fc6828) && low_byte;
+	const s32 bit3_state = lrclk_candidate ? s32(BIT(relevant_byte, 3)) : -1;
+	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+
+	logerror("ASR10_LRCLK_CANDIDATE pc=%06x opcode=%04x rw=%c addr=%06x detail=%s "
+		"data=%04x mem_mask=%04x selected_byte=%s relevant_byte=%02x bit3_lrclk_candidate=%d "
+		"shadow=%04x shadow_relevant_byte=%02x "
+		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x sr=%04x "
+		"sp=%06x stack0=%08x stack1=%08x trace_count=%u\n",
+		pc, read_code_word(pc), write ? 'W' : 'R', address, m68302_register_name(address),
+		data, mem_mask, high_byte && !low_byte ? "high" : low_byte && !high_byte ? "low" : "word",
+		relevant_byte, bit3_state, shadow, shadow_byte,
+		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
+		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
+		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
+		u32(m_maincpu->state_int(M68K_A2)), u16(m_maincpu->state_int(M68K_SR)),
+		sp, read_stack_long(sp), read_stack_long(sp + 4), m_lrclk_trace_count);
+}
+
+
 void asr10_boot_state::log_fdc_04b0_context(bool write, u16 mem_mask)
 {
 	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
@@ -1663,6 +1828,10 @@ void asr10_boot_state::log_fdc_cmd46_summary()
 		"decoded_sector_size=%u decoded_EOT=%02x decoded_GPL=%02x decoded_DTL=%02x mfm=%u mt=%u sk=%u "
 		"result_bytes=\"%s\" fifo_result_pcs=\"%s\" "
 		"ST0=%02x ST1=%02x ST2=%02x result_C_byte=%02x result_H_byte=%02x result_R_byte=%02x result_N_byte=%02x "
+		"ST0_invalid=%u ST0_abnormal=%u ST0_seek_end=%u ST0_equipment_check=%u ST0_not_ready=%u "
+		"ST1_end_of_cylinder=%u ST1_data_error=%u ST1_overrun=%u ST1_no_data=%u ST1_not_writable=%u ST1_missing_address_mark=%u "
+		"ST2_control_mark=%u ST2_data_error=%u ST2_wrong_cylinder=%u ST2_scan_equal=%u ST2_scan_not_satisfied=%u "
+		"ST2_bad_cylinder=%u ST2_missing_data_address_mark=%u "
 		"decoded_result_C=%02x decoded_result_H=%02x decoded_result_R=%02x decoded_result_N=%02x "
 		"lowmem_ST0_04c6=%02x lowmem_ST1_04c7=%02x lowmem_ST2_04c8=%02x "
 		"lowmem_C_04c9=%02x lowmem_H_04ca=%02x lowmem_R_04cb=%02x lowmem_N_04cc=%02x "
@@ -1675,6 +1844,9 @@ void asr10_boot_state::log_fdc_cmd46_summary()
 		eot, gpl, dtl, BIT(command, 6), BIT(command, 7), BIT(command, 5),
 		result_bytes.c_str(), result_pcs.c_str(),
 		st0, st1, st2, result_c, result_h, result_r, result_n,
+		BIT(st0, 7), BIT(st0, 6), BIT(st0, 5), BIT(st0, 4), BIT(st0, 3),
+		BIT(st1, 7), BIT(st1, 5), BIT(st1, 4), BIT(st1, 2), BIT(st1, 1), BIT(st1, 0),
+		BIT(st2, 6), BIT(st2, 5), BIT(st2, 4), BIT(st2, 3), BIT(st2, 2), BIT(st2, 1), BIT(st2, 0),
 		result_c, result_h, result_r, result_n,
 		u8(m_lowmem_shadow[0x04c6 >> 1] >> 8), u8(m_lowmem_shadow[0x04c6 >> 1]),
 		u8(m_lowmem_shadow[0x04c8 >> 1] >> 8), u8(m_lowmem_shadow[0x04c8 >> 1]),
@@ -2202,7 +2374,7 @@ const char *asr10_boot_state::m68302_register_name(u32 address)
 	case 0x22: return "port_a_data_candidate";
 	case 0x24: return "port_b_control_candidate";
 	case 0x26: return "port_b_direction_candidate";
-	case 0x28: return "port_b_data_candidate";
+	case 0x28: return "port_b_data_lrclk_bit3_candidate";
 	case 0x30: return "chip_select_0_base_candidate";
 	case 0x32: return "chip_select_0_option_candidate";
 	case 0x34: return "chip_select_1_base_candidate";
@@ -2282,6 +2454,34 @@ void asr10_boot_state::log_watched_pc(u32 pc)
 	case 0x00f88030:
 		logerror("ASR10BOOT watched_pc: pc=%06x full_static=$fff88030 rom_offset=0x08030 system_call_8030\n", pc);
 		break;
+	case 0x00f88280:
+	case 0x00f88284:
+	case 0x00f882de:
+	case 0x00f87ede:
+	case 0x00f87ee4:
+	case 0x00f8c14a:
+	case 0x00f8c16a:
+	case 0x00f8932e:
+	case 0x00f89798:
+	case 0x00f8f302:
+	case 0x00f9268c:
+	case 0x00f94314:
+	{
+		const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+		logerror("ASR10_ERROR_WATCH pc=%06x previous_pc=%06x opcode=%04x "
+			"d0=%08x d1=%08x d2=%08x d3=%08x sr=%04x sp=%06x "
+			"stack0=%08x stack1=%08x stack2=%08x lowmem_00c0=%04x lowmem_0cda=%04x "
+			"lowmem_04c6=%04x lowmem_04c8=%04x lowmem_04ca=%04x lowmem_04cc=%04x\n",
+			pc, m_last_distinct_pc, read_code_word(pc),
+			u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
+			u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
+			u16(m_maincpu->state_int(M68K_SR)), sp,
+			read_stack_long(sp), read_stack_long(sp + 4), read_stack_long(sp + 8),
+			m_lowmem_shadow[0x00c0 >> 1], m_lowmem_shadow[0x0cda >> 1],
+			m_lowmem_shadow[0x04c6 >> 1], m_lowmem_shadow[0x04c8 >> 1],
+			m_lowmem_shadow[0x04ca >> 1], m_lowmem_shadow[0x04cc >> 1]);
+		break;
+	}
 	default:
 		break;
 	}
@@ -2299,7 +2499,7 @@ u16 asr10_boot_state::read_code_word(u32 address) const
 	return 0xffff;
 }
 
-
+// hängning
 void asr10_boot_state::log_pc_summary(const char *reason, u32 pc)
 {
 	const u16 opcode = read_code_word(pc);
