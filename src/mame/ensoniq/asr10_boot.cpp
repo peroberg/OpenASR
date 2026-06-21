@@ -203,6 +203,14 @@ private:
 	u32 m_f87f96_queue_write_count = 0;
 	u32 m_f87f96_queue_rte_count = 0;
 	bool m_f87f96_code_dump_logged = false;
+	bool m_f880_queue_code_dump_logged = false;
+	bool m_f8ce_queue_code_dump_logged = false;
+	bool m_queue_rte_after_pending = false;
+	u32 m_queue_rte_after_count = 0;
+	u32 m_queue_rte_before_pc = 0xffffffff;
+	u16 m_queue_rte_before_fc6814 = 0;
+	u16 m_queue_rte_before_fc6816 = 0;
+	u16 m_queue_rte_before_fc6818 = 0;
 	u32 m_fc681x_trace_count = 0;
 	bool m_fc681x_code_dump_logged = false;
 	bool m_fc681x_00bf_code_dump_logged = false;
@@ -394,6 +402,14 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_f87f96_queue_write_count));
 	save_item(NAME(m_f87f96_queue_rte_count));
 	save_item(NAME(m_f87f96_code_dump_logged));
+	save_item(NAME(m_f880_queue_code_dump_logged));
+	save_item(NAME(m_f8ce_queue_code_dump_logged));
+	save_item(NAME(m_queue_rte_after_pending));
+	save_item(NAME(m_queue_rte_after_count));
+	save_item(NAME(m_queue_rte_before_pc));
+	save_item(NAME(m_queue_rte_before_fc6814));
+	save_item(NAME(m_queue_rte_before_fc6816));
+	save_item(NAME(m_queue_rte_before_fc6818));
 	save_item(NAME(m_fc681x_trace_count));
 	save_item(NAME(m_fc681x_code_dump_logged));
 	save_item(NAME(m_fc681x_00bf_code_dump_logged));
@@ -444,6 +460,14 @@ void asr10_boot_state::machine_reset()
 	m_f87f96_queue_write_count = 0;
 	m_f87f96_queue_rte_count = 0;
 	m_f87f96_code_dump_logged = false;
+	m_f880_queue_code_dump_logged = false;
+	m_f8ce_queue_code_dump_logged = false;
+	m_queue_rte_after_pending = false;
+	m_queue_rte_after_count = 0;
+	m_queue_rte_before_pc = 0xffffffff;
+	m_queue_rte_before_fc6814 = 0;
+	m_queue_rte_before_fc6816 = 0;
+	m_queue_rte_before_fc6818 = 0;
 	m_fc681x_trace_count = 0;
 	m_fc681x_code_dump_logged = false;
 	m_fc681x_00bf_code_dump_logged = false;
@@ -1971,6 +1995,30 @@ void asr10_boot_state::log_f87f96_queue_write(u32 byte_address, u16 previous, u1
 	const u8 previous_byte3 = u8(previous);
 	const u8 current_byte2 = u8(current >> 8);
 	const u8 current_byte3 = u8(current);
+	if (!m_f880_queue_code_dump_logged && pc >= 0x00f880e0 && pc <= 0x00f88130)
+	{
+		std::string words;
+		for (u32 cursor = 0x00f880e0; cursor <= 0x00f88130; cursor += 2)
+		{
+			if (cursor != 0x00f880e0)
+				words += ',';
+			words += util::string_format("%06x:%04x", cursor, read_loaded_word(cursor));
+		}
+		logerror("ASR10_QUEUE_PRODUCER_CODE_DUMP range=f880e0_f88130 trigger_pc=%06x words=\"%s\"\n", pc, words.c_str());
+		m_f880_queue_code_dump_logged = true;
+	}
+	if (!m_f8ce_queue_code_dump_logged && pc >= 0x00f8ce20 && pc <= 0x00f8ce50)
+	{
+		std::string words;
+		for (u32 cursor = 0x00f8ce20; cursor <= 0x00f8ce50; cursor += 2)
+		{
+			if (cursor != 0x00f8ce20)
+				words += ',';
+			words += util::string_format("%06x:%04x", cursor, read_loaded_word(cursor));
+		}
+		logerror("ASR10_QUEUE_PRODUCER_CODE_DUMP range=f8ce20_f8ce50 trigger_pc=%06x words=\"%s\"\n", pc, words.c_str());
+		m_f8ce_queue_code_dump_logged = true;
+	}
 	m_recent_queue_pc = pc;
 	m_recent_queue_address = byte_address;
 	m_recent_queue_record_base = record_base;
@@ -1990,6 +2038,7 @@ void asr10_boot_state::log_f87f96_queue_write(u32 byte_address, u16 previous, u1
 		"queue_base_from_00c6=%04x record_base=%06x record_offset=%02x record_slot=%u "
 		"previous_byte2=%02x previous_byte3=%02x current_byte2=%02x current_byte3=%02x "
 		"made_unequal=%u made_equal=%u changed_by_handler_clear=%u "
+		"fc6814=%04x fc6814_bits_3_1_0=%u%u%u fc6816=%04x fc6816_bits_15_14_13_10_7=%u%u%u%u%u fc6818=%04x "
 		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x sr=%04x sr_mask=%u "
 		"sp=%06x stack0=%08x stack1=%08x "
 		"fc68_last_pc=%06x fc68_last_addr=%06x fc68_last_rw=%c fc68_last_data=%04x "
@@ -2000,6 +2049,14 @@ void asr10_boot_state::log_f87f96_queue_write(u32 byte_address, u16 previous, u1
 		previous_byte2, previous_byte3, current_byte2, current_byte3,
 		current_byte2 != current_byte3 ? 1 : 0, current_byte2 == current_byte3 ? 1 : 0,
 		(pc == 0x00f87fb0 && current == 0) ? 1 : 0,
+		m_m68302_internal_shadow[0x14 >> 1],
+		BIT(m_m68302_internal_shadow[0x14 >> 1], 3), BIT(m_m68302_internal_shadow[0x14 >> 1], 1),
+		BIT(m_m68302_internal_shadow[0x14 >> 1], 0),
+		m_m68302_internal_shadow[0x16 >> 1],
+		BIT(m_m68302_internal_shadow[0x16 >> 1], 15), BIT(m_m68302_internal_shadow[0x16 >> 1], 14),
+		BIT(m_m68302_internal_shadow[0x16 >> 1], 13), BIT(m_m68302_internal_shadow[0x16 >> 1], 10),
+		BIT(m_m68302_internal_shadow[0x16 >> 1], 7),
+		m_m68302_internal_shadow[0x18 >> 1],
 		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
 		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
 		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
@@ -2030,20 +2087,33 @@ void asr10_boot_state::log_f87f96_queue_rte(int state)
 	const u32 frame_return_pc = ((stack0 & 0x0000ffff) << 16) | (stack1 >> 16);
 	const u16 current_sr = u16(m_maincpu->state_int(M68K_SR));
 	const u16 queue_pointer_word = m_lowmem_shadow[0x00c6 >> 1];
+	const u16 fc6814_before = m_m68302_internal_shadow[0x14 >> 1];
+	const u16 fc6816_before = m_m68302_internal_shadow[0x16 >> 1];
+	const u16 fc6818_before = m_m68302_internal_shadow[0x18 >> 1];
+
+	m_queue_rte_after_pending = true;
+	m_queue_rte_after_count = m_f87f96_queue_rte_count;
+	m_queue_rte_before_pc = pc;
+	m_queue_rte_before_fc6814 = fc6814_before;
+	m_queue_rte_before_fc6816 = fc6816_before;
+	m_queue_rte_before_fc6818 = fc6818_before;
 
 	logerror("ASR10_F87F96_QUEUE_RTE state=%d pc=%06x previous_pc=%06x opcode=%04x "
 		"sr=%04x sr_mask=%u sp=%06x stack0=%08x stack1=%08x stack2=%08x "
 		"frame_sr_guess=%04x frame_sr_mask_guess=%u frame_return_pc_guess=%06x "
 		"queue_base_from_00c6=%04x "
 		"fc68_int_mask=%04x fc68_int_pending=%04x fc68_int_in_service=%04x fc68_int_control=%04x "
+		"fc6814_bits_3_1_0=%u%u%u fc6816_bits_15_14_13_10_7=%u%u%u%u%u "
 		"fc68_last_pc=%06x fc68_last_addr=%06x fc68_last_rw=%c fc68_last_data=%04x "
 		"fc68_last_mem_mask=%04x fc68_last_shadow=%04x fc68_last_detail=%s rte_count=%u\n",
 		state, pc, m_last_distinct_pc, read_loaded_word(0x00f87fc0),
 		current_sr, (current_sr >> 8) & 7, sp, stack0, stack1, read_stack_long(sp + 8),
 		frame_sr, (frame_sr >> 8) & 7, frame_return_pc & 0x00ffffff,
 		queue_pointer_word,
-		m_m68302_internal_shadow[0x12 >> 1], m_m68302_internal_shadow[0x14 >> 1],
-		m_m68302_internal_shadow[0x16 >> 1], m_m68302_internal_shadow[0x18 >> 1],
+		m_m68302_internal_shadow[0x12 >> 1], fc6814_before, fc6816_before, fc6818_before,
+		BIT(fc6814_before, 3), BIT(fc6814_before, 1), BIT(fc6814_before, 0),
+		BIT(fc6816_before, 15), BIT(fc6816_before, 14), BIT(fc6816_before, 13),
+		BIT(fc6816_before, 10), BIT(fc6816_before, 7),
 		m_last_fc68_pc, m_last_fc68_address, m_last_fc68_write ? 'W' : 'R',
 		m_last_fc68_data, m_last_fc68_mem_mask, m_last_fc68_shadow,
 		m68302_register_name(m_last_fc68_address), m_f87f96_queue_rte_count);
@@ -3129,6 +3199,28 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::pc_poll)
 {
 	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 	m_pc_poll_count++;
+	if (m_queue_rte_after_pending && pc != m_queue_rte_before_pc)
+	{
+		const u16 fc6814_after = m_m68302_internal_shadow[0x14 >> 1];
+		const u16 fc6816_after = m_m68302_internal_shadow[0x16 >> 1];
+		const u16 fc6818_after = m_m68302_internal_shadow[0x18 >> 1];
+		logerror("ASR10_F87F96_QUEUE_RTE_AFTER rte_count=%u pc=%06x previous_rte_pc=%06x "
+			"fc6814_before=%04x fc6814_after=%04x fc6814_changed=%04x "
+			"fc6816_before=%04x fc6816_after=%04x fc6816_changed=%04x "
+			"fc6818_before=%04x fc6818_after=%04x fc6818_changed=%04x "
+			"fc6814_bits_3_1_0=%u%u%u fc6816_bits_15_14_13_10_7=%u%u%u%u%u "
+			"last_fc68_pc=%06x last_fc68_addr=%06x last_fc68_rw=%c last_fc68_data=%04x last_fc68_shadow=%04x\n",
+			m_queue_rte_after_count, pc, m_queue_rte_before_pc,
+			m_queue_rte_before_fc6814, fc6814_after, m_queue_rte_before_fc6814 ^ fc6814_after,
+			m_queue_rte_before_fc6816, fc6816_after, m_queue_rte_before_fc6816 ^ fc6816_after,
+			m_queue_rte_before_fc6818, fc6818_after, m_queue_rte_before_fc6818 ^ fc6818_after,
+			BIT(fc6814_after, 3), BIT(fc6814_after, 1), BIT(fc6814_after, 0),
+			BIT(fc6816_after, 15), BIT(fc6816_after, 14), BIT(fc6816_after, 13),
+			BIT(fc6816_after, 10), BIT(fc6816_after, 7),
+			m_last_fc68_pc, m_last_fc68_address, m_last_fc68_write ? 'W' : 'R',
+			m_last_fc68_data, m_last_fc68_shadow);
+		m_queue_rte_after_pending = false;
+	}
 
 	if (pc != m_last_pc)
 	{
