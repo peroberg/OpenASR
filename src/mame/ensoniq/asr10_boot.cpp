@@ -199,6 +199,8 @@ private:
 	u32 m_lrclk_trace_count = 0;
 	u32 m_post_lrclk_poll_count = 0;
 	bool m_post_lrclk_disassembly_logged = false;
+	u32 m_f87f96_queue_read_count = 0;
+	u32 m_f87f96_queue_write_count = 0;
 	bool m_high_alias_enabled = false;
 	bool m_lowmem_overlay_enabled = false;
 	bool m_seen_insert_disk_prompt = false;
@@ -275,6 +277,8 @@ private:
 	void log_error009_context(const char *source, u32 pc, u16 value, u16 mem_mask);
 	void log_lrclk_candidate(bool write, u32 address, u16 data, u16 mem_mask, u16 shadow);
 	void log_post_lrclk_poll_candidate(u32 address, u16 data, u16 mem_mask, u16 shadow);
+	void log_f87f96_queue_read(u32 byte_address, u16 data, u16 mem_mask);
+	void log_f87f96_queue_write(u32 byte_address, u16 previous, u16 current, u16 data, u16 mem_mask);
 	void log_lowmem_04ee(bool write, u16 previous, u16 current, u16 mem_mask);
 	void log_lowmem_049d(bool write, u16 previous, u16 current, u16 mem_mask);
 	void log_pc_summary(const char *reason, u32 pc);
@@ -361,6 +365,8 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_lrclk_trace_count));
 	save_item(NAME(m_post_lrclk_poll_count));
 	save_item(NAME(m_post_lrclk_disassembly_logged));
+	save_item(NAME(m_f87f96_queue_read_count));
+	save_item(NAME(m_f87f96_queue_write_count));
 	save_item(NAME(m_high_alias_enabled));
 	save_item(NAME(m_lowmem_overlay_enabled));
 	save_item(NAME(m_seen_insert_disk_prompt));
@@ -387,6 +393,8 @@ void asr10_boot_state::machine_reset()
 	m_lrclk_trace_count = 0;
 	m_post_lrclk_poll_count = 0;
 	m_post_lrclk_disassembly_logged = false;
+	m_f87f96_queue_read_count = 0;
+	m_f87f96_queue_write_count = 0;
 	std::fill(std::begin(m_panel_text), std::end(m_panel_text), 0);
 	m_pc_poll_count = 0;
 	m_last_pc = 0xffffffffU;
@@ -540,6 +548,8 @@ u16 asr10_boot_state::low_rom_or_lowmem_r(offs_t offset, u16 mem_mask)
 					(u32(m_maincpu->state_int(M68K_D2)) & 0xffffff00) | masked_status);
 			}
 		}
+		if (!machine().side_effects_disabled())
+			log_f87f96_queue_read(byte_address, data, mem_mask);
 		return data;
 	}
 
@@ -563,6 +573,7 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 
 	const u16 previous = m_lowmem_shadow[offset];
 	COMBINE_DATA(&m_lowmem_shadow[offset]);
+	log_f87f96_queue_write(byte_address, previous, m_lowmem_shadow[offset], data, mem_mask);
 	if (m_fdc_cmd46_result_complete && byte_address >= 0x04c6 && byte_address <= 0x04cc)
 		log_fdc_cmd46_lowmem_store(byte_address, mem_mask);
 	if constexpr (ASR10_LOG_FDC_04B0_CONTEXT)
@@ -1678,6 +1689,76 @@ void asr10_boot_state::log_post_lrclk_poll_candidate(u32 address, u16 data, u16 
 		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
 		u16(m_maincpu->state_int(M68K_SR)), sp, read_stack_long(sp), read_stack_long(sp + 4),
 		read_stack_long(sp + 8), read_stack_long(sp + 12), m_post_lrclk_poll_count);
+}
+
+
+void asr10_boot_state::log_f87f96_queue_read(u32 byte_address, u16 data, u16 mem_mask)
+{
+	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+	if (pc != 0x00f87f96 && pc != 0x00f87f9a && byte_address != 0x00c6)
+		return;
+
+	const u32 a2 = m_maincpu->state_int(M68K_A2) & 0x00ffffff;
+	const u32 target_2 = (a2 + 2) & 0x00ffffff;
+	const u32 target_3 = (a2 + 3) & 0x00ffffff;
+	if (byte_address != 0x00c6 && byte_address != (target_2 & ~1U) && byte_address != (target_3 & ~1U))
+		return;
+
+	m_f87f96_queue_read_count++;
+	if (m_f87f96_queue_read_count > 96 && (m_f87f96_queue_read_count & (m_f87f96_queue_read_count - 1)))
+		return;
+
+	const bool low_byte = bool(mem_mask & 0x00ff);
+	const u8 relevant_byte = low_byte ? u8(data) : u8(data >> 8);
+	const u32 effective_address = pc == 0x00f87f96 ? target_2 : pc == 0x00f87f9a ? target_3 : byte_address;
+	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+
+	logerror("ASR10_F87F96_QUEUE_READ pc=%06x previous_pc=%06x opcode=%04x addr=%06x effective_addr=%06x "
+		"data=%04x mem_mask=%04x relevant_byte=%02x byte_role=%s "
+		"a2=%08x queue_word=%04x queue_byte2=%02x queue_byte3=%02x "
+		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a3=%08x sr=%04x "
+		"sp=%06x stack0=%08x stack1=%08x stack2=%08x read_count=%u\n",
+		pc, m_last_distinct_pc, read_code_word(pc), byte_address, effective_address,
+		data, mem_mask, relevant_byte, pc == 0x00f87f96 ? "queue_byte2_to_d0" :
+			pc == 0x00f87f9a ? "queue_byte3_to_d1" : "queue_pointer_00c6_to_a2",
+		a2, (target_2 >> 1) < LOWMEM_WORDS ? m_lowmem_shadow[target_2 >> 1] : 0xffff,
+		(target_2 >> 1) < LOWMEM_WORDS ? u8(m_lowmem_shadow[target_2 >> 1] >> 8) : 0xff,
+		(target_2 >> 1) < LOWMEM_WORDS ? u8(m_lowmem_shadow[target_2 >> 1]) : 0xff,
+		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
+		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
+		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
+		u32(m_maincpu->state_int(M68K_A3)), u16(m_maincpu->state_int(M68K_SR)),
+		sp, read_stack_long(sp), read_stack_long(sp + 4), read_stack_long(sp + 8),
+		m_f87f96_queue_read_count);
+}
+
+
+void asr10_boot_state::log_f87f96_queue_write(u32 byte_address, u16 previous, u16 current, u16 data, u16 mem_mask)
+{
+	const u16 queue_pointer_word = m_lowmem_shadow[0x00c6 >> 1];
+	const u32 queue_base = queue_pointer_word & 0x00ffffff;
+	const u32 queue_word_address = (queue_base + 2) & ~1U;
+	if (byte_address != 0x00c6 && byte_address != queue_word_address)
+		return;
+
+	m_f87f96_queue_write_count++;
+	if (m_f87f96_queue_write_count > 96 && (m_f87f96_queue_write_count & (m_f87f96_queue_write_count - 1)))
+		return;
+
+	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+	logerror("ASR10_F87F96_QUEUE_WRITE pc=%06x addr=%06x data=%04x mem_mask=%04x previous=%04x current=%04x "
+		"queue_base_from_00c6=%04x queue_word_addr=%06x queue_byte2=%02x queue_byte3=%02x "
+		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x sr=%04x "
+		"sp=%06x stack0=%08x stack1=%08x write_count=%u\n",
+		pc, byte_address, data, mem_mask, previous, current, queue_pointer_word, queue_word_address,
+		u8(current >> 8), u8(current),
+		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
+		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
+		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
+		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
+		u16(m_maincpu->state_int(M68K_SR)), sp, read_stack_long(sp), read_stack_long(sp + 4),
+		m_f87f96_queue_write_count);
 }
 
 
