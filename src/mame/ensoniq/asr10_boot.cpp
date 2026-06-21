@@ -88,6 +88,7 @@ private:
 	static constexpr bool ASR10_LOG_FDC_ACCESS = false;
 	static constexpr bool ASR10_LOG_FDC_04B0_CONTEXT = false;
 	static constexpr bool ASR10_LOG_PANEL_BYTES = false;
+	static constexpr bool ASR10_EXPERIMENT_CMD88_RATE_500K = true;
 	static constexpr bool ASR10_EXPERIMENT_STUB_CMD1E_RESULTS = false;
 	static constexpr u8 ASR10_STUB_CMD1E_RESULT_BYTE0 = 0x00;
 	static constexpr u8 ASR10_STUB_CMD1E_RESULT_BYTE1 = 0x00;
@@ -833,16 +834,24 @@ void asr10_boot_state::upd72069_fdc_w(offs_t offset, u16 data, u16 mem_mask)
 			m_prompt_select_timer->adjust(attotime::zero, 0, attotime::from_ticks(1, m_maincpu->clock()));
 		}
 		m_fdc->auxcmd_w(m_fdc_last_aux_command);
+		if (ASR10_EXPERIMENT_CMD88_RATE_500K && m_fdc_last_aux_command == 0x88)
+		{
+			m_fdc->set_rate(500000);
+			m_fdc_data_rate = 500000;
+		}
 		if (m_fdc_last_aux_command == 0x88 || m_fdc_last_aux_command == 0xf3)
 		{
 			const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
 			floppy_image_device *const floppy = m_floppy_connector->get_device();
 			logerror("ASR10_FDC_CMD%02X txn=%u event=aux_write pc=%06x value=%02x "
 				"sp=%06x stack0=%08x stack1=%08x stack2=%08x "
-				"meaning=%s drive_attached=%u media_mounted=%u ready=%u motor=%u density=%s\n",
+				"meaning=%s experiment_cmd88_rate_500k=%u effective_data_rate=%u "
+				"drive_attached=%u media_mounted=%u ready=%u motor=%u density=%s\n",
 				m_fdc_last_aux_command, m_fdc_transaction, pc, m_fdc_last_aux_command,
 				sp, read_stack_long(sp), read_stack_long(sp + 4), read_stack_long(sp + 8),
-				m_fdc_last_aux_command == 0x88 ? "control_data_rate_250000" : "precompensation",
+				m_fdc_last_aux_command == 0x88 ? "control_data_rate_250000_asr_experiment_forces_500000" : "precompensation",
+				ASR10_EXPERIMENT_CMD88_RATE_500K && m_fdc_last_aux_command == 0x88 ? 1 : 0,
+				m_fdc_data_rate,
 				floppy ? 1 : 0, floppy && floppy->exists() ? 1 : 0,
 				floppy && !floppy->ready_r() ? 1 : 0, floppy && !floppy->mon_r() ? 1 : 0,
 				floppy && floppy->floppy_is_hd() ? "hd" : "dd");
