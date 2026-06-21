@@ -91,8 +91,9 @@ private:
 	static constexpr bool ASR10_EXPERIMENT_CMD88_RATE_500K = true;
 	static constexpr bool ASR10_EXPERIMENT_FC6860_CLEAR_BUSY_BIT0_AFTER_WRITE = true;
 	static constexpr u8 ASR10_EXPERIMENT_FC6860_CLEAR_BUSY_READ_DELAY = 2;
-	static constexpr bool ASR10_EXPERIMENT_68302_LRCLK_BIT3_TOGGLE = true;
-	static constexpr u8 ASR10_EXPERIMENT_68302_LRCLK_PHASE2_READ_DELAY = 4;
+	static constexpr bool ASR10_EXPERIMENT_68302_LRCLK_CLOCK_BIT3 = true;
+	static constexpr u8 ASR10_EXPERIMENT_68302_LRCLK_CLOCK_PHASE_READS = 8;
+	static constexpr u8 ASR10_EXPERIMENT_68302_LRCLK_CLOCK_MAX_LOGS = 64;
 	static constexpr bool ASR10_EXPERIMENT_PANEL_REBOOT_CONFIRM_RAW_21 = false;
 	static constexpr bool ASR10_EXPERIMENT_STUB_CMD1E_RESULTS = false;
 	static constexpr u8 ASR10_STUB_CMD1E_RESULT_BYTE0 = 0x00;
@@ -141,8 +142,9 @@ private:
 	u16 m_m68302_internal_shadow[0x80]{};
 	u8 m_fc6860_reads_after_write = 0;
 	bool m_fc6860_busy_clear_logged = false;
-	u8 m_lrclk_phase2_reads = 0;
-	bool m_lrclk_toggle_logged = false;
+	u32 m_lrclk_clock_reads = 0;
+	u8 m_lrclk_clock_transition_logs = 0;
+	s8 m_lrclk_clock_last_bit = -1;
 	u8 m_fdc_last_aux_command = 0;
 	u8 m_fdc_last_msr = 0;
 	u8 m_fdc_last_fifo_read = 0;
@@ -303,8 +305,9 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_m68302_internal_shadow));
 	save_item(NAME(m_fc6860_reads_after_write));
 	save_item(NAME(m_fc6860_busy_clear_logged));
-	save_item(NAME(m_lrclk_phase2_reads));
-	save_item(NAME(m_lrclk_toggle_logged));
+	save_item(NAME(m_lrclk_clock_reads));
+	save_item(NAME(m_lrclk_clock_transition_logs));
+	save_item(NAME(m_lrclk_clock_last_bit));
 	save_item(NAME(m_fdc_last_aux_command));
 	save_item(NAME(m_fdc_last_msr));
 	save_item(NAME(m_fdc_last_fifo_read));
@@ -398,8 +401,9 @@ void asr10_boot_state::machine_reset()
 	std::fill(std::begin(m_m68302_internal_shadow), std::end(m_m68302_internal_shadow), 0);
 	m_fc6860_reads_after_write = 0;
 	m_fc6860_busy_clear_logged = false;
-	m_lrclk_phase2_reads = 0;
-	m_lrclk_toggle_logged = false;
+	m_lrclk_clock_reads = 0;
+	m_lrclk_clock_transition_logs = 0;
+	m_lrclk_clock_last_bit = -1;
 	m_fdc_last_aux_command = 0;
 	m_fdc_last_msr = 0;
 	m_fdc_last_fifo_read = 0;
@@ -702,34 +706,22 @@ u16 asr10_boot_state::m68302_internal_r(offs_t offset, u16 mem_mask)
 			}
 		}
 	}
-	if (ASR10_EXPERIMENT_68302_LRCLK_BIT3_TOGGLE && address == 0x00fc6828 && mem_mask == 0x00ff &&
-		pc >= 0x00f8c142 && pc <= 0x00f8c16a && !machine().side_effects_disabled())
+	if (ASR10_EXPERIMENT_68302_LRCLK_CLOCK_BIT3 && address == 0x00fc6828 && mem_mask == 0x00ff &&
+		!machine().side_effects_disabled())
 	{
 		const u8 original_byte = u8(effective);
-		u8 effective_byte = original_byte;
-		if (pc == 0x00f8c14e)
+		const u32 phase = m_lrclk_clock_reads / ASR10_EXPERIMENT_68302_LRCLK_CLOCK_PHASE_READS;
+		const u8 bit3 = phase & 1;
+		const u8 effective_byte = bit3 ? (original_byte | 0x08) : (original_byte & ~u8(0x08));
+		if (m_lrclk_clock_last_bit != s8(bit3) &&
+			m_lrclk_clock_transition_logs < ASR10_EXPERIMENT_68302_LRCLK_CLOCK_MAX_LOGS)
 		{
-			effective_byte &= ~u8(0x08);
-			m_lrclk_phase2_reads = 0;
-			m_lrclk_toggle_logged = false;
+			logerror("ASR10_EXPERIMENT_LRCLK_CLOCK pc=%06x original=%02x effective=%02x bit3=%u phase=%u\n",
+				pc, original_byte, effective_byte, bit3, phase);
+			m_lrclk_clock_transition_logs++;
 		}
-		else if (pc == 0x00f8c160)
-		{
-			if (m_lrclk_phase2_reads < ASR10_EXPERIMENT_68302_LRCLK_PHASE2_READ_DELAY)
-			{
-				m_lrclk_phase2_reads++;
-			}
-			else
-			{
-				effective_byte |= 0x08;
-				if (!m_lrclk_toggle_logged && !BIT(original_byte, 3))
-				{
-					logerror("ASR10_EXPERIMENT_LRCLK_TOGGLE pc=f8c160 original=%02x effective=%02x bit3 0->1\n",
-						original_byte, effective_byte);
-					m_lrclk_toggle_logged = true;
-				}
-			}
-		}
+		m_lrclk_clock_last_bit = s8(bit3);
+		m_lrclk_clock_reads++;
 		effective = (effective & 0xff00) | effective_byte;
 	}
 	const u16 data = effective & mem_mask;
