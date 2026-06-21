@@ -201,6 +201,14 @@ private:
 	bool m_post_lrclk_disassembly_logged = false;
 	u32 m_f87f96_queue_read_count = 0;
 	u32 m_f87f96_queue_write_count = 0;
+	u32 m_f87f96_queue_rte_count = 0;
+	bool m_f87f96_code_dump_logged = false;
+	u32 m_last_fc68_pc = 0xffffffff;
+	u32 m_last_fc68_address = 0xffffffff;
+	u16 m_last_fc68_data = 0;
+	u16 m_last_fc68_mem_mask = 0;
+	u16 m_last_fc68_shadow = 0;
+	bool m_last_fc68_write = false;
 	bool m_high_alias_enabled = false;
 	bool m_lowmem_overlay_enabled = false;
 	bool m_seen_insert_disk_prompt = false;
@@ -279,6 +287,7 @@ private:
 	void log_post_lrclk_poll_candidate(u32 address, u16 data, u16 mem_mask, u16 shadow);
 	void log_f87f96_queue_read(u32 byte_address, u16 data, u16 mem_mask);
 	void log_f87f96_queue_write(u32 byte_address, u16 previous, u16 current, u16 data, u16 mem_mask);
+	void log_f87f96_queue_rte(int state);
 	void log_lowmem_04ee(bool write, u16 previous, u16 current, u16 mem_mask);
 	void log_lowmem_049d(bool write, u16 previous, u16 current, u16 mem_mask);
 	void log_pc_summary(const char *reason, u32 pc);
@@ -367,6 +376,14 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_post_lrclk_disassembly_logged));
 	save_item(NAME(m_f87f96_queue_read_count));
 	save_item(NAME(m_f87f96_queue_write_count));
+	save_item(NAME(m_f87f96_queue_rte_count));
+	save_item(NAME(m_f87f96_code_dump_logged));
+	save_item(NAME(m_last_fc68_pc));
+	save_item(NAME(m_last_fc68_address));
+	save_item(NAME(m_last_fc68_data));
+	save_item(NAME(m_last_fc68_mem_mask));
+	save_item(NAME(m_last_fc68_shadow));
+	save_item(NAME(m_last_fc68_write));
 	save_item(NAME(m_high_alias_enabled));
 	save_item(NAME(m_lowmem_overlay_enabled));
 	save_item(NAME(m_seen_insert_disk_prompt));
@@ -395,6 +412,14 @@ void asr10_boot_state::machine_reset()
 	m_post_lrclk_disassembly_logged = false;
 	m_f87f96_queue_read_count = 0;
 	m_f87f96_queue_write_count = 0;
+	m_f87f96_queue_rte_count = 0;
+	m_f87f96_code_dump_logged = false;
+	m_last_fc68_pc = 0xffffffff;
+	m_last_fc68_address = 0xffffffff;
+	m_last_fc68_data = 0;
+	m_last_fc68_mem_mask = 0;
+	m_last_fc68_shadow = 0;
+	m_last_fc68_write = false;
 	std::fill(std::begin(m_panel_text), std::end(m_panel_text), 0);
 	m_pc_poll_count = 0;
 	m_last_pc = 0xffffffffU;
@@ -736,6 +761,12 @@ u16 asr10_boot_state::m68302_internal_r(offs_t offset, u16 mem_mask)
 		effective = (effective & 0xff00) | effective_byte;
 	}
 	const u16 data = effective & mem_mask;
+	m_last_fc68_pc = pc;
+	m_last_fc68_address = address;
+	m_last_fc68_data = data;
+	m_last_fc68_mem_mask = mem_mask;
+	m_last_fc68_shadow = shadow;
+	m_last_fc68_write = false;
 	trace_access(trace_region::M68302_INTERNAL, false, address, data, mem_mask, shadow);
 	log_lrclk_candidate(false, address, data, mem_mask, shadow);
 	log_post_lrclk_poll_candidate(address, data, mem_mask, shadow);
@@ -755,6 +786,12 @@ void asr10_boot_state::m68302_internal_w(offs_t offset, u16 data, u16 mem_mask)
 {
 	const u32 address = 0x00fc6800 | (offset << 1);
 	COMBINE_DATA(&m_m68302_internal_shadow[offset & 0x7f]);
+	m_last_fc68_pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+	m_last_fc68_address = address;
+	m_last_fc68_data = data;
+	m_last_fc68_mem_mask = mem_mask;
+	m_last_fc68_shadow = m_m68302_internal_shadow[offset & 0x7f];
+	m_last_fc68_write = true;
 	trace_access(trace_region::M68302_INTERNAL, true, address, data, mem_mask, m_m68302_internal_shadow[offset & 0x7f]);
 	log_lrclk_candidate(true, address, data, mem_mask, m_m68302_internal_shadow[offset & 0x7f]);
 	if (address == 0x00fc6860 && !machine().side_effects_disabled())
@@ -1698,6 +1735,19 @@ void asr10_boot_state::log_f87f96_queue_read(u32 byte_address, u16 data, u16 mem
 	if (pc != 0x00f87f96 && pc != 0x00f87f9a && byte_address != 0x00c6)
 		return;
 
+	if (!m_f87f96_code_dump_logged)
+	{
+		std::string words;
+		for (u32 cursor = 0x00f87f40; cursor <= 0x00f87fd0; cursor += 2)
+		{
+			if (cursor != 0x00f87f40)
+				words += ',';
+			words += util::string_format("%06x:%04x", cursor, read_loaded_word(cursor));
+		}
+		logerror("ASR10_F87F96_CODE_DUMP words=\"%s\"\n", words.c_str());
+		m_f87f96_code_dump_logged = true;
+	}
+
 	const u32 a2 = m_maincpu->state_int(M68K_A2) & 0x00ffffff;
 	const u32 target_2 = (a2 + 2) & 0x00ffffff;
 	const u32 target_3 = (a2 + 3) & 0x00ffffff;
@@ -1712,12 +1762,20 @@ void asr10_boot_state::log_f87f96_queue_read(u32 byte_address, u16 data, u16 mem
 	const u8 relevant_byte = low_byte ? u8(data) : u8(data >> 8);
 	const u32 effective_address = pc == 0x00f87f96 ? target_2 : pc == 0x00f87f9a ? target_3 : byte_address;
 	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+	const u32 stack0 = read_stack_long(sp);
+	const u32 stack1 = read_stack_long(sp + 4);
+	const u32 frame_return_pc = ((stack0 & 0x0000ffff) << 16) | (stack1 >> 16);
+	const u16 frame_sr = stack0 >> 16;
+	const u16 current_sr = u16(m_maincpu->state_int(M68K_SR));
 
 	logerror("ASR10_F87F96_QUEUE_READ pc=%06x previous_pc=%06x opcode=%04x addr=%06x effective_addr=%06x "
 		"data=%04x mem_mask=%04x relevant_byte=%02x byte_role=%s "
 		"a2=%08x queue_word=%04x queue_byte2=%02x queue_byte3=%02x "
-		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a3=%08x sr=%04x "
-		"sp=%06x stack0=%08x stack1=%08x stack2=%08x read_count=%u\n",
+		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a3=%08x sr=%04x sr_mask=%u "
+		"sp=%06x stack0=%08x stack1=%08x stack2=%08x frame_sr_guess=%04x frame_sr_mask_guess=%u "
+		"frame_return_pc_guess=%06x "
+		"fc68_last_pc=%06x fc68_last_addr=%06x fc68_last_rw=%c fc68_last_data=%04x "
+		"fc68_last_mem_mask=%04x fc68_last_shadow=%04x fc68_last_detail=%s read_count=%u\n",
 		pc, m_last_distinct_pc, read_code_word(pc), byte_address, effective_address,
 		data, mem_mask, relevant_byte, pc == 0x00f87f96 ? "queue_byte2_to_d0" :
 			pc == 0x00f87f9a ? "queue_byte3_to_d1" : "queue_pointer_00c6_to_a2",
@@ -1727,8 +1785,12 @@ void asr10_boot_state::log_f87f96_queue_read(u32 byte_address, u16 data, u16 mem
 		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
 		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
 		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
-		u32(m_maincpu->state_int(M68K_A3)), u16(m_maincpu->state_int(M68K_SR)),
-		sp, read_stack_long(sp), read_stack_long(sp + 4), read_stack_long(sp + 8),
+		u32(m_maincpu->state_int(M68K_A3)), current_sr, (current_sr >> 8) & 7,
+		sp, stack0, stack1, read_stack_long(sp + 8), frame_sr, (frame_sr >> 8) & 7,
+		frame_return_pc & 0x00ffffff,
+		m_last_fc68_pc, m_last_fc68_address, m_last_fc68_write ? 'W' : 'R',
+		m_last_fc68_data, m_last_fc68_mem_mask, m_last_fc68_shadow,
+		m68302_register_name(m_last_fc68_address),
 		m_f87f96_queue_read_count);
 }
 
@@ -1737,8 +1799,12 @@ void asr10_boot_state::log_f87f96_queue_write(u32 byte_address, u16 previous, u1
 {
 	const u16 queue_pointer_word = m_lowmem_shadow[0x00c6 >> 1];
 	const u32 queue_base = queue_pointer_word & 0x00ffffff;
-	const u32 queue_word_address = (queue_base + 2) & ~1U;
-	if (byte_address != 0x00c6 && byte_address != queue_word_address)
+	const bool queue_pointer_write = byte_address == 0x00c6;
+	const u32 queue_offset = queue_base ? (byte_address - queue_base) : 0xffffffffU;
+	const bool queue_record_index_write =
+		queue_base >= 0x0200 && byte_address >= queue_base && byte_address < queue_base + 0x0200 &&
+		((queue_offset % 0x16) == 2);
+	if (!queue_pointer_write && !queue_record_index_write)
 		return;
 
 	m_f87f96_queue_write_count++;
@@ -1747,18 +1813,72 @@ void asr10_boot_state::log_f87f96_queue_write(u32 byte_address, u16 previous, u1
 
 	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+	const u32 record_base = queue_record_index_write ? byte_address - (queue_offset % 0x16) : queue_base;
+	const u8 previous_byte2 = u8(previous >> 8);
+	const u8 previous_byte3 = u8(previous);
+	const u8 current_byte2 = u8(current >> 8);
+	const u8 current_byte3 = u8(current);
 	logerror("ASR10_F87F96_QUEUE_WRITE pc=%06x addr=%06x data=%04x mem_mask=%04x previous=%04x current=%04x "
-		"queue_base_from_00c6=%04x queue_word_addr=%06x queue_byte2=%02x queue_byte3=%02x "
-		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x sr=%04x "
-		"sp=%06x stack0=%08x stack1=%08x write_count=%u\n",
-		pc, byte_address, data, mem_mask, previous, current, queue_pointer_word, queue_word_address,
-		u8(current >> 8), u8(current),
+		"queue_base_from_00c6=%04x record_base=%06x record_offset=%02x record_slot=%u "
+		"previous_byte2=%02x previous_byte3=%02x current_byte2=%02x current_byte3=%02x "
+		"made_unequal=%u made_equal=%u changed_by_handler_clear=%u "
+		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x sr=%04x sr_mask=%u "
+		"sp=%06x stack0=%08x stack1=%08x "
+		"fc68_last_pc=%06x fc68_last_addr=%06x fc68_last_rw=%c fc68_last_data=%04x "
+		"fc68_last_mem_mask=%04x fc68_last_shadow=%04x fc68_last_detail=%s write_count=%u\n",
+		pc, byte_address, data, mem_mask, previous, current, queue_pointer_word, record_base,
+		queue_record_index_write ? queue_offset : 0xffffffffU,
+		queue_record_index_write ? queue_offset / 0x16 : 0xffffffffU,
+		previous_byte2, previous_byte3, current_byte2, current_byte3,
+		current_byte2 != current_byte3 ? 1 : 0, current_byte2 == current_byte3 ? 1 : 0,
+		(pc == 0x00f87fb0 && current == 0) ? 1 : 0,
 		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
 		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
 		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
 		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
-		u16(m_maincpu->state_int(M68K_SR)), sp, read_stack_long(sp), read_stack_long(sp + 4),
+		u16(m_maincpu->state_int(M68K_SR)), (u16(m_maincpu->state_int(M68K_SR)) >> 8) & 7,
+		sp, read_stack_long(sp), read_stack_long(sp + 4),
+		m_last_fc68_pc, m_last_fc68_address, m_last_fc68_write ? 'W' : 'R',
+		m_last_fc68_data, m_last_fc68_mem_mask, m_last_fc68_shadow,
+		m68302_register_name(m_last_fc68_address),
 		m_f87f96_queue_write_count);
+}
+
+
+void asr10_boot_state::log_f87f96_queue_rte(int state)
+{
+	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+	if (pc != 0x00f87fc0 && m_last_pc != 0x00f87fc0)
+		return;
+
+	m_f87f96_queue_rte_count++;
+	if (m_f87f96_queue_rte_count > 96 && (m_f87f96_queue_rte_count & (m_f87f96_queue_rte_count - 1)))
+		return;
+
+	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+	const u32 stack0 = read_stack_long(sp);
+	const u32 stack1 = read_stack_long(sp + 4);
+	const u16 frame_sr = stack0 >> 16;
+	const u32 frame_return_pc = ((stack0 & 0x0000ffff) << 16) | (stack1 >> 16);
+	const u16 current_sr = u16(m_maincpu->state_int(M68K_SR));
+	const u16 queue_pointer_word = m_lowmem_shadow[0x00c6 >> 1];
+
+	logerror("ASR10_F87F96_QUEUE_RTE state=%d pc=%06x previous_pc=%06x opcode=%04x "
+		"sr=%04x sr_mask=%u sp=%06x stack0=%08x stack1=%08x stack2=%08x "
+		"frame_sr_guess=%04x frame_sr_mask_guess=%u frame_return_pc_guess=%06x "
+		"queue_base_from_00c6=%04x "
+		"fc68_int_mask=%04x fc68_int_pending=%04x fc68_int_in_service=%04x fc68_int_control=%04x "
+		"fc68_last_pc=%06x fc68_last_addr=%06x fc68_last_rw=%c fc68_last_data=%04x "
+		"fc68_last_mem_mask=%04x fc68_last_shadow=%04x fc68_last_detail=%s rte_count=%u\n",
+		state, pc, m_last_distinct_pc, read_loaded_word(0x00f87fc0),
+		current_sr, (current_sr >> 8) & 7, sp, stack0, stack1, read_stack_long(sp + 8),
+		frame_sr, (frame_sr >> 8) & 7, frame_return_pc & 0x00ffffff,
+		queue_pointer_word,
+		m_m68302_internal_shadow[0x12 >> 1], m_m68302_internal_shadow[0x14 >> 1],
+		m_m68302_internal_shadow[0x16 >> 1], m_m68302_internal_shadow[0x18 >> 1],
+		m_last_fc68_pc, m_last_fc68_address, m_last_fc68_write ? 'W' : 'R',
+		m_last_fc68_data, m_last_fc68_mem_mask, m_last_fc68_shadow,
+		m68302_register_name(m_last_fc68_address), m_f87f96_queue_rte_count);
 }
 
 
@@ -2890,6 +3010,7 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 {
 	M68000(config, m_maincpu, XTAL(16'000'000)); // 68000-compatible stand-in for likely MC68302-family board
 	m_maincpu->set_addrmap(AS_PROGRAM, &asr10_boot_state::mem_map);
+	m_maincpu->set_rte_callback(FUNC(asr10_boot_state::log_f87f96_queue_rte));
 
 	UPD72069(config, m_fdc, XTAL(16'000'000)); // clock unknown; placeholder for boot tracing
 
