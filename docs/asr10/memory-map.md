@@ -118,13 +118,50 @@ Dispatcher scans records from $00c6 to $00c8.
 
 Active/current dispatcher record pointer candidate.
 
-Observed around dispatcher save/restore paths. Needs more confirmation.
+Observed at dispatcher RTE:
+
+```asm
+f87fbc: move.w A2,$0b6a.w
+```
+
+Current interpretation:
+
+```text
+$0b6a holds the active/current slot record when the dispatcher transfers control through RTE.
+```
 
 Current question:
 
 ```text
-Which slot/callback led to the runtime service setter around 00bf1a?
+Which caller/branch returns from the slot 2 callback chain into f8ce00..f8ce46?
 ```
+
+### Queue slot record fields
+
+Current candidate layout for a 0x16-byte slot record:
+
+```text
++0x02/+0x03  pending/equalized bytes
++0x06        callback / RTE PC
++0x0a        stacked SR
++0x0c        dispatch context / continuation, moved to D5 and cleared
++0x0e        extra context / USP-ish candidate
++0x10        secondary continuation/list pointer candidate
++0x12        companion state to +0x10
+```
+
+Baseline slot 2:
+
+```text
+slot base=002400
+pending word=002402
++0x06/+0x08 frame PC=007308
++0x0a frame SR=0000
++0x10=002410
++0x12=002412
+```
+
+First-PC diagnostics showed dispatcher `f87fc0: rte` entered `007308` in baseline, with no immediate IACK observed.
 
 ## Runtime service flags
 
@@ -155,6 +192,7 @@ Important caution:
 ```text
 Exact meaning is unknown.
 Do not treat it as confirmed complete/active semantics yet.
+No proven consumption/clear of the new $0d06=ff00 before idle is known in the current sequence.
 ```
 
 ### `$0E82`
@@ -172,6 +210,7 @@ written as 0008
 later cleared
 later written as 0004
 read into D0 at 00bf14
+later changes 0004 -> 0010 after service path
 ```
 
 Context:
@@ -184,8 +223,8 @@ Context:
 Open question:
 
 ```text
-Does $0e82 provide the argument to the Line-A/A000 call?
-What do values 0004 and 0008 mean?
+What do values 0004, 0008, and 0010 mean?
+Is 0010 a service lifecycle state, a callback state, or unrelated to slot offset +0x10?
 ```
 
 ## Runtime service setter around `00BF1A`
@@ -217,6 +256,7 @@ Current interpretation:
 This is a real runtime service/handshake routine.
 The IACK handler does not directly set FC6816 0x2400.
 Runtime code sets it later at 00bf1a.
+A000 in this sequence is Line-A vector #10 to ROM f882ca; it writes D0.w to stacked SR/CCR, skips A000, and returns after the opcode.
 ```
 
 ## MC68302 / FC68xx current-phase fields
@@ -269,6 +309,13 @@ Current interpretation:
 
 ```text
 FC6816 bit 0x2400 may be an in-service/service-active/EOI latch, but it is not the sole blocker.
+```
+
+Current caution:
+
+```text
+No proven post-set firmware read/test of FC6816 0x2400 is known in the current service sequence.
+Do not keep focusing on FC6816 clear unless a firmware path reads/tests it and gates producer/re-arm behavior.
 ```
 
 Latest negative result:

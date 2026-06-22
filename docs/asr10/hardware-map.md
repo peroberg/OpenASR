@@ -26,11 +26,12 @@ The current blocker is probably not raw panel input, FDC media format, or simple
 Current best hardware-side suspects:
 
 ```text id="9ks6xd"
-- MC68302 timer/service completion
 - dispatcher queue re-arm
+- slot 2 callback-chain / scheduler re-arm
+- producer vs finalizer path after slot 2 completion
+- MC68302 timer/service completion, only if firmware branches on it
 - FC6884/FC6894 completion behavior
 - lowmem service state around $0d06/$0e82
-- missing event payload after accepted 0x2400 service sequence
 ```
 
 ## Known or strongly suspected hardware
@@ -145,6 +146,13 @@ Open question:
 
 ```text id="urgjby"
 Should FC6884/FC6894 produce a later timer/completion event that re-arms the firmware dispatcher queue?
+```
+
+Current caution:
+
+```text id="fc68caution"
+Raise FC68xx/MC68302 back to primary only if a firmware path clearly tests external status/timer/completion and that test controls producer/re-arm after slot 2 completion.
+No proven post-set firmware read/test of FC6816 0x2400 is known in the current sequence.
 ```
 
 ### FDC
@@ -336,9 +344,9 @@ MC68302/board service source 0x2400
 What is still missing:
 
 ```text id="18yn8k"
-A later event, queue mutation, timer tick, or hardware completion signal that causes the dispatcher to leave idle and continue beyond LOADING SYSTEM.
+A producer/re-arm path after slot 2 completion, or a proven external status/timer/completion condition that gates that producer/re-arm path.
 ```
 
 ## Current one-line hardware takeaway
 
-The current hardware problem is no longer simply "what chip exists where?". The immediate problem is the missing control-plane side effect after the accepted-looking MC68302/FC68xx `0x2400` service sequence: FC6814 clears, FC6816 is set at runtime `00bf1a`, `$0d06` is set, FC6816 can be experimentally cleared back to `c080`, but the firmware dispatcher still idles at `f87f9a` with no panel or FDC progress.
+The current hardware problem is no longer simply "what chip exists where?". The immediate problem is that after the accepted-looking MC68302/FC68xx `0x2400` service sequence, baseline slot 2 callback enters `007308`, reaches the `00bf1a/00bf22` service setter, and post-service/finalizer code writes slot 2 to equalized `8080`; hardware-side work should only return to FC68xx/MC68302 details once the firmware path shows an external status/timer/completion controls the missing producer/re-arm.

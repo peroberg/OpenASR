@@ -54,21 +54,25 @@ ROM boots
 -> panel text path works
 -> earlier input/status and FDC/media gates are passed far enough to reach LOADING SYSTEM
 -> accepted-looking MC68302/FC68xx 0x2400 service sequence runs
+-> dispatcher takes slot 2
+-> baseline slot 2 callback enters 007308
+-> 007308 starts with jsr $fff8d01a
 -> runtime service setter at 00bf1a runs
 -> $0d06 is set
+-> post-service/finalizer writes slot 2 to 8080
 -> dispatcher returns to f87f9a idle
 ```
 
 Current missing step:
 
 ```text id="j0i3h7"
-No next queue event/payload/timer completion is observed after the service sequence.
+No next producer/re-arm event is observed after slot 2 completion.
 ```
 
 Current best hypothesis:
 
 ```text id="z3d9yr"
-The missing piece is likely dispatcher queue re-arm, event payload, timer cadence, FC6884/FC6894 completion behavior, or lowmem service state around $0d06/$0e82.
+The missing piece is likely the callback-chain / scheduler re-arm / producer path after slot 2 completion.
 ```
 
 ## Display print path
@@ -140,7 +144,47 @@ When byte2 == byte3, the dispatcher treats the slot as idle/equalized.
 Current blocker:
 
 ```text id="9ytfwz"
-After the accepted-looking service sequence, no queue slot appears to become pending again.
+After slot 2 callback/service completion, no queue slot appears to become pending again.
+```
+
+## Dispatcher RTE callback frame
+
+Documented/proven dispatcher frame builder:
+
+```asm id="rteframe"
+f87fa2  move.l $0006(A2),-(A7)   ; callback PC
+f87fa6  move.w $000a(A2),-(A7)   ; stacked SR
+f87fb4  move.w $000c(A2),D5
+f87fb8  clr.w  $000c(A2)
+f87fbc  move.w A2,$0b6a.w
+f87fc0  rte
+```
+
+This is a normal 68000 short RTE frame.
+
+Slot field candidate meanings:
+
+```text id="rteslotfields"
++0x02/+0x03  pending/equalized bytes
++0x06        callback / RTE PC
++0x0a        stacked SR
++0x0c        dispatch context / continuation, moved to D5 and cleared
++0x0e        extra context / USP-ish candidate
++0x10        secondary continuation/list pointer candidate
++0x12        companion state to +0x10
+```
+
+Baseline slot 2:
+
+```text id="rteslot2"
+slot base=002400
+pending word=002402
+frame SR=0000
+frame PC=007308
+dispatcher SR before RTE=2700
+first-PC diagnostics showed actual_pc=007308
+no immediate IACK was observed in baseline
+007308 executes and starts with jsr $fff8d01a
 ```
 
 ## Current MC68302 / FC68xx service sequence
@@ -186,6 +230,8 @@ autovectors 0x19..0x1f -> ERROR 139 unused vector
 Confirmed loaded runtime code:
 
 ```asm id="7p9egr"
+00bef2  writes FC6894 = 703b
+00bf00  writes FC6884 = 703b
 00bf0e  jsr     $ffff8eca
 00bf14  move.w  $0e82.w,D0
 00bf18  a000
@@ -211,6 +257,38 @@ The IACK handler does not directly set FC6816 0x2400.
 Runtime code sets it later at 00bf1a.
 This looks like a real service/handshake routine.
 ```
+
+Proven post-service observations:
+
+```text id="postservicefacts"
+FC6816 0x2400 is set by runtime at 00bf1a.
+$0d06 is set by runtime at 00bf22.
+$0e82 later changes 0004 -> 0010.
+No proven post-set firmware read/test of FC6816 0x2400 is known in this sequence.
+No proven consumption/clear of the new $0d06=ff00 before idle is known in this sequence.
+```
+
+## Line-A / A000 semantics
+
+A000 in the service setter is explained.
+
+Line-A vector #10 points to ROM `f882ca`:
+
+```asm id="lineavector10"
+f882ca: move.w D0,(A7)
+f882cc: addq.l #2,2(A7)
+f882d0: rte
+```
+
+Effect:
+
+```text id="linearesult"
+writes D0.w to stacked SR/CCR
+skips the A000 opcode
+returns to the instruction after A000
+```
+
+For `00bf18`, `D0=0004`, so A000 makes post-RTE SR/CCR `0004`. It does not directly create queue/event payload.
 
 Important negative result:
 
@@ -258,14 +336,90 @@ Current interpretation:
 f8c0xx and 00bfxx appear to be paired clear/set service paths or related service-handshake routines.
 ```
 
-Open questions:
+Resolved/updated:
 
 ```text id="8eh3qq"
 What does $0d06 mean?
 What does $0e82 mean?
-What does A000 / LINE-A do in this runtime context?
 What should happen after $0d06 is set?
 ```
+
+A000 / Line-A is no longer a leading open question for service payload production.
+
+## Slot continuation and finalizer behavior
+
+Continuation logic around `f880e0..f88100`:
+
+```asm id="f880continuation"
+f880e0: move.w  $0010(A2),D0
+f880e4: beq.s   f880fc
+f880e6: movea.w D0,A0
+f880e8: move.w  A0,$000c(A2)
+f880ec: move.w  (A0),$0010(A2)
+f880f0: bne.s   f880f6
+f880f2: clr.w   $0012(A2)
+f880f6: bclr    D2,$0002(A2)
+f880fa: bra.s   f88100
+f880fc: bset    D2,$0002(A2)
+f88100: bset    D2,$0003(A2)
+```
+
+With `D2=7`:
+
+```text id="f880meaning"
++0x10 == 0 gives byte2 |= 0x80 and byte3 |= 0x80, so equalized/not pending.
++0x10 != 0 can give byte2 != byte3, so pending.
+```
+
+Current logs do not prove a nonzero continuation path through `f880e6/f880ec/f880f6`.
+
+Finalizer/list-drain/completion candidate around `f8ce00..f8ce46`:
+
+```asm id="f8cefinalizer"
+f8ce00: move.w $0b6c.w,D1
+f8ce04: move.w $000c(A2),D0
+f8ce08: beq.s  f8ce1c
+f8ce0a: move.w D0,$0b6c.w
+f8ce0e: subq.b #1,$0b7f.w
+f8ce12: move.w D0,D5
+f8ce14: move.w D1,(A5)
+f8ce16: move.w D0,D1
+f8ce18: clr.w  $000c(A2)
+f8ce1c: move.w $0010(A2),D0
+f8ce20: beq.s  f8ce3a
+f8ce22: move.w D0,D5
+f8ce24: move.w D0,$0b6c.w
+f8ce28: subq.b #1,$0b7f.w
+f8ce2c: move.w (A5),D0
+f8ce2e: beq.s  f8ce32
+f8ce30: move.w D0,D5
+f8ce32: bne.s  f8ce28
+f8ce34: move.w D1,(A5)
+f8ce36: clr.l  $0010(A2)
+f8ce3a: move.w #$8080,$0002(A2)
+f8ce40: move.w #$0000,D0
+f8ce44: A000
+f8ce46: rts
+```
+
+For slot 2:
+
+```text id="slot2f8ce"
+A2=002400.
+f8ce36 clears 002410/002412 if that path runs.
+f8ce3a writes 002402=8080.
+8080 is equalized/not pending because byte2 == byte3.
+This looks like completion/finalizer output, not failed enqueue.
+```
+
+Healthy pending production is distinct:
+
+```asm id="healthyproducer"
+f87f28: clr.b  $0002(A1)
+f87f2c: move.b #$01,$0003(A1)
+```
+
+This creates `0001`, so byte2 != byte3 and the slot is pending. Code around `f88120/f88124` also appears capable of direct pending/equalize transitions for slot 4/5-like paths.
 
 ## `$049D` prompt/status decision
 

@@ -53,8 +53,8 @@ Current focus:
 
 ```text id="0y1czp"
 MC68302 / FC68xx service lifecycle
-dispatcher queue/event payload
-timer cadence / completion events
+dispatcher callback / scheduler re-arm
+producer vs finalizer path
 lowmem service state around $0d06/$0e82
 ```
 
@@ -65,6 +65,21 @@ Clearing FC6816 0x2400 after the runtime service setter works mechanically, but 
 ```
 
 So the current blocker is likely not just interrupt vectoring or FC6816 service clear.
+
+Current sharper blocker:
+
+```text id="sharpblocker"
+Slot 2 callback executes from 007308 in baseline, reaches the 00bf1a/00bf22 service setter, and post-service/finalizer writes slot 2 to equalized 8080. The next missing piece is likely callback-chain / scheduler re-arm / producer-path after slot 2 completion.
+```
+
+Do not use experiments to chase these as primary blockers without a new branch/log proving them relevant:
+
+```text id="notprimary"
+A000 / Line-A
+blind FC6816 clear
+FDC/raw image behavior
+broad MC68302 refactor
+```
 
 ---
 
@@ -305,6 +320,186 @@ Do not add FDC stubs unless logs show post-service FDC activity.
 ---
 
 # MC68302 / IACK / FC68xx experiments
+
+## Diagnostic: dispatcher RTE first-PC probe
+
+### Type
+
+```text id="rtefirsttype"
+Diagnostics-only.
+```
+
+### Purpose
+
+Prove whether dispatcher `f87fc0: rte` really enters the slot callback PC, or whether the restored SR immediately permits an interrupt/service entry before the callback executes.
+
+### Dispatcher frame facts
+
+```asm id="rtefirstframe"
+f87fa2  move.l $0006(A2),-(A7)   ; callback PC
+f87fa6  move.w $000a(A2),-(A7)   ; stacked SR
+f87fb4  move.w $000c(A2),D5
+f87fb8  clr.w  $000c(A2)
+f87fbc  move.w A2,$0b6a.w
+f87fc0  rte
+```
+
+This builds a normal 68000 short RTE frame.
+
+Baseline slot 2 result:
+
+```text id="rtefirstresult"
+slot base=002400
+pending word=002402
+frame SR=0000
+frame PC=007308
+dispatcher SR before RTE=2700
+first-PC diagnostics showed actual_pc=007308
+immediate IACK was not observed
+007308 executes and starts with jsr $fff8d01a
+```
+
+### Caution
+
+The harness-level first-PC probe uses the existing PC-poll path plus actual IACK callback logging. It is good enough to prove baseline `007308` execution because `007308` was directly observed, but the same diagnostic should be run on 0x4e/0x4f profiles before concluding whether those profiles also enter `007308` first.
+
+### Open follow-up
+
+```text id="rtefirstopen"
+Run the same first-PC diagnostics on 0x4e/0x4f profiles and classify:
+- f87fc0 -> 007308
+- f87fc0 -> 007308 -> f8d020/f8d05a
+- f87fc0 -> immediate IACK/vector/service -> f8d020/f8d05a
+- unexpected frame decode/stack issue
+```
+
+---
+
+## Diagnostic: Line-A / A000 semantics
+
+### Type
+
+```text id="lineatype"
+Diagnostics-only.
+```
+
+### Result
+
+A000 in the `00bf18` service setter path is explained.
+
+Line-A vector #10 points to ROM `f882ca`:
+
+```asm id="lineacode"
+f882ca: move.w D0,(A7)
+f882cc: addq.l #2,2(A7)
+f882d0: rte
+```
+
+Effect:
+
+```text id="lineaeffect"
+writes D0.w to stacked SR/CCR
+skips the A000 opcode
+returns to the instruction after A000
+```
+
+In the `00bf18` path, `D0=0004`, so the post-RTE SR/CCR becomes `0004`.
+
+### Conclusion
+
+```text id="lineaconclusion"
+A000 is not the missing dispatcher service-payload producer.
+Do not add emulator behavior for A000 based on this blocker.
+```
+
+---
+
+## Diagnostic: slot continuation and finalizer
+
+### Type
+
+```text id="slotfinalizertype"
+Diagnostics-only / code-path classification.
+```
+
+### Continuation logic
+
+```asm id="slotcontinuation"
+f880e0: move.w  $0010(A2),D0
+f880e4: beq.s   f880fc
+f880e6: movea.w D0,A0
+f880e8: move.w  A0,$000c(A2)
+f880ec: move.w  (A0),$0010(A2)
+f880f0: bne.s   f880f6
+f880f2: clr.w   $0012(A2)
+f880f6: bclr    D2,$0002(A2)
+f880fa: bra.s   f88100
+f880fc: bset    D2,$0002(A2)
+f88100: bset    D2,$0003(A2)
+```
+
+With `D2=7`:
+
+```text id="slotcontinuationmeaning"
++0x10 == 0 gives byte2 |= 0x80 and byte3 |= 0x80, so equalized/not pending.
++0x10 != 0 can give byte2 != byte3, so pending.
+```
+
+Current logs do not prove a nonzero continuation path through `f880e6/f880ec/f880f6`.
+
+### Finalizer/list-drain candidate
+
+```asm id="slotfinalizer"
+f8ce00: move.w $0b6c.w,D1
+f8ce04: move.w $000c(A2),D0
+f8ce08: beq.s  f8ce1c
+f8ce0a: move.w D0,$0b6c.w
+f8ce0e: subq.b #1,$0b7f.w
+f8ce12: move.w D0,D5
+f8ce14: move.w D1,(A5)
+f8ce16: move.w D0,D1
+f8ce18: clr.w  $000c(A2)
+f8ce1c: move.w $0010(A2),D0
+f8ce20: beq.s  f8ce3a
+f8ce22: move.w D0,D5
+f8ce24: move.w D0,$0b6c.w
+f8ce28: subq.b #1,$0b7f.w
+f8ce2c: move.w (A5),D0
+f8ce2e: beq.s  f8ce32
+f8ce30: move.w D0,D5
+f8ce32: bne.s  f8ce28
+f8ce34: move.w D1,(A5)
+f8ce36: clr.l  $0010(A2)
+f8ce3a: move.w #$8080,$0002(A2)
+f8ce40: move.w #$0000,D0
+f8ce44: A000
+f8ce46: rts
+```
+
+For slot 2:
+
+```text id="slot2finalizer"
+A2=002400
+f8ce36 clears 002410/002412 if that path runs
+f8ce3a writes 002402=8080
+8080 is equalized/not pending because byte2 == byte3
+This looks like completion/finalizer output, not failed enqueue.
+```
+
+Healthy pending production is separate:
+
+```asm id="slotproducer"
+f87f28: clr.b  $0002(A1)
+f87f2c: move.b #$01,$0003(A1)
+```
+
+This creates `0001`, so byte2 != byte3 and the slot is pending.
+
+### Open follow-up
+
+```text id="slotfinalizeropen"
+Find the caller/branch into f8ce00..f8ce46 and compare it with producer paths such as f87f28/f87f2c and f88120/f88124.
+```
 
 ## Experiment: CPU-space IACK diagnostics
 

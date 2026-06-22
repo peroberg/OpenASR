@@ -18,7 +18,7 @@ then progresses beyond the current dispatcher idle state.
 Current immediate goal:
 
 ```text id="q41sjr"
-Understand what dispatcher event, queue payload, timer cadence, or hardware completion signal is missing after the accepted-looking MC68302/FC68xx 0x2400 service sequence.
+Understand why the slot 2 callback/service path completes through the finalizer and does not re-arm or produce the next dispatcher event after LOADING SYSTEM.
 ```
 
 Long-term goal:
@@ -180,13 +180,22 @@ FC6816 0x2400 merely staying set
 Current blocker:
 
 ```text id="w2k7c3"
-After an accepted-looking MC68302/FC68xx 0x2400 service sequence, the runtime returns to dispatcher idle at f87f9a instead of generating/receiving the next event.
+Boot reaches LOADING SYSTEM, dispatcher takes slot 2, slot 2 callback executes from 007308 in baseline, the service chain reaches 00bf1a/00bf22, post-service/finalizer code writes slot 2 to 8080, and the dispatcher then finds no stable new work.
 ```
 
 Current best hypothesis:
 
 ```text id="coz8hc"
-The missing piece is likely dispatcher queue re-arm, event payload, timer cadence, FC6884/FC6894 completion behavior, or lowmem service state around $0d06/$0e82.
+The missing piece is likely callback-chain / scheduler re-arm / producer-path after slot 2 completion.
+```
+
+Not current primary blockers without new evidence:
+
+```text id="jz89nr"
+A000 / Line-A
+blind FC6816 clear
+FDC/raw image
+broad MC68302 refactor
 ```
 
 ## Current MC68302 / FC68xx findings
@@ -273,6 +282,157 @@ The IACK handler does not directly set FC6816 0x2400.
 Runtime code sets it later at 00bf1a.
 This looks like a real service/handshake routine.
 ```
+
+Additional proven facts:
+
+```text id="rtef9a"
+$0e82 later changes 0004 -> 0010.
+No proven post-set firmware read/test of FC6816 0x2400 is known in the current sequence.
+No proven consumption/clear of the new $0d06=ff00 before idle is known in the current sequence.
+```
+
+## Line-A / A000 finding
+
+A000 is now explained and should not be treated as the missing service-payload producer.
+
+Line-A vector #10 points to ROM `f882ca`:
+
+```asm id="linea10"
+f882ca: move.w D0,(A7)
+f882cc: addq.l #2,2(A7)
+f882d0: rte
+```
+
+Effect:
+
+```text id="lineaeffect"
+writes D0.w to the stacked SR/CCR
+skips the A000 opcode
+returns to the instruction after A000
+```
+
+In the `00bf18` service-setter sequence, `D0=0004`, so the post-RTE SR/CCR becomes `0004`. This does not mutate the dispatcher queue, lowmem service state, or FC681x registers directly.
+
+## Dispatcher RTE frame and slot fields
+
+The dispatcher builds a normal 68000 short RTE frame:
+
+```asm id="dispatcherrte"
+f87fa2  move.l $0006(A2),-(A7)   ; callback PC
+f87fa6  move.w $000a(A2),-(A7)   ; stacked SR
+f87fb4  move.w $000c(A2),D5
+f87fb8  clr.w  $000c(A2)
+f87fbc  move.w A2,$0b6a.w
+f87fc0  rte
+```
+
+Slot field candidates:
+
+```text id="slotfields"
++0x02/+0x03  pending/equalized bytes
++0x06        callback / RTE PC
++0x0a        stacked SR
++0x0c        dispatch context / continuation, moved to D5 and cleared
++0x0e        extra context / USP-ish candidate
++0x10        secondary continuation/list pointer candidate
++0x12        companion state to +0x10
+```
+
+Baseline slot 2 evidence:
+
+```text id="slot2rte"
+slot base=002400
+pending word=002402
+frame SR=0000
+frame PC=007308
+dispatcher SR before RTE=2700
+first-PC diagnostics showed actual_pc=007308
+no immediate IACK was observed in baseline
+007308 executes and starts with jsr $fff8d01a
+```
+
+Unknown for 4e/4f profiles:
+
+```text id="rteunknown4e4f"
+whether first-PC is also 007308
+whether SR restore from 2700 to 0000 causes immediate IACK/service entry
+where f8d020/f8d05a sit in the callback chain
+```
+
+## Slot continuation and finalizer model
+
+Continuation logic around `f880e0..f88100`:
+
+```asm id="contlogic"
+f880e0: move.w  $0010(A2),D0
+f880e4: beq.s   f880fc
+f880e6: movea.w D0,A0
+f880e8: move.w  A0,$000c(A2)
+f880ec: move.w  (A0),$0010(A2)
+f880f0: bne.s   f880f6
+f880f2: clr.w   $0012(A2)
+f880f6: bclr    D2,$0002(A2)
+f880fa: bra.s   f88100
+f880fc: bset    D2,$0002(A2)
+f88100: bset    D2,$0003(A2)
+```
+
+With `D2=7`:
+
+```text id="contmeaning"
++0x10 == 0 gives byte2 |= 0x80 and byte3 |= 0x80, so equalized/not pending.
++0x10 != 0 can give byte2 != byte3, so pending.
+```
+
+Current logs do not prove a nonzero continuation path through `f880e6/f880ec/f880f6`.
+
+Finalizer/list-drain/completion candidate:
+
+```asm id="f8cefinalizer"
+f8ce00: move.w $0b6c.w,D1
+f8ce04: move.w $000c(A2),D0
+f8ce08: beq.s  f8ce1c
+f8ce0a: move.w D0,$0b6c.w
+f8ce0e: subq.b #1,$0b7f.w
+f8ce12: move.w D0,D5
+f8ce14: move.w D1,(A5)
+f8ce16: move.w D0,D1
+f8ce18: clr.w  $000c(A2)
+f8ce1c: move.w $0010(A2),D0
+f8ce20: beq.s  f8ce3a
+f8ce22: move.w D0,D5
+f8ce24: move.w D0,$0b6c.w
+f8ce28: subq.b #1,$0b7f.w
+f8ce2c: move.w (A5),D0
+f8ce2e: beq.s  f8ce32
+f8ce30: move.w D0,D5
+f8ce32: bne.s  f8ce28
+f8ce34: move.w D1,(A5)
+f8ce36: clr.l  $0010(A2)
+f8ce3a: move.w #$8080,$0002(A2)
+f8ce40: move.w #$0000,D0
+f8ce44: A000
+f8ce46: rts
+```
+
+For slot 2:
+
+```text id="slot2finalizer"
+A2=002400
+f8ce36 clears 002410/002412 if that path runs
+f8ce3a writes 002402=8080
+8080 is equalized/not pending because byte2 == byte3
+This looks like completion/finalizer output, not a failed enqueue.
+```
+
+Healthy pending production is distinct:
+
+```asm id="healthypending"
+f87f28: clr.b  $0002(A1)
+f87f2c: move.b #$01,$0003(A1)
+```
+
+This creates `0001`, so byte2 != byte3 and the slot is pending. Code around `f88120/f88124` also appears capable of direct pending/equalize transitions for slot 4/5-like paths.
 
 ## Latest negative result
 
@@ -420,33 +580,30 @@ Do not add a broad new behavior stub first.
 Next task:
 
 ```text id="p6fd03"
-Analyze dispatcher queue/event payload after the accepted 0x4e/0x4f service sequence.
+Follow the actual slot 2 callback chain and identify where it chooses producer/re-arm, wait-for-status, or finalizer.
 ```
 
 Focus:
 
 ```text id="cku34j"
-queue base $00c6
-queue end $00c8
-active/current record $0b6a
-slot byte2/byte3
-slot 2 callback/context
-last non-idle event before final f87f9a
-whether any slot should become pending again but does not
-readers/writers of $0d06 and $0e82
-FC6884/FC6894 behavior after service sequence
+007308
+f8d01a
+f8d020/f8d05a
+00bef2/00bf00/00bf1a/00bf22
+f8ce00..f8ce46
+first branch choosing producer/re-arm, wait-for-status, or finalizer
 ```
 
 Current key question:
 
 ```text id="lox769"
-After 00bf1a and $0d06 set, which queue slot, lowmem flag, timer register, or completion signal should change to make the dispatcher leave f87f9a idle?
+Why does the slot 2 callback/service path finish in the f8ce00..f8ce46 finalizer and leave slot 2 equalized at 8080 instead of producing or re-arming the next pending dispatcher work?
 ```
 
 ## Suggested next analysis prompt
 
 ```text id="lqejnq"
-Analyze dispatcher queue/event payload after the 0x4e/0x4f service sequence.
+Analyze callback-chain / scheduler re-arm after the 0x4e/0x4f service sequence.
 
 Do not edit files and do not commit.
 
@@ -463,44 +620,25 @@ Known facts:
   - no new error
   - final idle/hang remains f87f9a dispatcher scan.
 - Therefore FC6816 service clear is not sufficient.
-- Recent dispatcher context says slot 2 was handler-cleared at f87fb0 before/around the service setter path.
+- A000 is explained as Line-A vector #10 to f882ca; it writes D0.w to stacked SR, skips A000, and returns after the opcode.
+- Baseline dispatcher RTE for slot 2 has frame PC=007308, frame SR=0000, dispatcher SR=2700, and first-PC diagnostics showed actual_pc=007308 with no immediate IACK.
+- 007308 executes and starts with jsr $fff8d01a.
+- Post-service/finalizer writes slot 2 pending word 002402=8080, which is equalized/not pending.
 
 Goal:
-Determine what event/queue payload is missing after the service sequence.
+Determine where the callback chain should produce/re-arm next dispatcher work, or whether it is correctly waiting for an external completion.
 
 Tasks:
-1. Using existing logs first, compare baseline, 0x4e one-shot, 0x4f one-shot, and 0x4e/0x4f with FC6816 clear.
-2. Extract all dispatcher queue slot transitions after LOADING SYSTEM:
-   - slot number
-   - record address
-   - byte2
-   - byte3
-   - handler/callback pointer
-   - return PC / last_rte_return_pc
-   - when f87fb0 clears/equalizes a slot
-   - when any slot becomes pending, i.e. byte2 != byte3
-3. Focus on slot 2:
-   - what handler/callback address does it contain?
-   - what code runs before it is cleared?
-   - how is it related to 00bf1a / $0d06 / $0e82?
-4. Identify the last real non-idle event before final f87f9a idle.
-5. Determine whether after the service sequence any queue slot is supposed to be re-armed but is not.
-6. Search for lowmem flags near:
-   - $0d06
-   - $0e82
-   - queue base $00c6
-   - queue end $00c8
-   - active/current record $0b6a if relevant
-7. Explain whether the missing next step looks like:
-   - missing queue re-arm
-   - missing timer tick/event cadence
-   - missing FC6884/FC6894 completion
-   - missing panel/DUART event
-   - missing disk/FDC event
-   - OS simply waiting for a later periodic source
-8. Produce a compact timeline:
-   LOADING SYSTEM -> first accepted IACK -> FC6814 clear -> 00bf1a service set -> $0d06 set -> FC6816 optional clear -> final dispatcher idle.
-9. End with one best next diagnostics-only experiment.
+1. Disassemble/follow baseline from 007308 to f8d01a, f8d020/f8d05a if reached, 00bef2, 00bf1a, 00bf22, and f8ce3a.
+2. Run the same first-PC diagnostics on 0x4e/0x4f profiles:
+   - prove f87fc0 -> 007308, or
+   - prove immediate IACK/service entry after SR restore.
+3. Identify the first branch where callback-chain chooses:
+   - producer/re-arm
+   - wait-for-status
+   - finalizer
+4. Lift FC68xx/MC68302 again only if firmware clearly tests external status/timer/completion and that test controls producer/re-arm.
+5. End with one best next diagnostics-only breakpoint set.
 Do not implement it yet.
 ```
 
@@ -536,4 +674,4 @@ git status --short
 
 ## Current one-line summary
 
-The ASR-10 boot harness now reaches `LOADING SYSTEM` and executes an accepted-looking MC68302/FC68xx `0x2400` service sequence through vectors `0x4e/0x4f`; FC6814 clears, runtime code at `00bf1a` sets FC6816 `c080 -> e480`, `$0d06` is set, and FC6816 can be gated-cleared back to `c080`, but the machine still returns to dispatcher idle at `f87f9a`, so the next blocker is likely missing dispatcher event payload, timer cadence, queue re-arm, or hardware completion semantics rather than simple FDC/media, interrupt vectoring, or FC6816 service-clear behavior.
+The ASR-10 boot harness reaches `LOADING SYSTEM`, dispatcher takes slot 2, baseline first-PC after dispatcher RTE is `007308`, `007308` starts with `jsr $fff8d01a`, the service chain reaches `00bf1a/00bf22`, and post-service/finalizer code writes slot 2 to equalized `8080`; the next blocker is therefore the callback-chain/scheduler re-arm/producer path after slot 2 completion, not A000, blind FC6816 clear, FDC/raw image handling, or a broad MC68302 refactor.
