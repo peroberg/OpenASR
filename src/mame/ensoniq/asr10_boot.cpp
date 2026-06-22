@@ -94,6 +94,10 @@ private:
 	static constexpr bool ASR10_EXPERIMENT_68302_LRCLK_CLOCK_BIT3 = true;
 	static constexpr u8 ASR10_EXPERIMENT_68302_LRCLK_CLOCK_PHASE_READS = 8;
 	static constexpr u8 ASR10_EXPERIMENT_68302_LRCLK_CLOCK_MAX_LOGS = 64;
+	static constexpr bool ASR10_EXPERIMENT_FC6814_ACK_PENDING_000B = false;
+	static constexpr bool ASR10_EXPERIMENT_FC6816_CLEAR_SERVICE_2480 = false;
+	static constexpr bool ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ = false;
+	static constexpr u8 ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ_LEVEL = 1;
 	static constexpr bool ASR10_EXPERIMENT_PANEL_REBOOT_CONFIRM_RAW_21 = false;
 	static constexpr bool ASR10_EXPERIMENT_STUB_CMD1E_RESULTS = false;
 	static constexpr u8 ASR10_STUB_CMD1E_RESULT_BYTE0 = 0x00;
@@ -137,6 +141,7 @@ private:
 
 	emu_timer *m_pc_timer = nullptr;
 	emu_timer *m_prompt_select_timer = nullptr;
+	emu_timer *m_synth_68302_timer_irq_timer = nullptr;
 	std::unique_ptr<u16[]> m_lowmem_shadow;
 	u16 m_probe_or_alias_region_shadow[PROBE_OR_ALIAS_REGION_COUNT][2]{};
 	u16 m_m68302_internal_shadow[0x80]{};
@@ -192,11 +197,15 @@ private:
 	std::array<trace_slot, TRACE_SLOT_COUNT> m_trace_slots{};
 	char m_panel_text[PANEL_TEXT_LENGTH]{};
 	u32 m_panel_text_length = 0;
+	bool m_seen_loading_system_prompt = false;
+	u32 m_post_loading_panel_write_count = 0;
+	u32 m_post_loading_fdc_access_count = 0;
 	bool m_insert_disk_decision_logged = false;
 	bool m_seen_error_reboot_prompt = false;
 	bool m_panel_reboot_confirm_injected = false;
 	bool m_error009_origin_logged = false;
 	u32 m_lrclk_trace_count = 0;
+	u32 m_fc6829_trace_count = 0;
 	u32 m_post_lrclk_poll_count = 0;
 	bool m_post_lrclk_disassembly_logged = false;
 	u32 m_f87f96_queue_read_count = 0;
@@ -208,6 +217,13 @@ private:
 	bool m_queue_rte_after_pending = false;
 	u32 m_queue_rte_after_count = 0;
 	u32 m_queue_rte_before_pc = 0xffffffff;
+	u32 m_queue_rte_last_return_pc = 0xffffffff;
+	u32 m_runtime_dispatch_entry_count = 0;
+	u32 m_timer_candidate_trace_count = 0;
+	u32 m_synth_68302_timer_irq_count = 0;
+	bool m_synth_68302_timer_irq_vector_dump_logged = false;
+	bool m_synth_68302_timer_irq_code_dump_logged = false;
+	bool m_error139_d0_candidate_logged = false;
 	u16 m_queue_rte_before_fc6814 = 0;
 	u16 m_queue_rte_before_fc6816 = 0;
 	u16 m_queue_rte_before_fc6818 = 0;
@@ -280,6 +296,7 @@ private:
 
 	TIMER_CALLBACK_MEMBER(pc_poll);
 	TIMER_CALLBACK_MEMBER(prompt_select_poll);
+	TIMER_CALLBACK_MEMBER(synth_68302_timer_irq);
 
 	bool probe_or_alias_region_index(u32 address, u32 &index, u32 &word_index) const;
 	u16 probe_or_alias_region_r_at(u32 base, offs_t offset, u16 mem_mask);
@@ -306,9 +323,13 @@ private:
 	void log_04c6_origin(const char *landmark, u32 pc, u8 value, bool branch_taken, u32 branch_target);
 	void log_error009_context(const char *source, u32 pc, u16 value, u16 mem_mask);
 	void log_lrclk_candidate(bool write, u32 address, u16 data, u16 mem_mask, u16 shadow);
+	void log_fc6829_port_b_candidate(bool write, u32 address, u16 data, u16 mem_mask, u16 shadow);
 	void log_post_lrclk_poll_candidate(u32 address, u16 data, u16 mem_mask, u16 shadow);
 	void log_loaded_0067_window_candidate(u32 pc);
 	void log_fc681x_interrupt_candidate(bool write, u32 address, u16 data, u16 mem_mask, u16 old_shadow, u16 new_shadow);
+	void log_timer_candidate(bool write, u32 address, u16 data, u16 mem_mask, u16 old_shadow, u16 new_shadow);
+	void log_synth_68302_irq_vectors(u8 irq_level, u32 pc, u16 sr);
+	void dump_loaded_code_range(const char *tag, u32 start, u32 end);
 	void log_f87f96_queue_read(u32 byte_address, u16 data, u16 mem_mask);
 	void log_f87f96_queue_write(u32 byte_address, u16 previous, u16 current, u16 data, u16 mem_mask);
 	void log_f87f96_queue_rte(int state);
@@ -328,6 +349,7 @@ private:
 	static bool is_fdc_state_field(u32 address);
 	u16 read_code_word(u32 address) const;
 	u16 read_loaded_word(u32 address) const;
+	u32 read_loaded_long(u32 address) const;
 };
 
 
@@ -335,6 +357,7 @@ void asr10_boot_state::machine_start()
 {
 	m_pc_timer = timer_alloc(FUNC(asr10_boot_state::pc_poll), this);
 	m_prompt_select_timer = timer_alloc(FUNC(asr10_boot_state::prompt_select_poll), this);
+	m_synth_68302_timer_irq_timer = timer_alloc(FUNC(asr10_boot_state::synth_68302_timer_irq), this);
 	m_lowmem_shadow = make_unique_clear<u16[]>(LOWMEM_WORDS);
 
 	save_pointer(NAME(m_lowmem_shadow), LOWMEM_WORDS);
@@ -391,11 +414,15 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_es5510_ts_shadow));
 	save_item(NAME(m_panel_text));
 	save_item(NAME(m_panel_text_length));
+	save_item(NAME(m_seen_loading_system_prompt));
+	save_item(NAME(m_post_loading_panel_write_count));
+	save_item(NAME(m_post_loading_fdc_access_count));
 	save_item(NAME(m_insert_disk_decision_logged));
 	save_item(NAME(m_seen_error_reboot_prompt));
 	save_item(NAME(m_panel_reboot_confirm_injected));
 	save_item(NAME(m_error009_origin_logged));
 	save_item(NAME(m_lrclk_trace_count));
+	save_item(NAME(m_fc6829_trace_count));
 	save_item(NAME(m_post_lrclk_poll_count));
 	save_item(NAME(m_post_lrclk_disassembly_logged));
 	save_item(NAME(m_f87f96_queue_read_count));
@@ -407,6 +434,13 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_queue_rte_after_pending));
 	save_item(NAME(m_queue_rte_after_count));
 	save_item(NAME(m_queue_rte_before_pc));
+	save_item(NAME(m_queue_rte_last_return_pc));
+	save_item(NAME(m_runtime_dispatch_entry_count));
+	save_item(NAME(m_timer_candidate_trace_count));
+	save_item(NAME(m_synth_68302_timer_irq_count));
+	save_item(NAME(m_synth_68302_timer_irq_vector_dump_logged));
+	save_item(NAME(m_synth_68302_timer_irq_code_dump_logged));
+	save_item(NAME(m_error139_d0_candidate_logged));
 	save_item(NAME(m_queue_rte_before_fc6814));
 	save_item(NAME(m_queue_rte_before_fc6816));
 	save_item(NAME(m_queue_rte_before_fc6818));
@@ -449,11 +483,15 @@ void asr10_boot_state::machine_reset()
 	m_lowmem_overlay_enabled = false;
 	m_seen_insert_disk_prompt = false;
 	m_panel_text_length = 0;
+	m_seen_loading_system_prompt = false;
+	m_post_loading_panel_write_count = 0;
+	m_post_loading_fdc_access_count = 0;
 	m_insert_disk_decision_logged = false;
 	m_seen_error_reboot_prompt = false;
 	m_panel_reboot_confirm_injected = false;
 	m_error009_origin_logged = false;
 	m_lrclk_trace_count = 0;
+	m_fc6829_trace_count = 0;
 	m_post_lrclk_poll_count = 0;
 	m_post_lrclk_disassembly_logged = false;
 	m_f87f96_queue_read_count = 0;
@@ -465,6 +503,14 @@ void asr10_boot_state::machine_reset()
 	m_queue_rte_after_pending = false;
 	m_queue_rte_after_count = 0;
 	m_queue_rte_before_pc = 0xffffffff;
+	m_queue_rte_last_return_pc = 0xffffffff;
+	m_runtime_dispatch_entry_count = 0;
+	m_timer_candidate_trace_count = 0;
+	m_synth_68302_timer_irq_count = 0;
+	m_synth_68302_timer_irq_vector_dump_logged = false;
+	m_synth_68302_timer_irq_code_dump_logged = false;
+	m_error139_d0_candidate_logged = false;
+	m_synth_68302_timer_irq_timer->adjust(attotime::never);
 	m_queue_rte_before_fc6814 = 0;
 	m_queue_rte_before_fc6816 = 0;
 	m_queue_rte_before_fc6818 = 0;
@@ -555,6 +601,8 @@ void asr10_boot_state::machine_reset()
 	m_pc_timer->adjust(attotime::zero, 0, attotime::from_ticks(64, m_maincpu->clock()));
 
 	logerror("ASR10BOOT reset: expected SP=$00000300 PC=$0000000c from ROM vectors\n");
+	logerror("ASR10_MAINCPU_INPUT_LINE_DRIVER none source=harness set_input_line_calls=0 "
+		"pc_timer=diagnostic_poll prompt_select_timer=diagnostic_poll fc6850_fc6852_timer_binding=none\n");
 }
 
 
@@ -837,9 +885,11 @@ u16 asr10_boot_state::m68302_internal_r(offs_t offset, u16 mem_mask)
 	m_last_fc68_write = false;
 	trace_access(trace_region::M68302_INTERNAL, false, address, data, mem_mask, shadow);
 	log_lrclk_candidate(false, address, data, mem_mask, shadow);
+	log_fc6829_port_b_candidate(false, address, data, mem_mask, shadow);
 	log_post_lrclk_poll_candidate(address, data, mem_mask, shadow);
 	log_loaded_0067_window_candidate(pc);
 	log_fc681x_interrupt_candidate(false, address, data, mem_mask, shadow, shadow);
+	log_timer_candidate(false, address, data, mem_mask, shadow, shadow);
 	if (address == 0x00fc6860 && !machine().side_effects_disabled())
 	{
 		const u8 relevant_byte = (mem_mask & 0xff00) ? u8(effective >> 8) : u8(effective);
@@ -865,8 +915,10 @@ void asr10_boot_state::m68302_internal_w(offs_t offset, u16 data, u16 mem_mask)
 	m_last_fc68_write = true;
 	trace_access(trace_region::M68302_INTERNAL, true, address, data, mem_mask, m_m68302_internal_shadow[offset & 0x7f]);
 	log_lrclk_candidate(true, address, data, mem_mask, m_m68302_internal_shadow[offset & 0x7f]);
+	log_fc6829_port_b_candidate(true, address, data, mem_mask, m_m68302_internal_shadow[offset & 0x7f]);
 	log_loaded_0067_window_candidate(m_last_fc68_pc);
 	log_fc681x_interrupt_candidate(true, address, data, mem_mask, previous, m_m68302_internal_shadow[offset & 0x7f]);
+	log_timer_candidate(true, address, data, mem_mask, previous, m_m68302_internal_shadow[offset & 0x7f]);
 	if (address == 0x00fc6860 && !machine().side_effects_disabled())
 	{
 		const u16 shadow = m_m68302_internal_shadow[offset & 0x7f];
@@ -999,6 +1051,14 @@ u16 asr10_boot_state::upd72069_fdc_r(offs_t offset, u16 mem_mask)
 	}
 
 	const u16 result = raw_data & mem_mask;
+	if (m_seen_loading_system_prompt && !machine().side_effects_disabled())
+	{
+		m_post_loading_fdc_access_count++;
+		logerror("ASR10_POST_LOADING_FDC pc=%06x addr=%06x rw=R data=%04x mem_mask=%04x "
+			"last_aux=%02x txn=%u txn_access=%u detail=%s access_count=%u panel=\"%s\"\n",
+			pc, address, result, mem_mask, m_fdc_last_aux_command, m_fdc_transaction,
+			m_fdc_transaction_access, detail, m_post_loading_fdc_access_count, m_panel_text);
+	}
 	if constexpr (ASR10_LOG_FDC_ACCESS)
 		logerror("ASR10FDC time=%s seq=%llu txn=%u txn_access=%u pc=%06x addr=%06x rw=R data=%04x "
 			"mem_mask=%04x last_aux_command=%02x last_data_read=%02x last_data_write=%02x "
@@ -1157,6 +1217,14 @@ void asr10_boot_state::upd72069_fdc_w(offs_t offset, u16 data, u16 mem_mask)
 		detail = "upd72069_fifo";
 	}
 	++m_fdc_transaction_access;
+	if (m_seen_loading_system_prompt && !machine().side_effects_disabled())
+	{
+		m_post_loading_fdc_access_count++;
+		logerror("ASR10_POST_LOADING_FDC pc=%06x addr=%06x rw=W data=%04x mem_mask=%04x "
+			"last_aux=%02x last_fifo_write=%02x txn=%u txn_access=%u detail=%s access_count=%u panel=\"%s\"\n",
+			pc, address, data, mem_mask, m_fdc_last_aux_command, m_fdc_last_fifo_write,
+			m_fdc_transaction, m_fdc_transaction_access, detail, m_post_loading_fdc_access_count, m_panel_text);
+	}
 
 	if constexpr (ASR10_LOG_FDC_ACCESS)
 		logerror("ASR10FDC time=%s seq=%llu txn=%u txn_access=%u pc=%06x addr=%06x rw=W data=%04x "
@@ -1262,6 +1330,14 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 	if (address == 0x00fc4817 && ACCESSING_BITS_0_7)
 	{
 		const u8 character = u8(data);
+		if (m_seen_loading_system_prompt && !machine().side_effects_disabled())
+		{
+			m_post_loading_panel_write_count++;
+			logerror("ASR10_POST_LOADING_PANEL_WRITE pc=%06x data=%02x printable=%u char='%c' count=%u\n",
+				pc, character, character >= 0x20 && character <= 0x7e ? 1 : 0,
+				character >= 0x20 && character <= 0x7e ? char(character) : '.',
+				m_post_loading_panel_write_count);
+		}
 		if constexpr (ASR10_LOG_PANEL_BYTES)
 		{
 			if (character >= 0x20 && character <= 0x7e)
@@ -1308,10 +1384,24 @@ void asr10_boot_state::flush_panel_text()
 	if (m_panel_text_length)
 	{
 		logerror("ASR10PANEL text=\"%s\"\n", m_panel_text);
+		if (strstr(m_panel_text, "LOADING SYSTEM"))
+		{
+			m_seen_loading_system_prompt = true;
+			m_post_loading_panel_write_count = 0;
+			m_post_loading_fdc_access_count = 0;
+			logerror("ASR10PHASE phase=post_loading_system_panel pc=%06x\n",
+				m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff);
+		}
 		if (strstr(m_panel_text, "ERROR 009 - REBOOT ?"))
 		{
 			m_seen_error_reboot_prompt = true;
 			log_error009_context("panel_error009_text",
+				m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff,
+				m_lowmem_shadow[0x00c0 >> 1], 0xffff);
+		}
+		if (strstr(m_panel_text, "ERROR 139 - REBOOT ?"))
+		{
+			log_error009_context("panel_error139_text",
 				m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff,
 				m_lowmem_shadow[0x00c0 >> 1], 0xffff);
 		}
@@ -1648,14 +1738,15 @@ void asr10_boot_state::log_04c6_origin(const char *landmark, u32 pc, u8 value, b
 
 void asr10_boot_state::log_error009_context(const char *source, u32 pc, u16 value, u16 mem_mask)
 {
-	if (m_error009_origin_logged && strcmp(source, "panel_error009_text"))
+	const bool panel_error_text = !strcmp(source, "panel_error009_text") || !strcmp(source, "panel_error139_text");
+	if (m_error009_origin_logged && !panel_error_text)
 		return;
 
 	const u8 error_number = u8(value);
-	if (error_number != 0x09 && strcmp(source, "panel_error009_text"))
+	if (error_number != 0x09 && error_number != 0x8b && !panel_error_text)
 		return;
 
-	if (strcmp(source, "panel_error009_text"))
+	if (!panel_error_text)
 		m_error009_origin_logged = true;
 
 	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
@@ -1672,7 +1763,7 @@ void asr10_boot_state::log_error009_context(const char *source, u32 pc, u16 valu
 	const u8 last_st1 = m_fdc_cmd46_result_bytes[1];
 	const u8 last_st2 = m_fdc_cmd46_result_bytes[2];
 
-	logerror("ASR10_ERROR009_CONTEXT source=%s pc=%06x previous_pc=%06x opcode=%04x value=%04x mem_mask=%04x "
+	logerror("ASR10_ERROR_CONTEXT source=%s pc=%06x previous_pc=%06x opcode=%04x value=%04x mem_mask=%04x "
 		"error_number=%02x sr=%04x d0=%08x d1=%08x d2=%08x d3=%08x "
 		"a0=%08x a1=%08x a2=%08x a3=%08x sp=%06x "
 		"stack0=%08x stack1=%08x stack2=%08x stack3=%08x stack4=%08x stack5=%08x "
@@ -1750,6 +1841,46 @@ void asr10_boot_state::log_lrclk_candidate(bool write, u32 address, u16 data, u1
 		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
 		u32(m_maincpu->state_int(M68K_A2)), u16(m_maincpu->state_int(M68K_SR)),
 		sp, read_stack_long(sp), read_stack_long(sp + 4), m_lrclk_trace_count);
+}
+
+
+void asr10_boot_state::log_fc6829_port_b_candidate(bool write, u32 address, u16 data, u16 mem_mask, u16 shadow)
+{
+	if (machine().side_effects_disabled())
+		return;
+	if (address != 0x00fc6828 || !(mem_mask & 0x00ff))
+		return;
+
+	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+	const u8 byte = u8(data);
+	const u8 shadow_byte = u8(shadow);
+	const char *semantic = "port_b_data";
+	if (pc == 0x000067f6)
+		semantic = "port_b_bits0_2_strobe_set_ori_07";
+	else if (pc == 0x00006816)
+		semantic = "port_b_bits0_2_strobe_clear_andi_f8";
+	else if (pc == 0x00f8c14e || pc == 0x00f8c160 || (pc >= 0x0000bfb8 && pc <= 0x0000bfe8))
+		semantic = "port_b_bit3_lrclk_candidate";
+
+	m_fc6829_trace_count++;
+	if (m_fc6829_trace_count > 128 && (m_fc6829_trace_count & (m_fc6829_trace_count - 1)))
+		return;
+
+	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+	logerror("ASR10_FC6829_PORTB pc=%06x previous_pc=%06x opcode=%04x rw=%c semantic=%s "
+		"data=%04x mem_mask=%04x byte=%02x shadow=%04x shadow_byte=%02x "
+		"bit2=%u bit1=%u bit0=%u bits0_2=%u bit3_lrclk_candidate=%u "
+		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x sr=%04x "
+		"sp=%06x stack0=%08x stack1=%08x trace_count=%u\n",
+		pc, m_last_distinct_pc, read_loaded_word(pc), write ? 'W' : 'R', semantic,
+		data, mem_mask, byte, shadow, shadow_byte,
+		BIT(byte, 2), BIT(byte, 1), BIT(byte, 0), byte & 0x07, BIT(byte, 3),
+		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
+		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
+		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
+		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
+		u16(m_maincpu->state_int(M68K_SR)), sp, read_stack_long(sp), read_stack_long(sp + 4),
+		m_fc6829_trace_count);
 }
 
 
@@ -1894,6 +2025,161 @@ void asr10_boot_state::log_fc681x_interrupt_candidate(bool write, u32 address, u
 		m_recent_queue_record_base, m_recent_queue_slot, m_recent_queue_data, m_recent_queue_mem_mask,
 		m_recent_queue_previous, m_recent_queue_current, m_recent_queue_handler_clear ? 1 : 0,
 		m_fc681x_trace_count);
+}
+
+
+void asr10_boot_state::log_timer_candidate(bool write, u32 address, u16 data, u16 mem_mask, u16 old_shadow, u16 new_shadow)
+{
+	const u32 reg = address & 0xff;
+	if (reg < 0x48 || reg > 0x56 || machine().side_effects_disabled())
+		return;
+
+	const bool focused = (reg == 0x4a || reg == 0x50 || reg == 0x52);
+	m_timer_candidate_trace_count++;
+	if (!focused && m_timer_candidate_trace_count > 128 &&
+		(m_timer_candidate_trace_count & (m_timer_candidate_trace_count - 1)))
+		return;
+
+	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+	const u16 sr = u16(m_maincpu->state_int(M68K_SR));
+	const u16 fc6812 = m_m68302_internal_shadow[0x12 >> 1];
+	const u16 fc6814 = m_m68302_internal_shadow[0x14 >> 1];
+	const u16 fc6816 = m_m68302_internal_shadow[0x16 >> 1];
+	const u16 fc6818 = m_m68302_internal_shadow[0x18 >> 1];
+	const u16 fc684a = m_m68302_internal_shadow[0x4a >> 1];
+	const u16 fc6850 = m_m68302_internal_shadow[0x50 >> 1];
+	const u16 fc6852 = m_m68302_internal_shadow[0x52 >> 1];
+	const u16 changed = old_shadow ^ new_shadow;
+	const u16 mode = (reg == 0x50) ? new_shadow : fc6850;
+
+	logerror("ASR10_TIMER_CANDIDATE pc=%06x previous_pc=%06x opcode=%04x rw=%c addr=%06x reg=%02x detail=%s "
+		"data=%04x mem_mask=%04x old_shadow=%04x new_shadow=%04x changed_bits=%04x "
+		"sr=%04x sr_mask=%u sp=%06x stack0=%08x stack1=%08x "
+		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x "
+		"fc6812_mask=%04x fc6814_pending=%04x fc6816_in_service=%04x fc6818_control=%04x "
+		"fc684a=%04x fc6850=%04x fc6852=%04x "
+		"mode_bit5=%u mode_bit4=%u mode_bit3=%u mode_bit2=%u mode_bit1=%u mode_bit0=%u "
+		"mode_decode=local_bits_only timer_binding=none dispatcher_count=%u last_rte_return_pc=%06x "
+		"recent_queue_pc=%06x recent_queue_slot=%06x recent_queue_current=%04x phase=%s count=%u\n",
+		pc, m_last_distinct_pc, read_loaded_word(pc), write ? 'W' : 'R', address, reg, m68302_register_name(address),
+		data, mem_mask, old_shadow, new_shadow, changed,
+		sr, (sr >> 8) & 7, sp, read_stack_long(sp), read_stack_long(sp + 4),
+		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
+		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
+		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
+		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
+		fc6812, fc6814, fc6816, fc6818, fc684a, fc6850, fc6852,
+		BIT(mode, 5), BIT(mode, 4), BIT(mode, 3), BIT(mode, 2), BIT(mode, 1), BIT(mode, 0),
+		m_runtime_dispatch_entry_count, m_queue_rte_last_return_pc & 0x00ffffff,
+		m_recent_queue_pc, m_recent_queue_slot, m_recent_queue_current,
+		m_seen_loading_system_prompt ? "post_loading_system" : "boot",
+		m_timer_candidate_trace_count);
+
+	if constexpr (ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ)
+	{
+		if (write && reg == 0x50 && new_shadow != 0)
+		{
+			logerror("ASR10_EXPERIMENT_SYNTH_68302_TIMER_START pc=%06x fc6850=%04x fc6852_reference=%04x "
+				"irq_level=%u period=1ms frequency=diagnostic_not_derived\n",
+				pc, new_shadow, fc6852, ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ_LEVEL);
+			m_synth_68302_timer_irq_timer->adjust(attotime::from_msec(1), 0, attotime::from_msec(1));
+		}
+	}
+}
+
+
+void asr10_boot_state::dump_loaded_code_range(const char *tag, u32 start, u32 end)
+{
+	std::string words;
+	for (u32 cursor = start; cursor <= end; cursor += 2)
+	{
+		if (cursor != start)
+			words += ',';
+		words += util::string_format("%06x:%04x", cursor, read_loaded_word(cursor));
+	}
+	logerror("ASR10_CODE_DUMP tag=%s range=%06x_%06x words=\"%s\"\n", tag, start, end, words.c_str());
+}
+
+
+void asr10_boot_state::log_synth_68302_irq_vectors(u8 irq_level, u32 pc, u16 sr)
+{
+	if (!m_synth_68302_timer_irq_code_dump_logged)
+	{
+		dump_loaded_code_range("synthetic_irq_target_candidate", 0x00f8b800, 0x00f8b850);
+		dump_loaded_code_range("common_error_routine", 0x00f88260, 0x00f882a0);
+		dump_loaded_code_range("panel_error_prompt_path", 0x00f89c90, 0x00f89d10);
+		m_synth_68302_timer_irq_code_dump_logged = true;
+	}
+
+	if (m_synth_68302_timer_irq_vector_dump_logged)
+		return;
+
+	const u16 fc6812 = m_m68302_internal_shadow[0x12 >> 1];
+	const u16 fc6814 = m_m68302_internal_shadow[0x14 >> 1];
+	const u16 fc6816 = m_m68302_internal_shadow[0x16 >> 1];
+	const u16 fc6818 = m_m68302_internal_shadow[0x18 >> 1];
+	const u16 fc6850 = m_m68302_internal_shadow[0x50 >> 1];
+	const u16 fc6852 = m_m68302_internal_shadow[0x52 >> 1];
+	const u32 selected_vector_offset = 0x60 + (u32(irq_level) * 4);
+	const u32 selected_handler = read_loaded_long(selected_vector_offset) & 0x00ffffff;
+	const bool selected_is_f8b826 = selected_handler == 0x00f8b826;
+	const bool selected_is_f8b828 = selected_handler == 0x00f8b828;
+	std::string vector_words;
+	for (u8 level = 1; level <= 7; level++)
+	{
+		const u32 vector_offset = 0x60 + (u32(level) * 4);
+		const u32 handler = read_loaded_long(vector_offset) & 0x00ffffff;
+		if (level != 1)
+			vector_words += ',';
+		vector_words += util::string_format("irq%u@%02x=%06x%s", level, vector_offset, handler,
+			(handler == 0x00f8b826 || handler == 0x00f8b828) ? ":target_match" : "");
+	}
+
+	logerror("ASR10_SYNTH_IRQ_VECTOR_DUMP selected_irq_level=%u selected_vector_offset=%02x "
+		"selected_handler=%06x selected_equals_f8b826=%u selected_equals_f8b828=%u current_pc=%06x "
+		"sr=%04x sr_mask=%u fc6812=%04x fc6814=%04x fc6816=%04x fc6818=%04x fc6850=%04x fc6852=%04x "
+		"vectors=\"%s\"\n",
+		irq_level, selected_vector_offset, selected_handler,
+		selected_is_f8b826 ? 1 : 0, selected_is_f8b828 ? 1 : 0,
+		pc, sr, (sr >> 8) & 7, fc6812, fc6814, fc6816, fc6818, fc6850, fc6852,
+		vector_words.c_str());
+	m_synth_68302_timer_irq_vector_dump_logged = true;
+}
+
+
+TIMER_CALLBACK_MEMBER(asr10_boot_state::synth_68302_timer_irq)
+{
+	if constexpr (!ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ)
+		return;
+
+	m_synth_68302_timer_irq_count++;
+
+	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+	const u16 sr = u16(m_maincpu->state_int(M68K_SR));
+	const u8 sr_mask = (sr >> 8) & 7;
+	const u8 irq_level = ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ_LEVEL;
+	const u16 fc6812 = m_m68302_internal_shadow[0x12 >> 1];
+	const u16 fc6814 = m_m68302_internal_shadow[0x14 >> 1];
+	const u16 fc6816 = m_m68302_internal_shadow[0x16 >> 1];
+	const u16 fc6818 = m_m68302_internal_shadow[0x18 >> 1];
+	const u16 fc684a = m_m68302_internal_shadow[0x4a >> 1];
+	const u16 fc6850 = m_m68302_internal_shadow[0x50 >> 1];
+	const u16 fc6852 = m_m68302_internal_shadow[0x52 >> 1];
+	const bool pulse = sr_mask <= 6;
+
+	logerror("ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ callback=%u line=%u irq_level=%u state=%s pc=%06x "
+		"sr=%04x sr_mask=%u irq_level_above_mask=%u fc6812=%04x fc6814=%04x fc6816=%04x fc6818=%04x "
+		"fc684a=%04x fc6850=%04x fc6852_reference=%04x dispatcher_count=%u panel=\"%s\"\n",
+		m_synth_68302_timer_irq_count, irq_level, irq_level, pulse ? "HOLD_LINE" : "masked_no_pulse", pc,
+		sr, sr_mask, irq_level > sr_mask ? 1 : 0, fc6812, fc6814, fc6816, fc6818,
+		fc684a, fc6850, fc6852, m_runtime_dispatch_entry_count, m_panel_text);
+
+	if (pulse)
+	{
+		log_synth_68302_irq_vectors(irq_level, pc, sr);
+		m_maincpu->set_input_line(irq_level, HOLD_LINE);
+	}
 }
 
 
@@ -2090,12 +2376,37 @@ void asr10_boot_state::log_f87f96_queue_rte(int state)
 	const u16 fc6814_before = m_m68302_internal_shadow[0x14 >> 1];
 	const u16 fc6816_before = m_m68302_internal_shadow[0x16 >> 1];
 	const u16 fc6818_before = m_m68302_internal_shadow[0x18 >> 1];
+	if constexpr (ASR10_EXPERIMENT_FC6814_ACK_PENDING_000B)
+	{
+		if (fc6814_before == 0x000b)
+		{
+			m_m68302_internal_shadow[0x14 >> 1] = fc6814_before & ~u16(0x000b);
+			logerror("ASR10_EXPERIMENT_FC6814_ACK pc=%06x old=%04x new=%04x reason=dispatcher_rte "
+				"fc6816_before=%04x fc6816_after=%04x fc6818=%04x\n",
+				pc, fc6814_before, m_m68302_internal_shadow[0x14 >> 1],
+				fc6816_before, m_m68302_internal_shadow[0x16 >> 1], fc6818_before);
+		}
+	}
+	if constexpr (ASR10_EXPERIMENT_FC6816_CLEAR_SERVICE_2480)
+	{
+		if (fc6816_before & 0x2480)
+		{
+			m_m68302_internal_shadow[0x16 >> 1] = fc6816_before & ~u16(0x2480);
+			logerror("ASR10_EXPERIMENT_FC6816_CLEAR_SERVICE pc=%06x old=%04x new=%04x reason=dispatcher_rte "
+				"fc6814=%04x fc6818=%04x\n",
+				pc, fc6816_before, m_m68302_internal_shadow[0x16 >> 1],
+				m_m68302_internal_shadow[0x14 >> 1], fc6818_before);
+		}
+	}
+	const u16 fc6814_after_experiment = m_m68302_internal_shadow[0x14 >> 1];
+	const u16 fc6816_after_experiment = m_m68302_internal_shadow[0x16 >> 1];
 
 	m_queue_rte_after_pending = true;
 	m_queue_rte_after_count = m_f87f96_queue_rte_count;
 	m_queue_rte_before_pc = pc;
-	m_queue_rte_before_fc6814 = fc6814_before;
-	m_queue_rte_before_fc6816 = fc6816_before;
+	m_queue_rte_last_return_pc = frame_return_pc & 0x00ffffff;
+	m_queue_rte_before_fc6814 = fc6814_after_experiment;
+	m_queue_rte_before_fc6816 = fc6816_after_experiment;
 	m_queue_rte_before_fc6818 = fc6818_before;
 
 	logerror("ASR10_F87F96_QUEUE_RTE state=%d pc=%06x previous_pc=%06x opcode=%04x "
@@ -2110,10 +2421,10 @@ void asr10_boot_state::log_f87f96_queue_rte(int state)
 		current_sr, (current_sr >> 8) & 7, sp, stack0, stack1, read_stack_long(sp + 8),
 		frame_sr, (frame_sr >> 8) & 7, frame_return_pc & 0x00ffffff,
 		queue_pointer_word,
-		m_m68302_internal_shadow[0x12 >> 1], fc6814_before, fc6816_before, fc6818_before,
-		BIT(fc6814_before, 3), BIT(fc6814_before, 1), BIT(fc6814_before, 0),
-		BIT(fc6816_before, 15), BIT(fc6816_before, 14), BIT(fc6816_before, 13),
-		BIT(fc6816_before, 10), BIT(fc6816_before, 7),
+		m_m68302_internal_shadow[0x12 >> 1], fc6814_after_experiment, fc6816_after_experiment, fc6818_before,
+		BIT(fc6814_after_experiment, 3), BIT(fc6814_after_experiment, 1), BIT(fc6814_after_experiment, 0),
+		BIT(fc6816_after_experiment, 15), BIT(fc6816_after_experiment, 14), BIT(fc6816_after_experiment, 13),
+		BIT(fc6816_after_experiment, 10), BIT(fc6816_after_experiment, 7),
 		m_last_fc68_pc, m_last_fc68_address, m_last_fc68_write ? 'W' : 'R',
 		m_last_fc68_data, m_last_fc68_mem_mask, m_last_fc68_shadow,
 		m68302_register_name(m_last_fc68_address), m_f87f96_queue_rte_count);
@@ -2900,7 +3211,7 @@ const char *asr10_boot_state::m68302_register_name(u32 address)
 	case 0x22: return "port_a_data_candidate";
 	case 0x24: return "port_b_control_candidate";
 	case 0x26: return "port_b_direction_candidate";
-	case 0x28: return "port_b_data_lrclk_bit3_candidate";
+	case 0x28: return "port_b_data_bits0_2_control_lrclk_bit3_candidate";
 	case 0x30: return "chip_select_0_base_candidate";
 	case 0x32: return "chip_select_0_option_candidate";
 	case 0x34: return "chip_select_1_base_candidate";
@@ -2909,9 +3220,14 @@ const char *asr10_boot_state::m68302_register_name(u32 address)
 	case 0x3a: return "chip_select_2_option_candidate";
 	case 0x3c: return "chip_select_3_base_candidate";
 	case 0x3e: return "chip_select_3_option_candidate";
+	case 0x48: return "timer_neighbor_0x48_candidate";
 	case 0x4a: return "timer_or_clock_candidate";
+	case 0x4c: return "timer_neighbor_0x4c_candidate";
+	case 0x4e: return "timer_neighbor_0x4e_candidate";
 	case 0x50: return "timer_1_mode_candidate";
 	case 0x52: return "timer_1_reference_candidate";
+	case 0x54: return "timer_neighbor_0x54_candidate";
+	case 0x56: return "timer_neighbor_0x56_candidate";
 	case 0x60: return "unknown_0x60_busy_bit0_candidate";
 	default: return "internal_register_unknown";
 	}
@@ -3032,6 +3348,12 @@ u16 asr10_boot_state::read_loaded_word(u32 address) const
 	if (address < 0x00100000 && m_lowmem_overlay_enabled)
 		return m_lowmem_shadow[(address >> 1) & (LOWMEM_WORDS - 1)];
 	return read_code_word(address);
+}
+
+
+u32 asr10_boot_state::read_loaded_long(u32 address) const
+{
+	return (u32(read_loaded_word(address)) << 16) | read_loaded_word(address + 2);
 }
 
 // hängning
@@ -3199,6 +3521,54 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::pc_poll)
 {
 	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 	m_pc_poll_count++;
+	const u32 d0 = u32(m_maincpu->state_int(M68K_D0));
+	if (m_seen_loading_system_prompt && !m_error139_d0_candidate_logged && (d0 == 0x0000008b || d0 == 0xffffff8b))
+	{
+		const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+		const u16 sr = u16(m_maincpu->state_int(M68K_SR));
+		logerror("ASR10_ERROR139_D0_CANDIDATE pc=%06x previous_pc=%06x opcode=%04x d0=%08x "
+			"sr=%04x sr_mask=%u sp=%06x stack0=%08x stack1=%08x stack2=%08x "
+			"fc6812=%04x fc6814=%04x fc6816=%04x fc6818=%04x fc6850=%04x fc6852=%04x "
+			"dispatcher_count=%u panel=\"%s\"\n",
+			pc, m_last_distinct_pc, read_loaded_word(pc), d0,
+			sr, (sr >> 8) & 7, sp, read_stack_long(sp), read_stack_long(sp + 4), read_stack_long(sp + 8),
+			m_m68302_internal_shadow[0x12 >> 1], m_m68302_internal_shadow[0x14 >> 1],
+			m_m68302_internal_shadow[0x16 >> 1], m_m68302_internal_shadow[0x18 >> 1],
+			m_m68302_internal_shadow[0x50 >> 1], m_m68302_internal_shadow[0x52 >> 1],
+			m_runtime_dispatch_entry_count, m_panel_text);
+		m_error139_d0_candidate_logged = true;
+	}
+	if (pc >= 0x00f87f40 && pc <= 0x00f87fd0 && pc != m_last_pc)
+	{
+		const char *semantic = "dispatcher_body";
+		if (pc == 0x00f87f40)
+			semantic = "dispatcher_context_save_entry";
+		else if (pc == 0x00f87f92)
+			semantic = "dispatcher_queue_scan_base_load";
+		else if (pc == 0x00f87f96)
+			semantic = "dispatcher_queue_scan_compare_byte2";
+		else if (pc == 0x00f87fb0)
+			semantic = "dispatcher_queue_clear_equalize";
+		else if (pc == 0x00f87fc0)
+			semantic = "dispatcher_rte";
+		else if (pc == 0x00f87fd0)
+			semantic = "dispatcher_scan_continue";
+		m_runtime_dispatch_entry_count++;
+		if (m_runtime_dispatch_entry_count <= 128 || !(m_runtime_dispatch_entry_count & (m_runtime_dispatch_entry_count - 1)))
+		{
+			const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+			logerror("ASR10_RUNTIME_DISPATCH pc=%06x previous_pc=%06x opcode=%04x semantic=%s "
+				"last_rte_return_pc=%06x sr=%04x sr_mask=%u sp=%06x stack0=%08x stack1=%08x "
+				"queue_base=%04x recent_queue_pc=%06x recent_queue_slot=%u recent_queue_current=%04x "
+				"fc6814=%04x fc6816=%04x fc6818=%04x count=%u\n",
+				pc, m_last_pc, read_loaded_word(pc), semantic, m_queue_rte_last_return_pc,
+				u16(m_maincpu->state_int(M68K_SR)), (u16(m_maincpu->state_int(M68K_SR)) >> 8) & 7,
+				sp, read_stack_long(sp), read_stack_long(sp + 4), m_lowmem_shadow[0x00c6 >> 1],
+				m_recent_queue_pc, m_recent_queue_slot, m_recent_queue_current,
+				m_m68302_internal_shadow[0x14 >> 1], m_m68302_internal_shadow[0x16 >> 1],
+				m_m68302_internal_shadow[0x18 >> 1], m_runtime_dispatch_entry_count);
+		}
+	}
 	if (m_queue_rte_after_pending && pc != m_queue_rte_before_pc)
 	{
 		const u16 fc6814_after = m_m68302_internal_shadow[0x14 >> 1];
