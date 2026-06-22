@@ -102,6 +102,9 @@ private:
 	static constexpr u8 ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_IRQ_LEVEL = 1;
 	static constexpr u8 ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR_BYTE = 0x40;
 	static constexpr u16 ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_SOURCE_MASK = 0x2400;
+	static constexpr bool ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_ONESHOT = false;
+	static constexpr bool ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_WAIT_FOR_SERVICE_CLEAR = false;
+	static constexpr u32 ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_MIN_CALLBACK_GAP = 1024;
 	static constexpr bool ASR10_EXPERIMENT_PANEL_REBOOT_CONFIRM_RAW_21 = false;
 	static constexpr bool ASR10_EXPERIMENT_STUB_CMD1E_RESULTS = false;
 	static constexpr u8 ASR10_STUB_CMD1E_RESULT_BYTE0 = 0x00;
@@ -227,6 +230,9 @@ private:
 	u32 m_synth_68302_timer_irq_count = 0;
 	u32 m_iack_trace_count = 0;
 	u32 m_synth_68302_timer_iack_delay_count = 0;
+	u32 m_synth_68302_timer_iack_fire_count = 0;
+	u32 m_synth_68302_timer_iack_last_fire_callback = 0;
+	u32 m_synth_68302_timer_iack_skip_count = 0;
 	bool m_synth_68302_timer_irq_vector_dump_logged = false;
 	bool m_synth_68302_timer_irq_code_dump_logged = false;
 	bool m_synth_68302_timer_iack_runtime_vector_dump_logged = false;
@@ -452,6 +458,9 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_synth_68302_timer_irq_count));
 	save_item(NAME(m_iack_trace_count));
 	save_item(NAME(m_synth_68302_timer_iack_delay_count));
+	save_item(NAME(m_synth_68302_timer_iack_fire_count));
+	save_item(NAME(m_synth_68302_timer_iack_last_fire_callback));
+	save_item(NAME(m_synth_68302_timer_iack_skip_count));
 	save_item(NAME(m_synth_68302_timer_irq_vector_dump_logged));
 	save_item(NAME(m_synth_68302_timer_irq_code_dump_logged));
 	save_item(NAME(m_synth_68302_timer_iack_runtime_vector_dump_logged));
@@ -526,6 +535,9 @@ void asr10_boot_state::machine_reset()
 	m_synth_68302_timer_irq_count = 0;
 	m_iack_trace_count = 0;
 	m_synth_68302_timer_iack_delay_count = 0;
+	m_synth_68302_timer_iack_fire_count = 0;
+	m_synth_68302_timer_iack_last_fire_callback = 0;
+	m_synth_68302_timer_iack_skip_count = 0;
 	m_synth_68302_timer_irq_vector_dump_logged = false;
 	m_synth_68302_timer_irq_code_dump_logged = false;
 	m_synth_68302_timer_iack_runtime_vector_dump_logged = false;
@@ -2331,6 +2343,8 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::synth_68302_timer_irq)
 	const bool dispatcher_context = m_runtime_dispatch_entry_count != 0 || (pc >= 0x00f87f40 && pc <= 0x00f87fd0);
 	bool iack_vector_ready = true;
 	const char *iack_delay_reason = "none";
+	bool iack_fire_ready = true;
+	const char *iack_skip_reason = "none";
 
 	if constexpr (ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR)
 	{
@@ -2376,18 +2390,64 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::synth_68302_timer_irq)
 		}
 		else
 		{
+			if (ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_ONESHOT && m_synth_68302_timer_iack_fire_count != 0)
+			{
+				iack_fire_ready = false;
+				iack_skip_reason = "oneshot_already_fired";
+			}
+			else if (ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_WAIT_FOR_SERVICE_CLEAR &&
+				(fc6816_before & ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_SOURCE_MASK))
+			{
+				iack_fire_ready = false;
+				iack_skip_reason = "source_still_in_service";
+			}
+			else if (ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_MIN_CALLBACK_GAP != 0 &&
+				m_synth_68302_timer_iack_fire_count != 0 &&
+				(m_synth_68302_timer_irq_count - m_synth_68302_timer_iack_last_fire_callback) <
+					ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_MIN_CALLBACK_GAP)
+			{
+				iack_fire_ready = false;
+				iack_skip_reason = "min_callback_gap";
+			}
+
+			if (!iack_fire_ready)
+			{
+				pulse = false;
+				m_synth_68302_timer_iack_skip_count++;
+				if (m_synth_68302_timer_iack_skip_count <= 32 ||
+					!(m_synth_68302_timer_iack_skip_count & (m_synth_68302_timer_iack_skip_count - 1)))
+				{
+					logerror("ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_SKIP skip_count=%u callback=%u reason=%s "
+						"pc=%06x sr=%04x sr_mask=%u dispatcher_count=%u fire_count=%u last_fire_callback=%u "
+						"min_callback_gap=%u fc6812=%04x fc6814=%04x fc6816=%04x fc6818=%04x "
+						"fc684a=%04x fc6850=%04x fc6852=%04x panel=\"%s\"\n",
+						m_synth_68302_timer_iack_skip_count, m_synth_68302_timer_irq_count, iack_skip_reason,
+						pc, sr, sr_mask, m_runtime_dispatch_entry_count, m_synth_68302_timer_iack_fire_count,
+						m_synth_68302_timer_iack_last_fire_callback,
+						ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_MIN_CALLBACK_GAP,
+						fc6812, fc6814_before, fc6816_before, fc6818, fc684a, fc6850, fc6852, m_panel_text);
+				}
+			}
+			else
+			{
+				m_m68302_internal_shadow[0x14 >> 1] = fc6814_before | ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_SOURCE_MASK;
+			}
+
 			if (!m_synth_68302_timer_iack_armed_logged)
 			{
 				logerror("ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_ARMED pc=%06x sr=%04x sr_mask=%u "
 					"dispatcher_count=%u fc6812=%04x fc6814=%04x fc6816=%04x fc6818=%04x "
-					"fc684a=%04x fc6850=%04x fc6852=%04x vector_byte=%02x source_mask=%04x panel=\"%s\"\n",
+					"fc684a=%04x fc6850=%04x fc6852=%04x vector_byte=%02x source_mask=%04x "
+					"oneshot=%u wait_for_service_clear=%u min_callback_gap=%u panel=\"%s\"\n",
 					pc, sr, sr_mask, m_runtime_dispatch_entry_count, fc6812, fc6814_before,
 					fc6816_before, fc6818, fc684a, fc6850, fc6852,
 					ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR_BYTE,
-					ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_SOURCE_MASK, m_panel_text);
+					ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_SOURCE_MASK,
+					ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_ONESHOT ? 1 : 0,
+					ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_WAIT_FOR_SERVICE_CLEAR ? 1 : 0,
+					ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_MIN_CALLBACK_GAP, m_panel_text);
 				m_synth_68302_timer_iack_armed_logged = true;
 			}
-			m_m68302_internal_shadow[0x14 >> 1] = fc6814_before | ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_SOURCE_MASK;
 		}
 	}
 	const u16 fc6814_after = m_m68302_internal_shadow[0x14 >> 1];
@@ -2395,16 +2455,18 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::synth_68302_timer_irq)
 
 	logerror("ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ callback=%u line=%u irq_level=%u state=%s pc=%06x "
 		"sr=%04x sr_mask=%u irq_level_above_mask=%u raw_irq_enabled=%u iack_vector_enabled=%u "
-		"iack_vector_ready=%u iack_delay_reason=%s iack_vector_byte=%02x iack_source_mask=%04x fc6812=%04x "
+		"iack_vector_ready=%u iack_fire_ready=%u iack_delay_reason=%s iack_skip_reason=%s "
+		"iack_vector_byte=%02x iack_source_mask=%04x iack_fire_count=%u iack_last_fire_callback=%u fc6812=%04x "
 		"fc6814_before=%04x fc6814_after=%04x fc6816_before=%04x fc6816_after=%04x fc6818=%04x "
 		"fc684a=%04x fc6850=%04x fc6852_reference=%04x dispatcher_count=%u panel=\"%s\"\n",
 		m_synth_68302_timer_irq_count, irq_level, irq_level, pulse ? "HOLD_LINE" : "masked_no_pulse", pc,
 		sr, sr_mask, irq_level > sr_mask ? 1 : 0,
 		ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ ? 1 : 0,
 		ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR ? 1 : 0,
-		iack_vector_ready ? 1 : 0, iack_delay_reason,
+		iack_vector_ready ? 1 : 0, iack_fire_ready ? 1 : 0, iack_delay_reason, iack_skip_reason,
 		ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR_BYTE,
 		ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_SOURCE_MASK,
+		m_synth_68302_timer_iack_fire_count, m_synth_68302_timer_iack_last_fire_callback,
 		fc6812, fc6814_before, fc6814_after, fc6816_before, fc6816_after, fc6818,
 		fc684a, fc6850, fc6852, m_runtime_dispatch_entry_count, m_panel_text);
 
@@ -2412,14 +2474,17 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::synth_68302_timer_irq)
 	{
 		if constexpr (ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR)
 		{
+			m_synth_68302_timer_iack_fire_count++;
+			m_synth_68302_timer_iack_last_fire_callback = m_synth_68302_timer_irq_count;
 			if (!m_synth_68302_timer_iack_fired_logged)
 			{
 				logerror("ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_FIRED pc=%06x sr=%04x sr_mask=%u "
-					"dispatcher_count=%u irq_level=%u vector_byte=%02x fc6812=%04x fc6814_before=%04x "
+					"dispatcher_count=%u irq_level=%u vector_byte=%02x fire_count=%u callback=%u fc6812=%04x fc6814_before=%04x "
 					"fc6814_after=%04x fc6816_before=%04x fc6816_after=%04x fc6818=%04x "
 					"fc684a=%04x fc6850=%04x fc6852=%04x panel=\"%s\"\n",
 					pc, sr, sr_mask, m_runtime_dispatch_entry_count, irq_level,
 					ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR_BYTE,
+					m_synth_68302_timer_iack_fire_count, m_synth_68302_timer_irq_count,
 					fc6812, fc6814_before, fc6814_after, fc6816_before, fc6816_after,
 					fc6818, fc684a, fc6850, fc6852, m_panel_text);
 				m_synth_68302_timer_iack_fired_logged = true;
