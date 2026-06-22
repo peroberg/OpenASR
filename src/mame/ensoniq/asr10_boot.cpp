@@ -223,9 +223,31 @@ private:
 	bool m_f880_queue_code_dump_logged = false;
 	bool m_f8ce_queue_code_dump_logged = false;
 	bool m_queue_rte_after_pending = false;
+	bool m_dispatcher_rte_first_pc_pending = false;
+	bool m_dispatcher_rte_first_pc_logged = false;
+	bool m_dispatcher_rte_candidate_dump_007308_logged = false;
+	bool m_dispatcher_rte_candidate_dump_f8d020_logged = false;
+	bool m_dispatcher_rte_candidate_dump_f8d05a_logged = false;
+	bool m_dispatcher_rte_candidate_dump_f88f06_logged = false;
+	bool m_dispatcher_rte_candidate_dump_f88f22_logged = false;
+	bool m_dispatcher_rte_candidate_dump_f8d072_logged = false;
+	bool m_dispatcher_rte_iack_seen = false;
 	u32 m_queue_rte_after_count = 0;
 	u32 m_queue_rte_before_pc = 0xffffffff;
 	u32 m_queue_rte_last_return_pc = 0xffffffff;
+	u32 m_dispatcher_rte_frame_pc = 0xffffffff;
+	u32 m_dispatcher_rte_frame_sp = 0xffffffff;
+	u32 m_dispatcher_rte_frame_a2 = 0xffffffff;
+	u32 m_dispatcher_rte_frame_slot = 0xffffffff;
+	u16 m_dispatcher_rte_frame_sr = 0;
+	u16 m_dispatcher_rte_current_sr = 0;
+	u16 m_dispatcher_rte_fc6814 = 0;
+	u16 m_dispatcher_rte_fc6816 = 0;
+	u16 m_dispatcher_rte_fc6818 = 0;
+	u8 m_dispatcher_rte_iack_vector = 0xff;
+	u8 m_dispatcher_rte_iack_level = 0xff;
+	u32 m_dispatcher_rte_iack_pc = 0xffffffff;
+	u16 m_dispatcher_rte_iack_sr = 0;
 	u32 m_runtime_dispatch_entry_count = 0;
 	u32 m_timer_candidate_trace_count = 0;
 	u32 m_synth_68302_timer_irq_count = 0;
@@ -360,6 +382,8 @@ private:
 	void log_synth_68302_irq_vectors(u8 irq_level, u32 pc, u16 sr);
 	void log_runtime_vector_table_for_iack_experiment(u32 pc, u16 sr);
 	void dump_loaded_code_range(const char *tag, u32 start, u32 end);
+	void log_dispatcher_rte_first_pc_probe(u32 pc);
+	void log_dispatcher_rte_candidate_pc(u32 pc);
 	void log_f87f96_queue_read(u32 byte_address, u16 data, u16 mem_mask);
 	void log_f87f96_queue_write(u32 byte_address, u16 previous, u16 current, u16 data, u16 mem_mask);
 	void log_f87f96_queue_rte(int state);
@@ -741,6 +765,21 @@ u8 asr10_boot_state::maincpu_iack_r(u8 level)
 			vector = ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR_BYTE;
 			custom_vector = true;
 		}
+	}
+
+	if (m_dispatcher_rte_first_pc_pending)
+	{
+		m_dispatcher_rte_iack_seen = true;
+		m_dispatcher_rte_iack_vector = vector;
+		m_dispatcher_rte_iack_level = level;
+		m_dispatcher_rte_iack_pc = pc;
+		m_dispatcher_rte_iack_sr = sr;
+		logerror("ASR10_DISPATCHER_RTE_IMMEDIATE_IACK pc=%06x sr=%04x sr_mask=%u "
+			"irq_level=%u returned_vector=%02x custom_vector=%u frame_pc=%06x frame_sr=%04x "
+			"fc6814_before=%04x fc6816_before=%04x fc6818=%04x rte_count=%u\n",
+			pc, sr, (sr >> 8) & 7, level, vector, custom_vector ? 1 : 0,
+			m_dispatcher_rte_frame_pc, m_dispatcher_rte_frame_sr,
+			fc6814_before, fc6816_before, fc6818, m_f87f96_queue_rte_count);
 	}
 
 	m_iack_trace_count++;
@@ -2853,6 +2892,110 @@ void asr10_boot_state::log_f87f96_queue_write(u32 byte_address, u16 previous, u1
 }
 
 
+void asr10_boot_state::log_dispatcher_rte_first_pc_probe(u32 pc)
+{
+	if (!m_dispatcher_rte_first_pc_pending || pc == 0x00f87fc0)
+		return;
+
+	const u16 sr = u16(m_maincpu->state_int(M68K_SR));
+	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+	const bool frame_pc_seen = pc == m_dispatcher_rte_frame_pc;
+	const bool candidate_downstream =
+		pc == 0x00007308 || pc == 0x00f8d020 || pc == 0x00f8d05a ||
+		pc == 0x00f88f06 || pc == 0x00f88f22 || pc == 0x00f8d072;
+
+	logerror("ASR10_DISPATCHER_RTE_FIRST_PC actual_pc=%06x previous_pc=%06x "
+		"actual_sr=%04x actual_sr_mask=%u actual_sp=%06x "
+		"frame_pc=%06x frame_sr=%04x dispatcher_sr_before_rte=%04x frame_pc_seen=%u "
+		"candidate_downstream=%u immediate_iack_seen=%u iack_pc=%06x iack_sr=%04x "
+		"iack_level=%u iack_vector=%02x "
+		"fc6814_before_rte=%04x fc6816_before_rte=%04x fc6818_before_rte=%04x "
+		"fc6814_now=%04x fc6816_now=%04x fc6818_now=%04x "
+		"rte_count=%u slot=%u slot_base=%06x panel=\"%s\"\n",
+		pc, m_last_pc, sr, (sr >> 8) & 7, sp,
+		m_dispatcher_rte_frame_pc, m_dispatcher_rte_frame_sr, m_dispatcher_rte_current_sr,
+		frame_pc_seen ? 1 : 0, candidate_downstream ? 1 : 0,
+		m_dispatcher_rte_iack_seen ? 1 : 0, m_dispatcher_rte_iack_pc,
+		m_dispatcher_rte_iack_sr, m_dispatcher_rte_iack_level, m_dispatcher_rte_iack_vector,
+		m_dispatcher_rte_fc6814, m_dispatcher_rte_fc6816, m_dispatcher_rte_fc6818,
+		m_m68302_internal_shadow[0x14 >> 1], m_m68302_internal_shadow[0x16 >> 1],
+		m_m68302_internal_shadow[0x18 >> 1],
+		m_f87f96_queue_rte_count, m_dispatcher_rte_frame_slot, m_dispatcher_rte_frame_a2,
+		m_panel_text);
+
+	m_dispatcher_rte_first_pc_pending = false;
+	m_dispatcher_rte_first_pc_logged = true;
+}
+
+
+void asr10_boot_state::log_dispatcher_rte_candidate_pc(u32 pc)
+{
+	bool *logged = nullptr;
+	const char *tag = nullptr;
+	u32 start = 0;
+	u32 end = 0;
+
+	switch (pc)
+	{
+	case 0x00007308:
+		logged = &m_dispatcher_rte_candidate_dump_007308_logged;
+		tag = "ASR10_DISPATCHER_RTE_CANDIDATE_007308";
+		start = 0x000072c0;
+		end = 0x00007380;
+		break;
+	case 0x00f8d020:
+		logged = &m_dispatcher_rte_candidate_dump_f8d020_logged;
+		tag = "ASR10_DISPATCHER_RTE_CANDIDATE_F8D020";
+		start = 0x00f8d000;
+		end = 0x00f8d080;
+		break;
+	case 0x00f8d05a:
+		logged = &m_dispatcher_rte_candidate_dump_f8d05a_logged;
+		tag = "ASR10_DISPATCHER_RTE_CANDIDATE_F8D05A";
+		start = 0x00f8d040;
+		end = 0x00f8d080;
+		break;
+	case 0x00f88f06:
+		logged = &m_dispatcher_rte_candidate_dump_f88f06_logged;
+		tag = "ASR10_DISPATCHER_RTE_VECTOR_F88F06";
+		start = 0x00f88efc;
+		end = 0x00f88f30;
+		break;
+	case 0x00f88f22:
+		logged = &m_dispatcher_rte_candidate_dump_f88f22_logged;
+		tag = "ASR10_DISPATCHER_RTE_VECTOR_F88F22";
+		start = 0x00f88f18;
+		end = 0x00f88f4c;
+		break;
+	case 0x00f8d072:
+		logged = &m_dispatcher_rte_candidate_dump_f8d072_logged;
+		tag = "ASR10_DISPATCHER_RTE_VECTOR_F8D072";
+		start = 0x00f8d040;
+		end = 0x00f8d090;
+		break;
+	default:
+		return;
+	}
+
+	const u16 sr = u16(m_maincpu->state_int(M68K_SR));
+	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+	logerror("%s pc=%06x previous_pc=%06x opcode=%04x sr=%04x sr_mask=%u sp=%06x "
+		"stack0=%08x stack1=%08x recent_frame_pc=%06x recent_frame_sr=%04x "
+		"recent_iack_seen=%u recent_iack_vector=%02x rte_count=%u\n",
+		tag, pc, m_last_pc, read_loaded_word(pc), sr, (sr >> 8) & 7, sp,
+		read_stack_long(sp), read_stack_long(sp + 4),
+		m_dispatcher_rte_frame_pc, m_dispatcher_rte_frame_sr,
+		m_dispatcher_rte_iack_seen ? 1 : 0, m_dispatcher_rte_iack_vector,
+		m_f87f96_queue_rte_count);
+
+	if (!*logged)
+	{
+		dump_loaded_code_range(tag, start, end);
+		*logged = true;
+	}
+}
+
+
 void asr10_boot_state::log_f87f96_queue_rte(int state)
 {
 	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
@@ -2870,6 +3013,10 @@ void asr10_boot_state::log_f87f96_queue_rte(int state)
 	const u32 frame_return_pc = ((stack0 & 0x0000ffff) << 16) | (stack1 >> 16);
 	const u16 current_sr = u16(m_maincpu->state_int(M68K_SR));
 	const u16 queue_pointer_word = m_lowmem_shadow[0x00c6 >> 1];
+	const u32 a2 = m_maincpu->state_int(M68K_A2) & 0x00ffffff;
+	const u32 queue_base = queue_pointer_word;
+	const u32 slot_index = (queue_base >= 0x0200 && a2 >= queue_base && a2 < queue_base + 0x0200) ?
+		((a2 - queue_base) / 0x16) : 0xffffffffU;
 	const u16 fc6814_before = m_m68302_internal_shadow[0x14 >> 1];
 	const u16 fc6816_before = m_m68302_internal_shadow[0x16 >> 1];
 	const u16 fc6818_before = m_m68302_internal_shadow[0x18 >> 1];
@@ -2939,6 +3086,63 @@ void asr10_boot_state::log_f87f96_queue_rte(int state)
 	m_queue_rte_before_fc6814 = fc6814_after_experiment;
 	m_queue_rte_before_fc6816 = fc6816_after_experiment;
 	m_queue_rte_before_fc6818 = fc6818_before;
+	m_dispatcher_rte_first_pc_pending = true;
+	m_dispatcher_rte_first_pc_logged = false;
+	m_dispatcher_rte_iack_seen = false;
+	m_dispatcher_rte_iack_vector = 0xff;
+	m_dispatcher_rte_iack_level = 0xff;
+	m_dispatcher_rte_iack_pc = 0xffffffff;
+	m_dispatcher_rte_iack_sr = 0;
+	m_dispatcher_rte_frame_pc = frame_return_pc & 0x00ffffff;
+	m_dispatcher_rte_frame_sp = sp;
+	m_dispatcher_rte_frame_a2 = a2;
+	m_dispatcher_rte_frame_slot = slot_index;
+	m_dispatcher_rte_frame_sr = frame_sr;
+	m_dispatcher_rte_current_sr = current_sr;
+	m_dispatcher_rte_fc6814 = fc6814_after_experiment;
+	m_dispatcher_rte_fc6816 = fc6816_after_experiment;
+	m_dispatcher_rte_fc6818 = fc6818_before;
+
+	std::string stack_words;
+	for (u8 index = 0; index < 16; index++)
+	{
+		if (index)
+			stack_words += ',';
+		const u32 address = (sp + index * 2) & 0x00ffffff;
+		stack_words += util::string_format("%06x:%04x", address, read_loaded_word(address));
+	}
+
+	std::string slot_words;
+	if (slot_index != 0xffffffffU)
+	{
+		for (u8 offset = 0; offset < 0x16; offset += 2)
+		{
+			if (offset)
+				slot_words += ',';
+			const u32 address = (a2 + offset) & 0x00ffffff;
+			slot_words += util::string_format("+%02x@%06x:%04x", offset, address, read_loaded_word(address));
+		}
+	}
+	else
+	{
+		slot_words = "not_queue_slot";
+	}
+
+	logerror("ASR10_DISPATCHER_RTE_PRE pc=%06x previous_pc=%06x sr=%04x sr_mask=%u "
+		"sp=%06x usp=%06x ssp=%06x stack_words=\"%s\" "
+		"frame_sr=%04x frame_sr_mask=%u frame_pc=%06x "
+		"a2=%06x slot=%u slot_record=\"%s\" "
+		"lowmem_0b6a=%04x lowmem_0b6c=%04x lowmem_0b7f=%04x "
+		"fc6814=%04x fc6816=%04x fc6818=%04x rte_count=%u\n",
+		pc, m_last_distinct_pc, current_sr, (current_sr >> 8) & 7,
+		sp, u32(m_maincpu->state_int(M68K_USP)) & 0x00ffffff,
+		u32(m_maincpu->state_int(M68K_ISP)) & 0x00ffffff,
+		stack_words.c_str(), frame_sr, (frame_sr >> 8) & 7,
+		frame_return_pc & 0x00ffffff, a2, slot_index, slot_words.c_str(),
+		m_lowmem_shadow[0x0b6a >> 1], m_lowmem_shadow[0x0b6c >> 1],
+		m_lowmem_shadow[0x0b7e >> 1] & 0x00ff,
+		fc6814_after_experiment, fc6816_after_experiment, fc6818_before,
+		m_f87f96_queue_rte_count);
 
 	logerror("ASR10_F87F96_QUEUE_RTE state=%d pc=%06x previous_pc=%06x opcode=%04x "
 		"sr=%04x sr_mask=%u sp=%06x stack0=%08x stack1=%08x stack2=%08x "
@@ -4100,6 +4304,8 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::pc_poll)
 				m_m68302_internal_shadow[0x18 >> 1], m_runtime_dispatch_entry_count);
 		}
 	}
+	log_dispatcher_rte_first_pc_probe(pc);
+	log_dispatcher_rte_candidate_pc(pc);
 	if (m_queue_rte_after_pending && pc != m_queue_rte_before_pc)
 	{
 		const u16 fc6814_after = m_m68302_internal_shadow[0x14 >> 1];
