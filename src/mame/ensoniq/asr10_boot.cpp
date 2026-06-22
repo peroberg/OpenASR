@@ -98,6 +98,10 @@ private:
 	static constexpr bool ASR10_EXPERIMENT_FC6816_CLEAR_SERVICE_2480 = false;
 	static constexpr bool ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ = false;
 	static constexpr u8 ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ_LEVEL = 1;
+	static constexpr bool ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR = false;
+	static constexpr u8 ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_IRQ_LEVEL = 1;
+	static constexpr u8 ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR_BYTE = 0x40;
+	static constexpr u16 ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_SOURCE_MASK = 0x2400;
 	static constexpr bool ASR10_EXPERIMENT_PANEL_REBOOT_CONFIRM_RAW_21 = false;
 	static constexpr bool ASR10_EXPERIMENT_STUB_CMD1E_RESULTS = false;
 	static constexpr u8 ASR10_STUB_CMD1E_RESULT_BYTE0 = 0x00;
@@ -221,6 +225,7 @@ private:
 	u32 m_runtime_dispatch_entry_count = 0;
 	u32 m_timer_candidate_trace_count = 0;
 	u32 m_synth_68302_timer_irq_count = 0;
+	u32 m_iack_trace_count = 0;
 	bool m_synth_68302_timer_irq_vector_dump_logged = false;
 	bool m_synth_68302_timer_irq_code_dump_logged = false;
 	bool m_error139_d0_candidate_logged = false;
@@ -262,6 +267,7 @@ private:
 	virtual void machine_reset() override ATTR_COLD;
 
 	void mem_map(address_map &map) ATTR_COLD;
+	void cpu_space_map(address_map &map) ATTR_COLD;
 
 	u16 low_rom_or_lowmem_r(offs_t offset, u16 mem_mask = ~0);
 	void lowmem_w(offs_t offset, u16 data, u16 mem_mask = ~0);
@@ -297,6 +303,7 @@ private:
 	TIMER_CALLBACK_MEMBER(pc_poll);
 	TIMER_CALLBACK_MEMBER(prompt_select_poll);
 	TIMER_CALLBACK_MEMBER(synth_68302_timer_irq);
+	u8 maincpu_iack_r(u8 level);
 
 	bool probe_or_alias_region_index(u32 address, u32 &index, u32 &word_index) const;
 	u16 probe_or_alias_region_r_at(u32 base, offs_t offset, u16 mem_mask);
@@ -438,6 +445,7 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_runtime_dispatch_entry_count));
 	save_item(NAME(m_timer_candidate_trace_count));
 	save_item(NAME(m_synth_68302_timer_irq_count));
+	save_item(NAME(m_iack_trace_count));
 	save_item(NAME(m_synth_68302_timer_irq_vector_dump_logged));
 	save_item(NAME(m_synth_68302_timer_irq_code_dump_logged));
 	save_item(NAME(m_error139_d0_candidate_logged));
@@ -507,6 +515,7 @@ void asr10_boot_state::machine_reset()
 	m_runtime_dispatch_entry_count = 0;
 	m_timer_candidate_trace_count = 0;
 	m_synth_68302_timer_irq_count = 0;
+	m_iack_trace_count = 0;
 	m_synth_68302_timer_irq_vector_dump_logged = false;
 	m_synth_68302_timer_irq_code_dump_logged = false;
 	m_error139_d0_candidate_logged = false;
@@ -601,8 +610,9 @@ void asr10_boot_state::machine_reset()
 	m_pc_timer->adjust(attotime::zero, 0, attotime::from_ticks(64, m_maincpu->clock()));
 
 	logerror("ASR10BOOT reset: expected SP=$00000300 PC=$0000000c from ROM vectors\n");
-	logerror("ASR10_MAINCPU_INPUT_LINE_DRIVER none source=harness set_input_line_calls=0 "
-		"pc_timer=diagnostic_poll prompt_select_timer=diagnostic_poll fc6850_fc6852_timer_binding=none\n");
+	logerror("ASR10_MAINCPU_INPUT_LINE_DRIVER source=harness default_set_input_line_calls=0 "
+		"iack_map=installed_returns_autovectors_by_default pc_timer=diagnostic_poll "
+		"prompt_select_timer=diagnostic_poll fc6850_fc6852_timer_binding=none\n");
 }
 
 
@@ -638,6 +648,63 @@ void asr10_boot_state::mem_map(address_map &map)
 	map(0xfc5020, 0xfc67ff).ram();
 	map(0xfc6800, 0xfc68ff).rw(FUNC(asr10_boot_state::m68302_internal_r), FUNC(asr10_boot_state::m68302_internal_w));
 	map(0xfc6900, 0xffffff).ram();
+}
+
+
+void asr10_boot_state::cpu_space_map(address_map &map)
+{
+	// M68000 interrupt acknowledge cycles. This preserves the default
+	// autovector behavior unless an ASR boot-harness vector experiment is on.
+	map(0xfffff3, 0xfffff3).lr8(NAME([this]() { return maincpu_iack_r(1); }));
+	map(0xfffff5, 0xfffff5).lr8(NAME([this]() { return maincpu_iack_r(2); }));
+	map(0xfffff7, 0xfffff7).lr8(NAME([this]() { return maincpu_iack_r(3); }));
+	map(0xfffff9, 0xfffff9).lr8(NAME([this]() { return maincpu_iack_r(4); }));
+	map(0xfffffb, 0xfffffb).lr8(NAME([this]() { return maincpu_iack_r(5); }));
+	map(0xfffffd, 0xfffffd).lr8(NAME([this]() { return maincpu_iack_r(6); }));
+	map(0xffffff, 0xffffff).lr8(NAME([this]() { return maincpu_iack_r(7); }));
+}
+
+
+u8 asr10_boot_state::maincpu_iack_r(u8 level)
+{
+	const u8 autovector = m68000_base_device::autovector(level);
+	u8 vector = autovector;
+	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+	const u16 sr = u16(m_maincpu->state_int(M68K_SR));
+	const u16 fc6812 = m_m68302_internal_shadow[0x12 >> 1];
+	const u16 fc6814_before = m_m68302_internal_shadow[0x14 >> 1];
+	const u16 fc6816_before = m_m68302_internal_shadow[0x16 >> 1];
+	const u16 fc6818 = m_m68302_internal_shadow[0x18 >> 1];
+	const u16 fc684a = m_m68302_internal_shadow[0x4a >> 1];
+	const u16 fc6850 = m_m68302_internal_shadow[0x50 >> 1];
+	const u16 fc6852 = m_m68302_internal_shadow[0x52 >> 1];
+	bool custom_vector = false;
+
+	if constexpr (ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR)
+	{
+		if (level == ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_IRQ_LEVEL &&
+			(fc6814_before & ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_SOURCE_MASK))
+		{
+			vector = ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR_BYTE;
+			custom_vector = true;
+		}
+	}
+
+	m_iack_trace_count++;
+	logerror("ASR10_M68K_IACK count=%u irq_level=%u default_autovector=%02x returned_vector=%02x "
+		"custom_vector=%u pc=%06x sr=%04x sr_mask=%u fc6812=%04x "
+		"fc6814_before=%04x fc6814_after=%04x fc6816_before=%04x fc6816_after=%04x fc6818=%04x "
+		"fc684a=%04x fc6850=%04x fc6852=%04x source_mask=%04x source_pending=%u "
+		"dispatcher_count=%u panel=\"%s\"\n",
+		m_iack_trace_count, level, autovector, vector, custom_vector ? 1 : 0,
+		pc, sr, (sr >> 8) & 7, fc6812,
+		fc6814_before, m_m68302_internal_shadow[0x14 >> 1],
+		fc6816_before, m_m68302_internal_shadow[0x16 >> 1], fc6818,
+		fc684a, fc6850, fc6852, ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_SOURCE_MASK,
+		(fc6814_before & ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_SOURCE_MASK) ? 1 : 0,
+		m_runtime_dispatch_entry_count, m_panel_text);
+
+	return vector;
 }
 
 
@@ -2076,13 +2143,19 @@ void asr10_boot_state::log_timer_candidate(bool write, u32 address, u16 data, u1
 		m_seen_loading_system_prompt ? "post_loading_system" : "boot",
 		m_timer_candidate_trace_count);
 
-	if constexpr (ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ)
+	if constexpr (ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ || ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR)
 	{
 		if (write && reg == 0x50 && new_shadow != 0)
 		{
 			logerror("ASR10_EXPERIMENT_SYNTH_68302_TIMER_START pc=%06x fc6850=%04x fc6852_reference=%04x "
-				"irq_level=%u period=1ms frequency=diagnostic_not_derived\n",
-				pc, new_shadow, fc6852, ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ_LEVEL);
+				"raw_irq_enabled=%u raw_irq_level=%u iack_vector_enabled=%u iack_irq_level=%u "
+				"iack_vector_byte=%02x iack_source_mask=%04x period=1ms frequency=diagnostic_not_derived\n",
+				pc, new_shadow, fc6852,
+				ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ ? 1 : 0, ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ_LEVEL,
+				ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR ? 1 : 0,
+				ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_IRQ_LEVEL,
+				ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR_BYTE,
+				ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_SOURCE_MASK);
 			m_synth_68302_timer_irq_timer->adjust(attotime::from_msec(1), 0, attotime::from_msec(1));
 		}
 	}
@@ -2150,7 +2223,7 @@ void asr10_boot_state::log_synth_68302_irq_vectors(u8 irq_level, u32 pc, u16 sr)
 
 TIMER_CALLBACK_MEMBER(asr10_boot_state::synth_68302_timer_irq)
 {
-	if constexpr (!ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ)
+	if constexpr (!ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ && !ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR)
 		return;
 
 	m_synth_68302_timer_irq_count++;
@@ -2158,21 +2231,34 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::synth_68302_timer_irq)
 	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 	const u16 sr = u16(m_maincpu->state_int(M68K_SR));
 	const u8 sr_mask = (sr >> 8) & 7;
-	const u8 irq_level = ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ_LEVEL;
+	const u8 irq_level = ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR ?
+		ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_IRQ_LEVEL : ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ_LEVEL;
 	const u16 fc6812 = m_m68302_internal_shadow[0x12 >> 1];
-	const u16 fc6814 = m_m68302_internal_shadow[0x14 >> 1];
-	const u16 fc6816 = m_m68302_internal_shadow[0x16 >> 1];
+	const u16 fc6814_before = m_m68302_internal_shadow[0x14 >> 1];
+	const u16 fc6816_before = m_m68302_internal_shadow[0x16 >> 1];
 	const u16 fc6818 = m_m68302_internal_shadow[0x18 >> 1];
 	const u16 fc684a = m_m68302_internal_shadow[0x4a >> 1];
 	const u16 fc6850 = m_m68302_internal_shadow[0x50 >> 1];
 	const u16 fc6852 = m_m68302_internal_shadow[0x52 >> 1];
 	const bool pulse = sr_mask <= 6;
 
+	if constexpr (ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR)
+		m_m68302_internal_shadow[0x14 >> 1] = fc6814_before | ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_SOURCE_MASK;
+	const u16 fc6814_after = m_m68302_internal_shadow[0x14 >> 1];
+	const u16 fc6816_after = m_m68302_internal_shadow[0x16 >> 1];
+
 	logerror("ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ callback=%u line=%u irq_level=%u state=%s pc=%06x "
-		"sr=%04x sr_mask=%u irq_level_above_mask=%u fc6812=%04x fc6814=%04x fc6816=%04x fc6818=%04x "
+		"sr=%04x sr_mask=%u irq_level_above_mask=%u raw_irq_enabled=%u iack_vector_enabled=%u "
+		"iack_vector_byte=%02x iack_source_mask=%04x fc6812=%04x "
+		"fc6814_before=%04x fc6814_after=%04x fc6816_before=%04x fc6816_after=%04x fc6818=%04x "
 		"fc684a=%04x fc6850=%04x fc6852_reference=%04x dispatcher_count=%u panel=\"%s\"\n",
 		m_synth_68302_timer_irq_count, irq_level, irq_level, pulse ? "HOLD_LINE" : "masked_no_pulse", pc,
-		sr, sr_mask, irq_level > sr_mask ? 1 : 0, fc6812, fc6814, fc6816, fc6818,
+		sr, sr_mask, irq_level > sr_mask ? 1 : 0,
+		ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ ? 1 : 0,
+		ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR ? 1 : 0,
+		ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR_BYTE,
+		ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_SOURCE_MASK,
+		fc6812, fc6814_before, fc6814_after, fc6816_before, fc6816_after, fc6818,
 		fc684a, fc6850, fc6852, m_runtime_dispatch_entry_count, m_panel_text);
 
 	if (pulse)
@@ -3640,6 +3726,7 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 {
 	M68000(config, m_maincpu, XTAL(16'000'000)); // 68000-compatible stand-in for likely MC68302-family board
 	m_maincpu->set_addrmap(AS_PROGRAM, &asr10_boot_state::mem_map);
+	m_maincpu->set_addrmap(m68000_base_device::AS_CPU_SPACE, &asr10_boot_state::cpu_space_map);
 	m_maincpu->set_rte_callback(FUNC(asr10_boot_state::log_f87f96_queue_rte));
 
 	UPD72069(config, m_fdc, XTAL(16'000'000)); // clock unknown; placeholder for boot tracing
