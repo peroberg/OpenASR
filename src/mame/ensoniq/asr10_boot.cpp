@@ -226,8 +226,12 @@ private:
 	u32 m_timer_candidate_trace_count = 0;
 	u32 m_synth_68302_timer_irq_count = 0;
 	u32 m_iack_trace_count = 0;
+	u32 m_synth_68302_timer_iack_delay_count = 0;
 	bool m_synth_68302_timer_irq_vector_dump_logged = false;
 	bool m_synth_68302_timer_irq_code_dump_logged = false;
+	bool m_synth_68302_timer_iack_runtime_vector_dump_logged = false;
+	bool m_synth_68302_timer_iack_armed_logged = false;
+	bool m_synth_68302_timer_iack_fired_logged = false;
 	bool m_error139_d0_candidate_logged = false;
 	u16 m_queue_rte_before_fc6814 = 0;
 	u16 m_queue_rte_before_fc6816 = 0;
@@ -336,6 +340,7 @@ private:
 	void log_fc681x_interrupt_candidate(bool write, u32 address, u16 data, u16 mem_mask, u16 old_shadow, u16 new_shadow);
 	void log_timer_candidate(bool write, u32 address, u16 data, u16 mem_mask, u16 old_shadow, u16 new_shadow);
 	void log_synth_68302_irq_vectors(u8 irq_level, u32 pc, u16 sr);
+	void log_runtime_vector_table_for_iack_experiment(u32 pc, u16 sr);
 	void dump_loaded_code_range(const char *tag, u32 start, u32 end);
 	void log_f87f96_queue_read(u32 byte_address, u16 data, u16 mem_mask);
 	void log_f87f96_queue_write(u32 byte_address, u16 previous, u16 current, u16 data, u16 mem_mask);
@@ -446,8 +451,12 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_timer_candidate_trace_count));
 	save_item(NAME(m_synth_68302_timer_irq_count));
 	save_item(NAME(m_iack_trace_count));
+	save_item(NAME(m_synth_68302_timer_iack_delay_count));
 	save_item(NAME(m_synth_68302_timer_irq_vector_dump_logged));
 	save_item(NAME(m_synth_68302_timer_irq_code_dump_logged));
+	save_item(NAME(m_synth_68302_timer_iack_runtime_vector_dump_logged));
+	save_item(NAME(m_synth_68302_timer_iack_armed_logged));
+	save_item(NAME(m_synth_68302_timer_iack_fired_logged));
 	save_item(NAME(m_error139_d0_candidate_logged));
 	save_item(NAME(m_queue_rte_before_fc6814));
 	save_item(NAME(m_queue_rte_before_fc6816));
@@ -516,8 +525,12 @@ void asr10_boot_state::machine_reset()
 	m_timer_candidate_trace_count = 0;
 	m_synth_68302_timer_irq_count = 0;
 	m_iack_trace_count = 0;
+	m_synth_68302_timer_iack_delay_count = 0;
 	m_synth_68302_timer_irq_vector_dump_logged = false;
 	m_synth_68302_timer_irq_code_dump_logged = false;
+	m_synth_68302_timer_iack_runtime_vector_dump_logged = false;
+	m_synth_68302_timer_iack_armed_logged = false;
+	m_synth_68302_timer_iack_fired_logged = false;
 	m_error139_d0_candidate_logged = false;
 	m_synth_68302_timer_irq_timer->adjust(attotime::never);
 	m_queue_rte_before_fc6814 = 0;
@@ -2221,6 +2234,80 @@ void asr10_boot_state::log_synth_68302_irq_vectors(u8 irq_level, u32 pc, u16 sr)
 }
 
 
+void asr10_boot_state::log_runtime_vector_table_for_iack_experiment(u32 pc, u16 sr)
+{
+	if (m_synth_68302_timer_iack_runtime_vector_dump_logged)
+		return;
+
+	m_synth_68302_timer_iack_runtime_vector_dump_logged = true;
+	const u16 fc6812 = m_m68302_internal_shadow[0x12 >> 1];
+	const u16 fc6814 = m_m68302_internal_shadow[0x14 >> 1];
+	const u16 fc6816 = m_m68302_internal_shadow[0x16 >> 1];
+	const u16 fc6818 = m_m68302_internal_shadow[0x18 >> 1];
+	const u16 fc684a = m_m68302_internal_shadow[0x4a >> 1];
+	const u16 fc6850 = m_m68302_internal_shadow[0x50 >> 1];
+	const u16 fc6852 = m_m68302_internal_shadow[0x52 >> 1];
+
+	logerror("ASR10_RUNTIME_VECTOR_TABLE_BEGIN pc=%06x sr=%04x sr_mask=%u "
+		"dispatcher_count=%u fc6812=%04x fc6814=%04x fc6816=%04x fc6818=%04x "
+		"fc684a=%04x fc6850=%04x fc6852=%04x panel=\"%s\"\n",
+		pc, sr, (sr >> 8) & 7, m_runtime_dispatch_entry_count,
+		fc6812, fc6814, fc6816, fc6818, fc684a, fc6850, fc6852, m_panel_text);
+
+	std::string candidates;
+	for (u16 base = 0; base < 0x100; base += 0x20)
+	{
+		std::string entries;
+		for (u16 vector = base; vector < base + 0x20; vector++)
+		{
+			const u32 handler = read_loaded_long(u32(vector) * 4) & 0x00ffffff;
+			std::string classification;
+			if (handler == 0x00f882da)
+				classification += "default_error_139";
+			if (handler >= 0x00f87f40 && handler <= 0x00f87fc0)
+			{
+				if (!classification.empty()) classification += '|';
+				classification += "dispatcher_related";
+			}
+			if ((handler >= 0x00f88efc && handler <= 0x00f88f5c))
+			{
+				if (!classification.empty()) classification += '|';
+				classification += "fc6818_rte_candidate";
+			}
+			if (handler >= 0x00f80000 && handler <= 0x00fbffff)
+			{
+				if (!classification.empty()) classification += '|';
+				classification += "rom";
+			}
+			else if (handler <= 0x0000ffff)
+			{
+				if (!classification.empty()) classification += '|';
+				classification += "ram";
+			}
+			if (classification.empty())
+				classification = "other";
+
+			if (!entries.empty())
+				entries += ',';
+			entries += util::string_format("%02x:%06x:%04x:%s",
+				vector, handler, read_loaded_word(handler), classification.c_str());
+
+			if (handler != 0x00f882da && handler != 0x00ffffff && handler != 0x00000000)
+			{
+				if (!candidates.empty())
+					candidates += ',';
+				candidates += util::string_format("%02x:%06x:%04x:%s",
+					vector, handler, read_loaded_word(handler), classification.c_str());
+			}
+		}
+		logerror("ASR10_RUNTIME_VECTOR_TABLE_CHUNK range=%02x_%02x entries=\"%s\"\n",
+			base, base + 0x1f, entries.c_str());
+	}
+
+	logerror("ASR10_RUNTIME_VECTOR_CANDIDATES non_default=\"%s\"\n", candidates.c_str());
+}
+
+
 TIMER_CALLBACK_MEMBER(asr10_boot_state::synth_68302_timer_irq)
 {
 	if constexpr (!ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ && !ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR)
@@ -2240,22 +2327,82 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::synth_68302_timer_irq)
 	const u16 fc684a = m_m68302_internal_shadow[0x4a >> 1];
 	const u16 fc6850 = m_m68302_internal_shadow[0x50 >> 1];
 	const u16 fc6852 = m_m68302_internal_shadow[0x52 >> 1];
-	const bool pulse = sr_mask <= 6;
+	bool pulse = sr_mask <= 6;
+	const bool dispatcher_context = m_runtime_dispatch_entry_count != 0 || (pc >= 0x00f87f40 && pc <= 0x00f87fd0);
+	bool iack_vector_ready = true;
+	const char *iack_delay_reason = "none";
 
 	if constexpr (ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR)
-		m_m68302_internal_shadow[0x14 >> 1] = fc6814_before | ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_SOURCE_MASK;
+	{
+		if (m_seen_loading_system_prompt)
+			log_runtime_vector_table_for_iack_experiment(pc, sr);
+
+		if (!m_seen_loading_system_prompt)
+		{
+			iack_vector_ready = false;
+			iack_delay_reason = "loading_system_not_seen";
+		}
+		else if (!dispatcher_context)
+		{
+			iack_vector_ready = false;
+			iack_delay_reason = "dispatcher_not_active";
+		}
+		else if (sr_mask != 0)
+		{
+			iack_vector_ready = false;
+			iack_delay_reason = "sr_mask_not_zero";
+		}
+		else if (fc6850 == 0)
+		{
+			iack_vector_ready = false;
+			iack_delay_reason = "fc6850_zero";
+		}
+
+		if (!iack_vector_ready)
+		{
+			pulse = false;
+			m_synth_68302_timer_iack_delay_count++;
+			if (m_synth_68302_timer_iack_delay_count <= 32 ||
+				!(m_synth_68302_timer_iack_delay_count & (m_synth_68302_timer_iack_delay_count - 1)))
+			{
+				logerror("ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_DELAY count=%u reason=%s "
+					"pc=%06x sr=%04x sr_mask=%u dispatcher_count=%u dispatcher_context=%u "
+					"fc6812=%04x fc6814=%04x fc6816=%04x fc6818=%04x fc684a=%04x fc6850=%04x fc6852=%04x "
+					"panel=\"%s\"\n",
+					m_synth_68302_timer_iack_delay_count, iack_delay_reason, pc, sr, sr_mask,
+					m_runtime_dispatch_entry_count, dispatcher_context ? 1 : 0,
+					fc6812, fc6814_before, fc6816_before, fc6818, fc684a, fc6850, fc6852, m_panel_text);
+			}
+		}
+		else
+		{
+			if (!m_synth_68302_timer_iack_armed_logged)
+			{
+				logerror("ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_ARMED pc=%06x sr=%04x sr_mask=%u "
+					"dispatcher_count=%u fc6812=%04x fc6814=%04x fc6816=%04x fc6818=%04x "
+					"fc684a=%04x fc6850=%04x fc6852=%04x vector_byte=%02x source_mask=%04x panel=\"%s\"\n",
+					pc, sr, sr_mask, m_runtime_dispatch_entry_count, fc6812, fc6814_before,
+					fc6816_before, fc6818, fc684a, fc6850, fc6852,
+					ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR_BYTE,
+					ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_SOURCE_MASK, m_panel_text);
+				m_synth_68302_timer_iack_armed_logged = true;
+			}
+			m_m68302_internal_shadow[0x14 >> 1] = fc6814_before | ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_SOURCE_MASK;
+		}
+	}
 	const u16 fc6814_after = m_m68302_internal_shadow[0x14 >> 1];
 	const u16 fc6816_after = m_m68302_internal_shadow[0x16 >> 1];
 
 	logerror("ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ callback=%u line=%u irq_level=%u state=%s pc=%06x "
 		"sr=%04x sr_mask=%u irq_level_above_mask=%u raw_irq_enabled=%u iack_vector_enabled=%u "
-		"iack_vector_byte=%02x iack_source_mask=%04x fc6812=%04x "
+		"iack_vector_ready=%u iack_delay_reason=%s iack_vector_byte=%02x iack_source_mask=%04x fc6812=%04x "
 		"fc6814_before=%04x fc6814_after=%04x fc6816_before=%04x fc6816_after=%04x fc6818=%04x "
 		"fc684a=%04x fc6850=%04x fc6852_reference=%04x dispatcher_count=%u panel=\"%s\"\n",
 		m_synth_68302_timer_irq_count, irq_level, irq_level, pulse ? "HOLD_LINE" : "masked_no_pulse", pc,
 		sr, sr_mask, irq_level > sr_mask ? 1 : 0,
 		ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ ? 1 : 0,
 		ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR ? 1 : 0,
+		iack_vector_ready ? 1 : 0, iack_delay_reason,
 		ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR_BYTE,
 		ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_SOURCE_MASK,
 		fc6812, fc6814_before, fc6814_after, fc6816_before, fc6816_after, fc6818,
@@ -2263,6 +2410,21 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::synth_68302_timer_irq)
 
 	if (pulse)
 	{
+		if constexpr (ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR)
+		{
+			if (!m_synth_68302_timer_iack_fired_logged)
+			{
+				logerror("ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_FIRED pc=%06x sr=%04x sr_mask=%u "
+					"dispatcher_count=%u irq_level=%u vector_byte=%02x fc6812=%04x fc6814_before=%04x "
+					"fc6814_after=%04x fc6816_before=%04x fc6816_after=%04x fc6818=%04x "
+					"fc684a=%04x fc6850=%04x fc6852=%04x panel=\"%s\"\n",
+					pc, sr, sr_mask, m_runtime_dispatch_entry_count, irq_level,
+					ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR_BYTE,
+					fc6812, fc6814_before, fc6814_after, fc6816_before, fc6816_after,
+					fc6818, fc684a, fc6850, fc6852, m_panel_text);
+				m_synth_68302_timer_iack_fired_logged = true;
+			}
+		}
 		log_synth_68302_irq_vectors(irq_level, pc, sr);
 		m_maincpu->set_input_line(irq_level, HOLD_LINE);
 	}
