@@ -33,6 +33,37 @@ Usable ASR-10 emulation:
 - sequencer and UI work through original OS
 ```
 
+## Current blocker
+
+Slot 2 finalizes/equalizes because its continuation/list fields are zero.
+
+This is not because the fields were never initialized.
+
+Write tracing proves:
+
+- `f87dd6` initializes slot 2 `+0x0c`, `+0x10`, and `+0x12` to `0009`.
+- `fb8ab6` writes `$00da = 2400`.
+- `fb8ab6` then clears slot 2 `+0x0c`, `+0x10`, and `+0x12` from `0009` to `0000`.
+- `f87e82` clears the same fields again.
+- No later write repopulates slot 2 `+0x0c/+0x10/+0x12` before `f8ce3a`.
+
+At `f8cdf2`, firmware loads:
+
+`A2 = ($00da).w = 002400`
+
+so the finalizer operates on slot 2.
+
+At `f8ce00..f8ce3a`, both tested continuation fields are zero:
+
+- `+0x0c(A2) == 0000`
+- `+0x10(A2) == 0000`
+
+Therefore `f8ce3a` writes slot 2 pending word `002402 = 8080`, equalizing slot 2.
+
+The current unresolved question is:
+
+Why does `fb8ab6` clear slot 2 continuation/list fields from `0009` to `0000`, and what normal path would keep or restore them before slot 2 reaches `f8ce00`?
+
 ## Current source file
 
 Current experimental harness:
