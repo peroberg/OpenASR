@@ -1,38 +1,89 @@
-
-# fdc.md
-
 # ASR-10 FDC findings
+
+This file tracks ASR-10 floppy/FDC findings.
+
+Important current-context note:
+
+```text id="h8q0sr"
+FDC/media findings are still valid, but FDC/media is not the immediate current blocker once the emulator reaches LOADING SYSTEM.
+```
+
+The current immediate blocker is:
+
+```text id="kob7io"
+runtime dispatcher idle around f87f96/f87f9a after the accepted-looking MC68302/FC68xx 0x2400 service sequence
+```
+
+Do not add new FDC behavior stubs unless logs show post-service FDC activity.
+
+## Current relevance
+
+The FDC work was essential for reaching later boot paths and should remain documented.
+
+However, once the emulator reaches:
+
+```text id="1r71pg"
+ENSONIQ ASR-10
+LOADING SYSTEM
+```
+
+and then returns to:
+
+```text id="y3rj09"
+f87f96 / f87f9a / f87fca dispatcher idle
+```
+
+the next blocker appears to be outside the immediate FDC/media layer.
+
+Current likely blockers are:
+
+```text id="gitrbf"
+- dispatcher queue re-arm
+- event payload
+- timer tick/timebase side effect
+- FC6884/FC6894 completion behavior
+- lowmem service state around $0d06/$0e82
+```
+
+FDC should be revisited when logs show one of:
+
+```text id="5e6dvb"
+- post-service FDC activity
+- a new 0x46 Read Data command
+- media/status polling after LOADING SYSTEM
+- dispatcher progress into disk/media code
+```
 
 ## Hardware
 
 FDC:
 
-```text
+```text id="ha7ijb"
 NEC uPD72069
 ```
 
 Current candidate mapping:
 
-```text
+```text id="pnrj6a"
 $FC4000-$FC4003
 ```
 
 Current MAME device:
 
-```cpp
+```cpp id="i4ubdt"
 UPD72069(config, m_fdc, XTAL(16'000'000));
 FLOPPY_CONNECTOR(config, m_floppy_connector, asr10_boot_state::floppy_drives, "35dd", asr10_boot_state::floppy_formats, true);
 ```
 
 Connector tag:
 
-```text
+```text id="4pu3sa"
 fdc:0
 ```
 
 The no-media baseline proves the FDC sees an attached drive:
 
-```text
+```text id="2t4naz"
 drive_attached=1
 media_mounted=0
 ready=0
@@ -50,19 +101,19 @@ Do not add explicit connection hacks unless evidence shows the controller cannot
 
 Early command sequence included:
 
-```text
+```text id="b6os71"
 36, 0B, 4F, 1E, 0E
 ```
 
 After passing the input gate, later sequence includes:
 
-```text
+```text id="a5lcxc"
 88, F3, 03, 07, 00, 08
 ```
 
 Interpretation of later sequence:
 
-```text
+```text id="663p06"
 0x88 -> uPD72069 data-rate command, selects 250 kbit/s
 0xF3 -> uPD72069 precomp/precompensation auxiliary command
 0x03 E1 09 -> Specify
@@ -70,18 +121,25 @@ Interpretation of later sequence:
 0x08 -> Sense Interrupt Status
 ```
 
+Caution:
+
+```text id="bf6g7h"
+The FDC interpretation above belongs to the earlier boot/media phase.
+It should not be used to explain the current f87f9a dispatcher idle unless new logs show post-service FDC access.
+```
+
 ## No-media result
 
 Without media:
 
-```text
+```text id="c9wd7n"
 CMD 88 result: 80
 F3 transaction includes FIFO reads: 80,68,00
 ```
 
 Important decoded meaning:
 
-```text
+```text id="70l5p0"
 68,00 is Sense Interrupt Status result:
 ST0=0x68
 PCN=0x00
@@ -89,7 +147,7 @@ PCN=0x00
 
 `0x68` means approximately:
 
-```text
+```text id="32e24b"
 abnormal termination / failure
 seek end
 drive not ready
@@ -97,35 +155,35 @@ drive not ready
 
 ROM stores:
 
-```text
+```text id="l619f0"
 $04C6 = 68
 ```
 
 Then ROM checks:
 
-```text
+```text id="34wx03"
 $04C6 & 0xC0
 ```
 
 Since bit 6 is set:
 
-```text
+```text id="02mre1"
 ROM writes $04AE=2B
 ROM writes $049D=0D
 ```
 
-## Current raw image problem
+## Earlier raw image problem / still open
 
 Raw `.img` images:
 
-```text
+```text id="eespj8"
 V161.img = 1,638,400 bytes
 V350.img = 1,638,400 bytes
 ```
 
 Expected ASR geometry:
 
-```text
+```text id="m8vm9d"
 80 tracks
 2 sides
 20 sectors per track
@@ -133,15 +191,15 @@ Expected ASR geometry:
 total = 1,638,400 bytes
 ```
 
-Current error:
+Earlier/current image recognition error:
 
-```text
+```text id="vnak5i"
 Unable to identify image file format
 ```
 
 Current format registration:
 
-```cpp
+```cpp id="mgu3fs"
 void asr10_boot_state::floppy_formats(format_registration &fr)
 {
     fr.add_mfm_containers();
@@ -152,16 +210,22 @@ void asr10_boot_state::floppy_formats(format_registration &fr)
 
 Conclusion:
 
-```text
+```text id="9y592v"
 FLOPPY_ESQIMG_FORMAT does not recognize these ASR-10 1.6 MB raw .img files.
-Need new raw ASR-10 .img format.
+A raw ASR-10 .img format may still be needed.
+```
+
+Current relevance:
+
+```text id="3mgxby"
+This remains an open FDC/media task, but it is not the immediate current blocker if the emulator already reaches LOADING SYSTEM and then idles in the dispatcher.
 ```
 
 ## Required image format
 
-Add format:
+Potential raw format:
 
-```text
+```text id="0msyij"
 name: asr10_img
 description: Ensoniq ASR-10 1.6MB raw disk image
 extension: img
@@ -176,23 +240,23 @@ total size: 1,638,400 bytes
 
 Important unknown:
 
-```text
+```text id="0itme0"
 Sector IDs may be 0..19 or 1..20.
 ```
 
-After mounting, command `0x46 Read Data` will reveal what R value the ROM requests.
+After mounting, command `0x46 Read Data` should reveal what `R` value the ROM requests.
 
 ## First Read Data command
 
 Command to trace:
 
-```text
+```text id="euybkn"
 0x46 Read Data
 ```
 
 Trace should decode:
 
-```text
+```text id="r9qluz"
 command byte
 drive/head select byte
 C
@@ -213,7 +277,7 @@ result N
 
 Relevant lowmem layout:
 
-```text
+```text id="r09gfe"
 $04C6 high = ST0
 $04C6 low  = ST1
 $04C8 high = ST2
@@ -225,19 +289,19 @@ $04CC high = N
 
 Potential failure:
 
-```text
+```text id="ys8lxy"
 ST0=40 ST1=01
 ```
 
 Interpreted as:
 
-```text
+```text id="8bapf1"
 abnormal termination + missing address mark
 ```
 
 Likely causes:
 
-```text
+```text id="w0typp"
 wrong sector ID numbering
 wrong side/head
 wrong track
@@ -246,524 +310,57 @@ wrong image geometry
 wrong HFE/raw decoding
 ```
 
+## Interaction with current dispatcher/service blocker
 
----
+The current accepted-looking MC68302/FC68xx service sequence is:
 
-# panel-input-display.md
-
-# ASR-10 panel, display and input findings
-
-## Candidate window
-
-Current candidate panel/frontpanel/DUART window:
-
-```text
-$FC4800-$FC481F
+```text id="ylkepi"
+FC6814 000b -> 240b
+IACK vector 0x4e or 0x4f
+FC6818 = 4000 or 8000
+FC6814 240b -> 000b
+runtime 00bf1a sets FC6816 c080 -> e480
+runtime 00bf22 sets $0d06
+optional gated experiment clears FC6816 e480 -> c080
+dispatcher returns to f87f9a idle
 ```
 
-This is separate from current MC68302 internal candidate window:
+In the latest service-clear runs:
 
-```text
-$FC6800-$FC68FF
+```text id="y571h5"
+No panel advance beyond LOADING SYSTEM.
+No post-clear FDC activity.
+No new error.
+Final hang remains dispatcher idle at f87f9a.
 ```
 
-Interpretation:
+Therefore, do not currently assume that FDC/media is the next missing behavior.
 
-```text
-Display and button input likely go through an external panel/frontpanel/DUART/glue path, not directly through MC68302 internal SCC in the current evidence.
+The next FDC-relevant evidence would be a log showing:
+
+```text id="9ljkl4"
+- reads/writes to $FC4000-$FC4003 after the service sequence
+- new FDC command bytes after LOADING SYSTEM
+- a queue event leading back into FDC/media code
+- lowmem $04C6-$04CC updated after current service sequence
 ```
 
-## Display output
+## Future FDC tasks
 
-Known display/text path:
+Revisit FDC when dispatcher/service progress resumes or when logs show post-service disk activity.
 
-```text
-ROM print routine at $F89CB0 writes printable ASCII-like bytes to $FC4817.
+Future tasks:
+
+```text id="d1mkyh"
+- add or verify raw ASR-10 1.6MB .img format
+- determine sector numbering 0..19 vs 1..20
+- trace first real 0x46 Read Data after media is mounted
+- verify uPD72069 clock and data rate handling
+- verify motor/ready/density/side/drive-select behavior
+- confirm whether FLOPPY_35_DD is sufficient
+- test V161 and V350 images once format mounts
 ```
 
-Harness logic:
+## Current one-line FDC takeaway
 
-```cpp
-if (address == 0x00fc4817 && ACCESSING_BITS_0_7)
-{
-    const u8 character = u8(data);
-    panel_text_byte(character, pc);
-}
-```
-
-Text is reconstructed only when:
-
-```text
-PC == $F89CB0
-byte is printable ASCII: 0x20..0x7E
-```
-
-Observed panel logs:
-
-```text
-ASR10PANEL text="   ENSONIQ  ASR-10    "
-ASR10PANEL text="  PLEASE INSERT DISK  "
-```
-
-Conclusion:
-
-```text
-The ROM sends display text as ASCII-compatible bytes to $FC4817.
-```
-
-Caution:
-
-```text
-This is a log sniffer, not yet a real display device.
-Control bytes, cursor movement, clear display, row selection and handshaking may exist and are currently ignored.
-```
-
-## Input/event gate
-
-Known input/status check:
-
-```asm
-FB7C84 btst #4,$FFFC4809
-```
-
-Observed behavior:
-
-```text
-If $FC4809 bit 4 is clear:
-  $04EE becomes 00
-  ROM writes $049D=05
-
-If $FC4809 bit 4 is experimentally set:
-  $04EE becomes 01
-  ROM avoids that $049D=05 write
-  ROM progresses to later FDC/media path
-```
-
-Interpretation:
-
-```text
-$FC4809 bit 4 is likely an input-change/event-available/status bit.
-```
-
-It is not necessarily the actual button code.
-
-## Actual button data unknown
-
-Current known:
-
-```text
-$FC4809 bit 4 = event/status gate candidate
-```
-
-Unknown:
-
-```text
-which register contains actual button/event code
-which register acknowledges/clears event
-whether RX/TX share $FC4817 or use adjacent addresses
-how panel MCU encodes keys
-```
-
-## Likely panel model
-
-Possible model:
-
-```text
-frontpanel buttons/display
-  -> 80C52 or panel MCU / DUART / glue
-      -> $FC4800-$FC481F
-          -> main CPU reads status/events and writes display bytes
-```
-
-Known board clue:
-
-```text
-ENS5702000102 + 80C52 may be frontpanel/keyboard/display logic.
-```
-
-## Future minimal MAME model
-
-Start behavioral:
-
-```text
-- display buffer accepts bytes written to $FC4817
-- status register reports ready/event bits
-- input port events create queued panel event
-- ROM reads event status and event code
-```
-
-Do not attempt exact 80C52 emulation initially unless required.
-
-## Next trace task
-
-After passing the bit-4 gate, trace all reads/writes in:
-
-```text
-$FC4800-$FC481F
-```
-
-Log:
-
-```text
-pc
-address
-value
-mem_mask
-D0-D3
-A0-A1
-return address
-nearby opcodes
-```
-
-Goal:
-
-```text
-identify event available bit
-identify actual event/button code register
-identify acknowledge behavior
-separate display TX, status, RX/input paths
-```
-
-
----
-
-# experiments.md
-
-# ASR-10 experiments and stubs
-
-This file records path-opening experiments. Every experiment must state whether it is proof of hardware behavior or only a way to expose the next ROM path.
-
-## Rule
-
-```text
-Log first.
-Stub minimally.
-Mark all behavior that depends on a stub.
-Move only verified behavior into the clean driver.
-```
-
-## Experiment: panel/input bit 4 at `$FC4809`
-
-### Purpose
-
-Pass the ROM input/status gate at:
-
-```asm
-FB7C84 btst #4,$FFFC4809
-```
-
-### Experiment
-
-Set bit 4 only at the semantic reader PC:
-
-```text
-PC == FB7C84
-address == $FC4809
-return value |= 0x10
-```
-
-Current/old flag name:
-
-```cpp
-ASR10_STUB_DUART_INPUT_CHANGE_BIT4_AT_FB7C84
-```
-
-Preferred future name:
-
-```cpp
-ASR10_EXPERIMENT_STUB_DUART_INPUT_CHANGE_BIT4_AT_FB7C84
-```
-
-### Result
-
-With bit 4 clear:
-
-```text
-ROM writes $049D=05 at FB7C9E
-```
-
-With bit 4 set:
-
-```text
-ROM avoids FB7C9E $049D=05 write
-$04EE becomes 01
-execution reaches later FDC/media path
-```
-
-### Conclusion
-
-```text
-$FC4809 bit 4 is an input/event/status gate candidate.
-```
-
-### Caution
-
-This does not prove the real panel hardware always returns bit 4 set. It only proves what ROM does if that status bit is set.
-
-## Experiment: FDC result stubs for commands 1E/0E
-
-### Purpose
-
-Earlier path-opening experiments forced some FDC result bytes.
-
-### Caution
-
-When enabled, these stubs make byte-level FDC result semantics invalid for those commands.
-
-They do not invalidate ROM control-flow discoveries, but they must not be treated as real hardware evidence.
-
-### Current policy
-
-Keep FDC result stubs disabled by default.
-
-Important:
-
-```text
-The later 0x68 result from F3/Recalibrate/Sense came from real upd72069_device FIFO, not from result stubs.
-```
-
-## Experiment policy for future 0x46 success forcing
-
-Avoid forcing command 0x46 success until raw image format and geometry are tested.
-
-If ever added, use an explicit flag:
-
-```cpp
-static constexpr bool ASR10_EXPERIMENT_FORCE_CMD46_SUCCESS = false;
-```
-
-and log clearly:
-
-```text
-stubbed=1
-```
-
-Do not let forced FDC success leak into clean driver behavior.
-
-
----
-
-# vfx-reuse.md
-
-# VFX/TS/SD reuse for ASR-10
-
-## Principle
-
-VFX/TS/SD are references, not automatic facits.
-
-Use them for Ensoniq-family component behavior, but let ASR-10 ROM/OS prove ASR-specific address decoding.
-
-## Likely reusable
-
-### ES5506 / OTIS
-
-Likely useful for:
-
-```text
-- voice/sample playback behavior
-- host register model
-- sample RAM access pattern
-- audio routing
-```
-
-ASR-specific questions:
-
-```text
-- CPU address window to ES5506
-- sample RAM size and banking
-- address translation between CPU and OTIS
-- glue/bus arbitration behavior
-```
-
-### ES5510 / ESP
-
-Likely useful for:
-
-```text
-- effect engine device
-- parameter/config protocol
-- status/ready behavior
-- audio processing behavior
-```
-
-ASR-specific questions:
-
-```text
-- CPU/GLU address window to ESP
-- effect program/parameter load sequence
-- external delay/work RAM mapping
-- reset/init/status behavior
-```
-
-### Pump
-
-The MAME pump appears to model the standard Ensoniq audio pipeline:
-
-```text
-ES5506 -> pump -> ES5510
-```
-
-This is a good sign for ASR-10 audio reuse.
-
-ASR goal:
-
-```text
-Use same or similar ES5506/ES5510/pump audio path once ASR address map and sample RAM are known.
-```
-
-## Not directly reusable without verification
-
-```text
-- VFX address map
-- VFX DUART/panel addresses
-- VFX FDC addresses
-- VFX memory layout
-- TS reference windows
-```
-
-Current harness contains VFX/TS reference candidate windows. These are useful probes but should not be treated as verified ASR addresses.
-
-## Suggested search commands
-
-```sh
-rg "ES5510|es5510|ESP|esp" src/mame/ensoniq src/devices -g'*.cpp' -g'*.h'
-rg "5506|5505|OTIS|otis|ES550" src/mame/ensoniq src/devices -g'*.cpp' -g'*.h'
-rg "pump|PUMP" src/mame/ensoniq src/devices -g'*.cpp' -g'*.h'
-```
-
-## Strategy when ASR OS runs
-
-1. Log VFX ES5510 init/config sequence.
-2. Log ASR unknown write bursts after OS startup.
-3. Compare patterns:
-
-```text
-control writes
-address/index writes
-data writes
-status polling
-program load
-parameter writes
-```
-
-4. Connect ASR candidate window to existing ES5510 device only when the pattern is convincing.
-
-
----
-
-# open-questions.md
-
-# ASR-10 open questions
-
-## Boot/media
-
-- Does raw ASR `.img` use sector IDs `0..19` or `1..20`?
-- What exact C/H/R/N/EOT/GPL/DTL does ROM request for first `0x46 Read Data`?
-- Does V161 or V350 boot further once raw format mounts?
-- Does ROM require SCSI probe behavior before floppy path on SCSI-equipped unit?
-
-## ROM loading
-
-- Are high/low EPROM byte lanes definitely correct in current ROM_LOAD16_BYTE lines?
-- Where is OS loaded in RAM?
-- When does ROM jump to loaded OS?
-- Is there a remap/overlay switch before OS execution?
-
-## MC68302
-
-- Where is the true internal register block?
-- Does ROM write BAR/SCR?
-- Are chip selects configured dynamically?
-- Which 68302 ports control FDC motor/side/density/drive select?
-- Which timers/interrupts does OS require?
-- Is MIDI handled through 68302 SCC or external DUART?
-
-## Panel/input/display
-
-- Is `$FC4817` actual DUART TX, panel data latch, or glue register?
-- Which register contains actual button/event code?
-- How is input event acknowledged?
-- Is there an 80C52 panel MCU protocol?
-- Are display control bytes currently ignored by ASCII sniffer?
-
-## FDC
-
-- Is uPD72069 clock correct?
-- Is data rate `0x88` correctly interpreted as 250 kbit/s?
-- Does ASR 1.6 MB format require unusual sector numbering/gaps?
-- Are motor/ready/density signals fully correct?
-- Is `FLOPPY_35_DD` sufficient as drive type?
-
-## SCSI
-
-- Confirm exact SCSI controller.
-- Confirm ASR SCSI address window.
-- Determine boot priority and probe behavior.
-- Determine minimum SCSI behavior needed for OS to continue.
-
-## Super-GLU / ES5701
-
-- Which address windows are decoded by GLU?
-- How does CPU access OTIS/ES5506?
-- How does CPU access ESP/ES5510?
-- How is sample RAM shared/arbitrated?
-- Is any timing/waitstate behavior required for boot or OS?
-
-## Audio
-
-- Exact ASR ES5506 address window?
-- Exact ASR ES5510 address window?
-- Sample RAM size and bank mapping?
-- Does existing VFX/TS pump connect correctly?
-- Does ASR use same ESP parameter protocol as VFX?
-
-## Sequencer/MIDI
-
-- Which timer creates sequencer tick?
-- Where is MIDI UART/SCC?
-- Does OS sequencer work once input/display/timers/audio are functional?
-- How are song/sequence files stored on floppy/SCSI?
-
-
----
-
-# Suggested Codex prompt: create docs
-
-Create the following docs directory and Markdown files for the ASR-10 MAME project:
-
-```text
-docs/asr10/README.md
-docs/asr10/status.md
-docs/asr10/roadmap.md
-docs/asr10/running.md
-docs/asr10/hardware-map.md
-docs/asr10/boot-flow.md
-docs/asr10/fdc.md
-docs/asr10/panel-input-display.md
-docs/asr10/memory-map.md
-docs/asr10/experiments.md
-docs/asr10/vfx-reuse.md
-docs/asr10/open-questions.md
-```
-
-Use the content from this project summary.
-
-Important requirements:
-
-```text
-- Do not invent new facts.
-- Mark hypotheses as hypotheses.
-- Keep experimental stubs separate from verified behavior.
-- Emphasize that asr10booth is a research harness, not final driver.
-- Do not commit floppy images.
-- Include current build/run commands.
-- Include current blocker: raw ASR 1.6MB .img is not recognized.
-- Include next task: add raw ASR-10 .img floppy format.
-```
-
-After creating docs, run:
-
-```sh
-git diff --check
-git status
-```
+The FDC path is partially understood and the `fdc:0` connector appears to work, but the current boot blocker after `LOADING SYSTEM` is not presently proven to be FDC/media. Treat FDC as an important earlier and future subsystem, while the immediate focus remains dispatcher queue/event payload and MC68302/FC68xx service completion behavior.

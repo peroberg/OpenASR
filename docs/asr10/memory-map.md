@@ -1,7 +1,8 @@
-
-# memory-map.md
-
 # ASR-10 memory map notes
+
+This file tracks known and suspected ASR-10 address regions, lowmem fields, and current runtime/service fields.
+
+Do not treat hypotheses as confirmed hardware behavior. The current boot harness is still an instrumented research harness, not a clean final driver.
 
 ## Current harness candidate map
 
@@ -39,9 +40,357 @@ FDC_VFX_CANDIDATE
 *_vfx_shadow
 ```
 
-Do not remove before current FDC/image work is stable unless done in a separate cleanup commit.
+Do not remove before the current control-plane and boot-progress work is stable unless done in a separate cleanup commit.
 
-## Known lowmem fields
+## Current blocker
+
+The emulator currently reaches:
+
+```text
+ENSONIQ ASR-10
+LOADING SYSTEM
+```
+
+Then it returns to firmware dispatcher idle around:
+
+```text
+f87f96 / f87f9a / f87fca
+```
+
+This is not currently treated as a crash. It is a dispatcher queue scan / idle state.
+
+The current missing piece is likely one of:
+
+```text
+dispatcher queue re-arm
+event payload
+timer tick/timebase side effect
+FC6884/FC6894 completion behavior
+lowmem state transition involving $0d06/$0e82
+```
+
+## Runtime dispatcher / service fields
+
+These fields are current-phase important. They are involved after the emulator reaches `LOADING SYSTEM`.
+
+### Dispatcher queue pointers
+
+#### `$00C6`
+
+Dispatcher queue base pointer.
+
+Used around:
+
+```asm
+f87f92: movea.w $00c6.w,A2
+f87f96: move.b  $0002(A2),D0
+f87f9a: move.b  $0003(A2),D1
+f87f9e: cmp.b   D0,D1
+```
+
+Current interpretation:
+
+```text
+A queue slot appears pending when byte2 != byte3.
+When byte2 == byte3, the dispatcher treats the slot as idle/equalized.
+```
+
+#### `$00C8`
+
+Dispatcher queue end pointer.
+
+Used around:
+
+```asm
+f87fc2: adda.w  #$0016,A2
+f87fc6: cmpa.w  $00c8.w,A2
+f87fca: bcs     f87f96
+```
+
+Current interpretation:
+
+```text
+Queue record stride is 0x16.
+Dispatcher scans records from $00c6 to $00c8.
+```
+
+#### `$0B6A`
+
+Active/current dispatcher record pointer candidate.
+
+Observed around dispatcher save/restore paths. Needs more confirmation.
+
+Current question:
+
+```text
+Which slot/callback led to the runtime service setter around 00bf1a?
+```
+
+## Runtime service flags
+
+### `$0D06`
+
+Current interpretation:
+
+```text
+Service status / service-complete / service-active flag candidate.
+```
+
+Observed behavior:
+
+```text
+f8c10c clears $0d06.
+00bf22 sets $0d06 via ST $0d06.
+```
+
+Context:
+
+```asm
+00bf1a: ori.w #$2400,$00fc6816.l
+00bf22: st     $0d06.w
+```
+
+Important caution:
+
+```text
+Exact meaning is unknown.
+Do not treat it as confirmed complete/active semantics yet.
+```
+
+### `$0E82`
+
+Current interpretation:
+
+```text
+Service argument / scratch / selector candidate.
+```
+
+Observed behavior:
+
+```text
+written as 0008
+later cleared
+later written as 0004
+read into D0 at 00bf14
+```
+
+Context:
+
+```asm
+00bf14: move.w $0e82.w,D0
+00bf18: a000
+```
+
+Open question:
+
+```text
+Does $0e82 provide the argument to the Line-A/A000 call?
+What do values 0004 and 0008 mean?
+```
+
+## Runtime service setter around `00BF1A`
+
+Confirmed runtime code:
+
+```asm
+00bf0e  jsr     $ffff8eca
+00bf14  move.w  $0e82.w,D0
+00bf18  a000
+00bf1a  ori.w   #$2400,$00fc6816.l
+00bf22  st      $0d06.w
+00bf26  rts
+```
+
+Confirmed context:
+
+```text
+D0=00000004
+$0e82=0004
+$0d06=0000 before 00bf22
+FC6884=703b
+FC6894=703b
+```
+
+Current interpretation:
+
+```text
+This is a real runtime service/handshake routine.
+The IACK handler does not directly set FC6816 0x2400.
+Runtime code sets it later at 00bf1a.
+```
+
+## MC68302 / FC68xx current-phase fields
+
+### `$FC6814`
+
+Pending/status candidate.
+
+Observed behavior:
+
+```text
+Synthetic/service source uses bit 0x2400.
+FC6814 000b -> 240b when source injected.
+FC6814 240b -> 000b clears naturally through firmware path.
+```
+
+Current interpretation:
+
+```text
+FC6814 bit 0x2400 is a pending/status bit for the accepted-looking 68302 service source.
+```
+
+Open questions:
+
+```text
+What exact MC68302 source does bit 0x2400 represent?
+Is it timer-related, service-related, or a board-glue mirrored source?
+```
+
+### `$FC6816`
+
+Service/in-service candidate.
+
+Observed behavior:
+
+```text
+FC6816 c080 -> e480 at runtime PC 00bf1a.
+The changed bit is 0x2400.
+```
+
+A gated experiment can clear it back:
+
+```text
+FC6816 e480 -> c080
+```
+
+but this does not advance boot.
+
+Current interpretation:
+
+```text
+FC6816 bit 0x2400 may be an in-service/service-active/EOI latch, but it is not the sole blocker.
+```
+
+Latest negative result:
+
+```text
+Clearing FC6816 0x2400 after:
+- 00bf1a setter
+- $0d06 set
+- FC6814 clear
+- later dispatcher RTE
+
+works mechanically, but final state still returns to dispatcher idle at f87f9a.
+```
+
+### `$FC6818`
+
+Control/ack/EOI-ish candidate.
+
+Observed behavior:
+
+```text
+Vector 0x4e handler writes FC6818=4000.
+Vector 0x4f handler writes FC6818=8000.
+Runtime later writes FC6818=0080.
+```
+
+Current interpretation:
+
+```text
+FC6818 participates in accepted-looking IACK/service handler paths.
+0x4e and 0x4f differ here, then converge.
+```
+
+Open questions:
+
+```text
+Is FC6818 an interrupt-control, acknowledge, EOI, mode, or source-select register?
+What is the exact difference between 4000 and 8000?
+```
+
+### `$FC6884` and `$FC6894`
+
+Timer/control/reload candidates.
+
+Observed behavior before the `00bf1a` service setter:
+
+```text
+00bef2 writes FC6894=703b.
+00bf00 writes FC6884=703b.
+```
+
+Related observed values:
+
+```text
+FC6850=003b
+FC6852=3f01
+FC6884=703b
+FC6894=703b
+```
+
+Hypothesis:
+
+```text
+0x3b may be timer/count/period-related.
+0x703b may be mode/control plus count/reload.
+```
+
+Open question:
+
+```text
+Should FC6884/FC6894 generate a later event or completion signal that re-arms the dispatcher queue?
+```
+
+## Important ROM/runtime service paths
+
+### Common clear path
+
+ROM path:
+
+```asm
+f8c0ec: move.w #$7033,$00fc6884.l
+f8c0f4: move.w #$7033,$00fc6894.l
+f8c0fc: andi.w #$dbff,$00fc6816.l
+f8c104: andi.w #$dbff,$00fc6814.l
+f8c10c: clr.b  $0d06.w
+f8c110: move.w $0e82.w,D0
+f8c114: LINE_A
+f8c116: rts
+```
+
+`0xdbff = ~0x2400`.
+
+This path clears both FC6816 and FC6814 bit `0x2400`, and clears `$0d06`.
+
+In current accepted IACK runs:
+
+```text
+FC6814 240b -> 000b clears naturally.
+FC6816 later becomes e480 at 00bf1a.
+No firmware-side path clears FC6816 0x2400 afterward.
+```
+
+Experimentally clearing FC6816 after the setter is possible but does not advance boot.
+
+### Runtime service set path
+
+Loaded runtime path:
+
+```asm
+00bf0e  jsr     $ffff8eca
+00bf14  move.w  $0e82.w,D0
+00bf18  a000
+00bf1a  ori.w   #$2400,$00fc6816.l
+00bf22  st      $0d06.w
+00bf26  rts
+```
+
+This path is currently more important than older media/FDC lowmem state.
+
+## Older boot/media lowmem fields
+
+These fields were important during earlier boot/media/FDC path analysis. Keep them documented, but do not confuse them with the current dispatcher/service blocker.
 
 ### `$049D`
 
@@ -79,7 +428,7 @@ FB91D4 writes $049D=05 when countdown expires
 
 FDC result/status storage area.
 
-For command 0x46 result interpretation:
+For command `0x46 Read Data` result interpretation:
 
 ```text
 $04C6 high = ST0
@@ -114,5 +463,29 @@ if bit clear -> $04EE=00 -> $049D=05
 if bit set   -> $04EE=01 -> input gate passed
 ```
 
+## Notes on old FDC/media blocker
 
----
+Earlier project focus included raw ASR disk-image recognition and FDC media path.
+
+Those questions are still valid, but they are not the current immediate blocker if the emulator has already reached `LOADING SYSTEM`.
+
+Keep FDC/media facts in:
+
+```text
+fdc.md
+boot-flow.md
+open-questions.md
+```
+
+Current immediate blocker belongs mostly to:
+
+```text
+dispatcher queue/event system
+MC68302 service lifecycle
+FC6884/FC6894 timer/control completion
+lowmem service flags $0d06/$0e82
+```
+
+## Current one-line memory-map takeaway
+
+The current important map is not just the broad MMIO map. It is the relationship between dispatcher lowmem pointers `$00c6/$00c8/$0b6a`, service flags `$0d06/$0e82`, MC68302-like registers `$FC6814/$FC6816/$FC6818`, timer/control candidates `$FC6884/$FC6894`, and the runtime service routine at `00bf1a` that sets `FC6816 |= 0x2400` before the machine returns to dispatcher idle at `f87f9a`.
