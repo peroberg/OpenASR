@@ -96,6 +96,7 @@ private:
 	static constexpr u8 ASR10_EXPERIMENT_68302_LRCLK_CLOCK_MAX_LOGS = 64;
 	static constexpr bool ASR10_EXPERIMENT_FC6814_ACK_PENDING_000B = false;
 	static constexpr bool ASR10_EXPERIMENT_FC6816_CLEAR_SERVICE_2480 = false;
+	static constexpr bool ASR10_EXPERIMENT_FC6816_CLEAR_SERVICE_2400_AFTER_SETTER = false;
 	static constexpr bool ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ = false;
 	static constexpr u8 ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ_LEVEL = 1;
 	static constexpr bool ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR = false;
@@ -247,6 +248,13 @@ private:
 	bool m_fc681x_00bf_code_dump_logged = false;
 	bool m_fc681x_0067_code_dump_logged = false;
 	bool m_fc6816_service_setter_dump_logged = false;
+	bool m_fc6816_service_2400_set_by_runtime = false;
+	bool m_fc6816_service_0d06_set_after_runtime = false;
+	bool m_fc6816_service_2400_clear_experiment_done = false;
+	u32 m_fc6816_service_setter_rte_count = 0;
+	u32 m_fc6816_service_0d06_rte_count = 0;
+	u32 m_fc6816_service_setter_pc = 0xffffffff;
+	u32 m_fc6816_service_0d06_pc = 0xffffffff;
 	u32 m_last_fc68_pc = 0xffffffff;
 	u32 m_last_fc68_address = 0xffffffff;
 	u16 m_last_fc68_data = 0;
@@ -479,6 +487,13 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_fc681x_00bf_code_dump_logged));
 	save_item(NAME(m_fc681x_0067_code_dump_logged));
 	save_item(NAME(m_fc6816_service_setter_dump_logged));
+	save_item(NAME(m_fc6816_service_2400_set_by_runtime));
+	save_item(NAME(m_fc6816_service_0d06_set_after_runtime));
+	save_item(NAME(m_fc6816_service_2400_clear_experiment_done));
+	save_item(NAME(m_fc6816_service_setter_rte_count));
+	save_item(NAME(m_fc6816_service_0d06_rte_count));
+	save_item(NAME(m_fc6816_service_setter_pc));
+	save_item(NAME(m_fc6816_service_0d06_pc));
 	save_item(NAME(m_last_fc68_pc));
 	save_item(NAME(m_last_fc68_address));
 	save_item(NAME(m_last_fc68_data));
@@ -558,6 +573,13 @@ void asr10_boot_state::machine_reset()
 	m_fc681x_00bf_code_dump_logged = false;
 	m_fc681x_0067_code_dump_logged = false;
 	m_fc6816_service_setter_dump_logged = false;
+	m_fc6816_service_2400_set_by_runtime = false;
+	m_fc6816_service_0d06_set_after_runtime = false;
+	m_fc6816_service_2400_clear_experiment_done = false;
+	m_fc6816_service_setter_rte_count = 0;
+	m_fc6816_service_0d06_rte_count = 0;
+	m_fc6816_service_setter_pc = 0xffffffff;
+	m_fc6816_service_0d06_pc = 0xffffffff;
 	m_last_fc68_pc = 0xffffffff;
 	m_last_fc68_address = 0xffffffff;
 	m_last_fc68_data = 0;
@@ -814,6 +836,13 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 
 	const u16 previous = m_lowmem_shadow[offset];
 	COMBINE_DATA(&m_lowmem_shadow[offset]);
+	if (byte_address == 0x0d06 && (m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff) == 0x0000bf22 &&
+		ACCESSING_BITS_8_15 && u8(previous >> 8) == 0x00 && u8(m_lowmem_shadow[offset] >> 8) == 0xff)
+	{
+		m_fc6816_service_0d06_set_after_runtime = true;
+		m_fc6816_service_0d06_rte_count = m_f87f96_queue_rte_count;
+		m_fc6816_service_0d06_pc = 0x0000bf22;
+	}
 	log_lowmem_service_context(true, byte_address, previous, m_lowmem_shadow[offset], data, mem_mask);
 	log_f87f96_queue_write(byte_address, previous, m_lowmem_shadow[offset], data, mem_mask);
 	if (m_fdc_cmd46_result_complete && byte_address >= 0x04c6 && byte_address <= 0x04cc)
@@ -2130,7 +2159,12 @@ void asr10_boot_state::log_fc681x_interrupt_candidate(bool write, u32 address, u
 		m_fc681x_trace_count);
 
 	if (write && address == 0x00fc6816 && (set_bits & 0x2400))
+	{
+		m_fc6816_service_2400_set_by_runtime = true;
+		m_fc6816_service_setter_rte_count = m_f87f96_queue_rte_count;
+		m_fc6816_service_setter_pc = pc;
 		log_fc6816_service_setter_context(pc, data, mem_mask, old_shadow, new_shadow);
+	}
 }
 
 
@@ -2859,6 +2893,40 @@ void asr10_boot_state::log_f87f96_queue_rte(int state)
 				"fc6814=%04x fc6818=%04x\n",
 				pc, fc6816_before, m_m68302_internal_shadow[0x16 >> 1],
 				m_m68302_internal_shadow[0x14 >> 1], fc6818_before);
+		}
+	}
+	if constexpr (ASR10_EXPERIMENT_FC6816_CLEAR_SERVICE_2400_AFTER_SETTER)
+	{
+		const u16 fc6814_now = m_m68302_internal_shadow[0x14 >> 1];
+		const u16 fc6816_now = m_m68302_internal_shadow[0x16 >> 1];
+		if (!m_fc6816_service_2400_clear_experiment_done &&
+			m_fc6816_service_2400_set_by_runtime &&
+			m_fc6816_service_0d06_set_after_runtime &&
+			!(fc6814_now & 0x2400) &&
+			(m_f87f96_queue_rte_count > m_fc6816_service_0d06_rte_count) &&
+			(fc6816_now & 0x2400))
+		{
+			const u16 fc6816_new = fc6816_now & ~u16(0x2400);
+			m_m68302_internal_shadow[0x16 >> 1] = fc6816_new;
+			m_fc6816_service_2400_clear_experiment_done = true;
+			logerror("ASR10_EXPERIMENT_FC6816_CLEAR_SERVICE_2400_AFTER_SETTER pc=%06x previous_pc=%06x "
+				"reason=dispatcher_rte_after_00bf22 old_fc6816=%04x new_fc6816=%04x fc6814=%04x fc6818=%04x "
+				"fc6884=%04x fc6894=%04x lowmem_0d06=%04x lowmem_0e82=%04x "
+				"dispatcher_count=%u rte_count=%u setter_pc=%06x setter_rte_count=%u "
+				"lowmem_0d06_pc=%06x lowmem_0d06_rte_count=%u "
+				"recent_queue_pc=%06x recent_queue_rw=%c recent_queue_addr=%06x recent_queue_record=%06x "
+				"recent_queue_slot=%u recent_queue_previous=%04x recent_queue_current=%04x "
+				"recent_queue_data=%04x recent_queue_mem_mask=%04x recent_queue_handler_clear=%u panel=\"%s\"\n",
+				pc, m_last_distinct_pc, fc6816_now, fc6816_new, fc6814_now, fc6818_before,
+				m_m68302_internal_shadow[0x84 >> 1], m_m68302_internal_shadow[0x94 >> 1],
+				m_lowmem_shadow[0x0d06 >> 1], m_lowmem_shadow[0x0e82 >> 1],
+				m_runtime_dispatch_entry_count, m_f87f96_queue_rte_count,
+				m_fc6816_service_setter_pc, m_fc6816_service_setter_rte_count,
+				m_fc6816_service_0d06_pc, m_fc6816_service_0d06_rte_count,
+				m_recent_queue_pc, m_recent_queue_write ? 'W' : 'R', m_recent_queue_address,
+				m_recent_queue_record_base, m_recent_queue_slot, m_recent_queue_previous,
+				m_recent_queue_current, m_recent_queue_data, m_recent_queue_mem_mask,
+				m_recent_queue_handler_clear ? 1 : 0, m_panel_text);
 		}
 	}
 	const u16 fc6814_after_experiment = m_m68302_internal_shadow[0x14 >> 1];
