@@ -165,7 +165,6 @@ private:
 	emu_timer *m_pc_timer = nullptr;
 	emu_timer *m_prompt_select_timer = nullptr;
 	emu_timer *m_synth_68302_timer_irq_timer = nullptr;
-	emu_timer *m_panel_autorespond_timer = nullptr;
 	std::unique_ptr<u16[]> m_lowmem_shadow;
 	u16 m_probe_or_alias_region_shadow[PROBE_OR_ALIAS_REGION_COUNT][2]{};
 	u16 m_m68302_internal_shadow[0x80]{};
@@ -368,9 +367,6 @@ private:
 	u32 m_panel_l_pending_thrb_pc = 0xffffffffU;
 	u32 m_panel_l_current_thrb_pc = 0xffffffffU;
 	u64 m_panel_l_later_start_cycle = 0;
-	bool m_panel_autorespond_enabled = false;
-	u32 m_panel_autorespond_scheduled_count = 0;
-	u32 m_panel_autorespond_injected_count = 0;
 	bool m_panel_c_parser_trace_enabled = false;
 	bool m_panel_c_parser_trace_active = false;
 	bool m_panel_c_parser_trace_done = false;
@@ -429,7 +425,6 @@ private:
 	TIMER_CALLBACK_MEMBER(pc_poll);
 	TIMER_CALLBACK_MEMBER(prompt_select_poll);
 	TIMER_CALLBACK_MEMBER(synth_68302_timer_irq);
-	TIMER_CALLBACK_MEMBER(panel_autorespond_fire);
 	u8 maincpu_iack_r(u8 level);
 
 	bool probe_or_alias_region_index(u32 address, u32 &index, u32 &word_index) const;
@@ -527,12 +522,9 @@ void asr10_boot_state::machine_start()
 	m_pc_timer = timer_alloc(FUNC(asr10_boot_state::pc_poll), this);
 	m_prompt_select_timer = timer_alloc(FUNC(asr10_boot_state::prompt_select_poll), this);
 	m_synth_68302_timer_irq_timer = timer_alloc(FUNC(asr10_boot_state::synth_68302_timer_irq), this);
-	m_panel_autorespond_timer = timer_alloc(FUNC(asr10_boot_state::panel_autorespond_fire), this);
 	m_lowmem_shadow = make_unique_clear<u16[]>(LOWMEM_WORDS);
 
-	// output_finder in this MAME tree derives from device_resolver_base and
-	// resolves itself automatically (like required_device); there is no
-	// resolve() member to call here.
+	// m_display.resolve();
 	save_item(NAME(m_display_chars));
 	save_item(NAME(m_display_position));
 
@@ -715,9 +707,6 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_panel_l_pending_thrb_pc));
 	save_item(NAME(m_panel_l_current_thrb_pc));
 	save_item(NAME(m_panel_l_later_start_cycle));
-	save_item(NAME(m_panel_autorespond_enabled));
-	save_item(NAME(m_panel_autorespond_scheduled_count));
-	save_item(NAME(m_panel_autorespond_injected_count));
 	save_item(NAME(m_panel_c_parser_trace_enabled));
 	save_item(NAME(m_panel_c_parser_trace_active));
 	save_item(NAME(m_panel_c_parser_trace_done));
@@ -750,10 +739,10 @@ void asr10_boot_state::machine_reset()
 
 	set_display_text("----------------------");
 
-	for (u32 index = 0; index < ASR10_DISPLAY_LENGTH; index++)
-		m_display[index] = 0xffff;
-	clear_display();
-	set_display_text("----------------------");
+	//for (u32 index = 0; index < ASR10_DISPLAY_LENGTH; index++)
+	//	m_display[index] = 0xffff;
+	//clear_display();
+	//set_display_text("----------------------");
 
 	m_seen_loading_system_prompt = false;
 	m_post_loading_panel_write_count = 0;
@@ -831,31 +820,22 @@ void asr10_boot_state::machine_reset()
 	m_panel_b_last_parser_pc = 0xffffffffU;
 	m_panel_b_last_ring_write_byte = 0;
 	m_panel_b_last_ring_write_valid = false;
-	const char *const panel_autorespond = std::getenv("ASR10_DIAG_PANEL_AUTORESPOND");
-	m_panel_autorespond_enabled = panel_autorespond && panel_autorespond[0] && panel_autorespond[0] != '0';
 	const char *const panel_reply_71_zero = std::getenv("ASR10_EXPERIMENT_PANEL_REPLY_71_ZERO");
-	m_panel_c_reply_71_zero_enabled = !m_panel_autorespond_enabled &&
-		panel_reply_71_zero && panel_reply_71_zero[0] && panel_reply_71_zero[0] != '0';
+	m_panel_c_reply_71_zero_enabled = panel_reply_71_zero && panel_reply_71_zero[0] && panel_reply_71_zero[0] != '0';
 	const char *const panel_reply_71_ff = std::getenv("ASR10_EXPERIMENT_PANEL_REPLY_71_FF");
-	m_panel_d1_reply_71_ff_enabled = !m_panel_autorespond_enabled && !m_panel_c_reply_71_zero_enabled &&
+	m_panel_d1_reply_71_ff_enabled = !m_panel_c_reply_71_zero_enabled &&
 		panel_reply_71_ff && panel_reply_71_ff[0] && panel_reply_71_ff[0] != '0';
 	const char *const panel_reply_71_7e_ff = std::getenv("ASR10_EXPERIMENT_PANEL_REPLY_71_7E_FF");
-	m_panel_d2_reply_71_7e_ff_enabled = !m_panel_autorespond_enabled && !m_panel_c_reply_71_zero_enabled &&
-		!m_panel_d1_reply_71_ff_enabled &&
+	m_panel_d2_reply_71_7e_ff_enabled = !m_panel_c_reply_71_zero_enabled && !m_panel_d1_reply_71_ff_enabled &&
 		panel_reply_71_7e_ff && panel_reply_71_7e_ff[0] && panel_reply_71_7e_ff[0] != '0';
 	const char *const panel_ff_drain_known_ring = std::getenv("ASR10_EXPERIMENT_PANEL_FF_DRAIN_KNOWN_RING");
-	m_panel_e_ff_drain_known_ring_enabled = !m_panel_autorespond_enabled && !m_panel_c_reply_71_zero_enabled &&
-		!m_panel_d1_reply_71_ff_enabled &&
+	m_panel_e_ff_drain_known_ring_enabled = !m_panel_c_reply_71_zero_enabled && !m_panel_d1_reply_71_ff_enabled &&
 		!m_panel_d2_reply_71_7e_ff_enabled && panel_ff_drain_known_ring &&
 		panel_ff_drain_known_ring[0] && panel_ff_drain_known_ring[0] != '0';
 	const char *const panel_ff_drain_later_rings = std::getenv("ASR10_EXPERIMENT_PANEL_FF_DRAIN_LATER_RINGS");
-	m_panel_l_ff_drain_later_rings_enabled = !m_panel_autorespond_enabled && !m_panel_c_reply_71_zero_enabled &&
-		!m_panel_d1_reply_71_ff_enabled &&
+	m_panel_l_ff_drain_later_rings_enabled = !m_panel_c_reply_71_zero_enabled && !m_panel_d1_reply_71_ff_enabled &&
 		!m_panel_d2_reply_71_7e_ff_enabled && !m_panel_e_ff_drain_known_ring_enabled &&
 		panel_ff_drain_later_rings && panel_ff_drain_later_rings[0] && panel_ff_drain_later_rings[0] != '0';
-	m_panel_autorespond_scheduled_count = 0;
-	m_panel_autorespond_injected_count = 0;
-	m_panel_autorespond_timer->adjust(attotime::never);
 	const char *const panel_c_parser_trace = std::getenv("ASR10_DIAG_PANEL_C_PARSER_TRACE");
 	m_panel_c_parser_trace_enabled = m_panel_d1_reply_71_ff_enabled || m_panel_d2_reply_71_7e_ff_enabled ||
 		m_panel_e_ff_drain_known_ring_enabled || m_panel_l_ff_drain_later_rings_enabled ||
@@ -1321,8 +1301,8 @@ void asr10_boot_state::log_panel_b_thrb(u32 pc, u8 data)
 	if (machine().side_effects_disabled())
 		return;
 
-	const char *source = (pc == 0x00f89cb0) ? "f89cb0" :
-		(pc == 0x00f89aa4) ? "f89aa4" : "other";
+	const char *source = (pc == 0x00f89cb0) ? "early_polled_f89cb0" :
+		(pc >= 0x00f89a9a && pc <= 0x00f89ab6) ? "ring_send_f89a9a" : "unknown";
 	logerror("ASR10_DIAG_PANEL_B event=PANEL_THRB seq=%llu pc=%06x previous_pc=%06x source=%s "
 		"byte=%02x ascii='%c' count_03bc=%02x write_ptr_03b8=%04x read_ptr_03ba=%04x "
 		"idle_03c5=%02x parser_state_03c0=%04x\n",
@@ -1436,8 +1416,7 @@ void asr10_boot_state::panel_c_parser_trace_stop(const char *reason, u32 pc)
 
 bool asr10_boot_state::panel_reply_experiment_enabled() const
 {
-	return m_panel_autorespond_enabled ||
-		m_panel_c_reply_71_zero_enabled || m_panel_d1_reply_71_ff_enabled ||
+	return m_panel_c_reply_71_zero_enabled || m_panel_d1_reply_71_ff_enabled ||
 		m_panel_d2_reply_71_7e_ff_enabled || m_panel_e_ff_drain_known_ring_enabled ||
 		m_panel_l_ff_drain_later_rings_enabled;
 }
@@ -1445,8 +1424,7 @@ bool asr10_boot_state::panel_reply_experiment_enabled() const
 
 const char *asr10_boot_state::panel_reply_experiment_name() const
 {
-	return m_panel_autorespond_enabled ? "ASR10_DIAG_PANEL_AUTORESPOND" :
-		m_panel_l_ff_drain_later_rings_enabled ? "ASR10_EXPERIMENT_PANEL_FF_DRAIN_LATER_RINGS" :
+	return m_panel_l_ff_drain_later_rings_enabled ? "ASR10_EXPERIMENT_PANEL_FF_DRAIN_LATER_RINGS" :
 		m_panel_e_ff_drain_known_ring_enabled ? "ASR10_EXPERIMENT_PANEL_FF_DRAIN_KNOWN_RING" :
 		m_panel_d2_reply_71_7e_ff_enabled ? "ASR10_EXPERIMENT_PANEL_REPLY_71_7E_FF" :
 		m_panel_d1_reply_71_ff_enabled ? "ASR10_EXPERIMENT_PANEL_REPLY_71_FF" :
@@ -1502,24 +1480,6 @@ void asr10_boot_state::panel_c_queue_rx(u8 data, const char *reason, u32 pc)
 		lowmem_word(0x23d6), lowmem_word(0x23e4), lowmem_word(0x23e6), lowmem_word(0x14f6),
 		lowmem_byte(0x03bc));
 	panel_c_update_irq6("rx_queued", pc);
-}
-
-
-TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_autorespond_fire)
-{
-	if (!m_panel_autorespond_enabled)
-		return;
-
-	const u32 write_pc = u32(param);
-	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-	m_panel_autorespond_injected_count++;
-	logerror("ASR10_DIAG_PANEL_AUTORESPOND event=inject_response seq=%u write_pc=%06x pc=%06x byte=ff "
-		"count_03bc=%02x idle_03c5=%02x rx_valid_before=%u slot0_state=%04x "
-		"slot0_queue_head=%04x slot0_queue_tail=%04x node_14f4_type=%04x\n",
-		m_panel_autorespond_injected_count, write_pc, pc, lowmem_byte(0x03bc), lowmem_byte(0x03c5),
-		m_panel_c_rx_valid ? 1 : 0, lowmem_word(0x23d6), lowmem_word(0x23e4),
-		lowmem_word(0x23e6), lowmem_word(0x14f6));
-	panel_c_queue_rx(0xff, "autorespond_fc4817_write", write_pc);
 }
 
 
@@ -2076,14 +2036,6 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 						panel_c_queue_rx(0xff, "thrb_7e_after_count_0d_ff", pc);
 					}
 				}
-			}
-			if (byte_address == 0x03c4 && ACCESSING_BITS_0_7 && pc == 0x00f89ace)
-			{
-				logerror("ASR10_DIAG_PANEL_B event=PANEL_F89ACE_CLEAR pc=%06x previous_03c5=%02x "
-					"current_03c5=%02x count_03bc=%02x parser_state_03c0=%04x slot0_state=%04x "
-					"slot0_queue_head=%04x slot0_queue_tail=%04x node_14f4_type=%04x\n",
-					pc, u8(previous), lowmem_byte(0x03c5), lowmem_byte(0x03bc), lowmem_word(0x03c0),
-					lowmem_word(0x23d6), lowmem_word(0x23e4), lowmem_word(0x23e6), lowmem_word(0x14f6));
 			}
 			if (m_panel_l_ff_drain_later_rings_enabled && byte_address == 0x03c4 &&
 				ACCESSING_BITS_0_7 && pc == 0x00f89ace && m_panel_l_final_idle_probe_waiting)
@@ -2823,17 +2775,6 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 	{
 		const u8 character = u8(data);
 		log_panel_b_thrb(pc, character);
-		if (m_panel_autorespond_enabled && !machine().side_effects_disabled())
-		{
-			const char *const thrb_source = (pc == 0x00f89cb0) ? "f89cb0" :
-				(pc == 0x00f89aa4) ? "f89aa4" : "other";
-			m_panel_autorespond_scheduled_count++;
-			logerror("ASR10_DIAG_PANEL_AUTORESPOND event=schedule_response seq=%u pc=%06x source=%s "
-				"byte=%02x count_03bc=%02x idle_03c5=%02x\n",
-				m_panel_autorespond_scheduled_count, pc, thrb_source, character,
-				lowmem_byte(0x03bc), lowmem_byte(0x03c5));
-			m_panel_autorespond_timer->adjust(attotime::from_ticks(4, m_maincpu->clock()), s32(pc));
-		}
 		if (m_panel_e_ff_drain_known_ring_enabled && !machine().side_effects_disabled() &&
 			pc == 0x00f89aa4)
 			panel_e_observe_thrb(pc, character);
@@ -2900,7 +2841,7 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 
 void asr10_boot_state::panel_text_byte(u8 data, u32 pc)
 {
-	if (data < 0x20 || data > 0x7e)
+	if (pc != 0x00f89cb0 || data < 0x20 || data > 0x7e)
 	{
 		flush_panel_text();
 		return;
