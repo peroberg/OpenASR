@@ -166,6 +166,8 @@ private:
 	emu_timer *m_prompt_select_timer = nullptr;
 	emu_timer *m_synth_68302_timer_irq_timer = nullptr;
 	emu_timer *m_panel_autorespond_timer = nullptr;
+	emu_timer *m_duart_counter_timer = nullptr;
+	memory_passthrough_handler m_duart_counter_boundary_tap;
 	std::unique_ptr<u16[]> m_lowmem_shadow;
 	u16 m_probe_or_alias_region_shadow[PROBE_OR_ALIAS_REGION_COUNT][2]{};
 	u16 m_m68302_internal_shadow[0x80]{};
@@ -382,6 +384,14 @@ private:
 	u8 m_fdc_os_cmd_len = 0;
 	std::array<u8, 9> m_fdc_os_cmd_bytes{};
 	u32 m_fdc_os_cmd_pc = 0;
+	bool m_duart_counter_timer_enabled = false;
+	bool m_duart_counter_running = false;
+	u8 m_duart_ctu_preload = 0;
+	u8 m_duart_ctl_preload = 0;
+	u32 m_duart_counter_start_count = 0;
+	u32 m_duart_counter_fire_count = 0;
+	u32 m_duart_counter_stop_count = 0;
+	u8 m_duart_acr = 0;
 	bool m_panel_c_parser_trace_enabled = false;
 	bool m_panel_c_parser_trace_active = false;
 	bool m_panel_c_parser_trace_done = false;
@@ -441,6 +451,7 @@ private:
 	TIMER_CALLBACK_MEMBER(prompt_select_poll);
 	TIMER_CALLBACK_MEMBER(synth_68302_timer_irq);
 	TIMER_CALLBACK_MEMBER(panel_autorespond_fire);
+	TIMER_CALLBACK_MEMBER(duart_counter_terminal_count);
 	u8 maincpu_iack_r(u8 level);
 
 	bool probe_or_alias_region_index(u32 address, u32 &index, u32 &word_index) const;
@@ -488,6 +499,11 @@ private:
 	void log_lowmem_049d(bool write, u16 previous, u16 current, u16 mem_mask);
 	void log_pc_summary(const char *reason, u32 pc);
 	void log_watched_pc(u32 pc);
+	void log_duart_counter_watched_pc(u32 pc);
+	void duart_counter_start(u32 pc);
+	void duart_counter_stop(u32 pc);
+	void duart_counter_arm_periodic(u32 pc, const char *event);
+	void duart_counter_check_implicit_start(u32 pc);
 	u8 lowmem_byte(u32 address) const;
 	u16 lowmem_word(u32 address) const;
 	u32 lowmem_long(u32 address) const;
@@ -512,6 +528,7 @@ private:
 	void panel_l_log_temporal(const char *event, u32 pc, u32 byte_address = 0xffffffffU,
 		u16 previous = 0, u16 current = 0);
 	bool panel_reply_experiment_enabled() const;
+	bool duart_irq_model_enabled() const;
 	const char *panel_reply_experiment_name() const;
 	u32 read_stack_long(u32 address);
 	u16 read_program_word(u32 address);
@@ -539,6 +556,23 @@ void asr10_boot_state::machine_start()
 	m_prompt_select_timer = timer_alloc(FUNC(asr10_boot_state::prompt_select_poll), this);
 	m_synth_68302_timer_irq_timer = timer_alloc(FUNC(asr10_boot_state::synth_68302_timer_irq), this);
 	m_panel_autorespond_timer = timer_alloc(FUNC(asr10_boot_state::panel_autorespond_fire), this);
+	m_duart_counter_timer = timer_alloc(FUNC(asr10_boot_state::duart_counter_terminal_count), this);
+	// Temporary diagnostic: the address immediately past the mapped DUART
+	// block (0xfc4820) is backed by plain .ram() with no logging. Tap it
+	// read-only (no data/behavior change) so a START/STOP command issued
+	// one word beyond our assumed mapping is still observable.
+	m_duart_counter_boundary_tap = m_maincpu->space(AS_PROGRAM).install_read_tap(
+		0x00fc4820, 0x00fc4821, "duart_counter_boundary_tap",
+		[this] (offs_t offset, u16 &data, u16 mem_mask)
+		{
+			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+				return;
+			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+			logerror("ASR10_DUART_COUNTER event=raw_read pc=%06x address=%06x offset=%04x "
+				"mem_mask=%04x accessing_bits_0_7=%u accessing_bits_8_15=%u note=boundary_ram_region\n",
+				pc, 0x00fc4820 + offset * 2, offset, mem_mask,
+				ACCESSING_BITS_0_7 ? 1 : 0, ACCESSING_BITS_8_15 ? 1 : 0);
+		});
 	m_lowmem_shadow = make_unique_clear<u16[]>(LOWMEM_WORDS);
 
 	// output_finder in this MAME tree derives from device_resolver_base and
@@ -740,6 +774,14 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_fdc_os_cmd_len));
 	save_item(NAME(m_fdc_os_cmd_bytes));
 	save_item(NAME(m_fdc_os_cmd_pc));
+	save_item(NAME(m_duart_counter_timer_enabled));
+	save_item(NAME(m_duart_counter_running));
+	save_item(NAME(m_duart_ctu_preload));
+	save_item(NAME(m_duart_ctl_preload));
+	save_item(NAME(m_duart_counter_start_count));
+	save_item(NAME(m_duart_counter_fire_count));
+	save_item(NAME(m_duart_counter_stop_count));
+	save_item(NAME(m_duart_acr));
 	save_item(NAME(m_panel_c_parser_trace_enabled));
 	save_item(NAME(m_panel_c_parser_trace_active));
 	save_item(NAME(m_panel_c_parser_trace_done));
@@ -889,6 +931,16 @@ void asr10_boot_state::machine_reset()
 	m_fdc_os_cmd_len = 0;
 	m_fdc_os_cmd_bytes.fill(0);
 	m_fdc_os_cmd_pc = 0;
+	const char *const duart_counter_timer = std::getenv("ASR10_EXPERIMENT_DUART_COUNTER_TIMER");
+	m_duart_counter_timer_enabled = duart_counter_timer && duart_counter_timer[0] && duart_counter_timer[0] != '0';
+	m_duart_counter_running = false;
+	m_duart_ctu_preload = 0;
+	m_duart_ctl_preload = 0;
+	m_duart_counter_start_count = 0;
+	m_duart_counter_fire_count = 0;
+	m_duart_counter_stop_count = 0;
+	m_duart_acr = 0;
+	m_duart_counter_timer->adjust(attotime::never);
 	const char *const panel_c_parser_trace = std::getenv("ASR10_DIAG_PANEL_C_PARSER_TRACE");
 	m_panel_c_parser_trace_enabled = m_panel_d1_reply_71_ff_enabled || m_panel_d2_reply_71_7e_ff_enabled ||
 		m_panel_e_ff_drain_known_ring_enabled || m_panel_l_ff_drain_later_rings_enabled ||
@@ -1200,13 +1252,15 @@ u8 asr10_boot_state::maincpu_iack_r(u8 level)
 			custom_vector = true;
 		}
 	}
-	if (panel_reply_experiment_enabled() && level == 6 && m_panel_c_irq6_asserted)
+	if (duart_irq_model_enabled() && level == 6 && m_panel_c_irq6_asserted)
 	{
 		vector = 0x56;
 		custom_vector = true;
 		logerror("%s event=iack level=6 vector=%02x "
-			"pc=%06x sr=%04x isr=%02x imr=%02x active=%02x rx_valid=%u rx_byte=%02x\n",
+			"pc=%06x sr=%04x isr=%02x imr=%02x active=%02x rx_active=%02x counter_active=%02x "
+			"rx_valid=%u rx_byte=%02x\n",
 			panel_reply_experiment_name(), vector, pc, sr, m_panel_c_isr, m_panel_c_imr, m_panel_c_isr & m_panel_c_imr,
+			m_panel_c_isr & m_panel_c_imr & 0x20, m_panel_c_isr & m_panel_c_imr & 0x08,
 			m_panel_c_rx_valid ? 1 : 0, m_panel_c_rx_byte);
 	}
 
@@ -1483,21 +1537,38 @@ const char *asr10_boot_state::panel_reply_experiment_name() const
 		m_panel_e_ff_drain_known_ring_enabled ? "ASR10_EXPERIMENT_PANEL_FF_DRAIN_KNOWN_RING" :
 		m_panel_d2_reply_71_7e_ff_enabled ? "ASR10_EXPERIMENT_PANEL_REPLY_71_7E_FF" :
 		m_panel_d1_reply_71_ff_enabled ? "ASR10_EXPERIMENT_PANEL_REPLY_71_FF" :
+		m_duart_counter_timer_enabled ? "ASR10_EXPERIMENT_DUART_COUNTER_TIMER" :
 		"ASR10_EXPERIMENT_PANEL_REPLY_71_ZERO";
+}
+
+
+bool asr10_boot_state::duart_irq_model_enabled() const
+{
+	// Counter/timer is not a panel-reply experiment; it only needs the same
+	// proven ISR/IMR-driven IRQ6 + IACK routing. Kept narrow and used only
+	// in IRQ routing/IACK paths so existing panel RX behavior is unchanged
+	// bit-for-bit when only ASR10_EXPERIMENT_DUART_COUNTER_TIMER is set.
+	return panel_reply_experiment_enabled() || m_duart_counter_timer_enabled;
 }
 
 
 void asr10_boot_state::panel_c_update_irq6(const char *reason, u32 pc)
 {
-	if (!panel_reply_experiment_enabled() || machine().side_effects_disabled())
+	if (!duart_irq_model_enabled() || machine().side_effects_disabled())
 		return;
 
-	const bool active = (m_panel_c_isr & m_panel_c_imr & 0x20) != 0;
+	// 0x20 = RxRDYB (proven panel-reply path); 0x08 = counter/timer ready
+	// (ASR10_EXPERIMENT_DUART_COUNTER_TIMER). Bit 0x08 is only ever set by
+	// that experiment, so this widened mask is a no-op when it is disabled.
+	const u8 rx_active = m_panel_c_isr & m_panel_c_imr & 0x20;
+	const u8 counter_active = m_panel_c_isr & m_panel_c_imr & 0x08;
+	const bool active = (rx_active | counter_active) != 0;
 	if (active == m_panel_c_irq6_asserted)
 	{
 		logerror("%s event=irq6_route_no_change reason=%s pc=%06x "
-			"isr=%02x imr=%02x active=%02x irq6=%u rx_valid=%u rx_byte=%02x\n",
+			"isr=%02x imr=%02x active=%02x rx_active=%02x counter_active=%02x irq6=%u rx_valid=%u rx_byte=%02x\n",
 			panel_reply_experiment_name(), reason, pc, m_panel_c_isr, m_panel_c_imr, m_panel_c_isr & m_panel_c_imr,
+			rx_active, counter_active,
 			m_panel_c_irq6_asserted ? 1 : 0, m_panel_c_rx_valid ? 1 : 0, m_panel_c_rx_byte);
 		return;
 	}
@@ -1505,8 +1576,9 @@ void asr10_boot_state::panel_c_update_irq6(const char *reason, u32 pc)
 	m_panel_c_irq6_asserted = active;
 	m_maincpu->set_input_line(6, active ? ASSERT_LINE : CLEAR_LINE);
 	logerror("%s event=irq6_route reason=%s pc=%06x "
-		"isr=%02x imr=%02x active=%02x irq6=%u rx_valid=%u rx_byte=%02x sr=%04x\n",
+		"isr=%02x imr=%02x active=%02x rx_active=%02x counter_active=%02x irq6=%u rx_valid=%u rx_byte=%02x sr=%04x\n",
 		panel_reply_experiment_name(), reason, pc, m_panel_c_isr, m_panel_c_imr, m_panel_c_isr & m_panel_c_imr,
+		rx_active, counter_active,
 		m_panel_c_irq6_asserted ? 1 : 0, m_panel_c_rx_valid ? 1 : 0, m_panel_c_rx_byte,
 		u16(m_maincpu->state_int(M68K_SR)));
 }
@@ -1553,6 +1625,123 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_autorespond_fire)
 		m_panel_c_rx_valid ? 1 : 0, lowmem_word(0x23d6), lowmem_word(0x23e4),
 		lowmem_word(0x23e6), lowmem_word(0x14f6));
 	panel_c_queue_rx(0xff, "autorespond_fc4817_write", write_pc);
+}
+
+
+void asr10_boot_state::log_duart_counter_watched_pc(u32 pc)
+{
+	if (!m_duart_counter_timer_enabled)
+		return;
+
+	const char *role = nullptr;
+	switch (pc)
+	{
+	case 0x00f87ed2: role = "scheduler_core_f87ed2"; break;
+	case 0x00f87eda: role = "scheduler_core_f87eda"; break;
+	case 0x00f88300: role = "bit3_handler_entry_f88300"; break;
+	case 0x00f88302: role = "bit3_handler_body_f88302"; break;
+	case 0x00f8e1ee: role = "f8e2xx_user_f8e1ee"; break;
+	case 0x00f8e1f6: role = "f8e2xx_user_f8e1f6"; break;
+	case 0x00f97bd6: role = "f97bxx_user_f97bd6"; break;
+	case 0x00f97bde: role = "f97bxx_user_f97bde"; break;
+	default:
+		return;
+	}
+	logerror("ASR10_DUART_COUNTER event=watched_pc pc=%06x role=%s\n", pc, role);
+}
+
+
+void asr10_boot_state::duart_counter_arm_periodic(u32 pc, const char *event)
+{
+	// Provisional/uncalibrated: the board has no 3.6864 MHz crystal (Y1=16MHz,
+	// Y2=30.476MHz, Y3=33.8688MHz), so the DUART X1 rate is unknown and likely
+	// derived. Period accuracy is not the point of this experiment -- only
+	// whether ISR bit 3 delivery unlocks progress. Documented SCC2681 timer
+	// period is 2*N/X1; N = CTUR:CTLR.
+	constexpr double PROVISIONAL_X1_HZ = 3686400.0;
+	const u16 preload = u16((u16(m_duart_ctu_preload) << 8) | m_duart_ctl_preload);
+	const u32 n = preload ? preload : 1;
+	const double period_seconds = (2.0 * double(n)) / PROVISIONAL_X1_HZ;
+	const attotime period = attotime::from_double(period_seconds);
+	const bool imr_bit3 = BIT(m_panel_c_imr, 3);
+	m_duart_counter_running = true;
+	m_duart_counter_timer->adjust(period, 0, period);
+	logerror("ASR10_DUART_COUNTER event=%s pc=%06x preload=%04x acr=%02x timer_mode=%u "
+		"period_seconds=%f imr=%02x imr_bit3=%u model=provisional_x1_3686400hz_period_2n_over_x1\n",
+		event, pc, preload, m_duart_acr, (m_duart_acr & 0x70) == 0x60 ? 1 : 0,
+		period_seconds, m_panel_c_imr, imr_bit3 ? 1 : 0);
+	if (!imr_bit3)
+		logerror("ASR10_DUART_COUNTER event=START_WHILE_MASKED pc=%06x imr=%02x\n", pc, m_panel_c_imr);
+}
+
+
+void asr10_boot_state::duart_counter_check_implicit_start(u32 pc)
+{
+	// AN414-style interpretation: under this experiment only, treat the
+	// SCN2681 timer as already free-running once ACR selects TIMER mode
+	// (ACR[6:4]==0b110, X1 clock) and a nonzero CTUR:CTLR preload exists.
+	// This is a modeling choice, not an observed firmware START read --
+	// always logged as implicit_scn2681_timer_start, never as event=START.
+	if (!m_duart_counter_timer_enabled || machine().side_effects_disabled() || m_duart_counter_running)
+		return;
+	if ((m_duart_acr & 0x70) != 0x60)
+		return;
+	const u16 preload = u16((u16(m_duart_ctu_preload) << 8) | m_duart_ctl_preload);
+	if (preload == 0)
+		return;
+	duart_counter_arm_periodic(pc, "implicit_scn2681_timer_start");
+}
+
+
+void asr10_boot_state::duart_counter_start(u32 pc)
+{
+	if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+		return;
+
+	// Explicit physical START read (FC481D): reload/resynchronize the
+	// current cycle. Reuses the same periodic m_duart_counter_timer --
+	// never allocates a second one, whether or not it was already running
+	// (e.g. via the implicit reset-running model above).
+	m_duart_counter_start_count++;
+	duart_counter_arm_periodic(pc, "START");
+}
+
+
+void asr10_boot_state::duart_counter_stop(u32 pc)
+{
+	if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+		return;
+
+	// Explicit physical STOP read (FC481F): acknowledges/clears ISR bit 3
+	// and re-evaluates IRQ6. Per the corrected TIMER-mode model, this does
+	// NOT cancel or suspend the periodic timer -- in TIMER mode the C/T
+	// free-runs; STOP only silences the pending interrupt.
+	m_duart_counter_stop_count++;
+	const u8 previous_isr = m_panel_c_isr;
+	m_panel_c_isr &= ~0x08;
+	logerror("ASR10_DUART_COUNTER event=STOP pc=%06x running=%u previous_isr=%02x current_isr=%02x "
+		"stop_count=%u\n",
+		pc, m_duart_counter_running ? 1 : 0, previous_isr, m_panel_c_isr, m_duart_counter_stop_count);
+	panel_c_update_irq6("duart_counter_stop", pc);
+}
+
+
+TIMER_CALLBACK_MEMBER(asr10_boot_state::duart_counter_terminal_count)
+{
+	if (!m_duart_counter_timer_enabled || !m_duart_counter_running)
+		return;
+
+	m_duart_counter_fire_count++;
+	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+	m_panel_c_isr |= 0x08; // bit 3 only; bit 5 (RxRDYB) is preserved untouched
+	const bool verbose = m_duart_counter_fire_count <= 5 || (m_duart_counter_fire_count % 100) == 0;
+	if (verbose)
+		logerror("ASR10_DUART_COUNTER event=terminal_count pc=%06x isr=%02x imr=%02x active=%02x "
+			"rx_active=%02x counter_active=%02x fire_count=%u\n",
+			pc, m_panel_c_isr, m_panel_c_imr, m_panel_c_isr & m_panel_c_imr,
+			m_panel_c_isr & m_panel_c_imr & 0x20, m_panel_c_isr & m_panel_c_imr & 0x08,
+			m_duart_counter_fire_count);
+	panel_c_update_irq6("duart_counter_terminal_count", pc);
 }
 
 
@@ -2804,6 +2993,21 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 	log_cpu_context(pc);
 
+	if (m_duart_counter_timer_enabled && !machine().side_effects_disabled() &&
+		address >= 0x00fc4818 && address <= 0x00fc481e)
+	{
+		logerror("ASR10_DUART_COUNTER event=raw_read pc=%06x address=%06x offset=%04x mem_mask=%04x "
+			"accessing_bits_0_7=%u accessing_bits_8_15=%u\n",
+			pc, address, offset, mem_mask, ACCESSING_BITS_0_7 ? 1 : 0, ACCESSING_BITS_8_15 ? 1 : 0);
+	}
+	if (m_duart_counter_timer_enabled && !machine().side_effects_disabled() && ACCESSING_BITS_0_7)
+	{
+		if (address == 0x00fc481c)
+			duart_counter_start(pc);
+		else if (address == 0x00fc481e)
+			duart_counter_stop(pc);
+	}
+
 	// Channel B carries panel traffic on VFX-SD/SD-1 and TS-10. The ASR ROM
 	// writes the channel-B TX buffer at +0x17, then polls bit 0 at +0x13.
 	// Report receive-ready to expose the next boot dependency in the default harness.
@@ -2811,11 +3015,17 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 		m_duart_panel_asr_shadow[word] = 0x0001;
 
 	u16 raw_data = (address == 0x00fc4816) ? 0 : m_duart_panel_asr_shadow[word];
+	// ISR visibility is shared IRQ-routing state (RxRDYB and/or counter-ready),
+	// so it uses the broader duart_irq_model_enabled() gate. SRB/RHRB below
+	// stay on panel_reply_experiment_enabled() only: RX byte delivery is
+	// unrelated to the counter/timer experiment and must not change when it
+	// alone is enabled.
+	if (duart_irq_model_enabled() && ACCESSING_BITS_0_7 && address == 0x00fc480a &&
+		(m_panel_c_rx_valid || m_panel_c_isr))
+		raw_data = m_panel_c_isr;
 	if (panel_reply_experiment_enabled() && ACCESSING_BITS_0_7)
 	{
-		if (address == 0x00fc480a && (m_panel_c_rx_valid || m_panel_c_isr))
-			raw_data = m_panel_c_isr;
-		else if (address == 0x00fc4812 && m_panel_c_rx_valid)
+		if (address == 0x00fc4812 && m_panel_c_rx_valid)
 			raw_data = m_panel_c_srb;
 		else if (address == 0x00fc4816)
 			raw_data = m_panel_c_rx_valid ? m_panel_c_rx_byte : 0;
@@ -2923,16 +3133,41 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 	const u32 address = (0x00fc4800 | (offset << 1)) | (ACCESSING_BITS_0_7 ? 1 : 0);
 	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 	log_cpu_context(pc);
-	if (panel_reply_experiment_enabled() && address == 0x00fc480b && ACCESSING_BITS_0_7 &&
+	if (duart_irq_model_enabled() && address == 0x00fc480b && ACCESSING_BITS_0_7 &&
 		!machine().side_effects_disabled())
 	{
 		const u8 previous_imr = m_panel_c_imr;
 		m_panel_c_imr = u8(data);
 		logerror("%s event=imr_write pc=%06x previous_imr=%02x "
-			"new_imr=%02x isr=%02x active=%02x rx_valid=%u\n",
+			"new_imr=%02x isr=%02x active=%02x rx_active=%02x counter_active=%02x rx_valid=%u\n",
 			panel_reply_experiment_name(), pc, previous_imr, m_panel_c_imr, m_panel_c_isr, m_panel_c_isr & m_panel_c_imr,
+			m_panel_c_isr & m_panel_c_imr & 0x20, m_panel_c_isr & m_panel_c_imr & 0x08,
 			m_panel_c_rx_valid ? 1 : 0);
 		panel_c_update_irq6("imr_write", pc);
+	}
+	if (m_duart_counter_timer_enabled && !machine().side_effects_disabled() && ACCESSING_BITS_0_7)
+	{
+		if (address == 0x00fc4809)
+		{
+			m_duart_acr = u8(data);
+			logerror("ASR10_DUART_COUNTER event=acr_write pc=%06x value=%02x timer_mode=%u\n",
+				pc, m_duart_acr, (m_duart_acr & 0x70) == 0x60 ? 1 : 0);
+			duart_counter_check_implicit_start(pc);
+		}
+		else if (address == 0x00fc480d)
+		{
+			m_duart_ctu_preload = u8(data);
+			logerror("ASR10_DUART_COUNTER event=preload_ctu pc=%06x value=%02x combined_preload=%04x\n",
+				pc, m_duart_ctu_preload, u16((u16(m_duart_ctu_preload) << 8) | m_duart_ctl_preload));
+			duart_counter_check_implicit_start(pc);
+		}
+		else if (address == 0x00fc480f)
+		{
+			m_duart_ctl_preload = u8(data);
+			logerror("ASR10_DUART_COUNTER event=preload_ctl pc=%06x value=%02x combined_preload=%04x\n",
+				pc, m_duart_ctl_preload, u16((u16(m_duart_ctu_preload) << 8) | m_duart_ctl_preload));
+			duart_counter_check_implicit_start(pc);
+		}
 	}
 	if (address == 0x00fc4817 && ACCESSING_BITS_0_7)
 	{
@@ -5985,6 +6220,7 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::pc_poll)
 		else if (m_pc_change_count == 257)
 			logerror("ASR10PC further transitions suppressed; final loop summary remains enabled\n");
 		log_watched_pc(pc);
+		log_duart_counter_watched_pc(pc);
 		m_last_pc = pc;
 	}
 	else
