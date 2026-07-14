@@ -371,6 +371,17 @@ private:
 	bool m_panel_autorespond_enabled = false;
 	u32 m_panel_autorespond_scheduled_count = 0;
 	u32 m_panel_autorespond_injected_count = 0;
+	u32 m_gen_counter = 0;
+	std::array<u8, 128> m_gen_thrb_bytes{};
+	u8 m_gen_thrb_count = 0;
+	bool m_node_89a2_logged = false;
+	bool m_slot0_0202_logged = false;
+	bool m_fdc_os_cmd_active = false;
+	u8 m_fdc_os_cmd_opcode = 0;
+	u8 m_fdc_os_cmd_expected_len = 0;
+	u8 m_fdc_os_cmd_len = 0;
+	std::array<u8, 9> m_fdc_os_cmd_bytes{};
+	u32 m_fdc_os_cmd_pc = 0;
 	bool m_panel_c_parser_trace_enabled = false;
 	bool m_panel_c_parser_trace_active = false;
 	bool m_panel_c_parser_trace_done = false;
@@ -718,6 +729,17 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_panel_autorespond_enabled));
 	save_item(NAME(m_panel_autorespond_scheduled_count));
 	save_item(NAME(m_panel_autorespond_injected_count));
+	save_item(NAME(m_gen_counter));
+	save_item(NAME(m_gen_thrb_bytes));
+	save_item(NAME(m_gen_thrb_count));
+	save_item(NAME(m_node_89a2_logged));
+	save_item(NAME(m_slot0_0202_logged));
+	save_item(NAME(m_fdc_os_cmd_active));
+	save_item(NAME(m_fdc_os_cmd_opcode));
+	save_item(NAME(m_fdc_os_cmd_expected_len));
+	save_item(NAME(m_fdc_os_cmd_len));
+	save_item(NAME(m_fdc_os_cmd_bytes));
+	save_item(NAME(m_fdc_os_cmd_pc));
 	save_item(NAME(m_panel_c_parser_trace_enabled));
 	save_item(NAME(m_panel_c_parser_trace_active));
 	save_item(NAME(m_panel_c_parser_trace_done));
@@ -856,6 +878,17 @@ void asr10_boot_state::machine_reset()
 	m_panel_autorespond_scheduled_count = 0;
 	m_panel_autorespond_injected_count = 0;
 	m_panel_autorespond_timer->adjust(attotime::never);
+	m_gen_counter = 0;
+	m_gen_thrb_bytes.fill(0);
+	m_gen_thrb_count = 0;
+	m_node_89a2_logged = false;
+	m_slot0_0202_logged = false;
+	m_fdc_os_cmd_active = false;
+	m_fdc_os_cmd_opcode = 0;
+	m_fdc_os_cmd_expected_len = 0;
+	m_fdc_os_cmd_len = 0;
+	m_fdc_os_cmd_bytes.fill(0);
+	m_fdc_os_cmd_pc = 0;
 	const char *const panel_c_parser_trace = std::getenv("ASR10_DIAG_PANEL_C_PARSER_TRACE");
 	m_panel_c_parser_trace_enabled = m_panel_d1_reply_71_ff_enabled || m_panel_d2_reply_71_7e_ff_enabled ||
 		m_panel_e_ff_drain_known_ring_enabled || m_panel_l_ff_drain_later_rings_enabled ||
@@ -1994,6 +2027,20 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 		if (!machine().side_effects_disabled())
 		{
 			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+			if (!m_node_89a2_logged && mem_mask == 0xffff && m_lowmem_shadow[offset] == 0x89a2)
+			{
+				m_node_89a2_logged = true;
+				logerror("ASR10_NODE_89A2_FIRST event=node_type_write pc=%06x "
+					"node_plus02_address=%06x node_base_guess=%06x type=89a2\n",
+					pc, byte_address, byte_address >= 2 ? byte_address - 2 : 0);
+			}
+			if (!m_slot0_0202_logged && byte_address == 0x23d6 && m_lowmem_shadow[offset] == 0x0202)
+			{
+				m_slot0_0202_logged = true;
+				logerror("ASR10_SLOT0_0202_FIRST event=state_write pc=%06x slot0_state=0202 "
+					"head=%04x tail=%04x\n",
+					pc, lowmem_word(0x23e4), lowmem_word(0x23e6));
+			}
 			if (pc == 0x00f89a7a && byte_address <= 0x03b7 && byte_address + 1 >= 0x0378)
 			{
 				if (ACCESSING_BITS_8_15 && byte_address >= 0x0378 && byte_address <= 0x03b7)
@@ -2113,6 +2160,23 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 			if (pc == 0x00f89ac2 && byte_address == 0x23d6)
 			{
 				log_panel_b_wake(pc, byte_address, previous, m_lowmem_shadow[offset]);
+				m_gen_counter++;
+				{
+					std::string gen_hex;
+					for (u8 hex_index = 0; hex_index < m_gen_thrb_count; hex_index++)
+					{
+						if (hex_index)
+							gen_hex += ' ';
+						gen_hex += util::string_format("%02x", m_gen_thrb_bytes[hex_index]);
+					}
+					logerror("ASR10_GEN_TRACKING GEN=%u slot0_state=%04x head=%04x tail=%04x "
+						"count_03bc=%02x flag_03c5=%02x\n",
+						m_gen_counter, m_lowmem_shadow[offset], lowmem_word(0x23e4), lowmem_word(0x23e6),
+						lowmem_byte(0x03bc), lowmem_byte(0x03c5));
+					logerror("ASR10_GEN_TRACKING GEN=%u THRB_HEX=%s panel=\"%s\"\n",
+						m_gen_counter, gen_hex.c_str(), m_panel_text);
+					m_gen_thrb_count = 0;
+				}
 				if (m_panel_l_ff_drain_later_rings_enabled && m_panel_l_zero_pending_f89ac2)
 				{
 					m_panel_l_zero_pending_f89ac2 = false;
@@ -2618,6 +2682,57 @@ void asr10_boot_state::upd72069_fdc_w(offs_t offset, u16 data, u16 mem_mask)
 	else if ((address & 3) == 3 && ACCESSING_BITS_0_7)
 	{
 		m_fdc_last_fifo_write = u8(data);
+		if (m_seen_loading_system_prompt && !machine().side_effects_disabled())
+		{
+			if (!m_fdc_os_cmd_active)
+			{
+				m_fdc_os_cmd_active = true;
+				m_fdc_os_cmd_opcode = u8(data);
+				m_fdc_os_cmd_len = 1;
+				m_fdc_os_cmd_bytes[0] = u8(data);
+				m_fdc_os_cmd_pc = pc;
+				switch (m_fdc_os_cmd_opcode & 0x1f)
+				{
+				case 0x03:
+				case 0x0f:
+					m_fdc_os_cmd_expected_len = 3;
+					break;
+				case 0x04:
+				case 0x07:
+				case 0x0a:
+					m_fdc_os_cmd_expected_len = 2;
+					break;
+				case 0x05:
+				case 0x06:
+				case 0x09:
+				case 0x0c:
+				case 0x11:
+				case 0x19:
+				case 0x1d:
+					m_fdc_os_cmd_expected_len = 9;
+					break;
+				case 0x0d:
+					m_fdc_os_cmd_expected_len = 6;
+					break;
+				default:
+					m_fdc_os_cmd_expected_len = 1;
+					break;
+				}
+			}
+			else if (m_fdc_os_cmd_len < m_fdc_os_cmd_bytes.size())
+			{
+				m_fdc_os_cmd_bytes[m_fdc_os_cmd_len] = u8(data);
+				m_fdc_os_cmd_len++;
+			}
+			if (m_fdc_os_cmd_active && m_fdc_os_cmd_len >= m_fdc_os_cmd_expected_len)
+			{
+				const u8 os_cmd_track = (m_fdc_os_cmd_expected_len >= 3) ? m_fdc_os_cmd_bytes[2] : 0;
+				const u8 os_cmd_sector = (m_fdc_os_cmd_expected_len == 9) ? m_fdc_os_cmd_bytes[4] : 0;
+				logerror("ASR10_FDC_OS event=command cmd=%02x track=%u sector=%u pc=%06x len=%u\n",
+					m_fdc_os_cmd_opcode, os_cmd_track, os_cmd_sector, m_fdc_os_cmd_pc, m_fdc_os_cmd_len);
+				m_fdc_os_cmd_active = false;
+			}
+		}
 		if (!m_fdc_cmd46_active && m_fdc_last_fifo_write == 0x46)
 		{
 			floppy_image_device *const floppy = m_floppy_connector->get_device();
@@ -2823,6 +2938,8 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 	{
 		const u8 character = u8(data);
 		log_panel_b_thrb(pc, character);
+		if (!machine().side_effects_disabled() && m_gen_thrb_count < m_gen_thrb_bytes.size())
+			m_gen_thrb_bytes[m_gen_thrb_count++] = character;
 		if (m_panel_autorespond_enabled && !machine().side_effects_disabled())
 		{
 			const char *const thrb_source = (pc == 0x00f89cb0) ? "f89cb0" :
