@@ -176,6 +176,23 @@ or unresolved gap.
   removed. This was previously only hypothesized; see
   `asr10-panel-slot0-handoff-2026-07-13.md` for the pre-experiment state.
 
+- **Corrected MC68302 Port A/B register map** (internal base `FC6000`):
+  `FC681E`=PACNT, `FC6820`=PADDR, `FC6822`=PADAT, `FC6824`=PBCNT,
+  `FC6826`=PBDDR, `FC6828`=PBDAT (low byte `FC6829`=PB7..PB0), reserved
+  `FC682A/682C/682E`, and `FC6830-FC683E`=BR0/OR0/BR1/OR1/BR2/OR2/BR3/OR3
+  (chip-select base/option registers). Source: RTEMS `m68302.h` register
+  structure + MC68302 User's Manual, independently anchored by this
+  session's already-observed `FC6830-FC683E` chip-select initialization
+  writes (`architecture.md` §3). This **retracts** an informal,
+  never-committed doubt from an earlier session that Port B might live at
+  `FC6834/6835` instead — those are confirmed BR1/OR1, not Port B.
+- **MC68302 Port B bits 2:0 are configured as GPIO outputs.** Runtime-proven
+  via `ASR10_EXPERIMENT_MC68302_GPIO_TRACE=1`: `PBCNT=0x80` (bits 2:0 = 0 →
+  GPIO mode, not peripheral IACK7/6/1) and `PBDDR=0x97` (bits 2:0 = 7 → all
+  three configured as outputs), both set at `fb8e16`/`fb8e1e`, `fire_count=0`.
+  Reproduced identically across two independent captures (45s and a longer
+  run). This satisfies the Phase 2 Stage 1 gate exactly as specified.
+
 ## 3. Plausible hypotheses (unproven)
 
 - **FC2001 is (or is modeled on) an ES5506/ES5505-family device**, based
@@ -233,6 +250,22 @@ or unresolved gap.
   (`f8834a`, `f88352`, `006800`, `00680a`) recorded zero hits across two
   separate runs, while data-read taps at the same session's other
   addresses fired correctly.
+
+- **MC68302 Port B bits 2:0 as an ES5506 PAR analog-mux channel select.**
+  Tested via `ASR10_EXPERIMENT_MC68302_GPIO_TRACE=1` (Phase 2, Stage 2) and
+  **not supported**: bits 2:0 are written exactly once at boot (`fb8e2e`,
+  value `0b111`) and never rewritten again in either a 45s or a longer
+  capture. The routine at `0067f6` (previously guessed as a "bits 0-2
+  strobe set") executes exactly once (`fire_count=142`) and, empirically,
+  only ORs in bit 3 (the separately-tracked LRCLK candidate); it does not
+  touch bits 2:0. Every observed `00686e`/`FC60B0` PAR-measurement pass
+  (fire_counts 146/150/154/158/162/166/170/174, identical across both
+  captures) reads bits 2:0 as a constant `7` and PAR as a constant `0`. The
+  required evidence for this hypothesis — at least two distinct bits-2:0
+  values, each stable during its own measurement pass — does not exist.
+  Verdict: **B** (GPIO outputs confirmed, no PAR correlation observed).
+  Stage 3 (diagnostic analog-mux model) was not implemented, since it is
+  gated on Stage 2 passing.
 
 ## 5. Unresolved contradictions / open gaps
 

@@ -252,6 +252,10 @@ private:
 	bool m_error009_origin_logged = false;
 	u32 m_lrclk_trace_count = 0;
 	u32 m_fc6829_trace_count = 0;
+	bool m_gpio_stage1_trace_enabled = false;
+	u32 m_gpio_stage1_trace_count = 0;
+	bool m_gpio_stage1_gate_pass_logged = false;
+	bool m_gpio_stage1_gate_fail_logged = false;
 	u32 m_post_lrclk_poll_count = 0;
 	bool m_post_lrclk_disassembly_logged = false;
 	u32 m_f87f96_queue_read_count = 0;
@@ -508,6 +512,7 @@ private:
 	void log_error009_context(const char *source, u32 pc, u16 value, u16 mem_mask);
 	void log_lrclk_candidate(bool write, u32 address, u16 data, u16 mem_mask, u16 shadow);
 	void log_fc6829_port_b_candidate(bool write, u32 address, u16 data, u16 mem_mask, u16 shadow);
+	void log_68302_gpio_stage1(bool write, u32 address, u16 data, u16 mem_mask, u16 old_shadow, u16 new_shadow);
 	void log_post_lrclk_poll_candidate(u32 address, u16 data, u16 mem_mask, u16 shadow);
 	void log_loaded_0067_window_candidate(u32 pc);
 	void log_fc681x_interrupt_candidate(bool write, u32 address, u16 data, u16 mem_mask, u16 old_shadow, u16 new_shadow);
@@ -957,6 +962,10 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_error009_origin_logged));
 	save_item(NAME(m_lrclk_trace_count));
 	save_item(NAME(m_fc6829_trace_count));
+	save_item(NAME(m_gpio_stage1_trace_enabled));
+	save_item(NAME(m_gpio_stage1_trace_count));
+	save_item(NAME(m_gpio_stage1_gate_pass_logged));
+	save_item(NAME(m_gpio_stage1_gate_fail_logged));
 	save_item(NAME(m_post_lrclk_poll_count));
 	save_item(NAME(m_post_lrclk_disassembly_logged));
 	save_item(NAME(m_f87f96_queue_read_count));
@@ -1154,6 +1163,14 @@ void asr10_boot_state::machine_reset()
 	m_error009_origin_logged = false;
 	m_lrclk_trace_count = 0;
 	m_fc6829_trace_count = 0;
+	{
+		const char *const gpio_stage1_trace = std::getenv("ASR10_EXPERIMENT_MC68302_GPIO_TRACE");
+		m_gpio_stage1_trace_enabled =
+			gpio_stage1_trace && gpio_stage1_trace[0] && gpio_stage1_trace[0] != '0';
+	}
+	m_gpio_stage1_trace_count = 0;
+	m_gpio_stage1_gate_pass_logged = false;
+	m_gpio_stage1_gate_fail_logged = false;
 	m_post_lrclk_poll_count = 0;
 	m_post_lrclk_disassembly_logged = false;
 	m_f87f96_queue_read_count = 0;
@@ -3126,6 +3143,7 @@ u16 asr10_boot_state::m68302_internal_r(offs_t offset, u16 mem_mask)
 	trace_access(trace_region::M68302_INTERNAL, false, address, data, mem_mask, shadow);
 	log_lrclk_candidate(false, address, data, mem_mask, shadow);
 	log_fc6829_port_b_candidate(false, address, data, mem_mask, shadow);
+	log_68302_gpio_stage1(false, address, data, mem_mask, shadow, shadow);
 	log_post_lrclk_poll_candidate(address, data, mem_mask, shadow);
 	log_loaded_0067_window_candidate(pc);
 	log_fc681x_interrupt_candidate(false, address, data, mem_mask, shadow, shadow);
@@ -3157,6 +3175,7 @@ void asr10_boot_state::m68302_internal_w(offs_t offset, u16 data, u16 mem_mask)
 	trace_access(trace_region::M68302_INTERNAL, true, address, data, mem_mask, m_m68302_internal_shadow[offset & 0x7f]);
 	log_lrclk_candidate(true, address, data, mem_mask, m_m68302_internal_shadow[offset & 0x7f]);
 	log_fc6829_port_b_candidate(true, address, data, mem_mask, m_m68302_internal_shadow[offset & 0x7f]);
+	log_68302_gpio_stage1(true, address, data, mem_mask, previous, m_m68302_internal_shadow[offset & 0x7f]);
 	log_loaded_0067_window_candidate(m_last_fc68_pc);
 	log_fc681x_interrupt_candidate(true, address, data, mem_mask, previous, m_m68302_internal_shadow[offset & 0x7f]);
 	log_fc688x_service_context(true, address, data, mem_mask, previous, m_m68302_internal_shadow[offset & 0x7f]);
@@ -4376,6 +4395,75 @@ void asr10_boot_state::log_fc6829_port_b_candidate(bool write, u32 address, u16 
 		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
 		u16(m_maincpu->state_int(M68K_SR)), sp, read_stack_long(sp), read_stack_long(sp + 4),
 		m_fc6829_trace_count);
+}
+
+
+void asr10_boot_state::log_68302_gpio_stage1(bool write, u32 address, u16 data, u16 mem_mask, u16 old_shadow, u16 new_shadow)
+{
+	if (!m_gpio_stage1_trace_enabled || machine().side_effects_disabled())
+		return;
+	// Corrected MC68302 map (RTEMS m68302.h / MC68302 User's Manual,
+	// see docs/asr10/architecture.md): PBCNT=FC6824, PBDDR=FC6826,
+	// PBDAT=FC6828 (low byte FC6829 = PB7..PB0). BR0-3/OR0-3 occupy
+	// FC6830-FC683e and are NOT Port B (retracts the earlier
+	// "Port B may live at FC6834/35" hedge).
+	if (address != 0x00fc6824 && address != 0x00fc6826 && address != 0x00fc6828)
+		return;
+
+	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+	const char *const reg_name = address == 0x00fc6824 ? "PBCNT" :
+		address == 0x00fc6826 ? "PBDDR" : "PBDAT";
+	const char *const width = ACCESSING_BITS_0_15 ? "word" :
+		ACCESSING_BITS_0_7 ? "byte_low" : ACCESSING_BITS_8_15 ? "byte_high" : "none";
+
+	// Current authoritative snapshot of all three registers regardless of
+	// which one triggered this access (PBDAT reflects the just-applied
+	// new_shadow when this access IS the PBDAT access).
+	const u16 pbcnt = m_m68302_internal_shadow[0x24 >> 1];
+	const u16 pbddr = m_m68302_internal_shadow[0x26 >> 1];
+	const u16 pbdat = (address == 0x00fc6828) ? new_shadow : m_m68302_internal_shadow[0x28 >> 1];
+	const u8 pbcnt_low = u8(pbcnt);
+	const u8 pbddr_low = u8(pbddr);
+	const u8 pbdat_low = u8(pbdat);
+	const u32 pb2_0 = pbdat_low & 0x07;
+
+	m_gpio_stage1_trace_count++;
+
+	// Required proof gate: PBCNT bits 0-2 select GPIO (not peripheral
+	// IACK7/IACK6/IACK1), and PBDDR bits 0-2 are configured as outputs.
+	// Stage 2/3 must not proceed past this without an observed PASS.
+	const bool gate_pass = (pbcnt_low & 0x07) == 0x00 && (pbddr_low & 0x07) == 0x07;
+	if (gate_pass && !m_gpio_stage1_gate_pass_logged)
+	{
+		logerror("ASR10_GPIO_STAGE1_GATE result=PASS pbcnt=%02x pbddr=%02x pc=%06x fire_count=%u trace_count=%u\n",
+			pbcnt_low, pbddr_low, pc, m_duart_counter_fire_count, m_gpio_stage1_trace_count);
+		m_gpio_stage1_gate_pass_logged = true;
+	}
+	else if (!gate_pass && !m_gpio_stage1_gate_fail_logged && m_gpio_stage1_trace_count >= 32)
+	{
+		logerror("ASR10_GPIO_STAGE1_GATE result=FAIL pbcnt=%02x pbddr=%02x pc=%06x fire_count=%u "
+			"trace_count=%u note=analog_mux_select_hypothesis_unsupported_so_far\n",
+			pbcnt_low, pbddr_low, pc, m_duart_counter_fire_count, m_gpio_stage1_trace_count);
+		m_gpio_stage1_gate_fail_logged = true;
+	}
+
+	const bool verbose = m_gpio_stage1_trace_count <= 256 ||
+		!(m_gpio_stage1_trace_count & (m_gpio_stage1_trace_count - 1));
+	if (!verbose)
+		return;
+
+	logerror("ASR10_GPIO_STAGE1 pc=%06x reg=%s address=%06x rw=%c width=%s mem_mask=%04x "
+		"old=%04x new=%04x pbcnt=%02x pbddr=%02x pbdat=%02x pb2=%u pb1=%u pb0=%u pb2_0=%u "
+		"pbcnt_bit2_iack7=%u pbcnt_bit1_iack6=%u pbcnt_bit0_iack1=%u "
+		"pbddr_bit2_out=%u pbddr_bit1_out=%u pbddr_bit0_out=%u "
+		"gate_pass=%u fire_count=%u panel_text_len=%u panel_b_seq=%llu trace_count=%u\n",
+		pc, reg_name, address, write ? 'W' : 'R', width, mem_mask,
+		old_shadow, new_shadow, pbcnt_low, pbddr_low, pbdat_low,
+		BIT(pbdat_low, 2), BIT(pbdat_low, 1), BIT(pbdat_low, 0), pb2_0,
+		BIT(pbcnt_low, 2), BIT(pbcnt_low, 1), BIT(pbcnt_low, 0),
+		BIT(pbddr_low, 2), BIT(pbddr_low, 1), BIT(pbddr_low, 0),
+		gate_pass ? 1u : 0u, m_duart_counter_fire_count, m_panel_text_length,
+		(unsigned long long)m_panel_b_seq, m_gpio_stage1_trace_count);
 }
 
 

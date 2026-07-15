@@ -292,6 +292,67 @@ No relevant CS/remap write was observed between the high chunk 12 and low chunk
 separate views/backings rather than the result of runtime banking between those
 chunks.
 
+### 3.1 Corrected Port A/B GPIO register map [STAT]
+
+Internal base `FC6000`. Register map, sourced from the RTEMS `m68302.h`
+register structure and the MC68302 User's Manual, independently anchored by
+the already-observed `FC6830-FC683E` chip-select initialization writes:
+
+```text
+FC681E  PACNT
+FC6820  PADDR
+FC6822  PADAT
+FC6824  PBCNT
+FC6826  PBDDR
+FC6828  PBDAT  (low byte FC6829 = PB7..PB0)
+FC682A  reserved
+FC682C  reserved
+FC682E  reserved
+FC6830  BR0
+FC6832  OR0
+FC6834  BR1
+FC6836  OR1
+FC6838  BR2
+FC683A  OR2
+FC683C  BR3
+FC683E  OR3
+```
+
+This **retracts** an earlier, informal doubt (never committed to this doc, but
+carried across sessions) that Port B might live at `FC6834/6835` instead of
+`FC6824/6826/6828`. `FC6834/6836` are confirmed **BR1/OR1** — chip-select
+base/option registers, not Port B — matching this driver's own long-standing
+`m68302_register_name()` candidate labels at offsets `0x24/0x26/0x28`
+(`port_b_control_candidate` / `port_b_direction_candidate` /
+`port_b_data_bits0_2_control_lrclk_bit3_candidate`), which the corrected map
+now confirms rather than contradicts.
+
+**Phase 2 GPIO/PAR-correlation experiment** (`ASR10_EXPERIMENT_MC68302_GPIO_TRACE=1`,
+log-only, no analog model): tested whether PBDAT bits 2:0 act as an
+analog-mux channel select feeding the ES5506 host-port PAR register
+(`docs/asr10/es5506-chain-verification.md`). Findings, from two independent
+captures (45s and a longer run reaching the same steady state):
+
+- **Stage 1 gate PASSES**: `PBCNT=0x80` (bits 2:0 = 0, GPIO mode, not
+  peripheral IACK7/6/1) and `PBDDR=0x97` (bits 2:0 = 7, configured as
+  outputs), both set at `fb8e16`/`fb8e1e` very early in boot (`fire_count=0`).
+  Bits 2:0 are genuinely configured as GPIO outputs.
+- **Stage 2 correlation FAILS**: PBDAT bits 2:0 are written **exactly once**
+  (`fb8e2e`, value `0b111`) and are **never rewritten again** in either
+  capture. The routine at `0067f6` (previously guessed to be a
+  "bits0-2 strobe set" — `ori #$07`) executes exactly once (`fire_count=142`)
+  and, empirically, only ORs in bit 3 (the LRCLK candidate bit); it does not
+  touch bits 2:0. Across every observed `00686e`/`FC60B0` PAR-measurement
+  pass (fire_counts 146, 150, 154, 158, 162, 166, 170, 174 in both captures,
+  identically), PBDAT bits 2:0 read back a single constant value (`7`), and
+  PAR itself reads constant `0`. The required evidence for an analog-mux
+  hypothesis — at least two distinct bits-2:0 values, each stable during its
+  own measurement pass — does not exist in either capture.
+- **Verdict: B — PB2:0 are configured as GPIO outputs, but no PAR
+  correlation is observed.** Stage 3 (diagnostic analog-mux model) is
+  **not** implemented, per the experiment's own gating (Stage 3 requires
+  Stages 1 *and* 2 to both pass; only Stage 1 did).
+
 ROM addresses the internal block via base `$FC6000` in the OS-load DMA setup
 (`+0x802/804/808/80c/810`). The OS load itself completes by CPU FIFO polling once
 the FDC is reachable.
