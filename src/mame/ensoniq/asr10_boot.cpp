@@ -250,11 +250,14 @@ private:
 	bool m_seen_error_reboot_prompt = false;
 	bool m_panel_reboot_confirm_injected = false;
 	bool m_error009_origin_logged = false;
+	bool m_error032_origin_logged = false;
 	u32 m_lrclk_trace_count = 0;
 	u32 m_fc6829_trace_count = 0;
 	bool m_gpio_stage1_trace_enabled = false;
 	u32 m_gpio_stage1_trace_count = 0;
 	bool m_gpio_stage1_gate_pass_logged = false;
+	bool m_task1_string_scan_logged = false;
+	bool m_download_trace_enabled = false;
 	bool m_gpio_stage1_gate_fail_logged = false;
 	u32 m_post_lrclk_poll_count = 0;
 	bool m_post_lrclk_disassembly_logged = false;
@@ -523,6 +526,7 @@ private:
 	void log_synth_68302_irq_vectors(u8 irq_level, u32 pc, u16 sr);
 	void log_runtime_vector_table_for_iack_experiment(u32 pc, u16 sr);
 	void dump_loaded_code_range(const char *tag, u32 start, u32 end);
+	void scan_for_ascii_string(const char *tag, u32 start, u32 end, const char *needle);
 	void log_dispatcher_rte_first_pc_probe(u32 pc);
 	void log_dispatcher_rte_candidate_pc(u32 pc);
 	void log_f87f96_queue_read(u32 byte_address, u16 data, u16 mem_mask);
@@ -1003,12 +1007,15 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_seen_error_reboot_prompt));
 	save_item(NAME(m_panel_reboot_confirm_injected));
 	save_item(NAME(m_error009_origin_logged));
+	save_item(NAME(m_error032_origin_logged));
 	save_item(NAME(m_lrclk_trace_count));
 	save_item(NAME(m_fc6829_trace_count));
 	save_item(NAME(m_gpio_stage1_trace_enabled));
 	save_item(NAME(m_gpio_stage1_trace_count));
 	save_item(NAME(m_gpio_stage1_gate_pass_logged));
 	save_item(NAME(m_gpio_stage1_gate_fail_logged));
+	save_item(NAME(m_task1_string_scan_logged));
+	save_item(NAME(m_download_trace_enabled));
 	save_item(NAME(m_post_lrclk_poll_count));
 	save_item(NAME(m_post_lrclk_disassembly_logged));
 	save_item(NAME(m_f87f96_queue_read_count));
@@ -1204,6 +1211,7 @@ void asr10_boot_state::machine_reset()
 	m_seen_error_reboot_prompt = false;
 	m_panel_reboot_confirm_injected = false;
 	m_error009_origin_logged = false;
+	m_error032_origin_logged = false;
 	m_lrclk_trace_count = 0;
 	m_fc6829_trace_count = 0;
 	{
@@ -1214,6 +1222,11 @@ void asr10_boot_state::machine_reset()
 	m_gpio_stage1_trace_count = 0;
 	m_gpio_stage1_gate_pass_logged = false;
 	m_gpio_stage1_gate_fail_logged = false;
+	m_task1_string_scan_logged = false;
+	{
+		const char *const download_trace = std::getenv("ASR10_EXPERIMENT_DOWNLOAD_TRACE");
+		m_download_trace_enabled = download_trace && download_trace[0] && download_trace[0] != '0';
+	}
 	m_post_lrclk_poll_count = 0;
 	m_post_lrclk_disassembly_logged = false;
 	m_f87f96_queue_read_count = 0;
@@ -2835,6 +2848,20 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 			u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
 			u32(m_maincpu->state_int(M68K_D2)), m_duart_counter_fire_count);
 	}
+	if (m_download_trace_enabled &&
+		(byte_address == 0x0e7e || byte_address == 0x0e89 || byte_address == 0x0e9d || byte_address == 0x0e8c) &&
+		!machine().side_effects_disabled())
+	{
+		const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+		const char *const field =
+			byte_address == 0x0e7e ? "table_source_pointer_a3" :
+			byte_address == 0x0e89 ? "first_record_byte" :
+			byte_address == 0x0e8c ? "record_scratch" : "retry_counter";
+		logerror("ASR10_TASK3_DOWNLOAD_TRACE event=lowmem_store field=%s pc=%06x address=%06x "
+			"previous=%04x new=%04x mem_mask=%04x d3=%08x a3=%08x\n",
+			field, pc, byte_address, previous, m_lowmem_shadow[offset], mem_mask,
+			u32(m_maincpu->state_int(M68K_D3)), u32(m_maincpu->state_int(M68K_A3)));
+	}
 	if constexpr (ASR10_DIAG_PANEL_B)
 	{
 		if (!machine().side_effects_disabled())
@@ -3973,6 +4000,33 @@ void asr10_boot_state::flush_panel_text()
 				m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff,
 				m_lowmem_shadow[0x00c0 >> 1], 0xffff);
 		}
+		if (strstr(m_panel_text, "EFFECT DOWNLOAD FAILED"))
+		{
+			log_error009_context("panel_effect_download_failed_text",
+				m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff,
+				m_lowmem_shadow[0x00c0 >> 1], 0xffff);
+		}
+		if (strstr(m_panel_text, "ERROR 032 - REBOOT ?"))
+		{
+			log_error009_context("panel_error032_text",
+				m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff,
+				m_lowmem_shadow[0x00c0 >> 1], 0xffff);
+		}
+		if (!m_task1_string_scan_logged &&
+			(strstr(m_panel_text, "EFFECT DOWNLOAD FAILED") || strstr(m_panel_text, "ERROR 032 - REBOOT ?")))
+		{
+			m_task1_string_scan_logged = true;
+			scan_for_ascii_string("rom_effect_download_failed", 0x00f80000, 0x00fbffff, "EFFECT DOWNLOAD FAILED");
+			scan_for_ascii_string("lowmem_effect_download_failed", 0x00000000, 0x000fffff, "EFFECT DOWNLOAD FAILED");
+			scan_for_ascii_string("rom_error_032", 0x00f80000, 0x00fbffff, "ERROR 032");
+			scan_for_ascii_string("lowmem_error_032", 0x00000000, 0x000fffff, "ERROR 032");
+			scan_for_ascii_string("rom_error_prefix", 0x00f80000, 0x00fbffff, "ERROR ");
+			scan_for_ascii_string("lowmem_error_prefix", 0x00000000, 0x000fffff, "ERROR ");
+			scan_for_ascii_string("rom_reboot", 0x00f80000, 0x00fbffff, "REBOOT ?");
+			scan_for_ascii_string("lowmem_reboot", 0x00000000, 0x000fffff, "REBOOT ?");
+			dump_loaded_code_range("task1_rom_f840a0_f84120", 0x00f840a0, 0x00f84120);
+			dump_loaded_code_range("task1_lowmem_000380_000400", 0x00000380, 0x00000400);
+		}
 	}
 
 	m_panel_text_length = 0;
@@ -4313,16 +4367,45 @@ void asr10_boot_state::log_04c6_origin(const char *landmark, u32 pc, u8 value, b
 
 void asr10_boot_state::log_error009_context(const char *source, u32 pc, u16 value, u16 mem_mask)
 {
-	const bool panel_error_text = !strcmp(source, "panel_error009_text") || !strcmp(source, "panel_error139_text");
-	if (m_error009_origin_logged && !panel_error_text)
-		return;
-
+	const bool panel_error_text = !strcmp(source, "panel_error009_text") || !strcmp(source, "panel_error139_text") ||
+		!strcmp(source, "panel_effect_download_failed_text") || !strcmp(source, "panel_error032_text");
 	const u8 error_number = u8(value);
-	if (error_number != 0x09 && error_number != 0x8b && !panel_error_text)
+	const bool is_032_write = !panel_error_text && error_number == 0x20;
+	if (m_error009_origin_logged && !panel_error_text && !is_032_write)
+		return;
+	if (is_032_write && m_error032_origin_logged)
 		return;
 
-	if (!panel_error_text)
+	if (error_number != 0x09 && error_number != 0x8b && !panel_error_text && !is_032_write)
+		return;
+
+	if (!panel_error_text && !is_032_write)
 		m_error009_origin_logged = true;
+	if (is_032_write)
+	{
+		m_error032_origin_logged = true;
+		const u32 caller_pc = m_last_distinct_pc & 0x00ffffff;
+		// caller_pc lands in the plain .ram() window (0xfc6900-0xffffff,
+		// mem_map()) rather than ROM or the 0x000000-0x0fffff lowmem
+		// shadow, so read it via the generic bus (read_program_word)
+		// instead of dump_loaded_code_range/read_loaded_word (which would
+		// silently return 0xffff for this range).
+		{
+			const u32 start = caller_pc >= 0x40 ? caller_pc - 0x40 : 0;
+			const u32 end = caller_pc + 0x20;
+			std::string words;
+			for (u32 cursor = start; cursor <= end; cursor += 2)
+			{
+				if (cursor != start)
+					words += ',';
+				words += util::string_format("%06x:%04x", cursor, read_program_word(cursor));
+			}
+			logerror("ASR10_CODE_DUMP tag=task1_error032_caller range=%06x_%06x words=\"%s\"\n",
+				start, end, words.c_str());
+		}
+		dump_loaded_code_range("task1_common_error_routine_tail", 0x00f882a0, 0x00f88320);
+		dump_loaded_code_range("task2_f973f0_download_routine", 0x00f973b0, 0x00f97460);
+	}
 
 	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
 	std::string command_sequence;
@@ -4905,6 +4988,36 @@ void asr10_boot_state::dump_loaded_code_range(const char *tag, u32 start, u32 en
 		words += util::string_format("%06x:%04x", cursor, read_loaded_word(cursor));
 	}
 	logerror("ASR10_CODE_DUMP tag=%s range=%06x_%06x words=\"%s\"\n", tag, start, end, words.c_str());
+}
+
+
+void asr10_boot_state::scan_for_ascii_string(const char *tag, u32 start, u32 end, const char *needle)
+{
+	auto const disable_side_effects = machine().disable_side_effects();
+	const size_t needle_len = strlen(needle);
+	if (needle_len == 0 || end <= start || end - start < needle_len)
+		return;
+	u32 matches = 0;
+	for (u32 cursor = start; cursor <= end - needle_len; cursor++)
+	{
+		bool match = true;
+		for (size_t i = 0; i < needle_len && match; i++)
+		{
+			const u32 addr = cursor + u32(i);
+			const u16 word = read_loaded_word(addr & ~u32(1));
+			const u8 byte = (addr & 1) ? u8(word) : u8(word >> 8);
+			if (byte != u8(needle[i]))
+				match = false;
+		}
+		if (match)
+		{
+			logerror("ASR10_TASK1_STRING_SCAN tag=%s needle=\"%s\" address=%06x match=%u\n",
+				tag, needle, cursor, matches);
+			matches++;
+		}
+	}
+	logerror("ASR10_TASK1_STRING_SCAN_DONE tag=%s needle=\"%s\" total_matches=%u range=%06x_%06x\n",
+		tag, needle, matches, start, end);
 }
 
 

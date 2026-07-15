@@ -249,6 +249,66 @@ or unresolved gap.
   0x300. See `subsystems.md` for the full disassembly and byte-level
   trace.
 
+- **ERROR 032 ("EFFECT DOWNLOAD FAILED" / "bad download") origin, fully
+  traced.** With the diagnostic PAR bridge active
+  (`ASR10_EXPERIMENT_PAR_DIAGNOSTIC=1 ASR10_DIAG_PAR_VALUE=0x300`), the
+  firmware reaches a new, stable blocker. Traced via live disassembly and
+  targeted taps (`ASR10_ERROR_CONTEXT source=error_number_write_00c0`,
+  `ASR10_TASK3_DOWNLOAD_TRACE`, `ASR10_CODE_DUMP tag=task1_error032_caller`):
+  - Error-code storage: lowmem `$00C0` (already an established "current
+    error number" cell — see the pre-existing `error_number_write_00c0`
+    hook). Assignment site: `f88284` (`move.w D0,$00c0`), inside the ROM's
+    shared common-error routine (`f88260-f882a0`, first documented in
+    Phase 1B), called via `TRAP #0` with `D0` preloaded.
+  - Caller: a retry loop at `ffc89e-ffc8aa` (in the `.ram()` window
+    `0xfc6900-0xffffff`, i.e. genuine separate RAM, not a low-memory
+    mirror): `subq.b #1,($0e9d).w` / `bpl.s $ffc884` (retry while the
+    counter stays non-negative), falling through to
+    `move.b #$20,D0` / `trap #0` once retries are exhausted.
+  - The retried body (`ffc884-ffc8a4`) calls `jsr $fff973f0` — a
+    byte-coded "record table" interpreter (ROM `f973f0-f97460+`): reads a
+    record-type byte into D3 (`0xFF` = terminate), then a count/param
+    pair, then loops calling further subroutines per record. For record
+    types `0x01-0x04` it loads `movea.l #$fffc3001,A4` — the **same**
+    FC3000-cluster window already proven runtime-active very early in
+    boot (`movep-library.md`/`subsystems.md`).
+  - Panel strings: `"EFFECT DOWNLOAD FAILED"` lives at ROM `f840b6`
+    (0xFF-terminated) and, separately, as loaded content at lowmem `392`
+    (preceded by two panel control bytes at `38e-391`); `"ERROR "` is a
+    shared template at ROM `f824aa`, `"REBOOT ?"` at `f824b4` (immediately
+    adjacent — the numeric part is formatted between them, not a canned
+    "ERROR 032" string). No literal `"ERROR 032"` string exists anywhere
+    in ROM or lowmem.
+  - **Last FDC hardware status before failure, and for every single READ
+    DATA (CMD 0x46) transaction in the entire run (20/20, including the
+    very first, single-sector txn=1 with `EOT=1`)**: `ST0=0x40` (abnormal
+    termination), `ST1=0x80` (End of Cylinder) — `read_source=
+    upd72069_device`, `format=none`, `image_geometry=not_exposed`. Every
+    read, regardless of requested cylinder/head/sector/EOT, terminates
+    abnormally at the first sector boundary.
+  - The record interpreter's own trace (`ASR10_TASK3_DOWNLOAD_TRACE`)
+    shows its source pointer (`A3`, mirrored to lowmem `$0E7E`) pointing
+    first into lowmem RAM (`$010722`) for one record, then into **ROM**
+    (`$F9BD3E`) for subsequent records — the interpreted table is not
+    exclusively disk-sourced. Record types observed (`D3` low byte)
+    increment sequentially (0, 1, 2) with 10 sub-iterations each,
+    consistent with well-formed (not obviously garbage) data for the
+    records actually captured. The retry-counter cell (lowmem `$0E9C/9D`)
+    was **not** captured due to an odd-byte-address gap in this
+    session's tap (word-aligned checks only) — an acknowledged
+    instrumentation gap, not a claim that no decrement occurs (the
+    disassembly proves the `subq.b`/`bpl` retry loop exists).
+  - **Classification (Task 5): the evidence favors a disk-read/format
+    gap over an ES5510-protocol failure.** Every FDC READ DATA command
+    in the run — not just ones near the failure — abnormally terminates
+    with End-of-Cylinder, including a single-sector request that should
+    trivially succeed. Combined with `format=none`/`image_geometry=
+    not_exposed`, this points at the raw `.img` floppy-format support
+    (already flagged as incomplete in `running.md`) rather than a
+    protocol gap in whatever chip FC3001 belongs to. **Not fully
+    closed**: no direct proof yet ties this specific interpreter
+    invocation's source data to the specific failed FDC transaction.
+
 ## 3. Plausible hypotheses (unproven)
 
 - **FC2001 is (or is modeled on) an ES5506/ES5505-family device**, based
