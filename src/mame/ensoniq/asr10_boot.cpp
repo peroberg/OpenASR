@@ -43,6 +43,7 @@
 #include "machine/upd765.h"
 
 #include "formats/esq16_dsk.h"
+#include "sound/es5506.h"
 #include "formats/hxchfe_dsk.h"
 
 #include "asr10_boot.lh"
@@ -68,6 +69,7 @@ public:
 		, m_fdc(*this, "fdc")
 		, m_floppy_connector(*this, "fdc:0")
 		, m_rom(*this, "maincpu")
+		, m_es5506_host(*this, "es5506_host")
 	        , m_display(*this, "digit%u", 0U)
 	{
 	}
@@ -157,6 +159,7 @@ private:
 	required_device<upd72069_device> m_fdc;
 	required_device<floppy_connector> m_floppy_connector;
 	required_memory_region m_rom;
+	optional_device<es5506_device> m_es5506_host;
 
 	output_finder<ASR10_DISPLAY_LENGTH> m_display;
 	std::array<u8, ASR10_DISPLAY_LENGTH> m_display_chars{};
@@ -168,6 +171,23 @@ private:
 	emu_timer *m_panel_autorespond_timer = nullptr;
 	emu_timer *m_duart_counter_timer = nullptr;
 	memory_passthrough_handler m_duart_counter_boundary_tap;
+	memory_passthrough_handler m_hook_f8834a_tap;
+	memory_passthrough_handler m_hook_f88352_tap;
+	memory_passthrough_handler m_hook_006800_tap;
+	memory_passthrough_handler m_hook_00680a_tap;
+	bool m_hook_006800_dump_logged = false;
+	memory_passthrough_handler m_hook_fc2068_tap;
+	bool m_fc60b0_verified = false;
+	memory_passthrough_handler m_hook_fc2d40_read_tap;
+	memory_passthrough_handler m_hook_fc2d40_write_tap;
+	memory_passthrough_handler m_hook_fc3000_read_tap;
+	memory_passthrough_handler m_hook_fc3000_write_tap;
+	memory_passthrough_handler m_hook_fc222e_read_tap;
+	memory_passthrough_handler m_hook_fc222e_write_tap;
+	memory_passthrough_handler m_hook_fc226e_read_tap;
+	memory_passthrough_handler m_hook_fc226e_write_tap;
+	u32 m_fc2d40_cluster_count = 0;
+	u32 m_fc3000_cluster_count = 0;
 	std::unique_ptr<u16[]> m_lowmem_shadow;
 	u16 m_probe_or_alias_region_shadow[PROBE_OR_ALIAS_REGION_COUNT][2]{};
 	u16 m_m68302_internal_shadow[0x80]{};
@@ -392,6 +412,14 @@ private:
 	u32 m_duart_counter_fire_count = 0;
 	u32 m_duart_counter_stop_count = 0;
 	u8 m_duart_acr = 0;
+	bool m_divzero_frame_logged = false;
+	bool m_es5506_host_enabled = false;
+	std::array<u8, 64> m_es5506_host_seen_mask{}; // bit0=read seen, bit1=write seen, per device offset
+	u32 m_es5506_host_access_count = 0;
+	bool m_es5506_diag_par_enabled = false;
+	u16 m_es5506_diag_par_value = 0x200;
+	u32 m_es5506_diag_par_read_count = 0;
+	bool m_primary_slot_snapshot_logged = false;
 	bool m_panel_c_parser_trace_enabled = false;
 	bool m_panel_c_parser_trace_active = false;
 	bool m_panel_c_parser_trace_done = false;
@@ -500,10 +528,16 @@ private:
 	void log_pc_summary(const char *reason, u32 pc);
 	void log_watched_pc(u32 pc);
 	void log_duart_counter_watched_pc(u32 pc);
+	void log_divzero_exception_frame(u32 pc);
+	void log_primary_slot_snapshot_once(u32 pc);
+	void log_timer_secondary_callback(u32 pc);
 	void duart_counter_start(u32 pc);
 	void duart_counter_stop(u32 pc);
 	void duart_counter_arm_periodic(u32 pc, const char *event);
 	void duart_counter_check_implicit_start(u32 pc);
+	std::string dump_cpu_registers() const;
+	u16 es5506_host_read_par_diag();
+	static const char *es5506_register_name(u32 cpu_displacement);
 	u8 lowmem_byte(u32 address) const;
 	u16 lowmem_word(u32 address) const;
 	u32 lowmem_long(u32 address) const;
@@ -573,6 +607,285 @@ void asr10_boot_state::machine_start()
 				pc, 0x00fc4820 + offset * 2, offset, mem_mask,
 				ACCESSING_BITS_0_7 ? 1 : 0, ACCESSING_BITS_8_15 ? 1 : 0);
 		});
+	// Temporary, precise (non-periodic) call-chain hooks: opcode fetches are
+	// ordinary reads through AS_PROGRAM for this driver (no separate decrypted
+	// opcode space is mapped), so a narrow read tap over just the target
+	// instruction's first word fires exactly on that instruction's fetch.
+	// Each callback re-checks pc == target before logging, since the same
+	// tap could in principle also see a coincidental data access.
+	m_hook_f8834a_tap = m_maincpu->space(AS_PROGRAM).install_read_tap(
+		0x00f8834a, 0x00f8834b, "hook_f8834a_tap",
+		[this] (offs_t offset, u16 &data, u16 mem_mask)
+		{
+			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+				return;
+			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+			if (pc != 0x00f8834a)
+				return;
+			const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+			logerror("ASR10_CALLCHAIN_HOOK event=f8834a_load_callback_ptr pc=%06x sp=%06x %s "
+				"fire_count=%u\n",
+				pc, sp, dump_cpu_registers().c_str(), m_duart_counter_fire_count);
+		});
+	m_hook_f88352_tap = m_maincpu->space(AS_PROGRAM).install_read_tap(
+		0x00f88352, 0x00f88353, "hook_f88352_tap",
+		[this] (offs_t offset, u16 &data, u16 mem_mask)
+		{
+			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+				return;
+			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+			if (pc != 0x00f88352)
+				return;
+			const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+			const u32 entry_base = m_maincpu->state_int(M68K_A0) & 0x00ffffff;
+			const u32 callback_ptr = m_maincpu->state_int(M68K_A1) & 0x00ffffff;
+			logerror("ASR10_CALLCHAIN_HOOK event=f88352_jsr_a1 pc=%06x sp=%06x stack_top=%06x "
+				"entry_base=%06x entry_plus14=%04x callback_ptr=%06x %s fire_count=%u\n",
+				pc, sp, read_stack_long(sp), entry_base, lowmem_word(entry_base + 0x14),
+				callback_ptr, dump_cpu_registers().c_str(), m_duart_counter_fire_count);
+		});
+	m_hook_006800_tap = m_maincpu->space(AS_PROGRAM).install_read_tap(
+		0x00006800, 0x00006801, "hook_006800_tap",
+		[this] (offs_t offset, u16 &data, u16 mem_mask)
+		{
+			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+				return;
+			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+			if (pc != 0x00006800)
+				return;
+			const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+			const u32 return_address = read_stack_long(sp);
+			logerror("ASR10_CALLCHAIN_HOOK event=006800_entry pc=%06x sp=%06x return_address=%06x "
+				"%s fire_count=%u\n",
+				pc, sp, return_address, dump_cpu_registers().c_str(), m_duart_counter_fire_count);
+			if (!m_hook_006800_dump_logged)
+			{
+				m_hook_006800_dump_logged = true;
+				std::string hex;
+				for (u32 addr = 0x006800; addr < 0x006800 + 96; addr++)
+					hex += util::string_format("%02x", lowmem_byte(addr));
+				logerror("ASR10_CALLCHAIN_HOOK event=006800_forward_dump start=006800 len=96 hex=%s\n",
+					hex.c_str());
+			}
+		});
+	m_hook_00680a_tap = m_maincpu->space(AS_PROGRAM).install_read_tap(
+		0x0000680a, 0x0000680b, "hook_00680a_tap",
+		[this] (offs_t offset, u16 &data, u16 mem_mask)
+		{
+			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+				return;
+			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+			if (pc != 0x0000680a)
+				return;
+			logerror("ASR10_CALLCHAIN_HOOK event=00680a_pre_divu pc=%06x %s "
+				"tick_0b82=%02x flag_03c5=%02x word_03bc=%04x fire_count=%u\n",
+				pc, dump_cpu_registers().c_str(),
+				lowmem_byte(0x0b82), lowmem_byte(0x03c5), lowmem_word(0x03bc), m_duart_counter_fire_count);
+		});
+	// FC2068-FC206F: unlike the four opcode-fetch taps above (which never
+	// fire -- opcode fetch on this core goes through a cache-typed fast
+	// path that bypasses tap dispatch entirely), these are genuine DATA
+	// reads performed by the movep.l instruction at FC60B0, which uses the
+	// dispatch-backed accessor. FC2068/6A/6C/6E fall in the plain .ram()
+	// block (0xfc0000-0xfc3fff); no existing handler/diagnostic covers
+	// them, so this is the narrowest possible addition for that purpose.
+	m_hook_fc2068_tap = m_maincpu->space(AS_PROGRAM).install_read_tap(
+		0x00fc2068, 0x00fc206f, "hook_fc2068_tap",
+		[this] (offs_t offset, u16 &data, u16 mem_mask)
+		{
+			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+				return;
+			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+			const u32 address = 0x00fc2068 + offset * 2;
+			if (!m_fc60b0_verified)
+			{
+				m_fc60b0_verified = true;
+				const u16 w0 = read_program_word(0x00fc60b0);
+				const u16 w1 = read_program_word(0x00fc60b2);
+				const u16 w2 = read_program_word(0x00fc60b4);
+				logerror("ASR10_FC2001_TRACE event=fc60b0_verify runtime_word0=%04x runtime_word1=%04x "
+					"runtime_word2=%04x expected_word0=0548 expected_word1=0068 expected_word2=4e75 "
+					"match=%u\n",
+					w0, w1, w2, (w0 == 0x0548 && w1 == 0x0068 && w2 == 0x4e75) ? 1 : 0);
+
+				// One-shot: dump the live DPRAM chunk (FC6000-FC67FF, 2KB) so
+				// sibling movep-style access thunks can be located offline by
+				// pattern search, instead of adding more runtime hooks.
+				std::string dpram_hex;
+				for (u32 dpram_addr = 0x00fc6000; dpram_addr < 0x00fc6800; dpram_addr += 2)
+				{
+					const u16 w = read_program_word(dpram_addr);
+					dpram_hex += util::string_format("%02x%02x", u8(w >> 8), u8(w));
+				}
+				logerror("ASR10_FC2001_TRACE event=dpram_dump start=fc6000 len=2048 hex=%s\n",
+					dpram_hex.c_str());
+			}
+			logerror("ASR10_FC2001_TRACE event=fc2xxx_read pc=%06x address=%06x offset=%04x "
+				"mem_mask=%04x data=%04x accessing_bits_0_7=%u accessing_bits_8_15=%u fire_count=%u\n",
+				pc, address, offset, mem_mask, data,
+				ACCESSING_BITS_0_7 ? 1 : 0, ACCESSING_BITS_8_15 ? 1 : 0, m_duart_counter_fire_count);
+		});
+	// Narrow, log-only, bounded (first 32 accesses/cluster) taps to correlate
+	// the three static reference clusters (FC2001-relative, FC2D40-FC2D7F,
+	// FC3001-FC31xx) plus the FC222E/FC226E block-copy addresses at runtime.
+	// No data is modified; all four ranges are plain .ram() with no existing
+	// custom handler/diagnostic.
+	m_hook_fc2d40_read_tap = m_maincpu->space(AS_PROGRAM).install_read_tap(
+		0x00fc2d40, 0x00fc2d7f, "hook_fc2d40_read_tap",
+		[this] (offs_t offset, u16 &data, u16 mem_mask)
+		{
+			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+				return;
+			if (m_fc2d40_cluster_count >= 32)
+				return;
+			m_fc2d40_cluster_count++;
+			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+			logerror("ASR10_CLUSTER_TRACE event=fc2d40_read pc=%06x address=%06x offset=%04x "
+				"mem_mask=%04x data=%04x cluster_count=%u\n",
+				pc, 0x00fc2d40 + offset, offset, mem_mask, data, m_fc2d40_cluster_count);
+		});
+	m_hook_fc2d40_write_tap = m_maincpu->space(AS_PROGRAM).install_write_tap(
+		0x00fc2d40, 0x00fc2d7f, "hook_fc2d40_write_tap",
+		[this] (offs_t offset, u16 &data, u16 mem_mask)
+		{
+			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+				return;
+			if (m_fc2d40_cluster_count >= 32)
+				return;
+			m_fc2d40_cluster_count++;
+			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+			logerror("ASR10_CLUSTER_TRACE event=fc2d40_write pc=%06x address=%06x offset=%04x "
+				"mem_mask=%04x data=%04x cluster_count=%u\n",
+				pc, 0x00fc2d40 + offset, offset, mem_mask, data, m_fc2d40_cluster_count);
+		});
+	m_hook_fc3000_read_tap = m_maincpu->space(AS_PROGRAM).install_read_tap(
+		0x00fc3000, 0x00fc31ff, "hook_fc3000_read_tap",
+		[this] (offs_t offset, u16 &data, u16 mem_mask)
+		{
+			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+				return;
+			if (m_fc3000_cluster_count >= 32)
+				return;
+			m_fc3000_cluster_count++;
+			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+			logerror("ASR10_CLUSTER_TRACE event=fc3000_read pc=%06x address=%06x offset=%04x "
+				"mem_mask=%04x data=%04x cluster_count=%u\n",
+				pc, 0x00fc3000 + offset, offset, mem_mask, data, m_fc3000_cluster_count);
+		});
+	m_hook_fc3000_write_tap = m_maincpu->space(AS_PROGRAM).install_write_tap(
+		0x00fc3000, 0x00fc31ff, "hook_fc3000_write_tap",
+		[this] (offs_t offset, u16 &data, u16 mem_mask)
+		{
+			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+				return;
+			if (m_fc3000_cluster_count >= 32)
+				return;
+			m_fc3000_cluster_count++;
+			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+			logerror("ASR10_CLUSTER_TRACE event=fc3000_write pc=%06x address=%06x offset=%04x "
+				"mem_mask=%04x data=%04x cluster_count=%u\n",
+				pc, 0x00fc3000 + offset, offset, mem_mask, data, m_fc3000_cluster_count);
+		});
+	m_hook_fc222e_read_tap = m_maincpu->space(AS_PROGRAM).install_read_tap(
+		0x00fc222e, 0x00fc222f, "hook_fc222e_read_tap",
+		[this] (offs_t offset, u16 &data, u16 mem_mask)
+		{
+			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+				return;
+			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+			logerror("ASR10_CLUSTER_TRACE event=fc222e_read pc=%06x mem_mask=%04x data=%04x\n",
+				pc, mem_mask, data);
+		});
+	m_hook_fc222e_write_tap = m_maincpu->space(AS_PROGRAM).install_write_tap(
+		0x00fc222e, 0x00fc222f, "hook_fc222e_write_tap",
+		[this] (offs_t offset, u16 &data, u16 mem_mask)
+		{
+			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+				return;
+			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+			logerror("ASR10_CLUSTER_TRACE event=fc222e_write pc=%06x mem_mask=%04x data=%04x\n",
+				pc, mem_mask, data);
+		});
+	m_hook_fc226e_read_tap = m_maincpu->space(AS_PROGRAM).install_read_tap(
+		0x00fc226e, 0x00fc226f, "hook_fc226e_read_tap",
+		[this] (offs_t offset, u16 &data, u16 mem_mask)
+		{
+			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+				return;
+			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+			logerror("ASR10_CLUSTER_TRACE event=fc226e_read pc=%06x mem_mask=%04x data=%04x\n",
+				pc, mem_mask, data);
+		});
+	m_hook_fc226e_write_tap = m_maincpu->space(AS_PROGRAM).install_write_tap(
+		0x00fc226e, 0x00fc226f, "hook_fc226e_write_tap",
+		[this] (offs_t offset, u16 &data, u16 mem_mask)
+		{
+			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+				return;
+			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+			logerror("ASR10_CLUSTER_TRACE event=fc226e_write pc=%06x mem_mask=%04x data=%04x\n",
+				pc, mem_mask, data);
+		});
+	// Phase 1 host-port fingerprint experiment (ASR10_EXPERIMENT_ES5506_HOST):
+	// observation-only taps layered over the real es5506_device::read/write
+	// mapping installed in mem_map(). These are genuine DATA accesses (via
+	// MOVEP), not opcode fetches, so (unlike the four call-chain taps
+	// above) the dispatch-backed tap mechanism does fire here -- already
+	// proven earlier this session for other FC-range data taps.
+	if (m_es5506_host.found())
+	{
+		logerror("ASR10_ES5506_HOST event=device_instantiated clock=16000000 note=provisional_uncalibrated\n");
+		m_maincpu->space(AS_PROGRAM).install_read_tap(
+			0x00fc2000, 0x00fc207f, "hook_es5506_host_read_tap",
+			[this] (offs_t offset, u16 &data, u16 mem_mask)
+			{
+				if (!m_es5506_host_enabled || machine().side_effects_disabled())
+					return;
+				if (!ACCESSING_BITS_0_7)
+					return; // even lane is unmapped by design (odd-lane-only adapter)
+				const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+				const u32 address = offset + 1; // offset is the absolute even (word)
+					// address per this session's confirmed tap semantics; the
+					// odd/low byte (the only one wired) is offset+1.
+				const u32 disp = address - 0x00fc2001;
+				const u32 device_offset = disp / 2;
+				const u32 seen_index = device_offset & 0x3f;
+				const bool first_seen = !(m_es5506_host_seen_mask[seen_index] & 1);
+				m_es5506_host_seen_mask[seen_index] |= 1;
+				m_es5506_host_access_count++;
+				logerror("ASR10_ES5506_HOST event=host_read pc=%06x address=%06x adapter_disp=%02x "
+					"logical_offset=%02x case_index=%u register=%s data=%02x mem_mask=%04x "
+					"first_seen=%u access_count=%u\n",
+					pc, address, disp, device_offset, device_offset / 4,
+					es5506_register_name(disp), u8(data), mem_mask,
+					first_seen ? 1 : 0, m_es5506_host_access_count);
+			});
+		m_maincpu->space(AS_PROGRAM).install_write_tap(
+			0x00fc2000, 0x00fc207f, "hook_es5506_host_write_tap",
+			[this] (offs_t offset, u16 &data, u16 mem_mask)
+			{
+				if (!m_es5506_host_enabled || machine().side_effects_disabled())
+					return;
+				if (!ACCESSING_BITS_0_7)
+					return;
+				const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+				const u32 address = offset + 1; // offset is the absolute even (word)
+					// address per this session's confirmed tap semantics; the
+					// odd/low byte (the only one wired) is offset+1.
+				const u32 disp = address - 0x00fc2001;
+				const u32 device_offset = disp / 2;
+				const u32 seen_index = device_offset & 0x3f;
+				const bool first_seen = !(m_es5506_host_seen_mask[seen_index] & 2);
+				m_es5506_host_seen_mask[seen_index] |= 2;
+				m_es5506_host_access_count++;
+				logerror("ASR10_ES5506_HOST event=host_write pc=%06x address=%06x adapter_disp=%02x "
+					"logical_offset=%02x case_index=%u register=%s data=%02x mem_mask=%04x "
+					"first_seen=%u access_count=%u\n",
+					pc, address, disp, device_offset, device_offset / 4,
+					es5506_register_name(disp), u8(data), mem_mask,
+					first_seen ? 1 : 0, m_es5506_host_access_count);
+			});
+	}
 	m_lowmem_shadow = make_unique_clear<u16[]>(LOWMEM_WORDS);
 
 	// output_finder in this MAME tree derives from device_resolver_base and
@@ -782,6 +1095,19 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_duart_counter_fire_count));
 	save_item(NAME(m_duart_counter_stop_count));
 	save_item(NAME(m_duart_acr));
+	save_item(NAME(m_divzero_frame_logged));
+	m_es5506_host_enabled = m_es5506_host.found();
+	save_item(NAME(m_es5506_host_enabled));
+	save_item(NAME(m_es5506_host_seen_mask));
+	save_item(NAME(m_es5506_host_access_count));
+	save_item(NAME(m_es5506_diag_par_enabled));
+	save_item(NAME(m_es5506_diag_par_value));
+	save_item(NAME(m_es5506_diag_par_read_count));
+	save_item(NAME(m_primary_slot_snapshot_logged));
+	save_item(NAME(m_hook_006800_dump_logged));
+	save_item(NAME(m_fc60b0_verified));
+	save_item(NAME(m_fc2d40_cluster_count));
+	save_item(NAME(m_fc3000_cluster_count));
 	save_item(NAME(m_panel_c_parser_trace_enabled));
 	save_item(NAME(m_panel_c_parser_trace_active));
 	save_item(NAME(m_panel_c_parser_trace_done));
@@ -940,6 +1266,21 @@ void asr10_boot_state::machine_reset()
 	m_duart_counter_fire_count = 0;
 	m_duart_counter_stop_count = 0;
 	m_duart_acr = 0;
+	m_divzero_frame_logged = false;
+	m_es5506_host_seen_mask.fill(0);
+	m_es5506_host_access_count = 0;
+	{
+		const char *const par_value_env = std::getenv("ASR10_DIAG_PAR_VALUE");
+		m_es5506_diag_par_enabled = par_value_env && par_value_env[0];
+		m_es5506_diag_par_value = m_es5506_diag_par_enabled
+			? u16(std::strtoul(par_value_env, nullptr, 0)) : 0x200;
+	}
+	m_es5506_diag_par_read_count = 0;
+	m_primary_slot_snapshot_logged = false;
+	m_hook_006800_dump_logged = false;
+	m_fc60b0_verified = false;
+	m_fc2d40_cluster_count = 0;
+	m_fc3000_cluster_count = 0;
 	m_duart_counter_timer->adjust(attotime::never);
 	const char *const panel_c_parser_trace = std::getenv("ASR10_DIAG_PANEL_C_PARSER_TRACE");
 	m_panel_c_parser_trace_enabled = m_panel_d1_reply_71_ff_enabled || m_panel_d2_reply_71_7e_ff_enabled ||
@@ -1202,7 +1543,28 @@ void asr10_boot_state::mem_map(address_map &map)
 
 	map(0xf00000, 0xf7ffff).ram();
 	map(0xf80000, 0xfbffff).rw(FUNC(asr10_boot_state::high_alias_r), FUNC(asr10_boot_state::high_alias_w));
-	map(0xfc0000, 0xfc3fff).ram();
+	{
+		// Phase 1 host-port fingerprint experiment
+		// (ASR10_EXPERIMENT_ES5506_HOST): flagged premise, NOT board-proven
+		// -- see docs/asr10/es5506-chain-verification.md. Narrow adapter
+		// owns only FC2000-FC207F; FC2080+ (and FC2Dxx/FC30xx elsewhere)
+		// are untouched .ram(), matching the exact 0x80-byte,
+		// .umask16(0x00ff) convention already proven in esqkt.cpp/
+		// macrossp.cpp/ssv.cpp for this same device.
+		const char *const es5506_host_env = std::getenv("ASR10_EXPERIMENT_ES5506_HOST");
+		const bool es5506_host_enabled =
+			es5506_host_env && es5506_host_env[0] && es5506_host_env[0] != '0';
+		if (es5506_host_enabled)
+		{
+			map(0xfc0000, 0xfc1fff).ram();
+			map(0xfc2000, 0xfc207f).rw(m_es5506_host, FUNC(es5506_device::read), FUNC(es5506_device::write)).umask16(0x00ff);
+			map(0xfc2080, 0xfc3fff).ram();
+		}
+		else
+		{
+			map(0xfc0000, 0xfc3fff).ram();
+		}
+	}
 	map(0xfc4000, 0xfc4003).rw(FUNC(asr10_boot_state::upd72069_fdc_r), FUNC(asr10_boot_state::upd72069_fdc_w));
 	map(0xfc4004, 0xfc47ff).ram();
 	map(0xfc4800, 0xfc481f).rw(FUNC(asr10_boot_state::duart_panel_asr_candidate_r), FUNC(asr10_boot_state::duart_panel_asr_candidate_w));
@@ -1648,6 +2010,190 @@ void asr10_boot_state::log_duart_counter_watched_pc(u32 pc)
 		return;
 	}
 	logerror("ASR10_DUART_COUNTER event=watched_pc pc=%06x role=%s\n", pc, role);
+}
+
+
+std::string asr10_boot_state::dump_cpu_registers() const
+{
+	return util::string_format(
+		"d0=%08x d1=%08x d2=%08x d3=%08x d4=%08x d5=%08x d6=%08x d7=%08x "
+		"a0=%08x a1=%08x a2=%08x a3=%08x a4=%08x a5=%08x a6=%08x",
+		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
+		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
+		u32(m_maincpu->state_int(M68K_D4)), u32(m_maincpu->state_int(M68K_D5)),
+		u32(m_maincpu->state_int(M68K_D6)), u32(m_maincpu->state_int(M68K_D7)),
+		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
+		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
+		u32(m_maincpu->state_int(M68K_A4)), u32(m_maincpu->state_int(M68K_A5)),
+		u32(m_maincpu->state_int(M68K_A6)));
+}
+
+
+const char *asr10_boot_state::es5506_register_name(u32 cpu_displacement)
+{
+	// Per es5506-chain-verification.md: with the odd-lane/16-bit-bus
+	// convention proven in esqkt.cpp/macrossp.cpp/ssv.cpp, the CPU
+	// displacement equals the chip's own datasheet register byte address
+	// directly (case labels in es5506.cpp are written as "N/8" where N is
+	// exactly this displacement). PAR/IRQV/PAGE are identical across all
+	// three page banks (es5506.cpp:1421/1498/1522 etc); the others differ
+	// by bank, and we cannot read the device's private m_current_page, so
+	// both interpretations are named. Displacements not aligned to 8 are
+	// the low half-word of a 4-byte register (movep.w instead of movep.l).
+	const u32 aligned = cpu_displacement & ~7U;
+	const bool low_half = (cpu_displacement & 7U) == 4;
+	const char *base_name = nullptr;
+	switch (aligned)
+	{
+	case 0x00: base_name = "CR(low)/CR(high)/CH0L(test)"; break;
+	case 0x08: base_name = "FC(low)/START(high)/CH0R(test)"; break;
+	case 0x10: base_name = "LVOL(low)/END(high)/CH1L(test)"; break;
+	case 0x18: base_name = "LVRAMP(low)/ACCUM(high)/CH1R(test)"; break;
+	case 0x20: base_name = "RVOL(low)/O4n-1(high)/CH2L(test)"; break;
+	case 0x28: base_name = "RVRAMP(low)/O3n-1(high)/CH2R(test)"; break;
+	case 0x30: base_name = "ECOUNT(low)/O3n-2(high)/CH3L(test)"; break;
+	case 0x38: base_name = "K2(low)/O2n-1(high)/CH3R(test)"; break;
+	case 0x40: base_name = "K2RAMP(low)/O2n-2(high)/CH4L(test)"; break;
+	case 0x48: base_name = "K1(low)/O1n-1(high)/CH4R(test)"; break;
+	case 0x50: base_name = "K1RAMP(low)/W_ST(high)/CH5L(test)"; break;
+	case 0x58: base_name = "ACTV(low)/W_END(high)/CH5-6R(test)"; break;
+	case 0x60: base_name = "MODE(low)/LR_END(high)/EMPTY(test)"; break;
+	case 0x68: return "PAR(all banks)";
+	case 0x70: return "IRQV(all banks)";
+	case 0x78: return "PAGE(all banks)";
+	default: return "unknown/outside_register_file";
+	}
+	static thread_local std::string buf;
+	buf = low_half ? (std::string(base_name) + "[low-halfword]") : base_name;
+	return buf.c_str();
+}
+
+
+u16 asr10_boot_state::es5506_host_read_par_diag()
+{
+	// Phase 1B, pre-authorized ONLY for a Phase 1 INCONCLUSIVE verdict.
+	// NOT an analog model, NOT a resting-position claim -- its sole
+	// purpose is to let execution pass the divide so post-fault firmware
+	// performs richer FC20xx register traffic for fingerprinting.
+	m_es5506_diag_par_read_count++;
+	logerror("ASR10_ES5506_HOST event=par_diag_read source=diagnostic_unblock value=%03x "
+		"read_count=%u\n",
+		m_es5506_diag_par_value, m_es5506_diag_par_read_count);
+	return m_es5506_diag_par_value;
+}
+
+
+void asr10_boot_state::log_divzero_exception_frame(u32 pc)
+{
+	// One-shot: 68000 ERROR 130 (divide-by-zero) handler entry, per
+	// architecture.md's trap table (f882b6: moveq #$82). Observation only.
+	if (!m_duart_counter_timer_enabled || m_divzero_frame_logged || pc != 0x00f882b6)
+		return;
+	m_divzero_frame_logged = true;
+
+	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+	const u16 stacked_sr = read_program_word(sp);
+	const u32 stacked_pc = read_stack_long(sp + 2);
+	logerror("ASR10_DIVZERO_FRAME event=exception_frame pc=%06x sp=%06x stacked_sr=%04x stacked_pc=%06x "
+		"d0=%08x d1=%08x d2=%08x d3=%08x d4=%08x d5=%08x d6=%08x d7=%08x "
+		"a0=%08x a1=%08x a2=%08x a3=%08x a4=%08x a5=%08x a6=%08x "
+		"tick_0b82=%02x flag_03c5=%02x word_03bc=%04x fire_count=%u\n",
+		pc, sp, stacked_sr, stacked_pc,
+		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
+		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
+		u32(m_maincpu->state_int(M68K_D4)), u32(m_maincpu->state_int(M68K_D5)),
+		u32(m_maincpu->state_int(M68K_D6)), u32(m_maincpu->state_int(M68K_D7)),
+		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
+		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
+		u32(m_maincpu->state_int(M68K_A4)), u32(m_maincpu->state_int(M68K_A5)),
+		u32(m_maincpu->state_int(M68K_A6)),
+		lowmem_byte(0x0b82), lowmem_byte(0x03c5), lowmem_word(0x03bc), m_duart_counter_fire_count);
+
+	// Temporary: stacked_pc lands in loaded low-RAM OS content (populated by
+	// the floppy-image loader at runtime), not static ROM, so it cannot be
+	// disassembled from the ROM file. Dump the live shadow bytes around it
+	// (32 before, 8 after) for offline unidasm analysis.
+	if (stacked_pc >= 32 && stacked_pc + 8 < LOWMEM_WORDS * 2)
+	{
+		std::string hex;
+		for (u32 offset = stacked_pc - 32; offset < stacked_pc + 8; offset++)
+			hex += util::string_format("%02x", lowmem_byte(offset));
+		logerror("ASR10_DIVZERO_FRAME event=stacked_pc_bytes stacked_pc=%06x dump_start=%06x "
+			"dump_len=40 hex=%s\n",
+			stacked_pc, stacked_pc - 32, hex.c_str());
+	}
+
+	// Extended stack-frame dump: SP+0 (stacked SR), SP+2..SP+5 (stacked PC),
+	// then every word SP+6..SP+0x24. The supervisor stack lives in low RAM
+	// (per the captured A7/SP), so the shadow-backed read_program_word is
+	// exact. SP+6 (a long) is the return address into 0x6800's direct
+	// caller, since 0x6800 pushes nothing of its own before the DIVU.
+	{
+		std::string words;
+		for (u32 off = 0; off <= 0x24; off += 2)
+			words += util::string_format("%04x@%02x ", read_program_word(sp + off), off);
+		const u32 caller_return_address = read_stack_long(sp + 6);
+		logerror("ASR10_DIVZERO_FRAME event=stack_frame_dump sp=%06x words=\"%s\" "
+			"caller_return_address=%06x\n",
+			sp, words.c_str(), caller_return_address);
+
+		// Live bytes around the caller's return address, for offline unidasm
+		// (same rationale as the stacked_pc dump above: loaded low-RAM OS
+		// content, not static ROM).
+		if (caller_return_address >= 48 && caller_return_address + 8 < LOWMEM_WORDS * 2)
+		{
+			std::string hex;
+			for (u32 offset = caller_return_address - 48; offset < caller_return_address + 8; offset++)
+				hex += util::string_format("%02x", lowmem_byte(offset));
+			logerror("ASR10_DIVZERO_FRAME event=caller_return_bytes caller_return_address=%06x "
+				"dump_start=%06x dump_len=56 hex=%s\n",
+				caller_return_address, caller_return_address - 48, hex.c_str());
+		}
+	}
+}
+
+
+void asr10_boot_state::log_primary_slot_snapshot_once(u32 pc)
+{
+	// One-shot, first entry into f88300 only. Walks the primary scheduler
+	// slot table [$00c6.w, $00c8.w), stride 0x16. Pure shadow reads via
+	// lowmem_word -- no guest RAM is mutated.
+	if (!m_duart_counter_timer_enabled || m_primary_slot_snapshot_logged || pc != 0x00f88300)
+		return;
+	m_primary_slot_snapshot_logged = true;
+
+	const u16 base = lowmem_word(0x00c6);
+	const u16 end = lowmem_word(0x00c8);
+	constexpr u32 MAX_SLOTS = 16;
+	u32 index = 0;
+	for (u32 addr = base; addr < u32(end) && index < MAX_SLOTS; addr += 0x16, index++)
+	{
+		logerror("ASR10_SLOT_TIMEOUT_SNAPSHOT event=primary_slot pc=%06x index=%u slot_base=%04x "
+			"countdown_plus00=%04x state_plus02=%04x threshold_plus14=%04x\n",
+			pc, index, addr, lowmem_word(addr), lowmem_word(addr + 2), lowmem_word(addr + 0x14));
+	}
+	logerror("ASR10_SLOT_TIMEOUT_SNAPSHOT event=primary_table_bounds pc=%06x base=%04x end=%04x count=%u\n",
+		pc, base, end, index);
+}
+
+
+void asr10_boot_state::log_timer_secondary_callback(u32 pc)
+{
+	// f88352 is the jsr (A1) itself, immediately after f8834a's
+	// movea.l ($16,A0),A1 loads the callback pointer -- verified by
+	// disassembly, not assumed. Logs every invocation (volume is low:
+	// gated by the every-10th-tick $0b82 walk plus each entry's own
+	// +0x14 countdown reaching zero), so the one immediately preceding
+	// a fault is always captured regardless of any dedup scheme.
+	if (!m_duart_counter_timer_enabled || pc != 0x00f88352)
+		return;
+
+	const u32 entry_base = m_maincpu->state_int(M68K_A0) & 0x00ffffff;
+	const u32 callback_ptr = m_maincpu->state_int(M68K_A1) & 0x00ffffff;
+	logerror("ASR10_TIMER_SECONDARY_CALLBACK event=callback_invoke pc=%06x entry_base=%06x "
+		"entry_plus14_countdown=%04x callback_ptr=%06x tick_0b82=%02x fire_count=%u caller_pc=%06x\n",
+		pc, entry_base, lowmem_word(entry_base + 0x14), callback_ptr,
+		lowmem_byte(0x0b82), m_duart_counter_fire_count, m_last_distinct_pc);
 }
 
 
@@ -6221,6 +6767,9 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::pc_poll)
 			logerror("ASR10PC further transitions suppressed; final loop summary remains enabled\n");
 		log_watched_pc(pc);
 		log_duart_counter_watched_pc(pc);
+		log_primary_slot_snapshot_once(pc);
+		log_timer_secondary_callback(pc);
+		log_divzero_exception_frame(pc);
 		m_last_pc = pc;
 	}
 	else
@@ -6273,6 +6822,31 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	// The uPD72069 sees this child connector as drive 0 via the conventional "fdc:0" tag.
 	// Mounted HFE media changes Recalibrate/Sense from 68,00 (not ready) to 20,00.
 	FLOPPY_CONNECTOR(config, m_floppy_connector, asr10_boot_state::floppy_drives, "35hd", asr10_boot_state::floppy_formats, true);
+
+	// Phase 1 host-port fingerprint experiment (ASR10_EXPERIMENT_ES5506_HOST).
+	// Flagged premise, not board-proven: see
+	// docs/asr10/es5506-chain-verification.md. Instantiated only when the
+	// env var is set, so the baseline (flag absent) build/run is
+	// byte-for-byte identical to before this device existed.
+	const char *const es5506_host_env = std::getenv("ASR10_EXPERIMENT_ES5506_HOST");
+	if (es5506_host_env && es5506_host_env[0] && es5506_host_env[0] != '0')
+	{
+		// Provisional/uncalibrated: no ASR-10-specific clock citation exists
+		// for this chip in any driver; es550x_device::device_start() divides
+		// by clock() to compute m_sample_rate, so a nonzero clock is required
+		// simply to construct the device.
+		es5506_device &es5506_host(ES5506(config, m_es5506_host, XTAL(16'000'000)));
+
+		// Phase 1B, pre-authorized ONLY for a Phase 1 INCONCLUSIVE verdict:
+		// bind a single fixed diagnostic PAR value so execution can pass the
+		// divide and produce richer post-fault FC20xx traffic. NOT an
+		// analog model, NOT a resting-position claim -- see
+		// es5506_host_read_par_diag().
+		const char *const par_value_env = std::getenv("ASR10_DIAG_PAR_VALUE");
+		if (par_value_env && par_value_env[0])
+			es5506_host.read_port_cb().set(FUNC(asr10_boot_state::es5506_host_read_par_diag));
+		// read_port_cb left unbound otherwise (Phase 1 requirement).
+	}
 
 	config.set_default_layout(layout_asr10_boot);
 }
