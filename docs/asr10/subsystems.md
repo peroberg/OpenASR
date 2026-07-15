@@ -105,28 +105,51 @@ itself is about relationships.
            │ claim.
            ▼
 ┌─────────────────────┐
-│ divider                │  `006800-006820`, fully disassembled:
+│ divider                │  `006800-006820`, fully disassembled and
+│                       │  **corrected 2026-07-16** (the branch at
+│                       │  `00680c` is `BVC`, not `BNE` — re-verified
+│                       │  directly from the live opcode word `$6804`:
+│                       │  `0110 1000 00000100` = Bcc class, condition
+│                       │  field `1000` = VC, displacement `+4` ->
+│                       │  `006812`):
 │                       │  ```
 │                       │  006800  move.w  D2,$0dd6      ; raw rate param
 │                       │  006804  move.l  #$a3480000,D0
 │                       │  00680a  divu.w  D2,D0          ; FAULTS if D2=0
-│                       │  00680c  bne.s   $006812
-│                       │  00680e  move.w  #$ffff,D0      ; clamp if quotient=0
+│                       │  00680c  bvc.s   $006812         ; V clear (no overflow) -> store directly
+│                       │  00680e  move.w  #$ffff,D0      ; V set (overflow) -> clamp to $FFFF
 │                       │  006812  move.w  D0,$0df2       ; final divider result
 │                       │  006816  andi.b  #$f8,$fc6829   ; clear PBDAT bits2:0
-│                       │  00681e  ori.b   #$05,$fc6829   ; [truncated dump;
-│                       │                                    address operand
-│                       │                                    not captured]
+│                       │  00681e  ori.b   #$05,$fc6829   ; set PBDAT bits2:0=5 (confirmed
+│                       │                                    by live execution, see below)
 │                       │  ```
-│                       │  The zero-quotient clamp to $FFFF (max 16-bit
-│                       │  value) is the classic "avoid a zero reload
-│                       │  count" pattern, consistent with $0DF2 feeding a
-│                       │  hardware **timer/period reload value**, not a
-│                       │  simple diagnostic. $0DD6 keeps the raw
-│                       │  (unscaled-by-divide) rate parameter.
+│                       │  Semantic distinction (corrected): divide-by-zero
+│                       │  is a full CPU exception (excluded entirely, not
+│                       │  reachable via this branch); the clamp to $FFFF
+│                       │  fires on **quotient overflow** (divisor too
+│                       │  small for the quotient to fit in 16 bits), not
+│                       │  on a zero quotient. This is the classic "avoid
+│                       │  an unrepresentable reload count" pattern,
+│                       │  consistent with $0DF2 feeding a hardware
+│                       │  **timer/period reload value**. $0DD6 keeps the
+│                       │  raw (unscaled-by-divide) rate parameter.
+│                       │
+│                       │  **Confirmed live** via the gated diagnostic PAR
+│                       │  test (`ASR10_EXPERIMENT_PAR_DIAGNOSTIC=1
+│                       │  ASR10_DIAG_PAR_VALUE=0x300`, NOT a channel/
+│                       │  resting-value claim): raw=0x300 -> D2=0xC000
+│                       │  (matches `raw<<6` exactly) -> `divu.w` computes
+│                       │  quotient=$D9B5, remainder=$4000 (no overflow,
+│                       │  `bvc` taken) -> `$0DD6=$C000`, `$0DF2=$D9B5` ->
+│                       │  `andi #$f8,$fc6829` (PBDAT 0x0f->0x08) ->
+│                       │  `ori #$05,$fc6829` (PBDAT 0x08->0x0d, bits2:0=5,
+│                       │  confirming the previously-truncated operand) ->
+│                       │  firmware proceeds to a **new** blocker (see the
+│                       │  MC68302-ports box below).
 └──────────┬───────────┘  Proven: exception frame + this session's live
            │                disassembly (`ASR10_TASK2_00686E_DUMP`,
-           │                `ASR10_FC681X_CODE_DUMP`).
+           │                `ASR10_FC681X_CODE_DUMP`) + live diagnostic
+           │                run (`ASR10_DIVIDER_TASK2`, `ASR10_GPIO_STAGE1`).
            │ (immediately after the divide, on the non-faulting path)
            ▼
 ┌─────────────────────┐
@@ -134,18 +157,41 @@ itself is about relationships.
 │                       │  (bits 2:0 clear-then-set-to-5, i.e. 0b101 --
 │                       │  a THIRD distinct PB2:0 value, different from
 │                       │  the constant 0b111 observed throughout every
-│                       │  actual capture) immediately follow the divide.
-│                       │  **Still never observed executing in any
-│                       │  capture** (this session confirmed zero
-│                       │  divide-by-zero exceptions AND zero writes to
-│                       │  FC6829 beyond the boot-time init and the single
-│                       │  0067f6 `ori #7` in every run taken) — the fault
-│                       │  still gates this path off whenever D2=0, which
-│                       │  it always is in the current unmodeled harness.
-│                       │  [OPEN] — code is real (confirmed via live
-│                       │  disassembly), reachability is not.
-└──────────┬───────────┘
-           │ (hypothesized only)
+│                       │  unmodeled-harness capture) immediately follow
+│                       │  the divide.
+│                       │
+│                       │  **Now confirmed executing**, via the gated
+│                       │  diagnostic PAR test (raw=0x300, in the
+│                       │  mathematically-valid non-overflow range, see
+│                       │  the divider box above): PBDAT goes
+│                       │  0x0f->0x08 (`andi #$f8`)->0x0d (`ori #$05`,
+│                       │  bits2:0=5, confirming the address operand).
+│                       │  Immediately after (fire_count=206, a
+│                       │  previously-unreached point), the adjacent
+│                       │  `006840-00686c` routine runs its own
+│                       │  `andi #$f8`/`ori #$00` pair on the SAME byte
+│                       │  (PBDAT 0x0d->0x08->0x08, bits2:0=0 -- a
+│                       │  **fourth** distinct value), immediately
+│                       │  before falling into `00686e`'s next
+│                       │  measurement pass. No physical/channel meaning
+│                       │  is claimed for any of these values.
+│                       │
+│                       │  Firmware then proceeds past this point (up to
+│                       │  fire_count=1453 observed, both 45s and 180s
+│                       │  captures reach the identical stable end state)
+│                       │  to a **new terminal blocker**: panel text
+│                       │  progresses through "LOADING SYSTEM"->
+│                       │  "EFFECT DOWNLOAD FAILED"->"ERROR 032 - REBOOT ?"
+│                       │  (`troubleshoot.md`: 032 = "bad download",
+│                       │  digital-board-class error), then idles waiting
+│                       │  for a reboot-confirm keypress that never comes
+│                       │  in this headless harness. This replaces the
+│                       │  old ERROR 130/PAR=0 blocker entirely for this
+│                       │  configuration.
+└──────────┬───────────┘  Proven: live diagnostic run, `ASR10_GPIO_STAGE1`,
+           │                `ASR10PANEL text=...`. Reproduced identically
+           │                in independent 45s and 180s captures.
+           │ (hypothesized only, for the general/uninjected case)
            ▼
 ┌─────────────────────┐
 │ external device window │  FC2001-relative MOVEP library (20 thunks,

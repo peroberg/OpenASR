@@ -219,6 +219,36 @@ or unresolved gap.
   Source: `ASR10_TASK1_STATIC_JSR_SCAN` + `ASR10_CODE_DUMP
   tag=task2_f8db_armed_callback_range`.
 
+- **Divider branch at `00680c` corrected to `BVC`, not `BNE`.** Re-verified
+  directly from the live opcode word `$6804` (`0110 1000 00000100`: Bcc
+  class, condition field `1000`=VC). The clamp to `$FFFF` at `00680e`
+  fires on **quotient overflow** (divisor too small), not on a zero
+  quotient — divide-by-zero is a separate, full CPU exception excluded
+  entirely from this branch. Retracts the `BNE`/"zero-quotient clamp"
+  description from the previous report (chat-only, never committed to
+  this file, but recorded here to close the gap).
+- **Minimum safe (non-overflowing) divisor is `0xA349`, not `0xA348`.**
+  `ceil(0xA3480000 / 0xFFFF) = 0xA349` (at `D2=0xA348` exactly, the true
+  quotient is `0x10000`, one past the 16-bit max — this rounds down to
+  `0xA348` if using floor instead of ceil, an off-by-one in the earlier
+  report). Implied valid raw PAR range (8 identical samples,
+  `D2=raw<<6`): **`raw` in `[0x28E, 0x3FF]`** (654-1023 decimal), not
+  `[0x28D, 0x3FF]`.
+- **Diagnostic PAR test (`ASR10_EXPERIMENT_PAR_DIAGNOSTIC=1
+  ASR10_DIAG_PAR_VALUE=0x300`) confirms the full propagation chain**,
+  raw=0x300 chosen inside the valid range above: `D2=0xC000` (exact
+  `raw<<6`) -> `divu.w` quotient=`$D9B5`, remainder=`$4000` (no overflow)
+  -> `$0DD6=$C000`, `$0DF2=$D9B5` -> `andi #$f8,$fc6829` then
+  `ori #$05,$fc6829` (PBDAT 0x0f->0x08->0x0d, confirming the previously-
+  truncated `ori` operand) -> firmware reaches a **new, stable** terminal
+  state: `"EFFECT DOWNLOAD FAILED"` then `"ERROR 032 - REBOOT ?"`
+  (`troubleshoot.md`: 032 = bad download), replacing the old ERROR 130/
+  PAR=0 blocker. Reproduced identically in independent 45s and 180s
+  captures (both stop progressing at the same `read_count=459`,
+  `fire_count=1453`). No channel/resting-value semantics are claimed for
+  0x300. See `subsystems.md` for the full disassembly and byte-level
+  trace.
+
 ## 3. Plausible hypotheses (unproven)
 
 - **FC2001 is (or is modeled on) an ES5506/ES5505-family device**, based

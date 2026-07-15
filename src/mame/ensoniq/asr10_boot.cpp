@@ -1330,8 +1330,15 @@ void asr10_boot_state::machine_reset()
 	m_es5506_host_seen_mask.fill(0);
 	m_es5506_host_access_count = 0;
 	{
+		// Task-continuation diagnostic PAR test: requires BOTH the explicit
+		// experiment flag AND a value, narrower than the old Phase 1B gate
+		// (ASR10_DIAG_PAR_VALUE alone). NOT an analog model, NOT a claim
+		// that 0x300 (or whatever value is passed) is a real resting value.
+		const char *const par_diagnostic_env = std::getenv("ASR10_EXPERIMENT_PAR_DIAGNOSTIC");
+		const bool par_diagnostic_enabled =
+			par_diagnostic_env && par_diagnostic_env[0] && par_diagnostic_env[0] != '0';
 		const char *const par_value_env = std::getenv("ASR10_DIAG_PAR_VALUE");
-		m_es5506_diag_par_enabled = par_value_env && par_value_env[0];
+		m_es5506_diag_par_enabled = par_diagnostic_enabled && par_value_env && par_value_env[0];
 		m_es5506_diag_par_value = m_es5506_diag_par_enabled
 			? u16(std::strtoul(par_value_env, nullptr, 0)) : 0x200;
 	}
@@ -2131,14 +2138,15 @@ const char *asr10_boot_state::es5506_register_name(u32 cpu_displacement)
 
 u16 asr10_boot_state::es5506_host_read_par_diag()
 {
-	// Phase 1B, pre-authorized ONLY for a Phase 1 INCONCLUSIVE verdict.
-	// NOT an analog model, NOT a resting-position claim -- its sole
-	// purpose is to let execution pass the divide so post-fault firmware
-	// performs richer FC20xx register traffic for fingerprinting.
+	// Diagnostic-only fixed-value PAR test (ASR10_EXPERIMENT_PAR_DIAGNOSTIC).
+	// NOT an analog model, NOT a claim that this value is a real resting
+	// position for any physical control -- its sole purpose is to observe
+	// the DIVU's downstream propagation with a controlled, in-range input.
 	m_es5506_diag_par_read_count++;
-	logerror("ASR10_ES5506_HOST event=par_diag_read source=diagnostic_unblock value=%03x "
-		"read_count=%u\n",
-		m_es5506_diag_par_value, m_es5506_diag_par_read_count);
+	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+	logerror("ASR10_ES5506_HOST event=par_diag_read source=diagnostic_constant value=%03x "
+		"read_count=%u caller_pc=%06x fire_count=%u\n",
+		m_es5506_diag_par_value, m_es5506_diag_par_read_count, pc, m_duart_counter_fire_count);
 	return m_es5506_diag_par_value;
 }
 
@@ -6990,15 +6998,20 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 		// simply to construct the device.
 		es5506_device &es5506_host(ES5506(config, m_es5506_host, XTAL(16'000'000)));
 
-		// Phase 1B, pre-authorized ONLY for a Phase 1 INCONCLUSIVE verdict:
-		// bind a single fixed diagnostic PAR value so execution can pass the
-		// divide and produce richer post-fault FC20xx traffic. NOT an
-		// analog model, NOT a resting-position claim -- see
-		// es5506_host_read_par_diag().
+		// Narrowly-gated diagnostic PAR test (ASR10_EXPERIMENT_PAR_DIAGNOSTIC=1
+		// + ASR10_DIAG_PAR_VALUE=<n>): binds a single fixed diagnostic PAR
+		// value so the DIVU's downstream propagation can be observed. NOT
+		// an analog model, NOT a claim that any injected value is a real
+		// resting value -- see es5506_host_read_par_diag(). Both env vars
+		// are required; either absent leaves read_port_cb unbound (baseline
+		// ERROR 130 / PAR=0 path, matching Phase 1).
+		const char *const par_diagnostic_env = std::getenv("ASR10_EXPERIMENT_PAR_DIAGNOSTIC");
+		const bool par_diagnostic_enabled =
+			par_diagnostic_env && par_diagnostic_env[0] && par_diagnostic_env[0] != '0';
 		const char *const par_value_env = std::getenv("ASR10_DIAG_PAR_VALUE");
-		if (par_value_env && par_value_env[0])
+		if (par_diagnostic_enabled && par_value_env && par_value_env[0])
 			es5506_host.read_port_cb().set(FUNC(asr10_boot_state::es5506_host_read_par_diag));
-		// read_port_cb left unbound otherwise (Phase 1 requirement).
+		// read_port_cb left unbound otherwise.
 	}
 
 	config.set_default_layout(layout_asr10_boot);
