@@ -193,6 +193,32 @@ or unresolved gap.
   Reproduced identically across two independent captures (45s and a longer
   run). This satisfies the Phase 2 Stage 1 gate exactly as specified.
 
+- **`00686e` fully disassembled** (`006870-00689c` extended range): confirms
+  `moveq #7,D7` loop, `movem.l D6-D7,-(A7)`, `move.w #4,D0`/`trap #8`/
+  `moveq #0,D0`/`trap #7` (cooperative yield to the dispatcher **between
+  every one of the 8 samples**), `movea.l #$fc2001,A0`/`jsr $fffc60b0`,
+  `asl.w #6,D2`/`lsr.w #3,D2`/`add.w D2,D6`, `dbra D7,...`, `move.w D6,D2`,
+  `rts`. Source: `ASR10_TASK2_00686E_DUMP` (live RAM read).
+- **`006800-006820` (the divider) fully disassembled**: `move.w D2,$0dd6`,
+  `divu.w D2,D0` (dividend `$a3480000`), a zero-quotient clamp to `$FFFF`
+  (`bne.s`/`move.w #$ffff,D0`), `move.w D0,$0df2`, then
+  `andi.b #$f8,$fc6829`/`ori.b #$05,$fc6829`. The clamp-to-`$FFFF` pattern
+  supports classifying `$0DF2` as a timer/period reload value rather than
+  a generic diagnostic. Source: `ASR10_DIVIDER_TASK2` (live write taps at
+  `$0DD6`/`$0DF2`) + `ASR10_FC681X_CODE_DUMP`.
+- **`FC60B0` has (at least) four additional static ROM call sites**:
+  `f8db04`/`f8db24`/`f8db36`/`f8db52` (all literal `jsr $fffc60b0`),
+  found via an exhaustive live word-scan of `0xf80000-0xfbfffa`. Two of
+  the four (`f8db30`, `f8db4c`) implement an exponential-smoothing filter
+  against a per-instance state cell at `(A2+6)` — architecturally
+  consistent with periodic sampling of a noisy physical input. **None of
+  the four have been observed executing in any capture** (every captured
+  PAR-read burst still totals exactly 32 events, matching only `00686e`'s
+  own loop) — consistent with these being event-driven (e.g.
+  touch-triggered) callbacks that don't fire during an unattended boot.
+  Source: `ASR10_TASK1_STATIC_JSR_SCAN` + `ASR10_CODE_DUMP
+  tag=task2_f8db_armed_callback_range`.
+
 ## 3. Plausible hypotheses (unproven)
 
 - **FC2001 is (or is modeled on) an ES5506/ES5505-family device**, based
@@ -228,6 +254,12 @@ or unresolved gap.
   (`asl.w #6` then `lsr.w #3` per sample, summed into D6 across 8
   iterations), not a divide-by-8 average. No divide-by-eight instruction
   has been observed anywhere in the traced routine.
+- **"Zero literal `$fc60xx` references in the boot ROM" (movep-library.md,
+  prior session).** Retracted this session as a search-methodology error:
+  a differently-targeted literal search missed the `4eb9 fffc 60b0`
+  (absolute-long `JSR`) encoding actually used by the four static callers
+  at `f8db04/24/36/52`. Not a claim that new hardware was found — the
+  ROM content was always there; the earlier scan simply didn't match it.
 - **FC222E/FC226E block copies.** Cannot be verified — exhaustive
   disassembly of the entire static ROM (`0xf80000`-`0xfbffff`, ~97,000
   instructions) found **zero** literal references to either address, and

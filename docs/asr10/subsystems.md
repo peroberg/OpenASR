@@ -67,26 +67,83 @@ itself is about relationships.
 ┌─────────────────────┐
 │ 0x67xx-0x68xx          │  OS measurement routine. PROVEN: `00686e`
 │ OS measurement         │  (moveq #7,D7 loop) calls FC60B0 eight times
-│                       │  (fire_counts 149..177), asl.w#6/lsr.w#3/
-│                       │  accumulate into D6, `move.w D6,D2` at end.
-└──────────┬───────────┘  Proven: this session, live dump + disasm.
-           │ FC60B0 thunk: movep.l ($68,A0),D2, A0=FC2001
+│                       │  (fire_counts 149..177 in one capture; 146-174
+│                       │  in another), asl.w#6/lsr.w#3/accumulate into
+│                       │  D6, `move.w D6,D2` at end.
+└──────────┬───────────┘  Proven: full live disassembly, `00686e-00689c`:
+           │              ```
+           │              00686e  moveq   #7,D7
+           │              006870  moveq   #0,D6
+           │              006872  movem.l D6-D7,-(A7)   ; loop top
+           │              006876  move.w  #4,D0
+           │              00687a  trap    #8
+           │              00687c  moveq   #0,D0
+           │              00687e  trap    #7
+           │              006880  movem.l (A7)+,D6-D7
+           │              006884  movea.l #$fc2001,A0
+           │              00688a  jsr     $fffc60b0
+           │              006890  asl.w   #6,D2
+           │              006892  lsr.w   #3,D2
+           │              006894  add.w   D2,D6
+           │              006896  dbra    D7,$006872
+           │              00689a  move.w  D6,D2
+           │              00689c  rts
+           │              ```
+           │              The loop body invokes TRAP #8 then TRAP #7
+           │              (D0=4, then D0=0) **between every sample**,
+           │              i.e. it cooperatively yields to the dispatcher
+           │              once per iteration — this is why each of the 8
+           │              PAR samples lands several ticks apart rather
+           │              than in a tight loop, and why unrelated bus
+           │              traffic (e.g. the f8cf00-f8d010 voice-init
+           │              burst) is observed interleaved between samples
+           │              in the same capture.
+           │ FC60B0 thunk: movep.l ($68,A0),D2, A0=FC2001. **Also has
+           │ four additional static ROM call sites** (f8db04/24/36/52,
+           │ see movep-library.md) that never fire in any capture taken
+           │ so far — retracts the earlier "zero literal ROM callers"
+           │ claim.
            ▼
 ┌─────────────────────┐
-│ divider                │  `006800-00680e`: move.w D2,$0dd6 (store
-│                       │  rate param) ; move.l #$a3480000,D0 ;
-│                       │  divu.w D2,D0  <- FAULTS when D2=0.
-└──────────┬───────────┘  Proven: this session, exception frame +
-           │                live disassembly.
+│ divider                │  `006800-006820`, fully disassembled:
+│                       │  ```
+│                       │  006800  move.w  D2,$0dd6      ; raw rate param
+│                       │  006804  move.l  #$a3480000,D0
+│                       │  00680a  divu.w  D2,D0          ; FAULTS if D2=0
+│                       │  00680c  bne.s   $006812
+│                       │  00680e  move.w  #$ffff,D0      ; clamp if quotient=0
+│                       │  006812  move.w  D0,$0df2       ; final divider result
+│                       │  006816  andi.b  #$f8,$fc6829   ; clear PBDAT bits2:0
+│                       │  00681e  ori.b   #$05,$fc6829   ; [truncated dump;
+│                       │                                    address operand
+│                       │                                    not captured]
+│                       │  ```
+│                       │  The zero-quotient clamp to $FFFF (max 16-bit
+│                       │  value) is the classic "avoid a zero reload
+│                       │  count" pattern, consistent with $0DF2 feeding a
+│                       │  hardware **timer/period reload value**, not a
+│                       │  simple diagnostic. $0DD6 keeps the raw
+│                       │  (unscaled-by-divide) rate parameter.
+└──────────┬───────────┘  Proven: exception frame + this session's live
+           │                disassembly (`ASR10_TASK2_00686E_DUMP`,
+           │                `ASR10_FC681X_CODE_DUMP`).
            │ (immediately after the divide, on the non-faulting path)
            ▼
 ┌─────────────────────┐
 │ MC68302 ports          │  `andi.b #$f8,$fc6829` / `ori.b #$05,$fc6829`
-│                       │  immediately follow the divide in the routine
-│                       │  given by the task context — NOT independently
-│                       │  re-disassembled this session (the fault
-│                       │  prevents this path from executing in any
-│                       │  captured run). [OPEN].
+│                       │  (bits 2:0 clear-then-set-to-5, i.e. 0b101 --
+│                       │  a THIRD distinct PB2:0 value, different from
+│                       │  the constant 0b111 observed throughout every
+│                       │  actual capture) immediately follow the divide.
+│                       │  **Still never observed executing in any
+│                       │  capture** (this session confirmed zero
+│                       │  divide-by-zero exceptions AND zero writes to
+│                       │  FC6829 beyond the boot-time init and the single
+│                       │  0067f6 `ori #7` in every run taken) — the fault
+│                       │  still gates this path off whenever D2=0, which
+│                       │  it always is in the current unmodeled harness.
+│                       │  [OPEN] — code is real (confirmed via live
+│                       │  disassembly), reachability is not.
 └──────────┬───────────┘
            │ (hypothesized only)
            ▼

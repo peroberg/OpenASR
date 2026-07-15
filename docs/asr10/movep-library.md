@@ -69,12 +69,57 @@ as found, not reconciled by assumption.
 
 ## Static callers
 
-**Proven for one thunk only:** `FC60B0` is called from `00686e`
-(`jsr $FFFC60B0`, the 8-iteration measurement loop; see `subsystems.md`).
-No static (ROM) callers were found for FC60B0 or any other thunk in an
-exhaustive scan of the boot ROM (`0xf80000-0xfbffff`, ~97,000
-instructions, zero literal `$fc60xx` references) — consistent with every
-caller being loaded OS content in low RAM, not boot ROM.
+**Corrected 2026-07-16 — retracts the "zero literal references" claim
+below.** A direct word-level scan of the live ROM image (read through the
+running CPU's own address space, `0xf80000-0xfbfffa`, matching every
+`4eb9 fffc 60b0` triplet, i.e. `jsr $fffc60b0`) found **four** static ROM
+callers, all clustered in one block:
+
+```text
+f8db04   jsr $fffc60b0
+f8db24   jsr $fffc60b0
+f8db36   jsr $fffc60b0
+f8db52   jsr $fffc60b0
+```
+
+Full live disassembly of `f8db00-f8db60` shows these are four independent
+callback bodies, not one routine with four call sites:
+
+- **`f8db00-f8db10`**: `movea.l #$fc2001,A0` / `jsr $fffc60b0` / `asl.w #6,D2`
+  / `ori #1,ccr` / `rts` — a bare utility that returns the scaled PAR
+  sample in D2 (no local storage).
+- **`f8db1e-f8db2e`**: same setup/call/scale, then `bra.w` to a shared
+  tail at `f8db6e` (outside the captured range).
+- **`f8db30-f8db4a`**: same setup/call/scale, then
+  `add.w (6,A2),D2` / `lsr.w #1,D2` / `move.w D2,(6,A2)` / `bra.w f8db6e`
+  — an exponential-smoothing filter (`new = (old + (raw<<6)) >> 1`)
+  against a per-instance state cell at `(A2+6)`.
+- **`f8db4c-f8db60+`**: same setup/call/scale, then reads `(6,A2)` into D0
+  and continues (truncated in the captured dump) — a second, related
+  filter variant.
+
+None of these four blocks write PBDAT, PBCNT, PACNT, or the ES5506 PAGE
+register immediately around the `jsr`/scale sequence — whatever selects
+"which channel" PAR reads (if anything) is not adjacent to these call
+sites. In every capture taken so far (45s and longer), these four blocks
+are **never observed executing** — every captured `FC60B0` PAR read
+still traces to exactly 32 events (8 samples x 4 MOVEP bytes) matching
+only `00686e`'s own loop. This is consistent with these four being
+**event-driven callbacks** (e.g. armed only when a physical control is
+touched) that never fire during an unattended headless boot — see
+`architecture.md`/evidence-tree.md Task 4 discussion.
+
+The earlier claim of "zero literal `$fc60xx` references... ~97,000
+instructions" was based on a differently-shaped search (looking for a
+literal matching a different encoding form) and missed the
+`4eb9 fffc 60b0` (absolute-long `JSR`) encoding actually used here. It is
+retracted as a search-methodology error, not as new hardware evidence.
+
+**Proven for a fifth, RAM-resident call site:** `FC60B0` is also called
+from `00686e` (`jsr $fffc60b0` at `00688a`, live-disassembly-confirmed
+this session; the 8-iteration `moveq #7,D7` measurement loop — see
+`subsystems.md`). This remains the only call site actually observed
+firing at runtime.
 
 **Unproven for the other ~19 thunks.** No live RAM dump wide enough to
 locate their callers has been taken; this is an open gap, not a claim

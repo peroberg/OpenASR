@@ -858,10 +858,27 @@ void asr10_boot_state::machine_start()
 				const bool first_seen = !(m_es5506_host_seen_mask[seen_index] & 1);
 				m_es5506_host_seen_mask[seen_index] |= 1;
 				m_es5506_host_access_count++;
-				logerror("ASR10_ES5506_HOST event=host_read pc=%06x address=%06x adapter_disp=%02x "
+				// TASK1 investigative addition: the FC60xx thunks are bare
+				// `movep+rts`, so at the MOVEP itself SP still holds the
+				// caller's return address -- reveals which routine called
+				// into this thunk, since `pc` here is always the thunk
+				// address, not the caller.
+				const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+				std::string stack_words;
+				for (u32 w = 0; w < 12; ++w)
+				{
+					if (w) stack_words += ',';
+					const u32 wa = sp + w * 2;
+					stack_words += util::string_format("%06x:%04x", wa, read_program_word(wa));
+				}
+				logerror("ASR10_ES5506_HOST event=host_read pc=%06x sp=%06x a0=%06x a1=%06x a2=%06x d2=%08x "
+					"stack=\"%s\" "
+					"address=%06x adapter_disp=%02x "
 					"logical_offset=%02x case_index=%u register=%s data=%02x mem_mask=%04x "
 					"first_seen=%u access_count=%u\n",
-					pc, address, disp, device_offset, device_offset / 4,
+					pc, sp, u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
+					u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_D2)),
+					stack_words, address, disp, device_offset, device_offset / 4,
 					es5506_register_name(disp), u8(data), mem_mask,
 					first_seen ? 1 : 0, m_es5506_host_access_count);
 			});
@@ -883,13 +900,39 @@ void asr10_boot_state::machine_start()
 				const bool first_seen = !(m_es5506_host_seen_mask[seen_index] & 2);
 				m_es5506_host_seen_mask[seen_index] |= 2;
 				m_es5506_host_access_count++;
-				logerror("ASR10_ES5506_HOST event=host_write pc=%06x address=%06x adapter_disp=%02x "
+				const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+				const u32 caller_pc = read_stack_long(sp);
+				logerror("ASR10_ES5506_HOST event=host_write pc=%06x caller_pc=%06x address=%06x adapter_disp=%02x "
 					"logical_offset=%02x case_index=%u register=%s data=%02x mem_mask=%04x "
 					"first_seen=%u access_count=%u\n",
-					pc, address, disp, device_offset, device_offset / 4,
+					pc, caller_pc, address, disp, device_offset, device_offset / 4,
 					es5506_register_name(disp), u8(data), mem_mask,
 					first_seen ? 1 : 0, m_es5506_host_access_count);
 			});
+	}
+	// TASK2 investigative dump: static ROM content around the previously
+	// flagged-but-unverified "f8db00-f8db4e armed callback" range
+	// (subsystems.md), to check for a literal reference near fff8db12.
+	dump_loaded_code_range("task2_f8db_armed_callback_range", 0x00f8db00, 0x00f8db60);
+	// TASK1 investigative scan: exhaustive search of the ENTIRE static ROM
+	// for literal `jsr $fffc60b0` (4eb9 fffc 60b0) occurrences, since the
+	// f8db00-f8db60 dump above turned up at least one such literal --
+	// contradicting an earlier session's "zero literal $fc60xx references"
+	// claim. Logs every match's address, not just a first-hit.
+	{
+		u32 matches = 0;
+		for (u32 cursor = 0x00f80000; cursor <= 0x00fbfffa; cursor += 2)
+		{
+			if (read_loaded_word(cursor) == 0x4eb9 &&
+				read_loaded_word(cursor + 2) == 0xfffc &&
+				read_loaded_word(cursor + 4) == 0x60b0)
+			{
+				logerror("ASR10_TASK1_STATIC_JSR_SCAN match=%u caller_pc=%06x target=fc60b0\n",
+					matches, cursor);
+				matches++;
+			}
+		}
+		logerror("ASR10_TASK1_STATIC_JSR_SCAN_DONE total_matches=%u range=f80000_fbffff\n", matches);
 	}
 	m_lowmem_shadow = make_unique_clear<u16[]>(LOWMEM_WORDS);
 
@@ -2774,6 +2817,16 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 
 	const u16 previous = m_lowmem_shadow[offset];
 	COMBINE_DATA(&m_lowmem_shadow[offset]);
+	if ((byte_address == 0x0dd6 || byte_address == 0x0df2) && !machine().side_effects_disabled())
+	{
+		const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+		logerror("ASR10_DIVIDER_TASK2 event=%s pc=%06x address=%06x previous=%04x new=%04x mem_mask=%04x "
+			"d0=%08x d1=%08x d2=%08x fire_count=%u\n",
+			byte_address == 0x0dd6 ? "store_0dd6_rate_param" : "store_0df2_divider_result",
+			pc, byte_address, previous, m_lowmem_shadow[offset], mem_mask,
+			u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
+			u32(m_maincpu->state_int(M68K_D2)), m_duart_counter_fire_count);
+	}
 	if constexpr (ASR10_DIAG_PANEL_B)
 	{
 		if (!machine().side_effects_disabled())
@@ -4534,6 +4587,18 @@ void asr10_boot_state::log_loaded_0067_window_candidate(u32 pc)
 	}
 	logerror("ASR10_FC681X_CODE_DUMP range=0067d0_006820 trigger_pc=%06x words=\"%s\"\n", pc, words.c_str());
 	m_fc681x_0067_code_dump_logged = true;
+
+	// TASK2 investigative addition: also capture 00686e itself (the
+	// "OS measurement routine" per subsystems.md) now that its containing
+	// RAM window is confirmed loaded.
+	std::string words_686e;
+	for (u32 cursor = 0x00006840; cursor <= 0x000068c0; cursor += 2)
+	{
+		if (cursor != 0x00006840)
+			words_686e += ',';
+		words_686e += util::string_format("%06x:%04x", cursor, read_loaded_word(cursor));
+	}
+	logerror("ASR10_TASK2_00686E_DUMP range=006840_0068c0 trigger_pc=%06x words=\"%s\"\n", pc, words_686e.c_str());
 }
 
 
