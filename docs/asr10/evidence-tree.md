@@ -355,30 +355,110 @@ or unresolved gap.
     bytes the FDC returns for C=0/H=0/R=1 (`ASR10_TASK5_SECTOR_DATA`,
     captured from the live 512-byte data phase, not read at a guessed
     file offset) shows **track 0 (both heads, file offset 0 through
-    20479) is uniformly the repeating byte pair `6D B6`** (bitwise
-    complements of each other — the classic appearance of an
-    MFM gap-fill/idle pattern) — **not** structured boot data. File
-    offset 20480 (`track=1,head=0`, per the format's own
+    20479) is uniformly the repeating byte pair `6D B6`**. File offset
+    20480 (`track=1,head=0`, per the format's own
     `(track*head_count+head)*track_size` addressing) contains
     unambiguous 68000 code (`247c fff8 2188 4eb8 ...` — a `movea.l
     #$fff82188,A3`-style pattern matching this session's other
     disassembly). Offsets at 512000, 819200 (halfway), 1000000, and the
     last 32 bytes of the file are **all** the same `6DB6` fill pattern.
-  - **This means track 0 of `V161.img` is genuinely blank/unformatted
-    in the file itself** — not a format-selection or decode bug. Since
-    the full OS clearly already loaded successfully earlier in boot
-    (reaching "LOADING SYSTEM" and later prompts) via reads that must
-    have hit track 1+, this specific C0/H0/R1 read is most likely the
-    retry loop (`ffc89e`, see below) probing a location that happens to
-    be blank in this test image, not necessarily "the effect file's
-    real location" — that mapping is not proven.
+  - **Corrected 2026-07-16 — retracts "unformatted"/"MFM gap-fill"
+    framing.** `asr10img_format`/`upd765_format::load()` reads these
+    bytes directly as **decoded sector payload** via `read_at()` (see
+    source above) — it does not parse or interpret raw flux/MFM cells
+    at all. Calling `6D/B6` an "MFM gap pattern" would require an
+    independent flux-level analysis this session has not done. The
+    accurate, unembellished statement is: **track 0 is logically
+    readable and contains uniform `6D`/`B6` filler bytes; no structured
+    payload has yet been identified there.** Since the full OS clearly
+    already loaded successfully earlier in boot (reaching "LOADING
+    SYSTEM" and later prompts) via reads that must have hit track 1+,
+    this specific C0/H0/R1 read is most likely the retry loop
+    (`ffc89e`, see below) probing a location whose content this session
+    has not identified — not necessarily "the effect file's real
+    location," and not necessarily meaningless either.
   - **Classification (Task 5, revised): the TC omission is a proven,
     100%-reproducible bug independent of image content (it would
-    misreport EVEN a perfectly good read); the blank track 0 is a
-    second, separate, and also-real fact about this specific test image
-    that a TC fix alone will not paper over** — after fixing TC, a
+    misreport EVEN a perfectly good read); the track-0 filler content is
+    a second, separate, and also-real fact about this specific test
+    image that a TC fix alone will not paper over** — after fixing TC, a
     C0/H0/R1 read would complete with *normal* status and 512 bytes of
     `6DB6` filler, which downstream firmware may or may not accept.
+
+- **The firmware's READ DATA wrapper already tolerates ST0-abnormal +
+  ST1-End-of-Cylinder as a non-error outcome.** Full, tool-verified
+  disassembly (`unidasm`, not hand-decoding) of `fb8a5a-fb8aec` (the
+  READ DATA / CMD46 dispatcher, confirmed by its own `move.b #$46,(A0)+`
+  command-byte setup) shows its completion check is:
+  ```
+  fb8ace  move.b  $4c6.w,D2      ; D2 = ST0
+  fb8ad2  andi.b  #$c0,D2         ; mask Interrupt Code bits
+  fb8ad6  beq     fb8aec          ; IC==0 (normal) -> return, no error
+  fb8ad8  btst    #7,$4c7.w       ; else test ST1 bit 7 (End of Cylinder)
+  fb8ade  bne     fb8aec          ; EOC set -> ALSO return, no error
+  fb8ae0  move.b  #$0d,$49d.w     ; only reaches here if abnormal AND !EOC
+  fb8ae6  move.b  #$28,$4ae.w
+  fb8aec  rts
+  ```
+  For the exact observed txn=1 result (`ST0=0x40` -> IC=`01`≠0, `ST1=0x80`
+  -> bit7 set), this **takes the "no error" path** — the missing
+  `tc_w()` does not, by itself, cause this specific firmware routine to
+  flag a failure. The `WRITE DATA` wrapper (`fb8aee-fb8b80`, command
+  byte `0x45`) and a third `READ DATA` variant (`fb8b82-fb8c10`, reads
+  into D3 instead of a buffer) share the **identical** tolerant
+  tail — confirming Task 3's expectation that a real TC-adjacent
+  mechanism (or its absence) is handled uniformly across command
+  families, not specially for CMD46.
+- **The data-phase-to-result-phase transition is driven entirely by the
+  MSR EXM bit dropping, not by any host byte counter.** The transfer
+  loop (`fb8aa2-fb8abe`) polls `$FFFC4001` (MSR) every iteration; once
+  EXM (bit 5) reads 0, it branches straight to the result-byte reader
+  (`fb8ac2`/`fb8d78`) — this happens **regardless of `tc_done`**, since
+  MAME's `upd765_family_device::read_data_continue()` transitions
+  `main_phase` to `PHASE_RESULT` on both the `tc_done` true and false
+  paths. The only host-visible counter in this loop (`D0`, preloaded to
+  `0x3D0900` ≈ 4,001,536) is a generic worst-case safety timeout
+  decremented on *every* poll attempt (whether or not a byte was read),
+  not a 512-byte countdown.
+  - **No memory-mapped access outside `$FFFC4001`/`$FFFC4003` occurs
+    anywhere between the last data byte and the first result byte** —
+    confirmed directly from the disassembly (every instruction in
+    `fb8aa2-fb8db2` touches only those two addresses or CPU
+    registers/lowmem scratch cells). No candidate TC-strobe write
+    exists in this firmware revision's CMD46/CMD45 paths.
+  - **The FDC transfer is confirmed genuine programmed I/O**, not
+    MC68302 IDMA: the loop is a tight CPU poll-then-move-byte sequence
+    with no DMA register of any kind touched, addressed, or referenced
+    anywhere in the disassembled range. No MC68302 DMA register access
+    was found near CMD46 dispatch in this session's captures.
+  - **Implementation gate (Task 6) not met**: none of proof-A (a
+    specific guest access = TC strobe), proof-B (verified MC68302 DMA
+    completion drives TC), or proof-C (documented board wiring) was
+    established. Per the task's own gating, `tc_w()` is **not** wired
+    as a permanent implementation this session. `mpc60.cpp`'s
+    `fdc_tc_w()` (`m_fdc->tc_w(0); m_fdc->tc_w(1);` on a dedicated I/O
+    write) remains supporting-only precedent for a *sibling* uPD7206x
+    board, not proof for ASR-10's own memory map.
+- **Diagnostic-only synthetic TC experiment
+  (`ASR10_EXPERIMENT_FDC_SYNTH_TC=1`) reveals a regression, not a fix.**
+  Pulsing `tc_w(false);tc_w(true)` purely from the host's own verified
+  512-byte data-phase count (labeled `source=synthetic_host_completion`,
+  gated, never committed as a hardware claim) makes CMD46 report
+  genuinely normal status (`ST0=00 ST1=00`, confirmed in the log) and,
+  per the `upd765_family_device` source, causes the completed sector's
+  cylinder to auto-advance (`command[2]++`) on the now-true `tc_done`
+  path — result `C` changes from a constant `00` (every transaction,
+  no-TC) to `01` (57 of 76 transactions, with-TC). **This does not
+  progress the boot further — it regresses it**: the machine gets stuck
+  repeating `"PLEASE INSERT DISK"` (76 CMD46 transactions in 45s, zero
+  `"LOADING SYSTEM"` events), never reaching the previously-observed
+  `EFFECT DOWNLOAD FAILED`/`ERROR 032` stage at all. This strongly
+  suggests some **earlier** disk-presence/validity check depends on the
+  exact previous (broken) status/cylinder-unchanged behavior, and the
+  real blocker remains the track-0 content (uniform `6D`/`B6` filler,
+  see above), not the FDC status path. The experiment served its
+  intended diagnostic purpose (Task 6's "diagnostic fallback") and is
+  not recommended for permanent use as-is.
 
 ## 3. Plausible hypotheses (unproven)
 

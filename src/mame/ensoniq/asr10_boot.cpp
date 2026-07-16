@@ -263,6 +263,8 @@ private:
 	bool m_gpio_stage1_gate_pass_logged = false;
 	bool m_task1_string_scan_logged = false;
 	bool m_download_trace_enabled = false;
+	bool m_fdc_synth_tc_enabled = false;
+	bool m_fdc_synth_tc_pulsed_this_txn = false;
 	bool m_gpio_stage1_gate_fail_logged = false;
 	u32 m_post_lrclk_poll_count = 0;
 	bool m_post_lrclk_disassembly_logged = false;
@@ -932,6 +934,8 @@ void asr10_boot_state::machine_start()
 	// convention documented for the same FDC family in
 	// src/mame/akai/mpc60.cpp (a dedicated I/O write pulses tc_w(0);tc_w(1)).
 	dump_loaded_code_range("task2_fdc_read_loop_fb8c80_fb8e00", 0x00fb8c80, 0x00fb8e00);
+	dump_loaded_code_range("task2_fdc_read_loop_fb8e00_fb9100", 0x00fb8e00, 0x00fb9100);
+	dump_loaded_code_range("task2_fdc_read_loop_fb8a00_fb8c80", 0x00fb8a00, 0x00fb8c80);
 	// TASK1 investigative scan: exhaustive search of the ENTIRE static ROM
 	// for literal `jsr $fffc60b0` (4eb9 fffc 60b0) occurrences, since the
 	// f8db00-f8db60 dump above turned up at least one such literal --
@@ -1035,6 +1039,8 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_gpio_stage1_gate_fail_logged));
 	save_item(NAME(m_task1_string_scan_logged));
 	save_item(NAME(m_download_trace_enabled));
+	save_item(NAME(m_fdc_synth_tc_enabled));
+	save_item(NAME(m_fdc_synth_tc_pulsed_this_txn));
 	save_item(NAME(m_post_lrclk_poll_count));
 	save_item(NAME(m_post_lrclk_disassembly_logged));
 	save_item(NAME(m_f87f96_queue_read_count));
@@ -1246,6 +1252,18 @@ void asr10_boot_state::machine_reset()
 		const char *const download_trace = std::getenv("ASR10_EXPERIMENT_DOWNLOAD_TRACE");
 		m_download_trace_enabled = download_trace && download_trace[0] && download_trace[0] != '0';
 	}
+	{
+		// Diagnostic fallback ONLY: no guest memory-mapped access has been
+		// proven to be a real TC strobe, and the FDC transfer loop
+		// (fb8aa2-fb8abe/fb8d78) is confirmed programmed I/O with no
+		// MC68302 DMA involvement -- see docs/asr10/evidence-tree.md.
+		// This pulses tc_w() purely from the HOST'S OWN fifo_r() byte
+		// count reaching the expected sector size; it is not a claim
+		// about real ASR-10 hardware wiring.
+		const char *const synth_tc = std::getenv("ASR10_EXPERIMENT_FDC_SYNTH_TC");
+		m_fdc_synth_tc_enabled = synth_tc && synth_tc[0] && synth_tc[0] != '0';
+	}
+	m_fdc_synth_tc_pulsed_this_txn = false;
 	m_post_lrclk_poll_count = 0;
 	m_post_lrclk_disassembly_logged = false;
 	m_f87f96_queue_read_count = 0;
@@ -3386,6 +3404,21 @@ u16 asr10_boot_state::upd72069_fdc_r(offs_t offset, u16 mem_mask)
 				if (m_fdc_cmd46_transaction == 1 && m_fdc_cmd46_msr_exm_seen_count < m_fdc_cmd46_first_data_bytes.size())
 					m_fdc_cmd46_first_data_bytes[m_fdc_cmd46_msr_exm_seen_count] = device_data;
 				m_fdc_cmd46_msr_exm_seen_count++;
+				if (m_fdc_synth_tc_enabled && !m_fdc_synth_tc_pulsed_this_txn &&
+					m_fdc_cmd46_write_count == m_fdc_cmd46_write_bytes.size())
+				{
+					const u8 n_byte = m_fdc_cmd46_write_bytes[5];
+					const u32 expected_sector_size = n_byte <= 7 ? (128U << n_byte) : 0;
+					if (expected_sector_size && m_fdc_cmd46_msr_exm_seen_count == expected_sector_size)
+					{
+						m_fdc_synth_tc_pulsed_this_txn = true;
+						m_fdc->tc_w(false);
+						m_fdc->tc_w(true);
+						logerror("ASR10_FDC_TC source=synthetic_host_completion pc=%06x address=%06x "
+							"data=%02x transaction=%u transferred_bytes=%u remaining_bytes=0\n",
+							pc, address, device_data, m_fdc_cmd46_transaction, m_fdc_cmd46_msr_exm_seen_count);
+					}
+				}
 			}
 			else
 				m_fdc_cmd46_last_msr_before_result = m_fdc_last_msr;
@@ -3626,6 +3659,7 @@ void asr10_boot_state::upd72069_fdc_w(offs_t offset, u16 data, u16 mem_mask)
 			m_fdc_cmd46_total_fifo_reads = 0;
 			m_fdc_cmd46_msr_exm_seen_count = 0;
 			m_fdc_cmd46_last_msr_before_result = 0;
+			m_fdc_synth_tc_pulsed_this_txn = false;
 			m_fdc_cmd46_result_complete = false;
 			logerror("ASR10_FDC_CMD46 txn=%u event=start pc=%06x "
 				"format=%s media_mounted=%u ready=%u motor=%u current_cylinder=%d current_side=%u "
