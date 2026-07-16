@@ -296,6 +296,28 @@ private:
 	bool m_dispatcher_rte_candidate_dump_f88f06_logged = false;
 	bool m_dispatcher_rte_candidate_dump_f88f22_logged = false;
 	bool m_dispatcher_rte_candidate_dump_f8d072_logged = false;
+	// TUNING KBD stall investigation: one-shot code dumps for the loaded-runtime
+	// callback PCs observed in the final RTE burst (slots 1/3/0/4/5) immediately
+	// before the dispatcher goes idle forever. These are runtime-loaded (not ROM)
+	// so they cannot be read from a static ROM disassembly. Gated as a group
+	// behind ASR10_EXPERIMENT_TUNING_STALL_TRACE -- supporting/scheduler-shape
+	// diagnostics only; the load-bearing findings for this investigation come
+	// from the pre-existing Channel B/FDC hooks, not from these.
+	bool m_tuning_stall_trace_enabled = false;
+	bool m_tuning_stall_dump_ffc85a_logged = false;
+	bool m_tuning_stall_dump_ff9106_logged = false;
+	bool m_tuning_stall_dump_00ae14_logged = false;
+	bool m_tuning_stall_dump_0068a8_logged = false;
+	bool m_tuning_stall_dump_00779c_logged = false;
+	bool m_tuning_stall_dump_trap_vectors_logged = false;
+	bool m_tuning_stall_dump_7cc4_logged = false;
+	bool m_tuning_stall_dump_7164_logged = false;
+	bool m_tuning_stall_dump_bf28_logged = false;
+	bool m_tuning_stall_dump_bf5a_logged = false;
+	u32 m_tuning_stall_save_before_count = 0;
+	u32 m_tuning_stall_save_after_count = 0;
+	u32 m_tuning_stall_trap7_count = 0;
+	u32 m_tuning_stall_trap8_count = 0;
 	bool m_dispatcher_rte_iack_seen = false;
 	u32 m_queue_rte_after_count = 0;
 	u32 m_queue_rte_before_pc = 0xffffffff;
@@ -550,6 +572,8 @@ private:
 	void dump_loaded_code_range(const char *tag, u32 start, u32 end);
 	void scan_for_ascii_string(const char *tag, u32 start, u32 end, const char *needle);
 	void log_dispatcher_rte_first_pc_probe(u32 pc);
+	void log_tuning_stall_candidate_dump(u32 pc);
+	void log_tuning_stall_save_probe(u32 pc);
 	void log_dispatcher_rte_candidate_pc(u32 pc);
 	void log_f87f96_queue_read(u32 byte_address, u16 data, u16 mem_mask);
 	void log_f87f96_queue_write(u32 byte_address, u16 previous, u16 current, u16 data, u16 mem_mask);
@@ -1345,6 +1369,10 @@ void asr10_boot_state::machine_reset()
 	m_fc3000_verify_captured = false;
 	m_fc3000_verify_ring.fill(fc3000_ring_entry{});
 	m_fc3000_verify_ring_pos = 0;
+	{
+		const char *const tuning_stall_trace = std::getenv("ASR10_EXPERIMENT_TUNING_STALL_TRACE");
+		m_tuning_stall_trace_enabled = tuning_stall_trace && tuning_stall_trace[0] && tuning_stall_trace[0] != '0';
+	}
 	m_post_lrclk_poll_count = 0;
 	m_post_lrclk_disassembly_logged = false;
 	m_f87f96_queue_read_count = 0;
@@ -5785,6 +5813,107 @@ void asr10_boot_state::log_dispatcher_rte_first_pc_probe(u32 pc)
 
 	m_dispatcher_rte_first_pc_pending = false;
 	m_dispatcher_rte_first_pc_logged = true;
+
+	log_tuning_stall_candidate_dump(pc);
+}
+
+
+void asr10_boot_state::log_tuning_stall_candidate_dump(u32 pc)
+{
+	if (!m_tuning_stall_trace_enabled)
+		return;
+
+	bool *logged = nullptr;
+	u32 start = 0;
+	u32 end = 0;
+
+	switch (pc)
+	{
+	case 0x00ffc85a: logged = &m_tuning_stall_dump_ffc85a_logged; start = 0x00ffc830; end = 0x00ffc8d0; break;
+	case 0x00ff9106: logged = &m_tuning_stall_dump_ff9106_logged; start = 0x00ff90d0; end = 0x00ff9170; break;
+	case 0x0000ae18: logged = &m_tuning_stall_dump_00ae14_logged; start = 0x0000adf0; end = 0x0000ae90; break;
+	case 0x000068ae: logged = &m_tuning_stall_dump_0068a8_logged; start = 0x00006880; end = 0x00006920; break;
+	case 0x000077a0: logged = &m_tuning_stall_dump_00779c_logged; start = 0x00007770; end = 0x00007810; break;
+	default: return;
+	}
+
+	if (*logged)
+		return;
+	*logged = true;
+	dump_loaded_code_range("tuning_stall_callback", start, end);
+
+	// One-shot, read-only: capture the trap #7/#8 vector targets (vectors 39/40,
+	// addresses 0x9c/0xa0) and the four subroutines slot5's main loop calls
+	// ($7cc4, $7164, $bf28, $bf5a), to trace whether they lead back into the
+	// dispatcher/scheduler (f87f40-f87fd0) rather than assuming it from shape
+	// alone.
+	if (!m_tuning_stall_dump_trap_vectors_logged)
+	{
+		m_tuning_stall_dump_trap_vectors_logged = true;
+		logerror("ASR10_TUNING_STALL_TRAP_VECTORS trap7_vector_addr=0000009c trap7_target=%06x "
+			"trap8_vector_addr=000000a0 trap8_target=%06x\n",
+			read_loaded_long(0x0000009c) & 0x00ffffff, read_loaded_long(0x000000a0) & 0x00ffffff);
+	}
+	if (!m_tuning_stall_dump_7cc4_logged)
+	{
+		m_tuning_stall_dump_7cc4_logged = true;
+		dump_loaded_code_range("tuning_stall_sub_7cc4", 0x00007ca0, 0x00007d40);
+	}
+	if (!m_tuning_stall_dump_7164_logged)
+	{
+		m_tuning_stall_dump_7164_logged = true;
+		dump_loaded_code_range("tuning_stall_sub_7164", 0x00007140, 0x000071e0);
+	}
+	if (!m_tuning_stall_dump_bf28_logged)
+	{
+		m_tuning_stall_dump_bf28_logged = true;
+		dump_loaded_code_range("tuning_stall_sub_bf28", 0x0000bf00, 0x0000bfa0);
+	}
+	if (!m_tuning_stall_dump_bf5a_logged)
+	{
+		m_tuning_stall_dump_bf5a_logged = true;
+		dump_loaded_code_range("tuning_stall_sub_bf5a", 0x0000bf30, 0x0000bfd0);
+	}
+}
+
+
+void asr10_boot_state::log_tuning_stall_save_probe(u32 pc)
+{
+	// Read-only: fires at the two points in the ROM dispatcher-suspend path
+	// (f87f5c, immediately after `movea.w $b6a.w,A2` and before the two
+	// `bset D0,(n,A2)` instructions; f87f64, immediately after both bsets)
+	// that determine whether suspending the currently-running task makes its
+	// own slot "pending" again (byte2 != byte3), which would explain how a
+	// task whose own code never falls through to rts can still be the thing
+	// the f87f92 scan loop keeps re-dispatching. Gated on having already seen
+	// the slot5 tuning-stall callback dispatch (m_tuning_stall_dump_00779c_
+	// logged) -- otherwise the first hit here is from unrelated, much-earlier
+	// boot activity, since this dispatcher path is used throughout the whole
+	// run, not just for this investigation. Bounded to a handful of samples,
+	// not a strict one-shot, to see the pattern rather than a single instant.
+	if (!m_tuning_stall_trace_enabled || !m_tuning_stall_dump_00779c_logged)
+		return;
+	const u32 a2 = u32(m_maincpu->state_int(M68K_A2)) & 0x00ffffff;
+	if (a2 != 0x002442)
+		return;
+	if (pc == 0x00f87f5c && m_tuning_stall_save_before_count < 5)
+	{
+		m_tuning_stall_save_before_count++;
+		const u32 d0 = u32(m_maincpu->state_int(M68K_D0));
+		logerror("ASR10_TUNING_STALL_SAVE_BEFORE sample=%u pc=%06x a2=%06x d0=%08x "
+			"byte2=%02x byte3=%02x lowmem_0b6a=%04x\n",
+			m_tuning_stall_save_before_count, pc, a2, d0,
+			lowmem_byte(a2 + 2), lowmem_byte(a2 + 3), lowmem_word(0x0b6a));
+	}
+	else if (pc == 0x00f87f64 && m_tuning_stall_save_after_count < 5)
+	{
+		m_tuning_stall_save_after_count++;
+		const u32 d0 = u32(m_maincpu->state_int(M68K_D0));
+		logerror("ASR10_TUNING_STALL_SAVE_AFTER sample=%u pc=%06x a2=%06x d0=%08x "
+			"byte2=%02x byte3=%02x lowmem_0b6a=%04x\n",
+			m_tuning_stall_save_after_count, pc, a2, d0,
+			lowmem_byte(a2 + 2), lowmem_byte(a2 + 3), lowmem_word(0x0b6a));
+	}
 }
 
 
@@ -7282,6 +7411,31 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::pc_poll)
 	}
 	log_dispatcher_rte_first_pc_probe(pc);
 	log_dispatcher_rte_candidate_pc(pc);
+	log_tuning_stall_save_probe(pc);
+	// Read-only: direct counters for the trap #7/#8 handler entry points
+	// themselves (not gated on slot5 specifically), to settle whether either
+	// trap fires again at all after the initial six-slot RTE burst,
+	// independent of what m_f87f96_queue_rte_count or the slot's own
+	// queue_word show (a stable byte2==byte3 result is consistent with both
+	// "never called again" and "called repeatedly with a stable outcome").
+	// Supporting/scheduler-shape diagnostic only -- see ASR10_EXPERIMENT_
+	// TUNING_STALL_TRACE gate; the load-bearing findings for the TUNING KBD
+	// investigation come from the pre-existing Channel B/FDC hooks, not these.
+	if (m_tuning_stall_trace_enabled && pc == 0x00f88108)
+	{
+		m_tuning_stall_trap7_count++;
+		if (m_tuning_stall_trap7_count <= 20 || !(m_tuning_stall_trap7_count & (m_tuning_stall_trap7_count - 1)))
+			logerror("ASR10_TUNING_STALL_TRAP7_ENTRY count=%u pc=%06x a2=%06x d0=%08x rte_count=%u\n",
+				m_tuning_stall_trap7_count, pc, u32(m_maincpu->state_int(M68K_A2)) & 0x00ffffff,
+				u32(m_maincpu->state_int(M68K_D0)), m_f87f96_queue_rte_count);
+	}
+	else if (m_tuning_stall_trace_enabled && pc == 0x00f8812c)
+	{
+		m_tuning_stall_trap8_count++;
+		if (m_tuning_stall_trap8_count <= 20 || !(m_tuning_stall_trap8_count & (m_tuning_stall_trap8_count - 1)))
+			logerror("ASR10_TUNING_STALL_TRAP8_ENTRY count=%u pc=%06x d0=%08x rte_count=%u\n",
+				m_tuning_stall_trap8_count, pc, u32(m_maincpu->state_int(M68K_D0)), m_f87f96_queue_rte_count);
+	}
 	if (m_queue_rte_after_pending && pc != m_queue_rte_before_pc)
 	{
 		const u16 fc6814_after = m_m68302_internal_shadow[0x14 >> 1];
