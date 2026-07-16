@@ -265,6 +265,7 @@ private:
 	bool m_download_trace_enabled = false;
 	bool m_fdc_synth_tc_enabled = false;
 	bool m_fdc_synth_tc_pulsed_this_txn = false;
+	bool m_disk_sig_trace_enabled = false;
 	bool m_gpio_stage1_gate_fail_logged = false;
 	u32 m_post_lrclk_poll_count = 0;
 	bool m_post_lrclk_disassembly_logged = false;
@@ -936,6 +937,15 @@ void asr10_boot_state::machine_start()
 	dump_loaded_code_range("task2_fdc_read_loop_fb8c80_fb8e00", 0x00fb8c80, 0x00fb8e00);
 	dump_loaded_code_range("task2_fdc_read_loop_fb8e00_fb9100", 0x00fb8e00, 0x00fb9100);
 	dump_loaded_code_range("task2_fdc_read_loop_fb8a00_fb8c80", 0x00fb8a00, 0x00fb8c80);
+	dump_loaded_code_range("task1_fb90b2_decision_area", 0x00fb90b2, 0x00fb9280);
+	dump_loaded_code_range("task1_fb92ce_fb9600", 0x00fb92ce, 0x00fb9600);
+	dump_loaded_code_range("task1_fb9600_fb9800", 0x00fb9600, 0x00fb9800);
+	dump_loaded_code_range("task1_fbb280_fbb600", 0x00fbb280, 0x00fbb600);
+	dump_loaded_code_range("task1_fb8090_fb8120", 0x00fb8090, 0x00fb8120);
+	dump_loaded_code_range("task1_fb7c00_fb7c40", 0x00fb7c00, 0x00fb7c40);
+	dump_loaded_code_range("task1_fb89e0_fb8a00", 0x00fb89e0, 0x00fb8a00);
+	scan_for_ascii_string("rom_please_insert_disk", 0x00f80000, 0x00fbffff, "PLEASE INSERT DISK");
+	scan_for_ascii_string("lowmem_please_insert_disk", 0x00000000, 0x000fffff, "PLEASE INSERT DISK");
 	// TASK1 investigative scan: exhaustive search of the ENTIRE static ROM
 	// for literal `jsr $fffc60b0` (4eb9 fffc 60b0) occurrences, since the
 	// f8db00-f8db60 dump above turned up at least one such literal --
@@ -1041,6 +1051,7 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_download_trace_enabled));
 	save_item(NAME(m_fdc_synth_tc_enabled));
 	save_item(NAME(m_fdc_synth_tc_pulsed_this_txn));
+	save_item(NAME(m_disk_sig_trace_enabled));
 	save_item(NAME(m_post_lrclk_poll_count));
 	save_item(NAME(m_post_lrclk_disassembly_logged));
 	save_item(NAME(m_f87f96_queue_read_count));
@@ -1264,6 +1275,10 @@ void asr10_boot_state::machine_reset()
 		m_fdc_synth_tc_enabled = synth_tc && synth_tc[0] && synth_tc[0] != '0';
 	}
 	m_fdc_synth_tc_pulsed_this_txn = false;
+	{
+		const char *const disk_sig_trace = std::getenv("ASR10_EXPERIMENT_DISK_SIGNATURE_TRACE");
+		m_disk_sig_trace_enabled = disk_sig_trace && disk_sig_trace[0] && disk_sig_trace[0] != '0';
+	}
 	m_post_lrclk_poll_count = 0;
 	m_post_lrclk_disassembly_logged = false;
 	m_f87f96_queue_read_count = 0;
@@ -2903,6 +2918,22 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 			"previous=%04x new=%04x mem_mask=%04x d3=%08x a3=%08x\n",
 			field, pc, byte_address, previous, m_lowmem_shadow[offset], mem_mask,
 			u32(m_maincpu->state_int(M68K_D3)), u32(m_maincpu->state_int(M68K_A3)));
+	}
+	if (m_disk_sig_trace_enabled &&
+		(byte_address == 0x049c || byte_address == 0x04ae || byte_address == 0x0944 ||
+			byte_address == 0x0954 || byte_address == 0x04b8) &&
+		!machine().side_effects_disabled())
+	{
+		const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+		const char *const field =
+			byte_address == 0x049c ? "error_flag_049d" :
+			byte_address == 0x04ae ? "error_subcode_04ae" :
+			byte_address == 0x0944 ? "sector1_buffer_start" :
+			byte_address == 0x0954 ? "signature_compare_word0" : "disk_valid_flag_04b8";
+		logerror("ASR10_TASK1_DISK_SIG event=lowmem_store field=%s pc=%06x previous_pc=%06x address=%06x "
+			"previous=%04x new=%04x mem_mask=%04x d0=%08x d3=%08x\n",
+			field, pc, m_last_distinct_pc, byte_address, previous, m_lowmem_shadow[offset], mem_mask,
+			u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D3)));
 	}
 	if constexpr (ASR10_DIAG_PANEL_B)
 	{

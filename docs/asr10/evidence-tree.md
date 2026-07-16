@@ -459,6 +459,105 @@ or unresolved gap.
   see above), not the FDC status path. The experiment served its
   intended diagnostic purpose (Task 6's "diagnostic fallback") and is
   not recommended for permanent use as-is.
+- **Reclassification (2026-07-16): the missing FDC TC is no longer
+  treated as a proven ASR-10 bug.** The cumulative evidence above — no
+  TC-strobe access anywhere in the firmware, no MC68302 DMA
+  participation, both the READ and WRITE wrappers explicitly coding
+  "abnormal + End-of-Cylinder" as an accepted success case, and the
+  synthetic-TC experiment *regressing* boot (stuck repeating "PLEASE
+  INSERT DISK") rather than advancing it — is more consistent with an
+  **intentional programmed-I/O completion convention** than with an
+  emulation gap. Restated precisely: **MAME's `upd765_family_device`
+  requires an asserted TC for a formally normal completion status, but
+  the ASR-10 firmware appears designed to omit TC entirely and to treat
+  End-of-Cylinder completion as the expected, successful outcome for a
+  single-sector (`EOT==R`) transfer.** No permanent TC source should be
+  investigated or wired until this is revisited; `tc_w()` remains
+  uncalled by design pending further evidence, and
+  `ASR10_EXPERIMENT_FDC_SYNTH_TC` must stay disabled by default
+  (diagnostic-only, already gated off).
+- **The actual disk-acceptance signature checks for the fb92ce device-
+  probe sequence, fully identified (tool-disassembled).** `fb92ce`
+  (called from the outer "insert disk" loop at `fb917a`) issues three
+  separate single-sector reads via `fbb518`/`fbb55a`/`fbb4ec`, each into
+  a different lowmem buffer, each checked against a literal ASCII
+  signature at a fixed offset:
+  - `fbb518` → buffer `$4FE`, `R`=1 (or 2 on retry, from `$4ED`), `EOT`=`R`.
+    Checked by `fb80e8`: `cmpi.w #$4944,($26,A0)` — buffer offset `0x26`
+    must equal `"ID"` (0x4944). Mismatch -> `$49d`=`0x11`.
+  - `fbb55a` → buffer `$526`. Checked by `fb80c0`:
+    `cmpi.w #$4f53,($1c,A0)` — offset `0x1c` must equal `"OS"` (0x4f53).
+    Mismatch -> `$49d`=`0x12`.
+  - `fbb4ec` → buffer `$544`. Checked by `fb809e`:
+    `cmpi.w #$4452,($3fe,A0)` — offset `0x3fe` must equal `"DR"`
+    (0x4452). Mismatch -> `$49d`=`0x13`.
+  - A **separate, later** routine (`fb94ec`, called only after all
+    three probes above already succeed) reads a fourth buffer (`$944`)
+    and checks a **6-byte** signature at buffer offset `0x10` (`fb95e0`:
+    `cmpm.w` loop against ROM `$fb90ac-$fb90b1` = bytes
+    `49 33 32 35 56 4d`, i.e. ASCII `"I325VM"`). Mismatch ->
+    `$49d`=`0x25` (`fb9614`).
+  - Each of the three checks in `fb80xx` is itself gated on `$49d==0` at
+    entry — if the previous probe already failed, later probes skip
+    their own comparison entirely (this reproduces the FDC-family
+    read-then-verify-signature pattern seen with `"NO SCSI DEV"` /
+    `"R SCSI DEV\0\0"` text immediately preceding the `"I325VM"` table in
+    ROM — these are almost certainly a **generic boot-device probe**
+    trying floppy/SCSI/other candidates in turn, not the primary OS
+    loader).
+  - **Directly confirmed: the `"ID"`/`"OS"`/`"DR"` signature bytes are
+    genuinely examined against our C0/H0/R1(/R2/R3...) sector content**
+    (Task 2's question). Since that content is uniform `6D`/`B6` filler
+    at every offset checked, **every one of these comparisons fails
+    identically in both the no-TC and synthetic-TC captures** — the
+    signature checks themselves are not sensitive to FDC status at all,
+    only to buffer content.
+- **The no-TC vs. synthetic-TC divergence is NOT the signature checks —
+  it is an anomaly in the FDC's own result registers under the
+  synthetic pulse.** Direct comparison of the first 4 CMD46 transactions
+  (`decoded_R`=1,2,3,4 requested in both captures identically):
+  - **No-TC**: `result_R_byte` tracks the requested `R` each time
+    (1,2,3,5) and `result_C_byte` stays `00` throughout — consistent
+    with `fi.pcn`/`command[]` being freshly matched to each new command.
+  - **Synthetic TC**: `result_C_byte` jumps to `01` after the first
+    completed transaction and **stays there**; `result_R_byte` gets
+    **stuck at `01`** for the next two transactions despite `R`=2 and
+    `R`=3 being freshly requested each time. This does not match either
+    "real hardware" or "no-TC" behavior, and is most plausibly an
+    artifact of this session's simplistic host-byte-count-triggered
+    `tc_w()` pulse interacting awkwardly with `upd765_family_device`'s
+    internal `command[]` array (which the source shows is mutated
+    in-place — `command[2]++; command[4]=1;` — on the `tc_done`-true
+    completion path), **not evidence about how real, correctly-timed
+    hardware TC would behave.** This stuck-register anomaly is very
+    likely why the synthetic-TC full-boot run reached additional,
+    different signature checks (`0x13` at `fb80b4`) that the no-TC run
+    never reached, and should not be read as "TC breaks disk
+    acceptance" in any hardware-meaningful sense.
+  - **Conclusion for Task 1**: the direct branch selecting accepted vs.
+    rejected for a single probe is the `cmpi.w`/`cmpm.w` signature
+    compare in `fb80e8`/`fb80c0`/`fb809e`/`fb95e0` — ST0/ST1/ST2 are
+    **not** inputs to that comparison at all; only the returned C/H/R/N
+    matter insofar as a stuck/wrong `C` (an observed *side effect* of
+    the synthetic-TC pulse, not of TC itself) could route a later probe
+    to compare against the wrong buffer/cylinder. This is a diagnostic
+    artifact, not a hardware finding.
+- **Task 4/6 (early read sequence, image identity)**: every CMD46
+  transaction observed in both captures uses `C=0,H=0`, `N=2` (512
+  bytes/sector), and monotonically increasing `R`/`EOT` (single-sector
+  reads, `R==EOT` always) — consistent with the `fb92ce` device-probe
+  sequentially trying sectors 1, 2, 3, 4, 5... of track 0, cylinder 0,
+  head 0 looking for a recognizable boot/device signature, not with a
+  directory or FAT-style structure. Every probed sector's payload is
+  the same uniform `6D`/`B6` filler (see the disk-signature evidence
+  above and the earlier track-0 audit), so **classification F (disk
+  data is correct and ERROR 032 is a later, separate subsystem issue)
+  cannot yet be fully distinguished from classification E (wrong disk
+  image/track for this probe)** — no independent evidence identifies
+  whether track 0 is *supposed* to hold real boot-device descriptors on
+  a genuine ASR-10 boot disk, or whether `V161.img`'s repository
+  provenance marks it as something else (e.g. an OS-only or effects-only
+  image where track 0 is legitimately blank). This remains open.
 
 ## 3. Plausible hypotheses (unproven)
 
