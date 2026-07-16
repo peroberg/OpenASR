@@ -944,6 +944,9 @@ void asr10_boot_state::machine_start()
 	dump_loaded_code_range("task1_fb8090_fb8120", 0x00fb8090, 0x00fb8120);
 	dump_loaded_code_range("task1_fb7c00_fb7c40", 0x00fb7c00, 0x00fb7c40);
 	dump_loaded_code_range("task1_fb89e0_fb8a00", 0x00fb89e0, 0x00fb8a00);
+	dump_loaded_code_range("task2_fb8900_fb8a10", 0x00fb8900, 0x00fb8a10);
+	dump_loaded_code_range("task2_fb8100_fb81f0", 0x00fb8100, 0x00fb81f0);
+	dump_loaded_code_range("task2_fb8c40_fb8ce0", 0x00fb8c40, 0x00fb8ce0);
 	scan_for_ascii_string("rom_please_insert_disk", 0x00f80000, 0x00fbffff, "PLEASE INSERT DISK");
 	scan_for_ascii_string("lowmem_please_insert_disk", 0x00000000, 0x000fffff, "PLEASE INSERT DISK");
 	// TASK1 investigative scan: exhaustive search of the ENTIRE static ROM

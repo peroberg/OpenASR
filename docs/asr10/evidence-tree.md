@@ -542,22 +542,97 @@ or unresolved gap.
     the synthetic-TC pulse, not of TC itself) could route a later probe
     to compare against the wrong buffer/cylinder. This is a diagnostic
     artifact, not a hardware finding.
-- **Task 4/6 (early read sequence, image identity)**: every CMD46
-  transaction observed in both captures uses `C=0,H=0`, `N=2` (512
-  bytes/sector), and monotonically increasing `R`/`EOT` (single-sector
-  reads, `R==EOT` always) — consistent with the `fb92ce` device-probe
-  sequentially trying sectors 1, 2, 3, 4, 5... of track 0, cylinder 0,
-  head 0 looking for a recognizable boot/device signature, not with a
-  directory or FAT-style structure. Every probed sector's payload is
-  the same uniform `6D`/`B6` filler (see the disk-signature evidence
-  above and the earlier track-0 audit), so **classification F (disk
-  data is correct and ERROR 032 is a later, separate subsystem issue)
-  cannot yet be fully distinguished from classification E (wrong disk
-  image/track for this probe)** — no independent evidence identifies
-  whether track 0 is *supposed* to hold real boot-device descriptors on
-  a genuine ASR-10 boot disk, or whether `V161.img`'s repository
-  provenance marks it as something else (e.g. an OS-only or effects-only
-  image where track 0 is legitimately blank). This remains open.
+- **Superseded 2026-07-16 — retracts the "every probed sector is uniform
+  filler" claim above.** That claim was based on checking only file
+  offset 0 (sector `R=1`) plus widely-spaced later offsets; it did not
+  check the actual sectors the probe reads on its retry/second/third
+  attempts. Corrected finding below.
+- **The buffer/addressing model, fully resolved (Task 1).** `fbb518`,
+  `fbb55a`, and `fbb4ec` do **not** read three independent overlapping
+  512-byte sector buffers — they share one small scratch region reused
+  in sequence (each probe's read overwrites the previous probe's data
+  *after* that probe's own signature check has already run, so there is
+  no real collision):
+  - `fbb518` calls `fb8c6e` (seek, gated on cached cylinder `$4ac`) then
+    `fb89f6`/`fb8a5a` directly (single-sector CMD46, explicit
+    `C=0,H=0`, `R`=1 then 2 on retry via `$4ed`) into buffer `$4FE`
+    (512 bytes, `$4FE-$6FD`). Checked by `fb80e8` at absolute `$524`.
+  - `fbb55a`/`fbb4ec` instead call the shared **`fb895a`** ("read
+    sectors index..index" helper): `$416`/`$41a` (start/end,
+    zero-based) are copied into `$40a`, which a downstream helper
+    (`fb7e04`, not fully disassembled but empirically confirmed —
+    see below) turns into the actual FDC `R` as **`R = index + 1`**,
+    with `C=0,H=0` unchanged throughout (`fb895a` never touches `$49e`
+    on this path). `fbb55a` (`index=2`) reads **R=3** into buffer
+    `$526` (512 bytes); checked by `fb80c0` at absolute `$542`.
+    `fbb4ec` (`index=3..4`) reads **R=4 then R=5** into buffer `$544`
+    (1024 bytes, two sectors back-to-back); checked by `fb809e` at
+    absolute `$942` (510 bytes into the *second* sector, i.e. R=5).
+  - Non-overlapping-in-time memory map: `$4FE-$6FD` (probe 1, then
+    reused), `$526-$725` (probe 2, subset of probe 1's old span),
+    `$544-$943` (probe 3, two sectors, likewise overlapping probe 1/2's
+    old spans) — genuinely overlapping *addresses*, but never
+    overlapping in *time*, since each probe's compare instruction runs
+    immediately after its own fresh read and before the next probe's
+    read overwrites anything.
+- **Task 4/5 — proven directly against the image file, not inferred.**
+  Mapping each compare address back through `asr10img_format`'s
+  `(track*heads+head)*track_size + (R-1)*512` addressing (no
+  byte-swap/decode/checksum layer — this is a raw byte-serial FIFO copy)
+  gives exact file offsets, and **all three reachable probes match the
+  live disk image byte-for-byte**:
+  - Probe 1 retry (`C=0,H=0,R=2`): file offset `512+0x26=550` (0x226) =
+    literal bytes `49 44` = **"ID"**. Exact match.
+  - Probe 2 (`R=3`): file offset `1024+0x1c=1052` (0x41c) = literal
+    bytes `4f 53` = **"OS"**. Exact match.
+  - Probe 3 (`R=5`, second half of the two-sector read): file offset
+    `2048+510=2558` (0x9fe) = literal bytes `44 52` = **"DR"**. Exact
+    match.
+  - A whole-file scan (`re.finditer` over the raw `.img` bytes) confirms
+    these are not coincidental: `"ID"` appears at offset 550 (among 22
+    total occurrences file-wide), `"OS"` at 1052 (8 total), `"DR"` at
+    2558 (54 total) — all as the *first* occurrence in the file, exactly
+    where the traced addressing predicts.
+  - The fourth, later probe (`fb94ec`/`fb95e0`, `"I325VM"`) was checked
+    against the same `R=index+1` model (`index=5` -> `R=6`, file offset
+    `2560+0x10=2576`) and does **not** match (that offset holds
+    unrelated repeating data, not `"I325VM"`). This probe is never
+    observed executing in any capture (see below), so the discrepancy
+    doesn't affect real boot behavior — it just means `fb94ec`'s
+    `index`->`R` mapping (or intervening state) hasn't been independently
+    confirmed the way probes 1-3 have.
+  - **Corrected track-0 picture**: `R=1` (file offset 0-511) is
+    genuinely blank/reserved filler (`6D`/`B6`), but `R=2` through at
+    least `R=5` hold real, structured, non-filler data including the
+    exact expected descriptor tags. The earlier "track 0 is uniform
+    filler" claim only checked `R=1` and was an overgeneralization.
+- **Task 2/6 — the floppy device-probe (`fb92ce`) succeeds, in both
+  captures, using the genuine on-disk data.** Live traces confirm: probe
+  1 fails at `R=1` (blank sector, error `0x11`), the firmware's own
+  retry (`$4ed`, clearing `$49d` unconditionally) tries `R=2` and
+  **does not re-fail** — consistent with the exact-match evidence above.
+  No `0x12`/`0x13` (probe 2/3 failure codes) appear during this initial
+  pass in *either* the no-TC or synthetic-TC capture. **This means the
+  earlier finding that `fb92ce`'s outcome differs between no-TC and
+  synthetic-TC was wrong** — `fb92ce` succeeds identically both times,
+  using real, matching disk data. The previously-identified stuck/
+  anomalous FDC result-cylinder register under synthetic TC must
+  instead be affecting a **later** pass through this same code (the
+  outer `fb917a` loop retries indefinitely under synthetic TC, and on
+  some later iteration a mismatched internal FDC cylinder state — not
+  anything about the image — plausibly causes a probe that previously
+  succeeded to fail). This has not been independently re-confirmed
+  beyond the first pass and remains open.
+  - **Verdict: classification A** (Task 6) for the reachable part of
+    this probe — `V161.img` is exactly the disk this code expects, and
+    the address mapping is correct, not wrong. Classifications B
+    (wrong disk), D (wrong buffer interpretation) are refuted by the
+    exact byte-for-byte matches above. Classification C (this probe is
+    allowed to fail over to another device) is moot for probes 1-3
+    since they don't fail against this image; it may still apply to
+    probe 4 or to whatever the outer loop does after `fb93f4`'s
+    separate memory/config check, which remains undisassembled beyond
+    its two ROM-constant comparisons.
 
 ## 3. Plausible hypotheses (unproven)
 
