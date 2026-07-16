@@ -634,6 +634,103 @@ or unresolved gap.
     separate memory/config check, which remains undisassembled beyond
     its two ROM-constant comparisons.
 
+- **`fb93f4` fully resolved: it is an OS-version compatibility gate
+  reusing probe 2's already-read buffer, not a hardware/memory check.**
+  Tool-disassembled `fb9410-fb9436`: `A0=$526` (the SAME buffer
+  `fbb55a` just filled with the "OS"-tagged descriptor at file offset
+  1024); word at `($4,A0)` (file offset 1028) is compared via `BCC`
+  (unsigned `>=`) against ROM constant `$f80088`; word at `($6,A0)`
+  (file offset 1030) is compared via `BLS` (unsigned `<=`) against ROM
+  constant `$f80086`. Live values: ROM min=`0x012a` (298), ROM
+  max=`0x0132` (306); disk record holds `0x013d` (317, `>=298` ✓) and
+  `0x0132` (306, `<=306` ✓, exact boundary match). **Both checks pass**
+  — confirmed both structurally and against the real image bytes. This
+  retracts the earlier "RAM-size/hardware-revision, unconfirmed"
+  framing — it's a disk-version-range check, and it succeeds.
+- **Corrected 2026-07-16 — a silent 32-event cap in this session's own
+  `hook_fc3000_read_tap`/`hook_fc3000_write_tap` hid all FC3000-range
+  activity beyond the first 32 early-boot accesses in every prior
+  capture.** Both taps contained `if (m_fc3000_cluster_count >= 32)
+  return;` (silently, with no indication logging had stopped). Raising
+  this to a power-of-two rate limit (matching this file's other
+  high-frequency taps) reveals **extensive, continuous FC3000-FC31FF
+  traffic throughout the entire run** (cluster_count past 32768 in a
+  single 45s capture), including reads and writes at `fc3004`,
+  `fc3006`, `fc300a`, `fc300c`, `fc3100`, `fc3140`, `fc31c0`, directly
+  attributed (via `pc=`) to the record-interpreter addresses `f97432`
+  (the byte-copy loop), `f97678`/`f97722`/`f97792`/`f9770e` (the
+  `movep`-based single/double-register handlers). **Resolves the prior
+  "FC3001 access contradiction": verdict C — bus accesses occur but
+  previous tracing missed them**, not A (never reached) or D (base
+  only). FC3000-FC31FF is genuinely, continuously exercised — this
+  looks like a real, actively-used parameter-streaming target, not an
+  inert or unreached window.
+- **The interrupt-disable/restore pair (`f976ec`/`f976fa`) is a
+  correctly-functioning Line-1010 (Line-A) emulator trap, not a bug.**
+  `f976ec`: saves SR to lowmem `$0e82`, ORs in `$0700` (mask all
+  interrupts), then executes literal opcode `$A000` (Line-A trap).
+  The real, installed vector 10 handler (confirmed live at runtime:
+  `$fff882ca`, tool-disassembled) is `move.w D0,(A7)` /
+  `addq.l #2,($2,A7)` / `rte` — a textbook "install D0 as the new SR"
+  emulation that correctly skips the 2-byte trap opcode before
+  resuming. `f976fa` mirrors this to restore the original SR. Both
+  fire continuously (thousands of times per run) as part of the same
+  ongoing FC3000-area traffic above.
+- **Task 7 — the exact first false condition causing ERROR 032,
+  fully traced and tool-verified.** `ffc884-ffc8aa`
+  (the outer retry body), disassembled directly:
+  ```
+  ffc884  movea.l $e8e.w,A0        ; A0 = table-descriptor pointer
+  ffc888  movea.w ($26,A0),A3       ; A3 = 16-bit relative offset field
+  ffc88c  adda.l  A0,A3              ; A3 = A0 + offset (resolved table addr)
+  ffc88e  jsr     $fff973f0.l         ; call the record interpreter
+  ffc894  bcc     $ffc8d6              ; Carry CLEAR -> success, done
+  ffc896  cmpi.l  #$fff9bca0,$e8e.w    ; Carry SET: is this THE $e8e table?
+  ffc89e  bne     $ffc8ac                ; different table -> different error (trap #3)
+  ffc8a0  subq.b  #1,$e9d.w               ; THIS table: decrement retry counter
+  ffc8a4  bpl     $ffc884                  ; still non-negative -> retry (same A0/table)
+  ffc8a6  move.b  #$20,D0                   ; exhausted -> D0 = ERROR 032
+  ffc8aa  trap    #0
+  ```
+  The retry counter is initialized to `2` at `ffc87e` (confirmed live:
+  `retry_counter` write `new=0002`), giving **3 total attempts**.
+  Tracing *why* `f973f0` returns with Carry set: its second
+  ("verification") pass, `f97574`, does `cmp.b (A6),D2` — a **write-
+  then-read-back check**: `D2` is an expected bit pattern built from the
+  record's parameter byte (`f974fc-f97572`, a chain of `cmp.b`/`or.b`
+  against literal comparanda `$e8,$e9,$ea,$f0,$f1,$f4,$f5,$f8,$f9,$fa,
+  $fb`), and `(A6)` is a live re-read of the same FC3001-relative
+  address the interpreter just wrote. On mismatch, it retries up to 10
+  times (lowmem `$0e8c`, `cmpi.b #$a,$e8c.w`/`bcs $f9740a`) before
+  giving up at `f97596` (`ori #1,CCR` — explicit Carry set) — this
+  propagates directly to `ffc894`'s `bcc` not being taken.
+  - **Precise statement**: *At PC `f97574`, the condition
+    `(A6)==D2` (readback equals expected pattern) is false because the
+    live FC3000-range memory at `A6` does not return the bit pattern
+    the interpreter's parameter-decode logic expects — this is a
+    genuine write-then-verify handshake against the FC3000-FC31FF
+    target, not a disk-content or FDC-status issue.* This is
+    architecturally consistent with a real device expected to echo
+    back a status/acknowledgement bit pattern that this driver's
+    current plain `.ram()` model at FC3000-FC31FF cannot authentically
+    provide (a passive RAM block only ever returns exactly what was
+    last written, never an independent device-generated status).
+  - **Not yet proven**: the *exact* D2/(A6) values at the moment of
+    failure for the specific `$e8e=$fff9bca0` table (this would need
+    one more narrowly-gated tap on the `f97574` compare specifically,
+    which was not added this session due to time — see recommended
+    next experiment).
+- **Task 5 (target classification), tentative given the above**:
+  option 1 or 2 (direct or ASR-adapted ES5510 host interface) is now
+  *more* plausible than "generic record loader not yet at a device"
+  (option 4) — the target is continuously, actively exercised
+  (parameter streaming) and specifically implements a write-then-read-
+  back handshake, which is meaningless against inert shared RAM but
+  exactly what a real DSP/effects-processor host interface would need.
+  This is not proven to be ES5510 specifically (no MAME `es5510_device`
+  host-offset comparison has been done yet) and no device should be
+  instantiated on this basis alone.
+
 ## 3. Plausible hypotheses (unproven)
 
 - **FC2001 is (or is modeled on) an ES5506/ES5505-family device**, based

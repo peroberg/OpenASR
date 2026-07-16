@@ -781,9 +781,9 @@ void asr10_boot_state::machine_start()
 		{
 			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
 				return;
-			if (m_fc3000_cluster_count >= 32)
-				return;
 			m_fc3000_cluster_count++;
+			if (m_fc3000_cluster_count > 64 && (m_fc3000_cluster_count & (m_fc3000_cluster_count - 1)))
+				return;
 			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 			logerror("ASR10_CLUSTER_TRACE event=fc3000_read pc=%06x address=%06x offset=%04x "
 				"mem_mask=%04x data=%04x cluster_count=%u\n",
@@ -795,9 +795,16 @@ void asr10_boot_state::machine_start()
 		{
 			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
 				return;
-			if (m_fc3000_cluster_count >= 32)
-				return;
 			m_fc3000_cluster_count++;
+			// TASK4 correction: this tap previously hard-capped at 32
+			// events and silently dropped everything after, which is
+			// exactly why later (download-time) FC3000-range writes were
+			// never observed in prior sessions' captures -- not because
+			// they don't happen. Rate-limit to power-of-2 counts instead
+			// of a hard stop, matching this file's other high-frequency
+			// taps, so long runs stay legible without losing later activity.
+			if (m_fc3000_cluster_count > 64 && (m_fc3000_cluster_count & (m_fc3000_cluster_count - 1)))
+				return;
 			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 			logerror("ASR10_CLUSTER_TRACE event=fc3000_write pc=%06x address=%06x offset=%04x "
 				"mem_mask=%04x data=%04x cluster_count=%u\n",
@@ -946,6 +953,12 @@ void asr10_boot_state::machine_start()
 	dump_loaded_code_range("task1_fb89e0_fb8a00", 0x00fb89e0, 0x00fb8a00);
 	dump_loaded_code_range("task2_fb8900_fb8a10", 0x00fb8900, 0x00fb8a10);
 	dump_loaded_code_range("task2_fb8100_fb81f0", 0x00fb8100, 0x00fb81f0);
+	dump_loaded_code_range("task1_fb8006_words", 0x00f80080, 0x00f800a0);
+	dump_loaded_code_range("task1_fb93f4_fb9490", 0x00fb93f4, 0x00fb9490);
+	dump_loaded_code_range("task1_fb8830_fb8880", 0x00fb8830, 0x00fb8880);
+	dump_loaded_code_range("task4_lineA_handler", 0x00f882a0, 0x00f88320);
+	dump_loaded_code_range("task1_fb7f30_fb7fa0", 0x00fb7f30, 0x00fb7fa0);
+	dump_loaded_code_range("task4_vector_table_lineA", 0x00000000, 0x00000040);
 	dump_loaded_code_range("task2_fb8c40_fb8ce0", 0x00fb8c40, 0x00fb8ce0);
 	scan_for_ascii_string("rom_please_insert_disk", 0x00f80000, 0x00fbffff, "PLEASE INSERT DISK");
 	scan_for_ascii_string("lowmem_please_insert_disk", 0x00000000, 0x000fffff, "PLEASE INSERT DISK");
@@ -2909,18 +2922,30 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 			u32(m_maincpu->state_int(M68K_D2)), m_duart_counter_fire_count);
 	}
 	if (m_download_trace_enabled &&
-		(byte_address == 0x0e7e || byte_address == 0x0e89 || byte_address == 0x0e9d || byte_address == 0x0e8c) &&
+		(byte_address == 0x0e7e || byte_address == 0x0e89 || byte_address == 0x0e9c || byte_address == 0x0e8c ||
+			byte_address == 0x0e82 || byte_address == 0x0e8a) &&
 		!machine().side_effects_disabled())
 	{
+		// byte_address == 0x0e9c (word-aligned) covers the odd-address
+		// retry counter at $0e9d, which a prior session's tap missed by
+		// checking 0x0e9d directly (byte_address here is always even,
+		// offset<<1).
 		const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 		const char *const field =
 			byte_address == 0x0e7e ? "table_source_pointer_a3" :
 			byte_address == 0x0e89 ? "first_record_byte" :
-			byte_address == 0x0e8c ? "record_scratch" : "retry_counter";
+			byte_address == 0x0e8c ? "record_scratch" :
+			byte_address == 0x0e82 ? "saved_sr_slot" :
+			byte_address == 0x0e8a ? "loop_done_flag_0e8a" : "retry_counter_0e9c_0e9d";
 		logerror("ASR10_TASK3_DOWNLOAD_TRACE event=lowmem_store field=%s pc=%06x address=%06x "
-			"previous=%04x new=%04x mem_mask=%04x d3=%08x a3=%08x\n",
+			"previous=%04x new=%04x mem_mask=%04x "
+			"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x sr=%04x\n",
 			field, pc, byte_address, previous, m_lowmem_shadow[offset], mem_mask,
-			u32(m_maincpu->state_int(M68K_D3)), u32(m_maincpu->state_int(M68K_A3)));
+			u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
+			u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
+			u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
+			u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
+			u16(m_maincpu->state_int(M68K_SR)));
 	}
 	if (m_disk_sig_trace_enabled &&
 		(byte_address == 0x049c || byte_address == 0x04ae || byte_address == 0x0944 ||
@@ -4512,6 +4537,18 @@ void asr10_boot_state::log_error009_context(const char *source, u32 pc, u16 valu
 		}
 		dump_loaded_code_range("task1_common_error_routine_tail", 0x00f882a0, 0x00f88320);
 		dump_loaded_code_range("task2_f973f0_download_routine", 0x00f973b0, 0x00f97460);
+		dump_loaded_code_range("task3_f97340_f97800", 0x00f97340, 0x00f97800);
+		dump_loaded_code_range("task3_f97800_f97b00", 0x00f97800, 0x00f97b00);
+		{
+			std::string vecwords;
+			for (u32 cursor = 0; cursor <= 0x40; cursor += 2)
+			{
+				if (cursor)
+					vecwords += ',';
+				vecwords += util::string_format("%06x:%04x", cursor, lowmem_word(cursor));
+			}
+			logerror("ASR10_TASK4_RUNTIME_VECTORS words=\"%s\"\n", vecwords.c_str());
+		}
 	}
 
 	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
