@@ -1,7 +1,125 @@
 # ASR-10 Current Blocker — Channel B Output Completion and Slot0 Continuation
 
-**Date:** 2026-07-13  
+**Date:** 2026-07-13, updated 2026-07-16  
 Read `architecture.md`, `panel-protocol.md`, and `asr10-panel-slot0-handoff-2026-07-13.md` first.
+
+---
+
+## 2026-07-16 update — TUNING KBD stall: precise gap located
+
+(Supersedes earlier drafts of this section — see git history for prior
+framings. Current authoritative state below.)
+
+**Real-hardware reference (service manual)** — the required normal sequence
+after boot is `LOADING SYSTEM` → `TUNING KBD - HANDS OFF` → all Instrument
+LEDs turn off → `FILE 1 TUTORIAL BNK`. The current run reaches
+`TUNING KBD - HANDS OFF` and stops; it does not reach `FILE 1 TUTORIAL BNK`.
+This external reference rules out "legitimate final idle" as an explanation.
+
+**Build note**: `./mame` in this tree was a stale binary; `./mess` is the one
+`make SUBTARGET=mess SOURCES=src/mame/ensoniq/asr10_boot.cpp` rebuilds.
+Everything below is from a freshly-rebuilt `./mess`,
+`ASR10_DIAG_PANEL_AUTORESPOND=1` only.
+
+### Authoritative result
+
+Using the pre-existing, genuine (non-sampled) Channel B/FDC hooks
+(`PANEL_ENQUEUE`, `PANEL_THRB`, `PANEL_COMPLETE`, `PANEL_WAKE`,
+`PANEL_F89ACE_CLEAR`, `ASR10_FDC_*` — all fire on real state/memory events
+already wired into `asr10_boot.cpp`, not the coarse `pc_poll` sampler):
+
+- All 19 characters of the tuning-status text (`"f    KEYBOARD TUNED"`)
+  complete full Channel B transactions — enqueue → THRB → autorespond RX →
+  IACK → RHRB → complete → wake → `PANEL_F89ACE_CLEAR` — one at a time, no
+  partial or failed transaction (log sequence numbers 668-762).
+- Immediately after the last character, `trigger_pc=f880fc` fires (the
+  `f880e0-f88130` "Slot continuation and finalizer" code already documented
+  above) — this **finalizes** the printing task (slot 0, dispatched at
+  `rte_count=1`; the whole 19-character print happens as ordinary subroutine
+  execution within that one task, caller return address `fff89a56`, a
+  high-view address current tooling cannot disassemble).
+- A six-slot dispatch burst follows (`rte_count=2..6`, slots 1,3,0,4,5,
+  already documented under "Static disassembly").
+- Afterward, using the same genuine hooks: **no new `PANEL_ENQUEUE` event
+  and no new FDC event is observed** for the remainder of the run (44 real
+  seconds).
+- The expected `FILE 1 TUTORIAL BNK` state is not reached.
+- **The exact missing continuation remains unresolved** — not which code
+  should produce the next step, and not whether "queue producer" is even
+  the right frame (a real finalizer, `f880fc`, did fire on schedule, so
+  "no producer fires" is not an accurate description).
+
+Three things this result does **not** conflate: characters transmitted
+through Channel B (confirmed complete); the harness's `m_panel_text`
+accumulation/flush behavior (confirmed: text accumulates correctly, but no
+control byte ever triggers a second `flush_panel_text()`, so no separate
+`ASR10PANEL text="KEYBOARD TUNED"` line appears in the harness's own log —
+a fact about the harness's print/flush mechanism, not about real hardware);
+and the real hardware's visible display (not addressed — the service manual
+does not state `"KEYBOARD TUNED"` must be its own displayed screen, only
+that the *sequence of end states* includes LEDs-off then `FILE 1`).
+
+### ROM/disk search for "TUTORIAL"/"BNK"
+
+Searched the boot ROM and the exact `floppies/asr10booth/V161.img`
+(1,638,400 bytes) byte-for-byte for `"TUTORIAL"`, `"TUTORIAL BNK"`,
+`"TUTORIAL.BNK"`, `"BNK"` alone, a high-bit-set variant, two
+word-interleaved variants, lowercase, and reversed — none found in either
+image, in any of these encodings. The ROM does contain a fixed-width
+disk-browser category-menu table (`~0xf8ba80`: `"FACTORY SNDS"`,
+`"MY SOUNDS   "`, `"FACTORY BNKS"`, `"MY BANKS    "`, `"FACTORY SEQS"`,
+`"MY SEQUENCES"`), confirming the browsing UI framework exists, but no
+specific filename. **No matching literal representation was found in the
+searched ROM or `V161.img`; no RAM-resident match was identified by the
+current tooling** — this is not an exhaustive RAM search (no complete
+loaded-RAM dump was taken and searched), so a RAM-resident copy in some
+other encoding is not ruled out. Whether `V161.img` even has a populated
+file directory, or whether "TUTORIAL"/"BNK" is encoded some other way, is
+not established.
+
+**Instrument LED writes**: no dedicated LED-clear command or state write
+has yet been identified in the captured traffic or mapped hardware state.
+(Not claimed: that this is impossible to find, or that it must occur in the
+window after the last Channel B character — the command may have been sent
+earlier, embedded in control traffic, or use another path entirely.)
+
+### Scheduler context (supporting background, not the next experiment)
+
+The dispatcher suspend path (`f87f76-f87f92`) and both TRAP handlers were
+read directly from ROM (not inferred): TRAP #8 (`f8812c`) only writes a
+value to the active slot and returns via `rte`; TRAP #7 (`f88108`) compares
+a requested value against the active slot's countdown field, conditionally
+sets/clears one bit, then always falls into the same save-and-rescan path
+as TRAP #8's caller would need to reach some other way. Live counts for
+both traps come only from the coarse `pc_poll` timer (default: every 64 CPU
+clock ticks, not every tick — short enough that either trap's ~dozen
+instructions can be missed entirely), so a TRAP #7 count of zero does not
+mean it never fires again; only `m_f87f96_queue_rte_count`, driven by the
+genuine `set_rte_callback` hook, is reliable here, and it confirms no
+further RTE-based task-switch happens after slot 5 is dispatched. These
+scheduler-shape diagnostics (code dumps, TRAP #7/#8 counters, save-probe)
+are gated behind `ASR10_EXPERIMENT_TUNING_STALL_TRACE` (off by default,
+verified) and are supporting documentation only — the load-bearing result
+above comes from the pre-existing Channel B/FDC hooks, not from these.
+
+### Smallest corrective experiment (not run yet)
+
+1. A genuine hook (matching how `PANEL_ENQUEUE` is already implemented) on
+   the panel-enqueue routine (`f89a72`/`f89a7a`) and on FDC command entry,
+   armed for the remainder of the run — directly confirms whether anything
+   ever calls either again, without relying on `pc_poll`.
+2. Identify which of slots 1, 3, 4, 5 (slot 0 already identified as the
+   KEYBOARD TUNED printer) is responsible for the next panel message,
+   clearing the Instrument LEDs, or starting a disk-directory read, by
+   checking each slot's `+0x06` callback PC against known addresses.
+3. Determine whether `V161.img` has a populated file directory at all, and
+   if so, its on-disk byte layout (only literal-text encodings were tried
+   above).
+4. Only if (1)-(3) don't resolve it: read the high-view (`0xffxxxx`)
+   targets current tooling cannot disassemble (`fff89a56`; the
+   `$7cc4`/`$7164`/`$bf28`/`$bf5a` targets from slot 5's loop).
+
+Not run yet — deliberately, per this task's scope.
 
 ---
 
