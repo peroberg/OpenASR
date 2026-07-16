@@ -266,6 +266,18 @@ private:
 	bool m_fdc_synth_tc_enabled = false;
 	bool m_fdc_synth_tc_pulsed_this_txn = false;
 	bool m_disk_sig_trace_enabled = false;
+	bool m_fc3000_verify_trace_enabled = false;
+	bool m_fc3000_verify_captured = false;
+	struct fc3000_ring_entry
+	{
+		u32 pc = 0;
+		u32 address = 0;
+		u16 data = 0;
+		u16 mem_mask = 0;
+		bool write = false;
+	};
+	std::array<fc3000_ring_entry, 10> m_fc3000_verify_ring{};
+	u32 m_fc3000_verify_ring_pos = 0;
 	bool m_gpio_stage1_gate_fail_logged = false;
 	u32 m_post_lrclk_poll_count = 0;
 	bool m_post_lrclk_disassembly_logged = false;
@@ -517,6 +529,8 @@ private:
 	void log_prompt_select(u32 pc);
 	void log_04b0_countdown(u32 pc, char rw, u16 previous, u16 current);
 	void log_media_branch(u32 pc, u16 sr_override = 0xffff);
+	void log_fc3000_verify_handshake(bool write, u32 pc, u32 selected_cpu_byte_address, u32 offset, u16 data, u16 mem_mask);
+	bool fc3000_verify_table_match() const;
 	void log_fb81b4_path(const char *landmark, u32 pc, u8 tested_value, bool branch_taken,
 		u32 branch_target, u16 sr_override = 0xffff, u32 d2_override = 0xffffffff);
 	void log_04c6_origin(const char *landmark, u32 pc, u8 value, bool branch_taken, u32 branch_target);
@@ -779,21 +793,49 @@ void asr10_boot_state::machine_start()
 		0x00fc3000, 0x00fc31ff, "hook_fc3000_read_tap",
 		[this] (offs_t offset, u16 &data, u16 mem_mask)
 		{
-			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+			if (machine().side_effects_disabled())
+				return;
+			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+			if (m_fc3000_verify_trace_enabled)
+			{
+				// `offset` is already the absolute, even-aligned bus address (the
+				// tap/even bus address) -- not relative to the tap's install range,
+				// and must never be re-added to 0x00fc3000. The selected CPU byte
+				// address is the specific byte the 68000 program addressed: only
+				// meaningful for a byte-wide mem_mask (00ff/ff00), not a full word.
+				// See docs/asr10/evidence-tree.md for the full coordinate-system note.
+				const u32 selected_cpu_byte_address = offset + ((mem_mask & 0x00ff) ? 1u : 0u);
+				m_fc3000_verify_ring[m_fc3000_verify_ring_pos % m_fc3000_verify_ring.size()] =
+					fc3000_ring_entry{pc, selected_cpu_byte_address, data, mem_mask, false};
+				m_fc3000_verify_ring_pos++;
+				log_fc3000_verify_handshake(false, pc, selected_cpu_byte_address, offset, data, mem_mask);
+			}
+			if (!m_duart_counter_timer_enabled)
 				return;
 			m_fc3000_cluster_count++;
 			if (m_fc3000_cluster_count > 64 && (m_fc3000_cluster_count & (m_fc3000_cluster_count - 1)))
 				return;
-			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 			logerror("ASR10_CLUSTER_TRACE event=fc3000_read pc=%06x address=%06x offset=%04x "
 				"mem_mask=%04x data=%04x cluster_count=%u\n",
-				pc, 0x00fc3000 + offset, offset, mem_mask, data, m_fc3000_cluster_count);
+				pc, offset, offset, mem_mask, data, m_fc3000_cluster_count);
 		});
 	m_hook_fc3000_write_tap = m_maincpu->space(AS_PROGRAM).install_write_tap(
 		0x00fc3000, 0x00fc31ff, "hook_fc3000_write_tap",
 		[this] (offs_t offset, u16 &data, u16 mem_mask)
 		{
-			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+			if (machine().side_effects_disabled())
+				return;
+			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+			if (m_fc3000_verify_trace_enabled)
+			{
+				// See the read tap above for the tap/even-bus-address vs
+				// selected-CPU-byte-address distinction; same formula applies here.
+				const u32 selected_cpu_byte_address = offset + ((mem_mask & 0x00ff) ? 1u : 0u);
+				m_fc3000_verify_ring[m_fc3000_verify_ring_pos % m_fc3000_verify_ring.size()] =
+					fc3000_ring_entry{pc, selected_cpu_byte_address, data, mem_mask, true};
+				m_fc3000_verify_ring_pos++;
+			}
+			if (!m_duart_counter_timer_enabled)
 				return;
 			m_fc3000_cluster_count++;
 			// TASK4 correction: this tap previously hard-capped at 32
@@ -805,10 +847,9 @@ void asr10_boot_state::machine_start()
 			// taps, so long runs stay legible without losing later activity.
 			if (m_fc3000_cluster_count > 64 && (m_fc3000_cluster_count & (m_fc3000_cluster_count - 1)))
 				return;
-			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 			logerror("ASR10_CLUSTER_TRACE event=fc3000_write pc=%06x address=%06x offset=%04x "
 				"mem_mask=%04x data=%04x cluster_count=%u\n",
-				pc, 0x00fc3000 + offset, offset, mem_mask, data, m_fc3000_cluster_count);
+				pc, offset, offset, mem_mask, data, m_fc3000_cluster_count);
 		});
 	m_hook_fc222e_read_tap = m_maincpu->space(AS_PROGRAM).install_read_tap(
 		0x00fc222e, 0x00fc222f, "hook_fc222e_read_tap",
@@ -1068,6 +1109,8 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_fdc_synth_tc_enabled));
 	save_item(NAME(m_fdc_synth_tc_pulsed_this_txn));
 	save_item(NAME(m_disk_sig_trace_enabled));
+	save_item(NAME(m_fc3000_verify_trace_enabled));
+	save_item(NAME(m_fc3000_verify_captured));
 	save_item(NAME(m_post_lrclk_poll_count));
 	save_item(NAME(m_post_lrclk_disassembly_logged));
 	save_item(NAME(m_f87f96_queue_read_count));
@@ -1295,6 +1338,13 @@ void asr10_boot_state::machine_reset()
 		const char *const disk_sig_trace = std::getenv("ASR10_EXPERIMENT_DISK_SIGNATURE_TRACE");
 		m_disk_sig_trace_enabled = disk_sig_trace && disk_sig_trace[0] && disk_sig_trace[0] != '0';
 	}
+	{
+		const char *const fc3000_verify_trace = std::getenv("ASR10_EXPERIMENT_FC3000_VERIFY_TRACE");
+		m_fc3000_verify_trace_enabled = fc3000_verify_trace && fc3000_verify_trace[0] && fc3000_verify_trace[0] != '0';
+	}
+	m_fc3000_verify_captured = false;
+	m_fc3000_verify_ring.fill(fc3000_ring_entry{});
+	m_fc3000_verify_ring_pos = 0;
 	m_post_lrclk_poll_count = 0;
 	m_post_lrclk_disassembly_logged = false;
 	m_f87f96_queue_read_count = 0;
@@ -4348,6 +4398,74 @@ void asr10_boot_state::log_04b0_countdown(u32 pc, char rw, u16 previous, u16 cur
 		read_code_word(pc - 2), read_code_word(pc), read_code_word(pc + 2),
 		read_code_word(pc + 4), read_code_word(pc + 6), read_code_word(pc + 8),
 		m_fdc_last_aux_command, m_fdc_last_fifo_read, m_fdc_transaction, command_sequence.c_str());
+}
+
+
+bool asr10_boot_state::fc3000_verify_table_match() const
+{
+	// Narrow to the exact table whose outer retry eventually produces
+	// ERROR 032 (proven: ffc896 compares $0e8e against this literal).
+	// Without this gate the first capture was from an unrelated,
+	// harmless mismatch on a different table earlier in boot.
+	return m_lowmem_shadow[0x0e8e >> 1] == 0xfff9 && m_lowmem_shadow[(0x0e8e >> 1) + 1] == 0xbca0;
+}
+
+void asr10_boot_state::log_fc3000_verify_handshake(bool write, u32 pc, u32 selected_cpu_byte_address, u32 offset, u16 data, u16 mem_mask)
+{
+	// Only the read at f97574 ("cmp.b (A6),D2", the write-then-verify
+	// compare identified in the prior session's ERROR 032 trace) is of
+	// interest here -- everything else just feeds the ring buffer above.
+	if (write || pc != 0x00f97574 || m_fc3000_verify_captured)
+		return;
+	if (!fc3000_verify_table_match())
+		return;
+
+	const u16 d2 = u16(m_maincpu->state_int(M68K_D2));
+	const u8 expected = u8(d2);
+	const u8 observed = u8(data);
+	if (expected == observed)
+		return; // this particular compare matched; keep waiting for a real mismatch
+
+	m_fc3000_verify_captured = true;
+
+	const u32 a0 = u32(m_maincpu->state_int(M68K_A0));
+	const u32 a3 = u32(m_maincpu->state_int(M68K_A3));
+	const u32 a4 = u32(m_maincpu->state_int(M68K_A4));
+	const u32 a5 = u32(m_maincpu->state_int(M68K_A5));
+	const u32 a6 = u32(m_maincpu->state_int(M68K_A6));
+	const u16 table_base = m_lowmem_shadow[0x0e8e >> 1];
+	const u16 table_base_lo = m_lowmem_shadow[(0x0e8e >> 1) + 1];
+	const u8 outer_retry_remaining = u8(m_lowmem_shadow[0x0e9c >> 1]);
+	const u8 internal_retry_count = u8(m_lowmem_shadow[0x0e8c >> 1] >> 8);
+	const u8 record_type = u8(m_maincpu->state_int(M68K_D3));
+	const u8 record_count = u8(m_maincpu->state_int(M68K_D5));
+	const u8 record_param = u8(m_maincpu->state_int(M68K_D1));
+	const u8 record_index = u8(m_maincpu->state_int(M68K_D6));
+	const u16 sr = u16(m_maincpu->state_int(M68K_SR));
+
+	std::string ring;
+	const u32 count = std::min<u32>(m_fc3000_verify_ring_pos, u32(m_fc3000_verify_ring.size()));
+	for (u32 i = 0; i < count; i++)
+	{
+		const auto &e = m_fc3000_verify_ring[(m_fc3000_verify_ring_pos - count + i) % m_fc3000_verify_ring.size()];
+		if (i)
+			ring += ',';
+		ring += util::string_format("[pc=%06x addr=%06x rw=%c data=%04x mask=%04x]",
+			e.pc, e.address, e.write ? 'W' : 'R', e.data, e.mem_mask);
+	}
+
+	logerror("ASR10_FC3000_VERIFY_HANDSHAKE pc=%06x address=%06x offset=%04x mem_mask=%04x "
+		"observed=%02x expected_d2=%02x sr=%04x "
+		"outer_retry_remaining=%u internal_retry_count=%u "
+		"table_base_0e8e=%04x%04x record_type_d3=%02x record_count_d5=%02x "
+		"record_param_d1=%02x record_index_d6=%02x "
+		"a0=%06x a3=%06x a4=%06x a5=%06x a6=%06x "
+		"last_accesses=\"%s\"\n",
+		pc, selected_cpu_byte_address, offset, mem_mask, observed, expected, sr,
+		outer_retry_remaining, internal_retry_count,
+		table_base, table_base_lo, record_type, record_count,
+		record_param, record_index,
+		a0, a3, a4, a5, a6, ring.c_str());
 }
 
 
