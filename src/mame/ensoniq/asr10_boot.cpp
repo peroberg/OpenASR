@@ -228,6 +228,11 @@ private:
 	u8 m_fdc_cmd46_write_count = 0;
 	u8 m_fdc_cmd46_result_count = 0;
 	bool m_fdc_cmd46_active = false;
+	u32 m_fdc_cmd46_total_fifo_reads = 0;
+	u32 m_fdc_cmd46_msr_exm_seen_count = 0;
+	u8 m_fdc_cmd46_last_msr_before_result = 0;
+	std::array<u8, 64> m_fdc_cmd46_first_data_bytes{};
+	bool m_fdc_cmd46_first_data_logged = false;
 	bool m_fdc_cmd46_result_complete = false;
 	u8 m_prompt_select_trace_mask = 0;
 	u8 m_04b0_countdown_trace_mask = 0;
@@ -918,6 +923,15 @@ void asr10_boot_state::machine_start()
 	// flagged-but-unverified "f8db00-f8db4e armed callback" range
 	// (subsystems.md), to check for a literal reference near fff8db12.
 	dump_loaded_code_range("task2_f8db_armed_callback_range", 0x00f8db00, 0x00f8db60);
+	// TASK2 (uPD72069 TC investigation): the CMD46 read-sector loop's known
+	// static PCs (fb8cee=fifo command/data writes, fb8db2=fifo/status
+	// reads, per ASR10_FDC_CMD46's own fifo_write_pcs/fifo_result_pcs).
+	// Disassemble the surrounding ROM to look for a write to some other
+	// (currently unmapped-as-device) address once the expected byte
+	// count is reached -- the real-hardware "software TC strobe"
+	// convention documented for the same FDC family in
+	// src/mame/akai/mpc60.cpp (a dedicated I/O write pulses tc_w(0);tc_w(1)).
+	dump_loaded_code_range("task2_fdc_read_loop_fb8c80_fb8e00", 0x00fb8c80, 0x00fb8e00);
 	// TASK1 investigative scan: exhaustive search of the ENTIRE static ROM
 	// for literal `jsr $fffc60b0` (4eb9 fffc 60b0) occurrences, since the
 	// f8db00-f8db60 dump above turned up at least one such literal --
@@ -986,6 +1000,11 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_fdc_cmd46_write_count));
 	save_item(NAME(m_fdc_cmd46_result_count));
 	save_item(NAME(m_fdc_cmd46_active));
+	save_item(NAME(m_fdc_cmd46_total_fifo_reads));
+	save_item(NAME(m_fdc_cmd46_msr_exm_seen_count));
+	save_item(NAME(m_fdc_cmd46_last_msr_before_result));
+	save_item(NAME(m_fdc_cmd46_first_data_bytes));
+	save_item(NAME(m_fdc_cmd46_first_data_logged));
 	save_item(NAME(m_fdc_cmd46_result_complete));
 	save_item(NAME(m_prompt_select_trace_mask));
 	save_item(NAME(m_04b0_countdown_trace_mask));
@@ -1466,6 +1485,11 @@ void asr10_boot_state::machine_reset()
 	m_fdc_cmd46_write_count = 0;
 	m_fdc_cmd46_result_count = 0;
 	m_fdc_cmd46_active = false;
+	m_fdc_cmd46_total_fifo_reads = 0;
+	m_fdc_cmd46_msr_exm_seen_count = 0;
+	m_fdc_cmd46_last_msr_before_result = 0;
+	m_fdc_cmd46_first_data_bytes.fill(0);
+	m_fdc_cmd46_first_data_logged = false;
 	m_fdc_cmd46_result_complete = false;
 	m_prompt_select_trace_mask = 0;
 	m_04b0_countdown_trace_mask = 0;
@@ -3354,6 +3378,18 @@ u16 asr10_boot_state::upd72069_fdc_r(offs_t offset, u16 mem_mask)
 	else if ((address & 3) == 3)
 	{
 		const u8 device_data = m_fdc->fifo_r();
+		if (m_fdc_cmd46_active)
+		{
+			m_fdc_cmd46_total_fifo_reads++;
+			if (BIT(m_fdc_last_msr, 5))
+			{
+				if (m_fdc_cmd46_transaction == 1 && m_fdc_cmd46_msr_exm_seen_count < m_fdc_cmd46_first_data_bytes.size())
+					m_fdc_cmd46_first_data_bytes[m_fdc_cmd46_msr_exm_seen_count] = device_data;
+				m_fdc_cmd46_msr_exm_seen_count++;
+			}
+			else
+				m_fdc_cmd46_last_msr_before_result = m_fdc_last_msr;
+		}
 		if (ASR10_EXPERIMENT_STUB_CMD1E_RESULTS && m_fdc_last_aux_command == 0x1e && m_fdc_txn_read_count < 2)
 		{
 			raw_data = m_fdc_txn_read_count ? ASR10_STUB_CMD1E_RESULT_BYTE1 : ASR10_STUB_CMD1E_RESULT_BYTE0;
@@ -3587,6 +3623,9 @@ void asr10_boot_state::upd72069_fdc_w(offs_t offset, u16 data, u16 mem_mask)
 			m_fdc_cmd46_write_count = 0;
 			m_fdc_cmd46_result_count = 0;
 			m_fdc_cmd46_active = true;
+			m_fdc_cmd46_total_fifo_reads = 0;
+			m_fdc_cmd46_msr_exm_seen_count = 0;
+			m_fdc_cmd46_last_msr_before_result = 0;
 			m_fdc_cmd46_result_complete = false;
 			logerror("ASR10_FDC_CMD46 txn=%u event=start pc=%06x "
 				"format=%s media_mounted=%u ready=%u motor=%u current_cylinder=%d current_side=%u "
@@ -6006,7 +6045,8 @@ void asr10_boot_state::log_fdc_cmd46_summary()
 		"lowmem_ST0_04c6=%02x lowmem_ST1_04c7=%02x lowmem_ST2_04c8=%02x "
 		"lowmem_C_04c9=%02x lowmem_H_04ca=%02x lowmem_R_04cb=%02x lowmem_N_04cc=%02x "
 		"format=%s image_geometry=not_exposed current_cylinder=%d current_side=%u drive_sides=%d "
-		"media_mounted=%u ready=%u motor=%u density=%s read_source=upd72069_device stubbed=0\n",
+		"media_mounted=%u ready=%u motor=%u density=%s read_source=upd72069_device stubbed=0 "
+		"total_fifo_reads=%u data_phase_reads=%u result_phase_reads=%u tc_asserted=0\n",
 		m_fdc_cmd46_transaction, m_fdc_data_rate, m_fdc_data_rate_source,
 		write_bytes.c_str(), write_pcs.c_str(),
 		command, select, c, h, r, n, eot, gpl, dtl,
@@ -6025,7 +6065,19 @@ void asr10_boot_state::log_fdc_cmd46_summary()
 		floppy ? floppy->get_cyl() : -1, floppy ? floppy->ss_r() : 0,
 		floppy ? floppy->get_sides() : 0, floppy && floppy->exists() ? 1 : 0,
 		floppy && !floppy->ready_r() ? 1 : 0, floppy && !floppy->mon_r() ? 1 : 0,
-		floppy && floppy->floppy_is_hd() ? "hd" : "dd");
+		floppy && floppy->floppy_is_hd() ? "hd" : "dd",
+		m_fdc_cmd46_total_fifo_reads, m_fdc_cmd46_msr_exm_seen_count,
+		m_fdc_cmd46_total_fifo_reads - m_fdc_cmd46_msr_exm_seen_count);
+
+	if (m_fdc_cmd46_transaction == 1 && !m_fdc_cmd46_first_data_logged)
+	{
+		m_fdc_cmd46_first_data_logged = true;
+		std::string hex;
+		for (u8 b : m_fdc_cmd46_first_data_bytes)
+			hex += util::string_format("%02x", b);
+		logerror("ASR10_TASK5_SECTOR_DATA txn=1 c=%02x h=%02x r=%02x first64=\"%s\"\n",
+			c, h, r, hex.c_str());
+	}
 
 	m_fdc_cmd46_active = false;
 	m_fdc_cmd46_result_complete = false;

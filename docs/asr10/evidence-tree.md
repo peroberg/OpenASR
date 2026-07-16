@@ -309,6 +309,77 @@ or unresolved gap.
     closed**: no direct proof yet ties this specific interpreter
     invocation's source data to the specific failed FDC transaction.
 
+- **Root cause of every uPD72069 READ DATA abnormal-termination/End-of-
+  Cylinder result, proven from source.** `src/devices/machine/upd765.cpp`
+  `read_data_continue()`, `SECTOR_READ` state (~line 2038-2055): when the
+  just-completed sector equals `EOT` (`command[4]==command[6]`), the core
+  checks `tc_done` (set only by a `tc_done=true` transition inside
+  `tc_w(true)`, upd765.cpp:410-420). If `tc_done` is false, it sets
+  `ST0_FAIL|ST1_EN` (exactly the observed `ST0=0x40/ST1=0x80`); if true,
+  it completes normally. **`asr10_boot.cpp` never calls `m_fdc->tc_w()`
+  anywhere** (confirmed by exhaustive grep) — only `auxcmd_w()` (vendor
+  AUX commands: reset/motors/rate/precompensation, none of which are a
+  TC equivalent) and `fifo_r()`/`msr_r()` are used. This means `tc_done`
+  is permanently false, so **every** READ DATA command whose last
+  requested sector reaches `EOT` (which is every observed command in
+  this driver's usage — every read requests exactly one sector, `R==EOT`
+  from the start) reports abnormal/EOC regardless of image content or
+  geometry.
+  - Real-hardware precedent for the missing signal: `src/mame/akai/
+    mpc60.cpp` (closely related NEC uPD7206x-family FDC usage) wires a
+    dedicated host I/O write address to `fdc_tc_w()`, which does exactly
+    `m_fdc->tc_w(0); m_fdc->tc_w(1);` — a software-driven "TC strobe"
+    port distinct from the FDC's own 4 registers. ASR-10 almost
+    certainly has an equivalent board-level TC-strobe address that
+    `asr10_boot.cpp` has not yet identified/wired.
+  - **Directly measured for the minimal C=0/H=0/R=1/EOT=1 transaction**
+    (`ASR10_FDC_CMD46` summary, new `total_fifo_reads`/`data_phase_reads`/
+    `result_phase_reads` fields): `total_fifo_reads=519`,
+    `data_phase_reads=512`, `result_phase_reads=7`. **All 512 requested
+    data bytes are transferred in full** before the (incorrectly
+    abnormal) result phase — this is not a truncated or partial
+    transfer.
+- **Floppy format/geometry, checked and NOT implicated as a separate
+  bug.** `asr10img_format` (`src/lib/formats/esq16_dsk.cpp`, a
+  `upd765_format` subclass) declares `{FF_35, DSHD, MFM, 1000, 20, 80,
+  2, 512, ..., 1, ...}` — 20 sectors/track, 80 tracks, 2 heads, 512
+  bytes/sector, sector IDs starting at 1. `20*80*2*512 = 1,638,400`
+  bytes, an **exact** match to `floppies/asr10booth/V161.img`'s actual
+  file size. `upd765_format::identify()`/`load()` (verified by reading
+  the shared base class) read **flat, linear per-(track,head) sector
+  data** via `read_at()` then synthesize the MFM track programmatically
+  — the same convention `esqimg_format` uses for the VFX-SD/EPS-16
+  family — so this format should (and, per the correct C/H/R/N result
+  bytes, does) load and serve the file correctly logically.
+  - **However**, direct inspection of the file and of the actual decoded
+    bytes the FDC returns for C=0/H=0/R=1 (`ASR10_TASK5_SECTOR_DATA`,
+    captured from the live 512-byte data phase, not read at a guessed
+    file offset) shows **track 0 (both heads, file offset 0 through
+    20479) is uniformly the repeating byte pair `6D B6`** (bitwise
+    complements of each other — the classic appearance of an
+    MFM gap-fill/idle pattern) — **not** structured boot data. File
+    offset 20480 (`track=1,head=0`, per the format's own
+    `(track*head_count+head)*track_size` addressing) contains
+    unambiguous 68000 code (`247c fff8 2188 4eb8 ...` — a `movea.l
+    #$fff82188,A3`-style pattern matching this session's other
+    disassembly). Offsets at 512000, 819200 (halfway), 1000000, and the
+    last 32 bytes of the file are **all** the same `6DB6` fill pattern.
+  - **This means track 0 of `V161.img` is genuinely blank/unformatted
+    in the file itself** — not a format-selection or decode bug. Since
+    the full OS clearly already loaded successfully earlier in boot
+    (reaching "LOADING SYSTEM" and later prompts) via reads that must
+    have hit track 1+, this specific C0/H0/R1 read is most likely the
+    retry loop (`ffc89e`, see below) probing a location that happens to
+    be blank in this test image, not necessarily "the effect file's
+    real location" — that mapping is not proven.
+  - **Classification (Task 5, revised): the TC omission is a proven,
+    100%-reproducible bug independent of image content (it would
+    misreport EVEN a perfectly good read); the blank track 0 is a
+    second, separate, and also-real fact about this specific test image
+    that a TC fix alone will not paper over** — after fixing TC, a
+    C0/H0/R1 read would complete with *normal* status and 512 bytes of
+    `6DB6` filler, which downstream firmware may or may not accept.
+
 ## 3. Plausible hypotheses (unproven)
 
 - **FC2001 is (or is modeled on) an ES5506/ES5505-family device**, based
