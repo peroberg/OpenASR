@@ -731,6 +731,198 @@ or unresolved gap.
   host-offset comparison has been done yet) and no device should be
   instantiated on this basis alone.
 
+- **2026-07-16 continuation — the exact failing handshake captured
+  live, and `f973f0-f97800` fully disassembled with `unidasm` (not
+  hand-decoded).** New env-gated, one-shot diagnostic
+  `ASR10_EXPERIMENT_FC3000_VERIFY_TRACE=1` (added this session,
+  read/write-tap only, no behavior change) captures the first `f97574`
+  mismatch **for the specific `$e8e=$fff9bca0` table only** (gated on
+  the live `$0e8e` shadow value, to reject an earlier, harmless,
+  different-table mismatch this same diagnostic caught on its first,
+  ungated pass). Captured (baseline unchanged, ERROR 032 still
+  produced), verbatim, **including a since-fixed logging bug in this
+  session's own diagnostic** (see immediately below):
+  ```
+  ASR10_FC3000_VERIFY_HANDSHAKE pc=f97574 address=1f8600e offset=fc300e
+    mem_mask=00ff observed=f0 expected_d2=90 sr=0709
+    outer_retry_remaining=2 internal_retry_count=0
+    table_base_0e8e=fff9bca0 record_type_d3=02 record_count_d5=59
+    record_param_d1=00 record_index_d6=00 a0=000000 a3=fff9bd4e
+    a4=fffc3007 a5=fffc3011 a6=fffc300f
+  ```
+  `a6=fffc300f` is the fifth of six bytes processed (`a4..a5` =
+  `fc3007..fc3011` inclusive, 6 bytes); the ring of the five reads at
+  `f97574` immediately preceding this in the same capture shows the
+  first four (`fc3006/08/0a/0c`, i.e. odd bytes `fc3007/09/0b/0d`, all
+  `mem_mask=00ff`) all read back `ff` **with no capture firing** — since
+  the diagnostic only fires on genuine `expected≠observed`, this proves
+  those four bytes matched their expected (written) value; only the
+  fifth (`fc300f`) mismatched, `observed=f0` vs `expected(D2)=90`.
+
+  - **The `address=1f8600e` field above is wrong** (this session's own
+    instrumentation bug, not a pre-existing driver bug): `install_read_
+    tap`/`install_write_tap`'s `offset` is already the absolute, even
+    (tap/even bus address), so adding `0x00fc3000` to it again
+    double-counts (`0x00fc3000+0x00fc300e=0x1f8600e`). The CPU byte
+    address this compare actually reads — the *selected CPU byte
+    address*, meaningful only for a byte-wide `mem_mask` (00ff/ff00),
+    not implied for a full-word access — is `offset+1` when the low
+    byte lane is selected: `fc300e+1=fc300f`, exactly matching the
+    independently-logged `a6=fffc300f`. Both taps and the log line now
+    compute this correctly; verified against this same capture (the
+    arithmetic is deterministic — no fresh run was needed) and against
+    the tap-registration source (`src/emu/emumem_aspace.cpp`,
+    `src/emu/emumem_het.h`: the tap is registered on the global handler
+    tree, so `offset` is not relative to the tap's install range).
+
+  - **Task 2 (address/value relationship) — resolved, case A proven,
+    not assumed.** Full `unidasm -arch m68000` disassembly of
+    `f973f0-f97800` (live ROM, saved verbatim in this session's
+    transcript) shows the write pass (`f97424-f97438`) and the verify
+    pass (`f974fc-f975a0`) both derive `A4`/`A5` from the **same**
+    shared subroutine (`f97450-f9748e`), keyed only on `D3`, called
+    identically by both passes — so `A6` in the verify pass is
+    instruction-for-instruction the same address sequence as the write
+    pass's `A6` (`movea.l A4,A6` in both, at `f97424` and `f974b2`).
+    Both passes also re-derive `A3` from the same saved `$0e7e` base and
+    walk it through an identical header-byte sequence
+    (`addq.w #8,A3` / `D3` / `D5` / `D1`, byte-for-byte matching order)
+    before entering their respective per-byte loops, so `(A3)+` in the
+    verify pass reads the exact same table bytes, in the exact same
+    order, that the write pass's `(A3)+` wrote. **Write loop**
+    (`f97432`): `move.b (A3)+,(A6)` / `addq.l #2,A6` / `cmpa.l A5,A6` /
+    `ble` — raw byte, no transform. This is **case A**: the read at
+    `f97574` targets the exact same byte address the interpreter itself
+    wrote moments earlier in the same record pass, and (for record type
+    2, see Task 3) expects the exact same raw value it wrote — not
+    merely "a byte in the same register" or "a different status
+    offset."
+  - **Task 3 (D2 construction) — resolved for the failing record type.**
+    `f974fc: move.b (A3)+,D2` loads the raw table byte, then
+    `f97500-f97502: cmp.b #4,D3 / bne $f97574` — for any `D3≠4`
+    (**our case, `record_type_d3=02`**), this branch is **taken**,
+    jumping straight to the compare and skipping the entire OR-chain
+    below untouched. **For `D3==2`, `D2` is therefore the unmodified
+    raw source-table byte, with no transformation of any kind** — not a
+    bit mask, not an acknowledgment pattern. Classification: **exact
+    expected register value (raw copy)**. The elaborate chain
+    (`f97504-f97570`, literals `f9,fa,fb,f8,f5,f1,f0,ef,ea` — a superset
+    of, and consistent with, the previously-cited
+    `e8,e9,ea,f0,f1,f4,f5,f8,f9,fa,fb`) **only executes when `D3==4`**,
+    and there builds a genuine parameter-keyed ack/mask pattern (e.g.
+    `D1==0xf0` or `0xf1` forces `D2=0xff`; `D1` in `[0xea,0xef]` forces
+    `D2=0x00`; several other `D1` values OR in partial bit patterns) —
+    this is real, but it is **not** the path that produced this
+    session's captured mismatch, and must not be conflated with it.
+  - **Task 6 (per-record-type range/trigger table) — resolved, and this
+    retracts the prior turn's "DIL overrun" hypothesis outright.**
+    Static disassembly of `f9745c-f9748e` gives, for every statically
+    reachable type:
+
+    | `D3` | `A4` (start) | `A5` (end, inclusive) | byte range | offsets (`(addr-fc3001)/2`) | `D4` (commit offset) |
+    |---|---|---|---|---|---|
+    | 1 | `fc3001` | `fc3011` | 9 bytes | 0-8 (GPR+INSTR) | `0x1c0` = device offset `0xe0` |
+    | 2 | `fc3007` | `fc3011` | 6 bytes | 3-8 (INSTR only) | `0x180` = device offset `0xc0` |
+    | 3 or 4 | `fc3001` | `fc3005` | 3 bytes | 0-2 (GPR only) | `0x140` = device offset `0xa0` |
+
+    Every one of these three ranges is a **clean, exact subset of a
+    writable region** on the real `es5510_device` (GPR latch 0-2 and
+    INSTR latch 3-8 are both read/write per `es5510.cpp`); **none**
+    reaches the read-only DIL latch (offsets 9-11) at all. The prior
+    session's "type 2 overshoots into DIL" hypothesis is **retracted**:
+    it was based on an incomplete address derivation (assuming `A5`
+    re-derives from the *shifted* `A4`, which the disassembly disproves
+    — `A5` is fixed at the pre-shift `A4+0x10` for type 2, giving
+    `fc3011`, not `fc3017`). No record type this interpreter uses reads
+    or writes DIL at all.
+  - **Task 5 (ES5510 mapping) — verdict A (direct mapping strongly
+    supported), upgraded from "tentative."** Beyond the range match
+    above, `f97776` (called once after each type's byte loop, before
+    the verify pass) is now disassembled: it busy-waits on a status bit
+    at `(A0,$2c)` where `A0=fc3001` (the **fixed**, unshifted base, not
+    the per-type `A4`), then executes `move.b D1,(0,A0,D4.w)` at
+    `f97792` — a write to `fc3001+D4`: `+0x140=fc3141` (device offset
+    `0xa0`), `+0x180=fc3181` (`0xc0`), `+0x1c0=fc31c1` (`0xe0`) —
+    **exactly the three real `es5510_device` write-select trigger
+    offsets** (`0xa0`=commit GPR, `0xc0`=commit INSTR, `0xe0`=commit
+    GPR+INSTR; see `es5510.h`/`.cpp` `host_w`). Three independent record
+    types, three independent byte ranges, and three independent
+    commit-strobe addresses all agree with real ES5510 silicon with
+    zero discrepancy. No ASR-specific adapter logic (remapping,
+    inversion, scaling) is needed to explain any of this — the
+    interpreter's own address arithmetic **is** the ES5510 host
+    protocol, verbatim.
+  - **Task 4 (mismatch classification) — narrowed, not fully closed.**
+    Ruled out by the above: (2) byte-lane/address mapping is wrong —
+    write and verify compute the identical bus address and `mem_mask`
+    (proven in Task 2), so a lane swap cannot explain a same-address
+    mismatch. (4) compare-against-a-different-register is wrong — same
+    reasoning. (1) genuine device-required response is **inconsistent**
+    with this specific byte: for record type 2 the expected value is
+    the interpreter's own raw written byte (Task 3), not an
+    independent device-status value — a byte-latch that is supposed to
+    read back exactly what was written (as `es5510.cpp`'s real INSTR
+    latch does) needs no device model to satisfy this; plain RAM
+    suffices, *if* nothing else touches that byte in between.
+    **Asynchronous overwrite (3) is one remaining candidate, not yet
+    observed** — something *could* write to `fc300f` between the write
+    pass and the verify pass, which would explain the mismatch without
+    any device semantics at all, but no capture has actually shown such
+    a write. The live capture's address-unfiltered ring (10 entries)
+    was filled by unrelated, high-frequency traffic from a separate
+    subsystem (`f9770e`, a `fc3025`-bit-poll / `fc3101`-write loop,
+    unrelated to the INSTR latch) before it could show whatever
+    (if anything) touches `fc300f` in between. A follow-up experiment
+    (ring filtered to `fc3007-fc3011`, gated on table+type match, reset
+    at the start of each write pass) was written and built this
+    session but **could not be validated live** — blocked by the
+    `ASR10HANG`/`current-blocker.md` stall described below — and was
+    therefore **reverted rather than committed unvalidated**; see the
+    recovery note under Task 7 for the design to pick back up. Options
+    (1) and (3) both therefore remain open for this specific byte.
+  - **Task 7 (next implementation) — not yet actionable.** The
+    write-then-verify handshake and its three commit-trigger addresses
+    match real ES5510 silicon closely enough that instantiating
+    `es5510_device` (option: fully instantiate) is now the best-
+    supported *eventual* next step, but Task 4's root cause is not
+    closed — if the true cause is (3) (an unrelated subsystem
+    clobbering `fc300f`), fixing that clobber might make plain `.ram()`
+    pass this specific handshake without any device model at all, and
+    instantiating ES5510 first would risk masking that real bug behind
+    a device that happens to also satisfy the readback. Per this task's
+    own prohibitions (no direct D2 stub, no global success stub, no
+    speculative broadening), no code change is recommended yet.
+    - **Recovery note (for whoever resumes this once the unrelated
+      stall below is fixed).** A ring design was written and built
+      this session, then reverted (not committed) because it could not
+      be validated live: gate `m_fc3000_verify_ring` pushes, in both
+      taps, on `fc3000_verify_table_match() && u8(D3)==2 &&
+      selected_cpu_byte_address in [0xfc3007, 0xfc3011]`; in the write
+      tap only, also reset the ring (`fill({})`, `pos=0`) whenever
+      `pc==0x00f97432 && selected_cpu_byte_address==0x00fc3007` (the
+      start of record type 2's write pass) so stale entries from an
+      earlier internal/outer retry don't survive into the final
+      capture. This isolates the exact write/read sequence for
+      `fc3007-fc3011` alone, without the unrelated `fc3100`/`fc3140`-
+      range traffic crowding out the 10 remaining most-recent entries.
+      Re-attempt once a fresh run reaches
+      `ASR10_FC3000_VERIFY_HANDSHAKE` again.
+    - **Blocked on**: every reproduction attempt this session (flag
+      combinations `ASR10_DIAG_PANEL_AUTORESPOND`,
+      `ASR10_EXPERIMENT_PAR_DIAGNOSTIC=1 ASR10_DIAG_PAR_VALUE=0x300`,
+      `SDL_VIDEODRIVER=dummy`, `-bench` up to 420s, `-seconds_to_run` up
+      to 180s) now reliably reaches a documented, pre-existing,
+      unrelated stall — `"TUNING KBD - HANDS OFF"`,
+      `ASR10HANG reason=max_poll_count pc=f87f96` — before the
+      effect-download stage is reached again. This is the open
+      `dispatcher_queue_scan`/slot0-continuation gap already tracked in
+      `current-blocker.md` (dated one session earlier than this one),
+      unrelated to any change made this session (confirmed: this
+      session's own diff is diagnostic-only, and the stall reproduces
+      identically with `ASR10_EXPERIMENT_FC3000_VERIFY_TRACE` on or
+      off). The two captures quoted above both predate this stall
+      being hit and remain the only live evidence for this handshake.
+
 ## 3. Plausible hypotheses (unproven)
 
 - **FC2001 is (or is modeled on) an ES5506/ES5505-family device**, based
