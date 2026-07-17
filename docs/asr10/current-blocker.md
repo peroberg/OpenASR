@@ -102,6 +102,80 @@ are gated behind `ASR10_EXPERIMENT_TUNING_STALL_TRACE` (off by default,
 verified) and are supporting documentation only — the load-bearing result
 above comes from the pre-existing Channel B/FDC hooks, not from these.
 
+### 2026-07-16 addendum — filesystem/browser map (PASS 1 static + PASS 2 live)
+
+Full address inventory: `docs/asr10/filesystem-browser-map.md`. Summary:
+
+- Static ROM tracing found the mapped low-level FDC command engine and
+  currently known callers (send/status/result primitives at
+  `fb8cda`-`fb8dfc`, shared error setter `fb81ae` — not confirmed as
+  every command/result/error path the FDC supports), a SEEK wrapper with
+  a track cache (`fb8c6e`/lowmem `$49e.w` target, `$4ac.w` cache), a
+  generic "load one FDC unit into `$40e.w`" routine (`fb846a`), a
+  boot/format-sector loader+validator (`fb82a4`) that loads into a
+  lowmem `$544`-based buffer, and a generic bounds-checked range reader
+  (`fb895a`) keyed off a fixed lowmem descriptor at `$4fe` (size/limit
+  field at `$4fe+0xe` = `$50c`). A separate UI-side accessor (`f894a4`)
+  reads the same `$544` buffer as a 40-entry, 26-byte-stride table.
+  Filesystem shape remains **uncertain and not established**: the
+  leading hypothesis from partial tracing is a flat, category-filtered
+  entry table with FAT-like clustered reads rather than a hierarchical
+  directory, but this is not confirmed — see the map for the full
+  uncertainty markers.
+- **2026-07-16/17, live-instrumented pass, twice corrected.** Added a
+  single off-by-default flag, `ASR10_EXPERIMENT_FILESYSTEM_BROWSER_TRACE`
+  (all state in one `fsb_state` struct, code dumps table-driven), with
+  genuine read/write logging on ten candidate fields and entry-proxy hooks
+  for `fb82a4`, `fb846a`, `fb895a`, `fb8c6e`, `f894a4`'s canonical entry
+  (`f89494`) and table-read (`f894b4`, tracked separately), and FDC
+  command issue, plus `read_highview_word()` resolving the driver's
+  `0xfc6900-0xffffff` `.ram()` region via a genuine CPU-space read. Full
+  detail, including two rounds of correction to earlier overclaims in this
+  same pass: `docs/asr10/filesystem-browser-map.md` section 4.
+  - **Precise result on `f894a4`**: no execution through the canonical
+    `f8948e`/`f89494` entry path was observed, and the `$0544` table-read
+    path at `f894b4` was never reached — both zero, at every milestone.
+    Section 4.1 enumerates every candidate entry mechanism (direct calls,
+    branches, jump-table data, ~69 ROM-wide indirect `jsr (An)` sites,
+    loaded pointers) and finds no static caller, but explicitly does not
+    claim the routine is unreachable — a live-loaded callback pointer
+    reaching it was not exhaustively ruled out.
+  - **Validity predicate found, shown, and evaluated**: `$4b2.w`, set by
+    `fb9332` inside an error-checked chain (`fb9300`-`fb9342`), called from
+    "task1" (`fb92ce`, already named in this codebase's own earlier
+    diagnostics) via two direct callers (`fb917a`'s device-enumeration
+    loop; `fba828`, reached through an indirect dispatch pointer at
+    `$3de.w`). Live: value `0xff` (true), stable at every milestone.
+    Precise statement: **the mapped structures are populated and firmware
+    validity gate `$4b2` is true and stable** — not generalized beyond
+    that predicate.
+  - **Boundary**: directory/cache structures are populated before tuning,
+    and `$4b2` is true and stable throughout, but no execution through the
+    canonical `f894a4` entry path was observed.
+  - **Refuted by live data**: `fb82a4`/`fb846a` never fire (0 entries
+    each); the real live loader is `fb8ab6`/`fb8a54`, inside the
+    already-documented CMD46/READ DATA loop. Confirmed exactly: `$4ac`
+    writer `fb8cc2`, `$4be`/`$4bf` writer `fb7b9a`, `$4b3` writer `fb8948`.
+  - **Retracted** (address-resolution bug, corrected): slot 0's six
+    jump-vector operands and `f894a4`'s own five internal vector calls are
+    `jsr $xxxx.w` with bit 15 set, which sign-extends to `0xFFxxxx` on
+    this real 68000 — an earlier pass dumped the wrong (low) address and
+    reported a nonexistent `$a26e` reference to `$0544`/`$416`/`$4bf` and
+    a call chain (`fba0d6`/etc.) that does not exist. Corrected: `$a26e`'s
+    real target is a 4-byte `jmp $711e.w`, which loads slot 1's scheduler
+    base (`$23ea`) and executes `trap #9` — the same node-promotion trap
+    slot 1 itself uses from its own resume code (`$23d4`, slot 0's base).
+    None of slot 0's six real targets reference `$0544`/`$04fe`; two
+    converge on the scheduler's `trap #9` mechanism and one on the
+    already-open "node type 89A2" question from this document's own
+    section 9 — real findings, not proof of a filesystem-chain reach.
+  - Gate 1 re-verified clean (`GATE1_EXIT=0`, 0 `ASR10_FDC_TC`) after every
+    round of correction.
+  - Still open: who calls `fb8a44`-`fb8ab6` and task1 itself; where the
+    corrected tail-jump targets lead; whether any of the ~69 indirect-jump
+    sites reaches `f894a4` live; why `fb82a4`/`fb846a` never fire; the
+    filesystem-shape question.
+
 ### Smallest corrective experiment (not run yet)
 
 1. A genuine hook (matching how `PANEL_ENQUEUE` is already implemented) on
