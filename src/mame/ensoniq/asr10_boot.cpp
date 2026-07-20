@@ -37,6 +37,7 @@
  **************************************************************************/
 
 #include "emu.h"
+#include "main.h"
 
 #include "cpu/m68000/m68000.h"
 #include "imagedev/floppy.h"
@@ -248,6 +249,12 @@ private:
 	std::array<trace_slot, TRACE_SLOT_COUNT> m_trace_slots{};
 	char m_panel_text[PANEL_TEXT_LENGTH]{};
 	u32 m_panel_text_length = 0;
+	// filesystem-browser-map.md 4.15: display-timeline reconstruction from
+	// reset, not gated on the (too-late) f880fc landmark. Tracks the PC of
+	// the byte that started the current message and the PC of the most
+	// recent byte, so a completed message's producer PC range is known.
+	u32 m_panel_msg_first_pc = 0xffffffffU;
+	u32 m_panel_msg_last_pc = 0xffffffffU;
 	bool m_seen_loading_system_prompt = false;
 	u32 m_post_loading_panel_write_count = 0;
 	u32 m_post_loading_fdc_access_count = 0;
@@ -263,6 +270,8 @@ private:
 	bool m_gpio_stage1_gate_pass_logged = false;
 	bool m_task1_string_scan_logged = false;
 	bool m_download_trace_enabled = false;
+	bool m_download_retry_loop_dump_logged = false;
+	u32 m_esp_first_pass_write_seq = 0;
 	bool m_fdc_synth_tc_enabled = false;
 	bool m_fdc_synth_tc_pulsed_this_txn = false;
 	bool m_disk_sig_trace_enabled = false;
@@ -420,6 +429,130 @@ private:
 		bool milestone_e_logged = false;
 	};
 	fsb_state m_fsb;
+
+	// Post-tuning indirect-call / trap #9 verification
+	// (docs/asr10/filesystem-browser-map.md section 4.7's smallest edge).
+	// Off by default. Every hook here is gated on both m_pti.enabled and
+	// m_pti.seen_f880fc (the KEYBOARD TUNED finalizer already tracked by
+	// m_fsb.milestone_c_logged, tracked again independently here so this
+	// diagnostic does not depend on ASR10_EXPERIMENT_FILESYSTEM_BROWSER_TRACE
+	// also being set). `jsr (An)` genuinely pushes a return address (a real
+	// memory write, tappable via the established pc-gated technique inside
+	// lowmem_w); `jmp (An)` does not push anything and has no memory
+	// reference of its own, so it cannot be tapped this way -- of the ~69
+	// ROM-wide indirect sites found in section 4.1's enumeration, only the
+	// `jsr (An)` ones (PTI_INDIRECT_SITES below) are instrumented, and this
+	// is reported as a real coverage gap, not silently ignored.
+	static constexpr u32 PTI_INDIRECT_SITE_COUNT = 19;
+	// Slot 0's six named vectors reached via `jsr $xxxx.w` from its ae18
+	// resume routine and the adjacent ae22 routine (see the authoritative
+	// disassembly in filesystem-browser-map.md 4.9). Index order matches
+	// the task's own list: 0=87f2, 1=bc8e, 2=a26e, 3=8864, 4=8bb6 (JMP
+	// only -- see below), 5=9650. $a26e has two distinct jsr sites
+	// (ae5e, ae80); both increment index 2, distinguished in the log by
+	// source PC. $8bb6 (index 4) is reached only via `jmp $8bb6.w`
+	// (ae8a), which pushes no return address and cannot be tapped the
+	// same way -- its counter is incremented only by inference (the
+	// preceding `bsr $ae8e` at ae88 returning normally to ae8a).
+	static constexpr u32 PTI_VECTOR_COUNT = 6;
+	struct pti_state
+	{
+		bool enabled = false;
+		bool seen_f880fc = false;
+		std::array<u32, PTI_INDIRECT_SITE_COUNT> indirect_hit_counts{};
+		u32 trap9_hit_count = 0;
+		bool vector41_logged = false;
+		bool target_002b38_dump_logged = false;
+		std::array<u32, PTI_VECTOR_COUNT> vector_hit_counts{};
+		std::array<u32, PTI_VECTOR_COUNT> vector_return_counts{};
+		// 5 branch-guard taps: 0=ae34 (D2 sign, gates the ae38 bmi split),
+		// 1=ae56 ($183.w, gates ae5c bne / a26e site 1), 2=ae62 ($31c.w,
+		// gates ae66 beq / 8864), 3=ae72 ($183.w again, gates ae78 bne /
+		// a26e site 2 first check), 4=ae7a ($306.w, gates ae7e beq / a26e
+		// site 2 second check).
+		std::array<u32, 5> gate_hit_counts{};
+		// 002b14 node-classify verification (filesystem-browser-map.md
+		// 4.10): 0=002b1a ($035e.w vs A5), 1=002b26 ($031c.w -> D5).
+		std::array<u32, 2> node_gate_hit_counts{};
+		u32 trap4_hit_count = 0;
+		bool trap4_vector_logged = false;
+		// 007000 investigation (filesystem-browser-map.md 4.11): trap #2
+		// entry/return, the two node-field writes, trap #12/#14 issuance.
+		// Vectors 34/44/46 are dumped once, unconditionally at the
+		// f880fc gate (not gated on 007000 actually executing), so their
+		// handler addresses are known even if 007000 never runs.
+		bool vectors_34_44_46_logged = false;
+		u32 trap2_entry_count = 0;
+		u32 trap2_return_count = 0;
+		u32 node_write_1a_count = 0;
+		u32 node_write_a6_count = 0;
+		u32 trap12_count = 0;
+		u32 trap14_count = 0;
+		u32 trap2_a5_before = 0xffffffff;
+		// trap #13 caller cross-reference (filesystem-browser-map.md 4.13):
+		// 0=f883ac, 1=f88df8, 2=f89b54, all sharing A1 sourced from lowmem
+		// $dc.w per static analysis. Return sites: 0=f883ae (write tap),
+		// 1=f88dfa (write tap), 2=f89b56 (rts stack-pop read tap, this
+		// call site has no write instruction immediately after the trap).
+		std::array<u32, 3> trap13_call_counts{};
+		std::array<u32, 3> trap13_return_counts{};
+		std::array<u32, 3> trap13_a5_before{};
+		std::array<u32, 3> trap13_a1_before{};
+		std::array<u32, 3> trap13_queue_head_before{};
+		std::array<u32, 3> trap13_queue_tail_before{};
+		std::array<u32, 3> trap13_queue_count_before{};
+		std::array<u32, 3> trap13_queue_gate_before{};
+		u32 dispatcher_f87f82_hit_count = 0;
+		u32 dc_pointer_write_count = 0;
+		u32 dc_pointer_read_count = 0;
+		bool full_vector_scan_logged = false;
+		// filesystem-browser-map.md 4.14: per-entry tracking for every
+		// static path into f87f3e/f87f66/f87f80. "last_entry" is stashed
+		// by whichever entry tap fires (trap #1/#5/#6/#7/#15 direct, or
+		// one of f87f3e's five direct callers) and *consumed* (cleared)
+		// by the next downstream tap that reads it (f87f3e's own body
+		// entry, or f87f80/f87f82 for paths that skip f87f3e) -- so a
+		// correlation is only reported when a fresh, not-yet-consumed
+		// entry event actually precedes it, never by nearest-line timing.
+		bool last_entry_valid = false;
+		bool last_entry_consumed = false;
+		u32 last_entry_id = 0;
+		u32 last_entry_pc = 0;
+		std::array<u32, 11> entry_hit_counts{}; // indexed by entry id 1-10 (0 unused)
+		u32 f87f3e_body_entry_count = 0;
+		u32 f87f82_seq = 0;
+		u32 trap1_hit_count = 0;
+		u32 trap15_hit_count = 0;
+		u32 trap5_hit_count = 0;
+		u32 trap6_hit_count = 0;
+		u32 trap7_hit_count = 0;
+		// trap #15 before/after slot +2/+3 (task 4)
+		u32 trap15_slot_before2 = 0;
+		u32 trap15_slot_before3 = 0;
+		// filesystem-browser-map.md 4.15: early-epoch instrumentation, all
+		// gated purely on `enabled` (NOT seen_f880fc, which is proven too
+		// late -- it is a PC inside trap #6's own body).
+		u32 trap8_hit_count = 0;
+		u32 trap9_epoch_hit_count = 0;
+		u32 ca_list_decrement_count = 0;
+		u32 ca_list_callback_count = 0;
+		u32 slot0_ready_bit_write_count = 0;
+		// filesystem-browser-map.md 4.16: node+2=0x16 and 0xd10a producers,
+		// and the $d6.w destination cell (parallel to $dc.w in 4.13).
+		std::array<u32, 3> node16_producer_hit_counts{}; // 0=f88e2a 1=f9068a 2=f942f2
+		u32 d10a_producer_hit_count = 0;
+		u32 d6_pointer_write_count = 0;
+		u32 d6_pointer_read_count = 0;
+		// filesystem-browser-map.md 4.17
+		u32 ca_root_write_count = 0;
+		std::array<u32, 2> timer_field_write_counts{}; // 0=14d4 (word), 1=14d6 (long, 2 words)
+		std::array<u32, 5> family12_entry_counts{}; // 0=12efc 1=12f24 2=12f66 3=12f76 4=12f7e
+		// filesystem-browser-map.md 4.18: ae10-ae20 per-iteration capture.
+		u32 ae12_seq = 0;
+		u32 ae1a_seq = 0;
+		u32 ae20_seq = 0;
+	};
+	pti_state m_pti;
 	u32 m_runtime_dispatch_entry_count = 0;
 	u32 m_timer_candidate_trace_count = 0;
 	u32 m_synth_68302_timer_irq_count = 0;
@@ -637,6 +770,7 @@ private:
 	void log_04b0_countdown(u32 pc, char rw, u16 previous, u16 current);
 	void log_media_branch(u32 pc, u16 sr_override = 0xffff);
 	void log_fc3000_verify_handshake(bool write, u32 pc, u32 selected_cpu_byte_address, u32 offset, u16 data, u16 mem_mask);
+	void log_esp_first_pass_write(u32 pc, u32 byte_address, u8 data);
 	bool fc3000_verify_table_match() const;
 	void log_fb81b4_path(const char *landmark, u32 pc, u8 tested_value, bool branch_taken,
 		u32 branch_target, u16 sr_override = 0xffff, u32 d2_override = 0xffffffff);
@@ -664,6 +798,51 @@ private:
 	void log_fsb_snapshot(const char *milestone, u32 pc);
 	void log_fsb_milestone_check_panel_text(u32 pc, u8 data, u32 length_after);
 	void log_fsb_code_dumps(u32 pc);
+	void log_pti_indirect_call(u32 pc, u32 site_index);
+	void log_pti_trap9(u32 pc, const char *caller_tag);
+	void log_pti_dump_target(u32 address);
+	void check_pti_sites(u32 pc);
+	void log_pti_stack_probe(const char *milestone, u32 pc);
+	void log_pti_vector_call(u32 vector_index, const char *vector_name, u32 pc, u32 target,
+		u32 byte_address, u16 data, const char *gate_note);
+	void log_pti_vector_return(u32 vector_index, const char *vector_name, u32 pc);
+	void log_pti_gate(const char *name, u32 pc, u32 value, u32 gate_index);
+	void log_pti_node_gate(const char *name, u32 pc, u32 byte_address, u32 value, u32 index);
+	void log_pti_trap4(u32 pc);
+	void log_pti_vectors_34_44_46();
+	void log_pti_full_vector_scan();
+	void log_run_config_header();
+	void log_pti_entry_stash(u32 entry_id, const char *name, u32 pc);
+	void log_pti_f87f3e_body_entry(u32 pc);
+	void log_pti_f87f80_direct(u32 entry_id, const char *name, u32 pc);
+	void log_pti_f87f82_correlated(u32 pc);
+	void log_pti_trap15(u32 pc);
+	void log_pti_f880e0_check(u32 pc);
+	void log_pti_trap8(u32 pc);
+	void log_pti_trap9_epoch(u32 pc);
+	void log_pti_ca_list_decrement(u32 pc);
+	void log_pti_ca_list_callback(u32 pc);
+	void log_pti_slot0_ready_bit_write(u32 pc, u32 byte_address, u16 value);
+	void log_pti_trap2_entry(u32 pc);
+	void log_pti_trap2_success_observation(u32 pc);
+	void log_pti_node_field_write(const char *name, u32 pc, u32 byte_address, u32 value);
+	void log_pti_trap12_or_14(u32 pc, u32 trap_num);
+	void log_pti_trap13_call(u32 pc, u32 site_index);
+	void log_pti_trap13_return(u32 pc, u32 site_index);
+	void log_pti_dispatcher_f87f82(u32 pc);
+	void log_pti_dc_pointer_write(u32 pc, u16 value);
+	void log_pti_node16_producer(u32 pc, const char *site_name);
+	void log_pti_d10a_producer(u32 pc);
+	void log_pti_d6_pointer_write(u32 pc, u16 value);
+	void log_pti_d6_pointer_read(u32 pc, u16 value);
+	void log_pti_ca_root_write(u32 pc, u16 value);
+	void log_pti_timer_field_write(const char *name, u32 pc, u32 byte_address, u16 value);
+	void log_pti_12_family_entry(const char *name, u32 pc);
+	void log_pti_ae12_before(u32 pc);
+	void log_pti_ae1a_taken(u32 pc);
+	void log_pti_ae20_full(u32 pc);
+	void dump_slot_record(const char *tag, u32 slot_addr);
+	void log_pti_dc_pointer_read(u32 pc, u16 value);
 	void log_dispatcher_rte_first_pc_probe(u32 pc);
 	void log_tuning_stall_candidate_dump(u32 pc);
 	void log_tuning_stall_save_probe(u32 pc);
@@ -951,6 +1130,14 @@ void asr10_boot_state::machine_start()
 				m_fc3000_verify_ring[m_fc3000_verify_ring_pos % m_fc3000_verify_ring.size()] =
 					fc3000_ring_entry{pc, selected_cpu_byte_address, data, mem_mask, true};
 				m_fc3000_verify_ring_pos++;
+				// filesystem-browser-map.md 4.23 TASK 1: the first-pass
+				// upload write ("f97432: move.b (A3)+,(A6)") for the same
+				// 0xfff9bca0-tagged object the verify pass (4.22) later
+				// mismatches on. A3 has already been post-incremented by
+				// the time this tap fires, so the source ROM byte's
+				// address is (A3-1).
+				if (pc == 0x00f97432 && fc3000_verify_table_match())
+					log_esp_first_pass_write(pc, selected_cpu_byte_address, u8(data));
 			}
 			if (!m_duart_counter_timer_enabled)
 				return;
@@ -1207,6 +1394,8 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_es5510_ts_shadow));
 	save_item(NAME(m_panel_text));
 	save_item(NAME(m_panel_text_length));
+	save_item(NAME(m_panel_msg_first_pc));
+	save_item(NAME(m_panel_msg_last_pc));
 	save_item(NAME(m_seen_loading_system_prompt));
 	save_item(NAME(m_post_loading_panel_write_count));
 	save_item(NAME(m_post_loading_fdc_access_count));
@@ -1439,6 +1628,8 @@ void asr10_boot_state::machine_reset()
 		const char *const download_trace = std::getenv("ASR10_EXPERIMENT_DOWNLOAD_TRACE");
 		m_download_trace_enabled = download_trace && download_trace[0] && download_trace[0] != '0';
 	}
+	m_download_retry_loop_dump_logged = false;
+	m_esp_first_pass_write_seq = 0;
 	{
 		// Diagnostic fallback ONLY: no guest memory-mapped access has been
 		// proven to be a real TC strobe, and the FDC transfer loop
@@ -1472,6 +1663,13 @@ void asr10_boot_state::machine_reset()
 			fs_browser_trace && fs_browser_trace[0] && fs_browser_trace[0] != '0';
 		m_fsb = fsb_state{};
 		m_fsb.enabled = fs_browser_trace_enabled;
+	}
+	{
+		const char *const post_tuning_trace = std::getenv("ASR10_EXPERIMENT_POST_TUNING_INDIRECT_TRACE");
+		const bool post_tuning_trace_enabled =
+			post_tuning_trace && post_tuning_trace[0] && post_tuning_trace[0] != '0';
+		m_pti = pti_state{};
+		m_pti.enabled = post_tuning_trace_enabled;
 	}
 	m_post_lrclk_poll_count = 0;
 	m_post_lrclk_disassembly_logged = false;
@@ -1738,6 +1936,7 @@ void asr10_boot_state::machine_reset()
 	logerror("ASR10_MAINCPU_INPUT_LINE_DRIVER source=harness default_set_input_line_calls=0 "
 		"iack_map=installed_returns_autovectors_by_default pc_timer=diagnostic_poll "
 		"prompt_select_timer=diagnostic_poll fc6850_fc6852_timer_binding=none\n");
+	log_run_config_header();
 }
 
 /**
@@ -2085,6 +2284,89 @@ u16 asr10_boot_state::low_rom_or_lowmem_r(offs_t offset, u16 mem_mask)
 					"address=%06x value=%04x\n",
 					pc, entry_index, byte_address, m_lowmem_shadow[offset]);
 			}
+		}
+		if (m_pti.enabled && m_pti.seen_f880fc && !machine().side_effects_disabled())
+		{
+			// Slot 0's own resume code (ae18) is `and.b #$80,D0; beq $ae20`
+			// -- a register/flag-only decision with no memory reference of
+			// its own, so it can't be tapped directly (same "Path D" style
+			// limitation as f894a4's bounds check). `rts` at ae20 (the
+			// early-return target if the branch is taken) DOES read memory
+			// (pops the return address from the stack), giving a genuine
+			// proxy: if this fires, the branch was taken and `jsr $87f2.w`
+			// (the only vector directly reachable from *this* loop -- see
+			// filesystem-browser-map.md 4.9's authoritative disassembly;
+			// the other five belong to a separate routine at ae22 whose
+			// call relationship to this one is not yet established) did
+			// not execute this dispatch. D0 is unchanged since ae18 (only
+			// `and`/`beq` intervene), so its value here is also the value
+			// tested.
+			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+			if (pc == 0x0000ae20)
+			{
+				const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+				logerror("ASR10_PTI_SLOT0_EARLY_RETURN pc=%06x d0=%08x active_slot=%u sp=%06x "
+					"read_address=%06x read_data=%04x region=%s panel=\"%s\"\n",
+					pc, u32(m_maincpu->state_int(M68K_D0)), m_dispatcher_rte_frame_slot, sp,
+					byte_address, data, address_region_guess(sp), m_panel_text);
+			}
+			// Gate/return reads for the ae22 routine's five vectors (all
+			// via genuine memory reads immediately before/after each
+			// conditional jsr -- see filesystem-browser-map.md 4.9).
+			if (byte_address == 0x0cdc && pc == 0x0000ae2e)
+				log_pti_vector_return(1, "bc8e", pc);
+			if (byte_address == 0x0182 && pc == 0x0000ae56)
+				log_pti_gate("ae56_183_first_check", pc, data, 1);
+			if (byte_address == 0x031c && pc == 0x0000ae62)
+			{
+				log_pti_gate("ae62_31c_gates_8864", pc, data, 2);
+				log_pti_vector_return(2, "a26e_site1", pc);
+			}
+			if (pc == 0x0000ae6c)
+				log_pti_vector_return(3, "8864", pc);
+			if (byte_address == 0x0182 && pc == 0x0000ae72)
+				log_pti_gate("ae72_183_second_check", pc, data, 3);
+			if (byte_address == 0x0306 && pc == 0x0000ae7a)
+				log_pti_gate("ae7a_306_gates_a26e_site2", pc, data, 4);
+			// 002b14's node-classify sequence (filesystem-browser-map.md
+			// 4.10): 2b1a is `cmpa.w $35e.w,A5` (genuine read); 2b26 is
+			// `move.w $31c.w,D5` (genuine read, also the D5 producer).
+			if (byte_address == 0x035e && pc == 0x00002b1a)
+				log_pti_node_gate("2b1a_35e_vs_a5", pc, byte_address, data, 0);
+			if (byte_address == 0x031c && pc == 0x00002b26)
+				log_pti_node_gate("2b26_31c_to_d5", pc, byte_address, data, 1);
+			// filesystem-browser-map.md 4.13: trap #13 call site 2
+			// (f89b54)'s only following instruction is `rts` at f89b56,
+			// a stack-pop read with no write to tap -- same technique
+			// as the ae20 slot-0 early-return proxy above.
+			if (pc == 0x00f89b56)
+				log_pti_trap13_return(pc, 2);
+			// filesystem-browser-map.md 4.13 TASK 4: broad net, read side.
+			if (byte_address == 0x00dc)
+				log_pti_dc_pointer_read(pc, data);
+			// filesystem-browser-map.md 4.14: f880d6 (trap #6)'s first
+			// genuine access is a read, unlike the other entry proxies.
+			if (pc == 0x00f880e0)
+				log_pti_f880e0_check(pc);
+		}
+		// filesystem-browser-map.md 4.15: early-epoch instrumentation,
+		// gated purely on `enabled` (from reset) -- see the matching
+		// block in lowmem_w for the gate-correction rationale.
+		if (m_pti.enabled && !machine().side_effects_disabled())
+		{
+			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+			if (pc == 0x00f8813c)
+				log_pti_trap9_epoch(pc);
+			// filesystem-browser-map.md 4.16 TASK 3/6: broad net, read side.
+			if (byte_address == 0x00d6)
+				log_pti_d6_pointer_read(pc, data);
+			// filesystem-browser-map.md 4.17 TASK 1: the outer dispatcher
+			// entry `tst.b $101a.w` at 12efc is a genuine read.
+			if (pc == 0x00012efc)
+				log_pti_12_family_entry("12efc", pc);
+			// filesystem-browser-map.md 4.18: ae20's `rts` stack-pop read.
+			if (pc == 0x0000ae20)
+				log_pti_ae20_full(pc);
 		}
 		return data;
 	}
@@ -3119,6 +3401,9 @@ void asr10_boot_state::panel_l_note_completion(u32 pc, u16 previous_03bc, u16 cu
 }
 
 
+static const char *pti_entry_name(u32 entry_id);
+
+
 void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 {
 	const u32 byte_address = offset << 1;
@@ -3168,6 +3453,17 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 			u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
 			u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
 			u16(m_maincpu->state_int(M68K_SR)));
+		// filesystem-browser-map.md TASK 3 (ES5510/ESP download hypothesis
+		// round): one-shot static dump of the retry-loop's own code range
+		// (ffc840-ffc8c0, covering the ffc866/ffc872/ffc87e/ffc8a0/ffc8a4
+		// PCs already seen writing these same lowmem fields), so the exact
+		// compare/branch that decides retry-vs-give-up can be read directly
+		// instead of only inferred from field values.
+		if (!m_download_retry_loop_dump_logged && read_highview_word(0x00ffc866) != 0)
+		{
+			m_download_retry_loop_dump_logged = true;
+			dump_highview_code_range("download_retry_loop_ffc840_ffc8c0", 0x00ffc840, 0x00ffc8c0);
+		}
 	}
 	if (m_disk_sig_trace_enabled &&
 		(byte_address == 0x049c || byte_address == 0x04ae || byte_address == 0x0944 ||
@@ -3458,6 +3754,202 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 		// by its callees' return address (0xfb8352), not a direct tap.
 		if (byte_address == 0x04a9 && pc == 0x00fb846a)
 			log_fsb_entry(FSB_ENTRY_FB846A, pc);
+	}
+
+	if (m_pti.enabled && m_pti.seen_f880fc && !machine().side_effects_disabled())
+	{
+		// `jsr (An)` and `trap #9` both push a genuine return-address/frame
+		// word onto the stack; that write is what reaches this handler and
+		// makes the pc-gated checks inside check_pti_sites() possible (the
+		// instructions themselves have no other memory reference to tap).
+		// Identified by PC alone, not byte_address, since the push lands
+		// wherever SP currently is, not at a fixed field address.
+		const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+		check_pti_sites(pc);
+		// Positive control: slot 5's resume code unconditionally executes
+		// `clr.w $cdb0.w` (007aa, a genuine, always-reached lowmem write --
+		// proof this specific dispatch is live and its SP is what it is
+		// right here) immediately followed by `jsr $00007cc4.l` (0077ae, a
+		// direct absolute-long call, unconditional, no branch in between).
+		// If the stack really is in lowmem, 0077ae's own return-address
+		// push (to 0077b4, the next instruction) must also reach this
+		// handler; if it does not despite 0077aa firing, the stack is not
+		// where this technique assumes.
+		if (pc == 0x000077aa)
+		{
+			const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+			logerror("ASR10_PTI_CONTROL_BEFORE_JSR pc=%06x sp=%06x region=%s active_slot=%u panel=\"%s\"\n",
+				pc, sp, address_region_guess(sp), m_dispatcher_rte_frame_slot, m_panel_text);
+			log_pti_stack_probe("before_known_jsr_0077ae", pc);
+		}
+		if (pc == 0x000077ae)
+		{
+			const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+			logerror("ASR10_PTI_CONTROL_JSR_PUSH pc=%06x sp=%06x pushed_word_address=%06x "
+				"pushed_word_value=%04x mem_mask=%04x expected_return_address_00077b4 region=%s panel=\"%s\"\n",
+				pc, sp, byte_address, data, mem_mask, address_region_guess(sp), m_panel_text);
+		}
+
+		// Slot 0's six named vectors (filesystem-browser-map.md 4.9's
+		// authoritative disassembly of ae0c-ae91). All six `jsr $xxxx.w`
+		// sites are 4-byte instructions; each fires here via its own
+		// genuine return-address push, pc-gated exactly like the
+		// positive control above (byte_address/data below are that
+		// actual write, not a re-derived value). Gate taps
+		// (ae34/ae56/ae62/ae72/ae7a) capture the branch-condition inputs
+		// immediately before each conditional call, using the same
+		// technique.
+		if (pc == 0x0000ae1a)
+			log_pti_vector_call(0, "87f2", pc, 0x00ff87f2, byte_address, m_lowmem_shadow[offset],
+				"and.b#$80,D0 (ae14) != 0 -- unconditional once looped");
+		if (pc == 0x0000ae2a)
+			log_pti_vector_call(1, "bc8e", pc, 0x00ffbc8e, byte_address, m_lowmem_shadow[offset],
+				"unconditional once ae22 routine entered");
+		if (byte_address == 0x0cdc && pc == 0x0000ae34)
+			log_pti_gate("ae34_d2_to_cdc", pc, m_lowmem_shadow[offset], 0);
+		if (pc == 0x0000ae5e)
+			log_pti_vector_call(2, "a26e_site1", pc, 0x00ffa26e, byte_address, m_lowmem_shadow[offset],
+				"ae54 beq(D0!=0) + ae5c bne($183.w==3)");
+		if (byte_address == 0x0330 && pc == 0x0000ae4c)
+			log_pti_vector_return(5, "9650_via_ae4a_bsr", pc);
+		if (pc == 0x0000ae68)
+			log_pti_vector_call(3, "8864", pc, 0x00ff8864, byte_address, m_lowmem_shadow[offset],
+				"ae66 beq($31c.w!=0)");
+		if (pc == 0x0000ae80)
+			log_pti_vector_call(2, "a26e_site2", pc, 0x00ffa26e, byte_address, m_lowmem_shadow[offset],
+				"ae38 bmi(D2<0) + ae78 bne($183.w==3) + ae7e beq($306.w!=0)");
+		if (byte_address == 0x0cda && pc == 0x0000ae84)
+			log_pti_vector_return(2, "a26e_site2", pc);
+		if (pc == 0x0000ae8e)
+			log_pti_vector_call(5, "9650", pc, 0x00ff9650, byte_address, m_lowmem_shadow[offset],
+				"bsr from ae4a or ae88 -- see caller field in the log line's a-registers/stack, not distinguished here");
+		// trap #4 at 002b2a: a genuine exception-frame push, tappable by
+		// PC alone (lands wherever the supervisor stack is, not a fixed
+		// field address) -- same technique as trap #9 in 4.8.
+		if (pc == 0x00002b2a)
+			log_pti_trap4(pc);
+		// 007000 investigation (filesystem-browser-map.md 4.11): trap #2
+		// (7000) is a genuine exception push, tappable by PC alone. 7002
+		// (`bcs $702e`) is register/flag-only with no memory reference
+		// (same limitation as ae18/f894a8) -- 7004's write (only reached
+		// if carry was clear) is used as the "trap #2 succeeded" proxy
+		// instead. 700a/7010 are the node+2/node+4 writes themselves,
+		// PC-gated since the target address depends on A5, not fixed.
+		// 701e/702a are trap #12/#14, again genuine exception pushes.
+		if (pc == 0x00007000)
+			log_pti_trap2_entry(pc);
+		if (byte_address == 0x22bc && pc == 0x00007004)
+			log_pti_trap2_success_observation(pc);
+		if (pc == 0x0000700a)
+			log_pti_node_field_write("node+2=0x1a", pc, byte_address, m_lowmem_shadow[offset]);
+		if (pc == 0x00007010)
+			log_pti_node_field_write("node+4=A6", pc, byte_address, m_lowmem_shadow[offset]);
+		if (pc == 0x0000701e)
+			log_pti_trap12_or_14(pc, 12);
+		if (pc == 0x0000702a)
+			log_pti_trap12_or_14(pc, 14);
+		// filesystem-browser-map.md 4.13: the three static trap #13
+		// callers outside its own vector-46 nested call. Entry taps on
+		// the trap instruction's own exception-frame push (same
+		// technique as trap #4 above); return taps on the genuine
+		// lowmem write immediately after the trap, where one exists
+		// (site 2, f89b54, has none -- see low_rom_or_lowmem_r instead).
+		if (pc == 0x00f883ac)
+			log_pti_trap13_call(pc, 0);
+		if (pc == 0x00f883ae)
+			log_pti_trap13_return(pc, 0);
+		if (pc == 0x00f88df8)
+			log_pti_trap13_call(pc, 1);
+		if (pc == 0x00f88dfa)
+			log_pti_trap13_return(pc, 1);
+		if (pc == 0x00f89b54)
+			log_pti_trap13_call(pc, 2);
+		if (pc == 0x00f87f82)
+			log_pti_f87f82_correlated(pc);
+		// filesystem-browser-map.md 4.13 TASK 4: broad net on the queue
+		// pointer cell itself, independent of which PC touches it -- did
+		// $dc.w change post-gate, or get read by some caller other than
+		// the three known trap #13 sites (no static writer was found for
+		// it, consistent with the already-established bulk-copy pattern).
+		if (byte_address == 0x00dc)
+			log_pti_dc_pointer_write(pc, m_lowmem_shadow[offset]);
+		// filesystem-browser-map.md 4.14: entry taps for every distinct
+		// static path into f87f3e/f87f80. Register-only entry
+		// instructions are tapped at their first genuine memory access
+		// instead (same technique used throughout this driver).
+		if (pc == 0x00f87f7a)
+			log_pti_f87f80_direct(1, pti_entry_name(1), pc);   // trap #1 direct
+		if (pc == 0x00f880ba)
+			log_pti_f87f80_direct(2, pti_entry_name(2), pc);   // trap #5 (falls into #6's body)
+		if (pc == 0x00f8810c)
+			log_pti_f87f80_direct(3, pti_entry_name(3), pc);   // trap #7
+		if (pc == 0x00f8805a)
+			log_pti_trap15(pc);                                 // trap #15
+		if (pc == 0x00f881d0)
+			log_pti_entry_stash(5, pti_entry_name(5), pc);      // f87f3e via trap #12 bsr
+		if (pc == 0x00f881f0)
+			log_pti_entry_stash(6, pti_entry_name(6), pc);      // f87f3e via trap #14 jsr
+		if (pc == 0x00f89a28)
+			log_pti_entry_stash(7, pti_entry_name(7), pc);      // f87f3e via f89a28
+		if (pc == 0x00f89a4e)
+			log_pti_entry_stash(8, pti_entry_name(8), pc);      // f87f3e via f89a4e
+		if (pc == 0x00f89a68)
+			log_pti_entry_stash(9, pti_entry_name(9), pc);      // f87f3e via f89a68
+		if (pc == 0x00f87f40)
+			log_pti_f87f3e_body_entry(pc);
+	}
+
+	// filesystem-browser-map.md 4.15: early-epoch instrumentation, gated
+	// purely on `enabled` (from reset) -- f880fc/seen_f880fc is proven too
+	// late for the calibration-transition search (it is a PC inside trap
+	// #6's own body, not a universal post-tuning landmark).
+	if (m_pti.enabled && !machine().side_effects_disabled())
+	{
+		const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+		if (pc == 0x00f88134)
+			log_pti_trap8(pc);
+		if (pc == 0x00f88344)
+			log_pti_ca_list_decrement(pc);
+		if (pc == 0x00f88352)
+			log_pti_ca_list_callback(pc);
+		const u32 slot0_ptr = u32(lowmem_word(0x000c6)) & 0xffff;
+		if (byte_address == (slot0_ptr + 2) || byte_address == (slot0_ptr + 3))
+			log_pti_slot0_ready_bit_write(pc, byte_address, m_lowmem_shadow[offset]);
+		// filesystem-browser-map.md 4.16: node+2=0x16 / 0xd10a producers,
+		// and the $d6.w destination cell.
+		if (pc == 0x00f88e2a)
+			log_pti_node16_producer(pc, "f88e2a");
+		if (pc == 0x00f9068a)
+			log_pti_node16_producer(pc, "f9068a");
+		if (pc == 0x00f942f2)
+			log_pti_node16_producer(pc, "f942f2");
+		if (pc == 0x00012f88)
+			log_pti_d10a_producer(pc);
+		if (byte_address == 0x00d6)
+			log_pti_d6_pointer_write(pc, m_lowmem_shadow[offset]);
+		// filesystem-browser-map.md 4.17: $00ca root, timer fields, and
+		// the corrected 012efc-012f94 dispatcher family entries.
+		if (byte_address == 0x00ca)
+			log_pti_ca_root_write(pc, m_lowmem_shadow[offset]);
+		if (byte_address == 0x14d4)
+			log_pti_timer_field_write("14d4", pc, byte_address, m_lowmem_shadow[offset]);
+		if (byte_address == 0x14d6 || byte_address == 0x14d8)
+			log_pti_timer_field_write("14d6", pc, byte_address, m_lowmem_shadow[offset]);
+		if (pc == 0x00012f24)
+			log_pti_12_family_entry("12f24", pc);
+		if (pc == 0x00012f66)
+			log_pti_12_family_entry("12f66", pc);
+		if (pc == 0x00012f76)
+			log_pti_12_family_entry("12f76", pc);
+		if (pc == 0x00012f7e)
+			log_pti_12_family_entry("12f7e", pc);
+		// filesystem-browser-map.md 4.18: ae10-ae20 loop, writes side
+		// (trap #5's own exception push at ae12; jsr $87f2.w's return-
+		// address push at ae1a).
+		if (pc == 0x0000ae12)
+			log_pti_ae12_before(pc);
+		if (pc == 0x0000ae1a)
+			log_pti_ae1a_taken(pc);
 	}
 
 	if (byte_address < LOWMEM_LOG_END || byte_address == 0x00ea || byte_address == 0x0b7a || byte_address == 0x0b7c || byte_address == 0x0b7e)
@@ -4298,7 +4790,9 @@ void asr10_boot_state::panel_text_byte(u8 data, u32 pc)
 	if (m_panel_text_length == 0)
 	{
 		clear_display();
+		m_panel_msg_first_pc = pc;
 	}
+	m_panel_msg_last_pc = pc;
 
 	// Visa samma tecken som diagnostikbufferten tar emot.
 	if (m_display_position < ASR10_DISPLAY_LENGTH)
@@ -4364,6 +4858,16 @@ void asr10_boot_state::flush_panel_text()
 	if (m_panel_text_length)
 	{
 		logerror("ASR10PANEL text=\"%s\"\n", m_panel_text);
+		// filesystem-browser-map.md 4.15 TASK 1: unconditional (not gated
+		// on the too-late f880fc landmark) display-timeline entry, active
+		// whenever the PTI flag is on, from reset.
+		if (m_pti.enabled)
+		{
+			logerror("ASR10_PTI_PANEL_TIMELINE time=%s text=\"%s\" first_char_pc=%06x "
+				"last_char_pc=%06x active_slot=%u\n",
+				machine().time().to_string(), m_panel_text, m_panel_msg_first_pc,
+				m_panel_msg_last_pc, m_dispatcher_rte_frame_slot);
+		}
 		if (strstr(m_panel_text, "LOADING SYSTEM"))
 		{
 			m_seen_loading_system_prompt = true;
@@ -4612,6 +5116,37 @@ bool asr10_boot_state::fc3000_verify_table_match() const
 	// harmless mismatch on a different table earlier in boot.
 	return m_lowmem_shadow[0x0e8e >> 1] == 0xfff9 && m_lowmem_shadow[(0x0e8e >> 1) + 1] == 0xbca0;
 }
+
+// filesystem-browser-map.md 4.23 TASK 1: every first-pass upload byte
+// write for the 0xfff9bca0-tagged object, so the exact write that
+// precedes the 4.22 verify-pass mismatch at FC300F can be found directly
+// (not correlated by nearest timestamp). A3 has already been
+// post-incremented by the time this fires, so the source ROM address is
+// (A3-1); the destination is the CPU-visible byte address the tap
+// itself computed.
+void asr10_boot_state::log_esp_first_pass_write(u32 pc, u32 byte_address, u8 data)
+{
+	m_esp_first_pass_write_seq++;
+	const u32 a3 = u32(m_maincpu->state_int(M68K_A3)) & 0x00ffffff;
+	logerror("ASR10_ESP_FIRST_PASS_WRITE seq=%u pc=%06x dest_address=%06x written=%02x "
+		"source_rom_address=%06x table_base_0e8e=%04x%04x record_type_d3=%02x "
+		"record_count_d5=%02x record_param_d1=%02x record_index_d6=%02x "
+		"a0=%06x a1=%06x a2=%06x a3=%06x a4=%06x a5=%06x a6=%06x "
+		"d0=%08x d1=%08x d2=%08x d3=%08x d4=%08x d5=%08x d6=%08x\n",
+		m_esp_first_pass_write_seq, pc, byte_address, data, a3 - 1,
+		m_lowmem_shadow[0x0e8e >> 1], m_lowmem_shadow[(0x0e8e >> 1) + 1],
+		u32(m_maincpu->state_int(M68K_D3)) & 0xff, u32(m_maincpu->state_int(M68K_D5)) & 0xff,
+		u32(m_maincpu->state_int(M68K_D1)) & 0xff, u32(m_maincpu->state_int(M68K_D6)) & 0xff,
+		u32(m_maincpu->state_int(M68K_A0)) & 0x00ffffff, u32(m_maincpu->state_int(M68K_A1)) & 0x00ffffff,
+		u32(m_maincpu->state_int(M68K_A2)) & 0x00ffffff, a3,
+		u32(m_maincpu->state_int(M68K_A4)) & 0x00ffffff, u32(m_maincpu->state_int(M68K_A5)) & 0x00ffffff,
+		u32(m_maincpu->state_int(M68K_A6)) & 0x00ffffff,
+		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
+		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
+		u32(m_maincpu->state_int(M68K_D4)), u32(m_maincpu->state_int(M68K_D5)),
+		u32(m_maincpu->state_int(M68K_D6)));
+}
+
 
 void asr10_boot_state::log_fc3000_verify_handshake(bool write, u32 pc, u32 selected_cpu_byte_address, u32 offset, u16 data, u16 mem_mask)
 {
@@ -5679,6 +6214,1161 @@ void asr10_boot_state::log_fsb_code_dumps(u32 pc)
 }
 
 
+namespace {
+// The 18 ROM-wide `jsr (An)` sites found in section 4.1's enumeration
+// (JMP(An) sites push no return address and cannot be tapped this way --
+// see the m_pti comment at the member declaration), plus the one
+// live-discovered lowmem site (002b38, reached from slot 0's ff87f2
+// vector via the 002b14 tail-jump, per filesystem-browser-map.md 4.5).
+struct pti_indirect_site
+{
+	const char *name;
+	u32 pc;
+	int reg; // M68K_A0..M68K_A5
+};
+
+constexpr u32 PTI_SITE_COUNT = 19;
+
+constexpr pti_indirect_site PTI_INDIRECT_SITES[PTI_SITE_COUNT] = {
+	{ "f87ef6_jsr_a0", 0x00f87ef6, M68K_A0 },
+	{ "f87efc_jsr_a0", 0x00f87efc, M68K_A0 },
+	{ "f88024_jsr_a1", 0x00f88024, M68K_A1 },
+	{ "f881e2_jsr_a0", 0x00f881e2, M68K_A0 },
+	{ "f88228_jsr_a0", 0x00f88228, M68K_A0 },
+	{ "f88352_jsr_a1", 0x00f88352, M68K_A1 },
+	{ "f8d0b8_jsr_a3", 0x00f8d0b8, M68K_A3 },
+	{ "f8f0ea_jsr_a3", 0x00f8f0ea, M68K_A3 },
+	{ "f8f0ee_jsr_a3", 0x00f8f0ee, M68K_A3 },
+	{ "f8f100_jsr_a3", 0x00f8f100, M68K_A3 },
+	{ "f8f126_jsr_a2", 0x00f8f126, M68K_A2 },
+	{ "f8f12a_jsr_a2", 0x00f8f12a, M68K_A2 },
+	{ "f8f13c_jsr_a2", 0x00f8f13c, M68K_A2 },
+	{ "f8fcfc_jsr_a5", 0x00f8fcfc, M68K_A5 },
+	{ "f8ff56_jsr_a2", 0x00f8ff56, M68K_A2 },
+	{ "fa07fc_jsr_a1", 0x00fa07fc, M68K_A1 },
+	{ "faae16_jsr_a1", 0x00faae16, M68K_A1 },
+	{ "fb0f90_jsr_a0", 0x00fb0f90, M68K_A0 },
+	{ "002b38_jsr_a2", 0x00002b38, M68K_A2 }, // lowmem: slot0 ff87f2 -> 002b14 -> here
+};
+
+const char *pti_classify_target(u32 target)
+{
+	if (target >= 0x00f8948e && target <= 0x00f894f4)
+		return "f894a4_routine_range";
+	if (target >= 0x00f89a72 && target <= 0x00f89a94)
+		return "panel_enqueue_range";
+	if ((target >= 0x00fb7c00 && target <= 0x00fb9700) || (target >= 0x00fba000 && target <= 0x00fbb600))
+		return "mapped_filesystem_range";
+	return "other";
+}
+} // namespace
+
+
+void asr10_boot_state::check_pti_sites(u32 pc)
+{
+	for (u32 i = 0; i < PTI_SITE_COUNT; i++)
+	{
+		if (pc == PTI_INDIRECT_SITES[i].pc)
+			log_pti_indirect_call(pc, i);
+	}
+	if (pc == 0x00ffc8c0)
+		log_pti_trap9(pc, "slot1_ffc85a_resume");
+	else if (pc == 0x0000713a)
+		log_pti_trap9(pc, "slot0_a26e_00711e_target");
+}
+
+
+// Proves (or disproves) that the active stack is where the JSR/TRAP#9/RTS
+// hooks assume it is, before trusting their (null or non-null) results.
+// M68K_SP is the currently-active stack pointer (USP if the CPU is in user
+// mode, ISP/MSP if supervisor) per m68kcommon.h; M68K_USP/M68K_ISP are the
+// two register values directly, regardless of which is currently active,
+// so a user/supervisor mismatch is visible even if M68K_SP alone would
+// hide it.
+void asr10_boot_state::log_pti_stack_probe(const char *milestone, u32 pc)
+{
+	if (!m_pti.enabled)
+		return;
+	const u16 sr = u16(m_maincpu->state_int(M68K_SR));
+	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+	const u32 usp = m_maincpu->state_int(M68K_USP) & 0x00ffffff;
+	const u32 isp = m_maincpu->state_int(M68K_ISP) & 0x00ffffff;
+	logerror("ASR10_PTI_STACK_PROBE milestone=%s pc=%06x sp=%06x usp=%06x isp=%06x "
+		"sr=%04x supervisor=%u active_slot=%u sp_region=%s usp_region=%s isp_region=%s panel=\"%s\"\n",
+		milestone, pc, sp, usp, isp, sr, BIT(sr, 13) ? 1 : 0, m_dispatcher_rte_frame_slot,
+		address_region_guess(sp), address_region_guess(usp), address_region_guess(isp), m_panel_text);
+}
+
+
+// Fires from lowmem_w, pc-gated on one of slot 0's six named `jsr $xxxx.w`
+// sites (filesystem-browser-map.md 4.9's authoritative disassembly). Each
+// such jsr is a genuine 4-byte instruction pushing a 4-byte (long) return
+// address, so it triggers *two* word-write calls to lowmem_w at the same
+// pc (high word then low word, same as the 0077ae positive control) --
+// this function is called once per word, `word_count` therefore counts
+// words, not instructions. `usp_minus_observed` reports USP-observed_address
+// as a plain fact (not an assumed-correct formula -- whether MAME's core
+// exposes USP pre- or post-decrement at this callback was not established
+// by the earlier positive control, which only compared addresses across
+// two separate log lines, not against a live USP read at the write
+// itself); the actual relationship should be read off this field, not
+// asserted. `expected_word` is the high or low half of pc+4 as appropriate
+// for whichever of USP or USP-2 the observed address matches (if neither,
+// reported against USP itself, so the mismatch is still visible).
+// `target` is the known, constant sign-extended jsr operand
+// (absolute-short addressing, not indirect -- no register read is needed
+// to know where it goes, only whether it goes there at all).
+void asr10_boot_state::log_pti_vector_call(u32 vector_index, const char *vector_name, u32 pc,
+	u32 target, u32 byte_address, u16 data, const char *gate_note)
+{
+	if (!m_pti.enabled || !m_pti.seen_f880fc || machine().side_effects_disabled())
+		return;
+	u32 &counter = m_pti.vector_hit_counts[vector_index];
+	counter++;
+	const u32 usp = m_maincpu->state_int(M68K_USP) & 0x00ffffff;
+	const u32 expected_return = pc + 4;
+	const s32 usp_minus_observed = s32(usp) - s32(byte_address);
+	const u16 expected_word = (byte_address & 2) == (usp & 2)
+		? u16(expected_return) : u16(expected_return >> 16);
+	logerror("ASR10_PTI_VECTOR_CALL name=%s pc=%06x target=%06x word_count=%u "
+		"observed_write_address=%06x observed_write_value=%04x expected_return=%06x "
+		"usp=%06x usp_minus_observed=%d match_expected_word=%u "
+		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x "
+		"active_slot=%u gate=%s panel=\"%s\"\n",
+		vector_name, pc, target, counter,
+		byte_address, data, expected_return,
+		usp, usp_minus_observed, data == expected_word ? 1 : 0,
+		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
+		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
+		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
+		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
+		m_dispatcher_rte_frame_slot, gate_note, m_panel_text);
+}
+
+
+void asr10_boot_state::log_pti_vector_return(u32 vector_index, const char *vector_name, u32 pc)
+{
+	if (!m_pti.enabled || !m_pti.seen_f880fc || machine().side_effects_disabled())
+		return;
+	if (m_pti.vector_hit_counts[vector_index] == 0)
+		return; // return-point reached without a matching call this run -- not this vector's return
+	m_pti.vector_return_counts[vector_index]++;
+	logerror("ASR10_PTI_VECTOR_RETURN name=%s pc=%06x call_count=%u return_count=%u active_slot=%u panel=\"%s\"\n",
+		vector_name, pc, m_pti.vector_hit_counts[vector_index], m_pti.vector_return_counts[vector_index],
+		m_dispatcher_rte_frame_slot, m_panel_text);
+}
+
+
+void asr10_boot_state::log_pti_gate(const char *name, u32 pc, u32 value, u32 gate_index)
+{
+	if (!m_pti.enabled || !m_pti.seen_f880fc || machine().side_effects_disabled())
+		return;
+	m_pti.gate_hit_counts[gate_index]++;
+	logerror("ASR10_PTI_GATE name=%s pc=%06x value=%04x count=%u active_slot=%u panel=\"%s\"\n",
+		name, pc, value, m_pti.gate_hit_counts[gate_index], m_dispatcher_rte_frame_slot, m_panel_text);
+}
+
+
+// 002b1a (`cmpa.w $35e.w,A5`) and 002b26 (`move.w $31c.w,D5`) -- the two
+// genuine reads inside 002b14's node-classify sequence (see
+// filesystem-browser-map.md 4.10 for the authoritative disassembly and
+// the corrected register usage: A2/A5, not "D2.w" as informally assumed
+// before disassembling). Logs D0-D3/A2/A5 (full 32-bit and the low word
+// separately), the value actually read, USP, and active slot/node
+// context, so the branch this read feeds can be reconstructed rather
+// than assumed.
+void asr10_boot_state::log_pti_node_gate(const char *name, u32 pc, u32 byte_address, u32 value, u32 index)
+{
+	if (!m_pti.enabled || !m_pti.seen_f880fc || machine().side_effects_disabled())
+		return;
+	m_pti.node_gate_hit_counts[index]++;
+	const u32 d2 = u32(m_maincpu->state_int(M68K_D2));
+	const u32 d5 = u32(m_maincpu->state_int(M68K_D5));
+	const u32 a2 = u32(m_maincpu->state_int(M68K_A2)) & 0x00ffffff;
+	const u32 a5 = u32(m_maincpu->state_int(M68K_A5)) & 0x00ffffff;
+	const u32 usp = m_maincpu->state_int(M68K_USP) & 0x00ffffff;
+	logerror("ASR10_PTI_NODE_GATE name=%s pc=%06x address=%06x value=%04x count=%u "
+		"d2=%08x d2w=%04x d5=%08x d5w=%04x a2=%06x a5=%06x usp=%06x "
+		"active_slot=%u active_slot_a2=%06x panel=\"%s\"\n",
+		name, pc, byte_address, value, m_pti.node_gate_hit_counts[index],
+		d2, u16(d2), d5, u16(d5), a2, a5, usp,
+		m_dispatcher_rte_frame_slot, m_dispatcher_rte_frame_a2, m_panel_text);
+}
+
+
+// trap #4 at 002b2a. TRAP always pushes a genuine exception frame
+// (SR+PC) regardless of addressing context, so it's tappable the same
+// way as trap #9 (see 4.8) even though this specific call site is
+// register-only right up to the trap. Vector 36 (32+4); handler address
+// at lowmem $90 (36*4).
+void asr10_boot_state::log_pti_trap4(u32 pc)
+{
+	if (!m_pti.enabled || !m_pti.seen_f880fc || machine().side_effects_disabled())
+		return;
+	m_pti.trap4_hit_count++;
+	const u32 a2 = u32(m_maincpu->state_int(M68K_A2)) & 0x00ffffff;
+	const u32 a5 = u32(m_maincpu->state_int(M68K_A5)) & 0x00ffffff;
+	logerror("ASR10_PTI_TRAP4 pc=%06x count=%u a2_before=%06x a5=%06x active_slot=%u panel=\"%s\"\n",
+		pc, m_pti.trap4_hit_count, a2, a5, m_dispatcher_rte_frame_slot, m_panel_text);
+	if (!m_pti.trap4_vector_logged)
+	{
+		m_pti.trap4_vector_logged = true;
+		const u32 handler = read_loaded_long(0x00000090) & 0x00ffffff;
+		logerror("ASR10_PTI_TRAP4_VECTOR vector=36 vector_addr=000090 handler=%06x\n", handler);
+		if (handler >= 0x00fc6900)
+			dump_highview_code_range("pti_trap4_handler", handler, handler + 0x40);
+		else
+			dump_loaded_code_range("pti_trap4_handler", handler, handler + 0x40);
+	}
+}
+
+
+// Vectors 34 (trap #2), 44 (trap #12), 46 (trap #14) -- read and dumped
+// once, unconditionally at the f880fc gate, independent of whether
+// 007000 (which issues all three) ever actually executes. A static
+// ROM-wide search for the code that populates these vector-table slots
+// found only false-positive byte matches (same pattern as the 6b1c/6cf2/
+// d10a search in 4.10) -- the setup is evidently not simple per-vector
+// immediate stores, so the handler addresses are obtained by reading the
+// already-populated table live instead.
+void asr10_boot_state::log_pti_vectors_34_44_46()
+{
+	if (!m_pti.enabled || m_pti.vectors_34_44_46_logged)
+		return;
+	m_pti.vectors_34_44_46_logged = true;
+	const u32 h2 = read_loaded_long(0x00000088) & 0x00ffffff;
+	const u32 h12 = read_loaded_long(0x000000b0) & 0x00ffffff;
+	const u32 h13 = read_loaded_long(0x000000b4) & 0x00ffffff;
+	const u32 h14 = read_loaded_long(0x000000b8) & 0x00ffffff;
+	const u32 h15 = read_loaded_long(0x000000bc) & 0x00ffffff;
+	logerror("ASR10_PTI_VECTORS_2_12_13_14_15 vector34_addr=000088 handler=%06x "
+		"vector44_addr=0000b0 handler=%06x vector45_addr=0000b4 handler=%06x "
+		"vector46_addr=0000b8 handler=%06x vector47_addr=0000bc handler=%06x\n",
+		h2, h12, h13, h14, h15);
+	auto dump = [this](const char *tag, u32 handler, u32 len)
+	{
+		if (handler >= 0x00fc6900)
+			dump_highview_code_range(tag, handler, handler + len);
+		else if (handler <= 0x00fbffff)
+			dump_loaded_code_range(tag, handler, handler + len);
+	};
+	dump("pti_trap2_handler", h2, 0x40);
+	dump("pti_trap12_handler", h12, 0x40);
+	dump("pti_trap13_handler", h13, 0x40);
+	dump("pti_trap14_handler", h14, 0x40);
+	dump("pti_trap15_handler", h15, 0x40);
+	// f881f6 control-flow correction: f881e6's handler RTEs at f881f4, so
+	// f881f6 cannot be its fall-through body. Dump a wider window spanning
+	// both f881e6-f881f4 and the separate f881f6+ routine, plus whichever
+	// vector's handler equals f881f6 exactly, if any.
+	dump("pti_f881e6_wide", 0x00f881e6, 0x60);
+	if (h13 == 0x00f881f6)
+		logerror("ASR10_PTI_F881F6_XREF vector45(trap13) handler equals f881f6\n");
+	if (h14 == 0x00f881f6)
+		logerror("ASR10_PTI_F881F6_XREF vector46(trap14) handler equals f881f6\n");
+	if (h15 == 0x00f881f6)
+		logerror("ASR10_PTI_F881F6_XREF vector47(trap15) handler equals f881f6\n");
+	if (h13 != 0x00f881f6 && h14 != 0x00f881f6 && h15 != 0x00f881f6)
+		logerror("ASR10_PTI_F881F6_XREF none of vectors 45/46/47 point to f881f6\n");
+}
+
+
+// filesystem-browser-map.md 4.19: mandatory run-config header, logged
+// once per machine_reset(), unconditionally (not gated on any experiment
+// flag) so every capture is self-describing. Enumerates every known
+// ASR10_* environment flag (requested env string, parsed/effective
+// value, default when unset), ROM/floppy identity, and what is
+// statically known about the DUART/IRQ6 wiring at this point (the
+// counter's actual period/IACK vector are runtime facts that only exist
+// once the firmware arms the counter -- see the ASR10_DUART_COUNTER
+// arm-time log lines for those, not duplicated here).
+void asr10_boot_state::log_run_config_header()
+{
+	auto flag = [](const char *name) -> std::string
+	{
+		const char *const v = std::getenv(name);
+		return v ? std::string(v) : std::string("<unset>");
+	};
+
+	logerror("ASR10_RUN_CONFIG_HEADER begin ==========================================\n");
+	logerror("ASR10_RUN_CONFIG_BUILD mame_version=%s source=src/mame/ensoniq/asr10_boot.cpp "
+		"romset=asr10booth\n",
+		emulator_info::get_build_version());
+	logerror("ASR10_RUN_CONFIG_ROM lo=asr-648c-lo-1.5b.bin CRC(8e437843) "
+		"SHA1(418f042acbc5323f5b59cbbd71fdc8b2d851f7d0) "
+		"hi=asr-65e0-hi-1.5b.bin CRC(b37cd3b6) SHA1(c4371848428a628b5e5a50e99be602d7abfc7904)\n");
+	{
+		floppy_image_device *const floppy = m_floppy_connector->get_device();
+		if (floppy && floppy->exists())
+		{
+			const std::string hash = floppy->hash().macro_string();
+			logerror("ASR10_RUN_CONFIG_FLOPPY mounted=1 basename=%s hash=%s\n",
+				floppy->basename() ? floppy->basename() : "<null>",
+				hash.empty() ? "<unavailable_this_mame_version_does_not_precompute_floppy_hash>" : hash.c_str());
+		}
+		else
+		{
+			logerror("ASR10_RUN_CONFIG_FLOPPY mounted=0\n");
+		}
+	}
+	logerror("ASR10_RUN_CONFIG_IRQ6 wiring=fixed vector=0x56 condition=duart_irq_model_enabled()&&"
+		"level==6&&m_panel_c_irq6_asserted duart_irq_model_enabled=%u note=actual_counter_period_and_"
+		"first_iack_vector_are_runtime_facts_see_ASR10_DUART_COUNTER_and_ASR10_M68K_IACK_tags\n",
+		duart_irq_model_enabled() ? 1u : 0u);
+
+	// requested (raw env string) / effective (parsed bool actually used) /
+	// default-when-unset, for every ASR10_* flag found in this source file.
+	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_DIAG_PANEL_AUTORESPOND requested=%s effective=%u default_when_unset=0\n",
+		flag("ASR10_DIAG_PANEL_AUTORESPOND").c_str(), m_panel_autorespond_enabled ? 1u : 0u);
+	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_DIAG_PANEL_C_PARSER_TRACE requested=%s effective=%u "
+		"default_when_unset=0 note=also_forced_on_by_any_panel_reply_71_family_flag\n",
+		flag("ASR10_DIAG_PANEL_C_PARSER_TRACE").c_str(), m_panel_c_parser_trace_enabled ? 1u : 0u);
+	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_DIAG_PAR_VALUE requested=%s effective_value=0x%04x "
+		"default_when_unset=0x0200 note=value_only_applied_if_ASR10_EXPERIMENT_PAR_DIAGNOSTIC_also_set\n",
+		flag("ASR10_DIAG_PAR_VALUE").c_str(), m_es5506_diag_par_value);
+	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_DISK_SIGNATURE_TRACE requested=%s effective=%u "
+		"default_when_unset=0\n",
+		flag("ASR10_EXPERIMENT_DISK_SIGNATURE_TRACE").c_str(), m_disk_sig_trace_enabled ? 1u : 0u);
+	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_DOWNLOAD_TRACE requested=%s effective=%u "
+		"default_when_unset=0\n",
+		flag("ASR10_EXPERIMENT_DOWNLOAD_TRACE").c_str(), m_download_trace_enabled ? 1u : 0u);
+	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_DUART_COUNTER_TIMER requested=%s effective=%u "
+		"default_when_unset=0\n",
+		flag("ASR10_EXPERIMENT_DUART_COUNTER_TIMER").c_str(), m_duart_counter_timer_enabled ? 1u : 0u);
+	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_ES5506_HOST requested=%s effective=%u "
+		"default_when_unset=0 note=config_time_only_device_instantiation\n",
+		flag("ASR10_EXPERIMENT_ES5506_HOST").c_str(), m_es5506_host_enabled ? 1u : 0u);
+	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_FC3000_VERIFY_TRACE requested=%s effective=%u "
+		"default_when_unset=0\n",
+		flag("ASR10_EXPERIMENT_FC3000_VERIFY_TRACE").c_str(), m_fc3000_verify_trace_enabled ? 1u : 0u);
+	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_FDC_SYNTH_TC requested=%s effective=%u "
+		"default_when_unset=0\n",
+		flag("ASR10_EXPERIMENT_FDC_SYNTH_TC").c_str(), m_fdc_synth_tc_enabled ? 1u : 0u);
+	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_FILESYSTEM_BROWSER_TRACE requested=%s effective=%u "
+		"default_when_unset=0\n",
+		flag("ASR10_EXPERIMENT_FILESYSTEM_BROWSER_TRACE").c_str(), m_fsb.enabled ? 1u : 0u);
+	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_MC68302_GPIO_TRACE requested=%s effective=%u "
+		"default_when_unset=0\n",
+		flag("ASR10_EXPERIMENT_MC68302_GPIO_TRACE").c_str(), m_gpio_stage1_trace_enabled ? 1u : 0u);
+	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_PANEL_FF_DRAIN_KNOWN_RING requested=%s effective=%u "
+		"default_when_unset=0 note=mutually_exclusive_with_autorespond_and_other_panel_reply_flags_priority_order\n",
+		flag("ASR10_EXPERIMENT_PANEL_FF_DRAIN_KNOWN_RING").c_str(), m_panel_e_ff_drain_known_ring_enabled ? 1u : 0u);
+	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_PANEL_FF_DRAIN_LATER_RINGS requested=%s effective=%u "
+		"default_when_unset=0 note=mutually_exclusive_see_above\n",
+		flag("ASR10_EXPERIMENT_PANEL_FF_DRAIN_LATER_RINGS").c_str(), m_panel_l_ff_drain_later_rings_enabled ? 1u : 0u);
+	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_PANEL_REPLY_71_7E_FF requested=%s effective=%u "
+		"default_when_unset=0 note=mutually_exclusive_see_above\n",
+		flag("ASR10_EXPERIMENT_PANEL_REPLY_71_7E_FF").c_str(), m_panel_d2_reply_71_7e_ff_enabled ? 1u : 0u);
+	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_PANEL_REPLY_71_FF requested=%s effective=%u "
+		"default_when_unset=0 note=mutually_exclusive_see_above\n",
+		flag("ASR10_EXPERIMENT_PANEL_REPLY_71_FF").c_str(), m_panel_d1_reply_71_ff_enabled ? 1u : 0u);
+	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_PANEL_REPLY_71_ZERO requested=%s effective=%u "
+		"default_when_unset=0 note=mutually_exclusive_see_above\n",
+		flag("ASR10_EXPERIMENT_PANEL_REPLY_71_ZERO").c_str(), m_panel_c_reply_71_zero_enabled ? 1u : 0u);
+	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_PAR_DIAGNOSTIC requested=%s "
+		"effective_paired_with_DIAG_PAR_VALUE=%u default_when_unset=0 "
+		"note=BOTH_this_AND_ASR10_DIAG_PAR_VALUE_required_or_read_port_cb_stays_unbound_baseline_error130\n",
+		flag("ASR10_EXPERIMENT_PAR_DIAGNOSTIC").c_str(), m_es5506_diag_par_enabled ? 1u : 0u);
+	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_POST_TUNING_INDIRECT_TRACE requested=%s effective=%u "
+		"default_when_unset=0\n",
+		flag("ASR10_EXPERIMENT_POST_TUNING_INDIRECT_TRACE").c_str(), m_pti.enabled ? 1u : 0u);
+	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_TUNING_STALL_TRACE requested=%s effective=%u "
+		"default_when_unset=0\n",
+		flag("ASR10_EXPERIMENT_TUNING_STALL_TRACE").c_str(), m_tuning_stall_trace_enabled ? 1u : 0u);
+	logerror("ASR10_RUN_CONFIG_HEADER end ============================================\n");
+}
+
+
+// filesystem-browser-map.md 4.14 TASK 1/2: a one-shot scan of every
+// autovector (1-7, offsets 0x64-0x7c) and every trap vector (0-15,
+// offsets 0x80-0xbc), to identify which vector (if any) owns the three
+// newly-found static "bra $f87f80" handler fragments (f880b6, f880d6/
+// f88108 -- found to fall through into one another with no vector-driven
+// frame-build of their own) and f87f76 (a fourth f87f80-continuation
+// entry point found in the f87f1a-f87fd0 static map with zero call/branch
+// references anywhere in the ROM).
+void asr10_boot_state::log_pti_full_vector_scan()
+{
+	if (!m_pti.enabled || m_pti.full_vector_scan_logged)
+		return;
+	m_pti.full_vector_scan_logged = true;
+
+	static constexpr std::array<u32, 7> AUTOVECTOR_OFFSETS = { 0x64, 0x68, 0x6c, 0x70, 0x74, 0x78, 0x7c };
+	for (size_t i = 0; i < AUTOVECTOR_OFFSETS.size(); i++)
+	{
+		const u32 h = read_loaded_long(AUTOVECTOR_OFFSETS[i]) & 0x00ffffff;
+		logerror("ASR10_PTI_AUTOVECTOR level=%zu addr=%04x handler=%06x\n", i + 1, AUTOVECTOR_OFFSETS[i], h);
+	}
+	for (u32 trap_num = 0; trap_num <= 15; trap_num++)
+	{
+		const u32 offset = (32 + trap_num) * 4;
+		const u32 h = read_loaded_long(offset) & 0x00ffffff;
+		logerror("ASR10_PTI_TRAPVECTOR trap=%u addr=%04x handler=%06x\n", trap_num, offset, h);
+		if (h == 0x00f880b6)
+			logerror("ASR10_PTI_F880B6_XREF trap %u handler equals f880b6\n", trap_num);
+		if (h == 0x00f88108)
+			logerror("ASR10_PTI_F88108_XREF trap %u handler equals f88108\n", trap_num);
+		if (h == 0x00f87f76)
+			logerror("ASR10_PTI_F87F76_XREF trap %u handler equals f87f76\n", trap_num);
+		if (h == 0x00012f24)
+			logerror("ASR10_PTI_12F24_XREF trap %u handler equals 12f24\n", trap_num);
+		if (h == 0x00012f7e)
+			logerror("ASR10_PTI_12F7E_XREF trap %u handler equals 12f7e\n", trap_num);
+	}
+	// filesystem-browser-map.md 4.17 TASK 5: unconditional, one-shot dump
+	// of high-view 0xffd0e0-0xffd160 (around the FFFFD10A jsr target used
+	// by 002b14's third whitelisted branch) -- read regardless of whether
+	// any live path ever reaches it, since this is a pure data read with
+	// no side effect on emulated state.
+	dump_highview_code_range("pti_ffd10a_region", 0x00ffd0e0, 0x00ffd160);
+	// filesystem-browser-map.md 4.17 TASK 2: the raw word at lowmem $00ca
+	// itself, one-shot, regardless of live $00ca-list activity.
+	logerror("ASR10_PTI_00CA_WORD value=%04x\n", lowmem_word(0x000ca));
+}
+
+
+// filesystem-browser-map.md 4.14 TASK 3: entry-id -> name lookup for the
+// nine distinct static paths found into f87f3e/f87f80 (5 direct f87f3e
+// callers, plus the 4 trap-vector paths -- trap #1 direct, the trap
+// #5/#6 fall-through chain, trap #7, and trap #15 -- that reach f87f80
+// without going through f87f3e at all).
+static const char *pti_entry_name(u32 entry_id)
+{
+	switch (entry_id)
+	{
+		case 1: return "trap1_f87f76_direct";
+		case 2: return "trap5_6_chain_f880b6_f880d6";
+		case 3: return "trap7_f88108";
+		case 4: return "trap15_f88056";
+		case 5: return "f87f3e_via_f881d0_trap12_bsr";
+		case 6: return "f87f3e_via_f881f0_trap14_jsr";
+		case 7: return "f87f3e_via_f89a28";
+		case 8: return "f87f3e_via_f89a4e";
+		case 9: return "f87f3e_via_f89a68";
+		case 10: return "trap6_direct_f880d6";
+		default: return "unknown";
+	}
+}
+
+
+// Common full-register snapshot logged at every distinct entry point.
+void asr10_boot_state::log_pti_entry_stash(u32 entry_id, const char *name, u32 pc)
+{
+	if (!m_pti.enabled || !m_pti.seen_f880fc || machine().side_effects_disabled())
+		return;
+	m_pti.entry_hit_counts[entry_id]++;
+	m_pti.last_entry_valid = true;
+	m_pti.last_entry_consumed = false;
+	m_pti.last_entry_id = entry_id;
+	m_pti.last_entry_pc = pc;
+
+	const u32 usp = u32(m_maincpu->state_int(M68K_USP)) & 0x00ffffff;
+	const u16 sr = u16(m_maincpu->state_int(M68K_SR));
+	logerror("ASR10_PTI_ENTRY id=%u name=%s pc=%06x count=%u active_slot=%u "
+		"d0=%08x d1=%08x d2=%08x d3=%08x "
+		"a0=%08x a1=%08x a2=%08x a3=%08x a4=%08x a5=%08x a6=%08x "
+		"usp=%06x sr=%04x panel=\"%s\"\n",
+		entry_id, name, pc, m_pti.entry_hit_counts[entry_id], m_dispatcher_rte_frame_slot,
+		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
+		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
+		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
+		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
+		u32(m_maincpu->state_int(M68K_A4)), u32(m_maincpu->state_int(M68K_A5)),
+		u32(m_maincpu->state_int(M68K_A6)), usp, sr, m_panel_text);
+}
+
+
+// f87f3e's own body entry (tapped at f87f40's genuine write, since f87f3e
+// itself is `move USP,A0`, register-only). Confirms *some* caller of the
+// five reached here, and reports which one via the stash -- consuming it
+// so a later, unrelated hit can't be misattributed.
+void asr10_boot_state::log_pti_f87f3e_body_entry(u32 pc)
+{
+	if (!m_pti.enabled || !m_pti.seen_f880fc || machine().side_effects_disabled())
+		return;
+	m_pti.f87f3e_body_entry_count++;
+	const bool have_source = m_pti.last_entry_valid && !m_pti.last_entry_consumed;
+	logerror("ASR10_PTI_F87F3E_BODY_ENTRY pc=%06x count=%u source_known=%u source_id=%u "
+		"source_name=%s source_pc=%06x active_slot=%u panel=\"%s\"\n",
+		pc, m_pti.f87f3e_body_entry_count, have_source ? 1u : 0u,
+		have_source ? m_pti.last_entry_id : 0u,
+		have_source ? pti_entry_name(m_pti.last_entry_id) : "UNKNOWN_STALE",
+		have_source ? m_pti.last_entry_pc : 0u, m_dispatcher_rte_frame_slot, m_panel_text);
+	if (have_source)
+		m_pti.last_entry_consumed = true;
+}
+
+
+// The four trap-vector paths that reach f87f80 WITHOUT going through
+// f87f3e (trap #1 direct fall-through, the #5/#6 chain, #7, #15). Each
+// re-stashes its own identity as the "last entry" so f87f82's correlation
+// below attributes correctly even for these non-f87f3e paths.
+void asr10_boot_state::log_pti_f87f80_direct(u32 entry_id, const char *name, u32 pc)
+{
+	log_pti_entry_stash(entry_id, name, pc);
+}
+
+
+// f87f82 (`move.w A0,($e,A2)`) -- the shared, caller-agnostic proxy.
+// Assigns a monotonic sequence number and reports the correlated entry
+// only if one is stashed and not yet consumed (i.e. genuinely proven to
+// precede this specific hit, not just "the nearest earlier log line").
+void asr10_boot_state::log_pti_f87f82_correlated(u32 pc)
+{
+	if (!m_pti.enabled || !m_pti.seen_f880fc || machine().side_effects_disabled())
+		return;
+	m_pti.dispatcher_f87f82_hit_count++;
+	m_pti.f87f82_seq++;
+	const bool have_source = m_pti.last_entry_valid && !m_pti.last_entry_consumed;
+	logerror("ASR10_PTI_F87F82_SEQ seq=%u pc=%06x active_slot=%u source_known=%u source_id=%u "
+		"source_name=%s source_pc=%06x panel=\"%s\"\n",
+		m_pti.f87f82_seq, pc, m_dispatcher_rte_frame_slot, have_source ? 1u : 0u,
+		have_source ? m_pti.last_entry_id : 0u,
+		have_source ? pti_entry_name(m_pti.last_entry_id) : "UNKNOWN_STALE",
+		have_source ? m_pti.last_entry_pc : 0u, m_panel_text);
+	if (have_source)
+		m_pti.last_entry_consumed = true;
+}
+
+
+// filesystem-browser-map.md 4.14 TASK 4: trap #15 specifics -- source PC
+// (fixed, f88056, but logged for uniformity), D0 (the bit number),
+// $b6a.w (active slot pointer), and slot +2/+3 immediately before this
+// tap (the "after" values are whatever the *next* tap -- f87f80_direct
+// or f87f3e_body_entry -- observes, since trap #15's own two bset
+// instructions have no memory reference of their own to tap directly;
+// bset on an absolute/indexed memory operand IS a genuine read-modify-
+// write, but the two bset instructions here target the same byte pair
+// tested by the entry-stash snapshot taken at this same PC, so the
+// before/after split is: "before" = this tap, at f88056 itself, prior to
+// either bset; "after" is reported by whichever f87f80/f87f3e tap
+// follows).
+void asr10_boot_state::log_pti_trap15(u32 pc)
+{
+	if (!m_pti.enabled || !m_pti.seen_f880fc || machine().side_effects_disabled())
+		return;
+	m_pti.trap15_hit_count++;
+	const u32 slot_ptr = u32(lowmem_word(0x00b6a)) & 0xffff;
+	m_pti.trap15_slot_before2 = lowmem_byte(slot_ptr + 2);
+	m_pti.trap15_slot_before3 = lowmem_byte(slot_ptr + 3);
+	logerror("ASR10_PTI_TRAP15 pc=%06x count=%u d0_bit=%08x b6a_slot_ptr=%04x "
+		"slot+2_before=%02x slot+3_before=%02x active_slot=%u panel=\"%s\"\n",
+		pc, m_pti.trap15_hit_count, u32(m_maincpu->state_int(M68K_D0)), slot_ptr,
+		m_pti.trap15_slot_before2, m_pti.trap15_slot_before3, m_dispatcher_rte_frame_slot, m_panel_text);
+	log_pti_entry_stash(4, pti_entry_name(4), pc);
+}
+
+
+// f880d6 (trap #6)'s first genuine access (`move.w ($10,A2),D0`, a read)
+// fires unconditionally whether reached via trap #5's fall-through or
+// trap #6's own vector directly. If a fresh, unconsumed trap-#5 stash
+// (id 2) already precedes it, this is the normal chain -- leave it
+// attributed to trap #5 and just consume it here instead of at f87f80,
+// since f880d6 is the true unconditional convergence point for that
+// chain. Otherwise, trap #6 was entered directly, bypassing trap #5:
+// stash a distinct id (10) so it is not misattributed.
+void asr10_boot_state::log_pti_f880e0_check(u32 pc)
+{
+	if (!m_pti.enabled || !m_pti.seen_f880fc || machine().side_effects_disabled())
+		return;
+	const bool via_trap5 = m_pti.last_entry_valid && !m_pti.last_entry_consumed && m_pti.last_entry_id == 2;
+	logerror("ASR10_PTI_F880D6_ENTRY pc=%06x via_trap5_chain=%u active_slot=%u panel=\"%s\"\n",
+		pc, via_trap5 ? 1u : 0u, m_dispatcher_rte_frame_slot, m_panel_text);
+	if (!via_trap5)
+		log_pti_entry_stash(10, pti_entry_name(10), pc);
+}
+
+
+// filesystem-browser-map.md 4.15 TASK 3: trap #8 (vector 40, f8812c) --
+// `movea.w $b6a.w,A0 / move.w D0,(A0) / rte`: writes D0 into the
+// *currently active* slot's own +0 field. Gated purely on `enabled`
+// (from reset), per the gate correction -- f880fc/seen_f880fc is proven
+// too late (it is a PC inside trap #6's own body) to bound this search.
+void asr10_boot_state::log_pti_trap8(u32 pc)
+{
+	if (!m_pti.enabled || machine().side_effects_disabled())
+		return;
+	m_pti.trap8_hit_count++;
+	const u32 slot_ptr = u32(lowmem_word(0x00b6a)) & 0xffff;
+	logerror("ASR10_PTI_TRAP8 pc=%06x caller_pc=%06x count=%u d0_delay=%08x "
+		"target_slot_ptr=%04x active_slot=%u panel=\"%s\" time=%s\n",
+		pc, m_last_distinct_pc, m_pti.trap8_hit_count, u32(m_maincpu->state_int(M68K_D0)),
+		slot_ptr, m_dispatcher_rte_frame_slot, m_panel_text, machine().time().to_string());
+}
+
+
+// filesystem-browser-map.md 4.15 TASK 3: trap #9 (vector 41, f88138) --
+// enqueues node A5 onto an explicit queue A1 (head +0x10, tail +0x12),
+// clearing bit 7 of A1+2 once posted. Unlike trap #6/#7/#15, A1 is an
+// explicit argument, not $b6a.w -- this is the "post to an arbitrary
+// target" primitive, the leading candidate for what actually wakes a
+// specific target slot (including slot 0) rather than the caller's own.
+void asr10_boot_state::log_pti_trap9_epoch(u32 pc)
+{
+	if (!m_pti.enabled || machine().side_effects_disabled())
+		return;
+	m_pti.trap9_epoch_hit_count++;
+	const u32 a1 = u32(m_maincpu->state_int(M68K_A1)) & 0x00ffffff;
+	const u32 a5 = u32(m_maincpu->state_int(M68K_A5)) & 0x00ffffff;
+	const u32 slot0_ptr = u32(lowmem_word(0x000c6)) & 0xffff;
+	logerror("ASR10_PTI_TRAP9_EPOCH pc=%06x caller_pc=%06x count=%u a1_target=%06x a5_node=%06x "
+		"targets_slot0=%u active_slot=%u panel=\"%s\" time=%s\n",
+		pc, m_last_distinct_pc, m_pti.trap9_epoch_hit_count, a1, a5,
+		a1 == slot0_ptr ? 1u : 0u, m_dispatcher_rte_frame_slot, m_panel_text, machine().time().to_string());
+}
+
+
+// filesystem-browser-map.md 4.15 TASK 3: the "$00ca-list" -- a table of
+// 26-byte (0x1a) records from $ca.w to $cc.w, each with a countdown at
+// +0x14 and a callback function pointer at +0x16, serviced once per tick
+// (f88338-f88360, already statically mapped in 4.13's site-1 context).
+void asr10_boot_state::log_pti_ca_list_decrement(u32 pc)
+{
+	if (!m_pti.enabled || machine().side_effects_disabled())
+		return;
+	m_pti.ca_list_decrement_count++;
+	logerror("ASR10_PTI_CA_LIST_DECREMENT pc=%06x count=%u a0_record=%06x d1_remaining=%08x "
+		"active_slot=%u time=%s\n",
+		pc, m_pti.ca_list_decrement_count, u32(m_maincpu->state_int(M68K_A0)) & 0x00ffffff,
+		u32(m_maincpu->state_int(M68K_D1)), m_dispatcher_rte_frame_slot, machine().time().to_string());
+}
+
+
+void asr10_boot_state::log_pti_ca_list_callback(u32 pc)
+{
+	if (!m_pti.enabled || machine().side_effects_disabled())
+		return;
+	m_pti.ca_list_callback_count++;
+	logerror("ASR10_PTI_CA_LIST_CALLBACK pc=%06x count=%u a0_record=%06x a1_callback_target=%06x "
+		"active_slot=%u panel=\"%s\" time=%s\n",
+		pc, m_pti.ca_list_callback_count, u32(m_maincpu->state_int(M68K_A0)) & 0x00ffffff,
+		u32(m_maincpu->state_int(M68K_A1)) & 0x00ffffff, m_dispatcher_rte_frame_slot, m_panel_text,
+		machine().time().to_string());
+}
+
+
+// filesystem-browser-map.md 4.15 TASK 3/7: broad net on slot 0's own
+// +2/+3 ready-flag bytes specifically (address computed live from $c6.w,
+// slot 0 being the table's first entry), independent of which PC writes
+// them -- directly answers "other scheduler-ready-bit changes affecting
+// slot 0" and TASK 7's "is an expected later request for slot 0 absent".
+void asr10_boot_state::log_pti_slot0_ready_bit_write(u32 pc, u32 byte_address, u16 value)
+{
+	if (!m_pti.enabled || machine().side_effects_disabled())
+		return;
+	m_pti.slot0_ready_bit_write_count++;
+	logerror("ASR10_PTI_SLOT0_READY_BIT_WRITE pc=%06x count=%u byte_address=%06x value=%04x "
+		"active_slot=%u panel=\"%s\" time=%s\n",
+		pc, m_pti.slot0_ready_bit_write_count, byte_address, value,
+		m_dispatcher_rte_frame_slot, m_panel_text, machine().time().to_string());
+}
+
+
+void asr10_boot_state::log_pti_trap2_entry(u32 pc)
+{
+	if (!m_pti.enabled || !m_pti.seen_f880fc || machine().side_effects_disabled())
+		return;
+	m_pti.trap2_entry_count++;
+	m_pti.trap2_a5_before = u32(m_maincpu->state_int(M68K_A5)) & 0x00ffffff;
+	logerror("ASR10_PTI_TRAP2_ENTRY pc=%06x count=%u a5_before=%06x d0=%08x d1=%08x d2=%08x d3=%08x "
+		"a6=%06x active_slot=%u panel=\"%s\"\n",
+		pc, m_pti.trap2_entry_count, m_pti.trap2_a5_before,
+		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
+		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
+		u32(m_maincpu->state_int(M68K_A6)) & 0x00ffffff, m_dispatcher_rte_frame_slot, m_panel_text);
+}
+
+
+// Not a hook on trap #2's actual RTE -- that instruction has no memory
+// reference to tap. 7004 is the first write reached *after* rte, and only
+// on the path where the carry-clear (success) branch at 7002 was taken;
+// this is used purely as a proxy observation that trap #2 succeeded, not
+// as a direct measurement of the trap's own return.
+void asr10_boot_state::log_pti_trap2_success_observation(u32 pc)
+{
+	if (!m_pti.enabled || !m_pti.seen_f880fc || machine().side_effects_disabled())
+		return;
+	if (m_pti.trap2_entry_count == 0)
+		return; // reached 7004 without a matching trap #2 entry this run -- not this call
+	m_pti.trap2_return_count++;
+	const u32 a5_after = u32(m_maincpu->state_int(M68K_A5)) & 0x00ffffff;
+	const u16 sr = u16(m_maincpu->state_int(M68K_SR));
+	logerror("ASR10_PTI_TRAP2_SUCCESS_OBSERVATION pc=%06x count=%u a5_before=%06x a5_after=%06x "
+		"a5_changed=%u sr=%04x carry=%u active_slot=%u panel=\"%s\"\n",
+		pc, m_pti.trap2_return_count, m_pti.trap2_a5_before, a5_after,
+		a5_after != m_pti.trap2_a5_before ? 1 : 0, sr, BIT(sr, 0), m_dispatcher_rte_frame_slot, m_panel_text);
+}
+
+
+void asr10_boot_state::log_pti_node_field_write(const char *name, u32 pc, u32 byte_address, u32 value)
+{
+	if (!m_pti.enabled || !m_pti.seen_f880fc || machine().side_effects_disabled())
+		return;
+	const u32 a5 = u32(m_maincpu->state_int(M68K_A5)) & 0x00ffffff;
+	u32 &counter = !strcmp(name, "node+2=0x1a") ? m_pti.node_write_1a_count : m_pti.node_write_a6_count;
+	counter++;
+	logerror("ASR10_PTI_NODE_FIELD_WRITE name=%s pc=%06x count=%u a5=%06x write_address=%06x "
+		"write_value=%06x matches_a5_plus_offset=%u active_slot=%u panel=\"%s\"\n",
+		name, pc, counter, a5, byte_address, value,
+		(byte_address == a5 + 2 || byte_address == a5 + 4) ? 1 : 0,
+		m_dispatcher_rte_frame_slot, m_panel_text);
+}
+
+
+void asr10_boot_state::log_pti_trap12_or_14(u32 pc, u32 trap_num)
+{
+	if (!m_pti.enabled || !m_pti.seen_f880fc || machine().side_effects_disabled())
+		return;
+	u32 &counter = (trap_num == 12) ? m_pti.trap12_count : m_pti.trap14_count;
+	counter++;
+	const u32 a1 = u32(m_maincpu->state_int(M68K_A1)) & 0x00ffffff;
+	const u32 a5 = u32(m_maincpu->state_int(M68K_A5)) & 0x00ffffff;
+	const u32 a6 = u32(m_maincpu->state_int(M68K_A6)) & 0x00ffffff;
+	logerror("ASR10_PTI_TRAP%u pc=%06x count=%u a1=%06x a5=%06x a6=%06x d0=%08x active_slot=%u panel=\"%s\"\n",
+		trap_num, pc, counter, a1, a5, a6, u32(m_maincpu->state_int(M68K_D0)),
+		m_dispatcher_rte_frame_slot, m_panel_text);
+}
+
+
+// filesystem-browser-map.md 4.13: the three static call sites of `trap #d`
+// (trap #13) found outside its own vector-46 nested caller -- f883ac,
+// f88df8, f89b54. Static analysis established all three load A1 from the
+// same lowmem cell $dc.w immediately before the trap. Entry tap logs full
+// register state, the node at A5, and the queue header at A1, all *before*
+// the trap runs (i.e. before anything here could be side-effected by it).
+void asr10_boot_state::log_pti_trap13_call(u32 pc, u32 site_index)
+{
+	if (!m_pti.enabled || !m_pti.seen_f880fc || machine().side_effects_disabled())
+		return;
+	m_pti.trap13_call_counts[site_index]++;
+	const u32 a1_full = m_maincpu->state_int(M68K_A1);
+	const u32 a5_full = m_maincpu->state_int(M68K_A5);
+	const u32 a1 = u32(a1_full) & 0x00ffffff;
+	const u32 a5 = u32(a5_full) & 0x00ffffff;
+	const u32 a6 = u32(m_maincpu->state_int(M68K_A6)) & 0x00ffffff;
+	const u32 usp = u32(m_maincpu->state_int(M68K_USP)) & 0x00ffffff;
+	m_pti.trap13_a5_before[site_index] = a5;
+	m_pti.trap13_a1_before[site_index] = a1;
+
+	const u16 node0 = lowmem_word(a5 + 0);
+	const u16 node2 = lowmem_word(a5 + 2);
+	const u16 node4 = lowmem_word(a5 + 4);
+	const u16 node6 = lowmem_word(a5 + 6);
+	const u16 node8 = lowmem_word(a5 + 8);
+	const u16 nodea = lowmem_word(a5 + 0xa);
+	const s32 node2_sign_extended = s16(node2);
+	const char *type_match =
+		node2 == 0x6b1c ? "matches_6b1c" :
+		node2 == 0x6cf2 ? "matches_6cf2" :
+		node2 == 0xd10a ? "matches_d10a_lo16" :
+		u32(node2_sign_extended) == 0xffffd10a ? "matches_ffffd10a_signext" :
+		node2 == 0x89a2 ? "matches_89a2_lo16" :
+		node2 == 0x001a ? "matches_001a" : "no_known_match";
+
+	const u32 q_act = lowmem_word(a1 + 0);
+	const u32 q_side = lowmem_word(a1 + 4);
+	const u32 q_head = lowmem_word(a1 + 6);
+	const u32 q_tail = lowmem_word(a1 + 8);
+	const u32 q_limit = lowmem_word(a1 + 0xa);
+	const u32 q_count = lowmem_word(a1 + 0xc);
+	const u32 q_aux_e = lowmem_word(a1 + 0xe);
+	const u32 q_gate = lowmem_word(a1 + 0x10);
+	const u32 q_aux_12 = lowmem_word(a1 + 0x12);
+	m_pti.trap13_queue_head_before[site_index] = q_head;
+	m_pti.trap13_queue_tail_before[site_index] = q_tail;
+	m_pti.trap13_queue_count_before[site_index] = q_count;
+	m_pti.trap13_queue_gate_before[site_index] = q_gate;
+
+	logerror("ASR10_PTI_TRAP13_CALL site=%u pc=%06x count=%u a1_full=%08x a1_24=%06x "
+		"a5_full=%08x a5_24=%06x a6=%06x d0=%08x d1=%08x d2=%08x d3=%08x usp=%06x "
+		"active_slot=%u panel=\"%s\"\n",
+		site_index, pc, m_pti.trap13_call_counts[site_index], a1_full, a1, a5_full, a5, a6,
+		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
+		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
+		usp, m_dispatcher_rte_frame_slot, m_panel_text);
+	logerror("ASR10_PTI_TRAP13_NODE site=%u pc=%06x a5=%06x node+0=%04x node+2_raw=%04x "
+		"node+2_signext=%08x node+2_bus24=%06x node+4=%04x node+6=%04x node+8=%04x "
+		"node+a=%04x type_match=%s\n",
+		site_index, pc, a5, node0, node2, u32(node2_sign_extended), u32(node2_sign_extended) & 0x00ffffff,
+		node4, node6, node8, nodea, type_match);
+	logerror("ASR10_PTI_TRAP13_QUEUE_BEFORE site=%u pc=%06x a1=%06x act_ptr=%04x side=%04x "
+		"head=%04x tail=%04x limit=%04x count=%04x aux_e=%04x gate=%04x aux_12=%04x\n",
+		site_index, pc, a1, q_act, q_side, q_head, q_tail, q_limit, q_count, q_aux_e, q_gate, q_aux_12);
+}
+
+
+// Return-side observation: sites 0/1 tap the genuine lowmem write at the
+// instruction immediately after the trap (f883ae, f88dfa); site 2 has no
+// write there (f89b56 is a bare `rts`), so it is tapped as a stack-pop
+// *read* from low_rom_or_lowmem_r instead -- same technique already used
+// for the ae20 slot-0 early-return proxy (4.9).
+void asr10_boot_state::log_pti_trap13_return(u32 pc, u32 site_index)
+{
+	if (!m_pti.enabled || !m_pti.seen_f880fc || machine().side_effects_disabled())
+		return;
+	if (m_pti.trap13_call_counts[site_index] == 0)
+		return;
+	m_pti.trap13_return_counts[site_index]++;
+	const u32 a1 = u32(m_maincpu->state_int(M68K_A1)) & 0x00ffffff;
+	const u32 a5 = u32(m_maincpu->state_int(M68K_A5)) & 0x00ffffff;
+	const u32 a1_before = m_pti.trap13_a1_before[site_index];
+	const u32 a5_before = m_pti.trap13_a5_before[site_index];
+
+	const u32 q_head = lowmem_word(a1_before + 6);
+	const u32 q_tail = lowmem_word(a1_before + 8);
+	const u32 q_count = lowmem_word(a1_before + 0xc);
+	const u32 q_gate = lowmem_word(a1_before + 0x10);
+
+	// Positive-control style reachability check: walk up to 8 links from
+	// the (before-call) queue head and see if the enqueued node (a5_before)
+	// appears anywhere in that chain.
+	u32 walk = q_head;
+	bool reachable = false;
+	for (int i = 0; i < 8 && walk != 0; i++)
+	{
+		if (walk == a5_before) { reachable = true; break; }
+		walk = lowmem_word(walk + 0);
+	}
+	if (q_tail == a5_before)
+		reachable = true;
+
+	logerror("ASR10_PTI_TRAP13_RETURN site=%u pc=%06x count=%u a1_before=%06x a1_after=%06x "
+		"a1_unchanged=%u a5_before=%06x a5_after=%06x a5_unchanged=%u "
+		"head_before=%04x head_after=%04x tail_before=%04x tail_after=%04x "
+		"count_before=%04x count_after=%04x gate_before=%04x gate_after=%04x "
+		"node_reachable_from_head_or_tail=%u active_slot=%u panel=\"%s\"\n",
+		site_index, pc, m_pti.trap13_return_counts[site_index], a1_before, a1, a1 == a1_before ? 1u : 0u,
+		a5_before, a5, a5 == a5_before ? 1u : 0u,
+		m_pti.trap13_queue_head_before[site_index], q_head,
+		m_pti.trap13_queue_tail_before[site_index], q_tail,
+		m_pti.trap13_queue_count_before[site_index], q_count,
+		m_pti.trap13_queue_gate_before[site_index], q_gate,
+		reachable ? 1u : 0u, m_dispatcher_rte_frame_slot, m_panel_text);
+}
+
+
+// Shared, caller-agnostic proxy for "execution reached the dispatcher's
+// context-save continuation at f87f80" -- f87f80 itself is register-only
+// (`move USP,A0`), so f87f82 (`move.w A0,($e,A2)`, a genuine write) is
+// tapped instead. Not tied to any one of the three call sites above; a
+// hit here only proves *some* path reached this shared code, correlated
+// with the call-site counts above by proximity/timing, not causally.
+void asr10_boot_state::log_pti_dispatcher_f87f82(u32 pc)
+{
+	if (!m_pti.enabled || !m_pti.seen_f880fc || machine().side_effects_disabled())
+		return;
+	m_pti.dispatcher_f87f82_hit_count++;
+	logerror("ASR10_PTI_DISPATCHER_F87F82 pc=%06x count=%u active_slot=%u panel=\"%s\"\n",
+		pc, m_pti.dispatcher_f87f82_hit_count, m_dispatcher_rte_frame_slot, m_panel_text);
+}
+
+
+void asr10_boot_state::log_pti_dc_pointer_write(u32 pc, u16 value)
+{
+	if (!m_pti.enabled || !m_pti.seen_f880fc || machine().side_effects_disabled())
+		return;
+	m_pti.dc_pointer_write_count++;
+	logerror("ASR10_PTI_DC_POINTER_WRITE pc=%06x count=%u value=%04x active_slot=%u panel=\"%s\"\n",
+		pc, m_pti.dc_pointer_write_count, value, m_dispatcher_rte_frame_slot, m_panel_text);
+}
+
+
+void asr10_boot_state::log_pti_dc_pointer_read(u32 pc, u16 value)
+{
+	if (!m_pti.enabled || !m_pti.seen_f880fc || machine().side_effects_disabled())
+		return;
+	m_pti.dc_pointer_read_count++;
+	logerror("ASR10_PTI_DC_POINTER_READ pc=%06x count=%u value=%04x active_slot=%u panel=\"%s\"\n",
+		pc, m_pti.dc_pointer_read_count, value, m_dispatcher_rte_frame_slot, m_panel_text);
+}
+
+
+// filesystem-browser-map.md 4.16 TASK 3/6: the three confirmed static
+// producers of node+2=0x16 (f88e2a, f9068a, f942f2), all reached via
+// `trap #3` allocation (alloc without the count-limit check, 4.14). Gated
+// purely on `enabled` (from reset), not seen_f880fc, per the 4.15
+// correction. Dumps the surrounding gate bytes ($17e.w, $8434.w/$8435.w)
+// as plain facts, not asserted as *the* gating condition for all three
+// (only f88e2a's own static gate, $17e.w, was confirmed by disassembly).
+void asr10_boot_state::log_pti_node16_producer(u32 pc, const char *site_name)
+{
+	if (!m_pti.enabled || machine().side_effects_disabled())
+		return;
+	const u32 site_index = !strcmp(site_name, "f88e2a") ? 0 : !strcmp(site_name, "f9068a") ? 1 : 2;
+	m_pti.node16_producer_hit_counts[site_index]++;
+	const u32 a5 = u32(m_maincpu->state_int(M68K_A5)) & 0x00ffffff;
+	logerror("ASR10_PTI_NODE16_PRODUCER site=%s pc=%06x count=%u a5=%06x d3=%08x "
+		"flag_17e=%02x flag_8434=%02x flag_8435=%02x active_slot=%u panel=\"%s\" time=%s\n",
+		site_name, pc, m_pti.node16_producer_hit_counts[site_index], a5,
+		u32(m_maincpu->state_int(M68K_D3)), lowmem_byte(0x0017e), lowmem_byte(0x08434),
+		lowmem_byte(0x08435), m_dispatcher_rte_frame_slot, m_panel_text, machine().time().to_string());
+}
+
+
+// filesystem-browser-map.md 4.16 TASK 4/6: the one confirmed static
+// producer of node+2=0xd10a, found via disk-image byte search (RAM
+// 0x012f88, +0x2600 delta verified). Unlike the 0x16/0x89a2 producers,
+// this one targets slot 0 via a *hardcoded* immediate (#$23d4), not a
+// variable ($d6.w/$d8.w) -- logged as a plain fact, not generalized.
+void asr10_boot_state::log_pti_d10a_producer(u32 pc)
+{
+	if (!m_pti.enabled || machine().side_effects_disabled())
+		return;
+	m_pti.d10a_producer_hit_count++;
+	const u32 a5 = u32(m_maincpu->state_int(M68K_A5)) & 0x00ffffff;
+	logerror("ASR10_PTI_D10A_PRODUCER pc=%06x count=%u a5=%06x active_slot=%u panel=\"%s\" time=%s\n",
+		pc, m_pti.d10a_producer_hit_count, a5, m_dispatcher_rte_frame_slot, m_panel_text,
+		machine().time().to_string());
+}
+
+
+// filesystem-browser-map.md 4.16 TASK 3/6: broad net on $d6.w, the
+// confirmed destination of both f88e2a's and f942f2's node+2=0x16 posts
+// (parallel to $dc.w's treatment in 4.13).
+void asr10_boot_state::log_pti_d6_pointer_write(u32 pc, u16 value)
+{
+	if (!m_pti.enabled || machine().side_effects_disabled())
+		return;
+	m_pti.d6_pointer_write_count++;
+	logerror("ASR10_PTI_D6_POINTER_WRITE pc=%06x count=%u value=%04x active_slot=%u panel=\"%s\" time=%s\n",
+		pc, m_pti.d6_pointer_write_count, value, m_dispatcher_rte_frame_slot, m_panel_text,
+		machine().time().to_string());
+}
+
+
+void asr10_boot_state::log_pti_d6_pointer_read(u32 pc, u16 value)
+{
+	if (!m_pti.enabled || machine().side_effects_disabled())
+		return;
+	m_pti.d6_pointer_read_count++;
+	logerror("ASR10_PTI_D6_POINTER_READ pc=%06x count=%u value=%04x active_slot=%u panel=\"%s\" time=%s\n",
+		pc, m_pti.d6_pointer_read_count, value, m_dispatcher_rte_frame_slot, m_panel_text,
+		machine().time().to_string());
+}
+
+
+// filesystem-browser-map.md 4.17 TASK 2: every write to lowmem $00ca
+// itself (the candidate list-root cell).
+void asr10_boot_state::log_pti_ca_root_write(u32 pc, u16 value)
+{
+	if (!m_pti.enabled || machine().side_effects_disabled())
+		return;
+	m_pti.ca_root_write_count++;
+	logerror("ASR10_PTI_CA_ROOT_WRITE pc=%06x count=%u value=%04x active_slot=%u panel=\"%s\" time=%s\n",
+		pc, m_pti.ca_root_write_count, value, m_dispatcher_rte_frame_slot, m_panel_text,
+		machine().time().to_string());
+}
+
+
+// filesystem-browser-map.md 4.17 TASK 3: every write to $14d4 (countdown)
+// or $14d6-$14d9 (long callback pointer) -- the object corrected this
+// round to be reached via a SEPARATE tail case (12f6a) from the
+// unconditional-branch d10a producer (12f7e), not directly preceding it.
+void asr10_boot_state::log_pti_timer_field_write(const char *name, u32 pc, u32 byte_address, u16 value)
+{
+	if (!m_pti.enabled || machine().side_effects_disabled())
+		return;
+	const u32 index = !strcmp(name, "14d4") ? 0 : 1;
+	m_pti.timer_field_write_counts[index]++;
+	logerror("ASR10_PTI_TIMER_FIELD_WRITE name=%s pc=%06x count=%u byte_address=%06x value=%04x "
+		"active_slot=%u panel=\"%s\" time=%s\n",
+		name, pc, m_pti.timer_field_write_counts[index], byte_address, value,
+		m_dispatcher_rte_frame_slot, m_panel_text, machine().time().to_string());
+}
+
+
+// filesystem-browser-map.md 4.17 TASK 1/4: the five distinct entry points
+// in the 012efc-012f94 dispatcher family (see the corrected control-flow
+// account: 12f66's arm-timer tail loops back to 12f3a, NOT into 12f7e --
+// they are proven-separate branches, not a sequential pair).
+void asr10_boot_state::log_pti_12_family_entry(const char *name, u32 pc)
+{
+	if (!m_pti.enabled || machine().side_effects_disabled())
+		return;
+	static const std::array<const char *, 5> NAMES = { "12efc", "12f24", "12f66", "12f76", "12f7e" };
+	u32 index = 0;
+	for (u32 i = 0; i < NAMES.size(); i++)
+		if (!strcmp(name, NAMES[i])) { index = i; break; }
+	m_pti.family12_entry_counts[index]++;
+	logerror("ASR10_PTI_12FAMILY_ENTRY name=%s pc=%06x count=%u a5=%06x node_plus4=%08x "
+		"active_slot=%u panel=\"%s\" time=%s\n",
+		name, pc, m_pti.family12_entry_counts[index], u32(m_maincpu->state_int(M68K_A5)) & 0x00ffffff,
+		lowmem_long(u32(m_maincpu->state_int(M68K_A5)) + 4), m_dispatcher_rte_frame_slot, m_panel_text,
+		machine().time().to_string());
+}
+
+
+// filesystem-browser-map.md 4.18: one full 22-byte slot-record dump, used
+// by the ae12/ae1a/ae20 taps and the system-wide snapshot at ae20.
+void asr10_boot_state::dump_slot_record(const char *tag, u32 slot_addr)
+{
+	logerror("ASR10_PTI_SLOT_RECORD tag=%s addr=%06x +00=%04x +02=%04x +03=%02x +06=%08x "
+		"+0a=%04x +0c=%04x +0e=%04x +10=%04x +12=%04x +14=%04x\n",
+		tag, slot_addr, lowmem_word(slot_addr + 0), lowmem_word(slot_addr + 2),
+		u32(lowmem_byte(slot_addr + 3)), lowmem_long(slot_addr + 6), lowmem_word(slot_addr + 0xa),
+		lowmem_word(slot_addr + 0xc), lowmem_word(slot_addr + 0xe), lowmem_word(slot_addr + 0x10),
+		lowmem_word(slot_addr + 0x12), lowmem_word(slot_addr + 0x14));
+}
+
+
+// filesystem-browser-map.md 4.18 TASK 1: tapped at ae12, trap #5's own
+// exception-frame push. D0 is always 0 on entry here (established); logs
+// the FULL slot-0 record before trap #5/#6 run at all.
+void asr10_boot_state::log_pti_ae12_before(u32 pc)
+{
+	if (!m_pti.enabled || machine().side_effects_disabled())
+		return;
+	m_pti.ae12_seq++;
+	const u32 slot_ptr = u32(lowmem_word(0x00b6a)) & 0xffff;
+	logerror("ASR10_PTI_AE12_BEFORE seq=%u pc=%06x d0=%08x slot_ptr=%04x a5_before=%06x "
+		"active_slot=%u panel=\"%s\" time=%s\n",
+		m_pti.ae12_seq, pc, u32(m_maincpu->state_int(M68K_D0)), slot_ptr,
+		u32(m_maincpu->state_int(M68K_A5)) & 0x00ffffff, m_dispatcher_rte_frame_slot, m_panel_text,
+		machine().time().to_string());
+	dump_slot_record("ae12_before", slot_ptr);
+}
+
+
+// filesystem-browser-map.md 4.18 TASK 1/2: tapped at ae1a, `jsr $87f2.w`'s
+// own genuine return-address push -- fires ONLY when ae18's `beq` was NOT
+// taken (i.e. bit 7 of D0, post-AND, was set). D0 here is whatever trap
+// #5/#6 left it as (established: overwritten at f880e0 to the popped
+// queue-head pointer, or 0 if the queue was empty) -- NOT preserved from
+// entry, and NOT restored by the trap mechanism.
+void asr10_boot_state::log_pti_ae1a_taken(u32 pc)
+{
+	if (!m_pti.enabled || machine().side_effects_disabled())
+		return;
+	m_pti.ae1a_seq++;
+	const u32 slot_ptr = u32(lowmem_word(0x00b6a)) & 0xffff;
+	const u32 d0 = u32(m_maincpu->state_int(M68K_D0));
+	const u32 a5 = u32(m_maincpu->state_int(M68K_A5)) & 0x00ffffff;
+	const u16 sr = u16(m_maincpu->state_int(M68K_SR));
+	logerror("ASR10_PTI_AE1A_TAKEN seq=%u pc=%06x d0_full=%08x d0_low_byte=%02x sr=%04x ccr=%02x "
+		"slot_ptr=%04x a5=%06x node+0=%04x node+2=%04x node+4=%08x node+6=%04x "
+		"active_slot=%u panel=\"%s\" time=%s\n",
+		m_pti.ae1a_seq, pc, d0, u32(d0 & 0xff), sr, u32(sr & 0xff), slot_ptr, a5,
+		lowmem_word(a5 + 0), lowmem_word(a5 + 2), lowmem_long(a5 + 4), lowmem_word(a5 + 6),
+		m_dispatcher_rte_frame_slot, m_panel_text, machine().time().to_string());
+	dump_slot_record("ae1a_after_trap5_6", slot_ptr);
+}
+
+
+// filesystem-browser-map.md 4.18 TASK 1/3/4: tapped at ae20 (the `rts`
+// stack-pop read) -- fires when ae18's `beq` WAS taken (bit 7 of D0 was
+// clear). Full slot-0 record, A5/node state, the return address on the
+// stack, and a system-wide snapshot of every scheduler slot plus the
+// known queue/free-list/timer cells.
+void asr10_boot_state::log_pti_ae20_full(u32 pc)
+{
+	if (!m_pti.enabled || machine().side_effects_disabled())
+		return;
+	m_pti.ae20_seq++;
+	const u32 slot_ptr = u32(lowmem_word(0x00b6a)) & 0xffff;
+	const u32 sp = u32(m_maincpu->state_int(M68K_SP)) & 0x00ffffff;
+	const u32 a5 = u32(m_maincpu->state_int(M68K_A5)) & 0x00ffffff;
+	const u16 sr = u16(m_maincpu->state_int(M68K_SR));
+	const u32 return_address = read_stack_long(sp);
+	logerror("ASR10_PTI_AE20_FULL seq=%u pc=%06x d0=%08x sr=%04x ccr=%02x sp=%06x "
+		"return_address=%06x slot_ptr=%04x a5=%06x node+0=%04x node+2=%04x node+4=%08x node+6=%04x "
+		"active_slot=%u panel=\"%s\" time=%s\n",
+		m_pti.ae20_seq, pc, u32(m_maincpu->state_int(M68K_D0)), sr, u32(sr & 0xff), sp,
+		return_address, slot_ptr, a5, lowmem_word(a5 + 0), lowmem_word(a5 + 2), lowmem_long(a5 + 4),
+		lowmem_word(a5 + 6), m_dispatcher_rte_frame_slot, m_panel_text, machine().time().to_string());
+	logerror("ASR10_PTI_AE20_STACK_WORDS seq=%u sp=%06x words=\"%04x,%04x,%04x,%04x,%04x,%04x\"\n",
+		m_pti.ae20_seq, sp, lowmem_word(sp + 0), lowmem_word(sp + 2), lowmem_word(sp + 4),
+		lowmem_word(sp + 6), lowmem_word(sp + 8), lowmem_word(sp + 0xa));
+	dump_slot_record("ae20_slot0", slot_ptr);
+
+	// System-wide slot walk, $c6.w-$c8.w, stride 0x16 (4.14).
+	const u32 slot_base = u32(lowmem_word(0x000c6)) & 0xffff;
+	const u32 slot_bound = u32(lowmem_word(0x000c8)) & 0xffff;
+	for (u32 s = slot_base; s < slot_bound; s += 0x16)
+	{
+		char tag[24];
+		snprintf(tag, sizeof(tag), "ae20_snapshot_%06x", s);
+		dump_slot_record(tag, s);
+	}
+	logerror("ASR10_PTI_AE20_GLOBALS seq=%u d6=%04x d8=%04x da=%04x dc=%04x free_list_root_b6c=%04x "
+		"alloc_count_b7f=%02x timer_14c0_plus14=%04x timer_14c0_plus16=%08x ca_root=%04x\n",
+		m_pti.ae20_seq, lowmem_word(0x000d6), lowmem_word(0x000d8), lowmem_word(0x000da),
+		lowmem_word(0x000dc), lowmem_word(0x00b6c), u32(lowmem_byte(0x00b7f)),
+		lowmem_word(0x014d4), lowmem_long(0x014d6), lowmem_word(0x000ca));
+}
+
+
+void asr10_boot_state::log_pti_indirect_call(u32 pc, u32 site_index)
+{
+	if (!m_pti.enabled || !m_pti.seen_f880fc || machine().side_effects_disabled())
+		return;
+	u32 &counter = m_pti.indirect_hit_counts[site_index];
+	counter++;
+	if (counter > 64 && (counter & (counter - 1)))
+		return;
+	const pti_indirect_site &site = PTI_INDIRECT_SITES[site_index];
+	const u32 target = u32(m_maincpu->state_int(site.reg)) & 0x00ffffff;
+	const u32 queue_base = m_lowmem_shadow[0x00c6 >> 1] & 0x00ffffff;
+	logerror("ASR10_PTI_INDIRECT name=%s pc=%06x target=%06x classify=%s "
+		"active_slot=%u active_slot_a2=%06x queue_base=%06x count=%u panel=\"%s\"\n",
+		site.name, pc, target, pti_classify_target(target),
+		m_dispatcher_rte_frame_slot, m_dispatcher_rte_frame_a2, queue_base,
+		counter, m_panel_text);
+	if (site.pc == 0x00002b38 && !m_pti.target_002b38_dump_logged)
+	{
+		m_pti.target_002b38_dump_logged = true;
+		log_pti_dump_target(target);
+	}
+}
+
+
+void asr10_boot_state::log_pti_dump_target(u32 address)
+{
+	address &= 0x00ffffff;
+	char tag[48];
+	snprintf(tag, sizeof(tag), "pti_002b38_target_%06x", address);
+	if (address >= 0x00fc6900)
+		dump_highview_code_range(tag, address >= 0x20 ? address - 0x20 : 0, address + 0x40);
+	else
+		dump_loaded_code_range(tag, address >= 0x20 ? address - 0x20 : 0, address + 0x40);
+}
+
+
+// Both known "trap #9" call sites are in loaded overlay RAM, not static
+// ROM (a ROM-wide search found none) -- these two were found live in
+// filesystem-browser-map.md 4.5 (slot 1's own resume code, and slot 0's
+// ffa26e->00711e tail-jump target) and are not claimed to be exhaustive;
+// any other call site would need to be found the same way, live, first.
+void asr10_boot_state::log_pti_trap9(u32 pc, const char *caller_tag)
+{
+	if (!m_pti.enabled || !m_pti.seen_f880fc || machine().side_effects_disabled())
+		return;
+	m_pti.trap9_hit_count++;
+	const u32 a1 = u32(m_maincpu->state_int(M68K_A1)) & 0x00ffffff;
+	std::string record;
+	for (u32 offset = 0; offset < 0x16; offset += 2)
+	{
+		if (offset)
+			record += ',';
+		record += util::string_format("+%02x:%04x", offset, read_loaded_word(a1 + offset));
+	}
+	logerror("ASR10_PTI_TRAP9 caller=%s pc=%06x node_a1=%06x count=%u active_slot=%u "
+		"active_slot_a2=%06x panel=\"%s\" record=\"%s\"\n",
+		caller_tag, pc, a1, m_pti.trap9_hit_count, m_dispatcher_rte_frame_slot,
+		m_dispatcher_rte_frame_a2, m_panel_text, record.c_str());
+
+	if (!m_pti.vector41_logged)
+	{
+		m_pti.vector41_logged = true;
+		const u32 handler = read_loaded_long(0x000000a4) & 0x00ffffff;
+		logerror("ASR10_PTI_TRAP9_VECTOR vector=41 vector_addr=0000a4 handler=%06x\n", handler);
+		if (handler >= 0x00fc6900)
+			dump_highview_code_range("pti_trap9_handler", handler, handler + 0x60);
+		else
+			dump_loaded_code_range("pti_trap9_handler", handler, handler + 0x60);
+	}
+}
+
+
 void asr10_boot_state::log_fsb_snapshot(const char *milestone, u32 pc)
 {
 	if (!m_fsb.enabled)
@@ -6202,6 +7892,14 @@ void asr10_boot_state::log_f87f96_queue_write(u32 byte_address, u16 previous, u1
 		m_fsb.milestone_c_logged = true;
 		log_fsb_snapshot("C_after_f880fc_finalizer", pc);
 	}
+	if (pc == 0x00f880fc && m_pti.enabled && !m_pti.seen_f880fc)
+	{
+		m_pti.seen_f880fc = true;
+		logerror("ASR10_PTI_GATE_OPEN pc=%06x panel=\"%s\"\n", pc, m_panel_text);
+		log_pti_stack_probe("f880fc", pc);
+		log_pti_vectors_34_44_46();
+		log_pti_full_vector_scan();
+	}
 	if (!m_f8ce_queue_code_dump_logged && pc >= 0x00f8ce20 && pc <= 0x00f8ce50)
 	{
 		std::string words;
@@ -6306,6 +8004,12 @@ void asr10_boot_state::log_dispatcher_rte_first_pc_probe(u32 pc)
 		snprintf(milestone, sizeof(milestone), "D_slot%u_resume", m_dispatcher_rte_frame_slot);
 		log_fsb_snapshot(milestone, pc);
 		log_fsb_code_dumps(pc);
+	}
+	if (m_pti.enabled && m_pti.seen_f880fc)
+	{
+		char milestone[48];
+		snprintf(milestone, sizeof(milestone), "rte_resume_slot%u", m_dispatcher_rte_frame_slot);
+		log_pti_stack_probe(milestone, pc);
 	}
 }
 

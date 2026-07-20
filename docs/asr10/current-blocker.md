@@ -871,6 +871,27 @@ the consumer and meaning of node type 89A2 remain unknown
 Do not force `F97F10` on this node. `F97F10` is a typed `8810` consumer and
 releases nonmatching nodes. Calling it on `89A2` would destroy evidence.
 
+**2026-07-17 addendum — a live-confirmed consumer found, partial answer.**
+`docs/asr10/filesystem-browser-map.md` section 4.10: slot 0's post-tuning
+resume (`ae18` → `jsr $87f2.w` → `ff87f2` → `002b14`) calls `f89170`,
+which deserializes node `14f4`'s `+2` field into `A2` via `movea.w`
+(sign-extending). Live-captured: `A5=0x0014f4`, `A2=0xFF89A2` — exactly
+this node, exactly the documented `+02=89A2` value, now seen sign-extended
+into an address register. `002b14` then compares `A2` (via `cmpa.w`,
+which also sign-extends its immediate operands) against `0x6b1c`,
+`0x6cf2`, and `0xd10a`→`0xFFFFd10a`; `0xFF89A2` matches none, so `jsr
+(A2)` at `002b38` is not taken, and the node is instead pushed (via `trap
+#4`, verified: vector 36, handler `f880a2`) onto a linked list rooted at
+lowmem `$b6c.w` — a different list than `$b6a.w`'s already-documented
+active-slot pointer. **This is a different mechanism than the retracted
+`FF8258=8140`/`FF0AE2` model above** — it does not reopen that retraction,
+it is an unrelated reader of the same field, found via the actual
+executed path rather than address arithmetic. Still unknown: who writes
+`89a2` into node `14f4`'s `+2` field in the first place, and whether any
+node ever carries a value that actually matches one of the three
+constants (which would be the first live proof `002b38` is reachable at
+all, for any node).
+
 ---
 
 ## 10. Memory-model facts relevant to the blocker
