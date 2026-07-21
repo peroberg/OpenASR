@@ -96,3 +96,171 @@ command set and sizes may differ — treat as hypothesis, verify against parser.
    `A0 55 00`): source of the `A0` lead byte, meaning of `+08=1514/+10=151c`. [open]
 5. Whether the natural boot enqueues display text (e.g. disk/bank prompt) into
    the same ring — likely, given the two OS drain barriers.
+
+## 7. TRAP #$A marker+payload encoder (2026-07-21) [STAT]+[DYN]
+
+A second, distinct producer feeds the same ring/THRB path from §2. It is reached
+by a **software** exception, not a hardware interrupt:
+
+```text
+producer loads serialized byte into D2
+  -> opcode 0x4e4a, TRAP #$A (trap immediate 10, exception vector 42, table addr 0x00a8)
+  -> runtime-installed vector value 0xffff88e8
+  -> trampoline at 0xff88e8 -> jmp 0xfff89a5a
+  -> f89a5a flow-controlled enqueue handler (expects D2 preloaded; not itself a producer)
+  -> f89a72 TX-ring enqueue (§2)
+  -> f89a9a-f89ac8 dequeue/service -> f89aa4 THRB write -> RTE
+```
+
+Do not call TRAP #$A "Line-A" — Line-A is a separate, pre-existing mechanism
+(opcode family `0xAxxx`, exception vector 10, service at `f882ca`).
+
+**Encoder loop** (`f8a7dc-f8a808`, boot ROM): reads a source byte from `(A2)+`,
+separates its bit 7, and emits it as **two** transmitted bytes — marker, then
+masked payload:
+
+```text
+payload = source_byte & 0x7f
+marker  = (0x77 if bit7 clear, 0x7a if bit7 set) + D0
+```
+
+**Three D0 classes**, statically verified at the dispatch ladder:
+
+```text
+0x0089b0: moveq #2,D0; bra 0x0089ba   -> class 2
+0x0089b4: moveq #1,D0; bra 0x0089ba   -> class 1
+0x0089b8: moveq #0,D0                 -> class 0
+0x0089ba: jmp 0xfff8a7dc
+```
+
+Full marker matrix:
+
+| D0 | bit7=0 | bit7=1 |
+|----|--------|--------|
+| 0  | 0x77   | 0x7a   |
+| 1  | 0x78   | 0x7b   |
+| 2  | 0x79   | 0x7c   |
+
+This proves three serialization classes exist. **It does not prove their
+physical meaning** — do not label them active/inactive, left/right,
+normal/highlight, etc. without further evidence.
+
+### 7.1 Explanation of the observed `7b,0b,7a,0b` and the visible "Z" [DYN]
+
+Both halves come from the **same** static record, `f824e8` = `"8b 00"`,
+selected via pointer-table index 0 (`f824c8 -> f824e8`):
+
+| invocation | source byte | bit7 | D0 | marker | payload |
+|---|---|---|---|---|---|
+| 1st (`89b4`, fixed) | 0x8b | set | 1 | 0x7b | 0x0b |
+| 2nd (`89b8`/`89b0`, selected) | 0x8b | set | 0 | 0x7a | 0x0b |
+
+The current MAME parser treats `0x7a` as printable `z`→`Z` (14-segment renders
+both cases identically) and `0x0b` as a text-flush delimiter, leaving a visible
+"Z". **This is a parser artifact, not raw firmware text**, and not yet a proven
+statement of the correct physical panel effect.
+
+### 7.2 Short-record library and selector loop [STAT]+[DYN]
+
+`f824c8` is an 8-entry pointer table into a library of short null-terminated
+records living at `f824e8` onward. Some entries alias to the same record:
+
+```text
+idx 0 f824c8 -> f824e8 "8b 00"
+idx 1 f824cc -> f824ea "8c 00"
+idx 2 f824d0 -> f824ec "83 00"
+idx 3 f824d4 -> f824f0 "8e 00"
+idx 4 f824d8 -> f824ea "8c 00"
+idx 5 f824dc -> f824f0 "8e 00"
+idx 6 f824e0 -> f824ec "83 00"
+idx 7 f824e4 -> f824f2 "83 03 00"
+```
+
+`f824ee` = `"82 00"` is **direct-only** (addressed by `$3afe`, not via this
+pointer table) — this is not simply an eight-field display table.
+
+Live disk-overlay routine (0x003b32-0x003b70; absent from the static 256KB boot
+ROM, same as `f89a5a`):
+
+```asm
+3b32: movea.l #$fff824c8,A3
+3b38: move.w  $cbb8.w,D2        ; "previous" selection (see caveat below)
+3b3c: movea.l (A3,D2.w),A2
+3b40: jsr     $89b4.w           ; redraw previous selection, class 1
+3b44: moveq   #0,D2
+3b46: cmp.w   $c98.w,D2         ; $c98 = current-selection index (observed 0)
+3b4a: bne     $3b68
+3b4c: lsl.w   #2,D2
+3b4e: move.w  D2,$cbb8.w        ; persist new selection as "previous" for next call
+3b52: movea.l (A3,D2.w),A2
+3b56: lsr.w   #2,D2
+3b58: cmp.w   #4,D2
+3b5c: bcs     $3b64
+3b5e: jsr     $89b0.w           ; index 4-7 -> class 2
+3b62: bra     $3b68
+3b64: jsr     $89b8.w           ; index 0-3 -> class 0
+3b68: addq.w  #1,D2
+3b6a: cmp.w   #8,D2
+3b6e: bcs     $3b46
+3b70: bsr     $3afe             ; then always calls the $3afe direct-record step
+```
+
+`$3afe` (called from `3b70`, i.e. **after** `3b32`'s loop, not before/independently)
+sends the direct record `f824ee` ("82 00") conditionally on `$838e` and `$cbbc`,
+and also updates `$8a72`.
+
+**Working interpretation (STRONG INFERENCE, not proven):** `$c98` is a
+currently-selected-item index (0-7); `$cbb8` persists the previously-selected
+offset so the next call can redraw it; the class-0/class-2 split at index 4
+plausibly corresponds to which half of an 8-item display the selection falls
+in. In the observed boot ("NO INST OR BANK FILES"), `$c98` is computed to 0 by
+a call at `0x003c7c` (invoked with `D0=7` from a small dispatcher at `0x3ae0`,
+whose own algorithm was not traced) — i.e. "nothing to select, default to slot
+0" — which is why *both* transmissions in this run happen to hit the same
+record.
+
+**Open addressing caveat:** `$cbb8`, `$cbbc` and `$838e` all have bit 15 set,
+so `.w`-absolute references sign-extend to `0xFFFFxxxx` (landing in the plain
+`fc6900-ffffff` RAM, not the `0x0000xxxx` region); `$c98` (bit 15 clear) is
+unaffected. Live capture confirmed `$838e` (true address `0xff838e`) carries
+real, frequently-read/written state (0 -> 1 -> 0x52 -> 1) during the scan, and
+a direct one-off read of `0xffcbb8` confirmed value `0x0000` at the moment
+`$cbb8` should read as index 0 — consistent with the model above — but a
+dedicated read/write tap on that same address never fired for this specific
+instruction, an unexplained anomaly noted for future investigation rather than
+silently resolved.
+
+### 7.3 Inverse-decoder search [STAT — negative]
+
+No coherent subtract/compare/range-decode structure for the `0x77-0x7c` marker
+range, and no marker-then-payload reconstruction state machine, has been found
+in the searched host-side artifacts (static 256KB boot ROM; disk-image search
+for `0x77`-`0x7c`-relative compares was ROM-only, not yet extended to the full
+disk overlay). Result: **search coverage incomplete** — not "no decoder
+exists," and not grounds to assert the consumer's identity.
+
+### 7.4 Panel-controller hardware evidence [open]
+
+`docs/asr10/hardware-map.md` lists "ENS5702000102 + 80C52" only as a *possible*
+candidate for the frontpanel/keyboard/display controller, with no cited chip
+marking, photograph, schematic, or service-manual reference backing it up in
+this repository. Treat panel-controller identity as **external panel
+controller, firmware unavailable** — not "proven 80C52" — until a sourced
+hardware reference is added.
+
+### 7.5 Superseded conclusions
+
+- TRAP #$A is Line-A / exception vector 10 (it is vector 42; Line-A remains a
+  separate, pre-existing mechanism at `f882ca`).
+- `f89a5a` is a semantic byte producer (it is a flow-controlled enqueue
+  wrapper; D2 is preloaded by the caller).
+- `f89a72` is "the drain" (it is the enqueue side; `f89a9a-f89ac8` dequeues).
+- `0x0b` is a general transport delimiter (it is an encoder payload byte in
+  this path).
+- The two halves of `7b,0b,7a,0b` come from two different source records
+  (both come from `f824e8`, `"8b 00"`, via two different D0 classes).
+- A decimal-digit formatter (`f8a772-f8a78e`) produces the `f824e8` record
+  (proven unrelated for this specific object).
+- The visible "Z" is raw firmware text (it is a marker byte, parser-rendered).
+- A full 8-entry table redraw happens on every invocation (only the fixed
+  first entry plus the one matching `$c98` are actually transmitted).
