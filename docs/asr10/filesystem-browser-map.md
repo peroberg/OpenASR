@@ -3799,3 +3799,798 @@ added (`log_esp_first_pass_write`), gated entirely on the pre-existing
 `fc3000_verify_table_match()` gate — no new flag, no behavior change
 when that flag is off. ES5510 not instantiated. Nothing forced, patched,
 or synthesized; nothing committed.
+
+### 4.24 Stock `es5510_device` instantiated behind an `FC3000` host adapter — the record-0/58 collision is fixed; the download still fails on a different, unrelated object (not yet reviewed)
+
+**Scope note:** this section implements and verifies the recommendation
+from 4.23 (verdict A). It does not re-open ERROR 130, the FDC/TC model,
+or whether `FC3000` is the ES5510 — all settled in prior sections.
+
+**Device instance:** `ES5510(config, m_es5510_host, XTAL(10'000'000))`,
+immediately followed by `m_es5510_host.set_disable()`. Provisional,
+uncalibrated clock — matches the real `esqasr.cpp`/`esq5505.cpp`
+precedent for this exact chip on this exact board family, not derived
+from ASR-10 schematics. `set_disable()` is not a placeholder: it is the
+same idiom `esqasr.cpp` uses, and is correct here because
+`es5510_device::host_r`/`host_w` (`es5510.cpp`) are pure register/latch/
+gpr/instr-array state manipulation with no dependency on `execute_run()`,
+and `memory_space_config()` returns an empty `space_config_vector` (no
+internal addrmap needed). No IRQ wiring: nothing in the proven
+upload/verify sequence (`f973f0`-`f97776`) touches an ESP interrupt.
+
+**Flag:** `ASR10_EXPERIMENT_ES5510_HOST`, parsed identically to every
+other `ASR10_EXPERIMENT_*` flag; exposed in `ASR10_RUN_CONFIG_HEADER`
+with `requested`/`effective`/`device_exists`/`provisional_clock_hz`.
+Flag off preserves the exact prior passive-`.ram()` behavior for all of
+`FC3000`-`FC31FF` (verified below).
+
+**Address decode, byte-address-to-host-offset formula, and mem_mask:**
+`host_offset = (cpu_byte_address - 0xFC3001) >> 1`, equivalently
+`(word_address - 0xFC3000) >> 1`. `FC3000`-`FC303F` (word range, 32
+words) covers host offsets `0x00`-`0x1F` and maps directly to
+`es5510_device::host_r`/`host_w` via `.rw(m_es5510_host,
+FUNC(es5510_device::host_r), FUNC(es5510_device::host_w))
+.umask16(0x00ff)` — this works unmodified because the range's own word
+offset (0-0x1F, relative to base `0xFC3000`) already equals the intended
+host offset by construction. Every other address in the 512-byte
+`FC3000`-`FC31FF` window remains plain `.ram()` (unchanged fallback):
+`FC3040`-`FC30FF`, `FC3102`-`FC313F`, `FC3142`-`FC317F`, `FC3182`-
+`FC31FF`. This is option (A) from 4.23's TASK 5 (selective whitelist,
+RAM fallback elsewhere) — the real driver precedent (`esq5505.cpp`) maps
+the *entire* 0x200-byte window directly to the device and relies on its
+internal switch/default case for everything else; that full-window form
+was deliberately not used here, to keep the change scoped to only the
+offsets this investigation has actual evidence for. `.umask16(0x00ff)`
+(low/odd byte lane only) is the same convention already proven for
+`ASR10_EXPERIMENT_ES5506_HOST`; MAME's own word/byte bus-width shim,
+not any driver-side special case, is what makes this transparent to
+both ordinary `move.b` and MOVEP's spaced byte accesses (confirmed live
+below — MOVEP required no separate handling).
+
+**The single-word-range offset bug, found and fixed:** `FC3100`-
+`FC3101`, `FC3140`-`FC3141` and `FC3180`-`FC3181` (host offsets `0x80`,
+`0xA0`, `0xC0` — the read-select and the two write-select/commit
+registers) were *initially* mapped the same direct way as `FC3000`-
+`FC303F`. That is wrong: each of these is its own single-word
+`address_map` range, so the `offset` MAME hands to an `.rw()` handler
+installed there is always `0` — relative to *that range's own base* —
+never the absolute host offset the firmware intends. Concretely, every
+write to `FC3101`/`FC3141`/`FC3181` was silently landing on host offset
+`0x00` (`case 0x00`, GPR latch byte 2) inside the stock device, so the
+select/commit protocol never actually fired: `instr[]`/`gpr[]` were
+never updated per record, and the verify pass's readback was whatever
+raw byte the upload loop's own shared-staging writes happened to leave
+in the latch — a different-looking but equally wrong outcome than the
+original passive-RAM collision. This is an ASR-10 adapter address-decode
+bug (category (a) from the acceptance framework), not a stock-device
+defect, and it was found *before* any live run misattributed it to the
+device.
+
+**Fix:** six thin wrapper methods
+(`es5510_host_read_select_r/w`, `es5510_host_write_select_gpr_r/w`,
+`es5510_host_write_select_instr_r/w`) each discard the map-relative
+offset entirely and call `host_r`/`host_w` with the fixed absolute
+offset (`0x80`/`0xa0`/`0xc0`) explicitly. A second, smaller bug surfaced
+while wiring these in: giving the wrappers a `u16`-returning,
+`u16 mem_mask`-taking signature made MAME treat them as full bus-width
+(not narrower-than-bus) handlers, and `.umask16(0x00ff)` over a
+single-word range then failed at machine-config time with `"the
+unitmask of 00ff00ff00ff00ff has incorrect granularity for 0-bit chip
+selection"`. Changing the wrappers to plain `u8` read/write (no
+`mem_mask` parameter at all) — matching `es5510_device::host_r`/
+`host_w`'s own signature exactly — fixed this; MAME only ever invokes an
+8-bit handler for the lane it is mapped to, so no manual `ACCESSING_BITS`
+check is needed inside.
+
+**Proof of `0x80`/`0xA0`/`0xC0` forwarding (`ASR10_ESP_SELECT_FORWARD`,
+bounded to record indices 0 and 58):**
+```
+cpu_byte_address=fc3141 word_address=fc3140 map_relative_offset=00 fixed_host_offset=a0 record_index=0
+cpu_byte_address=fc3101 word_address=fc3100 map_relative_offset=00 fixed_host_offset=80 record_index=0
+cpu_byte_address=fc3141 word_address=fc3140 map_relative_offset=00 fixed_host_offset=a0 record_index=58
+cpu_byte_address=fc3101 word_address=fc3100 map_relative_offset=00 fixed_host_offset=80 record_index=58
+cpu_byte_address=fc3181 word_address=fc3180 map_relative_offset=00 fixed_host_offset=c0 record_index=0
+cpu_byte_address=fc3181 word_address=fc3180 map_relative_offset=00 fixed_host_offset=c0 record_index=58
+```
+`map_relative_offset` is always `00` (confirming the diagnosis exactly);
+`fixed_host_offset` is correctly `80`/`a0`/`c0` for both record 0 and
+record 58, and — critically — the `0xc0` (write-select-INSTR, the
+actual per-record commit into `instr[]`) fires for *both* indices, which
+it never did before the fix (the earlier, broken mapping made this
+register unreachable in practice).
+
+**Flag-off regression:** unchanged from 4.19-4.23 exactly — all 11
+baseline flags `effective=1`, `ASR10_EXPERIMENT_ES5510_HOST`
+`effective=0`/`device_exists=0`, flagless `ASR10_FDC_TC` count `0`, the
+same record-0/58 mismatch (`observed=f0 expected_d2=90`,
+`record_index_d6=00`), the same `EFFECT DOWNLOAD FAILED` →
+`ERROR 032 - REBOOT ?` panel sequence, byte-for-byte identical to every
+prior capture.
+
+**Enabled result — the targeted collision is fixed:** with the wrapper
+fix in place, `ASR10_FC3000_VERIFY_HANDSHAKE` (the record-0/58 mismatch
+tap, scoped to table `$0e8e==0xfff9bca0`) fires **zero** times, versus
+exactly one (`observed=f0 expected_d2=90`) in every prior capture
+including this same round's flag-off regression run above. The outer
+upload loop is observed to advance past record type 2 (the 59-record
+group containing indices 0 and 58) into record type 4 in the
+`ASR10_ESP_FIRST_PASS_WRITE` trace (`record_type_d3=04`,
+`record_count_d5=04`) — territory the outer retry loop could not reach
+before, since record type 2 always exhausted its 10 retries and gave up
+first. This is direct, live evidence the select/commit protocol now
+works correctly for the object this investigation targeted: record 0's
+own committed data is distinguishable from record 58's, and neither
+collides with the other any more.
+
+**The download still fails — on what was, at the time, an
+unidentified object:** the panel builds the complete string `"EFFECT
+DOWNLOAD FAILED"` (confirmed character-by-character via
+`ASR10_GEN_TRACKING`), but `"ERROR 032 - REBOOT ?"` never appears
+anywhere in the full 180s capture — the first time this differs from
+every prior capture, where the two messages always appeared within ~2
+emulated seconds of each other. Tracing the retry-counter writes
+(`$e8c` high byte, the `addq.b #1,$e8c.w` at `f97580`) shows a full
+0→10 retry sequence (`previous=0000`...`new=0a00`) with `a3=00010722`
+at the time of that retry — a *low-memory* address (`0x000000`-
+`0x0fffff` range). **A later retry-exhaustion path is observed while
+A3 points near `0x010722`. At the time this section was first written,
+the owning table/object, true base, loader provenance and relationship
+to the already-fixed ROM effect transfer were unresolved — see §4.25,
+which resolves all four from live evidence.** This exact same
+`a3=00010722` / 10-retry sequence, at an identical occurrence count, is
+also present in this round's own flag-off regression capture (1305
+occurrences in both) — it is not new, and not caused by this round's
+change. What differs is only what happens *after* it: previously, this
+(or a similar) give-up fed straight into `ERROR 032`; now, with the
+`fff9bca0` object no longer failing, the run's 180s budget elapses
+before `ERROR 032` appears (§4.25 corrects the ordering assumed here —
+the `0x010722` object is processed *before* `fff9bca0`, not after). The
+system does not hang: `ASR10_PTI_ENTRY`/`ASR10_PTI_CONTROL_JSR_PUSH`/
+DUART-counter/dispatcher activity continue at a steady rate for the
+entire remaining ~168s, so this is a live idle/scheduler state, not a
+deadlock — but it is also not a passed download.
+
+**Acceptance (per the A-D framework):**
+- **A. Device routing:** pass — proven above (0x80/0xa0/0xc0 forwarding,
+  MOVEP required no special-casing since it decomposes into the same
+  ordinary byte-wide bus accesses the ordinary handler already covers).
+- **B. Indexed storage:** pass — the `0xc0` commit fires independently
+  for both record 0 and record 58 for the first time; the outer loop's
+  advance into record type 4 is only reachable if the whole record-2
+  group (all 59 records, including 0 and 58) verified correctly.
+- **C. Firmware verify:** pass *for the targeted object* — zero
+  handshake mismatches this run vs. exactly one before, for the same
+  table.
+- **D. User-visible result:** **fail** — `EFFECT DOWNLOAD FAILED` is not
+  absent (a different, unrelated object still fails); final state is a
+  live idle loop with that text on-screen, not a captured "next screen."
+
+**Commit decision:** per the acceptance policy, category D failing means
+**no commit is made this round**. The fix itself (six wrappers + address
+map correction) is real, evidence-based, and resolves exactly the defect
+it targeted — but "the specific collision is fixed" is not the same as
+"the download passes," and TASK 9's gate is explicit that
+`EFFECT DOWNLOAD FAILED` must be absent before committing. Logs
+preserved as `task6c`/`task6d`/`task7` captures (job scratch directory;
+the full 180s capture was ~328M lines / 26GB and was deleted after
+extracting the evidence quoted above, to avoid exhausting host disk
+space — the quoted excerpts are the complete evidentiary basis for this
+section).
+
+**Smallest next step (not undertaken this round):** superseded by §4.25,
+which identifies the `0x010722` object, resolves base-vs-cursor, and
+captures its own verify mismatch. §4.25's own "smallest next step"
+carries this forward.
+
+**Verification:** build clean; Gate 1 exact (flagless boot at 100%
+speed, `ASR10_FDC_TC` count `0`, `ASR10_EXPERIMENT_ES5510_HOST`
+`effective=0`/`device_exists=0`); `git diff --check` clean throughout.
+Not committed — see commit decision above.
+
+### 4.25 The `0x010722` object identified: a low-RAM-resident "HALL REVERB" effect, processed *before* `fff9bca0`, with its own unresolved GPR verify mismatch (observation only — no fix, no commit)
+
+**Scope note:** this round is diagnostic only. It does not modify
+ES5510 host semantics, does not fix the mismatch found below, and does
+not commit. It resolves the identity questions §4.24 left open.
+
+**Method:** two new one-shot/bounded diagnostics, gated on the existing
+`ASR10_EXPERIMENT_DOWNLOAD_TRACE`/`ASR10_EXPERIMENT_FC3000_VERIFY_TRACE`
+flags (no new flags added):
+- `ASR10_ESP_F973F0_ENTRY` (bounded, cap 20): full register/lowmem-field
+  dump on every `f973f0` entry, tagging whether it is the already-fixed
+  `fff9bca0` table.
+- `ASR10_ESP_OTHER_TABLE_FIRST_RETRY` (one-shot; **named `ASR10_ESP_
+  OTHER_TABLE_RETRY` in the round that introduced it — renamed in the
+  4.26 correction round below because it fires at the *first*
+  retry-increment, not terminal exhaustion**) / `ASR10_ESP_OTHER_TABLE_
+  VERIFY` (one-shot, and **corrected in 4.26 to only log/consume its
+  one-shot on a genuine observed-vs-expected mismatch** — the version
+  that first ran this round logged the first *compare* regardless of
+  outcome): full state dump at the first `f97580` retry-increment and
+  first `f97574` mismatch belonging to *any table other than*
+  `fff9bca0`, plus bounded live-memory windows (`ASR10_ESP_OTHER_TABLE_
+  MEMDUMP`) around every plausible base-pointer candidate.
+- A bounded (cap 200) write-provenance recorder for the low-RAM window
+  `0x010600`-`0x0108ff`.
+
+**A methodological correction made before any of this fired:** the
+first attempt used standalone opcode-fetch taps
+(`install_read_tap` on the single-word code addresses `f973f0`/`f97580`/
+`f97574`, mirroring the file's four pre-existing "call-chain" opcode
+taps at `f8834a`/`f88352`/`006800`/`00680a`). None of these — old or
+new — were ever observed to fire in a live capture, and no prior
+session's log contains a single `ASR10_CALLCHAIN_HOOK` line either.
+Rather than conclude the code never executes there (contradicted by
+extensive prior evidence for `f973f0`'s call graph), the diagnostics
+were rerouted onto data accesses that are known reliable: `f973f0`'s own
+first instruction (`move.l A3,$e7e.w`, a write) and `f97580`'s own
+instruction (`addq.b #1,$e8c.w`, a write) are detected via the existing,
+always-fires `lowmem_w` handler (the primary backing handler for that
+address range, not a passthrough tap); the `f97574` compare is detected
+via the existing, already-proven-reliable `FC3000`-range read tap when
+its target address falls in that range. This worked immediately. **The
+opcode-fetch taps were left installed (harmless, inert) at the end of
+this round; the 4.26 correction round below removed them entirely**,
+along with the four older, equally-dead call-chain taps
+(`f8834a`/`f88352`/`006800`/`00680a`) that predate this whole
+investigation.
+
+**TASK 1/5 — object identity, resolved:** `ASR10_ESP_F973F0_ENTRY seq=1`
+captures the *first* `f973f0` invocation of the whole boot — **before**
+the already-fixed `fff9bca0` table's own entry (`seq=2`, ~111,000 log
+lines later in the same capture). At this first entry: `A3=0x00010722`,
+`A0=0x00010400`, lowmem `$0e8e=0x00010400`. At the later
+`ASR10_ESP_OTHER_TABLE_RETRY` (first retry-increment, `retry_number=1`):
+`A3=0x00010722` still, lowmem `$0e7e=0x00010722` (the full 32-bit
+`move.l` had completed by then), lowmem `$0e8e=0x00010400` unchanged.
+**`A3` is a cursor, not the base.** The true, stable object base is
+`0x010400`, held consistently in `A0` at entry and in lowmem `$0e8e`
+throughout — `a3_minus_lowmem_0e8e=802` (0x322) is exactly how far the
+cursor has advanced from that base by the time of the first retry. This
+is the *identical* structural pattern already established for the fixed
+table (`$0e8e=0xfff9bca0` is the stable base; `A3` advances from
+`0xfff9bd3e` onward as a cursor) — not a new mechanism, the same one
+applied to a different object.
+
+**TASK 2 — live memory dump, a recognizable header found:**
+`dump_memory_window("lowmem_0e8e_pointer_target", 0x010400, 128)`
+renders as ASCII:
+```
+.....`....  H A L L   R E V E R B ...z."...............t...tJUST REVERB .MORE REVERB .ALSO REVERB ..VW....
+```
+This is an unambiguous, recognizable header: readable effect names
+("HALL REVERB", "JUST REVERB", "MORE REVERB", "ALSO REVERB" — a reverb
+effect family, spaced one character apart in the ROM/RAM convention seen
+throughout this driver's ASCII-string scans elsewhere). **This proves
+TASK 5 category (A)/(B) over (H): this is a genuine ES5510 effect
+object, not "not an ES5510 transfer at all."** The dump at `A3` itself
+(`0x0106e2`-`0x010762`, spanning 64 bytes before/after) shows short,
+structured binary values (record-descriptor-shaped, not text) — cursor
+position is past the name/header section, inside the binary record
+stream, consistent with `A3` being mid-parse.
+
+**Correcting the earlier static-translation caution:** the prior
+round's tentative image-offset translation (low RAM `0x010722` → image
+offset `0x12d22` via the assumed `+0x2600` delta) used the *cursor*, not
+the *base*. Using the now-resolved base `0x010400` with the same delta
+gives image offset `0x12a00` instead — not independently verified
+against the disk image this round (out of scope; flagged below), but
+the earlier "looks like code, not a header" finding is now explained:
+it was never the object's start.
+
+**TASK 3 — loader provenance, partially resolved:** the bounded (cap
+200) write-provenance recorder shows all 200 captured writes into
+`0x010600`-`0x0108ff` come from a single PC, `f87dd6`, writing a
+constant word value `0x0041` to consecutive addresses (`A0` tracking the
+write address exactly, `D0=0x00000041` constant, `D1` incrementing as a
+byte counter) — **a buffer-fill/clear loop, not the load of the real
+"HALL REVERB" data.** The cap was reached (address `0x01078e`) before
+the loop finished or the real data-carrying write occurred. **Loader
+identity for the actual effect data is not resolved this round** — only
+that something clears this region with a constant pattern beforehand.
+
+**TASK 4 — one complete failing verify edge, captured:**
+```
+ASR10_ESP_OTHER_TABLE_VERIFY pc=f97574 a6=fc3001 observed=00 expected=04
+  in_es5510_window=1 es5510_host_offset=00000000 a6_byte_lane=odd_low
+  record_type_d3=01 record_param_d1=00000000 record_index_d6=00000000
+  a0=00000000 a1=00010400 a2=000023ea a3=0001072e a4=00fc3001 a5=00fc3011 sr=0709
+```
+`a6=fc3001` is inside the ES5510 host window; `es5510_host_offset=0` is
+GPR latch byte 2 (`host_r` case `0x00`). Record type 1 (distinct from
+the fixed table's type 2), record index 0, retry number 1 (the *first*
+attempt, not a give-up). Expected `0x04`, observed `0x00`. This is the
+GPR-latch path (offsets `0x00`-`0x02`), not the INSTR-latch path
+(`0x03`-`0x08`) the fixed table's collision used — a different byte
+range of the same host window.
+
+**TASK 5 — classification, from evidence only:** the observed/expected
+mismatch alone does not distinguish between (A) GPR indexed-storage/
+select semantics and simply catching this record on its first of up to
+10 attempts (the fixed table also needed multiple internal retries
+before its outer loop advanced, per the established call graph) — this
+one-shot capture, by design, stops at the *first* mismatch and cannot
+show whether record 0 of this object eventually verifies correctly on a
+later retry. **Not classified beyond (A) or "normal first-attempt
+retry, no defect" — the evidence does not yet distinguish these.**
+(H) is ruled out (§4.25 TASK 2 proves this is a real ES5510 transfer).
+(G) is not supported (the base/cursor relationship is internally
+consistent, not a corrupted pointer). (C)/(D)/(E)/(F) are not indicated
+by anything observed this round.
+
+**TASK 6 — post-failure control path:** not further traced this round
+beyond what §4.24 already established generically (the same
+`f97580`→`f97596`→`ffc894` retry/give-up machinery, confirmed shared by
+both objects via the identical PCs). Determining whether *this specific
+object* retries exactly 10 times and what exactly happens after its own
+give-up (as opposed to the fixed table's, already characterized in
+§4.24) was not undertaken this round — flagged below.
+
+---
+
+### 4.26 correction and completion round (2026-07-20): diagnostic bugs fixed, dead opcode taps removed, the complete HALL REVERB GPR transaction traced across all 10 attempts
+
+**Scope:** two goals only — (1) correct three diagnostic-correctness
+bugs found in the code above (the one-shot verify tap could consume
+itself on a non-mismatch; the retry tap's name/comments implied
+terminal exhaustion when it fires on the first retry; the entry tap
+reconstructed lowmem `$0e7e` as a complete longword when only its high
+word might have been written); (2) trace the complete latch→commit→
+select→readback→retry chain for HALL REVERB's type-1/record-0 GPR
+transaction, scoped narrowly (table `$0e8e==0x00010400`, `D3==1`,
+`D6==0` only — not every effect object). No ES5510 semantics changed.
+Not committed.
+
+**Diagnostic corrections made:**
+1. `log_esp_other_table_verify` (TASK 4 above) now takes the actual bus
+   `data`/`mem_mask` from the calling `FC3000` read tap instead of
+   re-reading via `read_program_word`, derives `observed` from those
+   values, and compares against `D2` **before** touching the one-shot
+   flag — it returns early, without logging or consuming the one-shot,
+   when the compare actually matches. (The version that produced TASK
+   4's capture above happened to catch a real mismatch on its first
+   call, so that capture's content is unaffected — but the bug was
+   real: a matching first compare would have silently consumed the
+   one-shot and hidden the actual first mismatch.)
+2. `log_esp_other_table_retry` renamed to `log_esp_other_table_first_
+   retry` (state renamed to `m_esp_other_table_first_retry_captured`,
+   log tag renamed to `ASR10_ESP_OTHER_TABLE_FIRST_RETRY`) to stop
+   describing the first retry-increment as exhaustion.
+3. `log_esp_f973f0_entry` no longer reconstructs lowmem `$0e7e` as a
+   complete 32-bit value. `move.l A3,$e7e.w` writes as two separate 16-
+   bit bus cycles on this core; the tap fires on the first (high) word,
+   so the low word (byte address `0x0e80`) may still hold a stale value
+   at that instant. The entry log now reports `entry_a3` (read directly
+   from the `A3` CPU register, always complete and correct) instead, and
+   is documented as an entry-*state* observation triggered by that first
+   write, not a perfect pre-instruction hook.
+
+**Dead opcode-fetch taps removed** (member variables, installation
+blocks, and all comments claiming they are useful): the three new ones
+from this section (`f973f0`/`f97580`/`f97574`) and the four
+pre-existing ones that predate this investigation (`f8834a`/`f88352`/
+`006800`/`00680a`). All seven were confirmed to never fire in any live
+capture across this entire investigation; the underlying cause (opcode
+fetch on this core bypasses passthrough-tap dispatch entirely — only
+genuine data reads/writes reach an installed tap) was already correctly
+documented in-code next to the surviving `FC2068` data tap, just not
+yet applied to remove the dead ones. The reliable data-access
+detections (`lowmem_w`'s `0x0e7e`/`0x0e8c` cases; the `FC3000`-range
+read tap's `pc==0xf97574` check) are unaffected and remain the
+detection mechanism.
+
+**Build/Gate 1:** clean build; flagless boot at 100% speed; flagless
+`ASR10_FDC_TC` count `0`; `ASR10_EXPERIMENT_ES5510_HOST`
+`effective=0`/`device_exists=0` when unset; all new/renamed diagnostics
+silent without `ASR10_EXPERIMENT_DOWNLOAD_TRACE`; `git diff --check`
+clean throughout.
+
+**TASK 6 — the complete HALL REVERB GPR transaction, all 10 attempts,
+via a new bounded (cap 300) `ASR10_HALL_REVERB_TRACE` covering every
+relevant event in execution order:** the sequence is **byte-for-byte
+identical across all 10 attempts** (`retry_number` 0 through 9):
+
+```
+write_latch_00   FC3001 <- 0x04      (source byte, matches D2's "expected" 0x04)
+write_latch_01   FC3003 <- 0x00
+write_latch_02   FC3005 <- 0x00
+write_read_select_0x80  FC3101 <- 0xff   ("kick", f9770e -- unrelated handshake, not a select)
+write_read_select_0x80  FC3101 <- 0x00   (f97792 -- the REAL read-select, index 0)
+write_select_gpr_0xa0   FC3141 <- 0x00   (f97792 -- write-select-GPR, index 0)
+read_latch_00    FC3001 -> 0x00     (readback)
+verify_compare   f97574: observed=0x00 expected=0x04  -- MISMATCH, every attempt
+retry_increment  $e8c high byte -> 1,2,3...10
+```
+
+**The read-select (`0x80`, index 0) fires before the write-select-GPR
+(`0xa0`, index 0) in every attempt.** Per `es5510.cpp`'s own `host_w`
+(`case 0x80`, unconditional when `data<0xa0`/`<0xc0`: `gpr_latch =
+gpr[data] & 0xffffff`), a read-select **unconditionally reloads**
+`gpr_latch` from the *already-stored* `gpr[0]` — discarding whatever was
+just built up from the three latch writes (`0x04,0x00,0x00`) *before*
+the write-select-GPR commit that follows ever executes. Since `gpr[0]`
+was never legitimately written before this (the device resets it to
+`0`), the write-select then re-commits that same stale `0` back into
+`gpr[0]` — a no-op from the object's perspective. The subsequent
+readback and compare therefore always see `0x00` against an expected
+`0x04` that appears to derive from the very byte the latch write just
+supplied. This sequence repeats **identically** for all 10 attempts:
+same addresses, same data values, same outcome — this is not a
+transient first-attempt condition.
+
+**TASK 7 — classification:** none of (A)-(D) fit cleanly.
+(A) source byte never written to the latch — **false**, `write_latch_
+00` writes `0x04` every attempt. (B) latch correct but write-select
+commits wrong/missing data — closest, but imprecise: the write-select's
+*input* (`gpr_latch`) has already been overwritten by the *preceding*
+read-select before the write-select ever runs, per stock, documented
+`host_w` semantics (not a stock-device bug — `case 0x80` behaves exactly
+as its own source says). (C) GPR entry correct but read-select reloads
+wrong data — does not fit; the GPR entry itself is not "correct" prior
+to this (it is the reset-time `0`). (D) adapter byte-lane/address
+error — ruled out; Phase 1 of this round independently confirmed
+`FC3101`→`0x80`, `FC3141`→`0xa0`, `FC3181`→`0xc0` forwarding is correct,
+and this trace shows the same correct addresses hit consistently.
+**Classified as (F), other, with the exact evidence above: this
+firmware code path issues a read-select before the corresponding
+write-select for this specific record, so the write-select's commit is
+fed stale (pre-write) latch content by the time it executes — a
+sequencing relationship between two individually-correct stock
+operations, not a defect in either one alone.** This is **not** called
+a "GPR semantics defect" and the evidence does not establish whether
+this ordering is a genuine firmware oddity, an artifact of how this
+round labeled "attempt" boundaries, or something else — the full
+transaction trace shows *where* state diverges (between the read-select
+and the write-select) but not conclusively *why* the firmware issues
+them in this order for this specific object.
+
+**TASK 8 — post-failure chain, resolved:** exactly 10 attempts
+(`retry_number` reaches `10` at `ASR10_HALL_REVERB_TRACE seq=104`).
+Every attempt fails with the *identical* `observed=0x00`/`expected=
+0x04` pair (confirmed via the `read_latch_00`/`verify_compare` event
+pairs at attempts 0 through 9, byte-for-byte identical). The give-up
+flag write (`st $e8a.w` at `f9758e`, the exact static PC established in
+§4.21/4.22) fires immediately after the 10th retry increment
+(`ASR10_HALL_REVERB_TRACE seq=105`) — confirming the *terminal*
+give-up path is taken, not merely another retry. Per the already-
+disassembled, unconditional code structure downstream of that write
+(§4.22: `f9758e`→`bsr f976fa`→`f97596: ori.b #1,CCR`→`rts`, no branches
+in between), `f973f0` returns with **carry set** for this table. `ffc894:
+bcc` therefore does not take the success branch. The *second*
+`ASR10_ESP_F973F0_ENTRY` (the already-fixed `fff9bca0` table,
+`known_fixed_table=1`) fires immediately afterward in the same
+capture (2 log lines later) — **confirming processing continues to
+`0xfff9bca0` directly after this object's give-up**, exactly as §4.25
+found before, now with the intervening control flow made explicit.
+Whether this object's failure *alone* is sufficient to produce
+`EFFECT DOWNLOAD FAILED` (as opposed to requiring some combination with
+another failure) was not traced further this round — the generic
+producer chain (`ffc8a4`→`f88284`/`f884bc`) was already established in
+§4.21 and not re-opened here; this object being the *only* remaining
+failure (per §4.24, the fixed table no longer fails) makes it the most
+direct remaining explanation for why that message still appears, but
+this round did not re-verify the producer chain itself.
+
+**TASK 9 — terminology, precise:** the *first compare mismatch* and the
+*first retry* are the same event here (`retry_number` becomes 1
+immediately after the first, and every, mismatch) — there is no
+separate "first mismatch without a retry" state for this object.
+*Terminal retry exhaustion* is `retry_number` reaching 10, distinct
+from and much later than the first retry, confirmed via the `give_up_
+flag_set` event. *Final object failure* is the give-up flag write plus
+the (inferred, from static code structure, not directly tapped) carry-
+set return — distinct from, and the direct consequence of, terminal
+retry exhaustion.
+
+**Panel/ordering correction:** the `0x010722` (`HALL REVERB` family)
+object's `f973f0` entry precedes the fixed `fff9bca0` table's entry by
+~111,000 log lines in the same capture — **it is processed first, not
+after**. §4.24's phrasing ("the firmware evidently continues on to
+attempt more of its effect-download list") had the order backwards;
+the reverb object is attempted and exhausts its retries *before*
+`fff9bca0` is ever reached. This does not change §4.24's core finding
+(the `fff9bca0` collision is fixed, independent of this object's own,
+separate problem) but corrects the sequence.
+
+**Smallest next missing semantic edge, updated by 4.26:**
+1. ~~Whether this reverb object's record 0 GPR verify ever succeeds on a
+   later retry~~ — **resolved this round: no, it fails identically on
+   all 10 attempts and exhausts terminally.** The open question is now
+   *why* the firmware issues read-select before write-select for this
+   record — determining that would require tracing the caller of the
+   `f97776` helper for this specific record (which of D4=0x100 vs 0x140
+   is invoked first, and by what code, for this record type) — not
+   undertaken this round, out of scope (this round's TASK 6 was
+   explicitly limited to table `0x010400`/type 1/index 0, not a new
+   call-graph investigation).
+2. What writes the real "HALL REVERB" effect data (name strings, record
+   descriptors) into `0x010400`+ — still not resolved; the write-
+   provenance capture only reached the preceding buffer-clear loop
+   before its 200-event cap.
+3. Whether image offset `~0x12a00` (corrected delta) actually contains
+   this object on `V161.img` — still not checked.
+4. Whether this object's failure alone (as opposed to some combination)
+   is what the `ffc8a4`/`f88284` producer chain treats as sufficient to
+   show `EFFECT DOWNLOAD FAILED` — the producer chain itself was not
+   re-traced this round.
+
+**Files modified this round (4.26):** `src/mame/ensoniq/asr10_boot.cpp`
+only (diagnostic corrections, dead-tap removal, new bounded HALL REVERB
+trace, all gated on existing flags; no new flags; no behavior change
+when those flags are off); this file (`filesystem-browser-map.md`, this
+section's corrections/additions). No changes to `current-blocker.md`
+this round — the blocker's substance is unchanged (HALL REVERB still
+fails, `fff9bca0` still succeeds), only its mechanism is now fully
+characterized.
+
+**Verification (4.26):** build clean; Gate 1 exact (flagless boot at
+100% speed, `ASR10_FDC_TC` count `0`, `ASR10_EXPERIMENT_ES5510_HOST`
+`effective=0`/`device_exists=0` when unset); all seven dead opcode-fetch
+taps removed cleanly (member variables, installation blocks, save/reset
+state, and comments); all new/renamed diagnostics silent without
+`ASR10_EXPERIMENT_DOWNLOAD_TRACE`; `git diff --check` clean throughout.
+**No ES5510 semantics changed. Not committed.**
+
+---
+
+### 4.27 The HALL REVERB mismatch resolved: a missing adapter address (host offset `0xe0`, `FC31C1`) — not a stock-device, firmware, or H1/H2 deferred-execution issue (observation only — no fix implemented, no commit)
+
+**Scope:** this round corrects 4.26's classification. 4.26 traced the
+`0x80`/`0xa0` (`FC3101`/`FC3141`) sequence and concluded (F) "a
+sequencing relationship between two individually-correct stock
+operations." That conclusion was based on an incomplete trace — this
+round extends the trace to the bytes and register `4.26` never watched
+(`FC3007`-`FC3011`, `FC31C1`) and finds the real cause is upstream of
+that sequence entirely, in this integration's own address map.
+
+**TASK 0 — every existing MAME ES5510 user, source-inspected:**
+`esqkt.cpp`, `esqasr.cpp`, `esq5505.cpp` are the only other `ES5510`
+instantiators. **All three** call `set_disable()`, exactly like this
+integration — but all three **also** instantiate `ESQ_5505_5510_PUMP`,
+whose `sound_stream_update()` calls `m_esp->run_once()` every audio
+sample (gated by the pump's own `m_esp_halted` flag, itself driven by
+firmware writes to a DUART output bit — `esq5505.cpp`'s `ESPHALT`,
+default-asserted at pump construction). The ASR-10 boot driver has
+**no pump at all** — `run_once()` is never called here, by anyone.
+`vfx`/`vfxsd`/`sd1`/`sd132` are flagged `MACHINE_IMPERFECT_SOUND` (not
+`MACHINE_NOT_WORKING`), circumstantial evidence they boot and likely
+program their ES5510 successfully — but this was **not independently
+re-verified by booting VFX this round** (source inspection only, per
+Phase 0's own instruction), so per TASK 0 option C this is
+**configuration precedent, not a proven working comparison**. Separately,
+and decisively for H2: `es5510.cpp`'s `host_w`/`host_r`/`read_reg`/
+`write_reg` contain **zero** occurrences of any queue, pending-operation,
+deferred-write, timer, frame-boundary, or synchronize mechanism (grepped
+directly: `queue|pending|deferred|synchronize|timer_alloc|emu_timer|
+frame_count|sync\(` — no matches anywhere in the file). Every host
+register operation is plain, synchronous C++ executed the instant
+`host_w`/`host_r` is called. **H2 as literally stated (stock MAME
+contains a required deferred mechanism the disabled ASR instance never
+reaches) is eliminated — there is no such mechanism to reach.** Whether
+*real* ES5510 hardware itself defers/reorders (H1) remains genuinely
+open and unrelated to what this round found.
+
+**TASKS 1/2 corrected — the real transaction boundary:** extending the
+trace to include `FC3007`-`FC3011` and `FC31C1` (see the `4.26`
+correction note now in the code) reveals the complete upload-pass
+sequence for record type 1 (all values from a live `retry_number=0`
+capture, `ASR10_HALL_REVERB_TRACE` seq 5-19):
+```
+write_latch_00  FC3001 <- 0x04         (gpr_latch byte 2)
+write_latch_01  FC3003 <- 0x00         (gpr_latch byte 1)
+write_latch_02  FC3005 <- 0x00         (gpr_latch byte 0 -> gpr_latch=0x040000)
+write_latch_03  FC3007 <- 0xff         (instr_latch byte 5)
+write_latch_04  FC3009 <- 0xff         (instr_latch byte 4)
+write_latch_05  FC300b <- 0xff         (instr_latch byte 3)
+write_latch_06  FC300d <- 0xff         (instr_latch byte 2)
+write_latch_07  FC300f <- 0x90         (instr_latch byte 1)
+write_latch_08  FC3011 <- 0x40         (instr_latch byte 0 -> instr_latch=0xffffff9040)
+write_select_gpr_instr_0xe0  FC31C1 <- 0x00   (D1=0: the REAL commit, host offset 0xe0)
+  -- then, moments later, the verify pass's own re-select idiom:
+write_read_select_0x80   FC3101 <- 0xff  ("kick")
+write_read_select_0x80   FC3101 <- 0x00  (re-select index 0 for read)
+write_select_gpr_0xa0    FC3141 <- 0x00  (re-commit index 0 -- a no-op on already-reloaded data)
+read_latch_00             FC3001 -> 0x00  (observed)
+verify_compare            f97574: observed=0x00 expected=0x04 (D2)
+```
+This directly answers `4.26`'s open question: **the `0x80`/`0xa0`
+(`FC3101`/`FC3141`) pair is NOT the commit.** It is the verify pass's
+re-select (per `f97498`-`f974f6`, disassembled from
+`asr10_f97340_full.dasm`): read-select reloads `gpr_latch`/`instr_latch`
+from whatever is *already stored*, and the following write-select-GPR
+re-commits that same (just-reloaded) value — a self-consistent no-op by
+design, not a defect. **The real commit is `FC31C1` (host offset
+`0xe0`, "Write select - GPR+INSTR combined"), issued once per record
+from the *upload* pass (`f9740a`'s inner loop `f97432` followed by
+`f9743a: bsr f97776`), using whichever `D4` the type validator
+`f97450` set.** Static disassembly of `f97450` proves record type
+`D3==1` (and `D3==3`) keep `D4`'s *default* value `0x1c0` (`FC31C1`,
+offset `0xe0`) — only `D3==2` overrides to `0x180` (`FC3181`, `0xc0`,
+INSTR-only) and only `D3==3`/`D3==4` override to `0x140` (`FC3141`,
+`0xa0`, GPR-only). Type 1 was never examined for its own `D4` value in
+any prior round; this round's static read of `f97450` is the first time
+it was.
+
+**The root cause:** this integration's own `FC3000`-`FC31FF` address map
+(established in the earlier ES5510-adapter round) routes only offsets
+`0x00`-`0x1f`, `0x80`, `0xa0`, `0xc0` to the real `es5510_device` —
+```
+map(0xfc3180, 0xfc3181).rw(...es5510_host_write_select_instr...).umask16(0x00ff);
+map(0xfc3182, 0xfc31ff).ram();
+```
+`FC31C1` (offset `0xe0`) falls inside `0xfc3182`-`0xfc31ff`, **plain,
+passive `.ram()`**. The type-1 upload-pass commit write lands in
+ordinary RAM and never reaches `host_w` at all — `gpr[0]`/`instr[0]`
+are never written by the real device, and stay at their
+`device_reset()`-time value of `0`. The verify pass's read-select then
+correctly reloads `gpr_latch` from the genuinely-unwritten `gpr[0]`
+(`0`), and the readback correctly reflects that `0` — **every stock
+operation observed behaves exactly as its own source says it should;
+the device is not malfunctioning.** This reproduces identically on
+every one of the (previously traced, `4.26`) 10 retries, because the
+missing mapping never changes between attempts.
+
+**TASK 7 classification: (F) — adapter mapping error, specifically an
+incomplete host-offset whitelist.** Not (A)-(E): the transaction
+grouping is now correctly understood (upload-pass commit vs.
+verify-pass re-select are genuinely separate, not misattributed); the
+firmware's operation order is internally consistent and requires no
+different order from any working reference; no missing host-control
+state or timing is implicated; nothing suggests real hardware defers
+host writes (H1 remains merely possible, not evidenced, and is now
+moot for this specific mismatch); the disabled/halted ASR instance
+never reaching a deferred mechanism (H2) is eliminated outright (no
+such mechanism exists in stock `es5510.cpp` to reach). Not (G): `FC3101
+<- 0xff` (the "kick") is part of the *verify pass* only, unrelated to
+this mismatch. Not (H): the uploaded data (`HALL REVERB` bytes) is
+well-formed; nothing indicates corrupt firmware/data. **(F) exactly**:
+the previous round's Phase-1 implementation whitelisted the offsets
+proven necessary by the *original* `fff9bca0` table (which never
+exercises type 1 and therefore never needed `0xe0`), and this round's
+type-1 object exposed the gap.
+
+**Smallest next change worth testing (not implemented this round, per
+this round's explicit no-fix/no-commit scope):** add
+`map(0xfc31c0, 0xfc31c1).rw(...).umask16(0x00ff)` (a seventh thin
+wrapper forwarding to fixed host offset `0xe0`, mirroring the existing
+`0x80`/`0xa0`/`0xc0` wrappers exactly) to the `FC3000`-`FC31FF` map, and
+re-run the HALL REVERB trace to confirm `gpr[0]`/`instr[0]` commit
+correctly and the verify compare passes. This is a mapping-completeness
+fix, not an ES5510 semantic change — no stock device behavior would be
+touched.
+
+**Temporary diagnostics status:** no internal `es5510_device` read-only
+accessors were added this round — the CPU-visible trace alone (extended
+to `FC3007`-`FC3011`/`FC31C1`) was sufficient to resolve the question
+without touching stock device code. The extended `asr10_boot.cpp` trace
+(now covering the full `0x00`-`0x08`/`0x80`/`0xa0`/`0xe0` offset set for
+the HALL REVERB scope) is the only diagnostic addition this round and
+should be **retained** — it is inert without
+`ASR10_EXPERIMENT_DOWNLOAD_TRACE`, gated identically to its `4.26`
+predecessor, and proved essential to finding this.
+
+**Verification (4.27):** build clean; Gate 1 exact (flagless boot at
+100% speed, `ASR10_FDC_TC` count `0`, `ASR10_EXPERIMENT_ES5510_HOST`
+`effective=0`/`device_exists=0` when unset); no ES5510 semantics
+changed; no pump added; execution not enabled; `git diff --check` clean
+throughout. **Not committed.**
+
+---
+
+### 4.28 Milestone: the missing `0xe0` route implemented — the ASR-10 now completes its built-in effect download and reaches `NO INST OR BANK FILES` with no error message
+
+**Scope:** implements exactly the fix `§4.27` identified — one
+additional thin fixed-offset wrapper routing `FC31C0`-`FC31C1` (active
+byte `FC31C1`) to stock `es5510_device` host offset `0xe0`, mirroring
+the existing `0x80`/`0xa0`/`0xc0` wrappers exactly. No stock
+`es5510_device` semantics changed; no audio pump added; ESP execution
+not enabled; no firmware control flow altered; no compare result forced.
+
+**The fix:** `es5510_host_write_select_gpr_instr_r/w`, forwarding to
+`host_r`/`host_w(0xe0, data)` (stock's own comment: `/* Write select -
+GPR + INSTR */`, `es5510.cpp` case `0xe0` — commits `gpr_latch` via
+`write_reg` unconditionally and `instr_latch` into `instr[data]` when
+`data<0xa0`, immediate/synchronous, no control/halt/timing dependency,
+identical in kind to `0xa0`/`0xc0`). The address map's `FC3182`-`FC31FF`
+passive-RAM fallback was split into `FC3182`-`FC31BF` / `FC31C0`-`FC31C1`
+(new wrapper) / `FC31C2`-`FC31FF`, preserving passive RAM everywhere
+else exactly as before.
+
+**Build/Gate 1:** clean build, no new warnings. Flag-off baseline:
+flagless boot at 100% speed (matching every prior flag-off capture),
+`ASR10_FDC_TC` count `0`, `ASR10_EXPERIMENT_ES5510_HOST`
+`effective=0`/`device_exists=0`, new diagnostics silent — behavior
+consistent with every prior flag-off run by these key markers (speed,
+counts, flag state); not a byte-for-byte log comparison.
+
+**Acceptance A — `FC31C1` reaches the device, proven live**
+(`ASR10_HALL_REVERB_TRACE`, table `$0e8e==0x00010400`, type 1, record
+0, first and only attempt, `retry_number=0` throughout):
+```
+write_latch_00..08   FC3001,3,5,7,9,b,d,f,11 <- 04,00,00,ff,ff,ff,ff,90,40
+write_select_gpr_instr_0xe0   FC31C1 <- 00   (index 0 -- the real commit)
+```
+`FC31C1`'s write is captured by the wrapper (confirmed by the log tag
+itself, only reachable through the new `.rw()` mapping — the previous
+round's identical write landed silently in `.ram()` and produced no
+device-side effect at all, which is exactly the defect this fixes).
+
+**Acceptance B — verify readback succeeds, no retry:**
+```
+write_read_select_0x80 (kick) FC3101 <- ff
+write_read_select_0x80        FC3101 <- 00   (re-select index 0)
+write_select_gpr_0xa0         FC3141 <- 00   (re-commit, no-op as established in 4.27)
+read_latch_00   FC3001 -> 04   expected 04   MATCH
+read_latch_01   FC3003 -> 00   expected 00   MATCH
+read_latch_02   FC3005 -> 00   expected 00   MATCH
+                FC3007 -> ff   expected ff   MATCH
+                FC3009 -> ff   expected ff   MATCH
+                FC300b -> ff   expected ff   MATCH
+                FC300d -> ff   expected ff   MATCH
+                FC300f -> 90   expected 90   MATCH
+                FC3011 -> 40   expected 40   MATCH
+```
+All eight verify compares match on the **first attempt** —
+`retry_number` never leaves `0` (the single `retry_increment`-tagged
+event in the capture is `f97406`'s `clr.b $e8c.w`, the loop's own
+initial reset, not a real retry; `f97580`, the real increment
+instruction, never fires). `f9758e` (terminal give-up) and `f97596`
+(carry-set failure) **never appear anywhere in the ~114.5s capture.**
+
+**Acceptance C — the complete HALL REVERB object, and every other
+object, finishes clean:** `ASR10_ESP_OTHER_TABLE_VERIFY` (the one-shot
+mismatch tap covering *any* table other than the already-fixed
+`fff9bca0`) fires **zero** times across the entire capture —
+confirming no record, of any type or index, in any table, mismatches
+anywhere in this run. `ASR10_ERROR_CONTEXT` (the generic firmware-error
+producer tap) also fires **zero** times.
+
+**Acceptance D — the original panel failure is gone:**
+`EFFECT DOWNLOAD FAILED`: **0** occurrences. `ERROR 032 - REBOOT ?`:
+**0** occurrences. Complete panel flush timeline for the run:
+```
+LOADING SYSTEM -> TUNING KBD - HANDS OFF -> KEYBOARD TUNED
+-> NO INST OR BANK FILES   (~11.657s emulated, matching the timing
+                             established since §4.19)
+```
+No further panel text for the remaining ~103 emulated seconds captured.
+
+**Acceptance E — the `0xfff9bca0` INSTR-path fix remains intact:**
+`ASR10_FC3000_VERIFY_HANDSHAKE` (the record-0/58 collision tap for the
+fixed table) fires **zero** times, identical to every capture since the
+Phase 1 ES5510 adapter round — no regression.
+
+**Final resting-state classification: A — correct stable no-files idle
+state.** `NO INST OR BANK FILES` is the historically-established correct
+result for `V161.img`'s actual contents (per §4.19/4.20's browser-level
+finding that this image carries no instrument/bank files); the panel
+holds this text for the rest of the capture; DUART-counter (194,124
+events) and ES5506-host (247,840 events) activity continue at a steady
+rate through the whole run, confirming a live, responsive scheduler, not
+a stalled or failure-looping system; zero `ASR10_DIVZERO_FRAME`
+occurrences (only the pre-existing, unrelated `ASR10_DIVIDER_TASK2`
+rate-parameter tracker, 168 benign events); zero unmapped-access
+warnings observed in the extracted evidence.
+
+**Cautious framing:** the ASR-10 now completes the previously failing
+built-in effect download path and reaches `NO INST OR BANK FILES` under
+the established diagnostic configuration. This is **not** "a fully
+emulated ASR-10" — audio output, the ESP's actual DSP execution, disk
+browsing beyond this point, and most of the rest of the machine remain
+unverified or out of scope for this branch.
+
+**Run record:** ~114.5 emulated seconds captured (requested
+`-seconds_to_run 180`; the run exited at ~114.5s on its own, `exit=0`,
+not killed by the surrounding timeout — this discrepancy was not
+root-caused, out of scope for this round, and does not affect the
+validity of the acceptance evidence within the captured window).
+Environment: the full 11-flag established baseline plus
+`ASR10_EXPERIMENT_ES5510_HOST=1`. Image: `floppies/asr10booth/V161.img`.
+Raw log: ~17.8GB, deleted after evidence extraction; manifest, env,
+`git diff` patch, and a concise evidence extract preserved under the
+job scratch directory (outside the repository).
+
+**Verification (4.28):** build clean; Gate 1 exact; flag-off baseline
+unchanged; enabled acceptance A-E all pass; `git diff --check` clean.
+**Committed** — see commit `asr10: route ES5510 host select 0xE0
+(type-1 GPR commit path)`.

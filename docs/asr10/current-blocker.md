@@ -1,7 +1,98 @@
 # ASR-10 Current Blocker — Channel B Output Completion and Slot0 Continuation
 
-**Date:** 2026-07-13, updated 2026-07-16  
-Read `architecture.md`, `panel-protocol.md`, and `asr10-panel-slot0-handoff-2026-07-13.md` first.
+**Date:** 2026-07-13, updated 2026-07-16, updated 2026-07-20, updated
+2026-07-21 (see below — the effect-download blocker this whole document
+chased since §4.19-equivalent sections is now RESOLVED)
+
+---
+
+## 2026-07-21 update — the ES5510 host adapter's missing `0xe0` route
+## is implemented. The ASR-10 now completes its built-in effect download
+## and reaches `NO INST OR BANK FILES` with no error message. No further
+## download blocker is currently known.
+
+Full detail: `filesystem-browser-map.md` §4.27 (root cause) and §4.28
+(fix + full acceptance evidence).
+
+**What changed:** the ES5510 host adapter now also routes `FC31C1`
+(host offset `0xe0`, stock `es5510_device`'s "Write select - GPR +
+INSTR") to the real device. This was the last unmapped offset the
+firmware's built-in effect table actually uses (record type 1, e.g. the
+live low-RAM "HALL REVERB" effect family) — it previously fell through
+to plain `.ram()`, silently discarding the commit.
+
+**Result:** `EFFECT DOWNLOAD FAILED` and `ERROR 032 - REBOOT ?` are both
+now **absent** (0 occurrences each) in a ~114.5-emulated-second capture
+under the full established diagnostic baseline. The panel reaches
+`LOADING SYSTEM` → `TUNING KBD - HANDS OFF` → `KEYBOARD TUNED` →
+`NO INST OR BANK FILES` and holds there, with the scheduler/DUART/
+ES5506-host activity continuing normally (a live idle state, not a
+failure loop). Both known effect objects (the ROM table at `0xfff9bca0`
+and the live low-RAM `HALL REVERB` family) verify cleanly with zero
+mismatches anywhere in the capture.
+
+**Current blocker:** none currently identified for the effect-download
+path. `NO INST OR BANK FILES` is the historically-established correct
+result for the mounted `V161.img` (it carries no instrument/bank files
+per §4.19/4.20's browser-level finding). Further work on this branch
+(audio pump, ESP execution, disk browsing beyond this point, or other
+subsystems) is out of scope for `asr10-es5510-host` — see
+`filesystem-browser-map.md` §4.28 for the recommendation to continue
+any such work on a new branch.
+
+---
+
+## 2026-07-20 update — ES5510 host adapter implemented; the FC300F
+## record-0/58 collision this whole document's later sections chased is
+## FIXED. The current blocker is a *different, unrelated* download object.
+## (Superseded 2026-07-21 above — kept for history.)
+
+Full detail: `filesystem-browser-map.md` §4.19-4.24 (read §4.24 last, it
+supersedes the blocker framing below).
+
+**What changed:** a stock `es5510_device` is now instantiated behind the
+`FC3000`-`FC31FF` host window, gated by `ASR10_EXPERIMENT_ES5510_HOST=1`.
+The previously-root-caused mechanism (record 0 and record 58 of the ROM
+effect table at `$fff9bca0` colliding in shared, passive RAM because
+nothing implemented the ES5510 host's select/commit protocol) is
+confirmed fixed: the record-0/58 verify mismatch (`ASR10_FC3000_VERIFY_
+HANDSHAKE`, previously `observed=f0 expected_d2=90` in every capture)
+now fires zero times, and the upload loop is observed advancing past
+that table into the next record type — proof the collision is
+genuinely resolved, not merely masked.
+
+**What has NOT changed:** the boot still does not complete. `EFFECT
+DOWNLOAD FAILED` still appears on the panel — but this time for an
+unrelated object at `a3=0x010722` (a low-memory address, not the ROM
+`fff9bca0` table this fix targeted), which independently exhausts 10
+retries and gives up. This exact retry sequence is present, at an
+identical count, in the flag-off (ES5510 disabled) capture too — it is
+pre-existing, not introduced by the fix. What is new is that `ERROR 032
+- REBOOT ?` no longer follows within the 180s capture window (previously
+always within ~2s); the system continues running (scheduler/DUART/trap
+activity all continue normally) rather than reaching that final panel
+state, at least within the time tested.
+
+**Current blocker, precisely (resolved 2026-07-21, see
+filesystem-browser-map.md §4.27):** the `0x010722`-cursor/`0x010400`-base
+object is a live low-RAM "HALL REVERB" effect. Its type-1 record 0 fails
+verify (`observed=0x00 expected=0x04`) because this integration's own
+`FC3000`-`FC31FF` adapter map never routed ES5510 host offset `0xe0`
+(CPU byte address `FC31C1`, "Write select - GPR+INSTR combined") to the
+real device — only `0x00`-`0x1f`/`0x80`/`0xa0`/`0xc0` were mapped, since
+those were all the original `fff9bca0` table (which never uses type 1)
+required. `FC31C1` falls through to plain `.ram()`, so the type-1
+upload commit silently no-ops against RAM and `gpr[0]`/`instr[0]` are
+never actually written by the device. **This is a simple, proven
+adapter-mapping gap, not a stock-device, firmware, or timing/deferred-
+execution issue** — see §4.27 for the complete evidence chain. The
+smallest next step is adding one more thin wrapper (`FC31C0`-`FC31C1` →
+fixed host offset `0xe0`), mirroring the existing `0x80`/`0xa0`/`0xc0`
+wrappers exactly; not yet implemented (observation-only round).
+
+---
+
+Read `architecture.md`, `panel-protocol.md`, and `asr10-panel-slot0-handoff-2026-07-13.md` next; the rest of this document (below) predates the ES5510 work above and describes an earlier tuning/Channel-B stall investigation.
 
 ---
 

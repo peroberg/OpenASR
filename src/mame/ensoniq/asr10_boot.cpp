@@ -45,6 +45,7 @@
 
 #include "formats/esq16_dsk.h"
 #include "sound/es5506.h"
+#include "cpu/es5510/es5510.h"
 #include "formats/hxchfe_dsk.h"
 
 #include "asr10_boot.lh"
@@ -71,6 +72,7 @@ public:
 		, m_floppy_connector(*this, "fdc:0")
 		, m_rom(*this, "maincpu")
 		, m_es5506_host(*this, "es5506_host")
+		, m_es5510_host(*this, "es5510_host")
 	        , m_display(*this, "digit%u", 0U)
 	{
 	}
@@ -161,6 +163,7 @@ private:
 	required_device<floppy_connector> m_floppy_connector;
 	required_memory_region m_rom;
 	optional_device<es5506_device> m_es5506_host;
+	optional_device<es5510_device> m_es5510_host;
 
 	output_finder<ASR10_DISPLAY_LENGTH> m_display;
 	std::array<u8, ASR10_DISPLAY_LENGTH> m_display_chars{};
@@ -172,11 +175,6 @@ private:
 	emu_timer *m_panel_autorespond_timer = nullptr;
 	emu_timer *m_duart_counter_timer = nullptr;
 	memory_passthrough_handler m_duart_counter_boundary_tap;
-	memory_passthrough_handler m_hook_f8834a_tap;
-	memory_passthrough_handler m_hook_f88352_tap;
-	memory_passthrough_handler m_hook_006800_tap;
-	memory_passthrough_handler m_hook_00680a_tap;
-	bool m_hook_006800_dump_logged = false;
 	memory_passthrough_handler m_hook_fc2068_tap;
 	bool m_fc60b0_verified = false;
 	memory_passthrough_handler m_hook_fc2d40_read_tap;
@@ -683,6 +681,19 @@ private:
 	bool m_es5506_host_enabled = false;
 	std::array<u8, 64> m_es5506_host_seen_mask{}; // bit0=read seen, bit1=write seen, per device offset
 	u32 m_es5506_host_access_count = 0;
+	bool m_es5510_host_enabled = false;
+	u32 m_esp_select_commit_log_count = 0;
+	// filesystem-browser-map.md 4.25 (observation-only round): identifying
+	// the retry-exhaustion object seen at a3=~0x010722, distinct from the
+	// already-fixed fff9bca0 table.
+	u32 m_esp_f973f0_entry_log_count = 0;
+	bool m_esp_other_table_first_retry_captured = false;
+	bool m_esp_other_table_verify_captured = false;
+	u32 m_esp_010722_window_write_count = 0;
+	// filesystem-browser-map.md 4.26 TASK 6 (observation-only): bounded
+	// per-attempt trace of the HALL REVERB (table base $0e8e==0x00010400)
+	// type-1/record-0 GPR transaction, scoped narrowly per instruction.
+	u32 m_hall_reverb_trace_count = 0;
 	bool m_es5506_diag_par_enabled = false;
 	u16 m_es5506_diag_par_value = 0x200;
 	u32 m_es5506_diag_par_read_count = 0;
@@ -771,7 +782,23 @@ private:
 	void log_media_branch(u32 pc, u16 sr_override = 0xffff);
 	void log_fc3000_verify_handshake(bool write, u32 pc, u32 selected_cpu_byte_address, u32 offset, u16 data, u16 mem_mask);
 	void log_esp_first_pass_write(u32 pc, u32 byte_address, u8 data);
+	void log_esp_select_commit(u32 pc, u32 byte_address, u8 data);
+	void log_esp_select_forward(u32 byte_address, u32 word_address, offs_t map_relative_offset,
+		u32 fixed_offset, u8 data, u16 mem_mask);
 	bool fc3000_verify_table_match() const;
+	// filesystem-browser-map.md 4.25 (observation-only): identifying the
+	// retry-exhaustion object at a3=~0x010722, distinct from the
+	// already-fixed fff9bca0 table. No fix, no new behavior -- logging
+	// only.
+	void log_esp_f973f0_entry(u32 pc);
+	void log_esp_other_table_first_retry(u32 pc);
+	void log_esp_other_table_verify(u32 pc, u32 cpu_byte_address, u16 data, u16 mem_mask);
+	void dump_memory_window(const char *tag, u32 base_address, u32 length_bytes);
+	// filesystem-browser-map.md 4.26 TASK 6 (observation-only): bounded
+	// per-attempt HALL REVERB (table $0e8e==0x00010400) type-1/record-0
+	// GPR transaction trace.
+	bool hall_reverb_type1_record0_active() const;
+	void log_hall_reverb_event(const char *event, u32 pc, u32 byte_address, u16 data, u16 mem_mask);
 	void log_fb81b4_path(const char *landmark, u32 pc, u8 tested_value, bool branch_taken,
 		u32 branch_target, u16 sr_override = 0xffff, u32 d2_override = 0xffffffff);
 	void log_04c6_origin(const char *landmark, u32 pc, u8 value, bool branch_taken, u32 branch_target);
@@ -864,6 +891,34 @@ private:
 	void duart_counter_check_implicit_start(u32 pc);
 	std::string dump_cpu_registers() const;
 	u16 es5506_host_read_par_diag();
+	// ASR10_EXPERIMENT_ES5510_HOST: FC3101/FC3141/FC3181 are each a
+	// single-word map range, so the `offset` MAME's address_map passes to
+	// an .rw() handler installed there is always 0 (relative to that
+	// range's own base) -- it is NOT the absolute ES5510 host offset
+	// (0x80/0xa0/0xc0/0xe0). These four thin wrappers supply the fixed
+	// absolute offset explicitly; they do not forward the map-relative
+	// offset at all. u8 read/write (no mem_mask parameter) deliberately
+	// matches es5510_device::host_r/host_w's own narrow-handler signature
+	// -- a u16-returning handler here made MAME treat this as a
+	// bus-width-matching (not narrower) handler, which .umask16() over a
+	// single-word range then rejected at machine-config time ("incorrect
+	// granularity for 0-bit chip selection").
+	u8 es5510_host_read_select_r(offs_t offset);
+	void es5510_host_read_select_w(offs_t offset, u8 data);
+	u8 es5510_host_write_select_gpr_r(offs_t offset);
+	void es5510_host_write_select_gpr_w(offs_t offset, u8 data);
+	u8 es5510_host_write_select_instr_r(offs_t offset);
+	void es5510_host_write_select_instr_w(offs_t offset, u8 data);
+	// filesystem-browser-map.md 4.27/4.28: host offset 0xe0 is stock
+	// es5510_device's "Write select - GPR + INSTR" (its own host_w case
+	// 0xe0 comment) -- commits BOTH gpr_latch (via write_reg) AND
+	// instr_latch (if data<0xa0) to the same index in one write, distinct
+	// from 0xa0 (GPR only) and 0xc0 (INSTR only). Firmware record type 1
+	// uses this combined path at FC31C1 -- proven from f97450's static
+	// disassembly: D4 stays at its default 0x1c0 for type 1 (only type 2
+	// overrides to 0x180/0xc0; only types 3/4 override to 0x140/0xa0).
+	u8 es5510_host_write_select_gpr_instr_r(offs_t offset);
+	void es5510_host_write_select_gpr_instr_w(offs_t offset, u8 data);
 	static const char *es5506_register_name(u32 cpu_displacement);
 	u8 lowmem_byte(u32 address) const;
 	u16 lowmem_word(u32 address) const;
@@ -934,88 +989,18 @@ void asr10_boot_state::machine_start()
 				pc, 0x00fc4820 + offset * 2, offset, mem_mask,
 				ACCESSING_BITS_0_7 ? 1 : 0, ACCESSING_BITS_8_15 ? 1 : 0);
 		});
-	// Temporary, precise (non-periodic) call-chain hooks: opcode fetches are
-	// ordinary reads through AS_PROGRAM for this driver (no separate decrypted
-	// opcode space is mapped), so a narrow read tap over just the target
-	// instruction's first word fires exactly on that instruction's fetch.
-	// Each callback re-checks pc == target before logging, since the same
-	// tap could in principle also see a coincidental data access.
-	m_hook_f8834a_tap = m_maincpu->space(AS_PROGRAM).install_read_tap(
-		0x00f8834a, 0x00f8834b, "hook_f8834a_tap",
-		[this] (offs_t offset, u16 &data, u16 mem_mask)
-		{
-			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
-				return;
-			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-			if (pc != 0x00f8834a)
-				return;
-			const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-			logerror("ASR10_CALLCHAIN_HOOK event=f8834a_load_callback_ptr pc=%06x sp=%06x %s "
-				"fire_count=%u\n",
-				pc, sp, dump_cpu_registers().c_str(), m_duart_counter_fire_count);
-		});
-	m_hook_f88352_tap = m_maincpu->space(AS_PROGRAM).install_read_tap(
-		0x00f88352, 0x00f88353, "hook_f88352_tap",
-		[this] (offs_t offset, u16 &data, u16 mem_mask)
-		{
-			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
-				return;
-			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-			if (pc != 0x00f88352)
-				return;
-			const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-			const u32 entry_base = m_maincpu->state_int(M68K_A0) & 0x00ffffff;
-			const u32 callback_ptr = m_maincpu->state_int(M68K_A1) & 0x00ffffff;
-			logerror("ASR10_CALLCHAIN_HOOK event=f88352_jsr_a1 pc=%06x sp=%06x stack_top=%06x "
-				"entry_base=%06x entry_plus14=%04x callback_ptr=%06x %s fire_count=%u\n",
-				pc, sp, read_stack_long(sp), entry_base, lowmem_word(entry_base + 0x14),
-				callback_ptr, dump_cpu_registers().c_str(), m_duart_counter_fire_count);
-		});
-	m_hook_006800_tap = m_maincpu->space(AS_PROGRAM).install_read_tap(
-		0x00006800, 0x00006801, "hook_006800_tap",
-		[this] (offs_t offset, u16 &data, u16 mem_mask)
-		{
-			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
-				return;
-			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-			if (pc != 0x00006800)
-				return;
-			const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-			const u32 return_address = read_stack_long(sp);
-			logerror("ASR10_CALLCHAIN_HOOK event=006800_entry pc=%06x sp=%06x return_address=%06x "
-				"%s fire_count=%u\n",
-				pc, sp, return_address, dump_cpu_registers().c_str(), m_duart_counter_fire_count);
-			if (!m_hook_006800_dump_logged)
-			{
-				m_hook_006800_dump_logged = true;
-				std::string hex;
-				for (u32 addr = 0x006800; addr < 0x006800 + 96; addr++)
-					hex += util::string_format("%02x", lowmem_byte(addr));
-				logerror("ASR10_CALLCHAIN_HOOK event=006800_forward_dump start=006800 len=96 hex=%s\n",
-					hex.c_str());
-			}
-		});
-	m_hook_00680a_tap = m_maincpu->space(AS_PROGRAM).install_read_tap(
-		0x0000680a, 0x0000680b, "hook_00680a_tap",
-		[this] (offs_t offset, u16 &data, u16 mem_mask)
-		{
-			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
-				return;
-			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-			if (pc != 0x0000680a)
-				return;
-			logerror("ASR10_CALLCHAIN_HOOK event=00680a_pre_divu pc=%06x %s "
-				"tick_0b82=%02x flag_03c5=%02x word_03bc=%04x fire_count=%u\n",
-				pc, dump_cpu_registers().c_str(),
-				lowmem_byte(0x0b82), lowmem_byte(0x03c5), lowmem_word(0x03bc), m_duart_counter_fire_count);
-		});
-	// FC2068-FC206F: unlike the four opcode-fetch taps above (which never
-	// fire -- opcode fetch on this core goes through a cache-typed fast
-	// path that bypasses tap dispatch entirely), these are genuine DATA
-	// reads performed by the movep.l instruction at FC60B0, which uses the
-	// dispatch-backed accessor. FC2068/6A/6C/6E fall in the plain .ram()
-	// block (0xfc0000-0xfc3fff); no existing handler/diagnostic covers
-	// them, so this is the narrowest possible addition for that purpose.
+	// Removed (4.26): four single-address opcode-fetch taps formerly here
+	// (f8834a/f88352/006800/00680a) never fired in any live capture across
+	// this whole investigation -- opcode fetch on this core goes through a
+	// cache-typed fast path that bypasses passthrough-tap dispatch
+	// entirely; only genuine DATA accesses (reads/writes through the
+	// dispatch-backed accessor) reach an install_read_tap/install_write_tap
+	// callback. FC2068-FC206F below are genuine DATA reads performed by the
+	// movep.l instruction at FC60B0, which uses the dispatch-backed
+	// accessor, and remain reliable. FC2068/6A/6C/6E fall in the plain
+	// .ram() block (0xfc0000-0xfc3fff); no existing handler/diagnostic
+	// covers them, so this is the narrowest possible addition for that
+	// purpose.
 	m_hook_fc2068_tap = m_maincpu->space(AS_PROGRAM).install_read_tap(
 		0x00fc2068, 0x00fc206f, "hook_fc2068_tap",
 		[this] (offs_t offset, u16 &data, u16 mem_mask)
@@ -1105,6 +1090,36 @@ void asr10_boot_state::machine_start()
 					fc3000_ring_entry{pc, selected_cpu_byte_address, data, mem_mask, false};
 				m_fc3000_verify_ring_pos++;
 				log_fc3000_verify_handshake(false, pc, selected_cpu_byte_address, offset, data, mem_mask);
+				// filesystem-browser-map.md 4.26 TASK 1 (observation-only):
+				// this is the reliable path for the f97574 compare IF the
+				// other-table object's A6 also lands in FC3000-FC31FF (i.e.
+				// it is ES5510-related). This tap is a genuine data-read
+				// dispatch, proven reliable for the fixed-table case above.
+				// If the other object's compare does NOT read from this
+				// range, this will not fire for it either -- documented as
+				// a limitation in the FINAL REPORT. data/mem_mask are the
+				// actual bus-read values from this callback, not reread
+				// via read_program_word -- log_esp_other_table_verify
+				// itself checks observed against D2 and only logs/consumes
+				// its one-shot on a genuine mismatch.
+				if (pc == 0x00f97574 && !fc3000_verify_table_match())
+					log_esp_other_table_verify(pc, selected_cpu_byte_address, data, mem_mask);
+				// filesystem-browser-map.md 4.26 TASK 6: HALL REVERB
+				// readback (latch bytes re-read after read-select) and the
+				// verify compare itself, every attempt (not one-shot),
+				// bounded by log_hall_reverb_event's own hard event cap.
+				if (hall_reverb_type1_record0_active() &&
+					(selected_cpu_byte_address == 0x00fc3001 ||
+						selected_cpu_byte_address == 0x00fc3003 ||
+						selected_cpu_byte_address == 0x00fc3005))
+				{
+					const char *const hr_event =
+						selected_cpu_byte_address == 0x00fc3001 ? "read_latch_00" :
+						selected_cpu_byte_address == 0x00fc3003 ? "read_latch_01" : "read_latch_02";
+					log_hall_reverb_event(hr_event, pc, selected_cpu_byte_address, data, mem_mask);
+				}
+				if (pc == 0x00f97574 && hall_reverb_type1_record0_active())
+					log_hall_reverb_event("verify_compare", pc, selected_cpu_byte_address, data, mem_mask);
 			}
 			if (!m_duart_counter_timer_enabled)
 				return;
@@ -1138,6 +1153,61 @@ void asr10_boot_state::machine_start()
 				// address is (A3-1).
 				if (pc == 0x00f97432 && fc3000_verify_table_match())
 					log_esp_first_pass_write(pc, selected_cpu_byte_address, u8(data));
+				// filesystem-browser-map.md 4.24 TASK 7: the select/commit
+				// writes (f97776's "move.b D1,(A0,D4.w)") for the two
+				// record indices (0 and 58) whose collision this round's
+				// ES5510 integration targets. Bounded to those two indices
+				// and to the three known select/commit byte addresses so
+				// this does not add per-retry log volume across the run.
+				if (fc3000_verify_table_match() &&
+					(selected_cpu_byte_address == 0x00fc3101 ||
+						selected_cpu_byte_address == 0x00fc3141 ||
+						selected_cpu_byte_address == 0x00fc3181) &&
+					(u8(data) == 0 || u8(data) == 58))
+					log_esp_select_commit(pc, selected_cpu_byte_address, u8(data));
+				// filesystem-browser-map.md 4.26 TASK 6: HALL REVERB
+				// (table $0e8e==0x00010400) type-1/record-0 GPR
+				// transaction trace -- latch writes (offsets 0x00-0x02,
+				// FC3001/FC3003/FC3005) and the write-select-GPR (0xa0,
+				// FC3141) / read-select (0x80, FC3101) commits.
+				if (hall_reverb_type1_record0_active() &&
+					(selected_cpu_byte_address == 0x00fc3001 ||
+						selected_cpu_byte_address == 0x00fc3003 ||
+						selected_cpu_byte_address == 0x00fc3005 ||
+						selected_cpu_byte_address == 0x00fc3007 ||
+						selected_cpu_byte_address == 0x00fc3009 ||
+						selected_cpu_byte_address == 0x00fc300b ||
+						selected_cpu_byte_address == 0x00fc300d ||
+						selected_cpu_byte_address == 0x00fc300f ||
+						selected_cpu_byte_address == 0x00fc3011 ||
+						selected_cpu_byte_address == 0x00fc3101 ||
+						selected_cpu_byte_address == 0x00fc3141 ||
+						selected_cpu_byte_address == 0x00fc31c1))
+				{
+					// filesystem-browser-map.md 4.27 TASK 1/2 correction:
+					// static disassembly (f97450) proves record type D3==1
+					// keeps D4's DEFAULT value 0x1c0 (host offset 0xe0,
+					// "Write select - GPR+INSTR combined") for the UPLOAD
+					// pass's commit at f9743a -- not 0xa0. The FC3101/FC3141
+					// pair traced in 4.26 is a SEPARATE re-select idiom
+					// inside the VERIFY pass (f97498-f974f6), not the real
+					// commit. FC3007-FC3011 (offsets 0x03-0x08, INSTR-latch
+					// range) and FC31C1 (offset 0xe0, the real commit) were
+					// never traced before this correction.
+					const char *const hr_event =
+						selected_cpu_byte_address == 0x00fc3001 ? "write_latch_00" :
+						selected_cpu_byte_address == 0x00fc3003 ? "write_latch_01" :
+						selected_cpu_byte_address == 0x00fc3005 ? "write_latch_02" :
+						selected_cpu_byte_address == 0x00fc3007 ? "write_latch_03" :
+						selected_cpu_byte_address == 0x00fc3009 ? "write_latch_04" :
+						selected_cpu_byte_address == 0x00fc300b ? "write_latch_05" :
+						selected_cpu_byte_address == 0x00fc300d ? "write_latch_06" :
+						selected_cpu_byte_address == 0x00fc300f ? "write_latch_07" :
+						selected_cpu_byte_address == 0x00fc3011 ? "write_latch_08" :
+						selected_cpu_byte_address == 0x00fc3101 ? "write_read_select_0x80" :
+						selected_cpu_byte_address == 0x00fc3141 ? "write_select_gpr_0xa0" : "write_select_gpr_instr_0xe0";
+					log_hall_reverb_event(hr_event, pc, selected_cpu_byte_address, data, mem_mask);
+				}
 			}
 			if (!m_duart_counter_timer_enabled)
 				return;
@@ -1155,6 +1225,13 @@ void asr10_boot_state::machine_start()
 				"mem_mask=%04x data=%04x cluster_count=%u\n",
 				pc, offset, offset, mem_mask, data, m_fc3000_cluster_count);
 		});
+	// Removed (4.26): standalone opcode-fetch taps formerly installed here
+	// at f973f0/f97580/f97574 never fired in any live capture, for the
+	// same reason the four pre-existing call-chain taps never fired (see
+	// the note near FC2068 above) -- opcode fetch bypasses passthrough-tap
+	// dispatch entirely on this core. f973f0/f97580/f97574 detection is
+	// done via the reliable DATA-access paths instead: see the lowmem_w
+	// 0x0e7e/0x0e8c cases and the fc3000_read_tap's pc==0xf97574 check.
 	m_hook_fc222e_read_tap = m_maincpu->space(AS_PROGRAM).install_read_tap(
 		0x00fc222e, 0x00fc222f, "hook_fc222e_read_tap",
 		[this] (offs_t offset, u16 &data, u16 mem_mask)
@@ -1560,11 +1637,13 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_es5506_host_enabled));
 	save_item(NAME(m_es5506_host_seen_mask));
 	save_item(NAME(m_es5506_host_access_count));
+	m_es5510_host_enabled = m_es5510_host.found();
+	save_item(NAME(m_es5510_host_enabled));
+	save_item(NAME(m_esp_select_commit_log_count));
 	save_item(NAME(m_es5506_diag_par_enabled));
 	save_item(NAME(m_es5506_diag_par_value));
 	save_item(NAME(m_es5506_diag_par_read_count));
 	save_item(NAME(m_primary_slot_snapshot_logged));
-	save_item(NAME(m_hook_006800_dump_logged));
 	save_item(NAME(m_fc60b0_verified));
 	save_item(NAME(m_fc2d40_cluster_count));
 	save_item(NAME(m_fc3000_cluster_count));
@@ -1630,6 +1709,12 @@ void asr10_boot_state::machine_reset()
 	}
 	m_download_retry_loop_dump_logged = false;
 	m_esp_first_pass_write_seq = 0;
+	m_esp_select_commit_log_count = 0;
+	m_esp_f973f0_entry_log_count = 0;
+	m_esp_other_table_first_retry_captured = false;
+	m_esp_other_table_verify_captured = false;
+	m_esp_010722_window_write_count = 0;
+	m_hall_reverb_trace_count = 0;
 	{
 		// Diagnostic fallback ONLY: no guest memory-mapped access has been
 		// proven to be a real TC strobe, and the FDC transfer loop
@@ -1801,7 +1886,6 @@ void asr10_boot_state::machine_reset()
 	}
 	m_es5506_diag_par_read_count = 0;
 	m_primary_slot_snapshot_logged = false;
-	m_hook_006800_dump_logged = false;
 	m_fc60b0_verified = false;
 	m_fc2d40_cluster_count = 0;
 	m_fc3000_cluster_count = 0;
@@ -2088,12 +2172,71 @@ void asr10_boot_state::mem_map(address_map &map)
 		{
 			map(0xfc0000, 0xfc1fff).ram();
 			map(0xfc2000, 0xfc207f).rw(m_es5506_host, FUNC(es5506_device::read), FUNC(es5506_device::write)).umask16(0x00ff);
-			map(0xfc2080, 0xfc3fff).ram();
+			map(0xfc2080, 0xfc2fff).ram();
 		}
 		else
 		{
-			map(0xfc0000, 0xfc3fff).ram();
+			map(0xfc0000, 0xfc2fff).ram();
 		}
+
+		// ASR10_EXPERIMENT_ES5510_HOST (filesystem-browser-map.md 4.24):
+		// FC3000-FC31FF is the proven ES5510 host window (4.22/4.23 -- the
+		// EFFECT DOWNLOAD FAILED / ERROR 032 collision is this range being
+		// plain, passive .ram() with no select/commit semantics). Route
+		// only the offsets proven meaningful in es5510_device::host_r/
+		// host_w -- the 0x00-0x1f latch/register block (byte addresses
+		// FC3001-FC303F) and the three select/commit registers 0x80/0xa0/
+		// 0xc0 (FC3101, FC3141, FC3181) -- to a real device; every other
+		// address in this 512-byte window stays plain .ram(), matching
+		// prior (unproven) behavior exactly and not blindly replacing the
+		// whole window. host_offset = (cpu_byte_address - 0xFC3001) >> 1;
+		// the containing 16-bit word address is one less (e.g. FC3001's
+		// word slot is FC3000, FC3181's word slot is FC3180). Byte-lane
+		// convention (.umask16(0x00ff), low/odd lane only) matches the
+		// proven ASR10_EXPERIMENT_ES5506_HOST adapter above; MAME's normal
+		// word/byte bus-width shim (not any driver-side special case)
+		// makes this transparent to both ordinary move.b and MOVEP's
+		// spaced byte accesses. Real precedent for this exact mapping
+		// (same device, same .umask16(0x00ff) idiom, whole host_r/host_w
+		// window) is esq5505.cpp's map(0x260000, 0x2601ff).rw(m_esp,
+		// FUNC(es5510_device::host_r), FUNC(es5510_device::host_w))
+		// .umask16(0x00ff); this round deliberately narrows that to only
+		// the evidenced offsets, per this investigation's acceptance
+		// criteria, and can be widened later if evidence demands it.
+		const char *const es5510_host_env = std::getenv("ASR10_EXPERIMENT_ES5510_HOST");
+		const bool es5510_host_enabled =
+			es5510_host_env && es5510_host_env[0] && es5510_host_env[0] != '0';
+		if (es5510_host_enabled)
+		{
+			map(0xfc3000, 0xfc303f).rw(m_es5510_host, FUNC(es5510_device::host_r), FUNC(es5510_device::host_w)).umask16(0x00ff);
+			map(0xfc3040, 0xfc30ff).ram();
+			// FC3100-FC3101/FC3140-FC3141/FC3180-FC3181/FC31C0-FC31C1
+			// cannot map directly to host_r/host_w: each is a single-word
+			// range, so the map-relative offset MAME supplies is always 0,
+			// not the absolute ES5510 host offset (0x80/0xa0/0xc0/0xe0)
+			// the firmware intends. Route through the fixed-offset
+			// wrappers instead.
+			map(0xfc3100, 0xfc3101).rw(FUNC(asr10_boot_state::es5510_host_read_select_r), FUNC(asr10_boot_state::es5510_host_read_select_w)).umask16(0x00ff);
+			map(0xfc3102, 0xfc313f).ram();
+			map(0xfc3140, 0xfc3141).rw(FUNC(asr10_boot_state::es5510_host_write_select_gpr_r), FUNC(asr10_boot_state::es5510_host_write_select_gpr_w)).umask16(0x00ff);
+			map(0xfc3142, 0xfc317f).ram();
+			map(0xfc3180, 0xfc3181).rw(FUNC(asr10_boot_state::es5510_host_write_select_instr_r), FUNC(asr10_boot_state::es5510_host_write_select_instr_w)).umask16(0x00ff);
+			map(0xfc3182, 0xfc31bf).ram();
+			// filesystem-browser-map.md 4.27/4.28: host offset 0xe0
+			// ("Write select - GPR + INSTR", es5510.cpp host_w case 0xe0)
+			// -- proven required by firmware record type 1 (f97450's
+			// static default D4=0x1c0, unmapped and falling through to
+			// plain .ram() until this round). Only types 2/3/4 override to
+			// 0xc0/0xa0; type 1 is the only one using 0xe0.
+			map(0xfc31c0, 0xfc31c1).rw(FUNC(asr10_boot_state::es5510_host_write_select_gpr_instr_r), FUNC(asr10_boot_state::es5510_host_write_select_gpr_instr_w)).umask16(0x00ff);
+			map(0xfc31c2, 0xfc31ff).ram();
+		}
+		else
+		{
+			map(0xfc3000, 0xfc31ff).ram();
+		}
+
+		map(0xfc3200, 0xfc3fff).ram();
 	}
 	map(0xfc4000, 0xfc4003).rw(FUNC(asr10_boot_state::upd72069_fdc_r), FUNC(asr10_boot_state::upd72069_fdc_w));
 	map(0xfc4004, 0xfc47ff).ram();
@@ -2738,6 +2881,67 @@ u16 asr10_boot_state::es5506_host_read_par_diag()
 		"read_count=%u caller_pc=%06x fire_count=%u\n",
 		m_es5506_diag_par_value, m_es5506_diag_par_read_count, pc, m_duart_counter_fire_count);
 	return m_es5506_diag_par_value;
+}
+
+
+// ASR10_EXPERIMENT_ES5510_HOST select/commit wrappers (filesystem-browser-
+// map.md 4.24 TASK 2/3). FC3100-FC3101, FC3140-FC3141 and FC3180-FC3181 are
+// each installed as their own single-word address_map range, so the
+// `offset` MAME hands to an .rw() handler there is always 0 (relative to
+// that range's own base address) -- never the absolute ES5510 host offset
+// (0x80/0xa0/0xc0) the firmware intends. Mapping these three ranges
+// directly to es5510_device::host_r/host_w (as FC3000-FC303F correctly is,
+// since its offsets 0x00-0x1f fall out of that range's own base by
+// construction) silently forwarded offset 0 for all three registers --
+// an ASR-10 adapter address-decode bug, not a stock-device defect. Each
+// wrapper below ignores the map-relative offset entirely and supplies the
+// fixed absolute host offset explicitly.
+u8 asr10_boot_state::es5510_host_read_select_r(offs_t offset)
+{
+	return m_es5510_host->host_r(m_maincpu->space(AS_PROGRAM), 0x80);
+}
+
+void asr10_boot_state::es5510_host_read_select_w(offs_t offset, u8 data)
+{
+	if (m_fc3000_verify_trace_enabled && fc3000_verify_table_match() && (data == 0 || data == 58))
+		log_esp_select_forward(0x00fc3101, 0x00fc3100, offset, 0x80, data, 0x00ff);
+	m_es5510_host->host_w(0x80, data);
+}
+
+u8 asr10_boot_state::es5510_host_write_select_gpr_r(offs_t offset)
+{
+	return m_es5510_host->host_r(m_maincpu->space(AS_PROGRAM), 0xa0);
+}
+
+void asr10_boot_state::es5510_host_write_select_gpr_w(offs_t offset, u8 data)
+{
+	if (m_fc3000_verify_trace_enabled && fc3000_verify_table_match() && (data == 0 || data == 58))
+		log_esp_select_forward(0x00fc3141, 0x00fc3140, offset, 0xa0, data, 0x00ff);
+	m_es5510_host->host_w(0xa0, data);
+}
+
+u8 asr10_boot_state::es5510_host_write_select_instr_r(offs_t offset)
+{
+	return m_es5510_host->host_r(m_maincpu->space(AS_PROGRAM), 0xc0);
+}
+
+void asr10_boot_state::es5510_host_write_select_instr_w(offs_t offset, u8 data)
+{
+	if (m_fc3000_verify_trace_enabled && fc3000_verify_table_match() && (data == 0 || data == 58))
+		log_esp_select_forward(0x00fc3181, 0x00fc3180, offset, 0xc0, data, 0x00ff);
+	m_es5510_host->host_w(0xc0, data);
+}
+
+u8 asr10_boot_state::es5510_host_write_select_gpr_instr_r(offs_t offset)
+{
+	return m_es5510_host->host_r(m_maincpu->space(AS_PROGRAM), 0xe0);
+}
+
+void asr10_boot_state::es5510_host_write_select_gpr_instr_w(offs_t offset, u8 data)
+{
+	if (m_fc3000_verify_trace_enabled && fc3000_verify_table_match() && (data == 0 || data == 58))
+		log_esp_select_forward(0x00fc31c1, 0x00fc31c0, offset, 0xe0, data, 0x00ff);
+	m_es5510_host->host_w(0xe0, data);
 }
 
 
@@ -3463,7 +3667,53 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 		{
 			m_download_retry_loop_dump_logged = true;
 			dump_highview_code_range("download_retry_loop_ffc840_ffc8c0", 0x00ffc840, 0x00ffc8c0);
-		}
+			}
+			// filesystem-browser-map.md 4.26: f973f0/f97580 detection uses
+			// these two DATA writes (0x0e7e is f973f0's own first
+			// instruction, "move.l A3,$e7e.w"; 0x0e8c is f97580's own
+			// instruction, "addq.b #1,$e8c.w") because lowmem_w is the
+			// primary backing handler for this address range, not a
+			// passthrough tap -- opcode-fetch taps on this core never fire
+			// (see the note near FC2068 in machine_start()). The 0x0e8c
+			// write fires on EVERY retry increment; log_esp_other_table_
+			// first_retry's own one-shot guard restricts it to the first.
+			if (byte_address == 0x0e7e && pc == 0x00f973f0)
+				log_esp_f973f0_entry(pc);
+			if (byte_address == 0x0e8c && pc == 0x00f97580)
+				log_esp_other_table_first_retry(pc);
+			// filesystem-browser-map.md 4.26 TASK 6: HALL REVERB table-level
+			// retry/give-up markers. Table match only (not record-scoped
+			// like log_hall_reverb_event's other call sites) because retry
+			// and give-up are attempt boundaries for the WHOLE table
+			// transfer (f9740a restarts all record types on a mismatch),
+			// not a single record.
+			if (m_lowmem_shadow[0x0e8e >> 1] == 0x0001 && m_lowmem_shadow[(0x0e8e >> 1) + 1] == 0x0400)
+			{
+				if (byte_address == 0x0e8c)
+					log_hall_reverb_event("retry_increment", pc, byte_address, data, mem_mask);
+				if (byte_address == 0x0e8a)
+					log_hall_reverb_event("give_up_flag_set", pc, byte_address, data, mem_mask);
+			}
+	}
+	// filesystem-browser-map.md 4.25 TASK 3 (observation-only): bounded
+	// write-provenance recorder for the low-RAM window surrounding the
+	// a3=~0x010722 address seen at the other-table retry-exhaustion path
+	// (4.24). No existing recorder covers writes above 0x10000, so this
+	// is the minimal extension requested -- a narrow window (0x010600-
+	// 0x0108ff, 768 bytes) and a hard cap on event count, not a general
+	// loader/chunk recorder.
+	if (m_download_trace_enabled && byte_address >= 0x010600 && byte_address <= 0x0108ff &&
+		m_esp_010722_window_write_count < 200 && !machine().side_effects_disabled())
+	{
+		m_esp_010722_window_write_count++;
+		const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+		logerror("ASR10_ESP_010722_WINDOW_WRITE seq=%u pc=%06x address=%06x previous=%04x new=%04x "
+			"mem_mask=%04x sp=%06x d0=%08x d1=%08x a0=%08x a1=%08x a2=%08x a3=%08x\n",
+			m_esp_010722_window_write_count, pc, byte_address, previous, m_lowmem_shadow[offset], mem_mask,
+			u32(m_maincpu->state_int(M68K_SP)) & 0x00ffffff,
+			u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
+			u32(m_maincpu->state_int(M68K_A0)) & 0x00ffffff, u32(m_maincpu->state_int(M68K_A1)) & 0x00ffffff,
+			u32(m_maincpu->state_int(M68K_A2)) & 0x00ffffff, u32(m_maincpu->state_int(M68K_A3)) & 0x00ffffff);
 	}
 	if (m_disk_sig_trace_enabled &&
 		(byte_address == 0x049c || byte_address == 0x04ae || byte_address == 0x0944 ||
@@ -3743,7 +3993,7 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 		// fb82a4 (boot/format sector loader): its own first instruction is
 		// `move.b #$20,$49e.w` -- tag entry via that write, gated on this
 		// exact PC (opcode-fetch taps are established not to fire for this
-		// core; see the m_hook_f8834a_tap comment above).
+		// core; see the note near FC2068 in machine_start()).
 		if (byte_address == 0x049e && pc == 0x00fb82a4)
 			log_fsb_entry(FSB_ENTRY_FB82A4, pc);
 		// fb846a (generic "load one FDC unit into $40e.w"): its first
@@ -5117,6 +5367,19 @@ bool asr10_boot_state::fc3000_verify_table_match() const
 	return m_lowmem_shadow[0x0e8e >> 1] == 0xfff9 && m_lowmem_shadow[(0x0e8e >> 1) + 1] == 0xbca0;
 }
 
+
+// filesystem-browser-map.md 4.26 TASK 6: narrows the HALL REVERB GPR
+// transaction trace to exactly table base $0e8e==0x00010400, record type
+// D3==1, record index D6==0 -- deliberately not "every effect object",
+// per this round's explicit scope.
+bool asr10_boot_state::hall_reverb_type1_record0_active() const
+{
+	return m_lowmem_shadow[0x0e8e >> 1] == 0x0001 && m_lowmem_shadow[(0x0e8e >> 1) + 1] == 0x0400 &&
+		(u8(m_maincpu->state_int(M68K_D3)) & 0xff) == 1 &&
+		(u32(m_maincpu->state_int(M68K_D6)) & 0xff) == 0;
+}
+
+
 // filesystem-browser-map.md 4.23 TASK 1: every first-pass upload byte
 // write for the 0xfff9bca0-tagged object, so the exact write that
 // precedes the 4.22 verify-pass mismatch at FC300F can be found directly
@@ -5145,6 +5408,247 @@ void asr10_boot_state::log_esp_first_pass_write(u32 pc, u32 byte_address, u8 dat
 		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
 		u32(m_maincpu->state_int(M68K_D4)), u32(m_maincpu->state_int(M68K_D5)),
 		u32(m_maincpu->state_int(M68K_D6)));
+}
+
+
+// filesystem-browser-map.md 4.24 TASK 7: proves the adapter forwards the
+// select/commit writes (f97776's "move.b D1,(A0,D4.w)", D4=0x100/0x140/0x180
+// selecting FC3101/FC3141/FC3181) with the correct record index into the
+// real es5510_device, for the two indices (0 and 58) whose collision this
+// round's integration is meant to resolve. host_offset is derived with the
+// same formula used throughout this section:
+// (cpu_byte_address - 0xFC3001) >> 1.
+void asr10_boot_state::log_esp_select_commit(u32 pc, u32 byte_address, u8 data)
+{
+	const u32 host_offset = (byte_address - 0x00fc3001) >> 1;
+	const char *const name =
+		host_offset == 0x80 ? "read_select_gpr_instr" :
+		host_offset == 0xa0 ? "write_select_gpr" :
+		host_offset == 0xc0 ? "write_select_instr" : "unknown";
+	m_esp_select_commit_log_count++;
+	logerror("ASR10_ESP_SELECT_COMMIT seq=%u pc=%06x byte_address=%06x host_offset=%02x "
+		"register=%s record_index=%u\n",
+		m_esp_select_commit_log_count, pc, byte_address, host_offset, name, data);
+}
+
+
+// filesystem-browser-map.md 4.24 TASK 4: proves, from inside the wrapper
+// itself (not just an independent recomputation from address), that the
+// single-word FC3101/FC3141/FC3181 ranges' map-relative offset (always 0)
+// is being discarded and the fixed absolute ES5510 host offset (0x80/0xa0/
+// 0xc0) is what actually reaches host_w. Bounded to record indices 0 and
+// 58 by the caller, so this adds no per-retry volume across a 180s run.
+void asr10_boot_state::log_esp_select_forward(u32 byte_address, u32 word_address, offs_t map_relative_offset,
+	u32 fixed_offset, u8 data, u16 mem_mask)
+{
+	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+	m_esp_select_commit_log_count++;
+	logerror("ASR10_ESP_SELECT_FORWARD seq=%u pc=%06x cpu_byte_address=%06x word_address=%06x "
+		"map_relative_offset=%02x fixed_host_offset=%02x record_index=%u mem_mask=%04x\n",
+		m_esp_select_commit_log_count, pc, byte_address, word_address,
+		map_relative_offset, fixed_offset, data, mem_mask);
+}
+
+
+// filesystem-browser-map.md 4.25 (observation-only): renders a bounded
+// live-memory window as both hex bytes and printable ASCII, via the
+// side-effect-free general bus reader (read_program_word) so it works
+// regardless of which region (ROM, lowmem, FC-range, etc.) base_address
+// falls in. Read word-at-a-time; length_bytes is rounded up to the next
+// even number if odd.
+void asr10_boot_state::dump_memory_window(const char *tag, u32 base_address, u32 length_bytes)
+{
+	std::string hex;
+	std::string ascii;
+	for (u32 i = 0; i < length_bytes; i += 2)
+	{
+		const u16 word = read_program_word((base_address + i) & 0x00ffffff);
+		const u8 hi = u8(word >> 8);
+		const u8 lo = u8(word & 0xff);
+		hex += util::string_format("%02x%02x", hi, lo);
+		ascii += (hi >= 0x20 && hi < 0x7f) ? char(hi) : '.';
+		ascii += (lo >= 0x20 && lo < 0x7f) ? char(lo) : '.';
+	}
+	logerror("ASR10_ESP_OTHER_TABLE_MEMDUMP tag=%s base=%06x length=%u hex=\"%s\" ascii=\"%s\"\n",
+		tag, base_address, length_bytes, hex.c_str(), ascii.c_str());
+}
+
+
+// filesystem-browser-map.md 4.26 TASK 3: bounded (cap 20), unconditional
+// per-invocation entry-state dump for f973f0, whichever table/object it
+// is processing. known_fixed_table distinguishes the already-fixed
+// fff9bca0 table from any other. This is triggered by the write of the
+// FIRST word of f973f0's own first instruction ("move.l A3,$e7e.w") --
+// an entry-state observation, not a perfect pre-instruction hook. A3 is
+// read directly from the CPU register (always complete/reliable) and
+// used as the entry-time table pointer; lowmem $0e7e is NOT reconstructed
+// as a complete longword here, since only the high word of the move.l
+// may have been written to memory at the moment this fires (the low word
+// write, to byte address 0x0e80, is a separate, later bus cycle).
+// caller_return_address is read directly off the stack (SP at this PC
+// still holds the return address, since f973f0 is entered via a plain
+// bsr/jsr and no nested call has happened yet).
+void asr10_boot_state::log_esp_f973f0_entry(u32 pc)
+{
+	if (m_esp_f973f0_entry_log_count >= 20)
+		return;
+	m_esp_f973f0_entry_log_count++;
+	const bool known_table = fc3000_verify_table_match();
+	const u32 sp = u32(m_maincpu->state_int(M68K_SP)) & 0x00ffffff;
+	const u32 caller_return_address = read_program_word(sp) << 16 | read_program_word(sp + 2);
+	const u32 a3 = u32(m_maincpu->state_int(M68K_A3)) & 0x00ffffff;
+	const u32 table_ptr_0e8e = (u32(m_lowmem_shadow[0x0e8e >> 1]) << 16) | m_lowmem_shadow[(0x0e8e >> 1) + 1];
+	logerror("ASR10_ESP_F973F0_ENTRY seq=%u pc=%06x known_fixed_table=%u caller_return_address=%06x "
+		"entry_a3=%06x lowmem_0e82=%04x lowmem_0e8c=%04x lowmem_0e8e=%08x "
+		"a0=%08x a1=%08x a2=%08x a4=%08x a5=%08x a6=%08x "
+		"d0=%08x d1=%08x d2=%08x d3=%08x d4=%08x d5=%08x d6=%08x d7=%08x sr=%04x "
+		"note=entry_a3_is_the_actual_register_value_lowmem_0e7e_is_not_reconstructed_here_"
+		"since_only_the_high_word_of_move_l_a3_e7e_w_may_have_been_written_at_this_point\n",
+		m_esp_f973f0_entry_log_count, pc, known_table ? 1u : 0u, caller_return_address,
+		a3, m_lowmem_shadow[0x0e82 >> 1], m_lowmem_shadow[0x0e8c >> 1], table_ptr_0e8e,
+		u32(m_maincpu->state_int(M68K_A0)) & 0x00ffffff, u32(m_maincpu->state_int(M68K_A1)) & 0x00ffffff,
+		u32(m_maincpu->state_int(M68K_A2)) & 0x00ffffff,
+		u32(m_maincpu->state_int(M68K_A4)) & 0x00ffffff, u32(m_maincpu->state_int(M68K_A5)) & 0x00ffffff,
+		u32(m_maincpu->state_int(M68K_A6)) & 0x00ffffff,
+		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
+		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
+		u32(m_maincpu->state_int(M68K_D4)), u32(m_maincpu->state_int(M68K_D5)),
+		u32(m_maincpu->state_int(M68K_D6)), u32(m_maincpu->state_int(M68K_D7)),
+		u16(m_maincpu->state_int(M68K_SR)));
+}
+
+
+// filesystem-browser-map.md 4.26 TASK 2: one-shot (first occurrence
+// only), fires at the FIRST retry-increment (retry_number becomes 1) for
+// a table other than the already-fixed fff9bca0 -- NOT terminal retry
+// exhaustion (renamed from log_esp_other_table_retry to make this
+// explicit; a prior round's name and comments incorrectly implied this
+// was the exhaustion/give-up point). Dumps full register/lowmem state
+// plus bounded live-memory windows around every plausible base-pointer
+// candidate. Does not assume A3 is the object base -- reports A3 minus
+// each candidate base so the cursor-vs-base question can be read
+// directly from the numbers.
+void asr10_boot_state::log_esp_other_table_first_retry(u32 pc)
+{
+	if (m_esp_other_table_first_retry_captured || fc3000_verify_table_match())
+		return;
+	m_esp_other_table_first_retry_captured = true;
+
+	const u32 a3 = u32(m_maincpu->state_int(M68K_A3)) & 0x00ffffff;
+	const u32 table_ptr_0e7e = (u32(m_lowmem_shadow[0x0e7e >> 1]) << 16) | m_lowmem_shadow[(0x0e7e >> 1) + 1];
+	const u32 table_ptr_0e8e = (u32(m_lowmem_shadow[0x0e8e >> 1]) << 16) | m_lowmem_shadow[(0x0e8e >> 1) + 1];
+	const u8 retry_number = u8(m_lowmem_shadow[0x0e8c >> 1] >> 8);
+
+	logerror("ASR10_ESP_OTHER_TABLE_FIRST_RETRY pc=%06x "
+		"a0=%08x a1=%08x a2=%08x a3=%08x a4=%08x a5=%08x a6=%08x "
+		"d0=%08x d1=%08x d2=%08x d3=%08x d4=%08x d5=%08x d6=%08x d7=%08x sr=%04x "
+		"lowmem_0e7e=%08x lowmem_0e82=%04x lowmem_0e8c=%04x lowmem_0e8e=%08x "
+		"a3_minus_lowmem_0e7e=%d a3_minus_lowmem_0e8e=%d retry_number=%u\n",
+		pc,
+		u32(m_maincpu->state_int(M68K_A0)) & 0x00ffffff, u32(m_maincpu->state_int(M68K_A1)) & 0x00ffffff,
+		u32(m_maincpu->state_int(M68K_A2)) & 0x00ffffff, a3,
+		u32(m_maincpu->state_int(M68K_A4)) & 0x00ffffff, u32(m_maincpu->state_int(M68K_A5)) & 0x00ffffff,
+		u32(m_maincpu->state_int(M68K_A6)) & 0x00ffffff,
+		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
+		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
+		u32(m_maincpu->state_int(M68K_D4)), u32(m_maincpu->state_int(M68K_D5)),
+		u32(m_maincpu->state_int(M68K_D6)), u32(m_maincpu->state_int(M68K_D7)),
+		u16(m_maincpu->state_int(M68K_SR)),
+		table_ptr_0e7e, m_lowmem_shadow[0x0e82 >> 1], m_lowmem_shadow[0x0e8c >> 1], table_ptr_0e8e,
+		int32_t(a3) - int32_t(table_ptr_0e7e), int32_t(a3) - int32_t(table_ptr_0e8e), retry_number);
+
+	// TASK2 (prior round): bounded live-memory windows at every plausible
+	// base-pointer candidate. "64 bytes before A3" and "64 bytes at A3"
+	// are rendered as one contiguous 128-byte window starting 64 bytes
+	// before A3, so the boundary itself is visible in one dump.
+	dump_memory_window("a3_minus64_to_a3_plus64", a3 >= 0x40 ? a3 - 0x40 : 0, 128);
+	dump_memory_window("lowmem_0e8e_pointer_target", table_ptr_0e8e, 128);
+	dump_memory_window("lowmem_0e7e_pointer_target", table_ptr_0e7e, 128);
+	// "64 bytes at the start of the current record": no register or
+	// lowmem field distinct from A3 has been established as a
+	// per-record (as opposed to per-table) base pointer -- A3 is the
+	// running per-byte cursor per the established f97432 call graph
+	// ("move.b (A3)+,(A6)"). Not dumped separately from the a3 window
+	// above; see the FINAL REPORT for this limitation stated explicitly.
+}
+
+
+// filesystem-browser-map.md 4.26 TASK 1: one-shot (first REAL mismatch
+// only) capture of the f97574 compare ("cmp.b (A6),D2") when the CURRENT
+// table is NOT the already-fixed fff9bca0 table. Fed the actual bus-read
+// value/mem_mask from the caller (the FC3000-range read tap), not
+// rereard via read_program_word -- a prior round's version fired on the
+// first COMPARE regardless of outcome, consuming its one-shot even on a
+// match. This version checks observed against D2 (the expected value)
+// BEFORE touching the one-shot flag, and returns without logging or
+// consuming it when the compare actually matches.
+void asr10_boot_state::log_esp_other_table_verify(u32 pc, u32 cpu_byte_address, u16 data, u16 mem_mask)
+{
+	if (m_esp_other_table_verify_captured || fc3000_verify_table_match())
+		return;
+
+	const bool low_lane = (mem_mask & 0x00ff) != 0;
+	const u8 observed_byte = low_lane ? u8(data & 0xff) : u8(data >> 8);
+	const u8 expected_byte = u8(m_maincpu->state_int(M68K_D2) & 0xff);
+	if (observed_byte == expected_byte)
+		return; // not a mismatch -- do not consume the one-shot
+
+	m_esp_other_table_verify_captured = true;
+
+	const u32 table_ptr_0e8e = (u32(m_lowmem_shadow[0x0e8e >> 1]) << 16) | m_lowmem_shadow[(0x0e8e >> 1) + 1];
+	const bool in_es5510_window = cpu_byte_address >= 0x00fc3000 && cpu_byte_address <= 0x00fc31ff;
+	const u32 es5510_host_offset = in_es5510_window ? (cpu_byte_address - 0x00fc3001) >> 1 : 0xffffffff;
+	const u8 retry_number = u8(m_lowmem_shadow[0x0e8c >> 1] >> 8);
+
+	logerror("ASR10_ESP_OTHER_TABLE_VERIFY pc=%06x cpu_byte_address=%06x bus_data=%04x mem_mask=%04x "
+		"observed=%02x expected=%02x byte_lane=%s in_es5510_window=%u es5510_host_offset=%08x "
+		"record_type_d3=%02x record_param_d1=%08x record_index_d6=%08x table_base_0e8e=%08x retry_number=%u "
+		"a0=%08x a1=%08x a2=%08x a3=%08x a4=%08x a5=%08x sr=%04x "
+		"note=select_commit_history_not_captured_existing_ASR10_ESP_SELECT_FORWARD_"
+		"tap_is_scoped_to_record_index_0_and_58_only\n",
+		pc, cpu_byte_address, data, mem_mask,
+		observed_byte, expected_byte, low_lane ? "odd_low" : "even_high",
+		in_es5510_window ? 1u : 0u, es5510_host_offset,
+		u32(m_maincpu->state_int(M68K_D3)) & 0xff, u32(m_maincpu->state_int(M68K_D1)),
+		u32(m_maincpu->state_int(M68K_D6)), table_ptr_0e8e, retry_number,
+		u32(m_maincpu->state_int(M68K_A0)) & 0x00ffffff, u32(m_maincpu->state_int(M68K_A1)) & 0x00ffffff,
+		u32(m_maincpu->state_int(M68K_A2)) & 0x00ffffff, u32(m_maincpu->state_int(M68K_A3)) & 0x00ffffff,
+		u32(m_maincpu->state_int(M68K_A4)) & 0x00ffffff, u32(m_maincpu->state_int(M68K_A5)) & 0x00ffffff,
+		u16(m_maincpu->state_int(M68K_SR)));
+}
+
+
+// filesystem-browser-map.md 4.26 TASK 6: single consolidated per-event
+// logger for the HALL REVERB (table $0e8e==0x00010400) type-1/record-0
+// GPR transaction, called from every relevant hook site (FC3000 write
+// tap, FC3000 read tap, lowmem_w's 0x0e8c/0x0e8a cases) with an `event`
+// tag identifying which step this is. Bounded by a hard event cap (not a
+// per-attempt cap), covering roughly attempts 1 through terminal retry
+// with headroom; the ordered sequence of events (write_latch_00/01/02,
+// write_select_gpr_0xa0, read_select_0x80, read_latch_00/01/02,
+// verify_compare, retry_increment, give_up_flag_set) reconstructs the
+// full latch->commit->select->readback->retry chain when read in order.
+// Does not reach into es5510_device internals (no public accessor for
+// gpr[] exists without a select+read cycle, and adding one would change
+// the device's public interface) -- "stock GPR entry after commit" is
+// observed the same way the firmware itself observes it: via the
+// subsequent read-select + latch readback.
+void asr10_boot_state::log_hall_reverb_event(const char *event, u32 pc, u32 byte_address, u16 data, u16 mem_mask)
+{
+	if (m_hall_reverb_trace_count >= 300)
+		return;
+	m_hall_reverb_trace_count++;
+	const u8 retry_number = u8(m_lowmem_shadow[0x0e8c >> 1] >> 8);
+	const u8 give_up_flag = u8(m_lowmem_shadow[0x0e8a >> 1] & 0xff);
+	logerror("ASR10_HALL_REVERB_TRACE seq=%u event=%s pc=%06x byte_address=%06x data=%04x mem_mask=%04x "
+		"retry_number=%u give_up_flag_0e8a=%02x "
+		"d1=%08x d2=%08x d3=%08x d6=%08x a3=%08x a4=%08x a6=%08x sr=%04x\n",
+		m_hall_reverb_trace_count, event, pc, byte_address, data, mem_mask,
+		retry_number, give_up_flag,
+		u32(m_maincpu->state_int(M68K_D1)), u32(m_maincpu->state_int(M68K_D2)),
+		u32(m_maincpu->state_int(M68K_D3)), u32(m_maincpu->state_int(M68K_D6)),
+		u32(m_maincpu->state_int(M68K_A3)) & 0x00ffffff, u32(m_maincpu->state_int(M68K_A4)) & 0x00ffffff,
+		u32(m_maincpu->state_int(M68K_A6)) & 0x00ffffff, u16(m_maincpu->state_int(M68K_SR)));
 }
 
 
@@ -6538,6 +7042,11 @@ void asr10_boot_state::log_run_config_header()
 	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_ES5506_HOST requested=%s effective=%u "
 		"default_when_unset=0 note=config_time_only_device_instantiation\n",
 		flag("ASR10_EXPERIMENT_ES5506_HOST").c_str(), m_es5506_host_enabled ? 1u : 0u);
+	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_ES5510_HOST requested=%s effective=%u "
+		"device_exists=%u provisional_clock_hz=10000000 default_when_unset=0 "
+		"note=config_time_only_device_instantiation_set_disable_no_execute_run_no_irq\n",
+		flag("ASR10_EXPERIMENT_ES5510_HOST").c_str(), m_es5510_host_enabled ? 1u : 0u,
+		m_es5510_host.found() ? 1u : 0u);
 	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_FC3000_VERIFY_TRACE requested=%s effective=%u "
 		"default_when_unset=0\n",
 		flag("ASR10_EXPERIMENT_FC3000_VERIFY_TRACE").c_str(), m_fc3000_verify_trace_enabled ? 1u : 0u);
@@ -9789,6 +10298,33 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 		if (par_diagnostic_enabled && par_value_env && par_value_env[0])
 			es5506_host.read_port_cb().set(FUNC(asr10_boot_state::es5506_host_read_par_diag));
 		// read_port_cb left unbound otherwise.
+	}
+
+	// ASR10_EXPERIMENT_ES5510_HOST (filesystem-browser-map.md 4.24):
+	// instantiate a stock es5510_device purely as a host-interface
+	// register bank for the FC3000-FC31FF select/commit protocol proven
+	// in 4.22/4.23. set_disable() keeps it out of the scheduler's execute
+	// list entirely -- the same idiom esqasr.cpp uses for this exact chip
+	// on this exact board family (ES5510(config, m_esp, XTAL(10'000'000));
+	// m_esp->set_disable();). This is deliberate, not a placeholder:
+	// es5510_device::host_r()/host_w() (es5510.cpp) are pure register/
+	// latch/gpr/instr-array state manipulation and do not call
+	// execute_run() or otherwise depend on the device's own instruction
+	// stream; memory_space_config() also returns an empty space_config_
+	// vector, so no internal addrmap is required either. No IRQ wiring:
+	// nothing in the proven upload/verify sequence (f973f0-f97776)
+	// touches an ESP interrupt. Host-interface correctness is this
+	// round's criterion, not audio output.
+	const char *const es5510_host_env = std::getenv("ASR10_EXPERIMENT_ES5510_HOST");
+	if (es5510_host_env && es5510_host_env[0] && es5510_host_env[0] != '0')
+	{
+		// Provisional/uncalibrated clock: 10MHz matches the real
+		// ASR-10/ESQ-1-family precedent (esqasr.cpp and esq5505.cpp both
+		// use XTAL(10'000'000) / 10_MHz_XTAL for this exact chip); not
+		// derived from ASR-10 schematics this round, and irrelevant to
+		// host_r()/host_w() correctness since the device never executes.
+		es5510_device &es5510_host(ES5510(config, m_es5510_host, XTAL(10'000'000)));
+		es5510_host.set_disable();
 	}
 
 	config.set_default_layout(layout_asr10_boot);
