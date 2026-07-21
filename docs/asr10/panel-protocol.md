@@ -248,7 +248,58 @@ this repository. Treat panel-controller identity as **external panel
 controller, firmware unavailable** — not "proven 80C52" — until a sourced
 hardware reference is added.
 
-### 7.5 Superseded conclusions
+### 7.5 External hardware observation: real panel boot sequence [external physical evidence]
+
+External physical observation of a real ASR-10 during boot:
+
+- all 8 instrument indicators illuminate in both red and yellow channels
+  (16 lamps total);
+- at "TUNING KEYBOARD - HANDS OFF", the instrument indicators turn off;
+- later, LOAD flashes;
+- INST remains steadily illuminated;
+- STOP remains steadily illuminated.
+
+This is external physical evidence, not host-ROM/OS evidence. The structural
+match between an 8-entry selector and the three D0-selected marker classes
+(`0x77`-`0x7c`) is suggestive, but no class/color/state/index mapping is
+proven. In particular, do not assign meanings such as class=color,
+class=state, payload=lamp, index=instrument, cursor, display half, blink,
+selected, or unselected without panel-controller firmware, service
+documentation, or direct hardware capture tying those meanings to the
+host-side byte stream.
+
+### 7.6 Direct transmit byte `0x66` text-frame prefix evidence (2026-07-21) [STAT]+[DYN]
+
+A separate direct transmit path, distinct from the TRAP #$A encoder, uses
+DUART Channel B.
+
+Static local routine `f89c94` has a verified text-frame shape:
+
+```text
+f89c94: D2 = 0x66
+  -> f89c48 THRB transmit of 0x66
+  -> transmit bytes from A2 through f89cb0 until NUL
+```
+
+That proves `0x66` is a local prefix before a NUL-terminated direct-path text
+payload in this routine. It does not prove a global meaning for byte `0x66`.
+
+Dynamic ring-drained observations also show `0x66` before direct-path text
+payloads, including the frame that previously rendered `FNO INST OR BANK FILES`.
+Those bytes enter the TX ring via `f89a7a` and drain at `f89aa4`; the observed
+prefix enqueue path returns through `f89a70`, while following payload bytes
+return through `f89a56` and related flow-control sites. This is trusted local
+runtime context for the observed text-prefix frame, but the original high-level
+producer or selection condition is not yet proven.
+
+Before the parser correction, host-side parser behavior rendered byte `0x66` as
+printable ASCII `'f'`, producing visible `FNO INST OR BANK FILES` after the
+marker/payload `Z` artifact was removed. Treat `0x66` as a probable
+control/frame prefix, not as proven text and not as a proven control command.
+Parser handling must be bound to the verified direct-text-frame context, not to
+byte value alone.
+
+### 7.7 Superseded conclusions
 
 - TRAP #$A is Line-A / exception vector 10 (it is vector 42; Line-A remains a
   separate, pre-existing mechanism at `f882ca`).

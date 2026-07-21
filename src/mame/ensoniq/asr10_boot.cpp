@@ -222,6 +222,8 @@ private:
 	std::array<trace_slot, TRACE_SLOT_COUNT> m_trace_slots{};
 	char m_panel_text[PANEL_TEXT_LENGTH]{};
 	u32 m_panel_text_length = 0;
+	u8 m_panel_transport_pending_marker = 0;
+	std::array<u8, 0x40> m_panel_direct_text_prefix_ring{};
 	// filesystem-browser-map.md 4.15: display-timeline reconstruction from
 	// reset, not gated on the (too-late) f880fc landmark. Tracks the PC of
 	// the byte that started the current message and the PC of the most
@@ -742,8 +744,10 @@ private:
 	void candidate_w(u32 base, offs_t offset, u16 data, u16 mem_mask, u16 *shadow, u32 words, trace_region region);
 	void trace_access(trace_region region, bool write, u32 address, u16 data, u16 mem_mask, u16 last_write);
 	void dump_repeated_accesses();
-	void panel_text_byte(u8 data, u32 pc);
+	void panel_text_byte(u8 data, u32 pc, bool direct_text_prefix);
 	void flush_panel_text();
+	void note_panel_direct_text_prefix_ring_store(u32 pc, u32 ring_address, u8 byte);
+	bool consume_panel_direct_text_prefix(u32 pc, u8 byte);
 	void log_cpu_context(u32 pc);
 	void log_fdc_04b0_context(bool write, u16 mem_mask);
 	void log_fdc_cmd0e_summary();
@@ -1446,6 +1450,8 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_es5510_ts_shadow));
 	save_item(NAME(m_panel_text));
 	save_item(NAME(m_panel_text_length));
+	save_item(NAME(m_panel_transport_pending_marker));
+	save_item(NAME(m_panel_direct_text_prefix_ring));
 	save_item(NAME(m_panel_msg_first_pc));
 	save_item(NAME(m_panel_msg_last_pc));
 	save_item(NAME(m_seen_loading_system_prompt));
@@ -1649,8 +1655,10 @@ void asr10_boot_state::machine_reset()
 	m_seen_insert_disk_prompt = false;
 
 	m_panel_text_length = 0;
+	m_panel_transport_pending_marker = 0;
 	m_display_chars.fill(' ');
 	m_display_position = 0;
+	m_panel_direct_text_prefix_ring.fill(0);
 
 	set_display_text("----------------------");
 
@@ -3647,6 +3655,7 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 					m_panel_b_last_ring_write_address = byte_address;
 					m_panel_b_last_ring_write_byte = u8(m_lowmem_shadow[offset] >> 8);
 					m_panel_b_last_ring_write_pc = pc;
+					note_panel_direct_text_prefix_ring_store(pc, byte_address, m_panel_b_last_ring_write_byte);
 				}
 				if (ACCESSING_BITS_0_7 && byte_address + 1 >= 0x0378 && byte_address + 1 <= 0x03b7)
 				{
@@ -3654,6 +3663,7 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 					m_panel_b_last_ring_write_address = byte_address + 1;
 					m_panel_b_last_ring_write_byte = u8(m_lowmem_shadow[offset]);
 					m_panel_b_last_ring_write_pc = pc;
+					note_panel_direct_text_prefix_ring_store(pc, byte_address + 1, m_panel_b_last_ring_write_byte);
 				}
 			}
 			if (byte_address == 0x03bc && ACCESSING_BITS_8_15)
@@ -4840,6 +4850,10 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 	{
 		const u8 character = u8(data);
 		log_panel_b_thrb(pc, character);
+		// Temporary bridge: classify the verified Path B direct-text prefix
+		// before the current parser. Remove when byte-stream framing or a
+		// real DUART boundary can provide this directly.
+		const bool direct_text_prefix = consume_panel_direct_text_prefix(pc, character);
 		if (!machine().side_effects_disabled() && m_gen_thrb_count < m_gen_thrb_bytes.size())
 			m_gen_thrb_bytes[m_gen_thrb_count++] = character;
 		if (m_panel_autorespond_enabled && !machine().side_effects_disabled())
@@ -4910,15 +4924,34 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 			else
 				logerror("ASR10PANEL control=%02x pc=%06x\n", character, pc);
 		}
-		panel_text_byte(character, pc);
+		panel_text_byte(character, pc, direct_text_prefix);
 	}
 	trace_access(trace_region::DUART_PANEL_ASR_CANDIDATE, true, address, data, mem_mask, m_duart_panel_asr_shadow[word]);
 }
 
 
 
-void asr10_boot_state::panel_text_byte(u8 data, u32 pc)
+void asr10_boot_state::panel_text_byte(u8 data, u32 pc, bool direct_text_prefix)
 {
+	if (m_panel_transport_pending_marker)
+	{
+		m_panel_transport_pending_marker = 0;
+		return;
+	}
+
+	if (direct_text_prefix)
+	{
+		flush_panel_text();
+		return;
+	}
+
+	if (data >= 0x77 && data <= 0x7c)
+	{
+		flush_panel_text();
+		m_panel_transport_pending_marker = data;
+		return;
+	}
+
 	if (data < 0x20 || data > 0x7e)
 	{
 		flush_panel_text();
@@ -5060,6 +5093,45 @@ void asr10_boot_state::flush_panel_text()
 	m_panel_text_length = 0;
 	m_insert_disk_decision_logged = false;
 	m_panel_text[0] = 0;
+}
+
+
+void asr10_boot_state::note_panel_direct_text_prefix_ring_store(u32 pc, u32 ring_address, u8 byte)
+{
+	if (machine().side_effects_disabled() || ring_address < 0x0378 || ring_address > 0x03b7)
+		return;
+
+	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+	const u32 return_pc = read_stack_long(sp) & 0x00ffffff;
+	m_panel_direct_text_prefix_ring[ring_address - 0x0378] =
+		(pc == 0x00f89a7a && byte == 0x66 && return_pc == 0x00f89a70) ? 1 : 0;
+}
+
+
+bool asr10_boot_state::consume_panel_direct_text_prefix(u32 pc, u8 byte)
+{
+	if (machine().side_effects_disabled() || byte != 0x66)
+		return false;
+
+	if (pc == 0x00f89c48)
+	{
+		const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+		return (read_stack_long(sp) & 0x00ffffff) == 0x00f89c9a;
+	}
+
+	if (pc == 0x00f89aa4)
+	{
+		const u32 ring_address = lowmem_word(0x03ba);
+		if (ring_address >= 0x0378 && ring_address <= 0x03b7)
+		{
+			const u32 index = ring_address - 0x0378;
+			const bool matched = m_panel_direct_text_prefix_ring[index] != 0;
+			m_panel_direct_text_prefix_ring[index] = 0;
+			return matched;
+		}
+	}
+
+	return false;
 }
 
 
