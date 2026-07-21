@@ -223,6 +223,7 @@ private:
 	char m_panel_text[PANEL_TEXT_LENGTH]{};
 	u32 m_panel_text_length = 0;
 	u8 m_panel_transport_pending_marker = 0;
+	bool m_panel_direct_text_prefix_pending = false;
 	std::array<u8, 0x40> m_panel_direct_text_prefix_ring{};
 	// filesystem-browser-map.md 4.15: display-timeline reconstruction from
 	// reset, not gated on the (too-late) f880fc landmark. Tracks the PC of
@@ -744,7 +745,7 @@ private:
 	void candidate_w(u32 base, offs_t offset, u16 data, u16 mem_mask, u16 *shadow, u32 words, trace_region region);
 	void trace_access(trace_region region, bool write, u32 address, u16 data, u16 mem_mask, u16 last_write);
 	void dump_repeated_accesses();
-	void panel_text_byte(u8 data, u32 pc, bool direct_text_prefix);
+	void panel_receive_byte(u8 data);
 	void flush_panel_text();
 	void note_panel_direct_text_prefix_ring_store(u32 pc, u32 ring_address, u8 byte);
 	bool consume_panel_direct_text_prefix(u32 pc, u8 byte);
@@ -1451,6 +1452,7 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_panel_text));
 	save_item(NAME(m_panel_text_length));
 	save_item(NAME(m_panel_transport_pending_marker));
+	save_item(NAME(m_panel_direct_text_prefix_pending));
 	save_item(NAME(m_panel_direct_text_prefix_ring));
 	save_item(NAME(m_panel_msg_first_pc));
 	save_item(NAME(m_panel_msg_last_pc));
@@ -1656,6 +1658,7 @@ void asr10_boot_state::machine_reset()
 
 	m_panel_text_length = 0;
 	m_panel_transport_pending_marker = 0;
+	m_panel_direct_text_prefix_pending = false;
 	m_display_chars.fill(' ');
 	m_display_position = 0;
 	m_panel_direct_text_prefix_ring.fill(0);
@@ -4851,9 +4854,10 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 		const u8 character = u8(data);
 		log_panel_b_thrb(pc, character);
 		// Temporary bridge: classify the verified Path B direct-text prefix
-		// before the current parser. Remove when byte-stream framing or a
-		// real DUART boundary can provide this directly.
-		const bool direct_text_prefix = consume_panel_direct_text_prefix(pc, character);
+		// before the byte-only panel receiver. Remove when byte-stream
+		// framing or a real DUART boundary can provide this directly.
+		if (consume_panel_direct_text_prefix(pc, character))
+			m_panel_direct_text_prefix_pending = true;
 		if (!machine().side_effects_disabled() && m_gen_thrb_count < m_gen_thrb_bytes.size())
 			m_gen_thrb_bytes[m_gen_thrb_count++] = character;
 		if (m_panel_autorespond_enabled && !machine().side_effects_disabled())
@@ -4924,23 +4928,25 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 			else
 				logerror("ASR10PANEL control=%02x pc=%06x\n", character, pc);
 		}
-		panel_text_byte(character, pc, direct_text_prefix);
+		panel_receive_byte(character);
 	}
 	trace_access(trace_region::DUART_PANEL_ASR_CANDIDATE, true, address, data, mem_mask, m_duart_panel_asr_shadow[word]);
 }
 
 
 
-void asr10_boot_state::panel_text_byte(u8 data, u32 pc, bool direct_text_prefix)
+void asr10_boot_state::panel_receive_byte(u8 data)
 {
 	if (m_panel_transport_pending_marker)
 	{
 		m_panel_transport_pending_marker = 0;
+		m_panel_direct_text_prefix_pending = false;
 		return;
 	}
 
-	if (direct_text_prefix)
+	if (m_panel_direct_text_prefix_pending)
 	{
+		m_panel_direct_text_prefix_pending = false;
 		flush_panel_text();
 		return;
 	}
@@ -4957,6 +4963,8 @@ void asr10_boot_state::panel_text_byte(u8 data, u32 pc, bool direct_text_prefix)
 		flush_panel_text();
 		return;
 	}
+
+	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 
 	// Ny textsekvens: töm den visuella displayen.
 	if (m_panel_text_length == 0)
@@ -4995,35 +5003,6 @@ void asr10_boot_state::panel_text_byte(u8 data, u32 pc, bool direct_text_prefix)
 		}
 	}
 }
-
-
-// void asr10_boot_state::panel_text_byte(u8 data, u32 pc)
-// {
-// 	if (pc != 0x00f89cb0 || data < 0x20 || data > 0x7e)
-// 	{
-// 		flush_panel_text();
-// 		return;
-// 	}
-//
-// 	if (m_panel_text_length == PANEL_TEXT_LENGTH - 1)
-// 		flush_panel_text();
-//
-// 	m_panel_text[m_panel_text_length++] = char(data);
-// 	m_panel_text[m_panel_text_length] = 0;
-//
-// 	if (!m_insert_disk_decision_logged && strstr(m_panel_text, "PLEASE INSERT DISK"))
-// 	{
-// 		m_insert_disk_decision_logged = true;
-// 		log_insert_disk_decision(pc);
-// 		if (!m_seen_insert_disk_prompt)
-// 		{
-// 			m_seen_insert_disk_prompt = true;
-// 			m_trace_slots = {};
-// 			logerror("ASR10PHASE phase=post_insert_disk_prompt pc=%06x\n", pc);
-// 		}
-// 	}
-// }
-
 
 void asr10_boot_state::flush_panel_text()
 {
@@ -7875,7 +7854,7 @@ void asr10_boot_state::log_fsb_snapshot(const char *milestone, u32 pc)
 }
 
 
-// Milestones A/B are content-triggered, one-shot, from inside panel_text_byte
+// Milestones A/B are content-triggered, one-shot, from inside panel_receive_byte
 // (the same accumulation path already used for the "PLEASE INSERT DISK"
 // one-shot decision log). Exact trigger, stated plainly so it can be
 // checked rather than trusted: A fires the instant a 'T' is appended while
