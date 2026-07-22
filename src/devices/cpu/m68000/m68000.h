@@ -56,6 +56,7 @@ public:
 	template <typename... T> void set_tas_write_callback(T &&... args) { m_tas_write_callback.set(std::forward<T>(args)...); }
 	template <typename... T> void set_cmpild_callback(T &&... args) { m_cmpild_instr_callback.set(std::forward<T>(args)...); }
 	template <typename... T> void set_rte_callback(T &&... args) { m_rte_instr_callback.set(std::forward<T>(args)...); }
+	template <typename... T> void set_instruction_execute_callback(T &&... args) { m_instruction_execute_callback.set(std::forward<T>(args)...); }
 
 	u64 vpa_sync(offs_t address, u64 current_time);
 	u32 vpa_after(offs_t address);
@@ -146,6 +147,7 @@ protected:
 	// Callbacks to host
 	write32sm_delegate m_cmpild_instr_callback;           /* Called when a CMPI.L #v, Dn instruction is encountered */
 	write_line_delegate m_rte_instr_callback;             /* Called when a RTE instruction is encountered */
+	write32smo_delegate m_instruction_execute_callback;   /* Called before executing an instruction */
 	write8sm_delegate m_tas_write_callback;               /* Called instead of normal write by the TAS instruction,
 	                                                        allowing writeback to be disabled globally or selectively
 	                                                        or other side effects to be implemented */
