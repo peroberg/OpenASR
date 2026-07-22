@@ -145,7 +145,7 @@ This proves three serialization classes exist. **It does not prove their
 physical meaning** — do not label them active/inactive, left/right,
 normal/highlight, etc. without further evidence.
 
-### 7.1 Explanation of the observed `7b,0b,7a,0b` and the visible "Z" [DYN]
+### 7.1 Explanation of the observed `7b,0b,7a,0b` and the historical visible "Z" [DYN]
 
 Both halves come from the **same** static record, `f824e8` = `"8b 00"`,
 selected via pointer-table index 0 (`f824c8 -> f824e8`):
@@ -155,10 +155,12 @@ selected via pointer-table index 0 (`f824c8 -> f824e8`):
 | 1st (`89b4`, fixed) | 0x8b | set | 1 | 0x7b | 0x0b |
 | 2nd (`89b8`/`89b0`, selected) | 0x8b | set | 0 | 0x7a | 0x0b |
 
-The current MAME parser treats `0x7a` as printable `z`→`Z` (14-segment renders
-both cases identically) and `0x0b` as a text-flush delimiter, leaving a visible
-"Z". **This is a parser artifact, not raw firmware text**, and not yet a proven
-statement of the correct physical panel effect.
+Before the parser correction, the MAME host-side parser treated `0x7a` as
+printable `z`->`Z` (14-segment renders both cases identically) and `0x0b` as a
+text-flush delimiter, leaving a visible "Z". **This was a parser artifact, not
+raw firmware text**, and not a proven statement of the correct physical panel
+effect. The current parser consumes `0x77`-`0x7c` as neutral marker bytes and
+consumes the immediately following byte as the marker payload.
 
 ### 7.2 Short-record library and selector loop [STAT]+[DYN]
 
@@ -315,3 +317,323 @@ byte value alone.
 - The visible "Z" is raw firmware text (it is a marker byte, parser-rendered).
 - A full 8-entry table redraw happens on every invocation (only the fixed
   first entry plus the one matching `$c98` are actually transmitted).
+
+## 8. Current parser and architecture snapshot (2026-07-22)
+
+This section is the stable reference point after the marker/payload parser
+correction, the bounded Path B direct-text-prefix correction, and the
+`panel_receive_byte()` boundary refactor. Earlier sections preserve the
+historical observations that led here; when they conflict with this section,
+treat this section as the current understanding.
+
+### 8.1 Current architecture
+
+The ASR-10 driver still uses the hand-written DUART shadow model. A real MAME
+`mc68681_device`/`scn2681_device` is not yet instantiated for this path.
+
+```text
+68k firmware
+    |
+    v
+hand-written DUART shadow
+    |
+    v
+Channel B THRB write at FC4817
+    |
+    v
+temporary upstream bridge
+    |
+    v
+panel_receive_byte(u8 data)
+    |
+    v
+panel protocol parser
+    |
+    v
+visible display state
+```
+
+The temporary upstream bridge lives in `asr10_boot.cpp` immediately before the
+call to `panel_receive_byte()`, with supporting ring provenance tracked by
+`note_panel_direct_text_prefix_ring_store()` and consumed by
+`consume_panel_direct_text_prefix()`. It exists only to preserve the verified
+local Path B behavior while the driver is still attached to a firmware/register
+shadow boundary instead of a real DUART TXB byte/serial boundary. It is not a
+protocol semantic rule and must be removed or replaced when byte-stream framing
+or real DUART wiring can provide the boundary directly.
+
+`panel_receive_byte(u8 data)` is the parser-facing entry point for Channel B
+panel bytes. It accepts only the transmitted byte. It no longer accepts a
+firmware PC, return PC, ring index, ring address, or firmware routine identity.
+The parser still records the current PC internally for existing diagnostics and
+milestone attribution, but protocol branching is not based on PC in
+`panel_receive_byte()`.
+
+### 8.2 Panel transport
+
+#### PATH A: marker/payload transport
+
+PATH A is the TRAP #$A encoder path described in Section 7. It reads a source
+byte from `(A2)+`, derives `payload = source_byte & 0x7f`, selects one of three
+D0 classes, and emits:
+
+```text
+marker = (0x77 if source bit 7 is clear, 0x7a if source bit 7 is set) + D0
+payload
+```
+
+The proven marker matrix remains:
+
+| D0 | bit7=0 | bit7=1 |
+|----|--------|--------|
+| 0  | 0x77   | 0x7a   |
+| 1  | 0x78   | 0x7b   |
+| 2  | 0x79   | 0x7c   |
+
+Current parser state: bytes `0x77`-`0x7c` are recognized as neutral protocol
+markers, stored as one pending marker, and not rendered as ASCII. The
+immediately following byte is consumed as that marker's payload and is also not
+rendered as ASCII.
+
+Known limitations: no marker class, payload, index, color, lamp, cursor,
+selection, blink, or display-half meaning is proven. No inverse decoder or
+panel-controller firmware is available in this repository.
+
+#### PATH B: direct-text transport
+
+PATH B is a separate direct transmit mechanism on DUART Channel B. It is not
+produced by the TRAP #$A encoder.
+
+The verified local routine `f89c94` loads `D2 = 0x66`, transmits `0x66`, then
+transmits bytes from `A2` through the direct transmit helper until NUL. This
+proves a local frame shape:
+
+```text
+0x66
+NUL-terminated text payload
+```
+
+The current parser correction handles the verified prefix only when the
+temporary upstream bridge has identified the trusted direct-text-frame context.
+The following NUL-terminated payload is still rendered as text.
+
+Evidence boundary: this proves that `0x66` is a local prefix before a
+NUL-terminated direct-path text payload in the trusted `f89c94` behavior. It
+does not prove that every byte `0x66` is a prefix, that `0x66` is a global
+control command, or that nearby bytes `0x64`-`0x69` have related meanings.
+
+#### PATH B lineage result: f89c94 item boundary
+
+A bounded panel TX lineage capture established that the two observed dynamic
+`f89c94` invocations were complete, uninterrupted direct-text items:
+
+```text
+f89c94 Path B      = ITEM_SERIALIZED
+ring path          = RAW_BYTE_STREAM
+combined THRB      = MULTI_PRODUCER_SERIAL
+byte interleaving  = NOT_OBSERVED
+```
+
+For each captured `f89c94` invocation, the prefix was sent through `f89c48` and
+each non-NUL `A2` payload byte was sent through `f89cb0`. No foreign THRB write
+occurred while either invocation was active (`foreign_during_text = 0`).
+
+The earlier raw `0x66...NUL` byte-stream parser experiment failed because the
+combined THRB stream contains multiple producers. The later `0x66` that caused
+the first raw-stream mismatch came from the independent ring-drain producer at
+`f89aa4`, after the active `f89c94` item had already completed. This does not
+make the combined THRB byte stream a self-describing PATH B stream.
+
+### 8.3 Parser evolution
+
+Historical visible display:
+
+```text
+Z
+```
+
+Why it appeared: marker byte `0x7a` from PATH A was treated as printable ASCII
+`z`, and `ascii_to_14seg()` rendered it as `Z`. The following payload byte was
+not understood as a payload. This was a parser artifact.
+
+Before:
+
+```text
+7b 0b 7a 0b
+```
+
+After:
+
+```text
+marker 7b + payload 0b consumed neutrally
+marker 7a + payload 0b consumed neutrally
+```
+
+Historical visible display:
+
+```text
+FNO INST OR BANK FILES
+```
+
+Why it appeared: after the PATH A marker artifact was fixed, PATH B byte `0x66`
+from the verified direct-text frame was still treated as printable ASCII `f`.
+The text payload then rendered normally, leaving a leading `F`.
+
+Before:
+
+```text
+66 4e 4f ...
+```
+
+After:
+
+```text
+prefix 66 consumed in verified direct-text-frame context
+4e 4f ... rendered as text payload
+```
+
+Current visible display:
+
+```text
+NO INST OR BANK FILES
+```
+
+Why it is now produced: PATH A markers/payloads are consumed neutrally, and the
+verified PATH B `0x66` prefix is consumed by the temporary upstream bridge before
+the byte-only panel parser renders the following payload. The decoded console
+or VFD text "NO INST OR BANK FILES" should not be conflated with older
+parser-artifact observations.
+
+### 8.4 Evidence inventory
+
+#### PROVEN
+
+- The ASR-10 panel byte stream reaches DUART Channel B THRB in the current
+  hand-written DUART shadow model.
+- PATH A is a marker/payload transport produced by the TRAP #$A encoder.
+- PATH A source payload is `source_byte & 0x7f`.
+- PATH A marker bytes are `0x77`-`0x7c`, selected by source bit 7 and D0 class.
+- `0x77`-`0x7c` are protocol markers, not printable text for the host-side
+  parser.
+- The visible `Z` was caused by treating marker `0x7a` as ASCII.
+- PATH B is separate from the TRAP #$A encoder path.
+- The local `f89c94` behavior transmits `0x66` before a NUL-terminated text
+  payload from `A2`.
+- One observed dynamic `f89c94` invocation corresponds to one complete,
+  uninterrupted PATH B direct-text item.
+- No foreign THRB writes were observed during the two captured `f89c94`
+  invocations.
+- The combined THRB stream is a multi-producer serial stream, not a
+  self-describing PATH B byte stream.
+- The TX ring stores queued bytes. `$03bc` counts queued bytes, and `$03bc == 0`
+  means only that the ring is empty.
+- The visible `F` in `FNO INST OR BANK FILES` was caused by treating the
+  verified PATH B `0x66` prefix as ASCII.
+- The current parser state produces visible `NO INST OR BANK FILES` for the
+  established V161 baseline.
+- `panel_receive_byte(u8 data)` is the parser-facing entry point for
+  panel-bound Channel B bytes.
+- The helper definitions `trace_region`, `trace_slot`, `ascii_to_14seg`,
+  `address_region_guess`, `region_name`, `m68302_register_name`,
+  `fdc_state_field_name`, and `is_fdc_state_field` have been extracted to
+  `asr10_boot_defs.*`.
+
+#### LIKELY
+
+- `$c98` is a selection index used by the observed 8-entry selector loop.
+- The external panel controller consumes the Channel B protocol outside the
+  host ROM/OS artifacts currently available in this repository.
+- The structural match between the 8-entry selector and three marker classes is
+  relevant to physical panel behavior.
+- `0x66` is a probable frame/control prefix in the verified PATH B direct-text
+  behavior.
+- A raw-byte panel path with a transport adapter is the currently supported
+  future boundary for preserving firmware-side submission identity while bytes
+  still pass through the DUART/serial model.
+
+#### UNKNOWN
+
+- The physical meaning of PATH A marker classes and payloads.
+- Whether marker class, payload, or selector index corresponds to lamp color,
+  lamp state, cursor, blink, display half, selected state, or unselected state.
+- The global meaning, if any, of byte `0x66`.
+- Whether nearby values `0x64`-`0x69` belong to the same direct-transmit
+  structure.
+- The original high-level producer or selection condition for every observed
+  ring-drained `0x66` frame.
+- Whether PATH A logical item boundaries can be recovered upstream from the
+  encoder, marker/payload state, or producer invocation.
+- The exact front-panel controller identity and firmware behavior.
+- Authentic panel ACK/status vocabulary and timing.
+- How to remove the current temporary Path B bridge without overfitting to
+  firmware PCs. `f89c94` remains the verified firmware anchor for PATH B; the
+  design is not fully PC-independent yet.
+
+### 8.5 Architecture cleanup completed
+
+Completed cleanup:
+
+- Stateless helper definitions were extracted from `asr10_boot.cpp` to
+  `asr10_boot_defs.h` and `asr10_boot_defs.cpp`.
+- The visible `Z` parser artifact was removed by neutral marker/payload
+  consumption for `0x77`-`0x7c`.
+- The visible leading `F` artifact was removed for the verified PATH B
+  direct-text prefix context.
+- The panel parser entry point is now `panel_receive_byte(u8 data)`.
+- The parser-facing API no longer accepts firmware PCs or ring provenance.
+
+Remaining technical debt:
+
+- The hand-written DUART shadow model is still authoritative.
+- The Path B `0x66` handling still depends on a temporary upstream provenance
+  bridge.
+- PATH A framing remains unresolved; ring emptiness is not a logical item
+  boundary and `$03bc == 0` proves only `RING_EMPTY_ONLY`.
+- Panel RX/autorespond, IRQ6, IACK, timer/counter behavior, and status-register
+  behavior are still part of the research harness rather than clean device
+  architecture.
+- Physical panel semantics remain unresolved.
+
+### 8.6 Current project status
+
+Finished:
+
+- The established V161 baseline reaches the post-scan idle state with visible
+  `NO INST OR BANK FILES`.
+- The historical `Z` parser artifact is fixed.
+- The historical leading `F` parser artifact is fixed for the verified PATH B
+  direct-text context.
+- The panel parser is behind a byte-only receive boundary.
+- The stateless helper extraction is complete.
+
+Remaining independent work tracks:
+
+1. Remove the temporary Path B provenance bridge.
+   Determine whether byte-stream framing alone can safely recognize the
+   verified direct-text frame, or whether this should wait for real DUART TXB
+   callback placement.
+
+2. Migrate from the hand-written DUART shadow to a real MAME
+   `mc68681_device`/`scn2681_device`.
+   This must be done in small, separately validated steps because timer,
+   IRQ6/IACK, RX/autorespond, SRB/RHRB, and TX timing can all affect boot.
+
+3. Continue reverse engineering of PATH A and physical panel semantics.
+   Semantic binding requires panel-controller firmware, service documentation,
+   or direct hardware capture. For periodic phase-3 sequences, hardware LOAD
+   indicator timing must be measured independently before any semantic binding.
+
+### 8.7 Lessons learned
+
+- Parser artifacts can look like firmware text. The visible `Z` and leading
+  `F` were both parser artifacts, not proven user-facing firmware strings.
+- Byte-pattern searches are not enough. The trusted `0x66` evidence came from
+  verified callers and transmit paths, not from byte value alone.
+- Execution provenance is not protocol semantics. PC and ring provenance can
+  justify a temporary bridge, but should not become the parser's long-term
+  protocol grammar.
+- Evidence levels matter. Historical observations, superseded interpretations,
+  strong inferences, and proven behavior need to stay separated.
+- Transport and parser boundaries matter. PATH A marker/payload transport,
+  PATH B direct text transport, and visible display rendering are separate
+  concerns and should remain architecturally separate.

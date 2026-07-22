@@ -1,6 +1,6 @@
 # ASR-10 Current Status
 
-**Status snapshot date: 2026-07-21.** This is a dated snapshot of a research
+**Status snapshot date: 2026-07-22.** This is a dated snapshot of a research
 harness, not a permanent architecture description. If you are reading this
 long after the date above, verify claims against the source and the newer
 entries in `panel-protocol.md` / `documentation-audit.md` before trusting it.
@@ -77,7 +77,7 @@ state, nor that other floppy images, SCSI, or panel input paths behave
 correctly.**
 
 The host-side front-panel transport is mapped in detail in
-`panel-protocol.md` §7:
+`panel-protocol.md` §7-§8:
 
 - a software `TRAP #$A` (not a hardware interrupt, and not the pre-existing,
   separate Line-A mechanism) reaches a runtime-installed exception-vector-42
@@ -85,8 +85,18 @@ The host-side front-panel transport is mapped in detail in
   Channel B;
 - a marker+payload byte encoder with three D0-selected classes is fully
   characterized (exact marker matrix known);
-- the specific `7b,0b,7a,0b` post-scan sequence and the visible "Z" artifact
-  are both explained down to the exact static source record involved.
+- the specific `7b,0b,7a,0b` post-scan sequence and the historical visible
+  "Z" artifact are both explained down to the exact static source record
+  involved;
+- the separate Path B direct-text frame beginning with `0x66` is locally
+  verified for routine `f89c94`, and the historical leading `F` artifact in
+  `FNO INST OR BANK FILES` is explained;
+- the bounded panel TX lineage capture proved the two observed `f89c94`
+  direct-text invocations were uninterrupted logical items, and that the old
+  raw `0x66...NUL` byte-stream framing failed because a later `0x66` came from
+  the independent ring-drain producer;
+- the current visible baseline is `NO INST OR BANK FILES`, with no leading
+  `F` and no final `Z` parser artifact.
 
 **`$c98`'s role as a selection index is a strong inference, not a proven
 fact.** The external front-panel controller that consumes this protocol is
@@ -115,23 +125,55 @@ boot stages use fully modelled real devices."
 
 ## 5. Diagnostics
 
-The temporary panel-investigation instrumentation
-(`ASR10_EXPERIMENT_PANEL_ENCODER_TRACE` and its supporting taps/one-shot code
-dumps) has been fully removed from `asr10_boot.cpp`. The file is
-byte-identical to accepted HEAD `da1b4c385256404fe9cd597837be45bf19cbf742`.
-The complete removed diagnostic diff is archived outside the repository (see
-`documentation-audit.md` for the exact path if you need to resume that
-specific investigation).
+The temporary panel-investigation instrumentation used to prove the PATH A
+marker/payload encoder and PATH B direct-text prefix has been removed or kept
+out of the parser path. The current parser architecture is:
+
+```text
+68k firmware
+    |
+    v
+hand-written DUART shadow
+    |
+    v
+Channel B THRB
+    |
+    v
+temporary upstream Path B provenance bridge
+    |
+    v
+panel_receive_byte()
+    |
+    v
+panel protocol parser
+    |
+    v
+visible display state
+```
+
+The temporary bridge lives before `panel_receive_byte()` and exists only to
+preserve the locally verified `0x66` direct-text-prefix behavior while the
+driver is still attached to the hand-written DUART/register-shadow boundary.
+The parser-facing entry point accepts only the transmitted byte.
 
 ## 6. Smallest next step, if panel work resumes
 
-Disassemble and understand `0x3c7c` (the routine that computes `$c98`,
-invoked with `D0=7` from a dispatcher at `0x3ae0`). This is the one
-remaining piece needed to move `$c98`'s "selection index" role from strong
-inference to proven. This was deliberately not investigated in the round
-that produced this document.
+Remaining work is split into independent tracks:
 
-Beyond that, physical panel semantics require external evidence (panel
-controller firmware dump, board-level chip identification, or a
-logic-analyzer capture of the real Channel-B wire) that this repository does
-not currently have.
+1. Remove the temporary Path B provenance bridge.
+   The next supported direction is a raw-byte path with a transport adapter
+   that preserves firmware-side submission identity. Do not treat this as a
+   fully PC-independent design yet: `f89c94` remains the verified firmware
+   anchor for Path B.
+
+2. Migrate from the hand-written DUART shadow to a real MAME
+   `mc68681_device`/`scn2681_device`. This remains deferred until the panel
+   transport cleanup is complete and should not be a single large rewrite:
+   timer/counter, IRQ6/IACK, RX/autorespond, SRB/RHRB, and TX timing all need
+   independent validation.
+
+3. Continue reverse engineering PATH A and physical panel semantics.
+   Disassembling `0x3c7c` may move `$c98` from strong inference to proven
+   selection-index behavior, but physical panel semantics still require
+   external evidence: panel-controller firmware, service documentation, or
+   direct hardware capture.
