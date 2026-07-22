@@ -128,6 +128,7 @@ private:
 	static constexpr u64 ASR10_PANEL_L_MAX_CYCLES_AFTER_LATER_START = 20'000'000;
 
 	static constexpr u32 ASR10_DISPLAY_LENGTH = 22;
+	static constexpr u32 ASR10_PANEL_DESCRIPTOR_TRACE_LIMIT = 64;
 	using trace_region = asr10_boot_defs::trace_region;
 	using trace_slot = asr10_boot_defs::trace_slot;
 	enum class panel_byte_role : u8
@@ -137,7 +138,6 @@ private:
 		DIRECT_TEXT_PREFIX,
 		TEXT_PAYLOAD
 	};
-
 	static u16 ascii_to_14seg(u8 character) { return asr10_boot_defs::ascii_to_14seg(character); }
 
 	required_device<m68000_device> m_maincpu;
@@ -237,6 +237,26 @@ private:
 	u32 m_panel_diag_ring_control_role_count = 0;
 	u32 m_panel_diag_direct_text_begin_count = 0;
 	u32 m_panel_diag_direct_text_end_count = 0;
+	static constexpr u8 PANEL_DESCRIPTOR_STACK_LIMIT = 16;
+	std::array<u32, PANEL_DESCRIPTOR_STACK_LIMIT> m_panel_descriptor_stack_raw_a2{};
+	std::array<u32, PANEL_DESCRIPTOR_STACK_LIMIT> m_panel_descriptor_stack_identity{};
+	std::array<u32, PANEL_DESCRIPTOR_STACK_LIMIT> m_panel_descriptor_stack_entry_pc{};
+	u8 m_panel_descriptor_stack_depth = 0;
+	u8 m_panel_descriptor_stack_overflow_depth = 0;
+	u8 m_panel_descriptor_max_depth = 0;
+	u32 m_panel_diag_descriptor_entry_count = 0;
+	u32 m_panel_diag_descriptor_return_count = 0;
+	u32 m_panel_diag_descriptor_outer_entry_count = 0;
+	u32 m_panel_diag_descriptor_outer_return_count = 0;
+	u32 m_panel_diag_descriptor_nested_entry_count = 0;
+	u32 m_panel_diag_descriptor_nested_return_count = 0;
+	u32 m_panel_diag_descriptor_unmatched_return_count = 0;
+	u32 m_panel_diag_descriptor_stack_overflow_count = 0;
+	u32 m_panel_diag_path_a_begin_count = 0;
+	u32 m_panel_diag_path_a_end_count = 0;
+	u32 m_panel_diag_path_a_identity_match_count = 0;
+	u32 m_panel_diag_path_a_identity_mismatch_count = 0;
+	u32 m_panel_diag_descriptor_trace_count = 0;
 	// filesystem-browser-map.md 4.15: display-timeline reconstruction from
 	// reset, not gated on the (too-late) f880fc landmark. Tracks the PC of
 	// the byte that started the current message and the PC of the most
@@ -762,7 +782,13 @@ private:
 	void note_panel_ring_store(u32 pc, u32 ring_address, u8 byte);
 	panel_byte_role consume_panel_ring_role(u32 pc);
 	bool is_bounded_panel_ring_control_candidate(u32 pc, u32 return_pc, u32 previous_pc) const;
+	void maincpu_instruction_hook(u32 pc);
+	void note_panel_descriptor_entry(u32 pc);
+	void note_panel_descriptor_return(u32 pc);
+	static u32 normalize_panel_descriptor_identity(u32 address);
+	void panel_descriptor_trace(const char *event, u32 pc, u32 raw_a2, u32 identity, u8 depth_before, u8 depth_after, const char *classification);
 	void panel_submission_trace(const char *event, const char *kind, u8 data = 0);
+	void panel_submission_summary();
 	void log_cpu_context(u32 pc);
 	void log_fdc_04b0_context(bool write, u16 mem_mask);
 	void log_fdc_cmd0e_summary();
@@ -967,6 +993,7 @@ void asr10_boot_state::machine_start()
 	m_synth_68302_timer_irq_timer = timer_alloc(FUNC(asr10_boot_state::synth_68302_timer_irq), this);
 	m_panel_autorespond_timer = timer_alloc(FUNC(asr10_boot_state::panel_autorespond_fire), this);
 	m_duart_counter_timer = timer_alloc(FUNC(asr10_boot_state::duart_counter_terminal_count), this);
+	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::panel_submission_summary, this));
 	// Temporary diagnostic: the address immediately past the mapped DUART
 	// block (0xfc4820) is backed by plain .ram() with no logging. Tap it
 	// read-only (no data/behavior change) so a START/STOP command issued
@@ -1472,6 +1499,25 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_panel_diag_ring_control_role_count));
 	save_item(NAME(m_panel_diag_direct_text_begin_count));
 	save_item(NAME(m_panel_diag_direct_text_end_count));
+	save_item(NAME(m_panel_descriptor_stack_raw_a2));
+	save_item(NAME(m_panel_descriptor_stack_identity));
+	save_item(NAME(m_panel_descriptor_stack_entry_pc));
+	save_item(NAME(m_panel_descriptor_stack_depth));
+	save_item(NAME(m_panel_descriptor_stack_overflow_depth));
+	save_item(NAME(m_panel_descriptor_max_depth));
+	save_item(NAME(m_panel_diag_descriptor_entry_count));
+	save_item(NAME(m_panel_diag_descriptor_return_count));
+	save_item(NAME(m_panel_diag_descriptor_outer_entry_count));
+	save_item(NAME(m_panel_diag_descriptor_outer_return_count));
+	save_item(NAME(m_panel_diag_descriptor_nested_entry_count));
+	save_item(NAME(m_panel_diag_descriptor_nested_return_count));
+	save_item(NAME(m_panel_diag_descriptor_unmatched_return_count));
+	save_item(NAME(m_panel_diag_descriptor_stack_overflow_count));
+	save_item(NAME(m_panel_diag_path_a_begin_count));
+	save_item(NAME(m_panel_diag_path_a_end_count));
+	save_item(NAME(m_panel_diag_path_a_identity_match_count));
+	save_item(NAME(m_panel_diag_path_a_identity_mismatch_count));
+	save_item(NAME(m_panel_diag_descriptor_trace_count));
 	save_item(NAME(m_panel_msg_first_pc));
 	save_item(NAME(m_panel_msg_last_pc));
 	save_item(NAME(m_seen_loading_system_prompt));
@@ -1670,6 +1716,10 @@ void asr10_boot_state::machine_start()
 
 void asr10_boot_state::machine_reset()
 {
+	if (m_panel_submission_trace_enabled && m_panel_descriptor_stack_depth)
+		logerror("ASR10_PANEL_DESCRIPTOR event=reset_nonempty_stack depth=%u overflow_depth=%u\n",
+			m_panel_descriptor_stack_depth, m_panel_descriptor_stack_overflow_depth);
+
 	m_high_alias_enabled = false;
 	m_lowmem_overlay_enabled = false;
 	m_seen_insert_disk_prompt = false;
@@ -1681,6 +1731,25 @@ void asr10_boot_state::machine_reset()
 	m_panel_diag_ring_control_role_count = 0;
 	m_panel_diag_direct_text_begin_count = 0;
 	m_panel_diag_direct_text_end_count = 0;
+	m_panel_descriptor_stack_raw_a2 = {};
+	m_panel_descriptor_stack_identity = {};
+	m_panel_descriptor_stack_entry_pc = {};
+	m_panel_descriptor_stack_depth = 0;
+	m_panel_descriptor_stack_overflow_depth = 0;
+	m_panel_descriptor_max_depth = 0;
+	m_panel_diag_descriptor_entry_count = 0;
+	m_panel_diag_descriptor_return_count = 0;
+	m_panel_diag_descriptor_outer_entry_count = 0;
+	m_panel_diag_descriptor_outer_return_count = 0;
+	m_panel_diag_descriptor_nested_entry_count = 0;
+	m_panel_diag_descriptor_nested_return_count = 0;
+	m_panel_diag_descriptor_unmatched_return_count = 0;
+	m_panel_diag_descriptor_stack_overflow_count = 0;
+	m_panel_diag_path_a_begin_count = 0;
+	m_panel_diag_path_a_end_count = 0;
+	m_panel_diag_path_a_identity_match_count = 0;
+	m_panel_diag_path_a_identity_mismatch_count = 0;
+	m_panel_diag_descriptor_trace_count = 0;
 	{
 		const char *const panel_submission_trace = std::getenv("ASR10_DIAG_PANEL_SUBMISSIONS");
 		m_panel_submission_trace_enabled =
@@ -5190,6 +5259,132 @@ bool asr10_boot_state::is_bounded_panel_ring_control_candidate(u32 pc, u32 retur
 }
 
 
+void asr10_boot_state::maincpu_instruction_hook(u32 pc)
+{
+	pc &= 0x00ffffff;
+
+	if (pc == 0x00f89354)
+		note_panel_descriptor_entry(pc);
+	else if (pc == 0x00f8937c)
+		note_panel_descriptor_return(pc);
+}
+
+
+void asr10_boot_state::note_panel_descriptor_entry(u32 pc)
+{
+	if (machine().side_effects_disabled())
+		return;
+
+	const u32 raw_a2 = u32(m_maincpu->state_int(M68K_A2)) & 0x00ffffff;
+	const u32 identity = normalize_panel_descriptor_identity(raw_a2);
+	const u8 depth_before = m_panel_descriptor_stack_depth;
+	m_panel_diag_descriptor_entry_count++;
+
+	if (m_panel_descriptor_stack_overflow_depth)
+	{
+		m_panel_descriptor_stack_overflow_depth++;
+		m_panel_diag_descriptor_stack_overflow_count++;
+		panel_descriptor_trace("entry_overflow_nested", pc, raw_a2, identity,
+			depth_before, depth_before, "overflow");
+		return;
+	}
+
+	if (depth_before >= PANEL_DESCRIPTOR_STACK_LIMIT)
+	{
+		m_panel_descriptor_stack_overflow_depth = 1;
+		m_panel_diag_descriptor_stack_overflow_count++;
+		panel_descriptor_trace("entry_overflow", pc, raw_a2, identity,
+			depth_before, depth_before, "overflow");
+		return;
+	}
+
+	m_panel_descriptor_stack_raw_a2[depth_before] = raw_a2;
+	m_panel_descriptor_stack_identity[depth_before] = identity;
+	m_panel_descriptor_stack_entry_pc[depth_before] = pc;
+	m_panel_descriptor_stack_depth++;
+	m_panel_descriptor_max_depth = std::max(m_panel_descriptor_max_depth, m_panel_descriptor_stack_depth);
+
+	const bool outer = depth_before == 0;
+	if (outer)
+		m_panel_diag_descriptor_outer_entry_count++;
+	else
+		m_panel_diag_descriptor_nested_entry_count++;
+
+	panel_descriptor_trace("entry", pc, raw_a2, identity, depth_before,
+		m_panel_descriptor_stack_depth, outer ? "outer" : "nested");
+}
+
+
+void asr10_boot_state::note_panel_descriptor_return(u32 pc)
+{
+	if (machine().side_effects_disabled())
+		return;
+
+	const u8 depth_before = m_panel_descriptor_stack_depth;
+	m_panel_diag_descriptor_return_count++;
+
+	if (m_panel_descriptor_stack_overflow_depth)
+	{
+		m_panel_descriptor_stack_overflow_depth--;
+		panel_descriptor_trace("return_overflow", pc, 0, 0, depth_before,
+			depth_before, "overflow");
+		return;
+	}
+
+	if (!depth_before)
+	{
+		m_panel_diag_descriptor_unmatched_return_count++;
+		panel_descriptor_trace("return_unmatched", pc, 0, 0, 0, 0, "unmatched");
+		return;
+	}
+
+	const u32 raw_a2 = m_panel_descriptor_stack_raw_a2[depth_before - 1];
+	const u32 identity = m_panel_descriptor_stack_identity[depth_before - 1];
+	m_panel_descriptor_stack_raw_a2[depth_before - 1] = 0;
+	m_panel_descriptor_stack_identity[depth_before - 1] = 0;
+	m_panel_descriptor_stack_entry_pc[depth_before - 1] = 0;
+	m_panel_descriptor_stack_depth--;
+
+	const bool outer = m_panel_descriptor_stack_depth == 0;
+	if (outer)
+		m_panel_diag_descriptor_outer_return_count++;
+	else
+		m_panel_diag_descriptor_nested_return_count++;
+
+	panel_descriptor_trace("return", pc, raw_a2, identity,
+		depth_before, m_panel_descriptor_stack_depth, outer ? "outer" : "nested");
+}
+
+
+u32 asr10_boot_state::normalize_panel_descriptor_identity(u32 address)
+{
+	const u32 raw = address & 0x00ffffff;
+	return raw < 0x8000 ? 0x00f80000 | raw : raw;
+}
+
+
+void asr10_boot_state::panel_descriptor_trace(const char *event, u32 pc, u32 raw_a2, u32 identity, u8 depth_before, u8 depth_after, const char *classification)
+{
+	if (!m_panel_submission_trace_enabled)
+		return;
+	if (m_panel_diag_descriptor_trace_count >= ASR10_PANEL_DESCRIPTOR_TRACE_LIMIT)
+		return;
+	m_panel_diag_descriptor_trace_count++;
+
+	logerror("ASR10_PANEL_DESCRIPTOR event=%s pc=%06x raw_a2=%06x identity=%06x "
+		"depth_before=%u depth_after=%u class=%s entries=%u returns=%u outer_entry=%u "
+		"outer_return=%u nested_entry=%u nested_return=%u unmatched_return=%u overflow=%u "
+		"path_a_begin=%u path_a_end=%u identity_match=%u identity_mismatch=%u\n",
+		event, pc, raw_a2, identity, depth_before, depth_after, classification,
+		m_panel_diag_descriptor_entry_count, m_panel_diag_descriptor_return_count,
+		m_panel_diag_descriptor_outer_entry_count, m_panel_diag_descriptor_outer_return_count,
+		m_panel_diag_descriptor_nested_entry_count, m_panel_diag_descriptor_nested_return_count,
+		m_panel_diag_descriptor_unmatched_return_count, m_panel_diag_descriptor_stack_overflow_count,
+		m_panel_diag_path_a_begin_count, m_panel_diag_path_a_end_count,
+		m_panel_diag_path_a_identity_match_count, m_panel_diag_path_a_identity_mismatch_count);
+}
+
+
 void asr10_boot_state::panel_submission_trace(const char *event, const char *kind, u8 data)
 {
 	if (!m_panel_submission_trace_enabled)
@@ -5200,6 +5395,30 @@ void asr10_boot_state::panel_submission_trace(const char *event, const char *kin
 		event, kind, data, m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff, m_last_distinct_pc,
 		m_panel_diag_ring_control_role_count, m_panel_diag_direct_text_begin_count,
 		m_panel_diag_direct_text_end_count);
+}
+
+
+void asr10_boot_state::panel_submission_summary()
+{
+	if (!m_panel_submission_trace_enabled)
+		return;
+
+	logerror("ASR10_PANEL_SUBMISSION_SUMMARY exact_descriptor_entries=%u exact_descriptor_returns=%u "
+		"outer_entries=%u outer_returns=%u nested_entries=%u nested_returns=%u max_depth=%u "
+		"stack_depth=%u overflow_depth=%u unmatched_returns=%u stack_overflows=%u "
+		"path_a_begin=%u path_a_end=%u identity_match=%u identity_mismatch=%u "
+		"descriptor_detail_logs=%u descriptor_detail_limit=%u ring_control_roles=%u "
+		"direct_begin=%u direct_end=%u\n",
+		m_panel_diag_descriptor_entry_count, m_panel_diag_descriptor_return_count,
+		m_panel_diag_descriptor_outer_entry_count, m_panel_diag_descriptor_outer_return_count,
+		m_panel_diag_descriptor_nested_entry_count, m_panel_diag_descriptor_nested_return_count,
+		m_panel_descriptor_max_depth, m_panel_descriptor_stack_depth,
+		m_panel_descriptor_stack_overflow_depth, m_panel_diag_descriptor_unmatched_return_count,
+		m_panel_diag_descriptor_stack_overflow_count, m_panel_diag_path_a_begin_count,
+		m_panel_diag_path_a_end_count, m_panel_diag_path_a_identity_match_count,
+		m_panel_diag_path_a_identity_mismatch_count, m_panel_diag_descriptor_trace_count,
+		ASR10_PANEL_DESCRIPTOR_TRACE_LIMIT, m_panel_diag_ring_control_role_count,
+		m_panel_diag_direct_text_begin_count, m_panel_diag_direct_text_end_count);
 }
 
 
@@ -10174,6 +10393,7 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	M68000(config, m_maincpu, XTAL(16'000'000)); // 68000-compatible stand-in for likely MC68302-family board
 	m_maincpu->set_addrmap(AS_PROGRAM, &asr10_boot_state::mem_map);
 	m_maincpu->set_addrmap(m68000_base_device::AS_CPU_SPACE, &asr10_boot_state::cpu_space_map);
+	m_maincpu->set_instruction_execute_callback(FUNC(asr10_boot_state::maincpu_instruction_hook));
 	m_maincpu->set_rte_callback(FUNC(asr10_boot_state::log_f87f96_queue_rte));
 
 	UPD72069(config, m_fdc, XTAL(16'000'000)); // clock unknown; placeholder for boot tracing

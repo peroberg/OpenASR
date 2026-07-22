@@ -355,19 +355,36 @@ the separate selector/status pair emitted by `f8938e`; the `0x08` byte is not
 part of the following control-plus-descriptor submission and must not be
 attached to it.
 
-Implementation note: exact PATH A descriptor-submission begin/end is not
-implemented in the harness. The attempted sampled PC observer was rejected
-because it missed the outer descriptor `f81190` and first observed nested
-descriptor `f81f16`. The current retained implementation only carries bounded
-per-byte roles to the byte receiver: PATH B `DirectText` roles, neutral
+Implementation note: exact descriptor invocation tracking is implemented with
+an optional generic M68000 instruction-execute callback. The callback fires
+before instruction dispatch, without requiring the MAME debugger. The ASR-10
+harness filters only `f89354` entry and `f8937c` return and maintains a real
+recursive descriptor stack. There is no sampled descriptor PC polling and no
+timeout-based descriptor end.
+
+The descriptor observer is still separate from panel byte-role delivery. The
+current retained implementation carries PATH B `DirectText` roles, neutral
 marker/payload roles, and a bounded ring-control role at the validated ring
 enqueue path. That ring-control role is conservative and may classify ring
 protocol bytes that are not proven descriptor-control submissions; it is not a
-general proof of PATH A descriptor association.
+general proof of PATH A descriptor association. Correct bounded display output
+does not prove general panel-transport correctness.
 
-Future PATH A work requires a narrow exact M68000 instruction-execute hook for
-`f89354` entry and `f8937c` return. Correct bounded display output does not
-prove general panel-transport correctness.
+Observed runtime facts from the bounded V161 diagnostic run:
+
+- exact `f89354` entries / `f8937c` returns: `12 / 12`
+- outer descriptor entries / returns: `3 / 3`
+- nested descriptor entries / returns: `9 / 9`
+- maximum descriptor stack depth: `2`
+- unmatched returns / stack overflows: `0 / 0`
+- PATH A logical begin / end: `0 / 0`
+- PATH A identity match / mismatch: `0 / 0`
+- PATH B `DirectText` begin / end: `2 / 2`
+
+The validated `TUNING KBD - HANDS OFF` example was observed exactly as outer
+descriptor `f81190`, then nested `f81676`, then nested `f81f16`. PATH A logical
+begin/end remains zero because the harness does not yet bind bounded
+ring-control roles to descriptor identities.
 
 ### 7.8 Superseded conclusions
 
@@ -430,10 +447,12 @@ roles:
 - bounded ring-control bytes from the validated ring enqueue path. This role is
   conservative and is not a complete PATH A descriptor-submission model.
 
-It is still firmware anchored (`f89c94` is the verified PATH B anchor), and
-PATH A descriptor observation is deferred until an exact instruction hook
-exists. A transient ring index is used only to carry the adapter-assigned byte
-role from enqueue to drain; it is not treated as protocol semantics.
+It is still firmware anchored (`f89c94` is the verified PATH B anchor). Exact
+PATH A descriptor invocation observation is now available through the M68000
+instruction hook, but descriptor observation and byte-role classification remain
+separate until a structural control-to-descriptor association is proven. A
+transient ring index is used only to carry the adapter-assigned byte role from
+enqueue to drain; it is not treated as protocol semantics.
 
 `panel_receive_byte(u8 data)` is the parser-facing entry point for Channel B
 panel bytes. It accepts only the transmitted byte. The parser still records the
@@ -473,11 +492,14 @@ selection, blink, or display-half meaning is proven. No inverse decoder or
 panel-controller firmware is available in this repository.
 
 A separate proven PATH A sender-side form is the control-plus-descriptor
-submission described in Section 7.7. The current harness does not yet implement
-its exact descriptor begin/end boundary. It only tags the validated ring
-control/protocol producer path as non-printable control metadata, while
-descriptor-expanded bytes emitted through TRAP #$B remain text payload. This
-does not assign global meaning to the control byte.
+submission described in Section 7.7. The current harness observes exact
+descriptor invocation entry/return with a recursive stack, but the retained
+byte-role behavior still only tags the validated ring control/protocol producer
+path as non-printable control metadata. Descriptor-expanded bytes emitted
+through TRAP #$B remain text payload. This does not assign global meaning to the
+control byte or prove every bounded ring-control byte is descriptor-associated.
+The exact observer proves descriptor nesting and return balance; it does not
+change ring/THRB byte order.
 
 #### PATH B: direct-text transport
 
@@ -619,8 +641,11 @@ conflated with older parser-artifact observations.
 - The descriptor NUL terminator is consumed by firmware and is not serialized.
 - The `0x74 0x08` selector/status pair before the `0x66 "TUNING..."` sequence
   is separate traffic and is not part of that text submission.
-- The sender-side `f89354` return boundary is proven in firmware, but exact
-  harness observation of `f89354`/`f8937c` is deferred.
+- Exact `f89354` entry and `f8937c` return observation is implemented with an
+  optional M68000 instruction-execute callback.
+- The callback observes descriptor execution before instruction dispatch; the
+  ASR-10 harness maintains a recursive descriptor stack and does not use sampled
+  descriptor PC polling.
 - Sampled PC polling was rejected because it missed outer descriptor `f81190`
   and first observed nested descriptor `f81f16`.
 - The current parser state produces visible `NO INST OR BANK FILES` for the
@@ -655,8 +680,9 @@ conflated with older parser-artifact observations.
   structure.
 - The original high-level producer or selection condition for every observed
   ring-drained `0x66` frame.
-- Whether PATH A logical item boundaries can be recovered upstream from the
-  encoder, marker/payload state, or producer invocation.
+- Whether the exact descriptor invocation stack can be structurally associated
+  with every bounded ring-control producer without overfitting to current boot
+  traffic.
 - The exact front-panel controller identity and firmware behavior.
 - Authentic panel ACK/status vocabulary and timing.
 - How to remove the current temporary Path B bridge without overfitting to
@@ -684,12 +710,12 @@ Remaining technical debt:
 - The hand-written DUART shadow model is still authoritative.
 - The byte-role adapter still uses verified firmware anchors and is not a real
   external panel-controller model.
-- PATH A descriptor-control association is deferred; the retained ring-control
-  role is bounded to current producer classification and is not a complete
-  logical-submission model.
-- Exact descriptor-depth observation needs a narrow M68000 instruction-execute
-  hook. Correct bounded display output does not prove general panel-transport
-  correctness.
+- PATH A descriptor-control association is still deferred; the retained
+  ring-control role is bounded to current producer classification and is not a
+  complete logical-submission model.
+- The exact descriptor-depth observer is diagnostic/architectural support, not
+  a complete external panel-controller model. Correct bounded display output
+  does not prove general panel-transport correctness.
 - Path B is content-observed at source NUL and statically equivalent to normal
   `f89c94` completion for the analyzed path.
 - Most PATH A physical semantics remain unresolved; ring emptiness is not a

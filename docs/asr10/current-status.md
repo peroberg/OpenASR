@@ -164,21 +164,34 @@ receiver. The independently retained boundaries are:
 The adapter does not give global meaning to byte `0x66`, does not use ring
 emptiness as framing, and does not infer PATH B from a raw `0x66...NUL` byte
 scan. The parser-facing entry point accepts only the transmitted byte; byte
-roles are supplied upstream. Sampled PC polling was rejected for PATH A
-descriptor begin/end because it missed the outer descriptor `f81190` and first
-observed nested descriptor `f81f16`. Exact PATH A descriptor association remains
-deferred until a narrow M68000 instruction-execute hook can observe `f89354`
-entry and `f8937c` return exactly.
+roles are supplied upstream.
+
+Exact descriptor invocation tracking is now available through an optional
+generic M68000 instruction-execute callback wired only for this ASR-10 CPU
+instance. The callback fires before instruction dispatch and the ASR-10 harness
+filters it to `f89354` entry and `f8937c` return, maintaining a recursive
+descriptor stack without PC polling, timer acceleration, or timeout-based
+semantic ends. This observes descriptor lifecycles exactly, but it does not by
+itself prove that every bounded ring-control producer is semantically part of a
+PATH A descriptor submission.
+
+In the bounded V161 validation run, exact descriptor tracking observed
+`f89354` entries and `f8937c` returns balanced at `12 / 12`. The validated
+`f81190` outer descriptor was observed before nested `f81676` and `f81f16`;
+maximum observed depth was 2 and final stack depth was 0. Exact descriptor
+tracking reported 3 outer entries / 3 outer returns and 9 nested entries / 9
+nested returns, but PATH A logical begin/end remains `0 / 0` because no stored
+control-to-descriptor identity binding is implemented yet. The correct bounded
+display result does not prove complete panel protocol correctness.
 
 ## 6. Smallest next step, if panel work resumes
 
 Remaining work is split into independent tracks:
 
-1. Implement exact PATH A descriptor observation using a narrow M68000
-   instruction-execute hook. `f89354` entry and `f8937c` return are proven
-   firmware boundaries, but they are not currently observed exactly by the
-   harness. `f89c94` remains the verified firmware anchor for PATH B; the design
-   is not yet fully PC-independent.
+1. Use the exact descriptor invocation stack to prove or reject a structural
+   binding between bounded ring-control submissions and outer descriptor
+   expansions. `f89c94` remains the verified firmware anchor for PATH B; the
+   design is not yet fully PC-independent.
 
 2. Migrate from the hand-written DUART shadow to a real MAME
    `mc68681_device`/`scn2681_device`. This remains deferred until the panel
