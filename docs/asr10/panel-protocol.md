@@ -301,7 +301,75 @@ control/frame prefix, not as proven text and not as a proven control command.
 Parser handling must be bound to the verified direct-text-frame context, not to
 byte value alone.
 
-### 7.7 Superseded conclusions
+### 7.7 TRAP ABI and descriptor expansion boundary (2026-07-22) [STAT]+[DYN]
+
+Two software TRAP paths feed the ring side of the Channel B panel transport:
+
+- `TRAP #$A` is a single-byte panel control/protocol submission ABI. It reaches
+  the `f89a5a`/`f89a72` enqueue path with `D2` already loaded by the caller.
+- `TRAP #$B` is a descriptor literal/text emission ABI. It reaches the
+  `f89a34` A2 string loop, which emits printable bytes through the same
+  `f89a72` enqueue path until the source string NUL.
+
+The descriptor expander at `f89354` has this proven grammar:
+
+```text
+0x00
+    terminator for the current descriptor; not serialized
+
+first byte 0x01-0x1f or 0x80-0xff
+    16-bit descriptor pointer; recursively expand target; advance parent A2 by 2
+
+first byte 0x20-0x7f
+    inline literal/text path; emitted through TRAP #B
+```
+
+Descriptor recursion is structural in firmware. Entry to `f89354` increments
+descriptor depth; the sole `f89354` RTS is at `f8937c` and decrements it. Only
+the depth transition `0 -> 1` begins an outer descriptor expansion, and only the
+transition `1 -> 0` ends that outer expansion. Nested descriptors do not create
+separate logical panel submissions.
+
+The first fully proven PATH A control-plus-descriptor submission has this
+sender-side shape:
+
+```text
+TRAP #$A single control/protocol byte
+same continuation enters outer f89354 descriptor expansion
+TRAP #$B emits descriptor-expanded text
+outermost f89354 return ends the logical submission
+```
+
+The captured runtime example used control byte `0x66` followed by descriptor `0x1190`,
+which expanded to:
+
+```text
+0x1676 -> "TUNING "
+0x1f16 -> "KBD "
+inline  -> "- HANDS OFF"
+```
+
+The descriptor NUL terminator is consumed by firmware and is never serialized
+through the ring or THRB. The immediately preceding ring bytes `0x74 0x08` are
+the separate selector/status pair emitted by `f8938e`; the `0x08` byte is not
+part of the following control-plus-descriptor submission and must not be
+attached to it.
+
+Implementation note: exact PATH A descriptor-submission begin/end is not
+implemented in the harness. The attempted sampled PC observer was rejected
+because it missed the outer descriptor `f81190` and first observed nested
+descriptor `f81f16`. The current retained implementation only carries bounded
+per-byte roles to the byte receiver: PATH B `DirectText` roles, neutral
+marker/payload roles, and a bounded ring-control role at the validated ring
+enqueue path. That ring-control role is conservative and may classify ring
+protocol bytes that are not proven descriptor-control submissions; it is not a
+general proof of PATH A descriptor association.
+
+Future PATH A work requires a narrow exact M68000 instruction-execute hook for
+`f89354` entry and `f8937c` return. Correct bounded display output does not
+prove general panel-transport correctness.
+
+### 7.8 Superseded conclusions
 
 - TRAP #$A is Line-A / exception vector 10 (it is vector 42; Line-A remains a
   separate, pre-existing mechanism at `f882ca`).
@@ -321,10 +389,11 @@ byte value alone.
 ## 8. Current parser and architecture snapshot (2026-07-22)
 
 This section is the stable reference point after the marker/payload parser
-correction, the bounded Path B direct-text-prefix correction, and the
-`panel_receive_byte()` boundary refactor. Earlier sections preserve the
-historical observations that led here; when they conflict with this section,
-treat this section as the current understanding.
+correction, the bounded Path B direct-text-prefix correction, the
+`panel_receive_byte()` boundary refactor, and the retained panel byte-role
+adapter. Earlier sections preserve the historical observations that led here;
+when they conflict with this section, treat this section as the current
+understanding.
 
 ### 8.1 Current architecture
 
@@ -341,7 +410,7 @@ hand-written DUART shadow
 Channel B THRB write at FC4817
     |
     v
-temporary upstream bridge
+panel byte-role adapter
     |
     v
 panel_receive_byte(u8 data)
@@ -353,25 +422,29 @@ panel protocol parser
 visible display state
 ```
 
-The temporary upstream bridge lives in `asr10_boot.cpp` immediately before the
-call to `panel_receive_byte()`, with supporting ring provenance tracked by
-`note_panel_direct_text_prefix_ring_store()` and consumed by
-`consume_panel_direct_text_prefix()`. It exists only to preserve the verified
-local Path B behavior while the driver is still attached to a firmware/register
-shadow boundary instead of a real DUART TXB byte/serial boundary. It is not a
-protocol semantic rule and must be removed or replaced when byte-stream framing
-or real DUART wiring can provide the boundary directly.
+The panel byte-role adapter lives in `asr10_boot.cpp` immediately before the
+call to `panel_receive_byte()`. It classifies only independently retained byte
+roles:
+
+- PATH B `DirectText`: one dynamic `f89c94` invocation.
+- bounded ring-control bytes from the validated ring enqueue path. This role is
+  conservative and is not a complete PATH A descriptor-submission model.
+
+It is still firmware anchored (`f89c94` is the verified PATH B anchor), and
+PATH A descriptor observation is deferred until an exact instruction hook
+exists. A transient ring index is used only to carry the adapter-assigned byte
+role from enqueue to drain; it is not treated as protocol semantics.
 
 `panel_receive_byte(u8 data)` is the parser-facing entry point for Channel B
-panel bytes. It accepts only the transmitted byte. It no longer accepts a
-firmware PC, return PC, ring index, ring address, or firmware routine identity.
-The parser still records the current PC internally for existing diagnostics and
-milestone attribution, but protocol branching is not based on PC in
-`panel_receive_byte()`.
+panel bytes. It accepts only the transmitted byte. The parser still records the
+current PC internally for existing diagnostics and milestone attribution, but
+protocol branching in the byte receiver is by upstream byte role, not by raw
+byte value, firmware PC, return PC, ring index, ring address, or firmware
+routine identity.
 
 ### 8.2 Panel transport
 
-#### PATH A: marker/payload transport
+#### PATH A: marker/payload transport and control-plus-descriptor submission
 
 PATH A is the TRAP #$A encoder path described in Section 7. It reads a source
 byte from `(A2)+`, derives `payload = source_byte & 0x7f`, selects one of three
@@ -399,6 +472,13 @@ Known limitations: no marker class, payload, index, color, lamp, cursor,
 selection, blink, or display-half meaning is proven. No inverse decoder or
 panel-controller firmware is available in this repository.
 
+A separate proven PATH A sender-side form is the control-plus-descriptor
+submission described in Section 7.7. The current harness does not yet implement
+its exact descriptor begin/end boundary. It only tags the validated ring
+control/protocol producer path as non-printable control metadata, while
+descriptor-expanded bytes emitted through TRAP #$B remain text payload. This
+does not assign global meaning to the control byte.
+
 #### PATH B: direct-text transport
 
 PATH B is a separate direct transmit mechanism on DUART Channel B. It is not
@@ -414,7 +494,7 @@ NUL-terminated text payload
 ```
 
 The current parser correction handles the verified prefix only when the
-temporary upstream bridge has identified the trusted direct-text-frame context.
+structural adapter has identified the trusted `f89c94` direct-text invocation.
 The following NUL-terminated payload is still rendered as text.
 
 Evidence boundary: this proves that `0x66` is a local prefix before a
@@ -498,11 +578,12 @@ Current visible display:
 NO INST OR BANK FILES
 ```
 
-Why it is now produced: PATH A markers/payloads are consumed neutrally, and the
-verified PATH B `0x66` prefix is consumed by the temporary upstream bridge before
-the byte-only panel parser renders the following payload. The decoded console
-or VFD text "NO INST OR BANK FILES" should not be conflated with older
-parser-artifact observations.
+Why it is now produced: PATH A markers/payloads are consumed neutrally, PATH A
+control-plus-descriptor control bytes are treated as control metadata rather
+than text, and the verified PATH B `0x66` prefix is consumed in the structural
+DirectText context before the byte-only panel parser renders the following
+payload. The decoded console or VFD text "NO INST OR BANK FILES" should not be
+conflated with older parser-artifact observations.
 
 ### 8.4 Evidence inventory
 
@@ -529,6 +610,19 @@ parser-artifact observations.
   means only that the ring is empty.
 - The visible `F` in `FNO INST OR BANK FILES` was caused by treating the
   verified PATH B `0x66` prefix as ASCII.
+- TRAP #$A also has a proven single-byte control/protocol submission role for
+  control-plus-descriptor PATH A traffic.
+- TRAP #$B emits descriptor-expanded literal/text bytes through the A2 string
+  loop.
+- `f89354` recursively expands descriptors; only the outermost return ends the
+  logical descriptor submission.
+- The descriptor NUL terminator is consumed by firmware and is not serialized.
+- The `0x74 0x08` selector/status pair before the `0x66 "TUNING..."` sequence
+  is separate traffic and is not part of that text submission.
+- The sender-side `f89354` return boundary is proven in firmware, but exact
+  harness observation of `f89354`/`f8937c` is deferred.
+- Sampled PC polling was rejected because it missed outer descriptor `f81190`
+  and first observed nested descriptor `f81f16`.
 - The current parser state produces visible `NO INST OR BANK FILES` for the
   established V161 baseline.
 - `panel_receive_byte(u8 data)` is the parser-facing entry point for
@@ -578,17 +672,28 @@ Completed cleanup:
 - The visible `Z` parser artifact was removed by neutral marker/payload
   consumption for `0x77`-`0x7c`.
 - The visible leading `F` artifact was removed for the verified PATH B
-  direct-text prefix context.
+  direct-text prefix context and for the proven PATH A control-plus-descriptor
+  control byte context.
 - The panel parser entry point is now `panel_receive_byte(u8 data)`.
 - The parser-facing API no longer accepts firmware PCs or ring provenance.
+- The old Path B-only provenance bridge was replaced by per-byte role transport
+  and a small PATH B `DirectText` boundary.
 
 Remaining technical debt:
 
 - The hand-written DUART shadow model is still authoritative.
-- The Path B `0x66` handling still depends on a temporary upstream provenance
-  bridge.
-- PATH A framing remains unresolved; ring emptiness is not a logical item
-  boundary and `$03bc == 0` proves only `RING_EMPTY_ONLY`.
+- The byte-role adapter still uses verified firmware anchors and is not a real
+  external panel-controller model.
+- PATH A descriptor-control association is deferred; the retained ring-control
+  role is bounded to current producer classification and is not a complete
+  logical-submission model.
+- Exact descriptor-depth observation needs a narrow M68000 instruction-execute
+  hook. Correct bounded display output does not prove general panel-transport
+  correctness.
+- Path B is content-observed at source NUL and statically equivalent to normal
+  `f89c94` completion for the analyzed path.
+- Most PATH A physical semantics remain unresolved; ring emptiness is not a
+  logical item boundary and `$03bc == 0` proves only `RING_EMPTY_ONLY`.
 - Panel RX/autorespond, IRQ6, IACK, timer/counter behavior, and status-register
   behavior are still part of the research harness rather than clean device
   architecture.
@@ -601,17 +706,15 @@ Finished:
 - The established V161 baseline reaches the post-scan idle state with visible
   `NO INST OR BANK FILES`.
 - The historical `Z` parser artifact is fixed.
-- The historical leading `F` parser artifact is fixed for the verified PATH B
-  direct-text context.
+- The historical leading `F` parser artifact is fixed for verified structural
+  submission contexts.
 - The panel parser is behind a byte-only receive boundary.
 - The stateless helper extraction is complete.
 
 Remaining independent work tracks:
 
-1. Remove the temporary Path B provenance bridge.
-   Determine whether byte-stream framing alone can safely recognize the
-   verified direct-text frame, or whether this should wait for real DUART TXB
-   callback placement.
+1. Reduce remaining firmware-anchor dependence in the structural
+   panel-submission adapter where evidence supports a stable non-PC boundary.
 
 2. Migrate from the hand-written DUART shadow to a real MAME
    `mc68681_device`/`scn2681_device`.

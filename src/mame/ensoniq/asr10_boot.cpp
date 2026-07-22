@@ -130,6 +130,13 @@ private:
 	static constexpr u32 ASR10_DISPLAY_LENGTH = 22;
 	using trace_region = asr10_boot_defs::trace_region;
 	using trace_slot = asr10_boot_defs::trace_slot;
+	enum class panel_byte_role : u8
+	{
+		SERIAL,
+		RING_CONTROL,
+		DIRECT_TEXT_PREFIX,
+		TEXT_PAYLOAD
+	};
 
 	static u16 ascii_to_14seg(u8 character) { return asr10_boot_defs::ascii_to_14seg(character); }
 
@@ -223,8 +230,13 @@ private:
 	char m_panel_text[PANEL_TEXT_LENGTH]{};
 	u32 m_panel_text_length = 0;
 	u8 m_panel_transport_pending_marker = 0;
-	bool m_panel_direct_text_prefix_pending = false;
-	std::array<u8, 0x40> m_panel_direct_text_prefix_ring{};
+	u8 m_panel_receive_role = u8(panel_byte_role::SERIAL);
+	std::array<u8, 0x40> m_panel_ring_byte_roles{};
+	bool m_panel_direct_text_active = false;
+	bool m_panel_submission_trace_enabled = false;
+	u32 m_panel_diag_ring_control_role_count = 0;
+	u32 m_panel_diag_direct_text_begin_count = 0;
+	u32 m_panel_diag_direct_text_end_count = 0;
 	// filesystem-browser-map.md 4.15: display-timeline reconstruction from
 	// reset, not gated on the (too-late) f880fc landmark. Tracks the PC of
 	// the byte that started the current message and the PC of the most
@@ -747,8 +759,10 @@ private:
 	void dump_repeated_accesses();
 	void panel_receive_byte(u8 data);
 	void flush_panel_text();
-	void note_panel_direct_text_prefix_ring_store(u32 pc, u32 ring_address, u8 byte);
-	bool consume_panel_direct_text_prefix(u32 pc, u8 byte);
+	void note_panel_ring_store(u32 pc, u32 ring_address, u8 byte);
+	panel_byte_role consume_panel_ring_role(u32 pc);
+	bool is_bounded_panel_ring_control_candidate(u32 pc, u32 return_pc, u32 previous_pc) const;
+	void panel_submission_trace(const char *event, const char *kind, u8 data = 0);
 	void log_cpu_context(u32 pc);
 	void log_fdc_04b0_context(bool write, u16 mem_mask);
 	void log_fdc_cmd0e_summary();
@@ -1452,8 +1466,12 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_panel_text));
 	save_item(NAME(m_panel_text_length));
 	save_item(NAME(m_panel_transport_pending_marker));
-	save_item(NAME(m_panel_direct_text_prefix_pending));
-	save_item(NAME(m_panel_direct_text_prefix_ring));
+	save_item(NAME(m_panel_receive_role));
+	save_item(NAME(m_panel_ring_byte_roles));
+	save_item(NAME(m_panel_direct_text_active));
+	save_item(NAME(m_panel_diag_ring_control_role_count));
+	save_item(NAME(m_panel_diag_direct_text_begin_count));
+	save_item(NAME(m_panel_diag_direct_text_end_count));
 	save_item(NAME(m_panel_msg_first_pc));
 	save_item(NAME(m_panel_msg_last_pc));
 	save_item(NAME(m_seen_loading_system_prompt));
@@ -1658,10 +1676,19 @@ void asr10_boot_state::machine_reset()
 
 	m_panel_text_length = 0;
 	m_panel_transport_pending_marker = 0;
-	m_panel_direct_text_prefix_pending = false;
+	m_panel_receive_role = u8(panel_byte_role::SERIAL);
+	m_panel_direct_text_active = false;
+	m_panel_diag_ring_control_role_count = 0;
+	m_panel_diag_direct_text_begin_count = 0;
+	m_panel_diag_direct_text_end_count = 0;
+	{
+		const char *const panel_submission_trace = std::getenv("ASR10_DIAG_PANEL_SUBMISSIONS");
+		m_panel_submission_trace_enabled =
+			panel_submission_trace && panel_submission_trace[0] && panel_submission_trace[0] != '0';
+	}
 	m_display_chars.fill(' ');
 	m_display_position = 0;
-	m_panel_direct_text_prefix_ring.fill(0);
+	m_panel_ring_byte_roles.fill(u8(panel_byte_role::SERIAL));
 
 	set_display_text("----------------------");
 
@@ -3658,7 +3685,7 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 					m_panel_b_last_ring_write_address = byte_address;
 					m_panel_b_last_ring_write_byte = u8(m_lowmem_shadow[offset] >> 8);
 					m_panel_b_last_ring_write_pc = pc;
-					note_panel_direct_text_prefix_ring_store(pc, byte_address, m_panel_b_last_ring_write_byte);
+					note_panel_ring_store(pc, byte_address, m_panel_b_last_ring_write_byte);
 				}
 				if (ACCESSING_BITS_0_7 && byte_address + 1 >= 0x0378 && byte_address + 1 <= 0x03b7)
 				{
@@ -3666,13 +3693,15 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 					m_panel_b_last_ring_write_address = byte_address + 1;
 					m_panel_b_last_ring_write_byte = u8(m_lowmem_shadow[offset]);
 					m_panel_b_last_ring_write_pc = pc;
-					note_panel_direct_text_prefix_ring_store(pc, byte_address + 1, m_panel_b_last_ring_write_byte);
+					note_panel_ring_store(pc, byte_address + 1, m_panel_b_last_ring_write_byte);
 				}
 			}
 			if (byte_address == 0x03bc && ACCESSING_BITS_8_15)
 			{
 				if (pc == 0x00f89a8a)
 				{
+					if (m_panel_b_last_ring_write_valid)
+						note_panel_ring_store(pc, m_panel_b_last_ring_write_address, m_panel_b_last_ring_write_byte);
 					log_panel_b_enqueue(pc, previous, m_lowmem_shadow[offset]);
 					if (panel_reply_experiment_enabled() && u8(m_lowmem_shadow[offset] >> 8) == 0x0e &&
 						lowmem_word(0x03ba) == 0x0379 &&
@@ -4853,11 +4882,37 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 	{
 		const u8 character = u8(data);
 		log_panel_b_thrb(pc, character);
-		// Temporary bridge: classify the verified Path B direct-text prefix
-		// before the byte-only panel receiver. Remove when byte-stream
-		// framing or a real DUART boundary can provide this directly.
-		if (consume_panel_direct_text_prefix(pc, character))
-			m_panel_direct_text_prefix_pending = true;
+		m_panel_receive_role = u8(panel_byte_role::SERIAL);
+		if (!machine().side_effects_disabled())
+		{
+			if (pc == 0x00f89aa4)
+			{
+				m_panel_receive_role = u8(consume_panel_ring_role(pc));
+			}
+			else if (pc == 0x00f89c48)
+			{
+				const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
+				if ((read_stack_long(sp) & 0x00ffffff) == 0x00f89c9a)
+				{
+					m_panel_direct_text_active = true;
+					m_panel_receive_role = u8(panel_byte_role::DIRECT_TEXT_PREFIX);
+					m_panel_diag_direct_text_begin_count++;
+					panel_submission_trace("begin", "DirectText", character);
+				}
+			}
+			else if (pc == 0x00f89cb0 && m_panel_direct_text_active)
+			{
+				m_panel_receive_role = u8(panel_byte_role::TEXT_PAYLOAD);
+				const u32 a2 = u32(m_maincpu->state_int(M68K_A2)) & 0x00ffffff;
+				auto const disable_side_effects = machine().disable_side_effects();
+				if (m_maincpu->space(AS_PROGRAM).read_byte(a2) == 0)
+				{
+					m_panel_diag_direct_text_end_count++;
+					panel_submission_trace("end", "DirectText", character);
+					m_panel_direct_text_active = false;
+				}
+			}
+		}
 		if (!machine().side_effects_disabled() && m_gen_thrb_count < m_gen_thrb_bytes.size())
 			m_gen_thrb_bytes[m_gen_thrb_count++] = character;
 		if (m_panel_autorespond_enabled && !machine().side_effects_disabled())
@@ -4929,6 +4984,7 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 				logerror("ASR10PANEL control=%02x pc=%06x\n", character, pc);
 		}
 		panel_receive_byte(character);
+		m_panel_receive_role = u8(panel_byte_role::SERIAL);
 	}
 	trace_access(trace_region::DUART_PANEL_ASR_CANDIDATE, true, address, data, mem_mask, m_duart_panel_asr_shadow[word]);
 }
@@ -4937,17 +4993,11 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 
 void asr10_boot_state::panel_receive_byte(u8 data)
 {
+	const panel_byte_role role = panel_byte_role(m_panel_receive_role);
+
 	if (m_panel_transport_pending_marker)
 	{
 		m_panel_transport_pending_marker = 0;
-		m_panel_direct_text_prefix_pending = false;
-		return;
-	}
-
-	if (m_panel_direct_text_prefix_pending)
-	{
-		m_panel_direct_text_prefix_pending = false;
-		flush_panel_text();
 		return;
 	}
 
@@ -4955,6 +5005,12 @@ void asr10_boot_state::panel_receive_byte(u8 data)
 	{
 		flush_panel_text();
 		m_panel_transport_pending_marker = data;
+		return;
+	}
+
+	if (role == panel_byte_role::RING_CONTROL || role == panel_byte_role::DIRECT_TEXT_PREFIX)
+	{
+		flush_panel_text();
 		return;
 	}
 
@@ -5075,42 +5131,75 @@ void asr10_boot_state::flush_panel_text()
 }
 
 
-void asr10_boot_state::note_panel_direct_text_prefix_ring_store(u32 pc, u32 ring_address, u8 byte)
+void asr10_boot_state::note_panel_ring_store(u32 pc, u32 ring_address, u8 byte)
 {
 	if (machine().side_effects_disabled() || ring_address < 0x0378 || ring_address > 0x03b7)
 		return;
 
 	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
 	const u32 return_pc = read_stack_long(sp) & 0x00ffffff;
-	m_panel_direct_text_prefix_ring[ring_address - 0x0378] =
-		(pc == 0x00f89a7a && byte == 0x66 && return_pc == 0x00f89a70) ? 1 : 0;
+	panel_byte_role role = panel_byte_role::SERIAL;
+
+	if (is_bounded_panel_ring_control_candidate(pc, return_pc, m_last_distinct_pc))
+	{
+		role = panel_byte_role::RING_CONTROL;
+		m_panel_diag_ring_control_role_count++;
+		panel_submission_trace("role", "BoundedRingControl", byte);
+	}
+
+	m_panel_ring_byte_roles[ring_address - 0x0378] = u8(role);
 }
 
 
-bool asr10_boot_state::consume_panel_direct_text_prefix(u32 pc, u8 byte)
+asr10_boot_state::panel_byte_role asr10_boot_state::consume_panel_ring_role(u32 pc)
 {
-	if (machine().side_effects_disabled() || byte != 0x66)
-		return false;
-
-	if (pc == 0x00f89c48)
-	{
-		const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-		return (read_stack_long(sp) & 0x00ffffff) == 0x00f89c9a;
-	}
-
-	if (pc == 0x00f89aa4)
+	if (!machine().side_effects_disabled() && pc == 0x00f89aa4)
 	{
 		const u32 ring_address = lowmem_word(0x03ba);
 		if (ring_address >= 0x0378 && ring_address <= 0x03b7)
 		{
 			const u32 index = ring_address - 0x0378;
-			const bool matched = m_panel_direct_text_prefix_ring[index] != 0;
-			m_panel_direct_text_prefix_ring[index] = 0;
-			return matched;
+			const panel_byte_role role = panel_byte_role(m_panel_ring_byte_roles[index]);
+			m_panel_ring_byte_roles[index] = u8(panel_byte_role::SERIAL);
+			return role;
 		}
 	}
 
-	return false;
+	return panel_byte_role::SERIAL;
+}
+
+
+bool asr10_boot_state::is_bounded_panel_ring_control_candidate(u32 pc, u32 return_pc, u32 previous_pc) const
+{
+	if (return_pc != 0x00f89a70)
+		return false;
+
+	if (pc == 0x00f89a8a)
+		return true;
+
+	if (pc != 0x00f89a7a)
+		return false;
+
+	if (previous_pc == 0x00f893a8)
+		return false;
+
+	if (previous_pc >= 0x00f8a7dc && previous_pc <= 0x00f8a808)
+		return false;
+
+	return previous_pc >= 0x00ff0000;
+}
+
+
+void asr10_boot_state::panel_submission_trace(const char *event, const char *kind, u8 data)
+{
+	if (!m_panel_submission_trace_enabled)
+		return;
+
+	logerror("ASR10_PANEL_SUBMISSION event=%s kind=%s data=%02x pc=%06x previous_pc=%06x "
+		"ring_control_roles=%u direct_begin=%u direct_end=%u\n",
+		event, kind, data, m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff, m_last_distinct_pc,
+		m_panel_diag_ring_control_role_count, m_panel_diag_direct_text_begin_count,
+		m_panel_diag_direct_text_end_count);
 }
 
 

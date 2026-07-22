@@ -138,8 +138,7 @@ hand-written DUART shadow
     v
 Channel B THRB
     |
-    v
-temporary upstream Path B provenance bridge
+panel byte-role adapter
     |
     v
 panel_receive_byte()
@@ -151,20 +150,35 @@ panel protocol parser
 visible display state
 ```
 
-The temporary bridge lives before `panel_receive_byte()` and exists only to
-preserve the locally verified `0x66` direct-text-prefix behavior while the
-driver is still attached to the hand-written DUART/register-shadow boundary.
-The parser-facing entry point accepts only the transmitted byte.
+The byte-role adapter lives before `panel_receive_byte()`. Every byte still
+travels through the hand-written DUART shadow, Channel B THRB, and the byte
+receiver. The independently retained boundaries are:
+
+- PATH B direct text: one dynamic `f89c94` invocation, with the prefix sent by
+  `f89c48` and payload bytes sent by `f89cb0`.
+- A bounded ring-control role at the validated ring enqueue path. This keeps
+  the proven control/protocol byte out of printable text for the bounded boot
+  path, but it is conservative and is not a complete PATH A
+  descriptor-submission implementation.
+
+The adapter does not give global meaning to byte `0x66`, does not use ring
+emptiness as framing, and does not infer PATH B from a raw `0x66...NUL` byte
+scan. The parser-facing entry point accepts only the transmitted byte; byte
+roles are supplied upstream. Sampled PC polling was rejected for PATH A
+descriptor begin/end because it missed the outer descriptor `f81190` and first
+observed nested descriptor `f81f16`. Exact PATH A descriptor association remains
+deferred until a narrow M68000 instruction-execute hook can observe `f89354`
+entry and `f8937c` return exactly.
 
 ## 6. Smallest next step, if panel work resumes
 
 Remaining work is split into independent tracks:
 
-1. Remove the temporary Path B provenance bridge.
-   The next supported direction is a raw-byte path with a transport adapter
-   that preserves firmware-side submission identity. Do not treat this as a
-   fully PC-independent design yet: `f89c94` remains the verified firmware
-   anchor for Path B.
+1. Implement exact PATH A descriptor observation using a narrow M68000
+   instruction-execute hook. `f89354` entry and `f8937c` return are proven
+   firmware boundaries, but they are not currently observed exactly by the
+   harness. `f89c94` remains the verified firmware anchor for PATH B; the design
+   is not yet fully PC-independent.
 
 2. Migrate from the hand-written DUART shadow to a real MAME
    `mc68681_device`/`scn2681_device`. This remains deferred until the panel
@@ -177,3 +191,6 @@ Remaining work is split into independent tracks:
    selection-index behavior, but physical panel semantics still require
    external evidence: panel-controller firmware, service documentation, or
    direct hardware capture.
+
+Channel A remains classified only as `ACTIVELY_USED_SERIAL_CHANNEL`; its
+physical role is not proven.
