@@ -257,6 +257,32 @@ private:
 	u32 m_panel_diag_path_a_identity_match_count = 0;
 	u32 m_panel_diag_path_a_identity_mismatch_count = 0;
 	u32 m_panel_diag_descriptor_trace_count = 0;
+	bool m_root_directory_trace_enabled = false;
+	bool m_root_directory_no_inst_seen = false;
+	u32 m_root_directory_direct_text_count = 0;
+	u32 m_root_directory_table_first_word_write_count = 0;
+	u16 m_root_directory_first_zero_index = 0xffff;
+	u16 m_root_directory_nonzero_first_word_count = 0;
+	static constexpr u32 ROOT_DIRECTORY_HISTORY_LIMIT = 64;
+	std::array<u32, ROOT_DIRECTORY_HISTORY_LIMIT> m_root_directory_history_pc{};
+	std::array<u16, ROOT_DIRECTORY_HISTORY_LIMIT> m_root_directory_history_opcode{};
+	std::array<u32, ROOT_DIRECTORY_HISTORY_LIMIT> m_root_directory_history_a0{};
+	std::array<u32, ROOT_DIRECTORY_HISTORY_LIMIT> m_root_directory_history_a2{};
+	std::array<u32, ROOT_DIRECTORY_HISTORY_LIMIT> m_root_directory_history_d0{};
+	std::array<u32, ROOT_DIRECTORY_HISTORY_LIMIT> m_root_directory_history_d1{};
+	std::array<u32, ROOT_DIRECTORY_HISTORY_LIMIT> m_root_directory_history_sp{};
+	std::array<u32, ROOT_DIRECTORY_HISTORY_LIMIT> m_root_directory_a2_change_pc{};
+	std::array<u16, ROOT_DIRECTORY_HISTORY_LIMIT> m_root_directory_a2_change_opcode{};
+	std::array<u32, ROOT_DIRECTORY_HISTORY_LIMIT> m_root_directory_a2_change_previous{};
+	std::array<u32, ROOT_DIRECTORY_HISTORY_LIMIT> m_root_directory_a2_change_current{};
+	std::array<u32, ROOT_DIRECTORY_HISTORY_LIMIT> m_root_directory_a2_change_d0{};
+	std::array<u32, ROOT_DIRECTORY_HISTORY_LIMIT> m_root_directory_a2_change_a0{};
+	u32 m_root_directory_last_a2 = 0xffffffff;
+	u32 m_root_directory_a2_change_pos = 0;
+	u32 m_root_directory_a2_change_count = 0;
+	u32 m_root_directory_history_pos = 0;
+	u32 m_root_directory_history_count = 0;
+	u32 m_root_directory_16c4_entry_count = 0;
 	// filesystem-browser-map.md 4.15: display-timeline reconstruction from
 	// reset, not gated on the (too-late) f880fc landmark. Tracks the PC of
 	// the byte that started the current message and the PC of the most
@@ -789,6 +815,12 @@ private:
 	void panel_descriptor_trace(const char *event, u32 pc, u32 raw_a2, u32 identity, u8 depth_before, u8 depth_after, const char *classification);
 	void panel_submission_trace(const char *event, const char *kind, u8 data = 0);
 	void panel_submission_summary();
+	void record_root_directory_instruction(u32 pc);
+	void dump_root_directory_history(u32 trigger_pc, u32 identity, u8 depth_before);
+	void log_root_directory_table_write(u32 pc, u32 byte_address, u16 previous, u16 current, u16 mem_mask);
+	void root_directory_summary();
+	void dump_root_directory_entry(const char *tag, u32 index);
+	void dump_root_directory_table_summary();
 	void log_cpu_context(u32 pc);
 	void log_fdc_04b0_context(bool write, u16 mem_mask);
 	void log_fdc_cmd0e_summary();
@@ -994,6 +1026,7 @@ void asr10_boot_state::machine_start()
 	m_panel_autorespond_timer = timer_alloc(FUNC(asr10_boot_state::panel_autorespond_fire), this);
 	m_duart_counter_timer = timer_alloc(FUNC(asr10_boot_state::duart_counter_terminal_count), this);
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::panel_submission_summary, this));
+	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::root_directory_summary, this));
 	// Temporary diagnostic: the address immediately past the mapped DUART
 	// block (0xfc4820) is backed by plain .ram() with no logging. Tap it
 	// read-only (no data/behavior change) so a START/STOP command issued
@@ -1518,6 +1551,30 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_panel_diag_path_a_identity_match_count));
 	save_item(NAME(m_panel_diag_path_a_identity_mismatch_count));
 	save_item(NAME(m_panel_diag_descriptor_trace_count));
+	save_item(NAME(m_root_directory_no_inst_seen));
+	save_item(NAME(m_root_directory_direct_text_count));
+	save_item(NAME(m_root_directory_table_first_word_write_count));
+	save_item(NAME(m_root_directory_first_zero_index));
+	save_item(NAME(m_root_directory_nonzero_first_word_count));
+	save_item(NAME(m_root_directory_history_pc));
+	save_item(NAME(m_root_directory_history_opcode));
+	save_item(NAME(m_root_directory_history_a0));
+	save_item(NAME(m_root_directory_history_a2));
+	save_item(NAME(m_root_directory_history_d0));
+	save_item(NAME(m_root_directory_history_d1));
+	save_item(NAME(m_root_directory_history_sp));
+	save_item(NAME(m_root_directory_a2_change_pc));
+	save_item(NAME(m_root_directory_a2_change_opcode));
+	save_item(NAME(m_root_directory_a2_change_previous));
+	save_item(NAME(m_root_directory_a2_change_current));
+	save_item(NAME(m_root_directory_a2_change_d0));
+	save_item(NAME(m_root_directory_a2_change_a0));
+	save_item(NAME(m_root_directory_last_a2));
+	save_item(NAME(m_root_directory_a2_change_pos));
+	save_item(NAME(m_root_directory_a2_change_count));
+	save_item(NAME(m_root_directory_history_pos));
+	save_item(NAME(m_root_directory_history_count));
+	save_item(NAME(m_root_directory_16c4_entry_count));
 	save_item(NAME(m_panel_msg_first_pc));
 	save_item(NAME(m_panel_msg_last_pc));
 	save_item(NAME(m_seen_loading_system_prompt));
@@ -1750,10 +1807,39 @@ void asr10_boot_state::machine_reset()
 	m_panel_diag_path_a_identity_match_count = 0;
 	m_panel_diag_path_a_identity_mismatch_count = 0;
 	m_panel_diag_descriptor_trace_count = 0;
+	m_root_directory_no_inst_seen = false;
+	m_root_directory_direct_text_count = 0;
+	m_root_directory_table_first_word_write_count = 0;
+	m_root_directory_first_zero_index = 0xffff;
+	m_root_directory_nonzero_first_word_count = 0;
+	m_root_directory_history_pc = {};
+	m_root_directory_history_opcode = {};
+	m_root_directory_history_a0 = {};
+	m_root_directory_history_a2 = {};
+	m_root_directory_history_d0 = {};
+	m_root_directory_history_d1 = {};
+	m_root_directory_history_sp = {};
+	m_root_directory_a2_change_pc = {};
+	m_root_directory_a2_change_opcode = {};
+	m_root_directory_a2_change_previous = {};
+	m_root_directory_a2_change_current = {};
+	m_root_directory_a2_change_d0 = {};
+	m_root_directory_a2_change_a0 = {};
+	m_root_directory_last_a2 = 0xffffffff;
+	m_root_directory_a2_change_pos = 0;
+	m_root_directory_a2_change_count = 0;
+	m_root_directory_history_pos = 0;
+	m_root_directory_history_count = 0;
+	m_root_directory_16c4_entry_count = 0;
 	{
 		const char *const panel_submission_trace = std::getenv("ASR10_DIAG_PANEL_SUBMISSIONS");
 		m_panel_submission_trace_enabled =
 			panel_submission_trace && panel_submission_trace[0] && panel_submission_trace[0] != '0';
+	}
+	{
+		const char *const root_directory_trace = std::getenv("ASR10_DIAG_ROOT_DIRECTORY");
+		m_root_directory_trace_enabled =
+			root_directory_trace && root_directory_trace[0] && root_directory_trace[0] != '0';
 	}
 	m_display_chars.fill(' ');
 	m_display_position = 0;
@@ -2328,13 +2414,13 @@ u8 asr10_boot_state::maincpu_iack_r(u8 level)
 }
 
 
-u16 asr10_boot_state::low_rom_or_lowmem_r(offs_t offset, u16 mem_mask)
-{
-	const u32 byte_address = offset << 1;
-	u32 probe_index = 0;
-	u32 probe_word = 0;
-	if (probe_or_alias_region_index(byte_address, probe_index, probe_word))
+	u16 asr10_boot_state::low_rom_or_lowmem_r(offs_t offset, u16 mem_mask)
 	{
+		const u32 byte_address = offset << 1;
+		u32 probe_index = 0;
+		u32 probe_word = 0;
+		if (probe_or_alias_region_index(byte_address, probe_index, probe_word))
+		{
 		const u16 data = m_probe_or_alias_region_shadow[probe_index][probe_word] & mem_mask;
 		trace_access(trace_region::BUS_PROBE, false, byte_address, data, mem_mask, m_probe_or_alias_region_shadow[probe_index][probe_word]);
 		return data;
@@ -4005,6 +4091,11 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 		if (byte_address == 0x04a9 && pc == 0x00fb846a)
 			log_fsb_entry(FSB_ENTRY_FB846A, pc);
 	}
+	if (m_root_directory_trace_enabled && !machine().side_effects_disabled())
+	{
+		const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+		log_root_directory_table_write(pc, byte_address, previous, m_lowmem_shadow[offset], mem_mask);
+	}
 
 	if (m_pti.enabled && m_pti.seen_f880fc && !machine().side_effects_disabled())
 	{
@@ -4967,6 +5058,24 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 					m_panel_receive_role = u8(panel_byte_role::DIRECT_TEXT_PREFIX);
 					m_panel_diag_direct_text_begin_count++;
 					panel_submission_trace("begin", "DirectText", character);
+					if (m_root_directory_trace_enabled)
+					{
+						const u32 a2 = u32(m_maincpu->state_int(M68K_A2)) & 0x00ffffff;
+						auto const disable_side_effects = machine().disable_side_effects();
+						char preview[25]{};
+						for (u32 i = 0; i != 24; i++)
+						{
+							const u8 c = m_maincpu->space(AS_PROGRAM).read_byte(a2 + i);
+							preview[i] = c >= 0x20 && c <= 0x7e ? char(c) : '.';
+							if (!c)
+								break;
+						}
+						m_root_directory_direct_text_count++;
+						osd_printf_info("ASR10_ROOT_DIRECTORY_DIRECT_TEXT event=begin count=%u pc=%06x "
+							"prefix=%02x source_a2=%06x normalized_source=%06x preview=\"%s\"\n",
+							m_root_directory_direct_text_count, pc, character, a2,
+							normalize_panel_descriptor_identity(a2), preview);
+					}
 				}
 			}
 			else if (pc == 0x00f89cb0 && m_panel_direct_text_active)
@@ -4978,6 +5087,10 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 				{
 					m_panel_diag_direct_text_end_count++;
 					panel_submission_trace("end", "DirectText", character);
+					if (m_root_directory_trace_enabled)
+						osd_printf_info("ASR10_ROOT_DIRECTORY_DIRECT_TEXT event=end pc=%06x final_byte=%02x "
+							"next_a2=%06x normalized_next=%06x panel=\"%s\"\n",
+							pc, character, a2, normalize_panel_descriptor_identity(a2), m_panel_text);
 					m_panel_direct_text_active = false;
 				}
 			}
@@ -5152,6 +5265,14 @@ void asr10_boot_state::flush_panel_text()
 			logerror("ASR10PHASE phase=post_loading_system_panel pc=%06x\n",
 				m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff);
 		}
+		if (m_root_directory_trace_enabled && strstr(m_panel_text, "NO INST OR BANK FILES"))
+		{
+			m_root_directory_no_inst_seen = true;
+			osd_printf_info("ASR10_ROOT_DIRECTORY_TEXT text=\"%s\" first_pc=%06x last_pc=%06x "
+				"descriptor_16c4_entries=%u\n",
+				m_panel_text, m_panel_msg_first_pc, m_panel_msg_last_pc,
+				m_root_directory_16c4_entry_count);
+		}
 		if (strstr(m_panel_text, "ERROR 009 - REBOOT ?"))
 		{
 			m_seen_error_reboot_prompt = true;
@@ -5259,9 +5380,12 @@ bool asr10_boot_state::is_bounded_panel_ring_control_candidate(u32 pc, u32 retur
 }
 
 
-void asr10_boot_state::maincpu_instruction_hook(u32 pc)
-{
-	pc &= 0x00ffffff;
+		void asr10_boot_state::maincpu_instruction_hook(u32 pc)
+		{
+			pc &= 0x00ffffff;
+
+			if (m_root_directory_trace_enabled)
+				record_root_directory_instruction(pc);
 
 	if (pc == 0x00f89354)
 		note_panel_descriptor_entry(pc);
@@ -5309,6 +5433,18 @@ void asr10_boot_state::note_panel_descriptor_entry(u32 pc)
 		m_panel_diag_descriptor_outer_entry_count++;
 	else
 		m_panel_diag_descriptor_nested_entry_count++;
+	if (m_root_directory_trace_enabled)
+	{
+		if (outer && identity == 0x00f816c4)
+		{
+			m_root_directory_16c4_entry_count++;
+			dump_root_directory_history(pc, identity, depth_before);
+		}
+		osd_printf_info("ASR10_ROOT_DIRECTORY_DESCRIPTOR event=entry pc=%06x raw_a2=%06x identity=%06x "
+			"depth_before=%u class=%s panel=\"%s\"\n",
+			pc, raw_a2, identity, depth_before, outer ? "outer" : "nested",
+			m_panel_text);
+	}
 
 	panel_descriptor_trace("entry", pc, raw_a2, identity, depth_before,
 		m_panel_descriptor_stack_depth, outer ? "outer" : "nested");
@@ -5350,6 +5486,13 @@ void asr10_boot_state::note_panel_descriptor_return(u32 pc)
 		m_panel_diag_descriptor_outer_return_count++;
 	else
 		m_panel_diag_descriptor_nested_return_count++;
+	if (m_root_directory_trace_enabled)
+	{
+		osd_printf_info("ASR10_ROOT_DIRECTORY_DESCRIPTOR event=return pc=%06x raw_a2=%06x identity=%06x "
+			"depth_before=%u depth_after=%u class=%s panel=\"%s\"\n",
+			pc, raw_a2, identity, depth_before, m_panel_descriptor_stack_depth,
+			outer ? "outer" : "nested", m_panel_text);
+	}
 
 	panel_descriptor_trace("return", pc, raw_a2, identity,
 		depth_before, m_panel_descriptor_stack_depth, outer ? "outer" : "nested");
@@ -5419,6 +5562,219 @@ void asr10_boot_state::panel_submission_summary()
 		m_panel_diag_path_a_identity_mismatch_count, m_panel_diag_descriptor_trace_count,
 		ASR10_PANEL_DESCRIPTOR_TRACE_LIMIT, m_panel_diag_ring_control_role_count,
 		m_panel_diag_direct_text_begin_count, m_panel_diag_direct_text_end_count);
+}
+
+
+void asr10_boot_state::record_root_directory_instruction(u32 pc)
+{
+	if (machine().side_effects_disabled())
+		return;
+
+	const u32 a2 = u32(m_maincpu->state_int(M68K_A2)) & 0x00ffffff;
+	const u16 opcode = read_program_word(pc);
+	const u32 slot = m_root_directory_history_pos % ROOT_DIRECTORY_HISTORY_LIMIT;
+	m_root_directory_history_pc[slot] = pc;
+	m_root_directory_history_opcode[slot] = opcode;
+	m_root_directory_history_a0[slot] = u32(m_maincpu->state_int(M68K_A0)) & 0x00ffffff;
+	m_root_directory_history_a2[slot] = a2;
+	m_root_directory_history_d0[slot] = u32(m_maincpu->state_int(M68K_D0));
+	m_root_directory_history_d1[slot] = u32(m_maincpu->state_int(M68K_D1));
+	m_root_directory_history_sp[slot] = u32(m_maincpu->state_int(M68K_SP)) & 0x00ffffff;
+	m_root_directory_history_pos = (m_root_directory_history_pos + 1) % ROOT_DIRECTORY_HISTORY_LIMIT;
+	if (m_root_directory_history_count < ROOT_DIRECTORY_HISTORY_LIMIT)
+		m_root_directory_history_count++;
+
+	if (a2 != m_root_directory_last_a2)
+	{
+		const u32 change_slot = m_root_directory_a2_change_pos % ROOT_DIRECTORY_HISTORY_LIMIT;
+		m_root_directory_a2_change_pc[change_slot] = pc;
+		m_root_directory_a2_change_opcode[change_slot] = opcode;
+		m_root_directory_a2_change_previous[change_slot] = m_root_directory_last_a2;
+		m_root_directory_a2_change_current[change_slot] = a2;
+		m_root_directory_a2_change_d0[change_slot] = u32(m_maincpu->state_int(M68K_D0));
+		m_root_directory_a2_change_a0[change_slot] = u32(m_maincpu->state_int(M68K_A0)) & 0x00ffffff;
+		m_root_directory_a2_change_pos = (m_root_directory_a2_change_pos + 1) % ROOT_DIRECTORY_HISTORY_LIMIT;
+		if (m_root_directory_a2_change_count < ROOT_DIRECTORY_HISTORY_LIMIT)
+			m_root_directory_a2_change_count++;
+		m_root_directory_last_a2 = a2;
+	}
+}
+
+
+void asr10_boot_state::dump_root_directory_history(u32 trigger_pc, u32 identity, u8 depth_before)
+{
+	dump_root_directory_table_summary();
+
+	const u32 sp = u32(m_maincpu->state_int(M68K_SP)) & 0x00ffffff;
+	osd_printf_info("ASR10_ROOT_DIRECTORY_SELECTOR trigger_pc=%06x identity=%06x "
+		"depth_before=%u previous_pc=%06x caller=%06x sr=%04x "
+		"d0=%08x d1=%08x d2=%08x d3=%08x d4=%08x d5=%08x d6=%08x d7=%08x "
+		"a0=%06x a1=%06x a2=%06x a3=%06x a4=%06x a5=%06x a6=%06x sp=%06x "
+		"stack=%08x,%08x,%08x,%08x,%08x,%08x,%08x,%08x "
+		"low04b0=%02x low04b1=%02x low04b2=%02x low04b3=%02x low04be=%04x low04bf=%02x "
+		"table_nonzero=%u first_zero=%u\n",
+		trigger_pc, identity, depth_before, m_last_distinct_pc, read_stack_long(sp) & 0x00ffffff,
+		u16(m_maincpu->state_int(M68K_SR)),
+		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
+		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
+		u32(m_maincpu->state_int(M68K_D4)), u32(m_maincpu->state_int(M68K_D5)),
+		u32(m_maincpu->state_int(M68K_D6)), u32(m_maincpu->state_int(M68K_D7)),
+		u32(m_maincpu->state_int(M68K_A0)) & 0x00ffffff,
+		u32(m_maincpu->state_int(M68K_A1)) & 0x00ffffff,
+		u32(m_maincpu->state_int(M68K_A2)) & 0x00ffffff,
+		u32(m_maincpu->state_int(M68K_A3)) & 0x00ffffff,
+		u32(m_maincpu->state_int(M68K_A4)) & 0x00ffffff,
+		u32(m_maincpu->state_int(M68K_A5)) & 0x00ffffff,
+		u32(m_maincpu->state_int(M68K_A6)) & 0x00ffffff,
+		sp, read_stack_long(sp), read_stack_long(sp + 4), read_stack_long(sp + 8),
+		read_stack_long(sp + 12), read_stack_long(sp + 16), read_stack_long(sp + 20),
+		read_stack_long(sp + 24), read_stack_long(sp + 28),
+		lowmem_byte(0x04b0), lowmem_byte(0x04b1), lowmem_byte(0x04b2),
+		lowmem_byte(0x04b3), lowmem_word(0x04be), lowmem_byte(0x04bf),
+		m_root_directory_nonzero_first_word_count, m_root_directory_first_zero_index);
+
+	for (u32 i = 0; i < m_root_directory_history_count; i++)
+	{
+		const u32 slot = (m_root_directory_history_pos + ROOT_DIRECTORY_HISTORY_LIMIT -
+			m_root_directory_history_count + i) % ROOT_DIRECTORY_HISTORY_LIMIT;
+		osd_printf_info("ASR10_ROOT_DIRECTORY_HISTORY index=%u pc=%06x opcode=%04x "
+			"d0=%08x d1=%08x a0=%06x a2=%06x sp=%06x\n",
+			i, m_root_directory_history_pc[slot], m_root_directory_history_opcode[slot],
+			m_root_directory_history_d0[slot], m_root_directory_history_d1[slot],
+			m_root_directory_history_a0[slot], m_root_directory_history_a2[slot],
+			m_root_directory_history_sp[slot]);
+	}
+
+	for (u32 i = 0; i < m_root_directory_a2_change_count; i++)
+	{
+		const u32 slot = (m_root_directory_a2_change_pos + ROOT_DIRECTORY_HISTORY_LIMIT -
+			m_root_directory_a2_change_count + i) % ROOT_DIRECTORY_HISTORY_LIMIT;
+		osd_printf_info("ASR10_ROOT_DIRECTORY_A2_CHANGE index=%u pc=%06x opcode=%04x "
+			"previous=%06x current=%06x d0=%08x a0=%06x\n",
+			i, m_root_directory_a2_change_pc[slot], m_root_directory_a2_change_opcode[slot],
+			m_root_directory_a2_change_previous[slot], m_root_directory_a2_change_current[slot],
+			m_root_directory_a2_change_d0[slot], m_root_directory_a2_change_a0[slot]);
+	}
+
+	for (u32 pc = 0x00ff8840; pc <= 0x00ff8870; pc += 2)
+	{
+		osd_printf_info("ASR10_ROOT_DIRECTORY_CODE pc=%06x word=%04x\n",
+			pc, read_program_word(pc));
+	}
+	for (u32 pc = 0x00ffa640; pc <= 0x00ffa660; pc += 2)
+	{
+		osd_printf_info("ASR10_ROOT_DIRECTORY_CODE pc=%06x word=%04x\n",
+			pc, read_program_word(pc));
+	}
+	for (u32 address = 0x00ffcb10; address <= 0x00ffcb40; address += 2)
+	{
+		osd_printf_info("ASR10_ROOT_DIRECTORY_SELECTOR_TABLE address=%06x word=%04x%s\n",
+			address, read_program_word(address), address == 0x00ffcb2c ? " selected=1" : "");
+	}
+}
+
+
+void asr10_boot_state::log_root_directory_table_write(u32 pc, u32 byte_address, u16 previous, u16 current, u16 mem_mask)
+{
+	if (!m_root_directory_trace_enabled || machine().side_effects_disabled())
+		return;
+	if (byte_address < 0x0544 || byte_address >= 0x0544 + 40 * 0x1a)
+		return;
+
+	const u32 rel = byte_address - 0x0544;
+	if ((rel % 0x1a) != 0)
+		return;
+
+	m_root_directory_table_first_word_write_count++;
+	if (m_root_directory_table_first_word_write_count > 80 &&
+		(m_root_directory_table_first_word_write_count & (m_root_directory_table_first_word_write_count - 1)))
+		return;
+
+	const u32 index = rel / 0x1a;
+	osd_printf_info("ASR10_ROOT_DIRECTORY_TABLE_WRITE count=%u pc=%06x previous_pc=%06x "
+		"index=%u address=%06x previous_first_word=%04x current_first_word=%04x "
+		"mem_mask=%04x name=\"%c%c%c%c%c%c%c%c%c%c%c%c%c\"\n",
+		m_root_directory_table_first_word_write_count, pc, m_last_distinct_pc,
+		index, byte_address, previous, current, mem_mask,
+		lowmem_byte(byte_address + 2) >= 0x20 && lowmem_byte(byte_address + 2) <= 0x7e ? char(lowmem_byte(byte_address + 2)) : '.',
+		lowmem_byte(byte_address + 3) >= 0x20 && lowmem_byte(byte_address + 3) <= 0x7e ? char(lowmem_byte(byte_address + 3)) : '.',
+		lowmem_byte(byte_address + 4) >= 0x20 && lowmem_byte(byte_address + 4) <= 0x7e ? char(lowmem_byte(byte_address + 4)) : '.',
+		lowmem_byte(byte_address + 5) >= 0x20 && lowmem_byte(byte_address + 5) <= 0x7e ? char(lowmem_byte(byte_address + 5)) : '.',
+		lowmem_byte(byte_address + 6) >= 0x20 && lowmem_byte(byte_address + 6) <= 0x7e ? char(lowmem_byte(byte_address + 6)) : '.',
+		lowmem_byte(byte_address + 7) >= 0x20 && lowmem_byte(byte_address + 7) <= 0x7e ? char(lowmem_byte(byte_address + 7)) : '.',
+		lowmem_byte(byte_address + 8) >= 0x20 && lowmem_byte(byte_address + 8) <= 0x7e ? char(lowmem_byte(byte_address + 8)) : '.',
+		lowmem_byte(byte_address + 9) >= 0x20 && lowmem_byte(byte_address + 9) <= 0x7e ? char(lowmem_byte(byte_address + 9)) : '.',
+		lowmem_byte(byte_address + 10) >= 0x20 && lowmem_byte(byte_address + 10) <= 0x7e ? char(lowmem_byte(byte_address + 10)) : '.',
+		lowmem_byte(byte_address + 11) >= 0x20 && lowmem_byte(byte_address + 11) <= 0x7e ? char(lowmem_byte(byte_address + 11)) : '.',
+		lowmem_byte(byte_address + 12) >= 0x20 && lowmem_byte(byte_address + 12) <= 0x7e ? char(lowmem_byte(byte_address + 12)) : '.',
+		lowmem_byte(byte_address + 13) >= 0x20 && lowmem_byte(byte_address + 13) <= 0x7e ? char(lowmem_byte(byte_address + 13)) : '.',
+		lowmem_byte(byte_address + 14) >= 0x20 && lowmem_byte(byte_address + 14) <= 0x7e ? char(lowmem_byte(byte_address + 14)) : '.');
+}
+
+
+void asr10_boot_state::root_directory_summary()
+{
+	if (!m_root_directory_trace_enabled)
+		return;
+	dump_root_directory_table_summary();
+	for (u32 index = 0; index != 16; index++)
+		dump_root_directory_entry(index < 14 ? "final_nonzero_window" : "final_zero_window", index);
+	osd_printf_info("ASR10_ROOT_DIRECTORY_SUMMARY descriptor_16c4_entries=%u "
+		"direct_text_count=%u no_inst_seen=%u table_first_word_writes=%u "
+		"nonzero_first_words=%u first_zero_index=%u post_loading_fdc_accesses=%u panel=\"%s\"\n",
+		m_root_directory_16c4_entry_count, m_root_directory_direct_text_count,
+		m_root_directory_no_inst_seen ? 1 : 0,
+		m_root_directory_table_first_word_write_count, m_root_directory_nonzero_first_word_count,
+		m_root_directory_first_zero_index, m_post_loading_fdc_access_count, m_panel_text);
+}
+
+
+void asr10_boot_state::dump_root_directory_entry(const char *tag, u32 index)
+{
+	if (index >= 40)
+		return;
+	const u32 base = 0x0544 + index * 0x1a;
+	std::string bytes;
+	for (u32 i = 0; i < 0x1a; i++)
+	{
+		if (i)
+			bytes += ' ';
+		bytes += util::string_format("%02x", lowmem_byte(base + i));
+	}
+	std::string name;
+	for (u32 i = 2; i < 15; i++)
+	{
+		const u8 ch = lowmem_byte(base + i);
+		name += (ch >= 0x20 && ch <= 0x7e) ? char(ch) : '.';
+	}
+	osd_printf_info("ASR10_ROOT_DIRECTORY_ENTRY tag=%s index=%u address=%06x first_word=%04x "
+		"type_byte=%02x name=\"%s\" bytes=\"%s\"\n",
+		tag, index, base, lowmem_word(base), lowmem_byte(base + 1),
+		name.c_str(), bytes.c_str());
+}
+
+
+void asr10_boot_state::dump_root_directory_table_summary()
+{
+	u16 first_zero = 0xffff;
+	u16 nonzero = 0;
+	u16 last_nonzero = 0xffff;
+	for (u32 index = 0; index < 40; index++)
+	{
+		const u16 first_word = lowmem_word(0x0544 + index * 0x1a);
+		if (first_word)
+		{
+			nonzero++;
+			last_nonzero = index;
+		}
+		else if (first_zero == 0xffff)
+			first_zero = index;
+	}
+	m_root_directory_nonzero_first_word_count = nonzero;
+	m_root_directory_first_zero_index = first_zero;
+	osd_printf_info("ASR10_ROOT_DIRECTORY_TABLE_SUMMARY nonzero_first_words=%u first_zero_index=%u "
+		"last_nonzero_index=%u\n",
+		nonzero, first_zero, last_nonzero);
 }
 
 
