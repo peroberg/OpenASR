@@ -104,7 +104,6 @@ const char *region_name(trace_region region)
 	case trace_region::SCSI_ASR_CANDIDATE: return "scsi_asr_candidate";
 	case trace_region::ES550X_VFX_CANDIDATE: return "es5505_es5506_vfx_reference";
 	case trace_region::ES5510_VFX_CANDIDATE: return "es5510_vfx_reference";
-	case trace_region::DUART_VFX_CANDIDATE: return "duart_panel_vfx_reference";
 	case trace_region::FDC_VFX_CANDIDATE: return "fdc_media_vfx_reference";
 	case trace_region::ES5506_TS_CANDIDATE: return "es5506_ts_reference";
 	case trace_region::ES5510_TS_CANDIDATE: return "es5510_ts_reference";
@@ -118,7 +117,6 @@ const char *address_region_guess(u32 address)
 	if (address <= 0x1fffff) return "sample_ram_candidate";
 	if (address >= 0x200000 && address <= 0x20007f) return "es5505_es5506_vfx_reference";
 	if (address >= 0x260000 && address <= 0x2601ff) return "es5510_vfx_reference";
-	if (address >= 0x280000 && address <= 0x28001f) return "duart_panel_vfx_reference";
 	if (address >= 0x2c0000 && address <= 0x2c0007) return "fdc_media_vfx_reference";
 	if (address >= 0x300000 && address <= 0x30007f) return "es5506_ts_reference";
 	if (address >= 0x380000 && address <= 0x3801ff) return "es5510_ts_reference";
