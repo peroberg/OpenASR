@@ -2530,6 +2530,20 @@ end
 
 ---------------------------------------------------
 --
+--@src/devices/machine/mc68302.h,MACHINES["MC68302"] = true
+---------------------------------------------------
+
+if MACHINES["MC68302"] then
+	files {
+		MAME_DIR .. "src/devices/machine/mc68302.cpp",
+		MAME_DIR .. "src/devices/machine/mc68302.h",
+		MAME_DIR .. "src/devices/machine/mc68302sim.cpp",
+		MAME_DIR .. "src/devices/machine/mc68302sim.h",
+	}
+end
+
+---------------------------------------------------
+--
 --@src/devices/machine/68340.h,MACHINES["M68340"] = true
 ---------------------------------------------------
 

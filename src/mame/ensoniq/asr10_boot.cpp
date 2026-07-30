@@ -42,6 +42,7 @@
 
 #include "cpu/m68000/m68000.h"
 #include "imagedev/floppy.h"
+#include "machine/mc68302.h"
 #include "machine/mc68681.h"
 #include "machine/upd765.h"
 
@@ -86,7 +87,6 @@ private:
 	static constexpr u32 ROM_MASK = 0x0003ffff;
 	static constexpr u32 LOWMEM_WORDS = 0x00100000 / 2;
 	static constexpr u32 LOWMEM_LOG_END = 0x00000200;
-	static constexpr u32 CONTROL_REGISTER_CANDIDATE = 0x00fc6830;
 	static constexpr u32 PROBE_OR_ALIAS_REGION_COUNT = 4;
 	static constexpr u32 TRACE_SLOT_COUNT = 64;
 	static constexpr u32 PANEL_TEXT_LENGTH = 64;
@@ -101,11 +101,6 @@ private:
 	static constexpr bool ASR10_LOG_FDC_04B0_CONTEXT = false;
 	static constexpr bool ASR10_LOG_PANEL_BYTES = false;
 	static constexpr bool ASR10_EXPERIMENT_CMD88_RATE_500K = true;
-	static constexpr bool ASR10_EXPERIMENT_FC6860_CLEAR_BUSY_BIT0_AFTER_WRITE = true;
-	static constexpr u8 ASR10_EXPERIMENT_FC6860_CLEAR_BUSY_READ_DELAY = 2;
-	static constexpr bool ASR10_EXPERIMENT_68302_LRCLK_CLOCK_BIT3 = true;
-	static constexpr u8 ASR10_EXPERIMENT_68302_LRCLK_CLOCK_PHASE_READS = 8;
-	static constexpr u8 ASR10_EXPERIMENT_68302_LRCLK_CLOCK_MAX_LOGS = 64;
 	static constexpr bool ASR10_EXPERIMENT_FC6814_ACK_PENDING_000B = false;
 	static constexpr bool ASR10_EXPERIMENT_FC6816_CLEAR_SERVICE_2480 = false;
 	static constexpr bool ASR10_EXPERIMENT_FC6816_CLEAR_SERVICE_2400_AFTER_SETTER = false;
@@ -142,7 +137,7 @@ private:
 	};
 	static u16 ascii_to_14seg(u8 character) { return asr10_boot_defs::ascii_to_14seg(character); }
 
-	required_device<m68000_device> m_maincpu;
+	required_device<mc68302_device> m_maincpu;
 	required_device<upd72069_device> m_fdc;
 	required_device<floppy_connector> m_floppy_connector;
 	required_device<scn2681_device> m_duart;
@@ -158,6 +153,8 @@ private:
 	emu_timer *m_prompt_select_timer = nullptr;
 	emu_timer *m_synth_68302_timer_irq_timer = nullptr;
 	emu_timer *m_panel_autorespond_timer = nullptr;
+	emu_timer *m_lrclk_timer = nullptr;
+	bool m_lrclk_level = false;
 	memory_passthrough_handler m_hook_fc2068_tap;
 	bool m_fc60b0_verified = false;
 	memory_passthrough_handler m_hook_fc2d40_read_tap;
@@ -173,11 +170,6 @@ private:
 	std::unique_ptr<u16[]> m_lowmem_shadow;
 	u16 m_probe_or_alias_region_shadow[PROBE_OR_ALIAS_REGION_COUNT][2]{};
 	u16 m_m68302_internal_shadow[0x80]{};
-	u8 m_fc6860_reads_after_write = 0;
-	bool m_fc6860_busy_clear_logged = false;
-	u32 m_lrclk_clock_reads = 0;
-	u8 m_lrclk_clock_transition_logs = 0;
-	s8 m_lrclk_clock_last_bit = -1;
 	u8 m_fdc_last_aux_command = 0;
 	u8 m_fdc_last_msr = 0;
 	u8 m_fdc_last_fifo_read = 0;
@@ -631,8 +623,6 @@ private:
 	u16 m_recent_queue_mem_mask = 0;
 	bool m_recent_queue_write = false;
 	bool m_recent_queue_handler_clear = false;
-	bool m_high_alias_enabled = false;
-	bool m_lowmem_overlay_enabled = false;
 	bool m_seen_insert_disk_prompt = false;
 	u64 m_pc_poll_count = 0;
 	u64 m_panel_b_seq = 0;
@@ -760,8 +750,6 @@ private:
 	void probe_or_alias_region_c08000_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 	u16 high_alias_r(offs_t offset, u16 mem_mask = ~0);
 	void high_alias_w(offs_t offset, u16 data, u16 mem_mask = ~0);
-	u16 m68302_internal_r(offs_t offset, u16 mem_mask = ~0);
-	void m68302_internal_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 	u16 upd72069_fdc_r(offs_t offset, u16 mem_mask = ~0);
 	void upd72069_fdc_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 	u16 duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask = ~0);
@@ -783,6 +771,7 @@ private:
 	TIMER_CALLBACK_MEMBER(prompt_select_poll);
 	TIMER_CALLBACK_MEMBER(synth_68302_timer_irq);
 	TIMER_CALLBACK_MEMBER(panel_autorespond_fire);
+	TIMER_CALLBACK_MEMBER(lrclk_toggle);
 	u8 maincpu_iack_r(u8 level);
 
 	bool probe_or_alias_region_index(u32 address, u32 &index, u32 &word_index) const;
@@ -808,6 +797,7 @@ private:
 	void dump_root_directory_history(u32 trigger_pc, u32 identity, u8 depth_before);
 	void log_root_directory_table_write(u32 pc, u32 byte_address, u16 previous, u16 current, u16 mem_mask);
 	void root_directory_summary();
+	void mc68302_access_summary();
 	void dump_root_directory_entry(const char *tag, u32 index);
 	void dump_root_directory_table_summary();
 	void log_cpu_context(u32 pc);
@@ -844,15 +834,6 @@ private:
 		u32 branch_target, u16 sr_override = 0xffff, u32 d2_override = 0xffffffff);
 	void log_04c6_origin(const char *landmark, u32 pc, u8 value, bool branch_taken, u32 branch_target);
 	void log_error009_context(const char *source, u32 pc, u16 value, u16 mem_mask);
-	void log_lrclk_candidate(bool write, u32 address, u16 data, u16 mem_mask, u16 shadow);
-	void log_fc6829_port_b_candidate(bool write, u32 address, u16 data, u16 mem_mask, u16 shadow);
-	void log_68302_gpio_stage1(bool write, u32 address, u16 data, u16 mem_mask, u16 old_shadow, u16 new_shadow);
-	void log_post_lrclk_poll_candidate(u32 address, u16 data, u16 mem_mask, u16 shadow);
-	void log_loaded_0067_window_candidate(u32 pc);
-	void log_fc681x_interrupt_candidate(bool write, u32 address, u16 data, u16 mem_mask, u16 old_shadow, u16 new_shadow);
-	void log_fc6816_service_setter_context(u32 pc, u16 data, u16 mem_mask, u16 old_shadow, u16 new_shadow);
-	void log_fc688x_service_context(bool write, u32 address, u16 data, u16 mem_mask, u16 old_shadow, u16 new_shadow);
-	void log_timer_candidate(bool write, u32 address, u16 data, u16 mem_mask, u16 old_shadow, u16 new_shadow);
 	void log_lowmem_service_context(bool write, u32 byte_address, u16 previous, u16 current, u16 data, u16 mem_mask);
 	void log_synth_68302_irq_vectors(u8 irq_level, u32 pc, u16 sr);
 	void log_runtime_vector_table_for_iack_experiment(u32 pc, u16 sr);
@@ -1009,8 +990,10 @@ void asr10_boot_state::machine_start()
 	m_prompt_select_timer = timer_alloc(FUNC(asr10_boot_state::prompt_select_poll), this);
 	m_synth_68302_timer_irq_timer = timer_alloc(FUNC(asr10_boot_state::synth_68302_timer_irq), this);
 	m_panel_autorespond_timer = timer_alloc(FUNC(asr10_boot_state::panel_autorespond_fire), this);
+	m_lrclk_timer = timer_alloc(FUNC(asr10_boot_state::lrclk_toggle), this);
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::panel_submission_summary, this));
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::root_directory_summary, this));
+	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::mc68302_access_summary, this));
 	// Removed (4.26): four single-address opcode-fetch taps formerly here
 	// (f8834a/f88352/006800/00680a) never fired in any live capture across
 	// this whole investigation -- opcode fetch on this core goes through a
@@ -1437,11 +1420,6 @@ void asr10_boot_state::machine_start()
 	save_pointer(NAME(m_lowmem_shadow), LOWMEM_WORDS);
 	save_item(NAME(m_probe_or_alias_region_shadow));
 	save_item(NAME(m_m68302_internal_shadow));
-	save_item(NAME(m_fc6860_reads_after_write));
-	save_item(NAME(m_fc6860_busy_clear_logged));
-	save_item(NAME(m_lrclk_clock_reads));
-	save_item(NAME(m_lrclk_clock_transition_logs));
-	save_item(NAME(m_lrclk_clock_last_bit));
 	save_item(NAME(m_fdc_last_aux_command));
 	save_item(NAME(m_fdc_last_msr));
 	save_item(NAME(m_fdc_last_fifo_read));
@@ -1621,8 +1599,6 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_recent_queue_mem_mask));
 	save_item(NAME(m_recent_queue_write));
 	save_item(NAME(m_recent_queue_handler_clear));
-	save_item(NAME(m_high_alias_enabled));
-	save_item(NAME(m_lowmem_overlay_enabled));
 	save_item(NAME(m_seen_insert_disk_prompt));
 	save_item(NAME(m_pc_poll_count));
 	save_item(NAME(m_panel_b_seq));
@@ -1683,6 +1659,7 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_panel_autorespond_enabled));
 	save_item(NAME(m_panel_autorespond_scheduled_count));
 	save_item(NAME(m_panel_autorespond_injected_count));
+	save_item(NAME(m_lrclk_level));
 	save_item(NAME(m_gen_counter));
 	save_item(NAME(m_gen_thrb_bytes));
 	save_item(NAME(m_gen_thrb_count));
@@ -1736,8 +1713,6 @@ void asr10_boot_state::machine_reset()
 		logerror("ASR10_PANEL_DESCRIPTOR event=reset_nonempty_stack depth=%u overflow_depth=%u\n",
 			m_panel_descriptor_stack_depth, m_panel_descriptor_stack_overflow_depth);
 
-	m_high_alias_enabled = false;
-	m_lowmem_overlay_enabled = false;
 	m_seen_insert_disk_prompt = false;
 
 	m_panel_text_length = 0;
@@ -1975,6 +1950,14 @@ void asr10_boot_state::machine_reset()
 	m_panel_autorespond_scheduled_count = 0;
 	m_panel_autorespond_injected_count = 0;
 	m_panel_autorespond_timer->adjust(attotime::never);
+	// Board-level LRCLK into PB3 (GPIO input, docs/mc68302/pin-function-map.md):
+	// external to the 68302, always running once the machine is up, not a
+	// register-driven behavior. Rate is [Hypothesis]: PLAN.md section 0's
+	// Y3 = 33.8688 MHz crystal is annotated "audio clock, 768 x 44.1 kHz",
+	// so a straight /768 divider would put the audio word clock at
+	// 44.1 kHz exactly -- not separately measured in this tree.
+	m_lrclk_level = false;
+	m_lrclk_timer->adjust(attotime::from_hz(44100), 0, attotime::from_hz(44100));
 	m_gen_counter = 0;
 	m_gen_thrb_bytes.fill(0);
 	m_gen_thrb_count = 0;
@@ -2076,11 +2059,6 @@ void asr10_boot_state::machine_reset()
 	for (auto &entry : m_probe_or_alias_region_shadow)
 		std::fill(std::begin(entry), std::end(entry), 0);
 	std::fill(std::begin(m_m68302_internal_shadow), std::end(m_m68302_internal_shadow), 0);
-	m_fc6860_reads_after_write = 0;
-	m_fc6860_busy_clear_logged = false;
-	m_lrclk_clock_reads = 0;
-	m_lrclk_clock_transition_logs = 0;
-	m_lrclk_clock_last_bit = -1;
 	m_fdc_last_aux_command = 0;
 	m_fdc_last_msr = 0;
 	m_fdc_last_fifo_read = 0;
@@ -2273,9 +2251,12 @@ void asr10_boot_state::mem_map(address_map &map)
 	map(0xfc4800, 0xfc481f).rw(FUNC(asr10_boot_state::duart_panel_asr_candidate_r), FUNC(asr10_boot_state::duart_panel_asr_candidate_w));
 	map(0xfc4820, 0xfc4fff).ram();
 	map(0xfc5000, 0xfc501f).rw(FUNC(asr10_boot_state::scsi_asr_candidate_r), FUNC(asr10_boot_state::scsi_asr_candidate_w));
-	map(0xfc5020, 0xfc67ff).ram();
-	map(0xfc6800, 0xfc68ff).rw(FUNC(asr10_boot_state::m68302_internal_r), FUNC(asr10_boot_state::m68302_internal_w));
-	map(0xfc6900, 0xffffff).ram();
+	// 0xFC6000-0xFC6FFF (the MC68302 internal 4KB window) is owned by
+	// m_maincpu itself now -- installed dynamically on BAR write, see
+	// mc68302_device::install_internal_window(). This plain RAM range is
+	// the neutral fallback for everything else; the device's dynamic
+	// install shadows its own slice of it once the ROM programs BAR.
+	map(0xfc5020, 0xffffff).ram();
 }
 
 
@@ -2374,7 +2355,7 @@ u8 asr10_boot_state::maincpu_iack_r(u8 level)
 		return data;
 	}
 
-	if (m_lowmem_overlay_enabled)
+	if (!m_maincpu->cs0_covers(0))
 	{
 		const u16 data = m_lowmem_shadow[offset] & mem_mask;
 		if (byte_address == 0x04ee && !machine().side_effects_disabled())
@@ -2799,6 +2780,13 @@ void asr10_boot_state::panel_c_queue_rx(u8 data, const char *reason, u32 pc)
 		lowmem_word(0x23d6), lowmem_word(0x23e4), lowmem_word(0x23e6), lowmem_word(0x14f6),
 		lowmem_byte(0x03bc));
 	panel_c_update_irq6("rx_queued", pc);
+}
+
+
+TIMER_CALLBACK_MEMBER(asr10_boot_state::lrclk_toggle)
+{
+	m_lrclk_level = !m_lrclk_level;
+	m_maincpu->set_pb_input(3, m_lrclk_level);
 }
 
 
@@ -4194,7 +4182,7 @@ u16 asr10_boot_state::high_alias_r(offs_t offset, u16 mem_mask)
 	const u32 runtime_address_24 = 0x00f80000 | (offset << 1);
 	const u32 rom_offset = runtime_address_24 & ROM_MASK;
 	const u16 data = (u16(rom[rom_offset]) << 8) | rom[(rom_offset + 1) & ROM_MASK];
-	if (!m_high_alias_enabled)
+	if (m_maincpu->cs0_covers(0))
 		trace_access(trace_region::HIGH_ROM_ALIAS, false, runtime_address_24, data, mem_mask, data);
 	return data;
 }
@@ -4204,129 +4192,6 @@ void asr10_boot_state::high_alias_w(offs_t offset, u16 data, u16 mem_mask)
 {
 	const u32 address = 0x00f80000 | (offset << 1);
 	trace_access(trace_region::HIGH_ROM_ALIAS, true, address, data, mem_mask, data);
-}
-
-
-u16 asr10_boot_state::m68302_internal_r(offs_t offset, u16 mem_mask)
-{
-	const u32 address = 0x00fc6800 | (offset << 1);
-	const u16 shadow = m_m68302_internal_shadow[offset & 0x7f];
-	u16 effective = shadow;
-	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-	if (ASR10_EXPERIMENT_FC6860_CLEAR_BUSY_BIT0_AFTER_WRITE && address == 0x00fc6860 && mem_mask == 0xff00 &&
-		!machine().side_effects_disabled())
-	{
-		const u8 original_byte = u8(shadow >> 8);
-		if (m_fc6860_reads_after_write < ASR10_EXPERIMENT_FC6860_CLEAR_BUSY_READ_DELAY)
-		{
-			m_fc6860_reads_after_write++;
-		}
-		else if (BIT(original_byte, 0))
-		{
-			const u8 effective_byte = original_byte & ~u8(0x01);
-			effective = (shadow & 0x00ff) | (u16(effective_byte) << 8);
-			if (!m_fc6860_busy_clear_logged && !machine().side_effects_disabled())
-			{
-				logerror("ASR10_EXPERIMENT_FC6860_CLEAR_BUSY bit0 1->0 original=%02x effective=%02x pc=%06x\n",
-					original_byte, effective_byte, pc);
-				m_fc6860_busy_clear_logged = true;
-			}
-		}
-	}
-	if (ASR10_EXPERIMENT_68302_LRCLK_CLOCK_BIT3 && address == 0x00fc6828 && mem_mask == 0x00ff &&
-		!machine().side_effects_disabled())
-	{
-		const u8 original_byte = u8(effective);
-		const u32 phase = m_lrclk_clock_reads / ASR10_EXPERIMENT_68302_LRCLK_CLOCK_PHASE_READS;
-		const u8 bit3 = phase & 1;
-		const u8 effective_byte = bit3 ? (original_byte | 0x08) : (original_byte & ~u8(0x08));
-		if (m_lrclk_clock_last_bit != s8(bit3) &&
-			m_lrclk_clock_transition_logs < ASR10_EXPERIMENT_68302_LRCLK_CLOCK_MAX_LOGS)
-		{
-			logerror("ASR10_EXPERIMENT_LRCLK_CLOCK pc=%06x original=%02x effective=%02x bit3=%u phase=%u\n",
-				pc, original_byte, effective_byte, bit3, phase);
-			m_lrclk_clock_transition_logs++;
-		}
-		m_lrclk_clock_last_bit = s8(bit3);
-		m_lrclk_clock_reads++;
-		effective = (effective & 0xff00) | effective_byte;
-	}
-	const u16 data = effective & mem_mask;
-	m_last_fc68_pc = pc;
-	m_last_fc68_address = address;
-	m_last_fc68_data = data;
-	m_last_fc68_mem_mask = mem_mask;
-	m_last_fc68_shadow = shadow;
-	m_last_fc68_write = false;
-	trace_access(trace_region::M68302_INTERNAL, false, address, data, mem_mask, shadow);
-	log_lrclk_candidate(false, address, data, mem_mask, shadow);
-	log_fc6829_port_b_candidate(false, address, data, mem_mask, shadow);
-	log_68302_gpio_stage1(false, address, data, mem_mask, shadow, shadow);
-	log_post_lrclk_poll_candidate(address, data, mem_mask, shadow);
-	log_loaded_0067_window_candidate(pc);
-	log_fc681x_interrupt_candidate(false, address, data, mem_mask, shadow, shadow);
-	log_fc688x_service_context(false, address, data, mem_mask, shadow, shadow);
-	log_timer_candidate(false, address, data, mem_mask, shadow, shadow);
-	if (address == 0x00fc6860 && !machine().side_effects_disabled())
-	{
-		const u8 relevant_byte = (mem_mask & 0xff00) ? u8(effective >> 8) : u8(effective);
-		logerror("ASR10_M68302_6860 pc=%06x rw=R data=%04x mem_mask=%04x relevant_byte=%02x "
-			"bit0=%u last_write=%04x opcode=%04x detail=%s\n",
-			pc, data, mem_mask, relevant_byte, BIT(relevant_byte, 0), shadow,
-			read_code_word(pc), m68302_register_name(address));
-	}
-	return data;
-}
-
-
-void asr10_boot_state::m68302_internal_w(offs_t offset, u16 data, u16 mem_mask)
-{
-	const u32 address = 0x00fc6800 | (offset << 1);
-	const u16 previous = m_m68302_internal_shadow[offset & 0x7f];
-	COMBINE_DATA(&m_m68302_internal_shadow[offset & 0x7f]);
-	m_last_fc68_pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-	m_last_fc68_address = address;
-	m_last_fc68_data = data;
-	m_last_fc68_mem_mask = mem_mask;
-	m_last_fc68_shadow = m_m68302_internal_shadow[offset & 0x7f];
-	m_last_fc68_write = true;
-	trace_access(trace_region::M68302_INTERNAL, true, address, data, mem_mask, m_m68302_internal_shadow[offset & 0x7f]);
-	log_lrclk_candidate(true, address, data, mem_mask, m_m68302_internal_shadow[offset & 0x7f]);
-	log_fc6829_port_b_candidate(true, address, data, mem_mask, m_m68302_internal_shadow[offset & 0x7f]);
-	log_68302_gpio_stage1(true, address, data, mem_mask, previous, m_m68302_internal_shadow[offset & 0x7f]);
-	log_loaded_0067_window_candidate(m_last_fc68_pc);
-	log_fc681x_interrupt_candidate(true, address, data, mem_mask, previous, m_m68302_internal_shadow[offset & 0x7f]);
-	log_fc688x_service_context(true, address, data, mem_mask, previous, m_m68302_internal_shadow[offset & 0x7f]);
-	log_timer_candidate(true, address, data, mem_mask, previous, m_m68302_internal_shadow[offset & 0x7f]);
-	if (address == 0x00fc6860 && !machine().side_effects_disabled())
-	{
-		const u16 shadow = m_m68302_internal_shadow[offset & 0x7f];
-		const u8 relevant_byte = (mem_mask & 0xff00) ? u8(shadow >> 8) : u8(shadow);
-		if (ASR10_EXPERIMENT_FC6860_CLEAR_BUSY_BIT0_AFTER_WRITE && mem_mask == 0xff00)
-		{
-			m_fc6860_reads_after_write = 0;
-			m_fc6860_busy_clear_logged = false;
-		}
-		const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-		logerror("ASR10_M68302_6860 pc=%06x rw=W data=%04x mem_mask=%04x relevant_byte=%02x "
-			"bit0=%u last_write=%04x d0=%08x opcode=%04x detail=%s\n",
-			pc, data, mem_mask, relevant_byte, BIT(relevant_byte, 0), shadow,
-			u32(m_maincpu->state_int(M68K_D0)), read_code_word(pc), m68302_register_name(address));
-	}
-
-	if (address == CONTROL_REGISTER_CANDIDATE && ACCESSING_BITS_0_15)
-	{
-		if (data == 0x1f01)
-		{
-			m_high_alias_enabled = true;
-			m_lowmem_overlay_enabled = true;
-			logerror("ASR10BOOT control_register_candidate: write #$1f01 -> enable likely high alias runtime&0x3ffff and lowmem overlay (speculative harness behavior)\n");
-		}
-		else
-		{
-			logerror("ASR10BOOT control_register_candidate: write %04x observed; exact semantics unknown\n", data);
-		}
-	}
 }
 
 
@@ -5543,6 +5408,18 @@ void asr10_boot_state::root_directory_summary()
 }
 
 
+void asr10_boot_state::mc68302_access_summary()
+{
+	// PLAN.md fas 3's acceptance oracle: every access to the internal
+	// SIB window is known/known_unimplemented/unknown, counted for the
+	// whole run. A boot that gets further should come with a count of
+	// how much it guessed.
+	osd_printf_info("ASR10_MC68302_ACCESS_SUMMARY known=%u known_unimplemented=%u unknown=%u\n",
+		m_maincpu->known_access_count(), m_maincpu->known_unimplemented_access_count(),
+		m_maincpu->unknown_access_count());
+}
+
+
 void asr10_boot_state::dump_root_directory_entry(const char *tag, u32 index)
 {
 	if (index >= 40)
@@ -6385,487 +6262,6 @@ void asr10_boot_state::log_error009_context(const char *source, u32 pc, u16 valu
 		BIT(last_st2, 6), BIT(last_st2, 5), BIT(last_st2, 4), BIT(last_st2, 3), BIT(last_st2, 2), BIT(last_st2, 1), BIT(last_st2, 0),
 		m_fdc_data_rate, m_fdc_data_rate_source);
 }
-
-
-void asr10_boot_state::log_lrclk_candidate(bool write, u32 address, u16 data, u16 mem_mask, u16 shadow)
-{
-	if (machine().side_effects_disabled())
-		return;
-
-	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-	if (pc < 0x00f8c100 || pc > 0x00f8c180)
-		return;
-
-	m_lrclk_trace_count++;
-	if (m_lrclk_trace_count > 96 && (m_lrclk_trace_count & (m_lrclk_trace_count - 1)))
-		return;
-
-	const bool low_byte = bool(mem_mask & 0x00ff);
-	const bool high_byte = bool(mem_mask & 0xff00);
-	const u8 relevant_byte = low_byte ? u8(data) : u8(data >> 8);
-	const u8 shadow_byte = low_byte ? u8(shadow) : u8(shadow >> 8);
-	const bool lrclk_candidate = (address == 0x00fc6828) && low_byte;
-	const s32 bit3_state = lrclk_candidate ? s32(BIT(relevant_byte, 3)) : -1;
-	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-
-	logerror("ASR10_LRCLK_CANDIDATE pc=%06x opcode=%04x rw=%c addr=%06x detail=%s "
-		"data=%04x mem_mask=%04x selected_byte=%s relevant_byte=%02x bit3_lrclk_candidate=%d "
-		"shadow=%04x shadow_relevant_byte=%02x "
-		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x sr=%04x "
-		"sp=%06x stack0=%08x stack1=%08x trace_count=%u\n",
-		pc, read_code_word(pc), write ? 'W' : 'R', address, m68302_register_name(address),
-		data, mem_mask, high_byte && !low_byte ? "high" : low_byte && !high_byte ? "low" : "word",
-		relevant_byte, bit3_state, shadow, shadow_byte,
-		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
-		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
-		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
-		u32(m_maincpu->state_int(M68K_A2)), u16(m_maincpu->state_int(M68K_SR)),
-		sp, read_stack_long(sp), read_stack_long(sp + 4), m_lrclk_trace_count);
-}
-
-
-void asr10_boot_state::log_fc6829_port_b_candidate(bool write, u32 address, u16 data, u16 mem_mask, u16 shadow)
-{
-	if (machine().side_effects_disabled())
-		return;
-	if (address != 0x00fc6828 || !(mem_mask & 0x00ff))
-		return;
-
-	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-	const u8 byte = u8(data);
-	const u8 shadow_byte = u8(shadow);
-	const char *semantic = "port_b_data";
-	if (pc == 0x000067f6)
-		semantic = "port_b_bits0_2_strobe_set_ori_07";
-	else if (pc == 0x00006816)
-		semantic = "port_b_bits0_2_strobe_clear_andi_f8";
-	else if (pc == 0x00f8c14e || pc == 0x00f8c160 || (pc >= 0x0000bfb8 && pc <= 0x0000bfe8))
-		semantic = "port_b_bit3_lrclk_candidate";
-
-	m_fc6829_trace_count++;
-	if (m_fc6829_trace_count > 128 && (m_fc6829_trace_count & (m_fc6829_trace_count - 1)))
-		return;
-
-	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-	logerror("ASR10_FC6829_PORTB pc=%06x previous_pc=%06x opcode=%04x rw=%c semantic=%s "
-		"data=%04x mem_mask=%04x byte=%02x shadow=%04x shadow_byte=%02x "
-		"bit2=%u bit1=%u bit0=%u bits0_2=%u bit3_lrclk_candidate=%u "
-		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x sr=%04x "
-		"sp=%06x stack0=%08x stack1=%08x trace_count=%u\n",
-		pc, m_last_distinct_pc, read_loaded_word(pc), write ? 'W' : 'R', semantic,
-		data, mem_mask, byte, shadow, shadow_byte,
-		BIT(byte, 2), BIT(byte, 1), BIT(byte, 0), byte & 0x07, BIT(byte, 3),
-		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
-		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
-		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
-		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
-		u16(m_maincpu->state_int(M68K_SR)), sp, read_stack_long(sp), read_stack_long(sp + 4),
-		m_fc6829_trace_count);
-}
-
-
-void asr10_boot_state::log_68302_gpio_stage1(bool write, u32 address, u16 data, u16 mem_mask, u16 old_shadow, u16 new_shadow)
-{
-	if (!m_gpio_stage1_trace_enabled || machine().side_effects_disabled())
-		return;
-	// Corrected MC68302 map (RTEMS m68302.h / MC68302 User's Manual,
-	// see docs/asr10/architecture.md): PBCNT=FC6824, PBDDR=FC6826,
-	// PBDAT=FC6828 (low byte FC6829 = PB7..PB0). BR0-3/OR0-3 occupy
-	// FC6830-FC683e and are NOT Port B (retracts the earlier
-	// "Port B may live at FC6834/35" hedge).
-	if (address != 0x00fc6824 && address != 0x00fc6826 && address != 0x00fc6828)
-		return;
-
-	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-	const char *const reg_name = address == 0x00fc6824 ? "PBCNT" :
-		address == 0x00fc6826 ? "PBDDR" : "PBDAT";
-	const char *const width = ACCESSING_BITS_0_15 ? "word" :
-		ACCESSING_BITS_0_7 ? "byte_low" : ACCESSING_BITS_8_15 ? "byte_high" : "none";
-
-	// Current authoritative snapshot of all three registers regardless of
-	// which one triggered this access (PBDAT reflects the just-applied
-	// new_shadow when this access IS the PBDAT access).
-	const u16 pbcnt = m_m68302_internal_shadow[0x24 >> 1];
-	const u16 pbddr = m_m68302_internal_shadow[0x26 >> 1];
-	const u16 pbdat = (address == 0x00fc6828) ? new_shadow : m_m68302_internal_shadow[0x28 >> 1];
-	const u8 pbcnt_low = u8(pbcnt);
-	const u8 pbddr_low = u8(pbddr);
-	const u8 pbdat_low = u8(pbdat);
-	const u32 pb2_0 = pbdat_low & 0x07;
-
-	m_gpio_stage1_trace_count++;
-
-	// Required proof gate: PBCNT bits 0-2 select GPIO (not peripheral
-	// IACK7/IACK6/IACK1), and PBDDR bits 0-2 are configured as outputs.
-	// Stage 2/3 must not proceed past this without an observed PASS.
-	const bool gate_pass = (pbcnt_low & 0x07) == 0x00 && (pbddr_low & 0x07) == 0x07;
-	if (gate_pass && !m_gpio_stage1_gate_pass_logged)
-	{
-		logerror("ASR10_GPIO_STAGE1_GATE result=PASS pbcnt=%02x pbddr=%02x pc=%06x trace_count=%u\n",
-			pbcnt_low, pbddr_low, pc, m_gpio_stage1_trace_count);
-		m_gpio_stage1_gate_pass_logged = true;
-	}
-	else if (!gate_pass && !m_gpio_stage1_gate_fail_logged && m_gpio_stage1_trace_count >= 32)
-	{
-		logerror("ASR10_GPIO_STAGE1_GATE result=FAIL pbcnt=%02x pbddr=%02x pc=%06x "
-			"trace_count=%u note=analog_mux_select_hypothesis_unsupported_so_far\n",
-			pbcnt_low, pbddr_low, pc, m_gpio_stage1_trace_count);
-		m_gpio_stage1_gate_fail_logged = true;
-	}
-
-	const bool verbose = m_gpio_stage1_trace_count <= 256 ||
-		!(m_gpio_stage1_trace_count & (m_gpio_stage1_trace_count - 1));
-	if (!verbose)
-		return;
-
-	logerror("ASR10_GPIO_STAGE1 pc=%06x reg=%s address=%06x rw=%c width=%s mem_mask=%04x "
-		"old=%04x new=%04x pbcnt=%02x pbddr=%02x pbdat=%02x pb2=%u pb1=%u pb0=%u pb2_0=%u "
-		"pbcnt_bit2_iack7=%u pbcnt_bit1_iack6=%u pbcnt_bit0_iack1=%u "
-		"pbddr_bit2_out=%u pbddr_bit1_out=%u pbddr_bit0_out=%u "
-		"gate_pass=%u panel_text_len=%u panel_b_seq=%llu trace_count=%u\n",
-		pc, reg_name, address, write ? 'W' : 'R', width, mem_mask,
-		old_shadow, new_shadow, pbcnt_low, pbddr_low, pbdat_low,
-		BIT(pbdat_low, 2), BIT(pbdat_low, 1), BIT(pbdat_low, 0), pb2_0,
-		BIT(pbcnt_low, 2), BIT(pbcnt_low, 1), BIT(pbcnt_low, 0),
-		BIT(pbddr_low, 2), BIT(pbddr_low, 1), BIT(pbddr_low, 0),
-		gate_pass ? 1u : 0u, m_panel_text_length,
-		(unsigned long long)m_panel_b_seq, m_gpio_stage1_trace_count);
-}
-
-
-void asr10_boot_state::log_post_lrclk_poll_candidate(u32 address, u16 data, u16 mem_mask, u16 shadow)
-{
-	if (machine().side_effects_disabled())
-		return;
-
-	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-	if (pc < 0x0000bfb8 || pc > 0x0000bfe8 || address != 0x00fc6828 || mem_mask != 0x00ff)
-		return;
-
-	if (!m_post_lrclk_disassembly_logged)
-	{
-		std::string words;
-		for (u32 cursor = 0x0000bfb8; cursor <= 0x0000bfe8; cursor += 2)
-		{
-			if (cursor != 0x0000bfb8)
-				words += ',';
-			words += util::string_format("%06x:%04x", cursor, read_loaded_word(cursor));
-		}
-		logerror("ASR10_POST_LRCLK_CODE_DUMP words=\"%s\"\n", words.c_str());
-		m_post_lrclk_disassembly_logged = true;
-	}
-
-	m_post_lrclk_poll_count++;
-	if (m_post_lrclk_poll_count > 96 && (m_post_lrclk_poll_count & (m_post_lrclk_poll_count - 1)))
-		return;
-
-	const u8 relevant_byte = u8(data);
-	const u8 shadow_byte = u8(shadow);
-	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-
-	logerror("ASR10_POST_LRCLK_POLL pc=%06x previous_pc=%06x opcode=%04x "
-		"op_m8=%04x op_m6=%04x op_m4=%04x op_m2=%04x op_0=%04x op_p2=%04x op_p4=%04x op_p6=%04x op_p8=%04x "
-		"addr=%06x data=%04x mem_mask=%04x relevant_byte=%02x bit3=%u shadow=%04x shadow_relevant_byte=%02x "
-		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x sr=%04x "
-		"sp=%06x stack0=%08x stack1=%08x stack2=%08x stack3=%08x poll_count=%u\n",
-		pc, m_last_distinct_pc, read_loaded_word(pc),
-		read_loaded_word(pc - 8), read_loaded_word(pc - 6), read_loaded_word(pc - 4),
-		read_loaded_word(pc - 2), read_loaded_word(pc), read_loaded_word(pc + 2),
-		read_loaded_word(pc + 4), read_loaded_word(pc + 6), read_loaded_word(pc + 8),
-		address, data, mem_mask, relevant_byte, BIT(relevant_byte, 3), shadow, shadow_byte,
-		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
-		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
-		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
-		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
-		u16(m_maincpu->state_int(M68K_SR)), sp, read_stack_long(sp), read_stack_long(sp + 4),
-		read_stack_long(sp + 8), read_stack_long(sp + 12), m_post_lrclk_poll_count);
-}
-
-
-void asr10_boot_state::log_loaded_0067_window_candidate(u32 pc)
-{
-	if (machine().side_effects_disabled() || m_fc681x_0067_code_dump_logged)
-		return;
-	if (pc < 0x000067d0 || pc > 0x00006820)
-		return;
-	if (read_loaded_word(0x000067f6) == 0x0000)
-		return;
-
-	std::string words;
-	for (u32 cursor = 0x000067d0; cursor <= 0x00006820; cursor += 2)
-	{
-		if (cursor != 0x000067d0)
-			words += ',';
-		words += util::string_format("%06x:%04x", cursor, read_loaded_word(cursor));
-	}
-	logerror("ASR10_FC681X_CODE_DUMP range=0067d0_006820 trigger_pc=%06x words=\"%s\"\n", pc, words.c_str());
-	m_fc681x_0067_code_dump_logged = true;
-
-	// TASK2 investigative addition: also capture 00686e itself (the
-	// "OS measurement routine" per subsystems.md) now that its containing
-	// RAM window is confirmed loaded.
-	std::string words_686e;
-	for (u32 cursor = 0x00006840; cursor <= 0x000068c0; cursor += 2)
-	{
-		if (cursor != 0x00006840)
-			words_686e += ',';
-		words_686e += util::string_format("%06x:%04x", cursor, read_loaded_word(cursor));
-	}
-	logerror("ASR10_TASK2_00686E_DUMP range=006840_0068c0 trigger_pc=%06x words=\"%s\"\n", pc, words_686e.c_str());
-}
-
-
-void asr10_boot_state::log_fc681x_interrupt_candidate(bool write, u32 address, u16 data, u16 mem_mask, u16 old_shadow, u16 new_shadow)
-{
-	if (machine().side_effects_disabled())
-		return;
-	if (address != 0x00fc6814 && address != 0x00fc6816 && address != 0x00fc6818)
-		return;
-
-	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-	if (!m_fc681x_code_dump_logged)
-	{
-		std::string rom_words;
-		for (u32 cursor = 0x00f87ee0; cursor <= 0x00f87f30; cursor += 2)
-		{
-			if (cursor != 0x00f87ee0)
-				rom_words += ',';
-			rom_words += util::string_format("%06x:%04x", cursor, read_loaded_word(cursor));
-		}
-		logerror("ASR10_FC681X_CODE_DUMP range=f87ee0_f87f30 words=\"%s\"\n", rom_words.c_str());
-		m_fc681x_code_dump_logged = true;
-	}
-	if (!m_fc681x_00bf_code_dump_logged && pc >= 0x0000bee0 && pc <= 0x0000bf60 && read_loaded_word(0x0000bf1a) != 0x0000)
-	{
-		std::string post_lrclk_words;
-		for (u32 cursor = 0x0000bee0; cursor <= 0x0000bf60; cursor += 2)
-		{
-			if (cursor != 0x0000bee0)
-				post_lrclk_words += ',';
-			post_lrclk_words += util::string_format("%06x:%04x", cursor, read_loaded_word(cursor));
-		}
-		logerror("ASR10_FC681X_CODE_DUMP range=00bee0_00bf60 trigger_pc=%06x words=\"%s\"\n", pc, post_lrclk_words.c_str());
-		m_fc681x_00bf_code_dump_logged = true;
-	}
-
-	m_fc681x_trace_count++;
-	const u16 changed_bits = old_shadow ^ new_shadow;
-	const u16 set_bits = ~old_shadow & new_shadow;
-	const u16 cleared_bits = old_shadow & ~new_shadow;
-	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-	const u16 current_sr = u16(m_maincpu->state_int(M68K_SR));
-	const u16 int_mask = m_m68302_internal_shadow[0x12 >> 1];
-	const u16 int_pending = m_m68302_internal_shadow[0x14 >> 1];
-	const u16 int_in_service = m_m68302_internal_shadow[0x16 >> 1];
-	const u16 int_control = m_m68302_internal_shadow[0x18 >> 1];
-
-	logerror("ASR10_FC681X pc=%06x previous_pc=%06x opcode=%04x rw=%c addr=%06x detail=%s "
-		"data=%04x mem_mask=%04x old_shadow=%04x new_shadow=%04x changed_bits=%04x set_bits=%04x cleared_bits=%04x "
-		"bit15=%u bit14=%u bit13=%u bit12=%u bit11=%u bit10=%u bit9=%u bit8=%u "
-		"bit7=%u bit6=%u bit5=%u bit4=%u bit3=%u bit2=%u bit1=%u bit0=%u "
-		"fc6812_mask=%04x fc6814_pending=%04x fc6816_in_service=%04x fc6818_control=%04x "
-		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x sr=%04x sr_mask=%u "
-		"sp=%06x stack0=%08x stack1=%08x stack2=%08x stack3=%08x "
-		"recent_queue_pc=%06x recent_queue_rw=%c recent_queue_addr=%06x recent_queue_record=%06x recent_queue_slot=%u "
-		"recent_queue_data=%04x recent_queue_mem_mask=%04x recent_queue_previous=%04x recent_queue_current=%04x "
-		"recent_queue_handler_clear=%u trace_count=%u\n",
-		pc, m_last_distinct_pc, read_loaded_word(pc), write ? 'W' : 'R', address, m68302_register_name(address),
-		data, mem_mask, old_shadow, new_shadow, changed_bits, set_bits, cleared_bits,
-		BIT(new_shadow, 15), BIT(new_shadow, 14), BIT(new_shadow, 13), BIT(new_shadow, 12),
-		BIT(new_shadow, 11), BIT(new_shadow, 10), BIT(new_shadow, 9), BIT(new_shadow, 8),
-		BIT(new_shadow, 7), BIT(new_shadow, 6), BIT(new_shadow, 5), BIT(new_shadow, 4),
-		BIT(new_shadow, 3), BIT(new_shadow, 2), BIT(new_shadow, 1), BIT(new_shadow, 0),
-		int_mask, int_pending, int_in_service, int_control,
-		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
-		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
-		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
-		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
-		current_sr, (current_sr >> 8) & 7,
-		sp, read_stack_long(sp), read_stack_long(sp + 4), read_stack_long(sp + 8), read_stack_long(sp + 12),
-		m_recent_queue_pc, m_recent_queue_write ? 'W' : 'R', m_recent_queue_address,
-		m_recent_queue_record_base, m_recent_queue_slot, m_recent_queue_data, m_recent_queue_mem_mask,
-		m_recent_queue_previous, m_recent_queue_current, m_recent_queue_handler_clear ? 1 : 0,
-		m_fc681x_trace_count);
-
-	if (write && address == 0x00fc6816 && (set_bits & 0x2400))
-	{
-		m_fc6816_service_2400_set_by_runtime = true;
-		m_fc6816_service_setter_rte_count = m_f87f96_queue_rte_count;
-		m_fc6816_service_setter_pc = pc;
-		log_fc6816_service_setter_context(pc, data, mem_mask, old_shadow, new_shadow);
-	}
-}
-
-
-void asr10_boot_state::log_fc6816_service_setter_context(u32 pc, u16 data, u16 mem_mask, u16 old_shadow, u16 new_shadow)
-{
-	if (machine().side_effects_disabled() || m_fc6816_service_setter_dump_logged)
-		return;
-
-	m_fc6816_service_setter_dump_logged = true;
-	dump_loaded_code_range("fc6816_service_setter_runtime_00bee0_00bf60", 0x0000bee0, 0x0000bf60);
-	dump_loaded_code_range("fc6816_service_clear_rom_f8c0c0_f8c130", 0x00f8c0c0, 0x00f8c130);
-	dump_loaded_code_range("fc6818_iack_handlers_f88ee0_f88f60", 0x00f88ee0, 0x00f88f60);
-
-	std::string stack_words;
-	std::string stack_longs;
-	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-	for (u32 index = 0; index < 16; index++)
-	{
-		if (index)
-		{
-			stack_words += ',';
-			stack_longs += ',';
-		}
-		stack_words += util::string_format("%06x:%04x", (sp + index * 2) & 0x00ffffff, read_loaded_word((sp + index * 2) & 0x00ffffff));
-		stack_longs += util::string_format("%06x:%08x", (sp + index * 4) & 0x00ffffff, read_stack_long((sp + index * 4) & 0x00ffffff));
-	}
-
-	std::string lowmem_0d_words;
-	for (u32 cursor = 0x00000cfc; cursor <= 0x00000d10; cursor += 2)
-	{
-		if (cursor != 0x00000cfc)
-			lowmem_0d_words += ',';
-		lowmem_0d_words += util::string_format("%04x:%04x", cursor, m_lowmem_shadow[cursor >> 1]);
-	}
-
-	std::string lowmem_0e_words;
-	for (u32 cursor = 0x00000e7c; cursor <= 0x00000e88; cursor += 2)
-	{
-		if (cursor != 0x00000e7c)
-			lowmem_0e_words += ',';
-		lowmem_0e_words += util::string_format("%04x:%04x", cursor, m_lowmem_shadow[cursor >> 1]);
-	}
-
-	logerror("ASR10_FC6816_SERVICE_SETTER_CONTEXT pc=%06x previous_pc=%06x opcode=%04x "
-		"data=%04x mem_mask=%04x old_fc6816=%04x new_fc6816=%04x set_bits=%04x cleared_bits=%04x "
-		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x "
-		"sr=%04x sr_mask=%u sp=%06x return_address=%08x recent_rte_return_pc=%06x "
-		"fc6812=%04x fc6814=%04x fc6816=%04x fc6818=%04x fc6884=%04x fc6894=%04x "
-		"lowmem_0d06=%04x lowmem_0e82=%04x lowmem_0d_window=\"%s\" lowmem_0e_window=\"%s\" "
-		"stack_words=\"%s\" stack_longs=\"%s\" "
-		"recent_queue_pc=%06x recent_queue_rw=%c recent_queue_addr=%06x recent_queue_record=%06x "
-		"recent_queue_slot=%u recent_queue_previous=%04x recent_queue_current=%04x "
-		"recent_queue_data=%04x recent_queue_mem_mask=%04x recent_queue_handler_clear=%u "
-		"dispatcher_count=%u rte_count=%u panel=\"%s\"\n",
-		pc, m_last_distinct_pc, read_loaded_word(pc), data, mem_mask, old_shadow, new_shadow,
-		(~old_shadow & new_shadow), (old_shadow & ~new_shadow),
-		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
-		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
-		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
-		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
-		u16(m_maincpu->state_int(M68K_SR)), (u16(m_maincpu->state_int(M68K_SR)) >> 8) & 7,
-		sp, read_stack_long(sp), m_queue_rte_last_return_pc,
-		m_m68302_internal_shadow[0x12 >> 1], m_m68302_internal_shadow[0x14 >> 1],
-		m_m68302_internal_shadow[0x16 >> 1], m_m68302_internal_shadow[0x18 >> 1],
-		m_m68302_internal_shadow[0x84 >> 1], m_m68302_internal_shadow[0x94 >> 1],
-		m_lowmem_shadow[0x0d06 >> 1], m_lowmem_shadow[0x0e82 >> 1],
-		lowmem_0d_words.c_str(), lowmem_0e_words.c_str(),
-		stack_words.c_str(), stack_longs.c_str(),
-		m_recent_queue_pc, m_recent_queue_write ? 'W' : 'R', m_recent_queue_address,
-		m_recent_queue_record_base, m_recent_queue_slot, m_recent_queue_previous,
-		m_recent_queue_current, m_recent_queue_data, m_recent_queue_mem_mask,
-		m_recent_queue_handler_clear ? 1 : 0, m_runtime_dispatch_entry_count,
-		m_f87f96_queue_rte_count, m_panel_text);
-}
-
-
-void asr10_boot_state::log_fc688x_service_context(bool write, u32 address, u16 data, u16 mem_mask, u16 old_shadow, u16 new_shadow)
-{
-	if (machine().side_effects_disabled())
-		return;
-	if (address != 0x00fc6884 && address != 0x00fc6894)
-		return;
-	if (!m_synth_68302_timer_iack_fire_count && m_last_distinct_pc < 0x0000bee0)
-		return;
-
-	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-	const u16 sr = u16(m_maincpu->state_int(M68K_SR));
-	logerror("ASR10_FC688X_SERVICE_CONTEXT pc=%06x previous_pc=%06x opcode=%04x rw=%c addr=%06x detail=%s "
-		"data=%04x mem_mask=%04x old_shadow=%04x new_shadow=%04x changed_bits=%04x "
-		"fc6812=%04x fc6814=%04x fc6816=%04x fc6818=%04x "
-		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x "
-		"sr=%04x sr_mask=%u recent_queue_pc=%06x recent_queue_slot=%u recent_rte_return_pc=%06x panel=\"%s\"\n",
-		pc, m_last_distinct_pc, read_loaded_word(pc), write ? 'W' : 'R', address, m68302_register_name(address),
-		data, mem_mask, old_shadow, new_shadow, old_shadow ^ new_shadow,
-		m_m68302_internal_shadow[0x12 >> 1], m_m68302_internal_shadow[0x14 >> 1],
-		m_m68302_internal_shadow[0x16 >> 1], m_m68302_internal_shadow[0x18 >> 1],
-		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
-		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
-		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
-		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
-		sr, (sr >> 8) & 7, m_recent_queue_pc, m_recent_queue_slot, m_queue_rte_last_return_pc,
-		m_panel_text);
-}
-
-
-void asr10_boot_state::log_timer_candidate(bool write, u32 address, u16 data, u16 mem_mask, u16 old_shadow, u16 new_shadow)
-{
-	const u32 reg = address & 0xff;
-	if (reg < 0x48 || reg > 0x56 || machine().side_effects_disabled())
-		return;
-
-	const bool focused = (reg == 0x4a || reg == 0x50 || reg == 0x52);
-	m_timer_candidate_trace_count++;
-	if (!focused && m_timer_candidate_trace_count > 128 &&
-		(m_timer_candidate_trace_count & (m_timer_candidate_trace_count - 1)))
-		return;
-
-	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-	const u16 sr = u16(m_maincpu->state_int(M68K_SR));
-	const u16 fc6812 = m_m68302_internal_shadow[0x12 >> 1];
-	const u16 fc6814 = m_m68302_internal_shadow[0x14 >> 1];
-	const u16 fc6816 = m_m68302_internal_shadow[0x16 >> 1];
-	const u16 fc6818 = m_m68302_internal_shadow[0x18 >> 1];
-	const u16 fc684a = m_m68302_internal_shadow[0x4a >> 1];
-	const u16 fc6850 = m_m68302_internal_shadow[0x50 >> 1];
-	const u16 fc6852 = m_m68302_internal_shadow[0x52 >> 1];
-	const u16 changed = old_shadow ^ new_shadow;
-	const u16 mode = (reg == 0x50) ? new_shadow : fc6850;
-
-	logerror("ASR10_TIMER_CANDIDATE pc=%06x previous_pc=%06x opcode=%04x rw=%c addr=%06x reg=%02x detail=%s "
-		"data=%04x mem_mask=%04x old_shadow=%04x new_shadow=%04x changed_bits=%04x "
-		"sr=%04x sr_mask=%u sp=%06x stack0=%08x stack1=%08x "
-		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x "
-		"fc6812_mask=%04x fc6814_pending=%04x fc6816_in_service=%04x fc6818_control=%04x "
-		"fc684a=%04x fc6850=%04x fc6852=%04x "
-		"mode_bit5=%u mode_bit4=%u mode_bit3=%u mode_bit2=%u mode_bit1=%u mode_bit0=%u "
-		"mode_decode=local_bits_only timer_binding=none dispatcher_count=%u last_rte_return_pc=%06x "
-		"recent_queue_pc=%06x recent_queue_slot=%06x recent_queue_current=%04x phase=%s count=%u\n",
-		pc, m_last_distinct_pc, read_loaded_word(pc), write ? 'W' : 'R', address, reg, m68302_register_name(address),
-		data, mem_mask, old_shadow, new_shadow, changed,
-		sr, (sr >> 8) & 7, sp, read_stack_long(sp), read_stack_long(sp + 4),
-		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
-		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
-		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
-		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
-		fc6812, fc6814, fc6816, fc6818, fc684a, fc6850, fc6852,
-		BIT(mode, 5), BIT(mode, 4), BIT(mode, 3), BIT(mode, 2), BIT(mode, 1), BIT(mode, 0),
-		m_runtime_dispatch_entry_count, m_queue_rte_last_return_pc & 0x00ffffff,
-		m_recent_queue_pc, m_recent_queue_slot, m_recent_queue_current,
-		m_seen_loading_system_prompt ? "post_loading_system" : "boot",
-		m_timer_candidate_trace_count);
-
-	if constexpr (ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ || ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR)
-	{
-		if (write && reg == 0x50 && new_shadow != 0)
-		{
-			logerror("ASR10_EXPERIMENT_SYNTH_68302_TIMER_START pc=%06x fc6850=%04x fc6852_reference=%04x "
-				"raw_irq_enabled=%u raw_irq_level=%u iack_vector_enabled=%u iack_irq_level=%u "
-				"iack_vector_byte=%02x iack_source_mask=%04x period=1ms frequency=diagnostic_not_derived\n",
-				pc, new_shadow, fc6852,
-				ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ ? 1 : 0, ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ_LEVEL,
-				ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR ? 1 : 0,
-				ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_IRQ_LEVEL,
-				ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR_BYTE,
-				ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_SOURCE_MASK);
-			m_synth_68302_timer_irq_timer->adjust(attotime::from_msec(1), 0, attotime::from_msec(1));
-		}
-	}
-}
-
-
 void asr10_boot_state::log_lowmem_service_context(bool write, u32 byte_address, u16 previous, u16 current, u16 data, u16 mem_mask)
 {
 	if (machine().side_effects_disabled())
@@ -10084,7 +9480,7 @@ u16 asr10_boot_state::read_code_word(u32 address) const
 u16 asr10_boot_state::read_loaded_word(u32 address) const
 {
 	address &= 0x00ffffff;
-	if (address < 0x00100000 && m_lowmem_overlay_enabled)
+	if (address < 0x00100000 && !m_maincpu->cs0_covers(0))
 		return m_lowmem_shadow[(address >> 1) & (LOWMEM_WORDS - 1)];
 	return read_code_word(address);
 }
@@ -10548,7 +9944,11 @@ INPUT_PORTS_END
 
 void asr10_boot_state::asr10_boot(machine_config &config)
 {
-	M68000(config, m_maincpu, XTAL(16'000'000)); // 68000-compatible stand-in for likely MC68302-family board
+	// fas 3 steg 1 (docs/asr10/PLAN.md): plumbing only -- BAR/SCR, Port B
+	// PIO, the FC6860 busy register, and known/known-unimplemented/unknown
+	// access classification. No interrupt controller, timer, IDMA, or
+	// communications processor yet; see docs/mc68302/.
+	MC68302(config, m_maincpu, XTAL(16'000'000));
 	m_maincpu->set_addrmap(AS_PROGRAM, &asr10_boot_state::mem_map);
 	m_maincpu->set_addrmap(m68000_base_device::AS_CPU_SPACE, &asr10_boot_state::cpu_space_map);
 	m_maincpu->set_instruction_execute_callback(FUNC(asr10_boot_state::maincpu_instruction_hook));
