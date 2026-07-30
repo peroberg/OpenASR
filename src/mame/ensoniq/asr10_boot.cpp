@@ -5411,12 +5411,23 @@ void asr10_boot_state::root_directory_summary()
 void asr10_boot_state::mc68302_access_summary()
 {
 	// PLAN.md fas 3's acceptance oracle: every access to the internal
-	// SIB window is known/known_unimplemented/unknown, counted for the
-	// whole run. A boot that gets further should come with a count of
-	// how much it guessed.
-	osd_printf_info("ASR10_MC68302_ACCESS_SUMMARY known=%u known_unimplemented=%u unknown=%u\n",
+	// SIB window is known/known_unimplemented/unknown. Raw access
+	// counts (known_access_count() etc.) are dominated by tight poll
+	// loops hitting a handful of addresses and are not useful on their
+	// own -- distinct addresses touched, and the hottest few, are.
+	const auto distinct = m_maincpu->distinct_offset_counts();
+	osd_printf_info("ASR10_MC68302_ACCESS_SUMMARY known=%u known_unimplemented=%u unknown=%u "
+		"distinct_known=%u distinct_known_unimplemented=%u distinct_unknown=%u\n",
 		m_maincpu->known_access_count(), m_maincpu->known_unimplemented_access_count(),
-		m_maincpu->unknown_access_count());
+		m_maincpu->unknown_access_count(),
+		distinct.known, distinct.known_unimplemented, distinct.unknown);
+
+	unsigned rank = 0;
+	for (const auto &hit : m_maincpu->top_accessed_offsets(5))
+	{
+		osd_printf_info("ASR10_MC68302_ACCESS_TOP rank=%u offset=%04x count=%u\n",
+			++rank, hit.byte_offset, hit.count);
+	}
 }
 
 

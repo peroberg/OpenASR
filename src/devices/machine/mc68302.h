@@ -17,8 +17,10 @@
 
 #include "cpu/m68000/m68000.h"
 
+#include <algorithm>
 #include <array>
 #include <memory>
+#include <vector>
 
 
 class mc68302_device : public m68000_device
@@ -44,6 +46,20 @@ public:
 	uint32_t known_access_count() const { return m_known_count; }
 	uint32_t known_unimplemented_access_count() const { return m_known_unimplemented_count; }
 	uint32_t unknown_access_count() const { return m_unknown_count; }
+
+	// The raw *_access_count() totals above are dominated by tight poll
+	// loops hitting a handful of addresses -- not useful as an oracle.
+	// Distinct-offset counts and the hottest individual addresses are.
+	struct access_class_counts
+	{
+		uint32_t known = 0;
+		uint32_t known_unimplemented = 0;
+		uint32_t unknown = 0;
+	};
+	access_class_counts distinct_offset_counts() const;
+
+	struct offset_hit { uint32_t byte_offset = 0; uint32_t count = 0; };
+	std::vector<offset_hit> top_accessed_offsets(unsigned max_entries) const;
 
 	// Real BR0/OR0 decode (docs/mc68302/sib-register-map.md): true while
 	// CS0 currently claims `address`. The driver's low-memory ROM/RAM
@@ -76,6 +92,7 @@ private:
 	void remove_internal_window();
 
 	static sib_access_class classify_offset(uint16_t byte_offset);
+	static sib_access_class classify_full(uint16_t byte_offset);
 
 	std::unique_ptr<mc68302_sim> m_sim;
 
@@ -85,6 +102,10 @@ private:
 	// PBCNT/PBDDR/PBDAT/FC6860 are intercepted before reaching this and
 	// live in m_sim instead.
 	std::array<uint16_t, 0x800> m_shadow{};
+
+	// Per-offset access count, same indexing as m_shadow, for
+	// distinct_offset_counts()/top_accessed_offsets().
+	std::array<uint32_t, 0x800> m_offset_access_count{};
 
 	uint16_t m_bar;
 	uint16_t m_scr_high;

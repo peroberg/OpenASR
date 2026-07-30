@@ -103,6 +103,7 @@ void mc68302_device::device_reset()
 
 	m_sim->reset();
 	m_shadow.fill(0);
+	m_offset_access_count.fill(0);
 
 	m_known_count = 0;
 	m_known_unimplemented_count = 0;
@@ -198,6 +199,55 @@ mc68302_device::sib_access_class mc68302_device::classify_offset(uint16_t byte_o
 }
 
 
+// Same offset set the internal_r/w switch statements dispatch on
+// explicitly -- kept in sync with those, not derived from them,
+// because they're a plain switch, not a table.
+mc68302_device::sib_access_class mc68302_device::classify_full(uint16_t byte_offset)
+{
+	switch (byte_offset)
+	{
+	case OFFSET_PBCNT: case OFFSET_PBDDR: case OFFSET_PBDAT: case OFFSET_FC6860:
+	case OFFSET_BR0: case OFFSET_OR0: case OFFSET_BR1: case OFFSET_OR1:
+	case OFFSET_BR2: case OFFSET_OR2: case OFFSET_BR3: case OFFSET_OR3:
+		return sib_access_class::known;
+	default:
+		return classify_offset(byte_offset);
+	}
+}
+
+mc68302_device::access_class_counts mc68302_device::distinct_offset_counts() const
+{
+	access_class_counts result;
+	for (size_t offset = 0; offset < m_offset_access_count.size(); offset++)
+	{
+		if (!m_offset_access_count[offset])
+			continue;
+		switch (classify_full(uint16_t(offset << 1)))
+		{
+		case sib_access_class::known: result.known++; break;
+		case sib_access_class::known_unimplemented: result.known_unimplemented++; break;
+		case sib_access_class::unknown: result.unknown++; break;
+		}
+	}
+	return result;
+}
+
+std::vector<mc68302_device::offset_hit> mc68302_device::top_accessed_offsets(unsigned max_entries) const
+{
+	std::vector<offset_hit> hits;
+	hits.reserve(m_offset_access_count.size());
+	for (size_t offset = 0; offset < m_offset_access_count.size(); offset++)
+		if (m_offset_access_count[offset])
+			hits.push_back({uint32_t(offset << 1), m_offset_access_count[offset]});
+
+	const size_t keep = std::min<size_t>(max_entries, hits.size());
+	std::partial_sort(hits.begin(), hits.begin() + keep, hits.end(),
+		[](const offset_hit &a, const offset_hit &b) { return a.count > b.count; });
+	hits.resize(keep);
+	return hits;
+}
+
+
 bool mc68302_device::cs0_covers(uint32_t address) const
 {
 	return m_sim->cs0_covers(address);
@@ -212,6 +262,7 @@ void mc68302_device::set_pb_input(unsigned bit, bool level)
 uint16_t mc68302_device::internal_r(offs_t offset, uint16_t mem_mask)
 {
 	const uint16_t byte_offset = uint16_t(offset << 1);
+	m_offset_access_count[offset & 0x7ff]++;
 
 	switch (byte_offset)
 	{
@@ -250,6 +301,7 @@ uint16_t mc68302_device::internal_r(offs_t offset, uint16_t mem_mask)
 void mc68302_device::internal_w(offs_t offset, uint16_t data, uint16_t mem_mask)
 {
 	const uint16_t byte_offset = uint16_t(offset << 1);
+	m_offset_access_count[offset & 0x7ff]++;
 
 	switch (byte_offset)
 	{
