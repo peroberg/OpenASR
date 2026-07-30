@@ -334,6 +334,17 @@ prioritering/pending/nesting, timers med komplett runtime-beteende,
 watchdog, SCC/SMC/kommunikationsprocessor, externa signalers elektriska
 beteende.
 
+**2026-07-30-rättelse: FDC-handskakningen går före interruptcontrollern.**
+Den faktiska blockeraren vid `KEYBOARD TUNED` (se nedan) är en
+uPD72069-statusväntan (`BTST #7,$FC4001`=RQM, `BTST #6,$FC4001`=DIO,
+timeout i lågminne `$476`, `$FB8D40`-`$FB8D76`), inte
+interruptcontrollern. GIMR/IMR/IPR/ISR och Timer 2 skrivs exakt en gång
+var, tidigt (`$FB8E7E`-`$FB8EAE`), och läses eller skrivs sedan aldrig
+igen under hela stallet — ingen tight poll mot dem existerar. Ordningen
+i den här listan ska alltså läsas som prioritetsordning: lös
+FDC-handskakningen (avsnitt "Flaggorna är kravlistan" nedan, uppdaterat)
+före `mc68302int.cpp`, inte efter.
+
 `[Verified]` **Diskvägen är korrekt och ska strykas ur misstänktlistan.**
 Byte-för-byte-verifierad mot .img-filen: "ASR-10 OS" i RAM-katalogen på
 $544 motsvarar diskoffset 0x602 = cyl 0 / head 0 / sektor 4 = FDC-
@@ -352,6 +363,32 @@ aldrig en bugg på V161 — maskinen hade rätt.
 avbilderna upp till 300 emulerade sekunder. Matchar den sedan 2026-06-29
 öppna node-89A2-schemaläggarfrågan. Den historiska djupare booten krävde
 en betydligt större uppsättning `ASR10_EXPERIMENT_*`-flaggor.
+
+`[Verified]`, **2026-07-30, mekanismen identifierad:** stallet är en
+uPD72069-statusväntan, inte en interruptfråga. `mc68302`-enhetens eget
+access-orakel (`distinct_offset_counts()`/`top_accessed_offsets()`,
+`docs/asr10/PLAN.md` fas 3:s acceptanskriterium) visade att de fem
+hetaste SIB-adresserna under stallet (2,6 miljoner accesser var) ligger
+i det dubbelportade RAM:et (`0x21a`-`0x22c`), inte i
+interruptcontrollerns register. PC-spårning (engångs-Lua-tap plus en
+tillfällig, sedan borttagen C++-logg) visade att detta är stackens
+push/pop i en kalibrerad fördröjningsrutin (`$FB8D6C`-`$FB8D76`) anropad
+från en äkta uPD72069-statuspoll: `BTST #7,$FC4001` (RQM), `BTST
+#6,$FC4001` (DIO), timeout-räknare i lågminne `$476`, `$FB8D40`-`$FB8D76`.
+Stackpekaren råkar stå inne i det dubbelportade RAM:et (rimligt
+designval — noll wait states), vilket är varför en oskyldig
+fördröjningsloop syns som "SIB-access" i oraklet alls.
+Interruptcontroller-registren (GIMR/IPR/IMR/ISR) och Timer 2
+(TMR2/TRR2) skrivs **exakt en gång var**, tidigt i boten
+(`$FB8E7E`-`$FB8EAE`, värden `0x8040`/`0x0000`/`0xFFFF`/`0xFFFF`/
+`0x003B`/`0x3F01` — matchar `docs/mc68302/timer2-interrupt-spec.md`
+exakt), och rörs sedan aldrig igen. Ingen tight poll mot
+interruptcontrollern existerar under stallet. Node-89A2-frågan må
+fortfarande vara olöst, men den är inte samma fråga som "vad väntar
+CPU:n på just nu" — det är en FDC-statusväntan som aldrig blir sann.
+FDC-kommandot som föregår väntan, och det faktiska MSR-värdet ROM:en
+får jämfört med vad den väntar på, är öppna frågor för nästa
+utredningssteg.
 
 #### Flaggorna är kravlistan
 
@@ -389,6 +426,16 @@ Tolv övergivna försök att fejka interrupt-acknowledge är ett indicium,
 inte en slump: interruptcontrollern går inte att fejka med punktvisa
 patchar. Varje försök byggdes, testades, och lämnades avstängd — ingen
 av dem tog booten längre än vad den redan var utan dem.
+
+**2026-07-30-nyans:** i ljuset av att den faktiska stallmekanismen är en
+FDC-statusväntan (se ovan), inte en interruptcontroller-poll, är den
+troligaste förklaringen till att alla tolv misslyckades inte (bara) att
+"interruptcontrollern går inte att fejka piecemeal" — det är att de
+riktade in sig på fel delsystem för just det här stallet. Ingen av dem
+kunde ha hjälpt, eftersom ROM:en vid den här punkten inte väntar på
+någon interruptcontroller-signal alls. Det upphäver inte att de bör
+sparas som specifikation (se nedan) — det förklarar bara varför de var
+dömda att misslyckas, oavsett hur de var skrivna.
 
 **De döda klass-(a)-konstanterna ska INTE raderas före fas 3.** De är
 specifikationen, uttryckt som en lista över vad som misslyckades: en

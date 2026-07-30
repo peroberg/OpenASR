@@ -184,13 +184,34 @@ fejkningsförsöken någonsin kunde leverera.
 resultat, inte ett problem att lösa här — nästa steg är
 `mc68302int.cpp` i fas 3, inte en trettonde `ASR10_EXPERIMENT_*`-flagga.
 
+**2026-07-30-rättelse: ovanstående slutsats var fel.** `fc6814=000b`/
+`fc6816=e480` i loggen ovan är utskrifter från den gamla handmodellens
+egen skuggarray (`m_m68302_internal_shadow`) — ren bokföring som
+diagnostikkoden läste för att visa "aktuellt värde" bredvid annan
+dispatcher-aktivitet, **inte** en live-läsning av någon 68302-hårdvara.
+Med den riktiga `mc68302`-enhetens access-orakel (`docs/asr10/PLAN.md`
+fas 3, `distinct_offset_counts()`/`top_accessed_offsets()`) visade det
+sig att GIMR/IPR/IMR/ISR skrivs exakt en gång var, tidigt i boten, och
+sedan **aldrig läses eller skrivs igen** under hela stallet — ingen
+tight poll mot interruptcontrollern existerar. Den faktiska
+hetaste aktiviteten (2,6 miljoner accesser) är stackens push/pop i en
+kalibrerad fördröjningsrutin inuti en äkta uPD72069-statusväntan
+(`BTST #7/#6,$FC4001` = RQM/DIO, timeout i `$476`, `$FB8D40`-`$FB8D76`)
+— se `PLAN.md` fas 3 för detaljerna. Slutsatsen "schemaläggaren väntar
+på en genuin interruptcontroller-signal" ovan ska alltså läsas som
+**motbevisad**, inte bekräftad. `mc68302int.cpp` är fortfarande rätt
+riktning för fas 3 i sin helhet, men den löser inte *det här specifika*
+stallet — FDC-handskakningen gör det, om den går att lösa.
+
 ## Vad detta dokument är till för
 
 Detta är regressionstestet för fas 3: kör kommandot i "Det exakta
 minimikommandot" ovan mot `mc68302`-baserad `asr10_boot.cpp` när den
 enheten finns. Om resultatet fortfarande stannar vid `"TUNING KBD -
-HANDS OFF"` med `fc6814`/`fc6816` konstanta har fas 3 inte löst
-problemet. Om `"NO INST OR BANK FILES"` väl visas — vilket enligt
+HANDS OFF"` har fas 3 inte löst problemet ännu (`fc6814`/`fc6816`
+konstanta är **inte** ett användbart tecken på det längre — se
+2026-07-30-rättelsen ovan; de förblir konstanta oavsett eftersom de
+aldrig pollas alls). Om `"NO INST OR BANK FILES"` väl visas — vilket enligt
 `PLAN.md` (V350 har verkliga instrument- och bankposter, se
 `disk-read-path.md`) skulle vara **fel** svar för just `V350.img` —
 är det ett tecken på att nästa lager (kategori-/filtypslogiken i
