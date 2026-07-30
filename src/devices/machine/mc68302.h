@@ -29,21 +29,28 @@ public:
 	mc68302_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
 
 	// Every access to the internal 4KB SIB window is bucketed into one of
-	// these three classes. `known` = the register is implemented in this
+	// these four classes. `known` = the register is implemented in this
 	// device and its side effects match this step's scope (Port B PIO,
-	// the FC6860 busy register). `known_unimplemented` = the offset is a
-	// documented MC68302 register (docs/mc68302/sib-register-map.md,
-	// communications-block-map.md) but this device only shadows the
-	// value, no side effects. `unknown` = the offset is not in either
-	// list at all.
+	// the FC6860 busy register, BR0-3/OR0-3). `internal_ram` = plain
+	// dual-port RAM (0x000-0x3FF) -- genuinely just memory, not a
+	// register; the ROM parks its supervisor stack there, so this is
+	// where the bulk of any poll/delay-loop access volume lives, and it
+	// isn't a guess in any sense that matters for the oracle. `known_
+	// unimplemented` = the offset is a documented MC68302 register
+	// (docs/mc68302/sib-register-map.md, communications-block-map.md,
+	// including 0x400-0x7FF's SCC/SMC parameter RAM) but this device
+	// only shadows the value, no side effects. `unknown` = the offset is
+	// not in any of the above at all.
 	enum class sib_access_class : uint8_t
 	{
 		known,
+		internal_ram,
 		known_unimplemented,
 		unknown
 	};
 
 	uint32_t known_access_count() const { return m_known_count; }
+	uint32_t internal_ram_access_count() const { return m_internal_ram_count; }
 	uint32_t known_unimplemented_access_count() const { return m_known_unimplemented_count; }
 	uint32_t unknown_access_count() const { return m_unknown_count; }
 
@@ -53,6 +60,7 @@ public:
 	struct access_class_counts
 	{
 		uint32_t known = 0;
+		uint32_t internal_ram = 0;
 		uint32_t known_unimplemented = 0;
 		uint32_t unknown = 0;
 	};
@@ -114,6 +122,7 @@ private:
 	uint32_t m_window_base;
 
 	uint32_t m_known_count;
+	uint32_t m_internal_ram_count;
 	uint32_t m_known_unimplemented_count;
 	uint32_t m_unknown_count;
 };

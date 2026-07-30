@@ -37,6 +37,7 @@ mc68302_device::mc68302_device(const machine_config &mconfig, const char *tag, d
 	m_window_installed(false),
 	m_window_base(0),
 	m_known_count(0),
+	m_internal_ram_count(0),
 	m_known_unimplemented_count(0),
 	m_unknown_count(0)
 {
@@ -74,6 +75,7 @@ void mc68302_device::device_start()
 	save_item(NAME(m_window_installed));
 	save_item(NAME(m_window_base));
 	save_item(NAME(m_known_count));
+	save_item(NAME(m_internal_ram_count));
 	save_item(NAME(m_known_unimplemented_count));
 	save_item(NAME(m_unknown_count));
 }
@@ -106,6 +108,7 @@ void mc68302_device::device_reset()
 	m_offset_access_count.fill(0);
 
 	m_known_count = 0;
+	m_internal_ram_count = 0;
 	m_known_unimplemented_count = 0;
 	m_unknown_count = 0;
 }
@@ -188,7 +191,8 @@ void mc68302_device::remove_internal_window()
 // that reason: every offset in that range now has an explicit case.
 mc68302_device::sib_access_class mc68302_device::classify_offset(uint16_t byte_offset)
 {
-	if (byte_offset <= 0x07ff) return sib_access_class::known_unimplemented; // dual-port RAM / parameter RAM
+	if (byte_offset <= 0x03ff) return sib_access_class::internal_ram; // dual-port RAM proper -- plain memory, not a register
+	if (byte_offset <= 0x07ff) return sib_access_class::known_unimplemented; // SCC/SMC parameter RAM
 	if (byte_offset <= 0x0811) return sib_access_class::known_unimplemented; // IDMA: CMR/SAPR/DAPR/BCR/CSR/FCR
 	if (byte_offset <= 0x0819) return sib_access_class::known_unimplemented; // interrupt controller: GIMR/IPR/IMR/ISR
 	if (byte_offset >= 0x081e && byte_offset <= 0x0823) return sib_access_class::known_unimplemented; // Port A
@@ -225,6 +229,7 @@ mc68302_device::access_class_counts mc68302_device::distinct_offset_counts() con
 		switch (classify_full(uint16_t(offset << 1)))
 		{
 		case sib_access_class::known: result.known++; break;
+		case sib_access_class::internal_ram: result.internal_ram++; break;
 		case sib_access_class::known_unimplemented: result.known_unimplemented++; break;
 		case sib_access_class::unknown: result.unknown++; break;
 		}
@@ -289,6 +294,11 @@ uint16_t mc68302_device::internal_r(offs_t offset, uint16_t mem_mask)
 	}
 
 	const sib_access_class cls = classify_offset(byte_offset);
+	if (cls == sib_access_class::internal_ram)
+	{
+		m_internal_ram_count++;
+		return m_shadow[offset & 0x7ff] & mem_mask;
+	}
 	if (cls == sib_access_class::known_unimplemented)
 	{
 		m_known_unimplemented_count++;
@@ -335,7 +345,12 @@ void mc68302_device::internal_w(offs_t offset, uint16_t data, uint16_t mem_mask)
 	}
 
 	const sib_access_class cls = classify_offset(byte_offset);
-	if (cls == sib_access_class::known_unimplemented)
+	if (cls == sib_access_class::internal_ram)
+	{
+		m_internal_ram_count++;
+		COMBINE_DATA(&m_shadow[offset & 0x7ff]);
+	}
+	else if (cls == sib_access_class::known_unimplemented)
 	{
 		m_known_unimplemented_count++;
 		COMBINE_DATA(&m_shadow[offset & 0x7ff]);
