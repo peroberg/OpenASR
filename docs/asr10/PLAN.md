@@ -334,16 +334,44 @@ prioritering/pending/nesting, timers med komplett runtime-beteende,
 watchdog, SCC/SMC/kommunikationsprocessor, externa signalers elektriska
 beteende.
 
-**2026-07-30-rättelse: FDC-handskakningen går före interruptcontrollern.**
-Den faktiska blockeraren vid `KEYBOARD TUNED` (se nedan) är en
-uPD72069-statusväntan (`BTST #7,$FC4001`=RQM, `BTST #6,$FC4001`=DIO,
-timeout i lågminne `$476`, `$FB8D40`-`$FB8D76`), inte
-interruptcontrollern. GIMR/IMR/IPR/ISR och Timer 2 skrivs exakt en gång
-var, tidigt (`$FB8E7E`-`$FB8EAE`), och läses eller skrivs sedan aldrig
-igen under hela stallet — ingen tight poll mot dem existerar. Ordningen
-i den här listan ska alltså läsas som prioritetsordning: lös
-FDC-handskakningen (avsnitt "Flaggorna är kravlistan" nedan, uppdaterat)
-före `mc68302int.cpp`, inte efter.
+**2026-07-30-rättelse: varken FDC:n eller interruptcontrollern är
+blockeraren — det är en oansluten DUART-inputpinne.** Två steg i samma
+utredningstråd samma dag:
+
+Steg A (ursprunglig rättelse, sedan delvis omsprungen):
+den faktiska blockeraren vid `KEYBOARD TUNED` (se nedan) trodde vi
+först var en uPD72069-statusväntan (`BTST #7,$FC4001`=RQM,
+`BTST #6,$FC4001`=DIO, timeout i lågminne `$476`, `$FB8D40`-`$FB8D76`),
+inte interruptcontrollern. GIMR/IMR/IPR/ISR och Timer 2 skrivs exakt en
+gång var, tidigt (`$FB8E7E`-`$FB8EAE`), och läses eller skrivs sedan
+aldrig igen under hela stallet.
+
+Steg B (`docs/asr10/fdc-dumpreg.md`, samma dag): FDC-hypotesen höll
+inte heller. Kommando `0x0E` (`auxcmd_w`, "enable motors" — inte
+NEC765:s `DUMP REGISTERS`, som hör till en aldrig instansierad
+syskonklass) löser sin enda-bytes resultatfas korrekt; MSR/CB rensas;
+körningen lämnar FDC-koden helt (`"polled 0 : 1 -> 0"` är bevisligen
+sista FDC-raden i hela loggen) och fortsätter normalt in i DUART-/
+panelkod.
+
+Steg C (`docs/asr10/panel-ipcr.md`, samma dag): den koden pollar
+`$FC4809` = SCN2681:ans IPCR, bit 4 = IP0:s ändringsflagga
+(`BTST #4` vid `$FB7C84`; den faktiska stallpunkten läser samma
+register upprepade gånger från en annan PC, `$FB7C30`). Ingenting i
+drivrutinen ropar någonsin `m_duart->ip0_w()` (eller ip1-3), så
+ändringsflaggan kan aldrig sättas — bit 4 är permanent `0`. Två
+kandidater för vad som borde driva IP0, ingen bevisad: panelhändelse,
+eller diskettmotor/media-status (syskonverket `esq5505.cpp` kopplar
+just den pinnen till diskettstatus, och en verklig
+disketready-övergång, `"polled 0 : 1 -> 0"` i `upd765.cpp`, inträffar
+tidsmässigt precis i samma fönster). Se `panel-ipcr.md` för detaljer
+och den öppna frågan.
+
+**Uppdaterad prioritetsordning:** varken FDC:n eller
+interruptcontrollern behöver lösas härnäst. Nästa steg är att avgöra
+och koppla in IP0 (och sannolikt IP1-3), antingen mot
+`m_floppy_connector`s befintliga status (billigast att testa) eller mot
+en ny panelenhet (se nedan). `mc68302int.cpp` kommer efter båda.
 
 `[Verified]` **Diskvägen är korrekt och ska strykas ur misstänktlistan.**
 Byte-för-byte-verifierad mot .img-filen: "ASR-10 OS" i RAM-katalogen på
