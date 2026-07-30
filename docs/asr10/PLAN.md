@@ -355,12 +355,60 @@ en betydligt större uppsättning `ASR10_EXPERIMENT_*`-flaggor.
 
 #### Flaggorna är kravlistan
 
-Varje `ASR10_EXPERIMENT_*` som är bärande för den djupa booten är en
-bekännelse: maskinen gör inte X rätt, så vi fejkar X. `ASR10_EXPERIMENT_
-ROUTE_DUART_INTRN_TO_IRQ6` finns uppenbart för att det inte finns någon
-MC68302-interruptcontroller som kan göra routningen. Att inventera vad
-varje bärande flagga kompenserar för ger både kravlistan för fas 3 och
-raderingslistan — härledda ur bevis i stället för ur gissning.
+Varje `ASR10_EXPERIMENT_*`/`ASR10_DIAG_*`-flagga som kompenserar för en
+saknad MC68302-funktion (klass (a) i `docs/asr10/experiment-flags.md`)
+är en bekännelse: maskinen gör inte X rätt, så vi fejkar X. Full
+inventering — alla 45 flaggor, klassificerade, med döda kontra aktiva
+markerade — finns i `docs/asr10/experiment-flags.md`. Sammanfattat här:
+
+**Aktiv klass (a)** — kompenserar idag, i varje körning
+(`static constexpr ... = true`, ingen väg att stänga av utan
+källkodsändring):
+
+* `ASR10_EXPERIMENT_68302_LRCLK_CLOCK_BIT3` — Port B PIO: syntetiserar
+  en växlande klockbit vid `0xfc6828`-läsning som ingenting på kortet
+  faktiskt driver.
+* `ASR10_EXPERIMENT_FC6860_CLEAR_BUSY_BIT0_AFTER_WRITE` — internt
+  register `0xfc6860`: låtsas att en busy-bit självrensar efter en kort
+  läsfördröjning.
+
+**Död klass (a)** — tolv `static constexpr ... = false`-konstanter,
+grupperade i två familjer, ingen väg att slå på utan källkodsändring:
+
+* Tre kring interruptcontrollerns ack/service-clear:
+  `ASR10_EXPERIMENT_FC6814_ACK_PENDING_000B`,
+  `ASR10_EXPERIMENT_FC6816_CLEAR_SERVICE_2480`,
+  `ASR10_EXPERIMENT_FC6816_CLEAR_SERVICE_2400_AFTER_SETTER`.
+* Nio kring timer/IACK-syntes:
+  `ASR10_EXPERIMENT_SYNTH_68302_TIMER_IRQ` + `_IRQ_LEVEL`,
+  `ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR` + `_IRQ_LEVEL` +
+  `_VECTOR_BYTE` + `_SOURCE_MASK` + `_ONESHOT` +
+  `_WAIT_FOR_SERVICE_CLEAR` + `_MIN_CALLBACK_GAP`.
+
+Tolv övergivna försök att fejka interrupt-acknowledge är ett indicium,
+inte en slump: interruptcontrollern går inte att fejka med punktvisa
+patchar. Varje försök byggdes, testades, och lämnades avstängd — ingen
+av dem tog booten längre än vad den redan var utan dem.
+
+**De döda klass-(a)-konstanterna ska INTE raderas före fas 3.** De är
+specifikationen, uttryckt som en lista över vad som misslyckades: en
+riktig `mc68302int.cpp` (GIMR/IPR/IMR/ISR, IPL-generering, vektor vid
+IACK) gör exakt det dessa tolv konstanter gissade sig fram till, fast
+på riktigt. Radera dem när den enheten finns och gör dem överflödiga,
+inte innan — se raderingslistan i `experiment-flags.md` för vad som
+redan kan tas bort oberoende av fas 3 (klass (d) och de döda
+klass-(b)-stubbarna).
+
+**IDMA, kommunikationsprocessorn och watchdogen står inte på
+kravlistan.** Ingen `ASR10_EXPERIMENT_*`-flagga någonsin byggd
+kompenserar för någon av dem. Det är inte bevis för att de är
+onödiga — det är frånvaro av bevis, och kan lika gärna betyda att
+ROM-koden som skulle ha behövt dem aldrig nåtts (booten stannar efter
+`KEYBOARD TUNED`, se nedan). IDMA är separat avskriven ovan på
+starkare grund (`disk-read-path.md`, disassemblerad programmerad I/O).
+Kommunikationsprocessorn avgörs av fas 2:s egen SCC/MIDI-fråga, inte av
+den här flagginventeringen. Watchdogen har inget eget spår i någon
+riktning.
 
 Rör ASR-10 lite av detta blir fas 3 klart mindre än takgränsen 2 000 rader.
 
