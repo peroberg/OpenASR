@@ -51,6 +51,8 @@ mc68302_device::mc68302_device(const machine_config &mconfig, const char *tag, d
 	// machine_start() can query cs0_covers() (via read_loaded_word())
 	// before this device's device_start() runs, since the driver device
 	// starts before its child devices in MAME's start order.
+	// FIXME: review the start-order requirement and the second allocation
+	// in device_start(); the lifecycle is intentionally provisional.
 	m_sim = std::make_unique<mc68302_sim>();
 }
 
@@ -74,6 +76,8 @@ void mc68302_device::device_start()
 	save_item(NAME(m_scr_low));
 	save_item(NAME(m_window_installed));
 	save_item(NAME(m_window_base));
+	// FIXME: m_shadow, m_offset_access_count, and mc68302_sim internals are
+	// not registered, so save/load restores incomplete device state.
 	save_item(NAME(m_known_count));
 	save_item(NAME(m_internal_ram_count));
 	save_item(NAME(m_known_unimplemented_count));
@@ -139,6 +143,8 @@ void mc68302_device::bar_scr_w(offs_t offset, uint16_t data, uint16_t mem_mask)
 		// SCR high word: bits 11-8 (IPA/HWT/WPV/ADC) are write-one-to-clear
 		// status; bits 6-0 excluding reserved bit 7 are plain RW; bits
 		// 15-12 are reserved and always read zero. docs/mc68302/scr-spec.md.
+		// FIXME: partial byte writes can clear low RW bits not selected by
+		// mem_mask; implement proper masked W1C/RW handling and tests.
 		uint16_t new_high = m_scr_high;
 		new_high &= ~(data & mem_mask & 0x0f00);
 		new_high = (new_high & ~uint16_t(0x007f)) | (data & mem_mask & 0x007f);
@@ -169,6 +175,8 @@ void mc68302_device::install_internal_window()
 		m_window_base, m_window_base + 0x0fff,
 		read16s_delegate(*this, FUNC(mc68302_device::internal_r)),
 		write16s_delegate(*this, FUNC(mc68302_device::internal_w)));
+	// TODO: verify partial BAR writes and whether unmap_readwrite()
+	// correctly restores any underlying handlers exposed by relocation.
 	m_window_installed = true;
 }
 
@@ -247,6 +255,7 @@ std::vector<mc68302_device::offset_hit> mc68302_device::top_accessed_offsets(uns
 
 	const size_t keep = std::min<size_t>(max_entries, hits.size());
 	std::partial_sort(hits.begin(), hits.begin() + keep, hits.end(),
+		// TODO: add a secondary key for deterministic ordering when counts tie.
 		[](const offset_hit &a, const offset_hit &b) { return a.count > b.count; });
 	hits.resize(keep);
 	return hits;
@@ -273,6 +282,8 @@ uint16_t mc68302_device::internal_r(offs_t offset, uint16_t mem_mask)
 	{
 	case OFFSET_PBCNT:
 		m_known_count++;
+		// FIXME: m_sim stores PBCNT/PBDDR, but readback is not implemented;
+		// do not treat these reads as verified register semantics yet.
 		return 0; // write-only in this step's model; PBCNT has no documented read-back distinct from PBDDR/PBDAT
 	case OFFSET_PBDDR:
 		m_known_count++;
@@ -282,6 +293,8 @@ uint16_t mc68302_device::internal_r(offs_t offset, uint16_t mem_mask)
 		return m_sim->read_pbdat(mem_mask);
 	case OFFSET_FC6860:
 		m_known_count++;
+		// NOTE: busy-bit timing is ASR-10-observed and experimental, not
+		// verified general MC68302 semantics; isolate as machine policy.
 		return (mem_mask & 0xff00) ? (uint16_t(m_sim->read_fc6860()) << 8) : 0x0000;
 	case OFFSET_BR0: case OFFSET_BR1: case OFFSET_BR2: case OFFSET_BR3:
 		m_known_count++;
@@ -302,6 +315,8 @@ uint16_t mc68302_device::internal_r(offs_t offset, uint16_t mem_mask)
 	if (cls == sib_access_class::known_unimplemented)
 	{
 		m_known_unimplemented_count++;
+		// NOTE: this readback is shadow storage only; implemented register
+		// side effects are intentionally deferred.
 		return m_shadow[offset & 0x7ff] & mem_mask;
 	}
 	m_unknown_count++;
@@ -353,6 +368,8 @@ void mc68302_device::internal_w(offs_t offset, uint16_t data, uint16_t mem_mask)
 	else if (cls == sib_access_class::known_unimplemented)
 	{
 		m_known_unimplemented_count++;
+		// NOTE: documented register treated as RAM for temporary plumbing;
+		// firmware probes may succeed without real device semantics.
 		COMBINE_DATA(&m_shadow[offset & 0x7ff]);
 	}
 	else

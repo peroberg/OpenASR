@@ -9,9 +9,9 @@
    controller, no timers, no watchdog -- those stay known-unimplemented
    shadow storage in mc68302_device::internal_r/w for this step.
 
-   Chip select scope: BR/OR base address and block size decoding is
-   real (docs/mc68302/sib-register-map.md's reset/CS0-final examples
-   verify the bit layout exactly). FC-compare and RW-compare
+   Chip select scope: BR/OR base address and block size decoding follows
+   the documented field layout used by the ASR-10 observations.
+   FC-compare and RW-compare
    enforcement are explicitly out of scope (sib-register-map.md: "not
    yet modeled by any MAME device") -- only CS0's base/size/enable
    feed driver behavior (the ROM/RAM low-memory overlay), and only
@@ -35,11 +35,9 @@ public:
 	static constexpr uint16_t PBCNT_RESET = 0x0080;
 
 	// FC6860 has no manual-documented identity (docs/mc68302/sib-register-map.md's
-	// note). This models only the observed behavior it replaces
-	// (ASR10_EXPERIMENT_FC6860_CLEAR_BUSY_BIT0_AFTER_WRITE, see
-	// docs/asr10/experiment-flags.md): bit 0 of the high byte reads back
-	// set for READ_DELAY reads after a write, then reads as clear
-	// (without altering the stored byte) until the next write rearms it.
+	// note). NOTE: this busy-bit behavior is ASR-10-observed and
+	// experimental, not verified generic MC68302 semantics. TODO: move it
+	// to machine policy/callback or otherwise isolate it more clearly.
 	static constexpr uint8_t FC6860_READ_DELAY = 2;
 
 	// Reset values from docs/mc68302/sib-register-map.md's "reset CS0"
@@ -94,6 +92,7 @@ public:
 	void write_or(unsigned index, uint16_t data, uint16_t mem_mask);
 
 	const cs_decode &cs(unsigned index) const { return m_cs[index]; }
+	// NOTE: address range only; FC/RW/CFC/MRW and DTACK are ignored.
 	bool cs0_covers(uint32_t address) const { return m_cs[0].enabled && address >= m_cs[0].base && address < m_cs[0].end; }
 
 private:

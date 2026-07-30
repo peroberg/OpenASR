@@ -131,6 +131,9 @@ void mc68302_device::mc68302_sim::recompute_cs(unsigned index)
 	unsigned dont_care_bits = 0;
 	while (dont_care_bits < 11 && !BIT(mask_field, dont_care_bits))
 		dont_care_bits++;
+	// TODO: verify whether decode.base should be normalized by the OR
+	// don't-care mask. This currently models only an address interval,
+	// not the full FC/RW/CFC/MRW/DTACK chip-select decision.
 	const uint32_t size = 0x2000u << dont_care_bits;
 	decode.end = decode.base + size;
 }

@@ -29,13 +29,14 @@ public:
 	mc68302_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
 
 	// Every access to the internal 4KB SIB window is bucketed into one of
-	// these four classes. `known` = the register is implemented in this
-	// device and its side effects match this step's scope (Port B PIO,
-	// the FC6860 busy register, BR0-3/OR0-3). `internal_ram` = plain
-	// dual-port RAM (0x000-0x3FF) -- genuinely just memory, not a
-	// register; the ROM parks its supervisor stack there, so this is
-	// where the bulk of any poll/delay-loop access volume lives, and it
-	// isn't a guess in any sense that matters for the oracle. `known_
+	// these four classes. `known` = this step has deliberate handling for
+	// the register, not necessarily fully verified MC68302 semantics.
+	// TODO: keep `known` reserved for verified semantics as this model
+	// grows; FC6860 and chip-select decode are currently partial.
+	// `internal_ram` = plain dual-port RAM (0x000-0x3FF) -- genuinely just
+	// memory, not a register; the ROM parks its supervisor stack there,
+	// so this is where the bulk of any poll/delay-loop access volume
+	// lives, and it isn't a guess in any sense that matters for the oracle. `known_
 	// unimplemented` = the offset is a documented MC68302 register
 	// (docs/mc68302/sib-register-map.md, communications-block-map.md,
 	// including 0x400-0x7FF's SCC/SMC parameter RAM) but this device
@@ -69,8 +70,10 @@ public:
 	struct offset_hit { uint32_t byte_offset = 0; uint32_t count = 0; };
 	std::vector<offset_hit> top_accessed_offsets(unsigned max_entries) const;
 
-	// Real BR0/OR0 decode (docs/mc68302/sib-register-map.md): true while
-	// CS0 currently claims `address`. The driver's low-memory ROM/RAM
+	// BR0/OR0 address-range decode (docs/mc68302/sib-register-map.md):
+	// true while CS0 currently claims `address`. NOTE: FC/RW/CFC/MRW and
+	// DTACK are not modeled here, so this is not full chip-select decode.
+	// The driver's low-memory ROM/RAM
 	// overlay is a direct consequence of this -- when the ROM relocates
 	// CS0 away from address 0 (BR0=0x1f01/OR0=0x3f82 -> 0xf80000), the
 	// overlay must flip. See mc68302sim.h/.cpp for the decode.
@@ -107,6 +110,9 @@ private:
 	// Generic shadow storage for the known-unimplemented ranges (dual-port
 	// RAM, IDMA, interrupt controller, Port A, chip selects, timers,
 	// watchdog, SCC/SMC/SCP) -- 0x800 words covers the full 4KB window.
+	// NOTE: documented-but-unimplemented registers behave as RAM here;
+	// firmware can therefore pass probes for the wrong reason. This is
+	// temporary plumbing, not register semantics.
 	// PBCNT/PBDDR/PBDAT/FC6860 are intercepted before reaching this and
 	// live in m_sim instead.
 	std::array<uint16_t, 0x800> m_shadow{};
