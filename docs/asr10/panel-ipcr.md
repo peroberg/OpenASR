@@ -198,3 +198,58 @@ och sina respektive billigaste-först-testa-ordning är noterade ovan.
 | IP0 = diskettstatus (motor/media) | Möjlig, starkare stöd (syskonprecedens + tidskorrelation) | `[Likely]` |
 | MAME-enhet för panelfallet | `esqpanel_device`-ramverk återanvändbart, protokoll måste vara nytt | `[Verified]`/`[OPEN]` |
 | MAME-enhet för diskettfallet | Ingen ny enhet behövs, en devcb-koppling räcker | `[Likely]` |
+
+## 2026-07-31: kandidat B (diskett) testad i tre varianter — ingen fungerar, koden reverterad
+
+`[Verified]`. Tre `m_duart->ip0_w(...)`-villkor testades, alla mot
+`./mess asr10booth -flop1 V350.img -video none -sound none -nothrottle
+-seconds_to_run 30 -log` med stubben borttagen:
+
+1. **`m_floppy_is_active && m_floppy_is_loaded`** (esq5505.cpp:387,
+   ordagrant). Regression: fastnar direkt i upprepad
+   `"PLEASE INSERT DISK"`, når aldrig `LOADING SYSTEM`.
+2. **`m_floppy_is_loaded` ensamt** (motorobereoende — motiverat av att
+   `$FB7C84` kontrolleras innan något motorkommando skickats).
+   **Identisk regression**, byte-för-byte samma access-siffror som (1).
+3. **`floppy_image_device::dskchg_r()`** (periodisk poll, 1 kHz, in i
+   `ip0_w()` varje tick — inget push-callback finns för DSKCHG).
+   **Återigen identisk regression.**
+
+**Det verkliga IPCR-värdet ROM:en fick, mätt direkt (stubben borta, de
+befintliga `ASR10_DUART_INPUT`-loggraderna), var `0x00` vid **båda**
+portarna, i varje varv av (3):**
+
+```
+pc=fb7c84 addr=fc4809 value=00 role=semantic_input_change_bit4 branch_taken=1  (väntar på bit4=1, tar fel-grenen)
+pc=fb7c30 addr=fc4809 value=00 role=ack_input_change_latch                     (väntar på bit4=1, ser aldrig det)
+```
+
+Bit 4 sattes alltså **aldrig**, trots att `m_duart->ip0_w()` verkligen
+anropas (verifierat i föregående runda: `real_ipcr=0x11` gick att mäta
+direkt efter en `ip0_w`-övergång innan stubben fanns kvar för att
+maska den). `[Hypothesis]`, inte verifierat vidare i den här
+uppgiften: den mest sannolika förklaringen är att `IPCR`:s
+ändringsflagga sätts en gång, tidigt (t.ex. i `machine_start()`, före
+`m_duart`s egen `device_reset()`, som sannolikt nollställer `IPCR`
+oavsett `IP_last_state`), och att ingen **ytterligare** verklig
+nivåändring sker innan `$FB7C84`/`$FB7C30` läser registret — eller att
+någon annan, ospårad läsning av register 4 konsumerar flaggan
+(`IPCR &= 0x0f` vid varje läsning) innan ROM:et själv hinner se den.
+Ingen av dessa möjligheter undersöktes vidare — utanför uppgiftens
+scope (`"Bygg ingen panelenhet"`).
+
+**Acceptanskriteriet ("stubben bort utan regression") uppfylldes
+inte.** Hela IP0-kopplingen reverterad i sin helhet — noll rader netto
+kvar av den (klass-medlemmar, `machine_start()`-koppling,
+funktionskroppar, `intrq_wr_callback`, allt borttaget); stubben
+återställd till exakt sitt ursprungsskick. Bekräftat identiskt
+efterbygge-beteende mot baslinjen (`TUNING KBD - HANDS OFF`, samma
+loggrader). Endast CS3-access-oraklet (`docs/asr10/PLAN.md` fas 3,
+punkt 0 i föregående uppdrag) kvarstår som en genuin, ocommitterad
+addition efter den här uppgiften.
+
+**Kandidat A (panelhändelse) är fortfarande obestriden och otestad.**
+Nästa steg, om frågan tas upp igen, bör antingen (a) undersöka VARFÖR
+den verkliga `ip0_w`-övergången aldrig syns i `IPCR` vid läspunkterna
+(reset-ordning eller en konsumerande läsning — se ovan), eller (b)
+testa kandidat A i stället för att fortsätta variera diskettvillkoret.
