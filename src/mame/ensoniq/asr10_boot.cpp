@@ -749,11 +749,8 @@ private:
 	bool m_panel_c_parser_trace_active = false;
 	bool m_panel_c_parser_trace_done = false;
 	bool m_panel_c_rx_valid = false;
-	bool m_panel_c_irq6_asserted = false;
 	u8 m_panel_c_rx_byte = 0;
 	u8 m_panel_c_srb = 0;
-	u8 m_panel_c_isr = 0;
-	u8 m_panel_c_imr = 0;
 	u32 m_panel_c_parser_trace_count = 0;
 	u32 m_panel_c_parser_trace_last_pc = 0xffffffffU;
 	u32 m_last_pc = 0xffffffffU;
@@ -978,7 +975,6 @@ private:
 	void log_panel_c_parser_trace(u32 pc, const char *event);
 	void panel_c_parser_trace_stop(const char *reason, u32 pc);
 	void panel_c_queue_rx(u8 data, const char *reason, u32 pc);
-	void panel_c_update_irq6(const char *reason, u32 pc);
 	void panel_e_observe_thrb(u32 pc, u8 data);
 	void panel_e_note_completion(u32 pc, u16 previous_03bc, u16 current_03bc);
 	void panel_e_abort(const char *reason, u32 pc, u8 actual = 0xff);
@@ -991,7 +987,6 @@ private:
 	void panel_l_log_temporal(const char *event, u32 pc, u32 byte_address = 0xffffffffU,
 		u16 previous = 0, u16 current = 0);
 	bool panel_reply_experiment_enabled() const;
-	bool duart_irq_model_enabled() const;
 	const char *panel_reply_experiment_name() const;
 	u32 read_stack_long(u32 address);
 	u16 read_program_word(u32 address);
@@ -1736,11 +1731,8 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_panel_c_parser_trace_active));
 	save_item(NAME(m_panel_c_parser_trace_done));
 	save_item(NAME(m_panel_c_rx_valid));
-	save_item(NAME(m_panel_c_irq6_asserted));
 	save_item(NAME(m_panel_c_rx_byte));
 	save_item(NAME(m_panel_c_srb));
-	save_item(NAME(m_panel_c_isr));
-	save_item(NAME(m_panel_c_imr));
 	save_item(NAME(m_panel_c_parser_trace_count));
 	save_item(NAME(m_panel_c_parser_trace_last_pc));
 	save_item(NAME(m_last_pc));
@@ -2087,11 +2079,8 @@ void asr10_boot_state::machine_reset()
 	m_panel_c_parser_trace_active = false;
 	m_panel_c_parser_trace_done = false;
 	m_panel_c_rx_valid = false;
-	m_panel_c_irq6_asserted = false;
 	m_panel_c_rx_byte = 0;
 	m_panel_c_srb = 0;
-	m_panel_c_isr = 0;
-	m_panel_c_imr = 0;
 	m_panel_c_parser_trace_count = 0;
 	m_panel_c_parser_trace_last_pc = 0xffffffffU;
 	m_last_pc = 0xffffffffU;
@@ -2343,16 +2332,14 @@ u8 asr10_boot_state::maincpu_iack_r(u8 level)
 			custom_vector = true;
 		}
 	}
-	if (duart_irq_model_enabled() && level == 6 && m_panel_c_irq6_asserted)
+	if (level == 6)
 	{
-		vector = 0x56;
+		// docs/asr10/PLAN.md fas 3 steg 2 (minimal slice): the external
+		// IRQ6 vector-supply formula now lives in the mc68302 device
+		// itself, not in a driver-side shadow. See
+		// mc68302_device::irq6_ack_vector().
+		vector = m_maincpu->irq6_ack_vector();
 		custom_vector = true;
-		logerror("%s event=iack level=6 vector=%02x "
-			"pc=%06x sr=%04x isr=%02x imr=%02x active=%02x rx_active=%02x counter_active=%02x "
-			"rx_valid=%u rx_byte=%02x\n",
-			panel_reply_experiment_name(), vector, pc, sr, m_panel_c_isr, m_panel_c_imr, m_panel_c_isr & m_panel_c_imr,
-			m_panel_c_isr & m_panel_c_imr & 0x20, m_panel_c_isr & m_panel_c_imr & 0x08,
-			m_panel_c_rx_valid ? 1 : 0, m_panel_c_rx_byte);
 	}
 
 	if (m_dispatcher_rte_first_pc_pending)
@@ -2760,48 +2747,6 @@ const char *asr10_boot_state::panel_reply_experiment_name() const
 }
 
 
-bool asr10_boot_state::duart_irq_model_enabled() const
-{
-	// Counter/timer is not a panel-reply experiment; it only needs the same
-	// proven ISR/IMR-driven IRQ6 + IACK routing. Kept narrow and used only
-	// in IRQ routing/IACK paths so existing panel RX behavior is unchanged
-	// bit-for-bit when only ASR10_EXPERIMENT_DUART_COUNTER_TIMER is set.
-	return panel_reply_experiment_enabled() || m_duart_counter_timer_enabled;
-}
-
-
-void asr10_boot_state::panel_c_update_irq6(const char *reason, u32 pc)
-{
-	if (!duart_irq_model_enabled() || machine().side_effects_disabled())
-		return;
-
-	// 0x20 = RxRDYB (proven panel-reply path); 0x08 = counter/timer ready
-	// (ASR10_EXPERIMENT_DUART_COUNTER_TIMER). Bit 0x08 is only ever set by
-	// that experiment, so this widened mask is a no-op when it is disabled.
-	const u8 rx_active = m_panel_c_isr & m_panel_c_imr & 0x20;
-	const u8 counter_active = m_panel_c_isr & m_panel_c_imr & 0x08;
-	const bool active = (rx_active | counter_active) != 0;
-	if (active == m_panel_c_irq6_asserted)
-	{
-		logerror("%s event=irq6_route_no_change reason=%s pc=%06x "
-			"isr=%02x imr=%02x active=%02x rx_active=%02x counter_active=%02x irq6=%u rx_valid=%u rx_byte=%02x\n",
-			panel_reply_experiment_name(), reason, pc, m_panel_c_isr, m_panel_c_imr, m_panel_c_isr & m_panel_c_imr,
-			rx_active, counter_active,
-			m_panel_c_irq6_asserted ? 1 : 0, m_panel_c_rx_valid ? 1 : 0, m_panel_c_rx_byte);
-		return;
-	}
-
-	m_panel_c_irq6_asserted = active;
-	m_maincpu->set_input_line(6, active ? ASSERT_LINE : CLEAR_LINE);
-	logerror("%s event=irq6_route reason=%s pc=%06x "
-		"isr=%02x imr=%02x active=%02x rx_active=%02x counter_active=%02x irq6=%u rx_valid=%u rx_byte=%02x sr=%04x\n",
-		panel_reply_experiment_name(), reason, pc, m_panel_c_isr, m_panel_c_imr, m_panel_c_isr & m_panel_c_imr,
-		rx_active, counter_active,
-		m_panel_c_irq6_asserted ? 1 : 0, m_panel_c_rx_valid ? 1 : 0, m_panel_c_rx_byte,
-		u16(m_maincpu->state_int(M68K_SR)));
-}
-
-
 void asr10_boot_state::panel_c_queue_rx(u8 data, const char *reason, u32 pc)
 {
 	if (!panel_reply_experiment_enabled() || machine().side_effects_disabled())
@@ -2809,22 +2754,20 @@ void asr10_boot_state::panel_c_queue_rx(u8 data, const char *reason, u32 pc)
 	if (m_panel_c_rx_valid)
 	{
 		logerror("%s event=rx_queue_blocked reason=%s pc=%06x "
-			"existing_rx=%02x requested_rx=%02x srb=%02x isr=%02x imr=%02x\n",
-			panel_reply_experiment_name(), reason, pc, m_panel_c_rx_byte, data, m_panel_c_srb, m_panel_c_isr, m_panel_c_imr);
+			"existing_rx=%02x requested_rx=%02x srb=%02x\n",
+			panel_reply_experiment_name(), reason, pc, m_panel_c_rx_byte, data, m_panel_c_srb);
 		return;
 	}
 
 	m_panel_c_rx_valid = true;
 	m_panel_c_rx_byte = data;
 	m_panel_c_srb |= 0x01;
-	m_panel_c_isr |= 0x20;
 	logerror("%s event=rx_queued reason=%s pc=%06x "
-		"rx=%02x srb=%02x isr=%02x imr=%02x active=%02x slot0_state=%04x "
+		"rx=%02x srb=%02x slot0_state=%04x "
 		"slot0_queue_head=%04x slot0_queue_tail=%04x node_14f4_type=%04x count_03bc=%02x\n",
-		panel_reply_experiment_name(), reason, pc, data, m_panel_c_srb, m_panel_c_isr, m_panel_c_imr, m_panel_c_isr & m_panel_c_imr,
+		panel_reply_experiment_name(), reason, pc, data, m_panel_c_srb,
 		lowmem_word(0x23d6), lowmem_word(0x23e4), lowmem_word(0x23e6), lowmem_word(0x14f6),
 		lowmem_byte(0x03bc));
-	panel_c_update_irq6("rx_queued", pc);
 }
 
 
@@ -4631,14 +4574,11 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 	// panel-B byte-transport taps and the unmodeled external-input stub
 	// below stay hand-written here.
 	u16 raw_data = ACCESSING_BITS_0_7 ? m_duart->read(word) : 0;
-	// ISR visibility is shared IRQ-routing state (RxRDYB and/or counter-ready),
-	// so it uses the broader duart_irq_model_enabled() gate. SRB/RHRB below
-	// stay on panel_reply_experiment_enabled() only: RX byte delivery is
-	// unrelated to the counter/timer experiment and must not change when it
-	// alone is enabled.
-	if (duart_irq_model_enabled() && ACCESSING_BITS_0_7 && address == 0x00fc480a &&
-		(m_panel_c_rx_valid || m_panel_c_isr))
-		raw_data = m_panel_c_isr;
+	// ISR reads now always come straight from the real device -- its irq_cb()
+	// is wired to maincpu IRQ6 (device_add_mconfig), so its ISR genuinely
+	// reflects RX-ready and counter/timer-ready alike. SRB/RHRB below stay
+	// hand-modeled: channel B still isn't wired to a real serial source, so
+	// panel_reply_experiment_enabled() injects bytes here directly.
 	if (panel_reply_experiment_enabled() && ACCESSING_BITS_0_7)
 	{
 		if (address == 0x00fc4812 && m_panel_c_rx_valid)
@@ -4688,14 +4628,14 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 		if (!machine().side_effects_disabled() && address == 0x00fc4816 && ACCESSING_BITS_0_7)
 			log_panel_b_rhrb(pc, u8(data),
 				panel_reply_experiment_enabled() ? m_panel_c_srb : u8(m_duart->read(0x09)),
-				panel_reply_experiment_enabled() ? m_panel_c_isr : u8(m_duart->read(0x05)));
+				u8(m_duart->read(0x05)));
 	}
 	if (panel_reply_experiment_enabled() && !machine().side_effects_disabled() &&
 		address == 0x00fc4816 && ACCESSING_BITS_0_7 && m_panel_c_rx_valid)
 	{
 		logerror("%s event=rhrb_pop pc=%06x byte=%02x "
-			"srb_before=%02x isr_before=%02x imr=%02x count_03bc=%02x parser_state_03c0=%04x\n",
-			panel_reply_experiment_name(), pc, m_panel_c_rx_byte, m_panel_c_srb, m_panel_c_isr, m_panel_c_imr,
+			"srb_before=%02x count_03bc=%02x parser_state_03c0=%04x\n",
+			panel_reply_experiment_name(), pc, m_panel_c_rx_byte, m_panel_c_srb,
 			lowmem_byte(0x03bc), lowmem_word(0x03c0));
 		if (m_panel_c_parser_trace_enabled && !m_panel_c_parser_trace_done && pc == 0x00ffb242 &&
 			(m_panel_c_rx_byte == 0x00 || m_panel_c_rx_byte == 0xff))
@@ -4709,8 +4649,6 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 		}
 		m_panel_c_rx_valid = false;
 		m_panel_c_srb &= ~0x01;
-		m_panel_c_isr &= ~0x20;
-		panel_c_update_irq6("rhrb_pop", pc);
 	}
 	if (!machine().side_effects_disabled())
 	{
@@ -4748,18 +4686,6 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 	const u32 address = (0x00fc4800 | (offset << 1)) | (ACCESSING_BITS_0_7 ? 1 : 0);
 	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 	log_cpu_context(pc);
-	if (duart_irq_model_enabled() && address == 0x00fc480b && ACCESSING_BITS_0_7 &&
-		!machine().side_effects_disabled())
-	{
-		const u8 previous_imr = m_panel_c_imr;
-		m_panel_c_imr = u8(data);
-		logerror("%s event=imr_write pc=%06x previous_imr=%02x "
-			"new_imr=%02x isr=%02x active=%02x rx_active=%02x counter_active=%02x rx_valid=%u\n",
-			panel_reply_experiment_name(), pc, previous_imr, m_panel_c_imr, m_panel_c_isr, m_panel_c_isr & m_panel_c_imr,
-			m_panel_c_isr & m_panel_c_imr & 0x20, m_panel_c_isr & m_panel_c_imr & 0x08,
-			m_panel_c_rx_valid ? 1 : 0);
-		panel_c_update_irq6("imr_write", pc);
-	}
 	if (ACCESSING_BITS_0_7)
 		m_duart->write(word, u8(data));
 	if (address == 0x00fc4817 && ACCESSING_BITS_0_7)
@@ -6972,10 +6898,10 @@ void asr10_boot_state::log_run_config_header()
 			logerror("ASR10_RUN_CONFIG_FLOPPY mounted=0\n");
 		}
 	}
-	logerror("ASR10_RUN_CONFIG_IRQ6 wiring=fixed vector=0x56 condition=duart_irq_model_enabled()&&"
-		"level==6&&m_panel_c_irq6_asserted duart_irq_model_enabled=%u note=actual_counter_period_and_"
-		"first_iack_vector_are_runtime_facts_see_ASR10_DUART_COUNTER_and_ASR10_M68K_IACK_tags\n",
-		duart_irq_model_enabled() ? 1u : 0u);
+	logerror("ASR10_RUN_CONFIG_IRQ6 wiring=real_device_irq_cb vector_source=mc68302_device::"
+		"irq6_ack_vector fixed_vector=%02x note=m_duart_irq_cb_bound_to_maincpu_input_line_6_"
+		"see_ASR10_M68K_IACK_tag_for_actual_returned_vector\n",
+		m_maincpu->irq6_ack_vector());
 
 	// requested (raw env string) / effective (parsed bool actually used) /
 	// default-when-unset, for every ASR10_* flag found in this source file.
@@ -10113,8 +10039,17 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	// and channel B (front panel) are not wired to anything yet -- the
 	// panel byte transport still runs through the hand-written taps in
 	// duart_panel_asr_candidate_r/w until a real esqpanel-style receiver
-	// exists.
+	// exists. The IRQ output, however, is a real pin on a real device --
+	// docs/asr10/duart-imr.md found it genuinely pending (counter/timer
+	// ready) 159/160 of the time and never wired to anything. Wired here
+	// the same way esq5505.cpp wires its own SCN2681 (irq_cb() ->
+	// set_inputline), replacing the old m_panel_c_isr/imr shadow that
+	// could only ever see RX-ready, never counter/timer. Landed together
+	// with mc68302_device::irq6_ack_vector() (docs/asr10/PLAN.md fas 3
+	// steg 2, minimal slice) -- see docs/asr10/duart-irq6-wiring.md for
+	// why the irq_cb wiring alone regresses the boot without it.
 	SCN2681(config, m_duart, XTAL(16'000'000) / 4);
+	m_duart->irq_cb().set_inputline(m_maincpu, 6);
 
 	// Phase 1 host-port fingerprint experiment (ASR10_EXPERIMENT_ES5506_HOST).
 	// Flagged premise, not board-proven: see

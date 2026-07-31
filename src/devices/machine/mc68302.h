@@ -83,6 +83,16 @@ public:
 	// LRCLK timer into PB3). See mc68302sim.h's set_external_input().
 	void set_pb_input(unsigned bit, bool level);
 
+	// External IRQ6 IACK vector, MC68302 User's Manual Table 3-5 /
+	// docs/mc68302/vector-origin-map.md: vector = (GIMR bits 7-5 << 5) |
+	// source_low_5. Fas 3 steg 2, minimal slice: only the external
+	// vector-supply formula for level 6, hardcoded to the ASR-10 boot's
+	// fixed GIMR=0x8040 (docs/asr10/baseline-media.md) since GIMR itself
+	// isn't a modeled register yet. No priority, no nesting, no IPR/ISR,
+	// no IMR masking of internal sources -- the full interrupt controller
+	// stays future work (mc68302int.cpp).
+	uint8_t irq6_ack_vector() const { return 0x40 | 0x16; } // GIMR.V7_V5=010 | external level 6 low bits
+
 protected:
 	class mc68302_sim;
 
