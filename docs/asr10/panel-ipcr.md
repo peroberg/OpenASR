@@ -253,3 +253,77 @@ Nästa steg, om frågan tas upp igen, bör antingen (a) undersöka VARFÖR
 den verkliga `ip0_w`-övergången aldrig syns i `IPCR` vid läspunkterna
 (reset-ordning eller en konsumerande läsning — se ovan), eller (b)
 testa kandidat A i stället för att fortsätta variera diskettvillkoret.
+
+## 2026-07-31: fördröjd IP0-övergång efter reset — flaggan sätts verkligen, men konsumeras av en tredje, tidigare okänd läsare ($FB7BEE) innan ROM:et hinner se den
+
+`[Verified]`. Föregående avsnitts hypotes — "någon annan, ospårad
+läsning av register 4 konsumerar flaggan innan ROM:et själv hinner se
+den" — testades direkt genom att flytta IP0-övergången till EFTER
+CPU-reset i stället för vid monteringstillfället, och genom att
+tillfälligt bredda diagnosen till att logga *varje* läsning av IPCR,
+inte bara de två kända grindarna.
+
+**Metod.** En `emu_timer`, startad i `machine_reset()` (garanterat
+efter alla enheters `device_start()`/`device_reset()`, till skillnad
+från `machine_start()`), fyrade 300 ms in i körningen och anropade då
+`m_duart->ip0_w(...)` — en äkta flanke medan CPU:n kör, inte ett
+tillstånd satt före DUART:ens egen reset. Stubben
+(`ASR10_EXPERIMENT_STUB_DUART_INPUT_CHANGE_BIT4_AT_FB7C84`) togs bort
+under testet. Två polariteter kördes:
+
+1. **0 → 1** (idle låg, timer sätter `ip0_w(1)`).
+2. **1 → 0** (idle hög satt i `machine_reset()`, timer sätter
+   `ip0_w(0)`) — provad eftersom riktiga diskettsignaler är aktivt
+   låga.
+
+**Resultat: identisk regression i båda fallen** — fastnar i upprepad
+`"PLEASE INSERT DISK"`, når aldrig `LOADING SYSTEM`. Men till skillnad
+från de tre diskettvillkoren i föregående avsnitt (som aldrig ens
+producerade en mätbar nivåändring) bekräftade den breddade loggningen
+att DUART:en verkligen registrerar övergången:
+
+```
+# 0 -> 1-fallet, timerns egen ip0_w:
+ASR10_IPCR_EXPERIMENT event=any_ipcr_read ... pc=00fb7bee value=11   (bit4 satt, rätt nivå)
+ASR10_DUART_INPUT pc=fb7c84 addr=fc4809 value=00 role=semantic_input_change_bit4   (flaggan redan borta)
+ASR10_DUART_INPUT pc=fb7c30 addr=fc4809 value=00 role=ack_input_change_latch       (flaggan redan borta)
+
+# 1 -> 0-fallet, spegelvänt:
+ASR10_IPCR_EXPERIMENT event=any_ipcr_read ... pc=00fb7bee value=10   (bit4 satt, rätt nivå)
+ASR10_DUART_INPUT pc=fb7c84 addr=fc4809 value=00 role=semantic_input_change_bit4
+ASR10_DUART_INPUT pc=fb7c30 addr=fc4809 value=00 role=ack_input_change_latch
+```
+
+**Fyndet:** det finns en tredje, tidigare oidentifierad läsare av
+IPCR vid `$FB7BEE`, som körs TIDIGARE i varje omförsöksvarv än de två
+kända grindarna — uppmätt kadens: `$FB7BEE` avfyras ungefär var 1,7:e
+sekund, `$FB7C84` följer ~0,75 s efter varje `$FB7BEE`. Eftersom
+`IPCR`:s ändringsflaggor nollställs vid läsning (`IPCR &= 0x0f`,
+`mc68681.cpp`), och `$FB7BEE` kommer först i programordning,
+konsumerar `$FB7BEE` alltid en färsk flagga innan `$FB7C84`/`$FB7C30`
+någonsin kan se den — **oavsett övergångens riktning**. Detta
+bekräftades explicit för båda polariteterna ovan: `$FB7BEE`:s första
+läsning efter övergången visar korrekt rått värde med bit4 satt
+(`value=11` respektive `value=10`); de två kända grindarnas
+efterföljande läsningar visar alltid flaggan redan borttagen.
+
+**Detta är en avgörande, mätt förklaring** till varför ingen variant
+av IP0-kopplingen någonsin kunnat få bort stubben — det är inte ett
+tidsfrågeproblem eller en polaritetsfråga, det är en tredje
+konsument som alltid kommer före. Vad `$FB7BEE` faktiskt gör med
+värdet, om den är den "riktiga" avsedda konsumenten (med `$FB7C84`/
+`$FB7C30` som sekundära/redundanta kontroller mot en annorlunda
+modellerad signal), och om riktig hårdvaras DSKCHG/IP0-koppling är
+nivåkänslig snarare än enstaka-flagga (så att alla tre läsarna skulle
+se konsekvent tillstånd på riktig kisel) — inget av detta undersöktes
+i den här uppgiften (ingen disassemblering av `$FB7BEE`s omgivande
+kod gjordes). Kandidat för en FRAMTIDA uppgift, inte åtagen här.
+
+**Acceptanskriteriet uppfylldes återigen inte.** IP0-kopplingen
+reverterad i sin helhet igen (klass-medlemmar, `machine_start()`- och
+`machine_reset()`-koppling, timer, load/unload-loggning, breddad
+IPCR-diagnostik, funktionskroppar) — noll rader netto kvar av den.
+Stubben återställd till exakt sitt ursprungsskick. Bekräftat identiskt
+efterbygge-beteende mot baslinjen (`TUNING KBD - HANDS OFF`, samma
+panelsekvens). CS3-access-oraklet (se nedan) committades separat som
+den enda genuina, bestående tillägget från den här uppgiften.
