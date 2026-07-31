@@ -56,6 +56,7 @@
 #include <algorithm>
 #include <array>
 #include <cstdlib>
+#include <vector>
 
 // TODO: ASR-10 likely contains ES5701/Super-GLU-class Ensoniq ASIC.
 // Known/claimed roles: 68000<->ESP, 68000<->OTIS,
@@ -142,6 +143,7 @@ private:
 	required_device<floppy_connector> m_floppy_connector;
 	required_device<scn2681_device> m_duart;
 	required_memory_region m_rom;
+
 	optional_device<es5506_device> m_es5506_host;
 	optional_device<es5510_device> m_es5510_host;
 
@@ -165,6 +167,33 @@ private:
 	memory_passthrough_handler m_hook_fc222e_write_tap;
 	memory_passthrough_handler m_hook_fc226e_read_tap;
 	memory_passthrough_handler m_hook_fc226e_write_tap;
+
+	// CS3 window access oracle (0xFC4000-0xFC5FFF: FDC, DUART, SCSI
+	// candidate) -- same known/known_unimplemented/unknown scheme as
+	// mc68302_device's SIB-window oracle (docs/asr10/PLAN.md fas 3).
+	// `known` = a real device backs this address (FDC/DUART). `known_
+	// unimplemented` = a documented board-level candidate register with
+	// no real device behind it (the SCSI candidate). `unknown` = plain
+	// unaddressed .ram() -- nothing claims this address at all.
+	//
+	// NOTE on indexing: install_read_tap/write_tap's `offset` callback
+	// parameter is the raw CPU byte address here (verified empirically:
+	// a read at $FC4809 delivered offset=0x00fc4808), not a word-shifted
+	// index relative to the tap's own addrstart the way the mc68302
+	// device's internal_r/w handlers work. classify_cs3_offset() and the
+	// storage array are byte-indexed accordingly, 0x2000 entries for the
+	// full 0xFC4000-0xFC5FFF span.
+	enum class cs3_access_class : u8 { known, known_unimplemented, unknown };
+	static cs3_access_class classify_cs3_offset(u16 byte_offset);
+	struct cs3_access_class_counts { u32 known = 0; u32 known_unimplemented = 0; u32 unknown = 0; };
+	cs3_access_class_counts cs3_distinct_offset_counts() const;
+	struct cs3_offset_hit { u32 address = 0; u32 count = 0; };
+	std::vector<cs3_offset_hit> cs3_top_accessed_offsets(unsigned max_entries) const;
+	void cs3_access_summary();
+	std::array<u32, 0x2000> m_cs3_access_count{};
+	memory_passthrough_handler m_cs3_read_tap;
+	memory_passthrough_handler m_cs3_write_tap;
+
 	u32 m_fc2d40_cluster_count = 0;
 	u32 m_fc3000_cluster_count = 0;
 	std::unique_ptr<u16[]> m_lowmem_shadow;
@@ -994,6 +1023,7 @@ void asr10_boot_state::machine_start()
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::panel_submission_summary, this));
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::root_directory_summary, this));
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::mc68302_access_summary, this));
+	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::cs3_access_summary, this));
 	// Removed (4.26): four single-address opcode-fetch taps formerly here
 	// (f8834a/f88352/006800/00680a) never fired in any live capture across
 	// this whole investigation -- opcode fetch on this core goes through a
@@ -1276,6 +1306,21 @@ void asr10_boot_state::machine_start()
 			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 			logerror("ASR10_CLUSTER_TRACE event=fc226e_write pc=%06x mem_mask=%04x data=%04x\n",
 				pc, mem_mask, data);
+		});
+	// CS3 window access oracle (PLAN.md fas 3): pure observation, no data
+	// modified, covers the whole 0xFC4000-0xFC5FFF window regardless of
+	// which sub-range (FDC/DUART/SCSI-candidate/plain RAM) answers.
+	m_cs3_read_tap = m_maincpu->space(AS_PROGRAM).install_read_tap(
+		0x00fc4000, 0x00fc5fff, "cs3_access_oracle_read_tap",
+		[this] (offs_t offset, u16 &data, u16 mem_mask)
+		{
+			m_cs3_access_count[offset & 0x1fff]++;
+		});
+	m_cs3_write_tap = m_maincpu->space(AS_PROGRAM).install_write_tap(
+		0x00fc4000, 0x00fc5fff, "cs3_access_oracle_write_tap",
+		[this] (offs_t offset, u16 &data, u16 mem_mask)
+		{
+			m_cs3_access_count[offset & 0x1fff]++;
 		});
 	// Phase 1 host-port fingerprint experiment (ASR10_EXPERIMENT_ES5506_HOST):
 	// observation-only taps layered over the real es5506_device::read/write
@@ -5431,6 +5476,89 @@ void asr10_boot_state::mc68302_access_summary()
 	{
 		osd_printf_info("ASR10_MC68302_ACCESS_TOP rank=%u offset=%04x count=%u\n",
 			++rank, hit.byte_offset, hit.count);
+	}
+}
+
+
+// CS3 window (0xFC4000-0xFC5FFF): FDC 0xfc4000-3, unaddressed RAM
+// 0xfc4004-47ff, DUART 0xfc4800-481f, unaddressed RAM 0xfc4820-4fff,
+// SCSI candidate 0xfc5000-501f, unaddressed RAM 0xfc5020-5fff.
+// byte_offset is 0-based from 0xfc4000 (see the class-body note on the
+// tap's offset convention -- this is a raw byte offset, not word-shifted).
+asr10_boot_state::cs3_access_class asr10_boot_state::classify_cs3_offset(u16 byte_offset)
+{
+	if (byte_offset <= 0x0003) return cs3_access_class::known;               // FDC
+	if (byte_offset <= 0x07ff) return cs3_access_class::unknown;             // 0xfc4004-47ff
+	if (byte_offset <= 0x081f) return cs3_access_class::known;               // DUART
+	if (byte_offset <= 0x0fff) return cs3_access_class::unknown;             // 0xfc4820-4fff
+	if (byte_offset <= 0x101f) return cs3_access_class::known_unimplemented; // SCSI candidate
+	return cs3_access_class::unknown;                                       // 0xfc5020-5fff
+}
+
+asr10_boot_state::cs3_access_class_counts asr10_boot_state::cs3_distinct_offset_counts() const
+{
+	cs3_access_class_counts result;
+	for (size_t offset = 0; offset < m_cs3_access_count.size(); offset++)
+	{
+		if (!m_cs3_access_count[offset])
+			continue;
+		switch (classify_cs3_offset(u16(offset)))
+		{
+		case cs3_access_class::known: result.known++; break;
+		case cs3_access_class::known_unimplemented: result.known_unimplemented++; break;
+		case cs3_access_class::unknown: result.unknown++; break;
+		}
+	}
+	return result;
+}
+
+std::vector<asr10_boot_state::cs3_offset_hit> asr10_boot_state::cs3_top_accessed_offsets(unsigned max_entries) const
+{
+	std::vector<cs3_offset_hit> hits;
+	hits.reserve(m_cs3_access_count.size());
+	for (size_t offset = 0; offset < m_cs3_access_count.size(); offset++)
+		if (m_cs3_access_count[offset])
+			hits.push_back({0x00fc4000 + u32(offset), m_cs3_access_count[offset]});
+
+	const size_t keep = std::min<size_t>(max_entries, hits.size());
+	std::partial_sort(hits.begin(), hits.begin() + keep, hits.end(),
+		[](const cs3_offset_hit &a, const cs3_offset_hit &b) { return a.count > b.count; });
+	hits.resize(keep);
+	return hits;
+}
+
+void asr10_boot_state::cs3_access_summary()
+{
+	// Board-level counterpart to mc68302_access_summary(): the same
+	// known/known_unimplemented/unknown oracle, but for the CS3 window
+	// (FDC, DUART, SCSI candidate) instead of the 68302's internal SIB
+	// window. Shows which DUART registers the ROM actually touches,
+	// which OR-patterns it writes, and how much of the window is pure
+	// guesswork (the SCSI candidate) versus a real device.
+	const auto distinct = cs3_distinct_offset_counts();
+	u32 known = 0, known_unimplemented = 0, unknown = 0;
+	for (size_t offset = 0; offset < m_cs3_access_count.size(); offset++)
+	{
+		const u32 count = m_cs3_access_count[offset];
+		if (!count)
+			continue;
+		switch (classify_cs3_offset(u16(offset)))
+		{
+		case cs3_access_class::known: known += count; break;
+		case cs3_access_class::known_unimplemented: known_unimplemented += count; break;
+		case cs3_access_class::unknown: unknown += count; break;
+		}
+	}
+	osd_printf_info("ASR10_CS3_ACCESS_SUMMARY known=%u known_unimplemented=%u unknown=%u "
+		"distinct_known=%u distinct_known_unimplemented=%u distinct_unknown=%u\n",
+		known, known_unimplemented, unknown,
+		distinct.known, distinct.known_unimplemented, distinct.unknown);
+
+	unsigned rank = 0;
+	for (const auto &hit : cs3_top_accessed_offsets(5))
+	{
+		osd_printf_info("ASR10_CS3_ACCESS_TOP rank=%u address=%06x count=%u\n",
+			++rank, hit.address, hit.count);
 	}
 }
 
