@@ -85,6 +85,7 @@ public:
 	void asr10_boot(machine_config &config) ATTR_COLD;
 
 private:
+	void es5506_wavetable_map(address_map &map) ATTR_COLD;
 	static constexpr u32 ROM_MASK = 0x0003ffff;
 	static constexpr u32 LOWMEM_WORDS = 0x00100000 / 2;
 	static constexpr u32 LOWMEM_LOG_END = 0x00000200;
@@ -2220,6 +2221,12 @@ void asr10_boot_state::cpu_space_map(address_map &map)
 	map(0xfffffb, 0xfffffb).lr8(NAME([this]() { return maincpu_iack_r(5); }));
 	map(0xfffffd, 0xfffffd).lr8(NAME([this]() { return maincpu_iack_r(6); }));
 	map(0xffffff, 0xffffff).lr8(NAME([this]() { return maincpu_iack_r(7); }));
+}
+
+
+void asr10_boot_state::es5506_wavetable_map(address_map &map)
+{
+	map(0x000000, 0x1fffff).ram();
 }
 
 
@@ -9892,6 +9899,7 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 		// by clock() to compute m_sample_rate, so a nonzero clock is required
 		// simply to construct the device.
 		es5506_device &es5506_host(ES5506(config, m_es5506_host, XTAL(16'000'000)));
+		es5506_host.set_addrmap(0, &asr10_boot_state::es5506_wavetable_map);
 
 		// Narrowly-gated diagnostic PAR test (ASR10_EXPERIMENT_PAR_DIAGNOSTIC=1
 		// + ASR10_DIAG_PAR_VALUE=<n>): binds a single fixed diagnostic PAR
