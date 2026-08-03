@@ -889,12 +889,12 @@ private:
 	u8 lowmem_byte(u32 address) const;
 	u16 lowmem_word(u32 address) const;
 	u32 lowmem_long(u32 address) const;
-	void log_panel_b_enqueue(u32 pc, u16 previous_03bc, u16 current_03bc);
-	void log_panel_b_thrb(u32 pc, u8 data);
-	void log_panel_b_rhrb(u32 pc, u8 data, u8 srb, u8 isr);
-	void log_panel_b_complete(u32 pc, u16 previous_03bc, u16 current_03bc);
-	void log_panel_b_wake(u32 pc, u32 byte_address, u16 previous, u16 current);
-	void log_panel_c_parser_trace(u32 pc, const char *event);
+
+
+
+
+
+
 	void panel_c_parser_trace_stop(const char *reason, u32 pc);
 	void panel_c_queue_rx(u8 data, const char *reason, u32 pc);
 	u32 read_stack_long(u32 address);
@@ -2230,133 +2230,10 @@ u32 asr10_boot_state::lowmem_long(u32 address) const
 }
 
 
-void asr10_boot_state::log_panel_b_enqueue(u32 pc, u16 previous_03bc, u16 current_03bc)
-{
-	if constexpr (!ASR10_DIAG_PANEL_B)
-		return;
-	if (machine().side_effects_disabled())
-		return;
-
-	const u8 count_before = u8(previous_03bc >> 8);
-	const u8 count_after = u8(current_03bc >> 8);
-	const u8 byte = m_panel_b_last_ring_write_valid ? m_panel_b_last_ring_write_byte : 0xff;
-	const u16 slot0_state = lowmem_word(0x23d6);
-	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-	logerror("ASR10_DIAG_PANEL_B event=PANEL_ENQUEUE seq=%llu pc=%06x previous_pc=%06x "
-		"caller_stack0=%08x byte=%02x ascii='%c' count_03bc_before=%02x count_03bc_after=%02x "
-		"write_ptr_03b8_before=%04x write_ptr_03b8_after=%04x read_ptr_03ba=%04x idle_03c5=%02x "
-		"slot0_state=%04x slot0_queue_head=%04x slot0_queue_tail=%04x ring_write_pc=%06x\n",
-		(unsigned long long)++m_panel_b_seq, pc, m_last_distinct_pc, read_stack_long(sp),
-		byte, byte >= 0x20 && byte <= 0x7e ? char(byte) : '.',
-		count_before, count_after, m_panel_b_last_ring_write_valid ? u16(m_panel_b_last_ring_write_address) : 0xffff,
-		lowmem_word(0x03b8), lowmem_word(0x03ba), lowmem_byte(0x03c5),
-		slot0_state, lowmem_word(0x23e4), lowmem_word(0x23e6), m_panel_b_last_ring_write_pc);
-}
 
 
-void asr10_boot_state::log_panel_b_thrb(u32 pc, u8 data)
-{
-	if constexpr (!ASR10_DIAG_PANEL_B)
-		return;
-	if (machine().side_effects_disabled())
-		return;
-
-	const char *source = (pc == 0x00f89cb0) ? "f89cb0" :
-		(pc == 0x00f89aa4) ? "f89aa4" : "other";
-	logerror("ASR10_DIAG_PANEL_B event=PANEL_THRB seq=%llu pc=%06x previous_pc=%06x source=%s "
-		"byte=%02x ascii='%c' count_03bc=%02x write_ptr_03b8=%04x read_ptr_03ba=%04x "
-		"idle_03c5=%02x parser_state_03c0=%04x\n",
-		(unsigned long long)++m_panel_b_seq, pc, m_last_distinct_pc, source,
-		data, data >= 0x20 && data <= 0x7e ? char(data) : '.',
-		lowmem_byte(0x03bc), lowmem_word(0x03b8), lowmem_word(0x03ba),
-		lowmem_byte(0x03c5), lowmem_word(0x03c0));
-}
 
 
-void asr10_boot_state::log_panel_b_rhrb(u32 pc, u8 data, u8 srb, u8 isr)
-{
-	if constexpr (!ASR10_DIAG_PANEL_B)
-		return;
-	if (machine().side_effects_disabled())
-		return;
-
-	const char *source = (pc >= 0x00ffb22a && pc <= 0x00ffb240) ? "irq6_rx_parser_ffb22a" : "unknown";
-	const char *parser = m_panel_b_last_parser_pc == 0x00ffb286 ? "ffb286_f89aec" :
-		m_panel_b_last_parser_pc == 0x00ffb32e ? "ffb32e_f89aec" :
-		m_panel_b_last_parser_pc == 0x00ffb3e4 ? "ffb3e4_f89a9a" :
-		m_panel_b_last_parser_pc == 0x00ffb424 ? "ffb424_f89a9a" : "unknown";
-	m_panel_b_last_rhrb_seq = ++m_panel_b_seq;
-	logerror("ASR10_DIAG_PANEL_B event=PANEL_RHRB seq=%llu pc=%06x previous_pc=%06x source=%s "
-		"byte=%02x ascii='%c' parser_state_03c0=%04x srb=%02x isr=%02x count_03bc=%02x "
-		"read_ptr_03ba=%04x parser_branch_or_destination=%s last_parser_pc=%06x\n",
-		(unsigned long long)m_panel_b_last_rhrb_seq, pc, m_last_distinct_pc, source,
-		data, data >= 0x20 && data <= 0x7e ? char(data) : '.',
-		lowmem_word(0x03c0), srb, isr, lowmem_byte(0x03bc), lowmem_word(0x03ba),
-		parser, m_panel_b_last_parser_pc);
-}
-
-
-void asr10_boot_state::log_panel_b_complete(u32 pc, u16 previous_03bc, u16 current_03bc)
-{
-	if constexpr (!ASR10_DIAG_PANEL_B)
-		return;
-	if (machine().side_effects_disabled())
-		return;
-
-	const char *source = m_panel_b_last_parser_pc == 0x00ffb3e4 ? "ffb3e4_to_f89a9a_f89ab8" :
-		m_panel_b_last_parser_pc == 0x00ffb424 ? "ffb424_to_f89a9a_f89ab8" :
-		m_panel_b_last_parser_pc == 0x00ffb3cc ? "ffb3cc_ff_to_f89a9a_f89ab8" :
-		m_panel_b_last_parser_pc == 0x00f89aec ? "f89aec_related" :
-		(pc == 0x00f89ab8) ? "f89ab8_count_decrement" : "unknown";
-	logerror("ASR10_DIAG_PANEL_B event=PANEL_COMPLETE seq=%llu pc=%06x previous_pc=%06x source_path=%s "
-		"triggering_rhrb_seq=%llu count_03bc_before=%02x count_03bc_after=%02x "
-		"next_thrb_byte=unknown parser_state_03c0=%04x byte_03bd=%02x last_parser_pc=%06x\n",
-		(unsigned long long)++m_panel_b_seq, pc, m_last_distinct_pc, source,
-		(unsigned long long)m_panel_b_last_rhrb_seq, u8(previous_03bc >> 8), u8(current_03bc >> 8),
-		lowmem_word(0x03c0), lowmem_byte(0x03bd), m_panel_b_last_parser_pc);
-}
-
-
-void asr10_boot_state::log_panel_b_wake(u32 pc, u32 byte_address, u16 previous, u16 current)
-{
-	if constexpr (!ASR10_DIAG_PANEL_B)
-		return;
-	if (machine().side_effects_disabled())
-		return;
-
-	logerror("ASR10_DIAG_PANEL_B event=PANEL_WAKE seq=%llu pc=%06x previous_pc=%06x "
-		"count_03bc_before=00 count_03bc_after=%02x slot_write_address=%06x "
-		"slot0_state_before=%04x slot0_state_after=%04x slot0_queue_head=%04x "
-		"slot0_queue_tail=%04x node_14f4_type=%04x\n",
-		(unsigned long long)++m_panel_b_seq, pc, m_last_distinct_pc, lowmem_byte(0x03bc),
-		byte_address, previous, current, lowmem_word(0x23e4), lowmem_word(0x23e6),
-		lowmem_word(0x14f6));
-}
-
-
-void asr10_boot_state::log_panel_c_parser_trace(u32 pc, const char *event)
-{
-	if (!m_panel_c_parser_trace_enabled || machine().side_effects_disabled())
-		return;
-
-	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-	logerror("ASR10_DIAG_PANEL_C_PARSER_TRACE event=%s seq=%u pc=%06x previous_pc=%06x "
-		"op0=%04x op1=%04x op2=%04x "
-		"d0=%08x d1=%08x d2=%08x d3=%08x "
-		"a0=%08x a1=%08x a2=%08x sr=%04x sp=%06x stack0=%08x "
-		"b03c0=%02x b03c1=%02x b03c2=%02x b03c3=%02x b03c4=%02x b03c5=%02x b03c6=%02x "
-		"b03bc=%02x w03c0=%04x\n",
-		event, m_panel_c_parser_trace_count, pc, m_last_distinct_pc,
-		read_program_word(pc), read_program_word(pc + 2), read_program_word(pc + 4),
-		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
-		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
-		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
-		u32(m_maincpu->state_int(M68K_A2)), u16(m_maincpu->state_int(M68K_SR)),
-		sp, read_stack_long(sp),
-		lowmem_byte(0x03c0), lowmem_byte(0x03c1), lowmem_byte(0x03c2),
-		lowmem_byte(0x03c3), lowmem_byte(0x03c4), lowmem_byte(0x03c5),
-		lowmem_byte(0x03c6), lowmem_byte(0x03bc), lowmem_word(0x03c0));
-}
 
 
 void asr10_boot_state::panel_c_parser_trace_stop(const char *reason, u32 pc)
@@ -2845,11 +2722,11 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 				{
 					if (m_panel_b_last_ring_write_valid)
 						note_panel_ring_store(pc, m_panel_b_last_ring_write_address, m_panel_b_last_ring_write_byte);
-					log_panel_b_enqueue(pc, previous, m_lowmem_shadow[offset]);
+					(void)0;
 				}
 				else if (pc == 0x00f89ab8)
 				{
-					log_panel_b_complete(pc, previous, m_lowmem_shadow[offset]);
+					(void)0;
 				}
 			}
 			if (byte_address == 0x03c4 && ACCESSING_BITS_0_7 && pc == 0x00f89ace)
@@ -2862,7 +2739,7 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 			}
 			if (pc == 0x00f89ac2 && byte_address == 0x23d6)
 			{
-				log_panel_b_wake(pc, byte_address, previous, m_lowmem_shadow[offset]);
+				(void)0;
 				m_gen_counter++;
 				{
 					std::string gen_hex;
@@ -3655,7 +3532,7 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 	if constexpr (ASR10_DIAG_PANEL_B)
 	{
 		if (!machine().side_effects_disabled() && address == 0x00fc4816 && ACCESSING_BITS_0_7)
-			log_panel_b_rhrb(pc, u8(data), srb_before_rhrb, u8(m_duart->read(0x05)));
+			(void)0;
 	}
 	if (!machine().side_effects_disabled() &&
 		address == 0x00fc4816 && ACCESSING_BITS_0_7 && BIT(srb_before_rhrb, 0))
@@ -3670,7 +3547,7 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 			m_panel_c_parser_trace_active = true;
 			m_panel_c_parser_trace_count = 0;
 			m_panel_c_parser_trace_last_pc = 0xffffffffU;
-			log_panel_c_parser_trace(pc, u8(data) == 0xff ? "start_after_rhrb_ff" : "start_after_rhrb_00");
+			(void)0;
 			m_pc_timer->adjust(attotime::from_ticks(1, m_maincpu->clock()), 0,
 				attotime::from_ticks(1, m_maincpu->clock()));
 		}
@@ -3716,7 +3593,7 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 	if (address == 0x00fc4817 && ACCESSING_BITS_0_7)
 	{
 		const u8 character = u8(data);
-		log_panel_b_thrb(pc, character);
+		(void)0;
 		m_panel_receive_role = u8(panel_byte_role::SERIAL);
 		if (!machine().side_effects_disabled())
 		{
@@ -7097,7 +6974,7 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::pc_poll)
 	{
 		m_panel_c_parser_trace_last_pc = pc;
 		m_panel_c_parser_trace_count++;
-		log_panel_c_parser_trace(pc, "pc");
+		(void)0;
 		if (pc == 0x00f89a9a)
 			panel_c_parser_trace_stop("reached_f89a9a", pc);
 		else if (pc == 0x00f89aec)
