@@ -745,9 +745,6 @@ private:
 	bool m_panel_c_parser_trace_enabled = false;
 	bool m_panel_c_parser_trace_active = false;
 	bool m_panel_c_parser_trace_done = false;
-	bool m_panel_c_rx_valid = false;
-	u8 m_panel_c_rx_byte = 0;
-	u8 m_panel_c_srb = 0;
 	u32 m_panel_c_parser_trace_count = 0;
 	u32 m_panel_c_parser_trace_last_pc = 0xffffffffU;
 	u32 m_last_pc = 0xffffffffU;
@@ -1657,9 +1654,6 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_panel_c_parser_trace_enabled));
 	save_item(NAME(m_panel_c_parser_trace_active));
 	save_item(NAME(m_panel_c_parser_trace_done));
-	save_item(NAME(m_panel_c_rx_valid));
-	save_item(NAME(m_panel_c_rx_byte));
-	save_item(NAME(m_panel_c_srb));
 	save_item(NAME(m_panel_c_parser_trace_count));
 	save_item(NAME(m_panel_c_parser_trace_last_pc));
 	save_item(NAME(m_last_pc));
@@ -2005,9 +1999,6 @@ void asr10_boot_state::machine_reset()
 	m_panel_l_later_start_cycle = 0;
 	m_panel_c_parser_trace_active = false;
 	m_panel_c_parser_trace_done = false;
-	m_panel_c_rx_valid = false;
-	m_panel_c_rx_byte = 0;
-	m_panel_c_srb = 0;
 	m_panel_c_parser_trace_count = 0;
 	m_panel_c_parser_trace_last_pc = 0xffffffffU;
 	m_last_pc = 0xffffffffU;
@@ -2679,21 +2670,12 @@ void asr10_boot_state::panel_c_queue_rx(u8 data, const char *reason, u32 pc)
 {
 	if (!panel_reply_experiment_enabled() || machine().side_effects_disabled())
 		return;
-	if (m_panel_c_rx_valid)
-	{
-		logerror("%s event=rx_queue_blocked reason=%s pc=%06x "
-			"existing_rx=%02x requested_rx=%02x srb=%02x\n",
-			panel_reply_experiment_name(), reason, pc, m_panel_c_rx_byte, data, m_panel_c_srb);
-		return;
-	}
 
-	m_panel_c_rx_valid = true;
-	m_panel_c_rx_byte = data;
-	m_panel_c_srb |= 0x01;
+	m_duart->m_chanB->rx_fifo_push(data, 0);
 	logerror("%s event=rx_queued reason=%s pc=%06x "
-		"rx=%02x srb=%02x slot0_state=%04x "
+		"rx=%02x source=mc68681_channel_b_fifo slot0_state=%04x "
 		"slot0_queue_head=%04x slot0_queue_tail=%04x node_14f4_type=%04x count_03bc=%02x\n",
-		panel_reply_experiment_name(), reason, pc, data, m_panel_c_srb,
+		panel_reply_experiment_name(), reason, pc, data,
 		lowmem_word(0x23d6), lowmem_word(0x23e4), lowmem_word(0x23e6), lowmem_word(0x14f6),
 		lowmem_byte(0x03bc));
 }
@@ -2715,10 +2697,10 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_autorespond_fire)
 	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 	m_panel_autorespond_injected_count++;
 	logerror("ASR10_DIAG_PANEL_AUTORESPOND event=inject_response seq=%u write_pc=%06x pc=%06x byte=ff "
-		"count_03bc=%02x idle_03c5=%02x rx_valid_before=%u slot0_state=%04x "
+		"count_03bc=%02x idle_03c5=%02x slot0_state=%04x "
 		"slot0_queue_head=%04x slot0_queue_tail=%04x node_14f4_type=%04x\n",
 		m_panel_autorespond_injected_count, write_pc, pc, lowmem_byte(0x03bc), lowmem_byte(0x03c5),
-		m_panel_c_rx_valid ? 1 : 0, lowmem_word(0x23d6), lowmem_word(0x23e4),
+		lowmem_word(0x23d6), lowmem_word(0x23e4),
 		lowmem_word(0x23e6), lowmem_word(0x14f6));
 	panel_c_queue_rx(0xff, "autorespond_fc4817_write", write_pc);
 }
@@ -3001,12 +2983,12 @@ void asr10_boot_state::panel_e_abort(const char *reason, u32 pc, u8 actual)
 	m_panel_e_ff_drain_aborted = true;
 	logerror("ASR10_EXPERIMENT_PANEL_FF_DRAIN_KNOWN_RING event=abort reason=%s pc=%06x "
 		"next_index=%u ready_valid=%u ready_index=%u waiting_completion=%u pending_index=%u "
-		"actual=%02x count_03bc=%02x parser_state_03c0=%04x rx_valid=%u slot0_state=%04x "
+		"actual=%02x count_03bc=%02x parser_state_03c0=%04x slot0_state=%04x "
 		"slot0_queue_head=%04x slot0_queue_tail=%04x node_14f4_type=%04x\n",
 		reason, pc, m_panel_e_ff_drain_next_index, m_panel_e_ff_drain_ready_valid ? 1 : 0,
 		m_panel_e_ff_drain_ready_index, m_panel_e_ff_drain_waiting_completion ? 1 : 0,
 		m_panel_e_ff_drain_pending_index, actual, lowmem_byte(0x03bc), lowmem_word(0x03c0),
-		m_panel_c_rx_valid ? 1 : 0, lowmem_word(0x23d6), lowmem_word(0x23e4),
+		lowmem_word(0x23d6), lowmem_word(0x23e4),
 		lowmem_word(0x23e6), lowmem_word(0x14f6));
 }
 
@@ -3023,11 +3005,6 @@ bool asr10_boot_state::panel_e_try_inject(u32 pc, const char *reason)
 		return false;
 	if (m_panel_e_ff_drain_waiting_completion)
 		return false;
-	if (m_panel_c_rx_valid)
-	{
-		panel_e_abort("rx_byte_still_pending_before_reply", pc);
-		return false;
-	}
 	if (lowmem_word(0x03c0) != 0xb3ba)
 	{
 		panel_e_abort("parser_state_not_b3ba_before_reply", pc);
@@ -3182,14 +3159,14 @@ void asr10_boot_state::panel_l_abort(const char *reason, u32 pc, u8 actual)
 	m_panel_l_aborted = true;
 	logerror("ASR10_EXPERIMENT_PANEL_FF_DRAIN_LATER_RINGS event=abort reason=%s pc=%06x "
 		"actual=%02x setup_done=%u later_started=%u waiting_completion=%u previous_completion=%u "
-		"replies=%u zero_crossings=%u count_03bc=%02x parser_state_03c0=%04x rx_valid=%u "
+		"replies=%u zero_crossings=%u count_03bc=%02x parser_state_03c0=%04x "
 		"prev_ring_byte=%02x current_ring_byte=%02x pending_byte=%02x pending_count=%02x "
 		"slot0_state=%04x slot0_queue_head=%04x slot0_queue_tail=%04x node_14f4_type=%04x\n",
 		reason, pc, actual, m_panel_l_first_ring_setup_done ? 1 : 0,
 		m_panel_l_later_started ? 1 : 0, m_panel_l_waiting_completion ? 1 : 0,
 		m_panel_l_previous_completion_observed ? 1 : 0, m_panel_l_reply_count,
 		m_panel_l_zero_crossing_count, lowmem_byte(0x03bc), lowmem_word(0x03c0),
-		m_panel_c_rx_valid ? 1 : 0, m_panel_l_previous_byte, m_panel_l_current_byte,
+		m_panel_l_previous_byte, m_panel_l_current_byte,
 		m_panel_l_pending_byte, m_panel_l_pending_count, lowmem_word(0x23d6),
 		lowmem_word(0x23e4), lowmem_word(0x23e6), lowmem_word(0x14f6));
 }
@@ -3221,11 +3198,6 @@ bool asr10_boot_state::panel_l_try_inject(u32 pc, const char *reason)
 	if (!m_panel_l_previous_completion_observed)
 	{
 		panel_l_abort("previous_completion_not_observed", pc);
-		return false;
-	}
-	if (m_panel_c_rx_valid)
-	{
-		panel_l_abort("rx_byte_still_pending_before_reply", pc);
 		return false;
 	}
 	if (lowmem_word(0x03c0) != 0xb3ba)
@@ -3409,11 +3381,6 @@ void asr10_boot_state::panel_l_note_completion(u32 pc, u16 previous_03bc, u16 cu
 			if (m_panel_l_current_byte != 0x02)
 			{
 				panel_l_abort("final_setup_byte_not_02", pc, m_panel_l_current_byte);
-				return;
-			}
-			if (m_panel_c_rx_valid)
-			{
-				panel_l_abort("rx_byte_pending_before_final_idle_probe", pc);
 				return;
 			}
 			if (lowmem_word(0x03c0) != 0xb3ba)
@@ -4498,22 +4465,10 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 	log_cpu_context(pc);
 
 	// The real SCN2681 register file (ACR, CTU/CTL preload and start/stop
-	// counter commands, MR/CR/SR, RHR/THR) lives in m_duart now; only the
-	// panel-B byte-transport taps and the unmodeled external-input stub
-	// below stay hand-written here.
+	// counter commands, MR/CR/SR, RHR/THR) lives in m_duart now. Panel reply
+	// bytes are injected into channel B's RX FIFO, not shadowed here.
+	const u8 srb_before_rhrb = (address == 0x00fc4816 && ACCESSING_BITS_0_7) ? u8(m_duart->read(0x09)) : 0;
 	u16 raw_data = ACCESSING_BITS_0_7 ? m_duart->read(word) : 0;
-	// ISR reads now always come straight from the real device -- its irq_cb()
-	// is wired to maincpu IRQ6 (device_add_mconfig), so its ISR genuinely
-	// reflects RX-ready and counter/timer-ready alike. SRB/RHRB below stay
-	// hand-modeled: channel B still isn't wired to a real serial source, so
-	// panel_reply_experiment_enabled() injects bytes here directly.
-	if (panel_reply_experiment_enabled() && ACCESSING_BITS_0_7)
-	{
-		if (address == 0x00fc4812 && m_panel_c_rx_valid)
-			raw_data = m_panel_c_srb;
-		else if (address == 0x00fc4816)
-			raw_data = m_panel_c_rx_valid ? m_panel_c_rx_byte : 0;
-	}
 	if (address == 0x00fc4808 && ACCESSING_BITS_0_7)
 	{
 		raw_data = ASR10_DUART_INPUT_CHANGE_STUB;
@@ -4554,29 +4509,25 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 	if constexpr (ASR10_DIAG_PANEL_B)
 	{
 		if (!machine().side_effects_disabled() && address == 0x00fc4816 && ACCESSING_BITS_0_7)
-			log_panel_b_rhrb(pc, u8(data),
-				panel_reply_experiment_enabled() ? m_panel_c_srb : u8(m_duart->read(0x09)),
-				u8(m_duart->read(0x05)));
+			log_panel_b_rhrb(pc, u8(data), srb_before_rhrb, u8(m_duart->read(0x05)));
 	}
 	if (panel_reply_experiment_enabled() && !machine().side_effects_disabled() &&
-		address == 0x00fc4816 && ACCESSING_BITS_0_7 && m_panel_c_rx_valid)
+		address == 0x00fc4816 && ACCESSING_BITS_0_7 && BIT(srb_before_rhrb, 0))
 	{
 		logerror("%s event=rhrb_pop pc=%06x byte=%02x "
-			"srb_before=%02x count_03bc=%02x parser_state_03c0=%04x\n",
-			panel_reply_experiment_name(), pc, m_panel_c_rx_byte, m_panel_c_srb,
+			"source=mc68681_channel_b_fifo count_03bc=%02x parser_state_03c0=%04x\n",
+			panel_reply_experiment_name(), pc, u8(data),
 			lowmem_byte(0x03bc), lowmem_word(0x03c0));
 		if (m_panel_c_parser_trace_enabled && !m_panel_c_parser_trace_done && pc == 0x00ffb242 &&
-			(m_panel_c_rx_byte == 0x00 || m_panel_c_rx_byte == 0xff))
+			(u8(data) == 0x00 || u8(data) == 0xff))
 		{
 			m_panel_c_parser_trace_active = true;
 			m_panel_c_parser_trace_count = 0;
 			m_panel_c_parser_trace_last_pc = 0xffffffffU;
-			log_panel_c_parser_trace(pc, m_panel_c_rx_byte == 0xff ? "start_after_rhrb_ff" : "start_after_rhrb_00");
+			log_panel_c_parser_trace(pc, u8(data) == 0xff ? "start_after_rhrb_ff" : "start_after_rhrb_00");
 			m_pc_timer->adjust(attotime::from_ticks(1, m_maincpu->clock()), 0,
 				attotime::from_ticks(1, m_maincpu->clock()));
 		}
-		m_panel_c_rx_valid = false;
-		m_panel_c_srb &= ~0x01;
 	}
 	if (!machine().side_effects_disabled())
 	{
@@ -9630,9 +9581,9 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::pc_poll)
 		{
 			logerror("ASR10_EXPERIMENT_PANEL_FF_DRAIN_LATER_RINGS event=final_idle_f89a9a_entry "
 				"pc=%06x previous_pc=%06x count_03bc=%02x idle_03c5=%02x "
-				"parser_state_03c0=%04x last_parser_pc=%06x rx_valid=%u\n",
+				"parser_state_03c0=%04x last_parser_pc=%06x\n",
 				pc, m_last_distinct_pc, lowmem_byte(0x03bc), lowmem_byte(0x03c5),
-				lowmem_word(0x03c0), m_panel_b_last_parser_pc, m_panel_c_rx_valid ? 1 : 0);
+				lowmem_word(0x03c0), m_panel_b_last_parser_pc);
 			if (lowmem_byte(0x03bc) != 0)
 			{
 				panel_l_abort("final_idle_f89a9a_entry_count_not_zero", pc, lowmem_byte(0x03bc));
