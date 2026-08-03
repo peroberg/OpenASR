@@ -353,16 +353,6 @@ private:
 	// diagnostics only; the load-bearing findings for this investigation come
 	// from the pre-existing Channel B/FDC hooks, not from these.
 	bool m_tuning_stall_trace_enabled = false;
-	bool m_tuning_stall_dump_ffc85a_logged = false;
-	bool m_tuning_stall_dump_ff9106_logged = false;
-	bool m_tuning_stall_dump_00ae14_logged = false;
-	bool m_tuning_stall_dump_0068a8_logged = false;
-	bool m_tuning_stall_dump_00779c_logged = false;
-	bool m_tuning_stall_dump_trap_vectors_logged = false;
-	bool m_tuning_stall_dump_7cc4_logged = false;
-	bool m_tuning_stall_dump_7164_logged = false;
-	bool m_tuning_stall_dump_bf28_logged = false;
-	bool m_tuning_stall_dump_bf5a_logged = false;
 	// Item 6/7 follow-through (filesystem-browser-map.md PASS 2): resolve
 	// slot 0's six jump-vector targets, slot 4's five high-view targets,
 	// f894a4's own internal vector calls, and slots 1/3's own resume code,
@@ -371,8 +361,6 @@ private:
 	// -- see FSB_DUMP_TARGETS in the .cpp -- rather than one bool per
 	// target. Gated on m_fsb.enabled, not m_tuning_stall_trace_enabled,
 	// since this is this task's own instrumentation.
-	u32 m_tuning_stall_save_before_count = 0;
-	u32 m_tuning_stall_save_after_count = 0;
 	u32 m_tuning_stall_trap7_count = 0;
 	u32 m_tuning_stall_trap8_count = 0;
 	bool m_dispatcher_rte_iack_seen = false;
@@ -717,7 +705,7 @@ private:
 	u16 probe_or_alias_region_r_at(u32 base, offs_t offset, u16 mem_mask);
 	void probe_or_alias_region_w_at(u32 base, offs_t offset, u16 data, u16 mem_mask);
 	void trace_access(trace_region region, bool write, u32 address, u16 data, u16 mem_mask, u16 last_write);
-	void dump_repeated_accesses();
+
 	void panel_receive_byte(u8 data);
 	void flush_panel_text();
 	void note_panel_ring_store(u32 pc, u32 ring_address, u8 byte);
@@ -737,7 +725,7 @@ private:
 	void mc68302_access_summary();
 
 
-	void log_cpu_context(u32 pc);
+
 
 
 
@@ -760,7 +748,7 @@ private:
 
 
 
-	void dump_memory_window(const char *tag, u32 base_address, u32 length_bytes);
+
 	// filesystem-browser-map.md 4.26 TASK 6 (observation-only): bounded
 	// per-attempt HALL REVERB (table $0e8e==0x00010400) type-1/record-0
 	// GPR transaction trace.
@@ -768,12 +756,12 @@ private:
 
 
 
-	void log_error009_context(const char *source, u32 pc, u16 value, u16 mem_mask);
 
-	void log_synth_68302_irq_vectors(u8 irq_level, u32 pc, u16 sr);
-	void log_runtime_vector_table_for_iack_experiment(u32 pc, u16 sr);
-	void dump_loaded_code_range(const char *tag, u32 start, u32 end);
-	void dump_highview_code_range(const char *tag, u32 start, u32 end);
+
+
+
+
+
 	void scan_for_ascii_string(const char *tag, u32 start, u32 end, const char *needle);
 	u16 read_highview_word(u32 address) const;
 
@@ -794,7 +782,6 @@ private:
 
 
 
-	void log_run_config_header();
 
 
 
@@ -824,23 +811,24 @@ private:
 
 
 
-	void dump_slot_record(const char *tag, u32 slot_addr);
-
-
-	void log_tuning_stall_candidate_dump(u32 pc);
-	void log_tuning_stall_save_probe(u32 pc);
 
 
 
 
 
 
-	void log_pc_summary(const char *reason, u32 pc);
 
-	void log_duart_counter_watched_pc(u32 pc);
-	void log_divzero_exception_frame(u32 pc);
-	void log_primary_slot_snapshot_once(u32 pc);
-	void log_timer_secondary_callback(u32 pc);
+
+
+
+
+
+
+
+
+
+
+
 	std::string dump_cpu_registers() const;
 	u16 es5506_host_read_par_diag();
 	// ES5510 host select/commit: FC3101/FC3141/FC3181 are each a
@@ -1798,7 +1786,7 @@ void asr10_boot_state::machine_reset()
 	logerror("ASR10_MAINCPU_INPUT_LINE_DRIVER source=harness default_set_input_line_calls=0 "
 		"iack_map=installed_returns_autovectors_by_default pc_timer=diagnostic_poll "
 		"prompt_select_timer=diagnostic_poll fc6850_fc6852_timer_binding=none\n");
-	log_run_config_header();
+	(void)0;
 }
 
 void asr10_boot_state::clear_display()
@@ -2258,25 +2246,6 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_autorespond_fire)
 }
 
 
-void asr10_boot_state::log_duart_counter_watched_pc(u32 pc)
-{
-	const char *role = nullptr;
-	switch (pc)
-	{
-	case 0x00f87ed2: role = "scheduler_core_f87ed2"; break;
-	case 0x00f87eda: role = "scheduler_core_f87eda"; break;
-	case 0x00f88300: role = "bit3_handler_entry_f88300"; break;
-	case 0x00f88302: role = "bit3_handler_body_f88302"; break;
-	case 0x00f8e1ee: role = "f8e2xx_user_f8e1ee"; break;
-	case 0x00f8e1f6: role = "f8e2xx_user_f8e1f6"; break;
-	case 0x00f97bd6: role = "f97bxx_user_f97bd6"; break;
-	case 0x00f97bde: role = "f97bxx_user_f97bde"; break;
-	default:
-		return;
-	}
-	logerror("ASR10_DUART_COUNTER event=watched_pc pc=%06x role=%s\n", pc, role);
-}
-
 
 std::string asr10_boot_state::dump_cpu_registers() const
 {
@@ -2409,118 +2378,7 @@ void asr10_boot_state::es5510_host_write_select_gpr_instr_w(offs_t offset, u8 da
 }
 
 
-void asr10_boot_state::log_divzero_exception_frame(u32 pc)
-{
-	// One-shot: 68000 ERROR 130 (divide-by-zero) handler entry, per
-	// architecture.md's trap table (f882b6: moveq #$82). Observation only.
-	if (m_divzero_frame_logged || pc != 0x00f882b6)
-		return;
-	m_divzero_frame_logged = true;
 
-	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-	const u16 stacked_sr = read_program_word(sp);
-	const u32 stacked_pc = read_stack_long(sp + 2);
-	logerror("ASR10_DIVZERO_FRAME event=exception_frame pc=%06x sp=%06x stacked_sr=%04x stacked_pc=%06x "
-		"d0=%08x d1=%08x d2=%08x d3=%08x d4=%08x d5=%08x d6=%08x d7=%08x "
-		"a0=%08x a1=%08x a2=%08x a3=%08x a4=%08x a5=%08x a6=%08x "
-		"tick_0b82=%02x flag_03c5=%02x word_03bc=%04x\n",
-		pc, sp, stacked_sr, stacked_pc,
-		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
-		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
-		u32(m_maincpu->state_int(M68K_D4)), u32(m_maincpu->state_int(M68K_D5)),
-		u32(m_maincpu->state_int(M68K_D6)), u32(m_maincpu->state_int(M68K_D7)),
-		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
-		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
-		u32(m_maincpu->state_int(M68K_A4)), u32(m_maincpu->state_int(M68K_A5)),
-		u32(m_maincpu->state_int(M68K_A6)),
-		lowmem_byte(0x0b82), lowmem_byte(0x03c5), lowmem_word(0x03bc));
-
-	// Temporary: stacked_pc lands in loaded low-RAM OS content (populated by
-	// the floppy-image loader at runtime), not static ROM, so it cannot be
-	// disassembled from the ROM file. Dump the live shadow bytes around it
-	// (32 before, 8 after) for offline unidasm analysis.
-	if (stacked_pc >= 32 && stacked_pc + 8 < LOWMEM_WORDS * 2)
-	{
-		std::string hex;
-		for (u32 offset = stacked_pc - 32; offset < stacked_pc + 8; offset++)
-			hex += util::string_format("%02x", lowmem_byte(offset));
-		logerror("ASR10_DIVZERO_FRAME event=stacked_pc_bytes stacked_pc=%06x dump_start=%06x "
-			"dump_len=40 hex=%s\n",
-			stacked_pc, stacked_pc - 32, hex.c_str());
-	}
-
-	// Extended stack-frame dump: SP+0 (stacked SR), SP+2..SP+5 (stacked PC),
-	// then every word SP+6..SP+0x24. The supervisor stack lives in low RAM
-	// (per the captured A7/SP), so the shadow-backed read_program_word is
-	// exact. SP+6 (a long) is the return address into 0x6800's direct
-	// caller, since 0x6800 pushes nothing of its own before the DIVU.
-	{
-		std::string words;
-		for (u32 off = 0; off <= 0x24; off += 2)
-			words += util::string_format("%04x@%02x ", read_program_word(sp + off), off);
-		const u32 caller_return_address = read_stack_long(sp + 6);
-		logerror("ASR10_DIVZERO_FRAME event=stack_frame_dump sp=%06x words=\"%s\" "
-			"caller_return_address=%06x\n",
-			sp, words.c_str(), caller_return_address);
-
-		// Live bytes around the caller's return address, for offline unidasm
-		// (same rationale as the stacked_pc dump above: loaded low-RAM OS
-		// content, not static ROM).
-		if (caller_return_address >= 48 && caller_return_address + 8 < LOWMEM_WORDS * 2)
-		{
-			std::string hex;
-			for (u32 offset = caller_return_address - 48; offset < caller_return_address + 8; offset++)
-				hex += util::string_format("%02x", lowmem_byte(offset));
-			logerror("ASR10_DIVZERO_FRAME event=caller_return_bytes caller_return_address=%06x "
-				"dump_start=%06x dump_len=56 hex=%s\n",
-				caller_return_address, caller_return_address - 48, hex.c_str());
-		}
-	}
-}
-
-
-void asr10_boot_state::log_primary_slot_snapshot_once(u32 pc)
-{
-	// One-shot, first entry into f88300 only. Walks the primary scheduler
-	// slot table [$00c6.w, $00c8.w), stride 0x16. Pure shadow reads via
-	// lowmem_word -- no guest RAM is mutated.
-	if (m_primary_slot_snapshot_logged || pc != 0x00f88300)
-		return;
-	m_primary_slot_snapshot_logged = true;
-
-	const u16 base = lowmem_word(0x00c6);
-	const u16 end = lowmem_word(0x00c8);
-	constexpr u32 MAX_SLOTS = 16;
-	u32 index = 0;
-	for (u32 addr = base; addr < u32(end) && index < MAX_SLOTS; addr += 0x16, index++)
-	{
-		logerror("ASR10_SLOT_TIMEOUT_SNAPSHOT event=primary_slot pc=%06x index=%u slot_base=%04x "
-			"countdown_plus00=%04x state_plus02=%04x threshold_plus14=%04x\n",
-			pc, index, addr, lowmem_word(addr), lowmem_word(addr + 2), lowmem_word(addr + 0x14));
-	}
-	logerror("ASR10_SLOT_TIMEOUT_SNAPSHOT event=primary_table_bounds pc=%06x base=%04x end=%04x count=%u\n",
-		pc, base, end, index);
-}
-
-
-void asr10_boot_state::log_timer_secondary_callback(u32 pc)
-{
-	// f88352 is the jsr (A1) itself, immediately after f8834a's
-	// movea.l ($16,A0),A1 loads the callback pointer -- verified by
-	// disassembly, not assumed. Logs every invocation (volume is low:
-	// gated by the every-10th-tick $0b82 walk plus each entry's own
-	// +0x14 countdown reaching zero), so the one immediately preceding
-	// a fault is always captured regardless of any dedup scheme.
-	if (pc != 0x00f88352)
-		return;
-
-	const u32 entry_base = m_maincpu->state_int(M68K_A0) & 0x00ffffff;
-	const u32 callback_ptr = m_maincpu->state_int(M68K_A1) & 0x00ffffff;
-	logerror("ASR10_TIMER_SECONDARY_CALLBACK event=callback_invoke pc=%06x entry_base=%06x "
-		"entry_plus14_countdown=%04x callback_ptr=%06x tick_0b82=%02x caller_pc=%06x\n",
-		pc, entry_base, lowmem_word(entry_base + 0x14), callback_ptr,
-		lowmem_byte(0x0b82), m_last_distinct_pc);
-}
 
 
 
@@ -2583,7 +2441,7 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 		if (!m_download_retry_loop_dump_logged && read_highview_word(0x00ffc866) != 0)
 		{
 			m_download_retry_loop_dump_logged = true;
-			dump_highview_code_range("download_retry_loop_ffc840_ffc8c0", 0x00ffc840, 0x00ffc8c0);
+			(void)0;
 			}
 			// filesystem-browser-map.md 4.26: f973f0/f97580 detection uses
 			// these two DATA writes (0x0e7e is f973f0's own first
@@ -2769,8 +2627,7 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 			m_lowmem_shadow[0x04cc >> 1]);
 	}
 	if (byte_address == 0x00c0)
-		log_error009_context("error_number_write_00c0", m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff,
-			m_lowmem_shadow[offset], mem_mask);
+		(void)0;
 	if (byte_address == 0x04ee)
 		(void)0;
 	else if (byte_address == 0x049c)
@@ -3075,7 +2932,7 @@ u16 asr10_boot_state::upd72069_fdc_r(offs_t offset, u16 mem_mask)
 {
 	const u32 address = (0x00fc4000 | (offset << 1)) | (ACCESSING_BITS_0_7 ? 1 : 0);
 	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-	log_cpu_context(pc);
+	(void)0;
 	++m_fdc_trace_sequence;
 	++m_fdc_transaction_access;
 
@@ -3222,7 +3079,7 @@ void asr10_boot_state::upd72069_fdc_w(offs_t offset, u16 data, u16 mem_mask)
 {
 	const u32 address = (0x00fc4000 | (offset << 1)) | (ACCESSING_BITS_0_7 ? 1 : 0);
 	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-	log_cpu_context(pc);
+	(void)0;
 	++m_fdc_trace_sequence;
 
 	const char *detail = "upd72069_register_unknown";
@@ -3453,7 +3310,7 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 	const u32 word = offset & 0x0f;
 	const u32 address = 0x00fc4800 | (offset << 1);
 	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-	log_cpu_context(pc);
+	(void)0;
 
 	// The real SCN2681 register file (ACR, CTU/CTL preload and start/stop
 	// counter commands, MR/CR/SR, RHR/THR) lives in m_duart now. Panel reply
@@ -3555,7 +3412,7 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 	const u32 word = offset & 0x0f;
 	const u32 address = (0x00fc4800 | (offset << 1)) | (ACCESSING_BITS_0_7 ? 1 : 0);
 	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-	log_cpu_context(pc);
+	(void)0;
 	if (ACCESSING_BITS_0_7)
 		m_duart->write(word, u8(data));
 	if (address == 0x00fc4817 && ACCESSING_BITS_0_7)
@@ -3754,27 +3611,19 @@ void asr10_boot_state::flush_panel_text()
 		if (strstr(m_panel_text, "ERROR 009 - REBOOT ?"))
 		{
 			m_seen_error_reboot_prompt = true;
-			log_error009_context("panel_error009_text",
-				m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff,
-				m_lowmem_shadow[0x00c0 >> 1], 0xffff);
+			(void)0;
 		}
 		if (strstr(m_panel_text, "ERROR 139 - REBOOT ?"))
 		{
-			log_error009_context("panel_error139_text",
-				m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff,
-				m_lowmem_shadow[0x00c0 >> 1], 0xffff);
+			(void)0;
 		}
 		if (strstr(m_panel_text, "EFFECT DOWNLOAD FAILED"))
 		{
-			log_error009_context("panel_effect_download_failed_text",
-				m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff,
-				m_lowmem_shadow[0x00c0 >> 1], 0xffff);
+			(void)0;
 		}
 		if (strstr(m_panel_text, "ERROR 032 - REBOOT ?"))
 		{
-			log_error009_context("panel_error032_text",
-				m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff,
-				m_lowmem_shadow[0x00c0 >> 1], 0xffff);
+			(void)0;
 		}
 		if (!m_task1_string_scan_logged &&
 			(strstr(m_panel_text, "EFFECT DOWNLOAD FAILED") || strstr(m_panel_text, "ERROR 032 - REBOOT ?")))
@@ -3788,8 +3637,8 @@ void asr10_boot_state::flush_panel_text()
 			scan_for_ascii_string("lowmem_error_prefix", 0x00000000, 0x000fffff, "ERROR ");
 			scan_for_ascii_string("rom_reboot", 0x00f80000, 0x00fbffff, "REBOOT ?");
 			scan_for_ascii_string("lowmem_reboot", 0x00000000, 0x000fffff, "REBOOT ?");
-			dump_loaded_code_range("task1_rom_f840a0_f84120", 0x00f840a0, 0x00f84120);
-			dump_loaded_code_range("task1_lowmem_000380_000400", 0x00000380, 0x00000400);
+			(void)0;
+			(void)0;
 		}
 	}
 
@@ -4322,23 +4171,6 @@ bool asr10_boot_state::hall_reverb_type1_record0_active() const
 // regardless of which region (ROM, lowmem, FC-range, etc.) base_address
 // falls in. Read word-at-a-time; length_bytes is rounded up to the next
 // even number if odd.
-void asr10_boot_state::dump_memory_window(const char *tag, u32 base_address, u32 length_bytes)
-{
-	std::string hex;
-	std::string ascii;
-	for (u32 i = 0; i < length_bytes; i += 2)
-	{
-		const u16 word = read_program_word((base_address + i) & 0x00ffffff);
-		const u8 hi = u8(word >> 8);
-		const u8 lo = u8(word & 0xff);
-		hex += util::string_format("%02x%02x", hi, lo);
-		ascii += (hi >= 0x20 && hi < 0x7f) ? char(hi) : '.';
-		ascii += (lo >= 0x20 && lo < 0x7f) ? char(lo) : '.';
-	}
-	logerror("ASR10_ESP_OTHER_TABLE_MEMDUMP tag=%s base=%06x length=%u hex=\"%s\" ascii=\"%s\"\n",
-		tag, base_address, length_bytes, hex.c_str(), ascii.c_str());
-}
-
 
 // filesystem-browser-map.md 4.26 TASK 3: bounded (cap 20), unconditional
 // per-invocation entry-state dump for f973f0, whichever table/object it
@@ -4395,129 +4227,6 @@ void asr10_boot_state::dump_memory_window(const char *tag, u32 base_address, u32
 
 
 
-
-void asr10_boot_state::log_error009_context(const char *source, u32 pc, u16 value, u16 mem_mask)
-{
-	const bool panel_error_text = !strcmp(source, "panel_error009_text") || !strcmp(source, "panel_error139_text") ||
-		!strcmp(source, "panel_effect_download_failed_text") || !strcmp(source, "panel_error032_text");
-	const u8 error_number = u8(value);
-	const bool is_032_write = !panel_error_text && error_number == 0x20;
-	if (m_error009_origin_logged && !panel_error_text && !is_032_write)
-		return;
-	if (is_032_write && m_error032_origin_logged)
-		return;
-
-	if (error_number != 0x09 && error_number != 0x8b && !panel_error_text && !is_032_write)
-		return;
-
-	if (!panel_error_text && !is_032_write)
-		m_error009_origin_logged = true;
-	if (is_032_write)
-	{
-		m_error032_origin_logged = true;
-		const u32 caller_pc = m_last_distinct_pc & 0x00ffffff;
-		// caller_pc lands in the plain .ram() window (0xfc6900-0xffffff,
-		// mem_map()) rather than ROM or the 0x000000-0x0fffff lowmem
-		// shadow, so read it via the generic bus (read_program_word)
-		// instead of dump_loaded_code_range/read_loaded_word (which would
-		// silently return 0xffff for this range).
-		{
-			const u32 start = caller_pc >= 0x40 ? caller_pc - 0x40 : 0;
-			const u32 end = caller_pc + 0x20;
-			std::string words;
-			for (u32 cursor = start; cursor <= end; cursor += 2)
-			{
-				if (cursor != start)
-					words += ',';
-				words += util::string_format("%06x:%04x", cursor, read_program_word(cursor));
-			}
-			logerror("ASR10_CODE_DUMP tag=task1_error032_caller range=%06x_%06x words=\"%s\"\n",
-				start, end, words.c_str());
-		}
-		dump_loaded_code_range("task1_common_error_routine_tail", 0x00f882a0, 0x00f88320);
-		dump_loaded_code_range("task2_f973f0_download_routine", 0x00f973b0, 0x00f97460);
-		dump_loaded_code_range("task3_f97340_f97800", 0x00f97340, 0x00f97800);
-		dump_loaded_code_range("task3_f97800_f97b00", 0x00f97800, 0x00f97b00);
-		{
-			std::string vecwords;
-			for (u32 cursor = 0; cursor <= 0x40; cursor += 2)
-			{
-				if (cursor)
-					vecwords += ',';
-				vecwords += util::string_format("%06x:%04x", cursor, lowmem_word(cursor));
-			}
-			logerror("ASR10_TASK4_RUNTIME_VECTORS words=\"%s\"\n", vecwords.c_str());
-		}
-	}
-
-	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-	std::string command_sequence;
-	const u8 first = (m_fdc_command_ring_next + m_fdc_command_ring.size() - m_fdc_command_ring_count) % m_fdc_command_ring.size();
-	for (u8 index = 0; index < m_fdc_command_ring_count; index++)
-	{
-		if (index)
-			command_sequence += ',';
-		command_sequence += util::string_format("%02x", m_fdc_command_ring[(first + index) % m_fdc_command_ring.size()]);
-	}
-
-	const u8 last_st0 = m_fdc_cmd46_result_bytes[0];
-	const u8 last_st1 = m_fdc_cmd46_result_bytes[1];
-	const u8 last_st2 = m_fdc_cmd46_result_bytes[2];
-
-	logerror("ASR10_ERROR_CONTEXT source=%s pc=%06x previous_pc=%06x opcode=%04x value=%04x mem_mask=%04x "
-		"error_number=%02x sr=%04x d0=%08x d1=%08x d2=%08x d3=%08x "
-		"a0=%08x a1=%08x a2=%08x a3=%08x sp=%06x "
-		"stack0=%08x stack1=%08x stack2=%08x stack3=%08x stack4=%08x stack5=%08x "
-		"lowmem_00c0=%04x lowmem_049d=%02x lowmem_04ae=%04x lowmem_04b0=%04x "
-		"lowmem_04c6=%04x lowmem_04c8=%04x lowmem_04ca=%04x lowmem_04cc=%04x "
-		"lowmem_04ee=%02x panel=\"%s\" "
-		"last_fdc_txn=%u last_aux=%02x last_fifo_read=%02x last_fifo_write=%02x recent_commands=\"%s\" "
-		"last_cmd46_bytes=%02x,%02x,%02x,%02x,%02x,%02x,%02x,%02x,%02x "
-		"last_cmd46_result=%02x,%02x,%02x,%02x,%02x,%02x,%02x "
-		"last_ST0_invalid=%u last_ST0_abnormal=%u last_ST0_seek_end=%u last_ST0_equipment_check=%u last_ST0_not_ready=%u "
-		"last_ST1_end_of_cylinder=%u last_ST1_data_error=%u last_ST1_overrun=%u last_ST1_no_data=%u "
-		"last_ST1_not_writable=%u last_ST1_missing_address_mark=%u "
-		"last_ST2_control_mark=%u last_ST2_data_error=%u last_ST2_wrong_cylinder=%u last_ST2_scan_equal=%u "
-		"last_ST2_scan_not_satisfied=%u last_ST2_bad_cylinder=%u last_ST2_missing_data_address_mark=%u "
-		"data_rate=%u data_rate_source=%02x\n",
-		source, pc, m_last_distinct_pc, read_code_word(pc), value, mem_mask, error_number,
-		u16(m_maincpu->state_int(M68K_SR)),
-		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
-		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
-		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
-		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
-		sp, read_stack_long(sp), read_stack_long(sp + 4), read_stack_long(sp + 8),
-		read_stack_long(sp + 12), read_stack_long(sp + 16), read_stack_long(sp + 20),
-		m_lowmem_shadow[0x00c0 >> 1], u8(m_lowmem_shadow[0x049c >> 1]),
-		m_lowmem_shadow[0x04ae >> 1], m_lowmem_shadow[0x04b0 >> 1],
-		m_lowmem_shadow[0x04c6 >> 1], m_lowmem_shadow[0x04c8 >> 1],
-		m_lowmem_shadow[0x04ca >> 1], m_lowmem_shadow[0x04cc >> 1],
-		u8(m_lowmem_shadow[0x04ee >> 1] >> 8), m_panel_text,
-		m_fdc_cmd46_transaction, m_fdc_last_aux_command, m_fdc_last_fifo_read,
-		m_fdc_last_fifo_write, command_sequence.c_str(),
-		m_fdc_cmd46_write_bytes[0], m_fdc_cmd46_write_bytes[1], m_fdc_cmd46_write_bytes[2],
-		m_fdc_cmd46_write_bytes[3], m_fdc_cmd46_write_bytes[4], m_fdc_cmd46_write_bytes[5],
-		m_fdc_cmd46_write_bytes[6], m_fdc_cmd46_write_bytes[7], m_fdc_cmd46_write_bytes[8],
-		last_st0, last_st1, last_st2,
-		m_fdc_cmd46_result_bytes[3], m_fdc_cmd46_result_bytes[4], m_fdc_cmd46_result_bytes[5],
-		m_fdc_cmd46_result_bytes[6],
-		BIT(last_st0, 7), BIT(last_st0, 6), BIT(last_st0, 5), BIT(last_st0, 4), BIT(last_st0, 3),
-		BIT(last_st1, 7), BIT(last_st1, 5), BIT(last_st1, 4), BIT(last_st1, 2), BIT(last_st1, 1), BIT(last_st1, 0),
-		BIT(last_st2, 6), BIT(last_st2, 5), BIT(last_st2, 4), BIT(last_st2, 3), BIT(last_st2, 2), BIT(last_st2, 1), BIT(last_st2, 0),
-		m_fdc_data_rate, m_fdc_data_rate_source);
-}
-
-void asr10_boot_state::dump_loaded_code_range(const char *tag, u32 start, u32 end)
-{
-	std::string words;
-	for (u32 cursor = start; cursor <= end; cursor += 2)
-	{
-		if (cursor != start)
-			words += ',';
-		words += util::string_format("%06x:%04x", cursor, read_loaded_word(cursor));
-	}
-	logerror("ASR10_CODE_DUMP tag=%s range=%06x_%06x words=\"%s\"\n", tag, start, end, words.c_str());
-}
 
 
 namespace {
@@ -4750,72 +4459,6 @@ void asr10_boot_state::check_pti_sites(u32 pc)
 // counter's actual period/IACK vector are runtime facts that only exist
 // once the firmware arms the counter -- see the ASR10_DUART_COUNTER
 // arm-time log lines for those, not duplicated here).
-void asr10_boot_state::log_run_config_header()
-{
-	auto flag = [](const char *name) -> std::string
-	{
-		const char *const v = std::getenv(name);
-		return v ? std::string(v) : std::string("<unset>");
-	};
-
-	logerror("ASR10_RUN_CONFIG_HEADER begin ==========================================\n");
-	logerror("ASR10_RUN_CONFIG_BUILD mame_version=%s source=src/mame/ensoniq/asr10_boot.cpp "
-		"romset=asr10booth\n",
-		emulator_info::get_build_version());
-	logerror("ASR10_RUN_CONFIG_ROM lo=asr-648c-lo-1.5b.bin CRC(8e437843) "
-		"SHA1(418f042acbc5323f5b59cbbd71fdc8b2d851f7d0) "
-		"hi=asr-65e0-hi-1.5b.bin CRC(b37cd3b6) SHA1(c4371848428a628b5e5a50e99be602d7abfc7904)\n");
-	{
-		floppy_image_device *const floppy = m_floppy_connector->get_device();
-		if (floppy && floppy->exists())
-		{
-			const std::string hash = floppy->hash().macro_string();
-			logerror("ASR10_RUN_CONFIG_FLOPPY mounted=1 basename=%s hash=%s\n",
-				floppy->basename() ? floppy->basename() : "<null>",
-				hash.empty() ? "<unavailable_this_mame_version_does_not_precompute_floppy_hash>" : hash.c_str());
-		}
-		else
-		{
-			logerror("ASR10_RUN_CONFIG_FLOPPY mounted=0\n");
-		}
-	}
-	logerror("ASR10_RUN_CONFIG_IRQ6 wiring=real_device_irq_cb vector_source=mc68302_device::"
-		"irq6_ack_vector fixed_vector=%02x note=m_duart_irq_cb_bound_to_maincpu_input_line_6_"
-		"see_ASR10_M68K_IACK_tag_for_actual_returned_vector\n",
-		m_maincpu->irq6_ack_vector());
-
-	// requested (raw env string) / effective (parsed bool actually used) /
-	// default-when-unset, for every ASR10_* flag found in this source file.
-	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_DIAG_PANEL_C_PARSER_TRACE requested=%s effective=%u "
-		"default_when_unset=0 note=also_forced_on_by_any_panel_reply_71_family_flag\n",
-		flag("ASR10_DIAG_PANEL_C_PARSER_TRACE").c_str(), m_panel_c_parser_trace_enabled ? 1u : 0u);
-	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_DISK_SIGNATURE_TRACE requested=%s effective=%u "
-		"default_when_unset=0\n",
-		flag("ASR10_EXPERIMENT_DISK_SIGNATURE_TRACE").c_str(), m_disk_sig_trace_enabled ? 1u : 0u);
-	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_DOWNLOAD_TRACE requested=%s effective=%u "
-		"default_when_unset=0\n",
-		flag("ASR10_EXPERIMENT_DOWNLOAD_TRACE").c_str(), m_download_trace_enabled ? 1u : 0u);
-	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_FC3000_VERIFY_TRACE requested=%s effective=%u "
-		"default_when_unset=0\n",
-		flag("ASR10_EXPERIMENT_FC3000_VERIFY_TRACE").c_str(), m_fc3000_verify_trace_enabled ? 1u : 0u);
-	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_FDC_SYNTH_TC requested=%s effective=%u "
-		"default_when_unset=0\n",
-		flag("ASR10_EXPERIMENT_FDC_SYNTH_TC").c_str(), m_fdc_synth_tc_enabled ? 1u : 0u);
-	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_FILESYSTEM_BROWSER_TRACE requested=%s effective=%u "
-		"default_when_unset=0\n",
-		flag("ASR10_EXPERIMENT_FILESYSTEM_BROWSER_TRACE").c_str(), m_fsb.enabled ? 1u : 0u);
-	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_MC68302_GPIO_TRACE requested=%s effective=%u "
-		"default_when_unset=0\n",
-		flag("ASR10_EXPERIMENT_MC68302_GPIO_TRACE").c_str(), m_gpio_stage1_trace_enabled ? 1u : 0u);
-	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_POST_TUNING_INDIRECT_TRACE requested=%s effective=%u "
-		"default_when_unset=0\n",
-		flag("ASR10_EXPERIMENT_POST_TUNING_INDIRECT_TRACE").c_str(), m_pti.enabled ? 1u : 0u);
-	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_TUNING_STALL_TRACE requested=%s effective=%u "
-		"default_when_unset=0\n",
-		flag("ASR10_EXPERIMENT_TUNING_STALL_TRACE").c_str(), m_tuning_stall_trace_enabled ? 1u : 0u);
-	logerror("ASR10_RUN_CONFIG_HEADER end ============================================\n");
-}
-
 
 // filesystem-browser-map.md 4.14 TASK 1/2: a one-shot scan of every
 // autovector (1-7, offsets 0x64-0x7c) and every trap vector (0-15,
@@ -4982,16 +4625,6 @@ void asr10_boot_state::log_run_config_header()
 
 // filesystem-browser-map.md 4.18: one full 22-byte slot-record dump, used
 // by the ae12/ae1a/ae20 taps and the system-wide snapshot at ae20.
-void asr10_boot_state::dump_slot_record(const char *tag, u32 slot_addr)
-{
-	logerror("ASR10_PTI_SLOT_RECORD tag=%s addr=%06x +00=%04x +02=%04x +03=%02x +06=%08x "
-		"+0a=%04x +0c=%04x +0e=%04x +10=%04x +12=%04x +14=%04x\n",
-		tag, slot_addr, lowmem_word(slot_addr + 0), lowmem_word(slot_addr + 2),
-		u32(lowmem_byte(slot_addr + 3)), lowmem_long(slot_addr + 6), lowmem_word(slot_addr + 0xa),
-		lowmem_word(slot_addr + 0xc), lowmem_word(slot_addr + 0xe), lowmem_word(slot_addr + 0x10),
-		lowmem_word(slot_addr + 0x12), lowmem_word(slot_addr + 0x14));
-}
-
 
 // filesystem-browser-map.md 4.18 TASK 1: tapped at ae12, trap #5's own
 // exception-frame push. D0 is always 0 on entry here (established); logs
@@ -5040,18 +4673,6 @@ void asr10_boot_state::dump_slot_record(const char *tag, u32 slot_addr)
 // high-view RAM region via read_highview_word() (a genuine CPU-space read)
 // instead of returning the 0xffff placeholder read_loaded_word() gives for
 // that range.
-void asr10_boot_state::dump_highview_code_range(const char *tag, u32 start, u32 end)
-{
-	std::string words;
-	for (u32 cursor = start; cursor <= end; cursor += 2)
-	{
-		if (cursor != start)
-			words += ',';
-		words += util::string_format("%06x:%04x", cursor, read_highview_word(cursor));
-	}
-	logerror("ASR10_CODE_DUMP tag=%s range=%06x_%06x words=\"%s\"\n", tag, start, end, words.c_str());
-}
-
 
 void asr10_boot_state::scan_for_ascii_string(const char *tag, u32 start, u32 end, const char *needle)
 {
@@ -5083,124 +4704,6 @@ void asr10_boot_state::scan_for_ascii_string(const char *tag, u32 start, u32 end
 }
 
 
-void asr10_boot_state::log_synth_68302_irq_vectors(u8 irq_level, u32 pc, u16 sr)
-{
-	if (!m_synth_68302_timer_irq_code_dump_logged)
-	{
-		dump_loaded_code_range("synthetic_irq_target_candidate", 0x00f8b800, 0x00f8b850);
-		dump_loaded_code_range("common_error_routine", 0x00f88260, 0x00f882a0);
-		dump_loaded_code_range("panel_error_prompt_path", 0x00f89c90, 0x00f89d10);
-		m_synth_68302_timer_irq_code_dump_logged = true;
-	}
-
-	if (m_synth_68302_timer_irq_vector_dump_logged)
-		return;
-
-	const u16 fc6812 = m_m68302_internal_shadow[0x12 >> 1];
-	const u16 fc6814 = m_m68302_internal_shadow[0x14 >> 1];
-	const u16 fc6816 = m_m68302_internal_shadow[0x16 >> 1];
-	const u16 fc6818 = m_m68302_internal_shadow[0x18 >> 1];
-	const u16 fc6850 = m_m68302_internal_shadow[0x50 >> 1];
-	const u16 fc6852 = m_m68302_internal_shadow[0x52 >> 1];
-	const u32 selected_vector_offset = 0x60 + (u32(irq_level) * 4);
-	const u32 selected_handler = read_loaded_long(selected_vector_offset) & 0x00ffffff;
-	const bool selected_is_f8b826 = selected_handler == 0x00f8b826;
-	const bool selected_is_f8b828 = selected_handler == 0x00f8b828;
-	std::string vector_words;
-	for (u8 level = 1; level <= 7; level++)
-	{
-		const u32 vector_offset = 0x60 + (u32(level) * 4);
-		const u32 handler = read_loaded_long(vector_offset) & 0x00ffffff;
-		if (level != 1)
-			vector_words += ',';
-		vector_words += util::string_format("irq%u@%02x=%06x%s", level, vector_offset, handler,
-			(handler == 0x00f8b826 || handler == 0x00f8b828) ? ":target_match" : "");
-	}
-
-	logerror("ASR10_SYNTH_IRQ_VECTOR_DUMP selected_irq_level=%u selected_vector_offset=%02x "
-		"selected_handler=%06x selected_equals_f8b826=%u selected_equals_f8b828=%u current_pc=%06x "
-		"sr=%04x sr_mask=%u fc6812=%04x fc6814=%04x fc6816=%04x fc6818=%04x fc6850=%04x fc6852=%04x "
-		"vectors=\"%s\"\n",
-		irq_level, selected_vector_offset, selected_handler,
-		selected_is_f8b826 ? 1 : 0, selected_is_f8b828 ? 1 : 0,
-		pc, sr, (sr >> 8) & 7, fc6812, fc6814, fc6816, fc6818, fc6850, fc6852,
-		vector_words.c_str());
-	m_synth_68302_timer_irq_vector_dump_logged = true;
-}
-
-
-void asr10_boot_state::log_runtime_vector_table_for_iack_experiment(u32 pc, u16 sr)
-{
-	if (m_synth_68302_timer_iack_runtime_vector_dump_logged)
-		return;
-
-	m_synth_68302_timer_iack_runtime_vector_dump_logged = true;
-	const u16 fc6812 = m_m68302_internal_shadow[0x12 >> 1];
-	const u16 fc6814 = m_m68302_internal_shadow[0x14 >> 1];
-	const u16 fc6816 = m_m68302_internal_shadow[0x16 >> 1];
-	const u16 fc6818 = m_m68302_internal_shadow[0x18 >> 1];
-	const u16 fc684a = m_m68302_internal_shadow[0x4a >> 1];
-	const u16 fc6850 = m_m68302_internal_shadow[0x50 >> 1];
-	const u16 fc6852 = m_m68302_internal_shadow[0x52 >> 1];
-
-	logerror("ASR10_RUNTIME_VECTOR_TABLE_BEGIN pc=%06x sr=%04x sr_mask=%u "
-		"dispatcher_count=%u fc6812=%04x fc6814=%04x fc6816=%04x fc6818=%04x "
-		"fc684a=%04x fc6850=%04x fc6852=%04x panel=\"%s\"\n",
-		pc, sr, (sr >> 8) & 7, m_runtime_dispatch_entry_count,
-		fc6812, fc6814, fc6816, fc6818, fc684a, fc6850, fc6852, m_panel_text);
-
-	std::string candidates;
-	for (u16 base = 0; base < 0x100; base += 0x20)
-	{
-		std::string entries;
-		for (u16 vector = base; vector < base + 0x20; vector++)
-		{
-			const u32 handler = read_loaded_long(u32(vector) * 4) & 0x00ffffff;
-			std::string classification;
-			if (handler == 0x00f882da)
-				classification += "default_error_139";
-			if (handler >= 0x00f87f40 && handler <= 0x00f87fc0)
-			{
-				if (!classification.empty()) classification += '|';
-				classification += "dispatcher_related";
-			}
-			if ((handler >= 0x00f88efc && handler <= 0x00f88f5c))
-			{
-				if (!classification.empty()) classification += '|';
-				classification += "fc6818_rte_candidate";
-			}
-			if (handler >= 0x00f80000 && handler <= 0x00fbffff)
-			{
-				if (!classification.empty()) classification += '|';
-				classification += "rom";
-			}
-			else if (handler <= 0x0000ffff)
-			{
-				if (!classification.empty()) classification += '|';
-				classification += "ram";
-			}
-			if (classification.empty())
-				classification = "other";
-
-			if (!entries.empty())
-				entries += ',';
-			entries += util::string_format("%02x:%06x:%04x:%s",
-				vector, handler, read_loaded_word(handler), classification.c_str());
-
-			if (handler != 0x00f882da && handler != 0x00ffffff && handler != 0x00000000)
-			{
-				if (!candidates.empty())
-					candidates += ',';
-				candidates += util::string_format("%02x:%06x:%04x:%s",
-					vector, handler, read_loaded_word(handler), classification.c_str());
-			}
-		}
-		logerror("ASR10_RUNTIME_VECTOR_TABLE_CHUNK range=%02x_%02x entries=\"%s\"\n",
-			base, base + 0x1f, entries.c_str());
-	}
-
-	logerror("ASR10_RUNTIME_VECTOR_CANDIDATES non_default=\"%s\"\n", candidates.c_str());
-}
 
 
 TIMER_CALLBACK_MEMBER(asr10_boot_state::synth_68302_timer_irq)
@@ -5232,7 +4735,7 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::synth_68302_timer_irq)
 	if constexpr (ASR10_EXPERIMENT_SYNTH_68302_TIMER_IACK_VECTOR)
 	{
 		if (m_seen_loading_system_prompt)
-			log_runtime_vector_table_for_iack_experiment(pc, sr);
+			(void)0;
 
 		if (!m_seen_loading_system_prompt)
 		{
@@ -5373,7 +4876,7 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::synth_68302_timer_irq)
 				m_synth_68302_timer_iack_fired_logged = true;
 			}
 		}
-		log_synth_68302_irq_vectors(irq_level, pc, sr);
+		(void)0;
 		m_maincpu->set_input_line(irq_level, HOLD_LINE);
 	}
 }
@@ -5382,111 +4885,6 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::synth_68302_timer_irq)
 
 
 
-void asr10_boot_state::log_tuning_stall_candidate_dump(u32 pc)
-{
-	if (!m_tuning_stall_trace_enabled)
-		return;
-
-	bool *logged = nullptr;
-	u32 start = 0;
-	u32 end = 0;
-
-	switch (pc)
-	{
-	case 0x00ffc85a: logged = &m_tuning_stall_dump_ffc85a_logged; start = 0x00ffc830; end = 0x00ffc8d0; break;
-	case 0x00ff9106: logged = &m_tuning_stall_dump_ff9106_logged; start = 0x00ff90d0; end = 0x00ff9170; break;
-	case 0x0000ae18: logged = &m_tuning_stall_dump_00ae14_logged; start = 0x0000adf0; end = 0x0000ae90; break;
-	case 0x000068ae: logged = &m_tuning_stall_dump_0068a8_logged; start = 0x00006880; end = 0x00006920; break;
-	case 0x000077a0: logged = &m_tuning_stall_dump_00779c_logged; start = 0x00007770; end = 0x00007810; break;
-	default: return;
-	}
-
-	if (*logged)
-		return;
-	*logged = true;
-	dump_loaded_code_range("tuning_stall_callback", start, end);
-
-	// Slot 0/4's downstream vector targets and slots 1/3's own resume code
-	// are dumped via the table-driven FSB_DUMP_TARGETS -- ffc85a/ff9106/
-	// ae18/68ae are all trigger_pc values in that table -- from the
-	// log_fsb_code_dumps() call in log_dispatcher_rte_first_pc_probe(),
-	// which runs regardless of m_tuning_stall_trace_enabled (this function
-	// is gated on it, so a call added here would depend on that unrelated
-	// flag too).
-
-	// One-shot, read-only: capture the trap #7/#8 vector targets (vectors 39/40,
-	// addresses 0x9c/0xa0) and the four subroutines slot5's main loop calls
-	// ($7cc4, $7164, $bf28, $bf5a), to trace whether they lead back into the
-	// dispatcher/scheduler (f87f40-f87fd0) rather than assuming it from shape
-	// alone.
-	if (!m_tuning_stall_dump_trap_vectors_logged)
-	{
-		m_tuning_stall_dump_trap_vectors_logged = true;
-		logerror("ASR10_TUNING_STALL_TRAP_VECTORS trap7_vector_addr=0000009c trap7_target=%06x "
-			"trap8_vector_addr=000000a0 trap8_target=%06x\n",
-			read_loaded_long(0x0000009c) & 0x00ffffff, read_loaded_long(0x000000a0) & 0x00ffffff);
-	}
-	if (!m_tuning_stall_dump_7cc4_logged)
-	{
-		m_tuning_stall_dump_7cc4_logged = true;
-		dump_loaded_code_range("tuning_stall_sub_7cc4", 0x00007ca0, 0x00007d40);
-	}
-	if (!m_tuning_stall_dump_7164_logged)
-	{
-		m_tuning_stall_dump_7164_logged = true;
-		dump_loaded_code_range("tuning_stall_sub_7164", 0x00007140, 0x000071e0);
-	}
-	if (!m_tuning_stall_dump_bf28_logged)
-	{
-		m_tuning_stall_dump_bf28_logged = true;
-		dump_loaded_code_range("tuning_stall_sub_bf28", 0x0000bf00, 0x0000bfa0);
-	}
-	if (!m_tuning_stall_dump_bf5a_logged)
-	{
-		m_tuning_stall_dump_bf5a_logged = true;
-		dump_loaded_code_range("tuning_stall_sub_bf5a", 0x0000bf30, 0x0000bfd0);
-	}
-}
-
-
-void asr10_boot_state::log_tuning_stall_save_probe(u32 pc)
-{
-	// Read-only: fires at the two points in the ROM dispatcher-suspend path
-	// (f87f5c, immediately after `movea.w $b6a.w,A2` and before the two
-	// `bset D0,(n,A2)` instructions; f87f64, immediately after both bsets)
-	// that determine whether suspending the currently-running task makes its
-	// own slot "pending" again (byte2 != byte3), which would explain how a
-	// task whose own code never falls through to rts can still be the thing
-	// the f87f92 scan loop keeps re-dispatching. Gated on having already seen
-	// the slot5 tuning-stall callback dispatch (m_tuning_stall_dump_00779c_
-	// logged) -- otherwise the first hit here is from unrelated, much-earlier
-	// boot activity, since this dispatcher path is used throughout the whole
-	// run, not just for this investigation. Bounded to a handful of samples,
-	// not a strict one-shot, to see the pattern rather than a single instant.
-	if (!m_tuning_stall_trace_enabled || !m_tuning_stall_dump_00779c_logged)
-		return;
-	const u32 a2 = u32(m_maincpu->state_int(M68K_A2)) & 0x00ffffff;
-	if (a2 != 0x002442)
-		return;
-	if (pc == 0x00f87f5c && m_tuning_stall_save_before_count < 5)
-	{
-		m_tuning_stall_save_before_count++;
-		const u32 d0 = u32(m_maincpu->state_int(M68K_D0));
-		logerror("ASR10_TUNING_STALL_SAVE_BEFORE sample=%u pc=%06x a2=%06x d0=%08x "
-			"byte2=%02x byte3=%02x lowmem_0b6a=%04x\n",
-			m_tuning_stall_save_before_count, pc, a2, d0,
-			lowmem_byte(a2 + 2), lowmem_byte(a2 + 3), lowmem_word(0x0b6a));
-	}
-	else if (pc == 0x00f87f64 && m_tuning_stall_save_after_count < 5)
-	{
-		m_tuning_stall_save_after_count++;
-		const u32 d0 = u32(m_maincpu->state_int(M68K_D0));
-		logerror("ASR10_TUNING_STALL_SAVE_AFTER sample=%u pc=%06x a2=%06x d0=%08x "
-			"byte2=%02x byte3=%02x lowmem_0b6a=%04x\n",
-			m_tuning_stall_save_after_count, pc, a2, d0,
-			lowmem_byte(a2 + 2), lowmem_byte(a2 + 3), lowmem_word(0x0b6a));
-	}
-}
 
 
 
@@ -5494,66 +4892,6 @@ void asr10_boot_state::log_tuning_stall_save_probe(u32 pc)
 
 
 
-
-void asr10_boot_state::log_cpu_context(u32 pc)
-{
-	static constexpr u32 landmarks[] = {
-		0x00fb7c30, 0x00fb7c7a, 0x00fb7c9c,
-		0x00fb9104, 0x00fb9184, 0x00fb9188,
-		0x00fb92ce, 0x00fb92d2, 0x00fb92d8, 0x00fb9344, 0x00fb9342,
-		0x00fb9358, 0x00fb9376, 0x00fb937e, 0x00fb9382, 0x00fb93c2,
-		0x00f88030, 0x00f87fd2, 0x00f89c48, 0x00f89cb0
-	};
-	u32 landmark = std::size(landmarks);
-	for (u32 index = 0; index < std::size(landmarks); index++)
-	{
-		if (pc == landmarks[index])
-		{
-			landmark = index;
-			break;
-		}
-	}
-	if (landmark == std::size(landmarks))
-		return;
-
-	const u32 hits = ++m_context_hits[landmark];
-	if (pc != 0x00fb7c30 && pc != 0x00fb7c7a && hits != 1 && (hits & (hits - 1)) != 0)
-		return;
-
-	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-	const u32 stack0 = read_stack_long(sp);
-	const u32 stack1 = read_stack_long(sp + 4);
-	const u32 stack2 = read_stack_long(sp + 8);
-	const u32 return_address = likely_rom_address(stack0) ? (stack0 & 0x00ffffff) : 0xffffffffU;
-
-	logerror("ASR10CPUCONTEXT pc=%06x previous_pc=%06x opcode=%04x sr=%04x "
-		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x "
-		"sp=%06x stack0=%08x stack1=%08x stack2=%08x guessed_return=%08x phase=%s hits=%u\n",
-		pc, m_last_distinct_pc, read_code_word(pc), u16(m_maincpu->state_int(M68K_SR)),
-		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
-		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
-		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
-		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
-		sp, stack0, stack1, stack2, return_address,
-		m_seen_insert_disk_prompt ? "post_insert_disk" : "boot", hits);
-
-	if (pc == 0x00fb7c30 && return_address != 0xffffffffU)
-	{
-		logerror("ASR10CALLCONTEXT callee=fb7c30 return=%06x stack0=%08x "
-			"callsite=fb9184 containing_routine=fb9104 path=normal_bsr_nested_return_fb90ee\n",
-			return_address, stack0);
-	}
-	else if (pc == 0x00fb7c7a)
-	{
-		const u8 lowmem_04ee = u8(m_lowmem_shadow[0x04ee / 2] >> 8);
-		logerror("ASR10SEMANTICREADER pc=fb7c7a lowmem_04ee=%02x negative=%u "
-			"duart_fc4809=%02x bit4=%u gate_bpl_target=fb7c9c return=%08x\n",
-			lowmem_04ee, BIT(lowmem_04ee, 7), ASR10_DUART_INPUT_CHANGE_STUB |
-				(ASR10_EXPERIMENT_STUB_DUART_INPUT_CHANGE_BIT4_AT_FB7C84 ? 0x10 : 0),
-			ASR10_EXPERIMENT_STUB_DUART_INPUT_CHANGE_BIT4_AT_FB7C84 ? 1 : BIT(ASR10_DUART_INPUT_CHANGE_STUB, 4),
-			return_address);
-	}
-}
 
 
 
@@ -5682,24 +5020,6 @@ void asr10_boot_state::trace_access(trace_region region, bool write, u32 address
 }
 
 
-void asr10_boot_state::dump_repeated_accesses()
-{
-	for (trace_slot const &slot : m_trace_slots)
-	{
-		if (slot.repeat_count > 1)
-		{
-			logerror("ASR10POLL pc=%06x addr=%06x rw=%c data=%04x mem_mask=%04x last_write=%04x region=%s repeats=%u\n",
-				slot.pc, slot.address, slot.write ? 'W' : 'R', slot.data, slot.mem_mask, slot.last_write, region_name(slot.region), slot.repeat_count);
-			if (m_seen_insert_disk_prompt)
-			{
-				logerror("ASR10POSTDISK summary=repeat pc=%06x addr=%06x rw=%c data=%04x mem_mask=%04x region=%s detail=%s repeats=%u\n",
-					slot.pc, slot.address, slot.write ? 'W' : 'R', slot.data, slot.mem_mask,
-					region_name(slot.region), trace_detail(slot.region, slot.address), slot.repeat_count);
-			}
-		}
-	}
-}
-
 
 const char *asr10_boot_state::trace_detail(trace_region region, u32 address)
 {
@@ -5783,130 +5103,6 @@ u32 asr10_boot_state::read_loaded_long(u32 address) const
 }
 
 // hängning
-void asr10_boot_state::log_pc_summary(const char *reason, u32 pc)
-{
-	const u16 opcode = read_loaded_word(pc);
-	u32 branch_target = 0xffffffffU;
-	u32 branch_pc = 0xffffffffU;
-	u32 accessed_address = 0xffffffffU;
-	s32 tested_bit = -1;
-	u16 poll_value = 0xffff;
-	u16 poll_mem_mask = 0;
-	u16 shadow_last_write = 0xffff;
-	u8 relevant_byte = 0xff;
-	s32 bit_state = -1;
-	const char *branch_kind = "not_decoded";
-	const char *loop_guess = "unknown";
-
-	if (opcode == 0x1039)
-		accessed_address = (u32(read_loaded_word(pc + 2)) << 16) | read_loaded_word(pc + 4);
-	else if ((opcode & 0xfff8) == 0x0810)
-	{
-		accessed_address = m_maincpu->state_int(M68K_A0 + (opcode & 7)) & 0x00ffffff;
-		tested_bit = read_loaded_word(pc + 2) & 7;
-	}
-
-	for (u32 candidate = pc; candidate < pc + 0x20; candidate += 2)
-	{
-		const u16 candidate_opcode = read_loaded_word(candidate);
-		u32 candidate_target = 0xffffffffU;
-		const char *candidate_kind = nullptr;
-		if ((candidate_opcode & 0xf000) == 0x6000)
-		{
-			const s8 displacement = s8(candidate_opcode);
-			candidate_kind = "bcc_bra_bsr";
-			candidate_target = displacement ?
-				((candidate + 2 + displacement) & 0x00ffffff) :
-				((candidate + 2 + s16(read_loaded_word(candidate + 2))) & 0x00ffffff);
-		}
-		else if ((candidate_opcode & 0xf0f8) == 0x50c8)
-		{
-			candidate_kind = "dbcc";
-			candidate_target = (candidate + 2 + s16(read_loaded_word(candidate + 2))) & 0x00ffffff;
-		}
-
-		if (candidate_kind && candidate_target <= pc)
-		{
-			branch_pc = candidate;
-			branch_target = candidate_target;
-			branch_kind = candidate_kind;
-			break;
-		}
-	}
-
-	const u32 poll_pc = (branch_target != 0xffffffffU && branch_target <= pc) ? branch_target : pc;
-	const u16 poll_opcode = read_loaded_word(poll_pc);
-	if (poll_opcode == 0x0839)
-	{
-		tested_bit = read_loaded_word(poll_pc + 2) & 7;
-		accessed_address = (u32(read_loaded_word(poll_pc + 4)) << 16) | read_loaded_word(poll_pc + 6);
-	}
-	else if (poll_opcode == 0x1039)
-	{
-		accessed_address = (u32(read_loaded_word(poll_pc + 2)) << 16) | read_loaded_word(poll_pc + 4);
-	}
-	else if ((poll_opcode & 0xfff8) == 0x0810)
-	{
-		accessed_address = m_maincpu->state_int(M68K_A0 + (poll_opcode & 7)) & 0x00ffffff;
-		tested_bit = read_loaded_word(poll_pc + 2) & 7;
-	}
-
-	if (accessed_address != 0xffffffffU)
-	{
-		const trace_slot *poll_slot = nullptr;
-		for (trace_slot const &slot : m_trace_slots)
-		{
-			if (slot.repeat_count && !slot.write && slot.address == accessed_address &&
-				(!poll_slot || slot.repeat_count > poll_slot->repeat_count))
-				poll_slot = &slot;
-		}
-		if (poll_slot)
-		{
-			poll_value = poll_slot->data;
-			poll_mem_mask = poll_slot->mem_mask;
-			shadow_last_write = poll_slot->last_write;
-			relevant_byte = (poll_mem_mask & 0xff00) ? u8(poll_value >> 8) : u8(poll_value);
-			if (tested_bit >= 0)
-				bit_state = BIT(relevant_byte, tested_bit & 7);
-		}
-	}
-
-	for (u32 candidate = pc - std::min<u32>(pc, 8); candidate <= pc; candidate += 2)
-	{
-		if (read_loaded_word(candidate) == 0xb683 && read_loaded_word(candidate + 2) == 0x2f03 &&
-			read_loaded_word(candidate + 4) == 0x261f && read_loaded_word(candidate + 6) == 0x5383 &&
-			pc <= candidate + 8)
-		{
-			loop_guess = "d3_register_countdown_not_mmio";
-			break;
-		}
-	}
-	if (pc == 0x00f89cd4)
-	{
-		loop_guess = "panel_input_poll_delay";
-	}
-	if (!strcmp(loop_guess, "unknown") && accessed_address != 0xffffffffU)
-	{
-		loop_guess = "device_or_memory_poll";
-	}
-
-	logerror("ASR10HANG reason=%s pc=%06x previous_pc=%06x opcode=%04x accessed_address=%08x "
-		"poll_address=%08x tested_bit=%d region_guess=%s poll_value=%04x poll_mem_mask=%04x "
-		"relevant_byte=%02x bit_state=%d shadow_last_write=%04x loop_guess=%s d3=%08x "
-		"branch_pc=%06x branch_kind=%s branch_target=%06x pc_repeat_count=%u poll_count=%u\n",
-		reason, pc, m_last_distinct_pc, opcode, accessed_address,
-		accessed_address, tested_bit, address_region_guess(accessed_address), poll_value, poll_mem_mask,
-		relevant_byte, bit_state, shadow_last_write, loop_guess, u32(m_maincpu->state_int(M68K_D3)), branch_pc,
-		branch_kind, branch_target, m_pc_repeat_count, u32(m_pc_poll_count));
-	dump_repeated_accesses();
-
-	if (m_fsb.enabled && !m_fsb.milestone_e_logged)
-	{
-		m_fsb.milestone_e_logged = true;
-		(void)0;
-	}
-}
-
 
 TIMER_CALLBACK_MEMBER(asr10_boot_state::prompt_select_poll)
 {
@@ -6029,7 +5225,7 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::pc_poll)
 	}
 	(void)0;
 	(void)0;
-	log_tuning_stall_save_probe(pc);
+	(void)0;
 	// Read-only: direct counters for the trap #7/#8 handler entry points
 	// themselves (not gated on slot5 specifically), to settle whether either
 	// trap fires again at all after the initial six-slot RTE burst,
@@ -6087,10 +5283,10 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::pc_poll)
 		else if (m_pc_change_count == 257)
 			logerror("ASR10PC further transitions suppressed; final loop summary remains enabled\n");
 		(void)0;
-		log_duart_counter_watched_pc(pc);
-		log_primary_slot_snapshot_once(pc);
-		log_timer_secondary_callback(pc);
-		log_divzero_exception_frame(pc);
+		(void)0;
+		(void)0;
+		(void)0;
+		(void)0;
 		m_last_pc = pc;
 	}
 	else
@@ -6105,7 +5301,7 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::pc_poll)
 	// }
 	if (m_pc_poll_count > MAX_PC_POLLS)
 	{
-		log_pc_summary("max_poll_count", pc);
+		(void)0;
 		m_pc_timer->adjust(attotime::never);
 		return;
 	}
