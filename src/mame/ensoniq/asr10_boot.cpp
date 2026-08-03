@@ -241,11 +241,6 @@ private:
 	u8 m_04b0_countdown_trace_mask = 0;
 	u32 m_media_branch_last_pc = 0xffffffff;
 	u16 m_scsi_asr_shadow[0x10]{};
-	u16 m_es550x_vfx_shadow[0x40]{};
-	u16 m_es5510_vfx_shadow[0x100]{};
-	u16 m_fdc_vfx_shadow[4]{};
-	u16 m_es5506_ts_shadow[0x40]{};
-	u16 m_es5510_ts_shadow[0x100]{};
 	std::array<trace_slot, TRACE_SLOT_COUNT> m_trace_slots{};
 	char m_panel_text[PANEL_TEXT_LENGTH]{};
 	u32 m_panel_text_length = 0;
@@ -782,16 +777,6 @@ private:
 	void duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 	u16 scsi_asr_candidate_r(offs_t offset, u16 mem_mask = ~0);
 	void scsi_asr_candidate_w(offs_t offset, u16 data, u16 mem_mask = ~0);
-	u16 es550x_vfx_candidate_r(offs_t offset, u16 mem_mask = ~0);
-	void es550x_vfx_candidate_w(offs_t offset, u16 data, u16 mem_mask = ~0);
-	u16 es5510_vfx_candidate_r(offs_t offset, u16 mem_mask = ~0);
-	void es5510_vfx_candidate_w(offs_t offset, u16 data, u16 mem_mask = ~0);
-	u16 fdc_vfx_candidate_r(offs_t offset, u16 mem_mask = ~0);
-	void fdc_vfx_candidate_w(offs_t offset, u16 data, u16 mem_mask = ~0);
-	u16 es5506_ts_candidate_r(offs_t offset, u16 mem_mask = ~0);
-	void es5506_ts_candidate_w(offs_t offset, u16 data, u16 mem_mask = ~0);
-	u16 es5510_ts_candidate_r(offs_t offset, u16 mem_mask = ~0);
-	void es5510_ts_candidate_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 
 	TIMER_CALLBACK_MEMBER(pc_poll);
 	TIMER_CALLBACK_MEMBER(prompt_select_poll);
@@ -803,8 +788,6 @@ private:
 	bool probe_or_alias_region_index(u32 address, u32 &index, u32 &word_index) const;
 	u16 probe_or_alias_region_r_at(u32 base, offs_t offset, u16 mem_mask);
 	void probe_or_alias_region_w_at(u32 base, offs_t offset, u16 data, u16 mem_mask);
-	u16 candidate_r(u32 base, offs_t offset, u16 mem_mask, u16 *shadow, u32 words, trace_region region);
-	void candidate_w(u32 base, offs_t offset, u16 data, u16 mem_mask, u16 *shadow, u32 words, trace_region region);
 	void trace_access(trace_region region, bool write, u32 address, u16 data, u16 mem_mask, u16 last_write);
 	void dump_repeated_accesses();
 	void panel_receive_byte(u8 data);
@@ -1502,11 +1485,6 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_04b0_countdown_trace_mask));
 	save_item(NAME(m_media_branch_last_pc));
 	save_item(NAME(m_scsi_asr_shadow));
-	save_item(NAME(m_es550x_vfx_shadow));
-	save_item(NAME(m_es5510_vfx_shadow));
-	save_item(NAME(m_fdc_vfx_shadow));
-	save_item(NAME(m_es5506_ts_shadow));
-	save_item(NAME(m_es5510_ts_shadow));
 	save_item(NAME(m_panel_text));
 	save_item(NAME(m_panel_text_length));
 	save_item(NAME(m_panel_transport_pending_marker));
@@ -2135,11 +2113,6 @@ void asr10_boot_state::machine_reset()
 	m_04b0_countdown_trace_mask = 0;
 	m_media_branch_last_pc = 0xffffffff;
 	std::fill(std::begin(m_scsi_asr_shadow), std::end(m_scsi_asr_shadow), 0);
-	std::fill(std::begin(m_es550x_vfx_shadow), std::end(m_es550x_vfx_shadow), 0);
-	std::fill(std::begin(m_es5510_vfx_shadow), std::end(m_es5510_vfx_shadow), 0);
-	std::fill(std::begin(m_fdc_vfx_shadow), std::end(m_fdc_vfx_shadow), 0);
-	std::fill(std::begin(m_es5506_ts_shadow), std::end(m_es5506_ts_shadow), 0);
-	std::fill(std::begin(m_es5510_ts_shadow), std::end(m_es5510_ts_shadow), 0);
 	m_trace_slots = {};
 
 	// Coarse landmark polling only. This does not replace instruction tracing.
@@ -2191,11 +2164,6 @@ void asr10_boot_state::mem_map(address_map &map)
 	// Reference-based candidate windows. These are deliberately traceable
 	// register shadows, not device implementations or asserted ASR-10 decode.
 	map(0x100000, 0x1fffff).ram(); // sample RAM candidate, directly tested by the boot ROM at 0x100000
-	map(0x200000, 0x20007f).rw(FUNC(asr10_boot_state::es550x_vfx_candidate_r), FUNC(asr10_boot_state::es550x_vfx_candidate_w));
-	map(0x260000, 0x2601ff).rw(FUNC(asr10_boot_state::es5510_vfx_candidate_r), FUNC(asr10_boot_state::es5510_vfx_candidate_w));
-	map(0x2c0000, 0x2c0007).rw(FUNC(asr10_boot_state::fdc_vfx_candidate_r), FUNC(asr10_boot_state::fdc_vfx_candidate_w));
-	map(0x300000, 0x30007f).rw(FUNC(asr10_boot_state::es5506_ts_candidate_r), FUNC(asr10_boot_state::es5506_ts_candidate_w));
-	map(0x380000, 0x3801ff).rw(FUNC(asr10_boot_state::es5510_ts_candidate_r), FUNC(asr10_boot_state::es5510_ts_candidate_w));
 
 	map(0xf00000, 0xf7ffff).ram();
 	map(0xf80000, 0xfbffff).rw(FUNC(asr10_boot_state::high_alias_r), FUNC(asr10_boot_state::high_alias_w));
@@ -9246,66 +9214,6 @@ void asr10_boot_state::scsi_asr_candidate_w(offs_t offset, u16 data, u16 mem_mas
 }
 
 
-u16 asr10_boot_state::es550x_vfx_candidate_r(offs_t offset, u16 mem_mask)
-{
-	return candidate_r(0x00200000, offset, mem_mask, m_es550x_vfx_shadow, std::size(m_es550x_vfx_shadow), trace_region::ES550X_VFX_CANDIDATE);
-}
-
-
-void asr10_boot_state::es550x_vfx_candidate_w(offs_t offset, u16 data, u16 mem_mask)
-{
-	candidate_w(0x00200000, offset, data, mem_mask, m_es550x_vfx_shadow, std::size(m_es550x_vfx_shadow), trace_region::ES550X_VFX_CANDIDATE);
-}
-
-
-u16 asr10_boot_state::es5510_vfx_candidate_r(offs_t offset, u16 mem_mask)
-{
-	return candidate_r(0x00260000, offset, mem_mask, m_es5510_vfx_shadow, std::size(m_es5510_vfx_shadow), trace_region::ES5510_VFX_CANDIDATE);
-}
-
-
-void asr10_boot_state::es5510_vfx_candidate_w(offs_t offset, u16 data, u16 mem_mask)
-{
-	candidate_w(0x00260000, offset, data, mem_mask, m_es5510_vfx_shadow, std::size(m_es5510_vfx_shadow), trace_region::ES5510_VFX_CANDIDATE);
-}
-
-
-u16 asr10_boot_state::fdc_vfx_candidate_r(offs_t offset, u16 mem_mask)
-{
-	return candidate_r(0x002c0000, offset, mem_mask, m_fdc_vfx_shadow, std::size(m_fdc_vfx_shadow), trace_region::FDC_VFX_CANDIDATE);
-}
-
-
-void asr10_boot_state::fdc_vfx_candidate_w(offs_t offset, u16 data, u16 mem_mask)
-{
-	candidate_w(0x002c0000, offset, data, mem_mask, m_fdc_vfx_shadow, std::size(m_fdc_vfx_shadow), trace_region::FDC_VFX_CANDIDATE);
-}
-
-
-u16 asr10_boot_state::es5506_ts_candidate_r(offs_t offset, u16 mem_mask)
-{
-	return candidate_r(0x00300000, offset, mem_mask, m_es5506_ts_shadow, std::size(m_es5506_ts_shadow), trace_region::ES5506_TS_CANDIDATE);
-}
-
-
-void asr10_boot_state::es5506_ts_candidate_w(offs_t offset, u16 data, u16 mem_mask)
-{
-	candidate_w(0x00300000, offset, data, mem_mask, m_es5506_ts_shadow, std::size(m_es5506_ts_shadow), trace_region::ES5506_TS_CANDIDATE);
-}
-
-
-u16 asr10_boot_state::es5510_ts_candidate_r(offs_t offset, u16 mem_mask)
-{
-	return candidate_r(0x00380000, offset, mem_mask, m_es5510_ts_shadow, std::size(m_es5510_ts_shadow), trace_region::ES5510_TS_CANDIDATE);
-}
-
-
-void asr10_boot_state::es5510_ts_candidate_w(offs_t offset, u16 data, u16 mem_mask)
-{
-	candidate_w(0x00380000, offset, data, mem_mask, m_es5510_ts_shadow, std::size(m_es5510_ts_shadow), trace_region::ES5510_TS_CANDIDATE);
-}
-
-
 bool asr10_boot_state::probe_or_alias_region_index(u32 address, u32 &index, u32 &word_index) const
 {
 	static constexpr u32 bases[PROBE_OR_ALIAS_REGION_COUNT] = { 0x00008000, 0x00408000, 0x00808000, 0x00c08000 };
@@ -9349,23 +9257,6 @@ void asr10_boot_state::probe_or_alias_region_w_at(u32 base, offs_t offset, u16 d
 		COMBINE_DATA(&m_probe_or_alias_region_shadow[index][word]);
 
 	trace_access(trace_region::BUS_PROBE, true, address, data, mem_mask, m_probe_or_alias_region_shadow[index][word]);
-}
-
-
-u16 asr10_boot_state::candidate_r(u32 base, offs_t offset, u16 mem_mask, u16 *shadow, u32 words, trace_region region)
-{
-	const u32 word = offset % words;
-	const u16 data = shadow[word] & mem_mask;
-	trace_access(region, false, base + (offset << 1), data, mem_mask, shadow[word]);
-	return data;
-}
-
-
-void asr10_boot_state::candidate_w(u32 base, offs_t offset, u16 data, u16 mem_mask, u16 *shadow, u32 words, trace_region region)
-{
-	const u32 word = offset % words;
-	COMBINE_DATA(&shadow[word]);
-	trace_access(region, true, base + (offset << 1), data, mem_mask, shadow[word]);
 }
 
 
@@ -9461,16 +9352,6 @@ const char *asr10_boot_state::trace_detail(trace_region region, u32 address)
 		if ((address & 0x1f) == 0x03)
 			return ASR10_FAKE_SCSI_INSTALLED ? "data_scratch_candidate_fake_installed" : "data_scratch_candidate_no_scsi";
 		return "scsi_register_unknown";
-	}
-	if (region == trace_region::FDC_VFX_CANDIDATE)
-	{
-		switch ((address >> 1) & 3)
-		{
-		case 0: return "vfx_reference_fdc_status_command";
-		case 1: return "vfx_reference_fdc_track";
-		case 2: return "vfx_reference_fdc_sector";
-		case 3: return "vfx_reference_fdc_data";
-		}
 	}
 	return "register_unknown";
 }
