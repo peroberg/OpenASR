@@ -345,13 +345,6 @@ private:
 	bool m_f8ce_queue_code_dump_logged = false;
 	bool m_queue_rte_after_pending = false;
 	bool m_dispatcher_rte_first_pc_pending = false;
-	bool m_dispatcher_rte_first_pc_logged = false;
-	bool m_dispatcher_rte_candidate_dump_007308_logged = false;
-	bool m_dispatcher_rte_candidate_dump_f8d020_logged = false;
-	bool m_dispatcher_rte_candidate_dump_f8d05a_logged = false;
-	bool m_dispatcher_rte_candidate_dump_f88f06_logged = false;
-	bool m_dispatcher_rte_candidate_dump_f88f22_logged = false;
-	bool m_dispatcher_rte_candidate_dump_f8d072_logged = false;
 	// TUNING KBD stall investigation: one-shot code dumps for the loaded-runtime
 	// callback PCs observed in the final RTE burst (slots 1/3/0/4/5) immediately
 	// before the dispatcher goes idle forever. These are runtime-loaded (not ROM)
@@ -387,14 +380,8 @@ private:
 	u32 m_queue_rte_before_pc = 0xffffffff;
 	u32 m_queue_rte_last_return_pc = 0xffffffff;
 	u32 m_dispatcher_rte_frame_pc = 0xffffffff;
-	u32 m_dispatcher_rte_frame_sp = 0xffffffff;
-	u32 m_dispatcher_rte_frame_a2 = 0xffffffff;
 	u32 m_dispatcher_rte_frame_slot = 0xffffffff;
 	u16 m_dispatcher_rte_frame_sr = 0;
-	u16 m_dispatcher_rte_current_sr = 0;
-	u16 m_dispatcher_rte_fc6814 = 0;
-	u16 m_dispatcher_rte_fc6816 = 0;
-	u16 m_dispatcher_rte_fc6818 = 0;
 	u8 m_dispatcher_rte_iack_vector = 0xff;
 	u8 m_dispatcher_rte_iack_level = 0xff;
 	u32 m_dispatcher_rte_iack_pc = 0xffffffff;
@@ -757,10 +744,10 @@ private:
 
 
 
-	void log_insert_disk_decision(u32 pc);
-	void log_prompt_select(u32 pc);
-	void log_04b0_countdown(u32 pc, char rw, u16 previous, u16 current);
-	void log_media_branch(u32 pc, u16 sr_override = 0xffff);
+
+
+
+
 
 
 
@@ -779,11 +766,10 @@ private:
 	// GPR transaction trace.
 	bool hall_reverb_type1_record0_active() const;
 
-	void log_fb81b4_path(const char *landmark, u32 pc, u8 tested_value, bool branch_taken,
-		u32 branch_target, u16 sr_override = 0xffff, u32 d2_override = 0xffffffff);
-	void log_04c6_origin(const char *landmark, u32 pc, u8 value, bool branch_taken, u32 branch_target);
+
+
 	void log_error009_context(const char *source, u32 pc, u16 value, u16 mem_mask);
-	void log_lowmem_service_context(bool write, u32 byte_address, u16 previous, u16 current, u16 data, u16 mem_mask);
+
 	void log_synth_68302_irq_vectors(u8 irq_level, u32 pc, u16 sr);
 	void log_runtime_vector_table_for_iack_experiment(u32 pc, u16 sr);
 	void dump_loaded_code_range(const char *tag, u32 start, u32 end);
@@ -840,17 +826,17 @@ private:
 
 	void dump_slot_record(const char *tag, u32 slot_addr);
 
-	void log_dispatcher_rte_first_pc_probe(u32 pc);
+
 	void log_tuning_stall_candidate_dump(u32 pc);
 	void log_tuning_stall_save_probe(u32 pc);
-	void log_dispatcher_rte_candidate_pc(u32 pc);
-	void log_f87f96_queue_read(u32 byte_address, u16 data, u16 mem_mask);
-	void log_f87f96_queue_write(u32 byte_address, u16 previous, u16 current, u16 data, u16 mem_mask);
-	void log_f87f96_queue_rte(int state);
-	void log_lowmem_04ee(bool write, u16 previous, u16 current, u16 mem_mask);
-	void log_lowmem_049d(bool write, u16 previous, u16 current, u16 mem_mask);
+
+
+
+
+
+
 	void log_pc_summary(const char *reason, u32 pc);
-	void log_watched_pc(u32 pc);
+
 	void log_duart_counter_watched_pc(u32 pc);
 	void log_divzero_exception_frame(u32 pc);
 	void log_primary_slot_snapshot_once(u32 pc);
@@ -2039,9 +2025,9 @@ u8 asr10_boot_state::maincpu_iack_r(u8 level)
 	{
 		const u16 data = m_lowmem_shadow[offset] & mem_mask;
 		if (byte_address == 0x04ee && !machine().side_effects_disabled())
-			log_lowmem_04ee(false, m_lowmem_shadow[offset], m_lowmem_shadow[offset], mem_mask);
+			(void)0;
 		else if (byte_address == 0x049c && !machine().side_effects_disabled())
-			log_lowmem_049d(false, m_lowmem_shadow[offset], m_lowmem_shadow[offset], mem_mask);
+			(void)0;
 		else if (m_seen_insert_disk_prompt && is_fdc_state_field(byte_address) && !machine().side_effects_disabled())
 		{
 			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
@@ -2055,26 +2041,10 @@ u8 asr10_boot_state::maincpu_iack_r(u8 level)
 					(void)0;
 			}
 		}
-		if (byte_address == 0x04c6 && !machine().side_effects_disabled())
-		{
-			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-			if (pc == 0x00fb8c4e)
-			{
-				const u8 masked_status = u8(data >> 8) & 0xc0;
-				u16 branch_sr = u16(m_maincpu->state_int(M68K_SR)) & ~0x000f;
-				if (!masked_status)
-					branch_sr |= 0x0004;
-				else if (BIT(masked_status, 7))
-					branch_sr |= 0x0008;
-				log_fb81b4_path("media_status_mask_c0", 0x00fb8c56,
-					masked_status, masked_status != 0, 0x00fb8c5e, branch_sr,
-					(u32(m_maincpu->state_int(M68K_D2)) & 0xffffff00) | masked_status);
-			}
-		}
 		if (!machine().side_effects_disabled())
-			log_lowmem_service_context(false, byte_address, m_lowmem_shadow[offset], m_lowmem_shadow[offset], data, mem_mask);
+			(void)0;
 		if (!machine().side_effects_disabled())
-			log_f87f96_queue_read(byte_address, data, mem_mask);
+			(void)0;
 		if (m_fsb.enabled && !machine().side_effects_disabled())
 		{
 			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
@@ -2767,8 +2737,8 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 		m_fc6816_service_0d06_rte_count = m_f87f96_queue_rte_count;
 		m_fc6816_service_0d06_pc = 0x0000bf22;
 	}
-	log_lowmem_service_context(true, byte_address, previous, m_lowmem_shadow[offset], data, mem_mask);
-	log_f87f96_queue_write(byte_address, previous, m_lowmem_shadow[offset], data, mem_mask);
+	(void)0;
+	(void)0;
 	if (m_fdc_cmd46_result_complete && byte_address >= 0x04c6 && byte_address <= 0x04cc)
 		(void)0;
 	if constexpr (ASR10_LOG_FDC_04B0_CONTEXT)
@@ -2777,7 +2747,7 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 			(void)0;
 	}
 	if (byte_address == 0x04b0)
-		log_04b0_countdown(m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff, 'W', previous, m_lowmem_shadow[offset]);
+		(void)0;
 	if ((byte_address == 0x0b7e || byte_address == 0x0b80) &&
 		(m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff) == 0x00f882de)
 	{
@@ -2802,9 +2772,9 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 		log_error009_context("error_number_write_00c0", m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff,
 			m_lowmem_shadow[offset], mem_mask);
 	if (byte_address == 0x04ee)
-		log_lowmem_04ee(true, previous, m_lowmem_shadow[offset], mem_mask);
+		(void)0;
 	else if (byte_address == 0x049c)
-		log_lowmem_049d(true, previous, m_lowmem_shadow[offset], mem_mask);
+		(void)0;
 	else if (byte_address == 0x04c6)
 	{
 		const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
@@ -2812,7 +2782,7 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 		if (ACCESSING_BITS_8_15 && pc == 0x00fb8db2 && m_fdc_last_aux_command == 0xf3 &&
 			(read_stack_long(sp) & 0x00ffffff) == 0x00fb7c78)
 		{
-			log_04c6_origin("fifo_store", pc, u8(m_lowmem_shadow[offset] >> 8), false, 0);
+			(void)0;
 		}
 	}
 	else if (m_seen_insert_disk_prompt && m_fdc_lowmem_watch && byte_address >= 0x0480 && byte_address <= 0x04fe)
@@ -3144,11 +3114,9 @@ u16 asr10_boot_state::upd72069_fdc_r(offs_t offset, u16 mem_mask)
 			if ((read_stack_long(sp) & 0x00ffffff) == 0x00fb7c78)
 			{
 				if (pc == 0x00fb8d9a)
-					log_04c6_origin("receive_rqm_bit7", 0x00fb8da2, raw_data,
-						!BIT(raw_data, 7), 0x00fb8d86);
+					(void)0;
 				else if (pc == 0x00fb8da8)
-					log_04c6_origin("receive_dio_bit6", 0x00fb8db0, raw_data,
-						!BIT(raw_data, 6), 0x00fb8dcc);
+					(void)0;
 			}
 		}
 	}
@@ -3213,7 +3181,7 @@ u16 asr10_boot_state::upd72069_fdc_r(offs_t offset, u16 mem_mask)
 		{
 			const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
 			if ((read_stack_long(sp) & 0x00ffffff) == 0x00fb7c78)
-				log_04c6_origin("fifo_read_fc4003", pc, raw_data, false, 0);
+				(void)0;
 		}
 		m_fdc_fifo_transaction_reads++;
 		m_fdc_lowmem_watch = 8;
@@ -3741,7 +3709,7 @@ void asr10_boot_state::panel_receive_byte(u8 data)
 	if (!m_insert_disk_decision_logged && strstr(m_panel_text, "PLEASE INSERT DISK"))
 	{
 		m_insert_disk_decision_logged = true;
-		log_insert_disk_decision(pc);
+		(void)0;
 
 		if (!m_seen_insert_disk_prompt)
 		{
@@ -4300,167 +4268,7 @@ bool asr10_boot_state::likely_rom_address(u32 address)
 }
 
 
-void asr10_boot_state::log_insert_disk_decision(u32 pc)
-{
-	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-	const u32 stack0 = read_stack_long(sp);
-	const u32 stack1 = read_stack_long(sp + 4);
-	const u32 stack2 = read_stack_long(sp + 8);
-	const u32 return_address = likely_rom_address(stack0) ? (stack0 & 0x00ffffff) : 0xffffffffU;
-	std::string command_sequence;
-	const u8 first = (m_fdc_command_ring_next + m_fdc_command_ring.size() - m_fdc_command_ring_count) % m_fdc_command_ring.size();
-	for (u8 index = 0; index < m_fdc_command_ring_count; index++)
-	{
-		if (index)
-			command_sequence += ',';
-		command_sequence += util::string_format("%02x", m_fdc_command_ring[(first + index) % m_fdc_command_ring.size()]);
-	}
 
-	logerror("ASR10_INSERT_DISK_DECISION pc=%06x last_distinct_pc=%06x sp=%06x "
-		"stack0=%08x stack1=%08x stack2=%08x guessed_return=%08x "
-		"last_command=%02x last_fifo_read=%02x last_fifo_write=%02x txn=%u recent_commands=\"%s\" "
-		"field_04a6=%04x field_04ae=%04x field_04b0=%04x field_04b4=%04x field_04b6=%04x "
-		"field_04c4=%04x field_04c6=%04x field_04d6=%04x field_04e6=%04x\n",
-		pc, m_last_distinct_pc, sp, stack0, stack1, stack2, return_address,
-		m_fdc_last_aux_command, m_fdc_last_fifo_read, m_fdc_last_fifo_write,
-		m_fdc_transaction, command_sequence.c_str(),
-		m_lowmem_shadow[0x04a6 >> 1], m_lowmem_shadow[0x04ae >> 1],
-		m_lowmem_shadow[0x04b0 >> 1], m_lowmem_shadow[0x04b4 >> 1],
-		m_lowmem_shadow[0x04b6 >> 1], m_lowmem_shadow[0x04c4 >> 1],
-		m_lowmem_shadow[0x04c6 >> 1], m_lowmem_shadow[0x04d6 >> 1],
-		m_lowmem_shadow[0x04e6 >> 1]);
-}
-
-
-void asr10_boot_state::log_prompt_select(u32 pc)
-{
-	u8 trace_bit = 0;
-	const char *landmark = "unknown";
-	switch (pc)
-	{
-	case 0x00fb9490:
-		trace_bit = 0x01;
-		landmark = "prompt_select_read_049d";
-		break;
-	case 0x00fb9494:
-		trace_bit = 0x02;
-		landmark = "prompt_select_compare";
-		break;
-	case 0x00fb9496:
-		trace_bit = 0x04;
-		landmark = "prompt_select_branch";
-		break;
-	case 0x00fb94ae:
-		trace_bit = 0x08;
-		landmark = "prompt_select_compare";
-		break;
-	case 0x00fb94b2:
-		trace_bit = 0x10;
-		landmark = "prompt_select_branch";
-		break;
-	case 0x00fb94b4:
-		trace_bit = 0x20;
-		landmark = "prompt_select_panel_call";
-		break;
-	case 0x00fb94da:
-		trace_bit = 0x40;
-		landmark = "prompt_select_panel_call";
-		break;
-	case 0x00fb94e0:
-		trace_bit = 0x80;
-		landmark = "prompt_select_return";
-		break;
-	}
-	if (!trace_bit || (m_prompt_select_trace_mask & trace_bit))
-		return;
-	m_prompt_select_trace_mask |= trace_bit;
-
-	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-	const u32 stack0 = read_stack_long(sp);
-	const u32 stack1 = read_stack_long(sp + 4);
-	const u32 stack2 = read_stack_long(sp + 8);
-	const u32 stack3 = read_stack_long(sp + 12);
-	const u16 opcode = read_code_word(pc);
-	u32 branch_target = 0xffffffffU;
-	if ((opcode & 0xf000) == 0x6000)
-	{
-		const s8 displacement = s8(opcode);
-		branch_target = displacement ?
-			((pc + 2 + displacement) & 0x00ffffff) :
-			((pc + 2 + s16(read_code_word(pc + 2))) & 0x00ffffff);
-	}
-	else if ((opcode & 0xf0f8) == 0x50c8)
-	{
-		branch_target = (pc + 2 + s16(read_code_word(pc + 2))) & 0x00ffffff;
-	}
-	std::string command_sequence;
-	const u8 first = (m_fdc_command_ring_next + m_fdc_command_ring.size() - m_fdc_command_ring_count) % m_fdc_command_ring.size();
-	for (u8 index = 0; index < m_fdc_command_ring_count; index++)
-	{
-		if (index)
-			command_sequence += ',';
-		command_sequence += util::string_format("%02x", m_fdc_command_ring[(first + index) % m_fdc_command_ring.size()]);
-	}
-	const u16 lowmem_049d_word = m_lowmem_shadow[0x049c >> 1];
-
-	logerror("ASR10_PROMPT_SELECT landmark=%s pc=%06x "
-		"op_m8=%04x op_m6=%04x op_m4=%04x op_m2=%04x op_0=%04x "
-		"op_p2=%04x op_p4=%04x op_p6=%04x op_p8=%04x "
-		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x sr=%04x "
-		"sp=%06x stack0=%08x stack1=%08x stack2=%08x stack3=%08x "
-		"lowmem_049d_word=%04x lowmem_049d_byte=%02x branch_target=%08x "
-		"recent_commands=\"%s\" last_command=%02x last_fifo_read=%02x last_fifo_write=%02x "
-		"field_04a6=%04x field_04ae=%04x field_04b0=%04x field_04b4=%04x field_04b6=%04x "
-		"field_04c4=%04x field_04c6=%04x field_04d6=%04x field_04e6=%04x\n",
-		landmark, pc,
-		read_code_word(pc - 8), read_code_word(pc - 6), read_code_word(pc - 4),
-		read_code_word(pc - 2), read_code_word(pc), read_code_word(pc + 2),
-		read_code_word(pc + 4), read_code_word(pc + 6), read_code_word(pc + 8),
-		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
-		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
-		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
-		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
-		u16(m_maincpu->state_int(M68K_SR)), sp, stack0, stack1, stack2, stack3,
-		lowmem_049d_word, lowmem_049d_word & 0xff, branch_target,
-		command_sequence.c_str(), m_fdc_last_aux_command, m_fdc_last_fifo_read, m_fdc_last_fifo_write,
-		m_lowmem_shadow[0x04a6 >> 1], m_lowmem_shadow[0x04ae >> 1],
-		m_lowmem_shadow[0x04b0 >> 1], m_lowmem_shadow[0x04b4 >> 1],
-		m_lowmem_shadow[0x04b6 >> 1], m_lowmem_shadow[0x04c4 >> 1],
-		m_lowmem_shadow[0x04c6 >> 1], m_lowmem_shadow[0x04d6 >> 1],
-		m_lowmem_shadow[0x04e6 >> 1]);
-}
-
-
-void asr10_boot_state::log_04b0_countdown(u32 pc, char rw, u16 previous, u16 current)
-{
-	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-	const u32 stack0 = read_stack_long(sp);
-	const u32 stack1 = read_stack_long(sp + 4);
-	const u32 stack2 = read_stack_long(sp + 8);
-	std::string command_sequence;
-	const u8 first = (m_fdc_command_ring_next + m_fdc_command_ring.size() - m_fdc_command_ring_count) % m_fdc_command_ring.size();
-	for (u8 index = 0; index < m_fdc_command_ring_count; index++)
-	{
-		if (index)
-			command_sequence += ',';
-		command_sequence += util::string_format("%02x", m_fdc_command_ring[(first + index) % m_fdc_command_ring.size()]);
-	}
-
-	logerror("ASR10_04B0_COUNTDOWN pc=%06x rw=%c previous=%04x current=%04x high_byte=%u "
-		"d0=%08x d1=%08x d2=%08x d3=%08x sr=%04x "
-		"sp=%06x stack0=%08x stack1=%08x stack2=%08x "
-		"op_m8=%04x op_m6=%04x op_m4=%04x op_m2=%04x op_0=%04x "
-		"op_p2=%04x op_p4=%04x op_p6=%04x op_p8=%04x "
-		"last_command=%02x last_fifo_read=%02x txn=%u recent_commands=\"%s\"\n",
-		pc, rw, previous, current, current >> 8,
-		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
-		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
-		u16(m_maincpu->state_int(M68K_SR)), sp, stack0, stack1, stack2,
-		read_code_word(pc - 8), read_code_word(pc - 6), read_code_word(pc - 4),
-		read_code_word(pc - 2), read_code_word(pc), read_code_word(pc + 2),
-		read_code_word(pc + 4), read_code_word(pc + 6), read_code_word(pc + 8),
-		m_fdc_last_aux_command, m_fdc_last_fifo_read, m_fdc_transaction, command_sequence.c_str());
-}
 
 
 bool asr10_boot_state::fc3000_verify_table_match() const
@@ -4585,150 +4393,7 @@ void asr10_boot_state::dump_memory_window(const char *tag, u32 base_address, u32
 // subsequent read-select + latch readback.
 
 
-void asr10_boot_state::log_media_branch(u32 pc, u16 sr_override)
-{
-	const u16 opcode = read_code_word(pc);
-	const u16 sr = (sr_override == 0xffff) ? u16(m_maincpu->state_int(M68K_SR)) : sr_override;
-	const bool carry = BIT(sr, 0);
-	const bool overflow = BIT(sr, 1);
-	const bool zero = BIT(sr, 2);
-	const bool negative = BIT(sr, 3);
-	const u8 condition = (opcode >> 8) & 0x0f;
-	bool branch_taken = false;
-	switch (condition)
-	{
-	case 0x0: branch_taken = true; break;
-	case 0x2: branch_taken = !carry && !zero; break;
-	case 0x3: branch_taken = carry || zero; break;
-	case 0x4: branch_taken = !carry; break;
-	case 0x5: branch_taken = carry; break;
-	case 0x6: branch_taken = !zero; break;
-	case 0x7: branch_taken = zero; break;
-	case 0x8: branch_taken = !overflow; break;
-	case 0x9: branch_taken = overflow; break;
-	case 0xa: branch_taken = !negative; break;
-	case 0xb: branch_taken = negative; break;
-	case 0xc: branch_taken = negative == overflow; break;
-	case 0xd: branch_taken = negative != overflow; break;
-	case 0xe: branch_taken = !zero && (negative == overflow); break;
-	case 0xf: branch_taken = zero || (negative != overflow); break;
-	}
-	const s8 displacement = s8(opcode);
-	const u32 branch_target = displacement ?
-		((pc + 2 + displacement) & 0x00ffffff) :
-		((pc + 2 + s16(read_code_word(pc + 2))) & 0x00ffffff);
-	std::string command_sequence;
-	const u8 first = (m_fdc_command_ring_next + m_fdc_command_ring.size() - m_fdc_command_ring_count) % m_fdc_command_ring.size();
-	for (u8 index = 0; index < m_fdc_command_ring_count; index++)
-	{
-		if (index)
-			command_sequence += ',';
-		command_sequence += util::string_format("%02x", m_fdc_command_ring[(first + index) % m_fdc_command_ring.size()]);
-	}
 
-	logerror("ASR10_MEDIA_BRANCH pc=%06x opcode=%04x sr=%04x "
-		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x "
-		"branch_taken=%u branch_target=%06x lowmem_049d=%02x "
-		"field_04b0=%04x field_04c4=%04x field_04c6=%04x field_04d6=%04x field_04e6=%04x "
-		"last_command=%02x last_fifo_read=%02x recent_commands=\"%s\"\n",
-		pc, opcode, sr,
-		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
-		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
-		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
-		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
-		branch_taken ? 1 : 0, branch_target, u8(m_lowmem_shadow[0x049c >> 1]),
-		m_lowmem_shadow[0x04b0 >> 1], m_lowmem_shadow[0x04c4 >> 1],
-		m_lowmem_shadow[0x04c6 >> 1], m_lowmem_shadow[0x04d6 >> 1],
-		m_lowmem_shadow[0x04e6 >> 1], m_fdc_last_aux_command,
-		m_fdc_last_fifo_read, command_sequence.c_str());
-}
-
-
-void asr10_boot_state::log_fb81b4_path(const char *landmark, u32 pc, u8 tested_value, bool branch_taken,
-	u32 branch_target, u16 sr_override, u32 d2_override)
-{
-	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-	const u32 stack0 = read_stack_long(sp);
-	const u32 stack1 = read_stack_long(sp + 4);
-	const u32 stack2 = read_stack_long(sp + 8);
-	std::string command_sequence;
-	const u8 first = (m_fdc_command_ring_next + m_fdc_command_ring.size() - m_fdc_command_ring_count) % m_fdc_command_ring.size();
-	for (u8 index = 0; index < m_fdc_command_ring_count; index++)
-	{
-		if (index)
-			command_sequence += ',';
-		command_sequence += util::string_format("%02x", m_fdc_command_ring[(first + index) % m_fdc_command_ring.size()]);
-	}
-
-	logerror("ASR10_FB81B4 landmark=%s pc=%06x opcode=%04x tested_value=%02x "
-		"branch_taken=%u branch_target=%06x "
-		"op_m8=%04x op_m6=%04x op_m4=%04x op_m2=%04x op_0=%04x "
-		"op_p2=%04x op_p4=%04x op_p6=%04x op_p8=%04x "
-		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x sr=%04x "
-		"sp=%06x stack0=%08x stack1=%08x stack2=%08x "
-		"lowmem_049d=%02x lowmem_04ee=%02x field_04b0=%04x field_04ae=%04x "
-		"field_04c6=%04x field_04d6=%04x field_04e6=%04x "
-		"last_command=%02x last_fifo_read=%02x last_fifo_write=%02x recent_commands=\"%s\"\n",
-		landmark, pc, read_code_word(pc), tested_value,
-		branch_taken ? 1 : 0, branch_target,
-		read_code_word(pc - 8), read_code_word(pc - 6), read_code_word(pc - 4),
-		read_code_word(pc - 2), read_code_word(pc), read_code_word(pc + 2),
-		read_code_word(pc + 4), read_code_word(pc + 6), read_code_word(pc + 8),
-		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
-		d2_override == 0xffffffff ? u32(m_maincpu->state_int(M68K_D2)) : d2_override,
-		u32(m_maincpu->state_int(M68K_D3)),
-		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
-		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
-		sr_override == 0xffff ? u16(m_maincpu->state_int(M68K_SR)) : sr_override,
-		sp, stack0, stack1, stack2,
-		u8(m_lowmem_shadow[0x049c >> 1]), u8(m_lowmem_shadow[0x04ee >> 1] >> 8),
-		m_lowmem_shadow[0x04b0 >> 1], m_lowmem_shadow[0x04ae >> 1],
-		m_lowmem_shadow[0x04c6 >> 1], m_lowmem_shadow[0x04d6 >> 1],
-		m_lowmem_shadow[0x04e6 >> 1], m_fdc_last_aux_command,
-		m_fdc_last_fifo_read, m_fdc_last_fifo_write, command_sequence.c_str());
-}
-
-
-void asr10_boot_state::log_04c6_origin(const char *landmark, u32 pc, u8 value, bool branch_taken, u32 branch_target)
-{
-	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-	const u32 stack0 = read_stack_long(sp);
-	const u32 stack1 = read_stack_long(sp + 4);
-	const u32 stack2 = read_stack_long(sp + 8);
-	std::string command_sequence;
-	const u8 first = (m_fdc_command_ring_next + m_fdc_command_ring.size() - m_fdc_command_ring_count) % m_fdc_command_ring.size();
-	for (u8 index = 0; index < m_fdc_command_ring_count; index++)
-	{
-		if (index)
-			command_sequence += ',';
-		command_sequence += util::string_format("%02x", m_fdc_command_ring[(first + index) % m_fdc_command_ring.size()]);
-	}
-
-	logerror("ASR10_04C6 landmark=%s pc=%06x opcode=%04x value=%02x "
-		"branch_taken=%u branch_target=%06x "
-		"op_m8=%04x op_m6=%04x op_m4=%04x op_m2=%04x op_0=%04x "
-		"op_p2=%04x op_p4=%04x op_p6=%04x op_p8=%04x "
-		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x sr=%04x "
-		"sp=%06x stack0=%08x stack1=%08x stack2=%08x "
-		"lowmem_049d=%02x lowmem_04ee=%02x field_04b0=%04x field_04ac=%04x "
-		"field_04ae=%04x field_04c4=%04x field_04c6=%04x field_04d6=%04x field_04e6=%04x "
-		"last_command=%02x last_fifo_read=%02x last_fifo_write=%02x recent_commands=\"%s\"\n",
-		landmark, pc, read_code_word(pc), value, branch_taken ? 1 : 0, branch_target,
-		read_code_word(pc - 8), read_code_word(pc - 6), read_code_word(pc - 4),
-		read_code_word(pc - 2), read_code_word(pc), read_code_word(pc + 2),
-		read_code_word(pc + 4), read_code_word(pc + 6), read_code_word(pc + 8),
-		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
-		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
-		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
-		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
-		u16(m_maincpu->state_int(M68K_SR)), sp, stack0, stack1, stack2,
-		u8(m_lowmem_shadow[0x049c >> 1]), u8(m_lowmem_shadow[0x04ee >> 1] >> 8),
-		m_lowmem_shadow[0x04b0 >> 1], m_lowmem_shadow[0x04ac >> 1],
-		m_lowmem_shadow[0x04ae >> 1], m_lowmem_shadow[0x04c4 >> 1],
-		m_lowmem_shadow[0x04c6 >> 1], m_lowmem_shadow[0x04d6 >> 1],
-		m_lowmem_shadow[0x04e6 >> 1], m_fdc_last_aux_command,
-		m_fdc_last_fifo_read, m_fdc_last_fifo_write, command_sequence.c_str());
-}
 
 
 void asr10_boot_state::log_error009_context(const char *source, u32 pc, u16 value, u16 mem_mask)
@@ -4841,39 +4506,6 @@ void asr10_boot_state::log_error009_context(const char *source, u32 pc, u16 valu
 		BIT(last_st2, 6), BIT(last_st2, 5), BIT(last_st2, 4), BIT(last_st2, 3), BIT(last_st2, 2), BIT(last_st2, 1), BIT(last_st2, 0),
 		m_fdc_data_rate, m_fdc_data_rate_source);
 }
-void asr10_boot_state::log_lowmem_service_context(bool write, u32 byte_address, u16 previous, u16 current, u16 data, u16 mem_mask)
-{
-	if (machine().side_effects_disabled())
-		return;
-	if (byte_address != 0x0d06 && byte_address != 0x0e82)
-		return;
-
-	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-	const bool near_service_setter = pc >= 0x0000bee0 && pc <= 0x0000bf60;
-	if (!m_synth_68302_timer_iack_fire_count && !near_service_setter && !m_fc6816_service_setter_dump_logged)
-		return;
-
-	const u16 sr = u16(m_maincpu->state_int(M68K_SR));
-	logerror("ASR10_LOWMEM_SERVICE_CONTEXT pc=%06x previous_pc=%06x opcode=%04x rw=%c addr=%04x "
-		"data=%04x mem_mask=%04x previous=%04x current=%04x changed=%04x "
-		"field=%s fc6812=%04x fc6814=%04x fc6816=%04x fc6818=%04x fc6884=%04x fc6894=%04x "
-		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x "
-		"sr=%04x sr_mask=%u recent_queue_pc=%06x recent_queue_slot=%u recent_rte_return_pc=%06x "
-		"dispatcher_count=%u panel=\"%s\"\n",
-		pc, m_last_distinct_pc, read_loaded_word(pc), write ? 'W' : 'R', byte_address,
-		data, mem_mask, previous, current, previous ^ current,
-		byte_address == 0x0d06 ? "lowmem_0d06_service_flag_candidate" : "lowmem_0e82_service_argument_candidate",
-		m_m68302_internal_shadow[0x12 >> 1], m_m68302_internal_shadow[0x14 >> 1],
-		m_m68302_internal_shadow[0x16 >> 1], m_m68302_internal_shadow[0x18 >> 1],
-		m_m68302_internal_shadow[0x84 >> 1], m_m68302_internal_shadow[0x94 >> 1],
-		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
-		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
-		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
-		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
-		sr, (sr >> 8) & 7, m_recent_queue_pc, m_recent_queue_slot,
-		m_queue_rte_last_return_pc, m_runtime_dispatch_entry_count, m_panel_text);
-}
-
 
 void asr10_boot_state::dump_loaded_code_range(const char *tag, u32 start, u32 end)
 {
@@ -5747,241 +5379,7 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::synth_68302_timer_irq)
 }
 
 
-void asr10_boot_state::log_f87f96_queue_read(u32 byte_address, u16 data, u16 mem_mask)
-{
-	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-	if (pc != 0x00f87f96 && pc != 0x00f87f9a && byte_address != 0x00c6)
-		return;
 
-	if (!m_f87f96_code_dump_logged)
-	{
-		std::string words;
-		for (u32 cursor = 0x00f87f40; cursor <= 0x00f87fd0; cursor += 2)
-		{
-			if (cursor != 0x00f87f40)
-				words += ',';
-			words += util::string_format("%06x:%04x", cursor, read_loaded_word(cursor));
-		}
-		logerror("ASR10_F87F96_CODE_DUMP words=\"%s\"\n", words.c_str());
-		m_f87f96_code_dump_logged = true;
-	}
-
-	const u32 a2 = m_maincpu->state_int(M68K_A2) & 0x00ffffff;
-	const u32 target_2 = (a2 + 2) & 0x00ffffff;
-	const u32 target_3 = (a2 + 3) & 0x00ffffff;
-	if (byte_address != 0x00c6 && byte_address != (target_2 & ~1U) && byte_address != (target_3 & ~1U))
-		return;
-
-	const bool low_byte = bool(mem_mask & 0x00ff);
-	const u8 relevant_byte = low_byte ? u8(data) : u8(data >> 8);
-	const u32 effective_address = pc == 0x00f87f96 ? target_2 : pc == 0x00f87f9a ? target_3 : byte_address;
-	m_recent_queue_pc = pc;
-	m_recent_queue_address = effective_address;
-	m_recent_queue_record_base = (pc == 0x00f87f96 || pc == 0x00f87f9a) ? a2 : 0xffffffff;
-	m_recent_queue_slot = (m_recent_queue_record_base != 0xffffffff && m_lowmem_shadow[0x00c6 >> 1] &&
-		m_recent_queue_record_base >= m_lowmem_shadow[0x00c6 >> 1]) ?
-		((m_recent_queue_record_base - m_lowmem_shadow[0x00c6 >> 1]) / 0x16) : 0xffffffff;
-	m_recent_queue_previous = (target_2 >> 1) < LOWMEM_WORDS ? m_lowmem_shadow[target_2 >> 1] : 0xffff;
-	m_recent_queue_current = m_recent_queue_previous;
-	m_recent_queue_data = data;
-	m_recent_queue_mem_mask = mem_mask;
-	m_recent_queue_write = false;
-	m_recent_queue_handler_clear = false;
-
-	m_f87f96_queue_read_count++;
-	if (m_f87f96_queue_read_count > 96 && (m_f87f96_queue_read_count & (m_f87f96_queue_read_count - 1)))
-		return;
-
-	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-	const u32 stack0 = read_stack_long(sp);
-	const u32 stack1 = read_stack_long(sp + 4);
-	const u32 frame_return_pc = ((stack0 & 0x0000ffff) << 16) | (stack1 >> 16);
-	const u16 frame_sr = stack0 >> 16;
-	const u16 current_sr = u16(m_maincpu->state_int(M68K_SR));
-
-	logerror("ASR10_F87F96_QUEUE_READ pc=%06x previous_pc=%06x opcode=%04x addr=%06x effective_addr=%06x "
-		"data=%04x mem_mask=%04x relevant_byte=%02x byte_role=%s "
-		"a2=%08x queue_word=%04x queue_byte2=%02x queue_byte3=%02x "
-		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a3=%08x sr=%04x sr_mask=%u "
-		"sp=%06x stack0=%08x stack1=%08x stack2=%08x frame_sr_guess=%04x frame_sr_mask_guess=%u "
-		"frame_return_pc_guess=%06x "
-		"fc68_last_pc=%06x fc68_last_addr=%06x fc68_last_rw=%c fc68_last_data=%04x "
-		"fc68_last_mem_mask=%04x fc68_last_shadow=%04x fc68_last_detail=%s read_count=%u\n",
-		pc, m_last_distinct_pc, read_code_word(pc), byte_address, effective_address,
-		data, mem_mask, relevant_byte, pc == 0x00f87f96 ? "queue_byte2_to_d0" :
-			pc == 0x00f87f9a ? "queue_byte3_to_d1" : "queue_pointer_00c6_to_a2",
-		a2, (target_2 >> 1) < LOWMEM_WORDS ? m_lowmem_shadow[target_2 >> 1] : 0xffff,
-		(target_2 >> 1) < LOWMEM_WORDS ? u8(m_lowmem_shadow[target_2 >> 1] >> 8) : 0xff,
-		(target_2 >> 1) < LOWMEM_WORDS ? u8(m_lowmem_shadow[target_2 >> 1]) : 0xff,
-		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
-		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
-		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
-		u32(m_maincpu->state_int(M68K_A3)), current_sr, (current_sr >> 8) & 7,
-		sp, stack0, stack1, read_stack_long(sp + 8), frame_sr, (frame_sr >> 8) & 7,
-		frame_return_pc & 0x00ffffff,
-		m_last_fc68_pc, m_last_fc68_address, m_last_fc68_write ? 'W' : 'R',
-		m_last_fc68_data, m_last_fc68_mem_mask, m_last_fc68_shadow,
-		m68302_register_name(m_last_fc68_address),
-		m_f87f96_queue_read_count);
-}
-
-
-void asr10_boot_state::log_f87f96_queue_write(u32 byte_address, u16 previous, u16 current, u16 data, u16 mem_mask)
-{
-	const u16 queue_pointer_word = m_lowmem_shadow[0x00c6 >> 1];
-	const u32 queue_base = queue_pointer_word & 0x00ffffff;
-	const bool queue_pointer_write = byte_address == 0x00c6;
-	const u32 queue_offset = queue_base ? (byte_address - queue_base) : 0xffffffffU;
-	const bool queue_record_index_write =
-		queue_base >= 0x0200 && byte_address >= queue_base && byte_address < queue_base + 0x0200 &&
-		((queue_offset % 0x16) == 2);
-	if (!queue_pointer_write && !queue_record_index_write)
-		return;
-
-	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-	const u32 record_base = queue_record_index_write ? byte_address - (queue_offset % 0x16) : queue_base;
-	const u8 previous_byte2 = u8(previous >> 8);
-	const u8 previous_byte3 = u8(previous);
-	const u8 current_byte2 = u8(current >> 8);
-	const u8 current_byte3 = u8(current);
-	if (!m_f880_queue_code_dump_logged && pc >= 0x00f880e0 && pc <= 0x00f88130)
-	{
-		std::string words;
-		for (u32 cursor = 0x00f880e0; cursor <= 0x00f88130; cursor += 2)
-		{
-			if (cursor != 0x00f880e0)
-				words += ',';
-			words += util::string_format("%06x:%04x", cursor, read_loaded_word(cursor));
-		}
-		logerror("ASR10_QUEUE_PRODUCER_CODE_DUMP range=f880e0_f88130 trigger_pc=%06x words=\"%s\"\n", pc, words.c_str());
-		m_f880_queue_code_dump_logged = true;
-	}
-	if (pc == 0x00f880fc && !m_fsb.milestone_c_logged)
-	{
-		m_fsb.milestone_c_logged = true;
-		(void)0;
-	}
-	if (pc == 0x00f880fc && m_pti.enabled && !m_pti.seen_f880fc)
-	{
-		m_pti.seen_f880fc = true;
-		logerror("ASR10_PTI_GATE_OPEN pc=%06x panel=\"%s\"\n", pc, m_panel_text);
-		(void)0;
-		(void)0;
-		(void)0;
-	}
-	if (!m_f8ce_queue_code_dump_logged && pc >= 0x00f8ce20 && pc <= 0x00f8ce50)
-	{
-		std::string words;
-		for (u32 cursor = 0x00f8ce20; cursor <= 0x00f8ce50; cursor += 2)
-		{
-			if (cursor != 0x00f8ce20)
-				words += ',';
-			words += util::string_format("%06x:%04x", cursor, read_loaded_word(cursor));
-		}
-		logerror("ASR10_QUEUE_PRODUCER_CODE_DUMP range=f8ce20_f8ce50 trigger_pc=%06x words=\"%s\"\n", pc, words.c_str());
-		m_f8ce_queue_code_dump_logged = true;
-	}
-	m_recent_queue_pc = pc;
-	m_recent_queue_address = byte_address;
-	m_recent_queue_record_base = record_base;
-	m_recent_queue_slot = queue_record_index_write ? queue_offset / 0x16 : 0xffffffffU;
-	m_recent_queue_previous = previous;
-	m_recent_queue_current = current;
-	m_recent_queue_data = data;
-	m_recent_queue_mem_mask = mem_mask;
-	m_recent_queue_write = true;
-	m_recent_queue_handler_clear = pc == 0x00f87fb0 && current == 0;
-
-	m_f87f96_queue_write_count++;
-	if (m_f87f96_queue_write_count > 96 && (m_f87f96_queue_write_count & (m_f87f96_queue_write_count - 1)))
-		return;
-
-	logerror("ASR10_F87F96_QUEUE_WRITE pc=%06x addr=%06x data=%04x mem_mask=%04x previous=%04x current=%04x "
-		"queue_base_from_00c6=%04x record_base=%06x record_offset=%02x record_slot=%u "
-		"previous_byte2=%02x previous_byte3=%02x current_byte2=%02x current_byte3=%02x "
-		"made_unequal=%u made_equal=%u changed_by_handler_clear=%u "
-		"fc6814=%04x fc6814_bits_3_1_0=%u%u%u fc6816=%04x fc6816_bits_15_14_13_10_7=%u%u%u%u%u fc6818=%04x "
-		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x sr=%04x sr_mask=%u "
-		"sp=%06x stack0=%08x stack1=%08x "
-		"fc68_last_pc=%06x fc68_last_addr=%06x fc68_last_rw=%c fc68_last_data=%04x "
-		"fc68_last_mem_mask=%04x fc68_last_shadow=%04x fc68_last_detail=%s write_count=%u\n",
-		pc, byte_address, data, mem_mask, previous, current, queue_pointer_word, record_base,
-		queue_record_index_write ? queue_offset : 0xffffffffU,
-		queue_record_index_write ? queue_offset / 0x16 : 0xffffffffU,
-		previous_byte2, previous_byte3, current_byte2, current_byte3,
-		current_byte2 != current_byte3 ? 1 : 0, current_byte2 == current_byte3 ? 1 : 0,
-		(pc == 0x00f87fb0 && current == 0) ? 1 : 0,
-		m_m68302_internal_shadow[0x14 >> 1],
-		BIT(m_m68302_internal_shadow[0x14 >> 1], 3), BIT(m_m68302_internal_shadow[0x14 >> 1], 1),
-		BIT(m_m68302_internal_shadow[0x14 >> 1], 0),
-		m_m68302_internal_shadow[0x16 >> 1],
-		BIT(m_m68302_internal_shadow[0x16 >> 1], 15), BIT(m_m68302_internal_shadow[0x16 >> 1], 14),
-		BIT(m_m68302_internal_shadow[0x16 >> 1], 13), BIT(m_m68302_internal_shadow[0x16 >> 1], 10),
-		BIT(m_m68302_internal_shadow[0x16 >> 1], 7),
-		m_m68302_internal_shadow[0x18 >> 1],
-		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
-		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
-		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
-		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
-		u16(m_maincpu->state_int(M68K_SR)), (u16(m_maincpu->state_int(M68K_SR)) >> 8) & 7,
-		sp, read_stack_long(sp), read_stack_long(sp + 4),
-		m_last_fc68_pc, m_last_fc68_address, m_last_fc68_write ? 'W' : 'R',
-		m_last_fc68_data, m_last_fc68_mem_mask, m_last_fc68_shadow,
-		m68302_register_name(m_last_fc68_address),
-		m_f87f96_queue_write_count);
-}
-
-
-void asr10_boot_state::log_dispatcher_rte_first_pc_probe(u32 pc)
-{
-	if (!m_dispatcher_rte_first_pc_pending || pc == 0x00f87fc0)
-		return;
-
-	const u16 sr = u16(m_maincpu->state_int(M68K_SR));
-	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-	const bool frame_pc_seen = pc == m_dispatcher_rte_frame_pc;
-	const bool candidate_downstream =
-		pc == 0x00007308 || pc == 0x00f8d020 || pc == 0x00f8d05a ||
-		pc == 0x00f88f06 || pc == 0x00f88f22 || pc == 0x00f8d072;
-
-	logerror("ASR10_DISPATCHER_RTE_FIRST_PC actual_pc=%06x previous_pc=%06x "
-		"actual_sr=%04x actual_sr_mask=%u actual_sp=%06x "
-		"frame_pc=%06x frame_sr=%04x dispatcher_sr_before_rte=%04x frame_pc_seen=%u "
-		"candidate_downstream=%u immediate_iack_seen=%u iack_pc=%06x iack_sr=%04x "
-		"iack_level=%u iack_vector=%02x "
-		"fc6814_before_rte=%04x fc6816_before_rte=%04x fc6818_before_rte=%04x "
-		"fc6814_now=%04x fc6816_now=%04x fc6818_now=%04x "
-		"rte_count=%u slot=%u slot_base=%06x panel=\"%s\"\n",
-		pc, m_last_pc, sr, (sr >> 8) & 7, sp,
-		m_dispatcher_rte_frame_pc, m_dispatcher_rte_frame_sr, m_dispatcher_rte_current_sr,
-		frame_pc_seen ? 1 : 0, candidate_downstream ? 1 : 0,
-		m_dispatcher_rte_iack_seen ? 1 : 0, m_dispatcher_rte_iack_pc,
-		m_dispatcher_rte_iack_sr, m_dispatcher_rte_iack_level, m_dispatcher_rte_iack_vector,
-		m_dispatcher_rte_fc6814, m_dispatcher_rte_fc6816, m_dispatcher_rte_fc6818,
-		m_m68302_internal_shadow[0x14 >> 1], m_m68302_internal_shadow[0x16 >> 1],
-		m_m68302_internal_shadow[0x18 >> 1],
-		m_f87f96_queue_rte_count, m_dispatcher_rte_frame_slot, m_dispatcher_rte_frame_a2,
-		m_panel_text);
-
-	m_dispatcher_rte_first_pc_pending = false;
-	m_dispatcher_rte_first_pc_logged = true;
-
-	log_tuning_stall_candidate_dump(pc);
-	if (m_fsb.enabled)
-	{
-		char milestone[48];
-		snprintf(milestone, sizeof(milestone), "D_slot%u_resume", m_dispatcher_rte_frame_slot);
-		(void)0;
-		(void)0;
-	}
-	if (m_pti.enabled && m_pti.seen_f880fc)
-	{
-		char milestone[48];
-		snprintf(milestone, sizeof(milestone), "rte_resume_slot%u", m_dispatcher_rte_frame_slot);
-		(void)0;
-	}
-}
 
 
 void asr10_boot_state::log_tuning_stall_candidate_dump(u32 pc)
@@ -6091,242 +5489,6 @@ void asr10_boot_state::log_tuning_stall_save_probe(u32 pc)
 }
 
 
-void asr10_boot_state::log_dispatcher_rte_candidate_pc(u32 pc)
-{
-	bool *logged = nullptr;
-	const char *tag = nullptr;
-	u32 start = 0;
-	u32 end = 0;
-
-	switch (pc)
-	{
-	case 0x00007308:
-		logged = &m_dispatcher_rte_candidate_dump_007308_logged;
-		tag = "ASR10_DISPATCHER_RTE_CANDIDATE_007308";
-		start = 0x000072c0;
-		end = 0x00007380;
-		break;
-	case 0x00f8d020:
-		logged = &m_dispatcher_rte_candidate_dump_f8d020_logged;
-		tag = "ASR10_DISPATCHER_RTE_CANDIDATE_F8D020";
-		start = 0x00f8d000;
-		end = 0x00f8d080;
-		break;
-	case 0x00f8d05a:
-		logged = &m_dispatcher_rte_candidate_dump_f8d05a_logged;
-		tag = "ASR10_DISPATCHER_RTE_CANDIDATE_F8D05A";
-		start = 0x00f8d040;
-		end = 0x00f8d080;
-		break;
-	case 0x00f88f06:
-		logged = &m_dispatcher_rte_candidate_dump_f88f06_logged;
-		tag = "ASR10_DISPATCHER_RTE_VECTOR_F88F06";
-		start = 0x00f88efc;
-		end = 0x00f88f30;
-		break;
-	case 0x00f88f22:
-		logged = &m_dispatcher_rte_candidate_dump_f88f22_logged;
-		tag = "ASR10_DISPATCHER_RTE_VECTOR_F88F22";
-		start = 0x00f88f18;
-		end = 0x00f88f4c;
-		break;
-	case 0x00f8d072:
-		logged = &m_dispatcher_rte_candidate_dump_f8d072_logged;
-		tag = "ASR10_DISPATCHER_RTE_VECTOR_F8D072";
-		start = 0x00f8d040;
-		end = 0x00f8d090;
-		break;
-	default:
-		return;
-	}
-
-	const u16 sr = u16(m_maincpu->state_int(M68K_SR));
-	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-	logerror("%s pc=%06x previous_pc=%06x opcode=%04x sr=%04x sr_mask=%u sp=%06x "
-		"stack0=%08x stack1=%08x recent_frame_pc=%06x recent_frame_sr=%04x "
-		"recent_iack_seen=%u recent_iack_vector=%02x rte_count=%u\n",
-		tag, pc, m_last_pc, read_loaded_word(pc), sr, (sr >> 8) & 7, sp,
-		read_stack_long(sp), read_stack_long(sp + 4),
-		m_dispatcher_rte_frame_pc, m_dispatcher_rte_frame_sr,
-		m_dispatcher_rte_iack_seen ? 1 : 0, m_dispatcher_rte_iack_vector,
-		m_f87f96_queue_rte_count);
-
-	if (!*logged)
-	{
-		dump_loaded_code_range(tag, start, end);
-		*logged = true;
-	}
-}
-
-
-void asr10_boot_state::log_f87f96_queue_rte(int state)
-{
-	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-	if (pc != 0x00f87fc0 && m_last_pc != 0x00f87fc0)
-		return;
-
-	m_f87f96_queue_rte_count++;
-	if (m_f87f96_queue_rte_count > 96 && (m_f87f96_queue_rte_count & (m_f87f96_queue_rte_count - 1)))
-		return;
-
-	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-	const u32 stack0 = read_stack_long(sp);
-	const u32 stack1 = read_stack_long(sp + 4);
-	const u16 frame_sr = stack0 >> 16;
-	const u32 frame_return_pc = ((stack0 & 0x0000ffff) << 16) | (stack1 >> 16);
-	const u16 current_sr = u16(m_maincpu->state_int(M68K_SR));
-	const u16 queue_pointer_word = m_lowmem_shadow[0x00c6 >> 1];
-	const u32 a2 = m_maincpu->state_int(M68K_A2) & 0x00ffffff;
-	const u32 queue_base = queue_pointer_word;
-	const u32 slot_index = (queue_base >= 0x0200 && a2 >= queue_base && a2 < queue_base + 0x0200) ?
-		((a2 - queue_base) / 0x16) : 0xffffffffU;
-	const u16 fc6814_before = m_m68302_internal_shadow[0x14 >> 1];
-	const u16 fc6816_before = m_m68302_internal_shadow[0x16 >> 1];
-	const u16 fc6818_before = m_m68302_internal_shadow[0x18 >> 1];
-	if constexpr (ASR10_EXPERIMENT_FC6814_ACK_PENDING_000B)
-	{
-		if (fc6814_before == 0x000b)
-		{
-			m_m68302_internal_shadow[0x14 >> 1] = fc6814_before & ~u16(0x000b);
-			logerror("ASR10_EXPERIMENT_FC6814_ACK pc=%06x old=%04x new=%04x reason=dispatcher_rte "
-				"fc6816_before=%04x fc6816_after=%04x fc6818=%04x\n",
-				pc, fc6814_before, m_m68302_internal_shadow[0x14 >> 1],
-				fc6816_before, m_m68302_internal_shadow[0x16 >> 1], fc6818_before);
-		}
-	}
-	if constexpr (ASR10_EXPERIMENT_FC6816_CLEAR_SERVICE_2480)
-	{
-		if (fc6816_before & 0x2480)
-		{
-			m_m68302_internal_shadow[0x16 >> 1] = fc6816_before & ~u16(0x2480);
-			logerror("ASR10_EXPERIMENT_FC6816_CLEAR_SERVICE pc=%06x old=%04x new=%04x reason=dispatcher_rte "
-				"fc6814=%04x fc6818=%04x\n",
-				pc, fc6816_before, m_m68302_internal_shadow[0x16 >> 1],
-				m_m68302_internal_shadow[0x14 >> 1], fc6818_before);
-		}
-	}
-	if constexpr (ASR10_EXPERIMENT_FC6816_CLEAR_SERVICE_2400_AFTER_SETTER)
-	{
-		const u16 fc6814_now = m_m68302_internal_shadow[0x14 >> 1];
-		const u16 fc6816_now = m_m68302_internal_shadow[0x16 >> 1];
-		if (!m_fc6816_service_2400_clear_experiment_done &&
-			m_fc6816_service_2400_set_by_runtime &&
-			m_fc6816_service_0d06_set_after_runtime &&
-			!(fc6814_now & 0x2400) &&
-			(m_f87f96_queue_rte_count > m_fc6816_service_0d06_rte_count) &&
-			(fc6816_now & 0x2400))
-		{
-			const u16 fc6816_new = fc6816_now & ~u16(0x2400);
-			m_m68302_internal_shadow[0x16 >> 1] = fc6816_new;
-			m_fc6816_service_2400_clear_experiment_done = true;
-			logerror("ASR10_EXPERIMENT_FC6816_CLEAR_SERVICE_2400_AFTER_SETTER pc=%06x previous_pc=%06x "
-				"reason=dispatcher_rte_after_00bf22 old_fc6816=%04x new_fc6816=%04x fc6814=%04x fc6818=%04x "
-				"fc6884=%04x fc6894=%04x lowmem_0d06=%04x lowmem_0e82=%04x "
-				"dispatcher_count=%u rte_count=%u setter_pc=%06x setter_rte_count=%u "
-				"lowmem_0d06_pc=%06x lowmem_0d06_rte_count=%u "
-				"recent_queue_pc=%06x recent_queue_rw=%c recent_queue_addr=%06x recent_queue_record=%06x "
-				"recent_queue_slot=%u recent_queue_previous=%04x recent_queue_current=%04x "
-				"recent_queue_data=%04x recent_queue_mem_mask=%04x recent_queue_handler_clear=%u panel=\"%s\"\n",
-				pc, m_last_distinct_pc, fc6816_now, fc6816_new, fc6814_now, fc6818_before,
-				m_m68302_internal_shadow[0x84 >> 1], m_m68302_internal_shadow[0x94 >> 1],
-				m_lowmem_shadow[0x0d06 >> 1], m_lowmem_shadow[0x0e82 >> 1],
-				m_runtime_dispatch_entry_count, m_f87f96_queue_rte_count,
-				m_fc6816_service_setter_pc, m_fc6816_service_setter_rte_count,
-				m_fc6816_service_0d06_pc, m_fc6816_service_0d06_rte_count,
-				m_recent_queue_pc, m_recent_queue_write ? 'W' : 'R', m_recent_queue_address,
-				m_recent_queue_record_base, m_recent_queue_slot, m_recent_queue_previous,
-				m_recent_queue_current, m_recent_queue_data, m_recent_queue_mem_mask,
-				m_recent_queue_handler_clear ? 1 : 0, m_panel_text);
-		}
-	}
-	const u16 fc6814_after_experiment = m_m68302_internal_shadow[0x14 >> 1];
-	const u16 fc6816_after_experiment = m_m68302_internal_shadow[0x16 >> 1];
-
-	m_queue_rte_after_pending = true;
-	m_queue_rte_after_count = m_f87f96_queue_rte_count;
-	m_queue_rte_before_pc = pc;
-	m_queue_rte_last_return_pc = frame_return_pc & 0x00ffffff;
-	m_queue_rte_before_fc6814 = fc6814_after_experiment;
-	m_queue_rte_before_fc6816 = fc6816_after_experiment;
-	m_queue_rte_before_fc6818 = fc6818_before;
-	m_dispatcher_rte_first_pc_pending = true;
-	m_dispatcher_rte_first_pc_logged = false;
-	m_dispatcher_rte_iack_seen = false;
-	m_dispatcher_rte_iack_vector = 0xff;
-	m_dispatcher_rte_iack_level = 0xff;
-	m_dispatcher_rte_iack_pc = 0xffffffff;
-	m_dispatcher_rte_iack_sr = 0;
-	m_dispatcher_rte_frame_pc = frame_return_pc & 0x00ffffff;
-	m_dispatcher_rte_frame_sp = sp;
-	m_dispatcher_rte_frame_a2 = a2;
-	m_dispatcher_rte_frame_slot = slot_index;
-	m_dispatcher_rte_frame_sr = frame_sr;
-	m_dispatcher_rte_current_sr = current_sr;
-	m_dispatcher_rte_fc6814 = fc6814_after_experiment;
-	m_dispatcher_rte_fc6816 = fc6816_after_experiment;
-	m_dispatcher_rte_fc6818 = fc6818_before;
-
-	std::string stack_words;
-	for (u8 index = 0; index < 16; index++)
-	{
-		if (index)
-			stack_words += ',';
-		const u32 address = (sp + index * 2) & 0x00ffffff;
-		stack_words += util::string_format("%06x:%04x", address, read_loaded_word(address));
-	}
-
-	std::string slot_words;
-	if (slot_index != 0xffffffffU)
-	{
-		for (u8 offset = 0; offset < 0x16; offset += 2)
-		{
-			if (offset)
-				slot_words += ',';
-			const u32 address = (a2 + offset) & 0x00ffffff;
-			slot_words += util::string_format("+%02x@%06x:%04x", offset, address, read_loaded_word(address));
-		}
-	}
-	else
-	{
-		slot_words = "not_queue_slot";
-	}
-
-	logerror("ASR10_DISPATCHER_RTE_PRE pc=%06x previous_pc=%06x sr=%04x sr_mask=%u "
-		"sp=%06x usp=%06x ssp=%06x stack_words=\"%s\" "
-		"frame_sr=%04x frame_sr_mask=%u frame_pc=%06x "
-		"a2=%06x slot=%u slot_record=\"%s\" "
-		"lowmem_0b6a=%04x lowmem_0b6c=%04x lowmem_0b7f=%04x "
-		"fc6814=%04x fc6816=%04x fc6818=%04x rte_count=%u\n",
-		pc, m_last_distinct_pc, current_sr, (current_sr >> 8) & 7,
-		sp, u32(m_maincpu->state_int(M68K_USP)) & 0x00ffffff,
-		u32(m_maincpu->state_int(M68K_ISP)) & 0x00ffffff,
-		stack_words.c_str(), frame_sr, (frame_sr >> 8) & 7,
-		frame_return_pc & 0x00ffffff, a2, slot_index, slot_words.c_str(),
-		m_lowmem_shadow[0x0b6a >> 1], m_lowmem_shadow[0x0b6c >> 1],
-		m_lowmem_shadow[0x0b7e >> 1] & 0x00ff,
-		fc6814_after_experiment, fc6816_after_experiment, fc6818_before,
-		m_f87f96_queue_rte_count);
-
-	logerror("ASR10_F87F96_QUEUE_RTE state=%d pc=%06x previous_pc=%06x opcode=%04x "
-		"sr=%04x sr_mask=%u sp=%06x stack0=%08x stack1=%08x stack2=%08x "
-		"frame_sr_guess=%04x frame_sr_mask_guess=%u frame_return_pc_guess=%06x "
-		"queue_base_from_00c6=%04x "
-		"fc68_int_mask=%04x fc68_int_pending=%04x fc68_int_in_service=%04x fc68_int_control=%04x "
-		"fc6814_bits_3_1_0=%u%u%u fc6816_bits_15_14_13_10_7=%u%u%u%u%u "
-		"fc68_last_pc=%06x fc68_last_addr=%06x fc68_last_rw=%c fc68_last_data=%04x "
-		"fc68_last_mem_mask=%04x fc68_last_shadow=%04x fc68_last_detail=%s rte_count=%u\n",
-		state, pc, m_last_distinct_pc, read_loaded_word(0x00f87fc0),
-		current_sr, (current_sr >> 8) & 7, sp, stack0, stack1, read_stack_long(sp + 8),
-		frame_sr, (frame_sr >> 8) & 7, frame_return_pc & 0x00ffffff,
-		queue_pointer_word,
-		m_m68302_internal_shadow[0x12 >> 1], fc6814_after_experiment, fc6816_after_experiment, fc6818_before,
-		BIT(fc6814_after_experiment, 3), BIT(fc6814_after_experiment, 1), BIT(fc6814_after_experiment, 0),
-		BIT(fc6816_after_experiment, 15), BIT(fc6816_after_experiment, 14), BIT(fc6816_after_experiment, 13),
-		BIT(fc6816_after_experiment, 10), BIT(fc6816_after_experiment, 7),
-		m_last_fc68_pc, m_last_fc68_address, m_last_fc68_write ? 'W' : 'R',
-		m_last_fc68_data, m_last_fc68_mem_mask, m_last_fc68_shadow,
-		m68302_register_name(m_last_fc68_address), m_f87f96_queue_rte_count);
-}
 
 
 
@@ -6394,128 +5556,6 @@ void asr10_boot_state::log_cpu_context(u32 pc)
 }
 
 
-void asr10_boot_state::log_lowmem_04ee(bool write, u16 previous, u16 current, u16 mem_mask)
-{
-	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-	log_cpu_context(pc);
-	const u8 previous_byte = previous >> 8;
-	const u8 current_byte = current >> 8;
-	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-	const u32 stack0 = read_stack_long(sp);
-	const u32 stack1 = read_stack_long(sp + 4);
-	const u32 stack2 = read_stack_long(sp + 8);
-	logerror("ASR10LOWMEM04EE pc=%06x rw=%c value=%04x previous=%04x current=%04x mem_mask=%04x "
-		"phase=%s sp=%06x stack0=%08x stack1=%08x stack2=%08x\n",
-		pc, write ? 'W' : 'R', current & mem_mask, previous, current, mem_mask,
-		m_seen_insert_disk_prompt ? "post_insert_disk" : "boot", sp, stack0, stack1, stack2);
-
-	if (!write && pc == 0x00fb7c7a)
-	{
-		logerror("ASR10_04EE pc=fb7c7a rw=R value=%02x negative=%u zero=%u "
-			"branch_pc=fb7c80 branch=bpl branch_taken=%u branch_target=fb7c9c "
-			"not_taken_path=duart_input_change_bit4\n",
-			current_byte, BIT(current_byte, 7), current_byte == 0,
-			BIT(current_byte, 7) ? 0 : 1);
-		logerror("ASR10_INPUT_BRANCH pc=fb7c80 opcode=6a1a tested=04ee_sign value=%02x "
-			"branch_taken=%u branch_target=fb7c9c\n",
-			current_byte, BIT(current_byte, 7) ? 0 : 1);
-	}
-	else if (write && pc == 0x00fb7c98)
-	{
-		logerror("ASR10_04EE pc=fb7c98 rw=W previous=%02x current=%02x source=semantic_input_result "
-			"branch_pc=fb7c9c branch=bne branch_taken=%u branch_target=fb7ca4\n",
-			previous_byte, current_byte, current_byte ? 1 : 0);
-		logerror("ASR10_INPUT_BRANCH pc=fb7c9c opcode=6606 tested=04ee_write_result value=%02x "
-			"branch_taken=%u branch_target=fb7ca4 not_taken_target=fb7c9e\n",
-			current_byte, current_byte ? 1 : 0);
-	}
-}
-
-
-void asr10_boot_state::log_lowmem_049d(bool write, u16 previous, u16 current, u16 mem_mask)
-{
-	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-	log_cpu_context(pc);
-	const u8 previous_byte = u8(previous);
-	const u8 current_byte = u8(current);
-	if (!ACCESSING_BITS_0_7)
-		return;
-
-	if (write)
-	{
-		const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-		const u32 stack0 = read_stack_long(sp);
-		const u32 stack1 = read_stack_long(sp + 4);
-		const u32 stack2 = read_stack_long(sp + 8);
-		std::string command_sequence;
-		const u8 first = (m_fdc_command_ring_next + m_fdc_command_ring.size() - m_fdc_command_ring_count) % m_fdc_command_ring.size();
-		for (u8 index = 0; index < m_fdc_command_ring_count; index++)
-		{
-			if (index)
-				command_sequence += ',';
-			command_sequence += util::string_format("%02x", m_fdc_command_ring[(first + index) % m_fdc_command_ring.size()]);
-		}
-
-		logerror("ASR10_049D_WRITE pc=%06x previous=%02x current=%02x mem_mask=%04x "
-			"op_m8=%04x op_m6=%04x op_m4=%04x op_m2=%04x op_0=%04x "
-			"op_p2=%04x op_p4=%04x op_p6=%04x op_p8=%04x "
-			"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x sr=%04x "
-			"sp=%06x stack0=%08x stack1=%08x stack2=%08x "
-			"last_command=%02x last_fifo_read=%02x last_fifo_write=%02x txn=%u recent_commands=\"%s\" "
-			"field_04a6=%04x field_04ae=%04x field_04b0=%04x field_04b4=%04x field_04b6=%04x "
-			"field_04c4=%04x field_04c6=%04x field_04d6=%04x field_04e6=%04x\n",
-			pc, previous_byte, current_byte, mem_mask,
-			read_code_word(pc - 8), read_code_word(pc - 6), read_code_word(pc - 4),
-			read_code_word(pc - 2), read_code_word(pc), read_code_word(pc + 2),
-			read_code_word(pc + 4), read_code_word(pc + 6), read_code_word(pc + 8),
-			u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
-			u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
-			u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
-			u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
-			u16(m_maincpu->state_int(M68K_SR)), sp, stack0, stack1, stack2,
-			m_fdc_last_aux_command, m_fdc_last_fifo_read, m_fdc_last_fifo_write,
-			m_fdc_transaction, command_sequence.c_str(),
-			m_lowmem_shadow[0x04a6 >> 1], m_lowmem_shadow[0x04ae >> 1],
-			m_lowmem_shadow[0x04b0 >> 1], m_lowmem_shadow[0x04b4 >> 1],
-			m_lowmem_shadow[0x04b6 >> 1], m_lowmem_shadow[0x04c4 >> 1],
-			m_lowmem_shadow[0x04c6 >> 1], m_lowmem_shadow[0x04d6 >> 1],
-			m_lowmem_shadow[0x04e6 >> 1]);
-		if (pc == 0x00fb81b4)
-			log_fb81b4_path("write_error_0d", pc, current_byte, false, 0x00fb81b8);
-	}
-	else
-	{
-		u32 branch_pc = 0;
-		switch (pc)
-		{
-		case 0x00fb917e: branch_pc = 0x00fb9182; break;
-		case 0x00fb918e: branch_pc = 0x00fb9192; break;
-		case 0x00fb91a2: branch_pc = 0x00fb91a6; break;
-		}
-		if (pc == 0x00fb8d80 && m_fdc_last_aux_command == 0xf3)
-		{
-			const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-			if ((read_stack_long(sp) & 0x00ffffff) == 0x00fb7c78)
-				log_04c6_origin("preexisting_error_gate", 0x00fb8d84,
-					current_byte, current_byte != 0, 0x00fb8dcc);
-		}
-		if (pc == 0x00fb8c46)
-			log_fb81b4_path("preexisting_error_gate", 0x00fb8c4a,
-				current_byte, current_byte != 0, 0x00fb8c6c);
-		if (branch_pc)
-		{
-			u16 tst_sr = u16(m_maincpu->state_int(M68K_SR)) & ~0x000f;
-			if (!current_byte)
-				tst_sr |= 0x0004;
-			else if (BIT(current_byte, 7))
-				tst_sr |= 0x0008;
-			log_media_branch(branch_pc, tst_sr);
-			m_media_branch_last_pc = branch_pc;
-		}
-		logerror("ASR10STATE049D pc=%06x rw=R previous=%02x current=%02x phase=%s\n",
-			pc, previous_byte, current_byte, m_seen_insert_disk_prompt ? "post_insert_disk" : "boot");
-	}
-}
 
 
 u16 asr10_boot_state::scsi_asr_candidate_r(offs_t offset, u16 mem_mask)
@@ -6689,63 +5729,6 @@ const char *asr10_boot_state::trace_detail(trace_region region, u32 address)
 	return "register_unknown";
 }
 
-
-void asr10_boot_state::log_watched_pc(u32 pc)
-{
-	log_cpu_context(pc);
-
-	switch (pc)
-	{
-	case 0x00fb8e06:
-		logerror("ASR10BOOT watched_pc: pc=%06x full_static=$fffb8e06 rom_offset=0x38e06 boot_continuation\n", pc);
-		break;
-	case 0x00f87e5c:
-		logerror("ASR10BOOT watched_pc: pc=%06x full_static=$fff87e5c rom_offset=0x07e5c boot_handoff\n", pc);
-		break;
-	case 0x00f87fd2:
-		m_dispatcher_hits++;
-		logerror("ASR10BOOT watched_pc: pc=%06x full_static=$fff87fd2 rom_offset=0x07fd2 dispatcher_7fd2 hit=%u\n", pc, m_dispatcher_hits);
-		if (m_dispatcher_hits > 16)
-		{
-			logerror("ASR10BOOT stop: dispatcher loop threshold reached\n");
-			machine().schedule_exit();
-		}
-		break;
-	case 0x00f88030:
-		logerror("ASR10BOOT watched_pc: pc=%06x full_static=$fff88030 rom_offset=0x08030 system_call_8030\n", pc);
-		break;
-	case 0x00f88280:
-	case 0x00f88284:
-	case 0x00f882de:
-	case 0x00f87ede:
-	case 0x00f87ee4:
-	case 0x00f8c14a:
-	case 0x00f8c16a:
-	case 0x00f8932e:
-	case 0x00f89798:
-	case 0x00f8f302:
-	case 0x00f9268c:
-	case 0x00f94314:
-	{
-		const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-		logerror("ASR10_ERROR_WATCH pc=%06x previous_pc=%06x opcode=%04x "
-			"d0=%08x d1=%08x d2=%08x d3=%08x sr=%04x sp=%06x "
-			"stack0=%08x stack1=%08x stack2=%08x lowmem_00c0=%04x lowmem_0cda=%04x "
-			"lowmem_04c6=%04x lowmem_04c8=%04x lowmem_04ca=%04x lowmem_04cc=%04x\n",
-			pc, m_last_distinct_pc, read_code_word(pc),
-			u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
-			u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
-			u16(m_maincpu->state_int(M68K_SR)), sp,
-			read_stack_long(sp), read_stack_long(sp + 4), read_stack_long(sp + 8),
-			m_lowmem_shadow[0x00c0 >> 1], m_lowmem_shadow[0x0cda >> 1],
-			m_lowmem_shadow[0x04c6 >> 1], m_lowmem_shadow[0x04c8 >> 1],
-			m_lowmem_shadow[0x04ca >> 1], m_lowmem_shadow[0x04cc >> 1]);
-		break;
-	}
-	default:
-		break;
-	}
-}
 
 
 u16 asr10_boot_state::read_code_word(u32 address) const
@@ -6935,7 +5918,7 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::prompt_select_poll)
 	{
 		if (pc != m_media_branch_last_pc)
 		{
-			log_media_branch(pc);
+			(void)0;
 			m_media_branch_last_pc = pc;
 		}
 	}
@@ -6950,7 +5933,7 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::prompt_select_poll)
 		if (pc == countdown_pcs[index] && !(m_04b0_countdown_trace_mask & (1U << index)))
 		{
 			m_04b0_countdown_trace_mask |= 1U << index;
-			log_04b0_countdown(pc, 'P', m_lowmem_shadow[0x04b0 >> 1], m_lowmem_shadow[0x04b0 >> 1]);
+			(void)0;
 			break;
 		}
 	}
@@ -6958,7 +5941,7 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::prompt_select_poll)
 		pc == 0x00fb94ae || pc == 0x00fb94b2 || pc == 0x00fb94b4 ||
 		pc == 0x00fb94da || pc == 0x00fb94e0)
 	{
-		log_prompt_select(pc);
+		(void)0;
 	}
 
 	if (m_prompt_select_trace_mask & 0x80)
@@ -7044,8 +6027,8 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::pc_poll)
 				m_m68302_internal_shadow[0x18 >> 1], m_runtime_dispatch_entry_count);
 		}
 	}
-	log_dispatcher_rte_first_pc_probe(pc);
-	log_dispatcher_rte_candidate_pc(pc);
+	(void)0;
+	(void)0;
 	log_tuning_stall_save_probe(pc);
 	// Read-only: direct counters for the trap #7/#8 handler entry points
 	// themselves (not gated on slot5 specifically), to settle whether either
@@ -7103,7 +6086,7 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::pc_poll)
 			logerror("ASR10PC pc=%06x previous_pc=%06x opcode=%04x\n", pc, m_last_distinct_pc, read_code_word(pc));
 		else if (m_pc_change_count == 257)
 			logerror("ASR10PC further transitions suppressed; final loop summary remains enabled\n");
-		log_watched_pc(pc);
+		(void)0;
 		log_duart_counter_watched_pc(pc);
 		log_primary_slot_snapshot_once(pc);
 		log_timer_secondary_callback(pc);
@@ -7158,7 +6141,6 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	m_maincpu->set_addrmap(AS_PROGRAM, &asr10_boot_state::mem_map);
 	m_maincpu->set_addrmap(m68000_base_device::AS_CPU_SPACE, &asr10_boot_state::cpu_space_map);
 	m_maincpu->set_instruction_execute_callback(FUNC(asr10_boot_state::maincpu_instruction_hook));
-	m_maincpu->set_rte_callback(FUNC(asr10_boot_state::log_f87f96_queue_rte));
 
 	UPD72069(config, m_fdc, XTAL(16'000'000)); // clock unknown; placeholder for boot tracing
 
