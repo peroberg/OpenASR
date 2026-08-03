@@ -32,6 +32,15 @@ The emulator reaches ENSONIQ ASR-10 / LOADING SYSTEM, then returns to firmware d
 - Which MC68302 interrupt source maps to vector `0x4f`?
 - Does the 68302 interrupt controller need a real in-service/EOI state machine?
 - Does the runtime expect a periodic timer tick rather than a one-shot service interrupt?
+- Low priority: why do Lua passthrough taps see zero accesses in
+  `$FC6000-$FC6FFF` while the `$0067EC` channel-select path is otherwise
+  proven to execute? In the 2026-08-03 PAR Lua observe run,
+  `fallande_PC=006802` and `$0DD6-skrivningar: 3` prove execution through
+  `$0067F6`/`$006800`, but the tap census was
+  `FC20xx x1128`, `FC30xx x15`, `FC40xx x1875886`, `FC48xx x3092`,
+  `FC50xx x2`, with no `FC68xx`, and both
+  `68302-LAS $FC6000-$FC6FFF` and `68302-SKRIV $FC6000-$FC6FFF` were empty.
+  Treat this as a tap/dispatch-layer question, not hardware evidence.
 
 ## FC6884 / FC6894 / timer-like state
 

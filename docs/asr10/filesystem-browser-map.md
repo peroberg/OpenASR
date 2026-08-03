@@ -2835,7 +2835,13 @@ browser/LOAD path either way.
 enabled for every live run. Nothing forced; not committed. No earlier
 retraction overwritten.
 
-### 4.19 Milestone: the complete verified baseline reaches a new firmware error — `NO INST OR BANK FILES` → `EFFECT DOWNLOAD FAILED` → `ERROR 032`, ERROR 130 confirmed gone (not yet reviewed)
+### 4.19 Historical milestone: not reproduced on current HEAD — `NO INST OR BANK FILES` → `EFFECT DOWNLOAD FAILED` → `ERROR 032`, ERROR 130 confirmed gone (not yet reviewed)
+
+**Historical status, 2026-08-03, HEAD `0bf6b05ebd8c`:** this section is
+not reproduced on current HEAD. The Lua per-channel PAR reproduction
+passes `ERROR 130`, but current HEAD does not reach `NO INST OR BANK
+FILES` or the later effect-download/error path described here. See
+`docs/asr10/par-lua-reproduction.md`.
 
 **This section supersedes 4.15/4.16/4.17/4.18's read of "the blocker" as far
 as the *specific* stall point goes.** Those sections' node/scheduler/timer
@@ -4477,7 +4483,13 @@ throughout. **Not committed.**
 
 ---
 
-### 4.28 Milestone: the missing `0xe0` route implemented — the ASR-10 now completes its built-in effect download and reaches `NO INST OR BANK FILES` with no error message
+### 4.28 Historical milestone: not reproduced on current HEAD — missing `0xe0` route and `NO INST OR BANK FILES` with no error message
+
+**Historical status, 2026-08-03, HEAD `0bf6b05ebd8c`:** this section is
+not reproduced on current HEAD. It describes a completed built-in effect
+download and `NO INST OR BANK FILES`; the current per-channel PAR
+reproduction passes `ERROR 130` but stops after `LOADING SYSTEM` panel
+traffic goes silent. See `docs/asr10/par-lua-reproduction.md`.
 
 **Scope:** implements exactly the fix `§4.27` identified — one
 additional thin fixed-offset wrapper routing `FC31C0`-`FC31C1` (active
