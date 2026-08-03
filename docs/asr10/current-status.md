@@ -1,209 +1,93 @@
-# ASR-10 Current Status
+# ASR-10 current status
 
-**Status snapshot date: 2026-07-22.** This is a dated snapshot of a research
-harness, not a permanent architecture description. If you are reading this
-long after the date above, verify claims against the source and the newer
-entries in `panel-protocol.md` / `documentation-audit.md` before trusting it.
+Current truth for the ASR-10 MAME bring-up. This file is deliberately short:
+verified reference facts belong in `reference/`, and experiment history belongs
+in `investigations/` or `archive/`.
 
-This file and `panel-protocol.md` are the only two **canonical** documents in
-`docs/asr10/`. Every other file in this directory is candidate material —
-historical, partially superseded, or not yet audited. See
-`documentation-audit.md` for the full classification and rationale.
+## Works
 
-## 1. What this is
+- `asr10booth` boots `floppies/asr10booth/V350.img` with no `ASR10_*`
+  environment variables to:
 
-`src/mame/ensoniq/asr10_boot.cpp` is an instrumented boot/research harness for
-the Ensoniq ASR-10, not a clean production MAME driver. It exists to discover
-how the ASR-10 ROM and loaded OS talk to hardware, using a mixture of real
-MAME devices, limited host-interface models, and hand-written experimental
-register/protocol models.
+  ```text
+  ENSONIQ ASR-10 -> LOADING SYSTEM -> FILE 1  TUTORIAL BNK
+  ```
 
-## 2. Build and run (verified against current source)
+- The acceptance test is `docs/asr10/regression-test.sh`. It runs `./mess
+  asr10booth -flop1 floppies/asr10booth/V350.img` and passes only when
+  `TUTORIAL BNK` appears in `error.log`.
+- Tag `asr10-file1-2026-08-03` marks the first documented `FILE 1
+  TUTORIAL BNK` milestone. That tag records the historical flag set that was
+  required at the time; those flags have since been removed from the driver.
+- Current boot uses real MAME devices for the DUART host path (`mc68681`),
+  ES5506 host registers, ES5510 host registers, and the FDC path used by this
+  boot. MC68302 modelling is split between the new device files and remaining
+  ASR-10 driver glue.
+- Channel B panel RX is owned by `mc68681_device`. Removed code includes
+  `m_panel_c_srb`, `m_panel_c_rx_byte`, `m_panel_c_rx_valid`, `m_panel_c_isr`,
+  `m_panel_c_imr`, `panel_c_update_irq6`, and the hand-rolled channel-B RX
+  path.
 
-Build:
+## Does not work
 
-```sh
-make -j12 SUBTARGET=mess SOURCES=src/mame/ensoniq/asr10_boot.cpp
-```
+- Button navigation is not implemented far enough to prove `FILE 2` or normal
+  file-browser interaction.
+- Audio output, sampling, sequencer behavior, and complete ES5506/ES5510 sound
+  integration are not working end-to-end.
+- DUART channel A RX is not wired to a real external source. It is MIDI-side
+  behavior and must not be inferred from the panel channel-B path.
+- The fixed PAR value is plumbing only. It is not a measured analog value and
+  not a real ADC model.
 
-This produces a binary literally named `mess` at the repository root
-(`SUBTARGET=mess` is an arbitrary historical label unrelated to the old
-"MESS" emulator suite). Do not confuse this with any other binary at the repo
-root (`./mame`, `./asr10boot`, etc.) — those are stale builds from other
-invocations and do not contain this driver's current code.
+## Next blocker
 
-Run, using the established minimal baseline flag set (verified present in
-the driver as of this snapshot: `ASR10_DIAG_PANEL_AUTORESPOND`,
-`ASR10_EXPERIMENT_DUART_COUNTER_TIMER`, `ASR10_EXPERIMENT_ES5506_HOST`,
-`ASR10_EXPERIMENT_ES5510_HOST`, `ASR10_EXPERIMENT_PAR_DIAGNOSTIC`,
-`ASR10_DIAG_PAR_VALUE`):
+Implement the smallest real input path that moves the file browser beyond
+`FILE 1  TUTORIAL BNK` without reintroducing stubs:
 
-```sh
-ASR10_DIAG_PANEL_AUTORESPOND=1 \
-ASR10_EXPERIMENT_DUART_COUNTER_TIMER=1 \
-ASR10_EXPERIMENT_ES5506_HOST=1 \
-ASR10_EXPERIMENT_ES5510_HOST=1 \
-ASR10_EXPERIMENT_PAR_DIAGNOSTIC=1 \
-ASR10_DIAG_PAR_VALUE=0x200 \
-./mess asr10booth \
-  -flop floppies/asr10booth/V161.img \
-  -seconds_to_run 20 \
-  -nowindow \
-  -skip_gameinfo
-```
+1. Identify the host-visible panel input path needed for browser navigation.
+2. Route that input through real DUART/channel or panel-device plumbing.
+3. Extend `docs/asr10/regression-test.sh` only after a new visible milestone is
+   reproduced.
 
-Do not add `-log` as a matter of routine — it has produced multi-gigabyte
-files in this repository's history. Use bounded, purpose-built diagnostics
-instead when investigating something new.
+Do not restart scheduler, DUART timer, PAR-channel, or SRA-break investigations
+unless a new failing run contradicts the facts below.
 
-## 3. What is currently proven
+## Open questions
 
-Under the configuration above, with `floppies/asr10booth/V161.img` mounted,
-the firmware reaches the following observed sequence and holds there as a
-live idle state (not a failure loop):
+- PAR value: the current value is selected to let the boot proceed, not
+  measured from hardware.
+- ADC channel identity: firmware channel numbers are verified, but the
+  physical source behind each channel is unknown.
+- PB3 LRCLK: the driver supplies a plausible LRCLK observation, but the exact
+  board frequency at PB3 is unmeasured.
+- Lua passthrough taps: `$0067EC` executes and writes `$0DD6`, but Lua taps saw
+  no `$FC6000-$FC6FFF` accesses while `$FC20xx`, `$FC40xx`, and `$FC48xx` were
+  visible. Treat this as a Lua/tap-layer question, not hardware evidence.
+- Channel A: the physical MIDI input and break/null handling need real wiring.
 
-```
-ENSONIQ ASR-10 → LOADING SYSTEM → TUNING KBD - HANDS OFF → KEYBOARD TUNED
-→ NO INST OR BANK FILES  (correct result: V161.img carries no instrument/bank files)
-```
+## Disproved hypotheses
 
-`EFFECT DOWNLOAD FAILED` and `ERROR 032 - REBOOT ?` are both absent. This
-required routing ES5510 host offset `0xE0` (fixed in commit `da1b4c385256`,
-see `filesystem-browser-map.md` §4.27-4.28 for the full root cause).
+- DUART OPR selects ADC/PAR channel. Disproved by OPR/PAR captures and the
+  verified channel-select code: MC68302 PBDAT bit 2:0 selects channels.
+- SRA bit 7 caused the browser regression. Forcing Received Break high on the
+  bad DUART revision did not produce `TUTORIAL BNK`; the real first regression
+  was missing DUART `irq_cb` wiring.
+- AN414-style implicit DUART timer start was a MAME defect. `mc68681_device`
+  already starts the counter on the relevant ACR transition; the missing
+  behavior was IRQ wiring, not timer start.
+- `$0DD6` is the divisor at `$006800`. The divisor is register D2. `$0DD6`
+  stores the measured channel-7 sum that feeds later calculations.
+- PAR is read at `$FC2069`. That byte is structurally the top byte of the
+  32-bit latch and is expected to be zero. The meaningful PAR bytes are
+  visible at `$FC206D`/`$FC206F`; see `reference/subroutine-index.md`.
+- `filesystem-browser-map.md` sections 4.19 and 4.28 described the final
+  current state. They were historical. Reproduction on `da1b4c38525` reached
+  `FILE 1  TUTORIAL BNK`, and current HEAD also reaches it flaglessly.
 
-**This proves the tested configuration reaches this one observed state for
-this one OS-only floppy image. It does not prove every physical ASR-10
-state, nor that other floppy images, SCSI, or panel input paths behave
-correctly.**
+## Current documents
 
-The host-side front-panel transport is mapped in detail in
-`panel-protocol.md` §7-§8:
-
-- a software `TRAP #$A` (not a hardware interrupt, and not the pre-existing,
-  separate Line-A mechanism) reaches a runtime-installed exception-vector-42
-  handler, which flows through a flow-controlled TX-ring enqueue into DUART
-  Channel B;
-- a marker+payload byte encoder with three D0-selected classes is fully
-  characterized (exact marker matrix known);
-- the specific `7b,0b,7a,0b` post-scan sequence and the historical visible
-  "Z" artifact are both explained down to the exact static source record
-  involved;
-- the separate Path B direct-text frame beginning with `0x66` is locally
-  verified for routine `f89c94`, and the historical leading `F` artifact in
-  `FNO INST OR BANK FILES` is explained;
-- the bounded panel TX lineage capture proved the two observed `f89c94`
-  direct-text invocations were uninterrupted logical items, and that the old
-  raw `0x66...NUL` byte-stream framing failed because a later `0x66` came from
-  the independent ring-drain producer;
-- the current visible baseline is `NO INST OR BANK FILES`, with no leading
-  `F` and no final `Z` parser artifact.
-
-**`$c98`'s role as a selection index is a strong inference, not a proven
-fact.** The external front-panel controller that consumes this protocol is
-strongly inferred (Channel B leaves the host; nothing in the searched
-host-side artifacts consumes it) but its firmware is not available in this
-repository, so **exact physical panel semantics remain unresolved** and are
-not solvable from host-side artifacts alone — see `panel-protocol.md` §7.4
-for what external evidence would be needed.
-
-## 4. Device-architecture status (do not overstate this)
-
-| Component | Status |
-|---|---|
-| uPD72069 / FDC | Real MAME device (`upd72069_device`). ASR-10-specific glue, terminal-count behavior and timing remain provisional. |
-| SCN2681 / DUART | **Not** a real `scn2681_device`. A hand-written partial register/shadow model inside `asr10_boot_state`, implementing only the behaviors discovered so far. |
-| ES5506 / OTIS | Real MAME host device present. Surrounding ASR-10 audio/sample-memory/board-glue architecture is incomplete. |
-| ES5510 / ESP | Real MAME host-interface device present. DSP execution is disabled; upload/readback is modelled, not actual DSP execution or audio processing. |
-| Front-panel controller | Not emulated. Its protocol is understood host-side (see above); its physical behavior is not. |
-| MC68302 internals | Hand-written partial shadow/behavior model. Not a real `mc68302_device`. |
-| SCSI | Shadow/stub only. |
-
-The correct summary sentence is: **the firmware boots through the currently
-known stages using a mixture of real MAME devices, limited host-interface
-models, and hand-written experimental register/protocol models** — not "all
-boot stages use fully modelled real devices."
-
-## 5. Diagnostics
-
-The temporary panel-investigation instrumentation used to prove the PATH A
-marker/payload encoder and PATH B direct-text prefix has been removed or kept
-out of the parser path. The current parser architecture is:
-
-```text
-68k firmware
-    |
-    v
-hand-written DUART shadow
-    |
-    v
-Channel B THRB
-    |
-panel byte-role adapter
-    |
-    v
-panel_receive_byte()
-    |
-    v
-panel protocol parser
-    |
-    v
-visible display state
-```
-
-The byte-role adapter lives before `panel_receive_byte()`. Every byte still
-travels through the hand-written DUART shadow, Channel B THRB, and the byte
-receiver. The independently retained boundaries are:
-
-- PATH B direct text: one dynamic `f89c94` invocation, with the prefix sent by
-  `f89c48` and payload bytes sent by `f89cb0`.
-- A bounded ring-control role at the validated ring enqueue path. This keeps
-  the proven control/protocol byte out of printable text for the bounded boot
-  path, but it is conservative and is not a complete PATH A
-  descriptor-submission implementation.
-
-The adapter does not give global meaning to byte `0x66`, does not use ring
-emptiness as framing, and does not infer PATH B from a raw `0x66...NUL` byte
-scan. The parser-facing entry point accepts only the transmitted byte; byte
-roles are supplied upstream.
-
-Exact descriptor invocation tracking is now available through an optional
-generic M68000 instruction-execute callback wired only for this ASR-10 CPU
-instance. The callback fires before instruction dispatch and the ASR-10 harness
-filters it to `f89354` entry and `f8937c` return, maintaining a recursive
-descriptor stack without PC polling, timer acceleration, or timeout-based
-semantic ends. This observes descriptor lifecycles exactly, but it does not by
-itself prove that every bounded ring-control producer is semantically part of a
-PATH A descriptor submission.
-
-In the bounded V161 validation run, exact descriptor tracking observed
-`f89354` entries and `f8937c` returns balanced at `12 / 12`. The validated
-`f81190` outer descriptor was observed before nested `f81676` and `f81f16`;
-maximum observed depth was 2 and final stack depth was 0. Exact descriptor
-tracking reported 3 outer entries / 3 outer returns and 9 nested entries / 9
-nested returns, but PATH A logical begin/end remains `0 / 0` because no stored
-control-to-descriptor identity binding is implemented yet. The correct bounded
-display result does not prove complete panel protocol correctness.
-
-## 6. Smallest next step, if panel work resumes
-
-Remaining work is split into independent tracks:
-
-1. Use the exact descriptor invocation stack to prove or reject a structural
-   binding between bounded ring-control submissions and outer descriptor
-   expansions. `f89c94` remains the verified firmware anchor for PATH B; the
-   design is not yet fully PC-independent.
-
-2. Migrate from the hand-written DUART shadow to a real MAME
-   `mc68681_device`/`scn2681_device`. This remains deferred until the panel
-   transport cleanup is complete and should not be a single large rewrite:
-   timer/counter, IRQ6/IACK, RX/autorespond, SRB/RHRB, and TX timing all need
-   independent validation.
-
-3. Continue reverse engineering PATH A and physical panel semantics.
-   Disassembling `0x3c7c` may move `$c98` from strong inference to proven
-   selection-index behavior, but physical panel semantics still require
-   external evidence: panel-controller firmware, service documentation, or
-   direct hardware capture.
-
-Channel A remains classified only as `ACTIVELY_USED_SERIAL_CHANNEL`; its
-physical role is not proven.
+- `reference/subroutine-index.md`: verified address/routine facts.
+- `investigations/duart.md`: DUART/tick/IRQ/OPR investigation history.
+- `investigations/par-adc.md`: PAR/ADC/channel-select investigation history.
+- `filesystem-browser-map.md`: filesystem/browser research notes; historical
+  claims are marked as such where they differ from current boot behavior.
