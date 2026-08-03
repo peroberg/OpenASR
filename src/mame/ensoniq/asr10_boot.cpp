@@ -791,12 +791,12 @@ private:
 	void dump_highview_code_range(const char *tag, u32 start, u32 end);
 	void scan_for_ascii_string(const char *tag, u32 start, u32 end, const char *needle);
 	u16 read_highview_word(u32 address) const;
-	void log_fsb_field_write(u32 pc, u32 byte_address, u16 previous, u16 current, u16 mem_mask);
-	void log_fsb_field_read(u32 pc, u32 byte_address, u16 data, u16 mem_mask);
-	void log_fsb_entry(u32 entry_id, u32 pc);
-	void log_fsb_snapshot(const char *milestone, u32 pc);
-	void log_fsb_milestone_check_panel_text(u32 pc, u8 data, u32 length_after);
-	void log_fsb_code_dumps(u32 pc);
+
+
+
+
+
+
 
 
 
@@ -2115,17 +2115,17 @@ u8 asr10_boot_state::maincpu_iack_r(u8 level)
 		if (m_fsb.enabled && !machine().side_effects_disabled())
 		{
 			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-			log_fsb_field_read(pc, byte_address, m_lowmem_shadow[offset], mem_mask);
+			(void)0;
 			// fb895a (generic bounds-checked range reader): `movea.w #$4fe,A2`
 			// is register-only, so the entry proxy is its very next
 			// instruction, the unconditional read of $416.w into D2.
 			if (byte_address == 0x0416 && pc == 0x00fb895e)
-				log_fsb_entry(FSB_ENTRY_FB895A, pc);
+				(void)0;
 			// fb8c6e (SEEK wrapper): `bsr fb7c7a` is control-only; the entry
 			// proxy is the read of $49e.w (seek target) immediately after
 			// that ready-check subroutine returns.
 			if (byte_address == 0x049e && pc == 0x00fb8c78)
-				log_fsb_entry(FSB_ENTRY_FB8C6E, pc);
+				(void)0;
 			// f894a4's canonical entry is f8948e; this reads its gate flag
 			// $4b2.w at f89494, on every execution through that canonical
 			// entry path regardless of which of the three paths (A/B/C, see
@@ -2140,8 +2140,8 @@ u8 asr10_boot_state::maincpu_iack_r(u8 level)
 			// contents).
 			if (byte_address == 0x04b2 && pc == 0x00f89494)
 			{
-				log_fsb_entry(FSB_ENTRY_F894A4_ROUTINE, pc);
-				log_fsb_code_dumps(pc);
+				(void)0;
+				(void)0;
 			}
 			// The table read itself (`move.w (0,A0),D1` at f894b4) proves
 			// only that the table-consumption path was reached, not that
@@ -2150,7 +2150,7 @@ u8 asr10_boot_state::maincpu_iack_r(u8 level)
 			if (pc == 0x00f894b4 && byte_address >= 0x0544 && byte_address < 0x0544 + 40 * 0x1a)
 			{
 				const u32 entry_index = (byte_address - 0x0544) / 0x1a;
-				log_fsb_entry(FSB_ENTRY_F894A4_TABLE, pc);
+				(void)0;
 				logerror("ASR10_FSB_TABLE_ACCESS name=f894a4_table_read pc=%06x entry_index=%u "
 					"address=%06x value=%04x\n",
 					pc, entry_index, byte_address, m_lowmem_shadow[offset]);
@@ -2989,13 +2989,13 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 	if (m_fsb.enabled && !machine().side_effects_disabled())
 	{
 		const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-		log_fsb_field_write(pc, byte_address, previous, m_lowmem_shadow[offset], mem_mask);
+		(void)0;
 		// fb82a4 (boot/format sector loader): its own first instruction is
 		// `move.b #$20,$49e.w` -- tag entry via that write, gated on this
 		// exact PC (opcode-fetch taps are established not to fire for this
 		// core; see the note near FC2068 in machine_start()).
 		if (byte_address == 0x049e && pc == 0x00fb82a4)
-			log_fsb_entry(FSB_ENTRY_FB82A4, pc);
+			(void)0;
 		// fb846a (generic "load one FDC unit into $40e.w"): its first
 		// instruction writes $4a9.w=5 (retry count). Called from fb82c0,
 		// fb83d6, and fb834e's loop; the caller field in ASR10_FSB_ENTRY
@@ -3003,7 +3003,7 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 		// itself has no data write before the bsr, so it is identified only
 		// by its callees' return address (0xfb8352), not a direct tap.
 		if (byte_address == 0x04a9 && pc == 0x00fb846a)
-			log_fsb_entry(FSB_ENTRY_FB846A, pc);
+			(void)0;
 	}
 	if (m_root_directory_trace_enabled && !machine().side_effects_disabled())
 	{
@@ -3437,7 +3437,7 @@ void asr10_boot_state::upd72069_fdc_w(offs_t offset, u16 data, u16 mem_mask)
 			// every ROM-side command primitive (fb8cfc/fb8cda/fb7c5a/fb7bc8/
 			// fb7c3c/fb7ca6/fb8dd8) ultimately reaches here. Logged directly,
 			// not via a PC-proxy, since this IS the real issue point.
-			log_fsb_entry(FSB_ENTRY_FDC_CMD, pc);
+			(void)0;
 		}
 		m_fdc_command_ring[m_fdc_command_ring_next] = m_fdc_last_aux_command;
 		m_fdc_command_ring_next = (m_fdc_command_ring_next + 1) % m_fdc_command_ring.size();
@@ -3896,7 +3896,7 @@ void asr10_boot_state::panel_receive_byte(u8 data)
 	m_panel_text[m_panel_text_length++] = char(data);
 	m_panel_text[m_panel_text_length] = 0;
 
-	log_fsb_milestone_check_panel_text(pc, data, m_panel_text_length);
+	(void)0;
 
 	if (!m_insert_disk_decision_logged && strstr(m_panel_text, "PLEASE INSERT DISK"))
 	{
@@ -5435,16 +5435,6 @@ constexpr fsb_field_info FSB_FIELDS[FSB_FIELD_COUNT] = {
 	{ "flags_04be_04bf",       0x04be, fsb_lane::WHOLE, "04be hi: f894a4-table type==0x20 flag; 04bf lo: fb7ba6 any-valid-entry flag" },
 };
 
-bool fsb_lane_matches(fsb_lane lane, u16 mem_mask)
-{
-	switch (lane)
-	{
-	case fsb_lane::HIGH: return (mem_mask & 0xff00) != 0;
-	case fsb_lane::LOW:  return (mem_mask & 0x00ff) != 0;
-	default:             return true;
-	}
-}
-
 const char *FSB_ENTRY_NAMES[] = {
 	"fb82a4_boot_sector_load",
 	"fb846a_generic_loader",
@@ -5514,111 +5504,8 @@ constexpr fsb_dump_target FSB_DUMP_TARGETS[FSB_DUMP_COUNT] = {
 } // namespace
 
 
-void asr10_boot_state::log_fsb_field_write(u32 pc, u32 byte_address, u16 previous, u16 current, u16 mem_mask)
-{
-	if (!m_fsb.enabled || machine().side_effects_disabled())
-		return;
-
-	if (byte_address >= 0x0544 && byte_address < 0x0544 + 40 * 0x1a)
-	{
-		m_fsb.table_write_count++;
-		const u32 rel = byte_address - 0x0544;
-		m_fsb.table_last_write_pc = pc;
-		m_fsb.table_last_write_entry = rel / 0x1a;
-		if (m_fsb.table_write_count <= 64 || !(m_fsb.table_write_count & (m_fsb.table_write_count - 1)))
-			logerror("ASR10_FSB_FIELD event=write field=table_0544 pc=%06x address=%06x entry_index=%u "
-				"byte_offset=%u previous=%04x current=%04x mem_mask=%04x count=%u\n",
-				pc, byte_address, rel / 0x1a, rel % 0x1a, previous, current, mem_mask,
-				m_fsb.table_write_count);
-	}
-
-	for (u32 i = 0; i < fsb_state::FIELD_COUNT; i++)
-	{
-		if (byte_address != FSB_FIELDS[i].word_address || !fsb_lane_matches(FSB_FIELDS[i].lane, mem_mask))
-			continue;
-		fsb_field_runtime &st = m_fsb.fields[i];
-		st.write_count++;
-		st.last_write_pc = pc;
-		st.value = current;
-		st.seen = true;
-		if (st.write_count <= 64 || !(st.write_count & (st.write_count - 1)))
-			logerror("ASR10_FSB_FIELD event=write field=%s pc=%06x address=%06x previous=%04x current=%04x "
-				"mem_mask=%04x count=%u note=\"%s\"\n",
-				FSB_FIELDS[i].name, pc, byte_address, previous, current, mem_mask,
-				st.write_count, FSB_FIELDS[i].note);
-	}
-}
 
 
-void asr10_boot_state::log_fsb_field_read(u32 pc, u32 byte_address, u16 data, u16 mem_mask)
-{
-	if (!m_fsb.enabled || machine().side_effects_disabled())
-		return;
-
-	if (byte_address >= 0x0544 && byte_address < 0x0544 + 40 * 0x1a)
-	{
-		m_fsb.table_read_count++;
-		const u32 rel = byte_address - 0x0544;
-		m_fsb.table_last_read_pc = pc;
-		m_fsb.table_last_read_entry = rel / 0x1a;
-		if (m_fsb.table_read_count <= 64 || !(m_fsb.table_read_count & (m_fsb.table_read_count - 1)))
-			logerror("ASR10_FSB_FIELD event=read field=table_0544 pc=%06x address=%06x entry_index=%u "
-				"byte_offset=%u data=%04x mem_mask=%04x count=%u\n",
-				pc, byte_address, rel / 0x1a, rel % 0x1a, data, mem_mask, m_fsb.table_read_count);
-	}
-
-	for (u32 i = 0; i < fsb_state::FIELD_COUNT; i++)
-	{
-		if (byte_address != FSB_FIELDS[i].word_address || !fsb_lane_matches(FSB_FIELDS[i].lane, mem_mask))
-			continue;
-		fsb_field_runtime &st = m_fsb.fields[i];
-		st.read_count++;
-		st.last_read_pc = pc;
-		if (st.read_count <= 64 || !(st.read_count & (st.read_count - 1)))
-			logerror("ASR10_FSB_FIELD event=read field=%s pc=%06x address=%06x data=%04x mem_mask=%04x "
-				"count=%u note=\"%s\"\n",
-				FSB_FIELDS[i].name, pc, byte_address, data, mem_mask, st.read_count,
-				FSB_FIELDS[i].note);
-	}
-}
-
-
-void asr10_boot_state::log_fsb_entry(u32 entry_id, u32 pc)
-{
-	if (!m_fsb.enabled || machine().side_effects_disabled())
-		return;
-	u32 &counter = m_fsb.entry_counts[entry_id];
-	counter++;
-	if (counter > 64 && (counter & (counter - 1)))
-		return;
-	const u32 sp = m_maincpu->state_int(M68K_SP) & 0x00ffffff;
-	const u32 caller = read_stack_long(sp) & 0x00ffffff;
-	logerror("ASR10_FSB_ENTRY name=%s pc=%06x caller=%06x count=%u "
-		"d0=%08x d1=%08x d2=%08x d3=%08x d6=%08x d7=%08x a0=%08x a1=%08x a2=%08x panel=\"%s\"\n",
-		FSB_ENTRY_NAMES[entry_id], pc, caller, counter,
-		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
-		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
-		u32(m_maincpu->state_int(M68K_D6)), u32(m_maincpu->state_int(M68K_D7)),
-		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
-		u32(m_maincpu->state_int(M68K_A2)), m_panel_text);
-}
-
-
-void asr10_boot_state::log_fsb_code_dumps(u32 pc)
-{
-	if (!m_fsb.enabled)
-		return;
-	for (u32 i = 0; i < fsb_state::DUMP_COUNT; i++)
-	{
-		if (pc != FSB_DUMP_TARGETS[i].trigger_pc || m_fsb.dump_logged[i])
-			continue;
-		m_fsb.dump_logged[i] = true;
-		if (FSB_DUMP_TARGETS[i].highview)
-			dump_highview_code_range(FSB_DUMP_TARGETS[i].tag, FSB_DUMP_TARGETS[i].start, FSB_DUMP_TARGETS[i].end);
-		else
-			dump_loaded_code_range(FSB_DUMP_TARGETS[i].tag, FSB_DUMP_TARGETS[i].start, FSB_DUMP_TARGETS[i].end);
-	}
-}
 
 
 namespace {
@@ -6013,41 +5900,6 @@ void asr10_boot_state::dump_slot_record(const char *tag, u32 slot_addr)
 // any other call site would need to be found the same way, live, first.
 
 
-void asr10_boot_state::log_fsb_snapshot(const char *milestone, u32 pc)
-{
-	if (!m_fsb.enabled)
-		return;
-
-	std::string fields;
-	for (u32 i = 0; i < fsb_state::FIELD_COUNT; i++)
-	{
-		const fsb_field_runtime &st = m_fsb.fields[i];
-		if (i)
-			fields += ',';
-		fields += util::string_format("%s:seen=%u|value=%04x|wpc=%06x|rpc=%06x|wc=%u|rc=%u",
-			FSB_FIELDS[i].name, st.seen ? 1u : 0u, st.value,
-			st.last_write_pc, st.last_read_pc, st.write_count, st.read_count);
-	}
-	std::string entries;
-	for (u32 i = 0; i < fsb_state::ENTRY_COUNT; i++)
-	{
-		if (i)
-			entries += ',';
-		entries += util::string_format("%s:%u", FSB_ENTRY_NAMES[i], m_fsb.entry_counts[i]);
-	}
-
-	logerror("ASR10_FSB_SNAPSHOT milestone=%s pc=%06x slot=%u "
-		"table_0544_write_count=%u table_0544_read_count=%u "
-		"table_0544_last_write_pc=%06x table_0544_last_read_pc=%06x "
-		"table_0544_last_write_entry=%u table_0544_last_read_entry=%u "
-		"fdc_last_aux_command=%02x panel=\"%s\" entries=\"%s\" fields=\"%s\"\n",
-		milestone, pc, m_dispatcher_rte_frame_slot,
-		m_fsb.table_write_count, m_fsb.table_read_count,
-		m_fsb.table_last_write_pc, m_fsb.table_last_read_pc,
-		m_fsb.table_last_write_entry, m_fsb.table_last_read_entry,
-		m_fdc_last_aux_command, m_panel_text, entries.c_str(), fields.c_str());
-}
-
 
 // Milestones A/B are content-triggered, one-shot, from inside panel_receive_byte
 // (the same accumulation path already used for the "PLEASE INSERT DISK"
@@ -6061,22 +5913,6 @@ void asr10_boot_state::log_fsb_snapshot(const char *milestone, u32 pc)
 // or an unrelated T-/K-word at the same short length, would trigger it
 // early or not at all. Documented here and in the map rather than silently
 // assumed precise.
-void asr10_boot_state::log_fsb_milestone_check_panel_text(u32 pc, u8 data, u32 length_after)
-{
-	if (!m_fsb.enabled)
-		return;
-	if (!m_fsb.milestone_a_logged && data == 'T' && length_after <= 2)
-	{
-		m_fsb.milestone_a_logged = true;
-		log_fsb_snapshot("A_before_tuning_kbd", pc);
-	}
-	if (!m_fsb.milestone_b_logged && data == 'K' && length_after >= 4 && length_after <= 7)
-	{
-		m_fsb.milestone_b_logged = true;
-		log_fsb_snapshot("B_before_keyboard_tuned", pc);
-	}
-}
-
 
 // Same shape as dump_loaded_code_range(), but resolves the 0xfc6900-0xffffff
 // high-view RAM region via read_highview_word() (a genuine CPU-space read)
@@ -6534,7 +6370,7 @@ void asr10_boot_state::log_f87f96_queue_write(u32 byte_address, u16 previous, u1
 	if (pc == 0x00f880fc && !m_fsb.milestone_c_logged)
 	{
 		m_fsb.milestone_c_logged = true;
-		log_fsb_snapshot("C_after_f880fc_finalizer", pc);
+		(void)0;
 	}
 	if (pc == 0x00f880fc && m_pti.enabled && !m_pti.seen_f880fc)
 	{
@@ -6646,8 +6482,8 @@ void asr10_boot_state::log_dispatcher_rte_first_pc_probe(u32 pc)
 	{
 		char milestone[48];
 		snprintf(milestone, sizeof(milestone), "D_slot%u_resume", m_dispatcher_rte_frame_slot);
-		log_fsb_snapshot(milestone, pc);
-		log_fsb_code_dumps(pc);
+		(void)0;
+		(void)0;
 	}
 	if (m_pti.enabled && m_pti.seen_f880fc)
 	{
@@ -7871,7 +7707,7 @@ void asr10_boot_state::log_pc_summary(const char *reason, u32 pc)
 	if (m_fsb.enabled && !m_fsb.milestone_e_logged)
 	{
 		m_fsb.milestone_e_logged = true;
-		log_fsb_snapshot("E_final_idle", pc);
+		(void)0;
 	}
 }
 
