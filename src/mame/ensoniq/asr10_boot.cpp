@@ -724,7 +724,6 @@ private:
 	bool m_es5506_host_enabled = false;
 	std::array<u8, 64> m_es5506_host_seen_mask{}; // bit0=read seen, bit1=write seen, per device offset
 	u32 m_es5506_host_access_count = 0;
-	bool m_es5510_host_enabled = false;
 	u32 m_esp_select_commit_log_count = 0;
 	// filesystem-browser-map.md 4.25 (observation-only round): identifying
 	// the retry-exhaustion object seen at a3=~0x010722, distinct from the
@@ -916,7 +915,7 @@ private:
 	void log_timer_secondary_callback(u32 pc);
 	std::string dump_cpu_registers() const;
 	u16 es5506_host_read_par_diag();
-	// ASR10_EXPERIMENT_ES5510_HOST: FC3101/FC3141/FC3181 are each a
+	// ES5510 host select/commit: FC3101/FC3141/FC3181 are each a
 	// single-word map range, so the `offset` MAME's address_map passes to
 	// an .rw() handler installed there is always 0 (relative to that
 	// range's own base) -- it is NOT the absolute ES5510 host offset
@@ -1635,8 +1634,6 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_es5506_host_enabled));
 	save_item(NAME(m_es5506_host_seen_mask));
 	save_item(NAME(m_es5506_host_access_count));
-	m_es5510_host_enabled = m_es5510_host.found();
-	save_item(NAME(m_es5510_host_enabled));
 	save_item(NAME(m_esp_select_commit_log_count));
 	save_item(NAME(m_es5506_diag_par_enabled));
 	save_item(NAME(m_es5506_diag_par_value));
@@ -2121,7 +2118,7 @@ void asr10_boot_state::mem_map(address_map &map)
 			map(0xfc0000, 0xfc2fff).ram();
 		}
 
-		// ASR10_EXPERIMENT_ES5510_HOST (filesystem-browser-map.md 4.24):
+		// ES5510 host window (filesystem-browser-map.md 4.24):
 		// FC3000-FC31FF is the proven ES5510 host window (4.22/4.23 -- the
 		// EFFECT DOWNLOAD FAILED / ERROR 032 collision is this range being
 		// plain, passive .ram() with no select/commit semantics). Route
@@ -2145,38 +2142,28 @@ void asr10_boot_state::mem_map(address_map &map)
 		// .umask16(0x00ff); this round deliberately narrows that to only
 		// the evidenced offsets, per this investigation's acceptance
 		// criteria, and can be widened later if evidence demands it.
-		const char *const es5510_host_env = std::getenv("ASR10_EXPERIMENT_ES5510_HOST");
-		const bool es5510_host_enabled =
-			es5510_host_env && es5510_host_env[0] && es5510_host_env[0] != '0';
-		if (es5510_host_enabled)
-		{
-			map(0xfc3000, 0xfc303f).rw(m_es5510_host, FUNC(es5510_device::host_r), FUNC(es5510_device::host_w)).umask16(0x00ff);
-			map(0xfc3040, 0xfc30ff).ram();
-			// FC3100-FC3101/FC3140-FC3141/FC3180-FC3181/FC31C0-FC31C1
-			// cannot map directly to host_r/host_w: each is a single-word
-			// range, so the map-relative offset MAME supplies is always 0,
-			// not the absolute ES5510 host offset (0x80/0xa0/0xc0/0xe0)
-			// the firmware intends. Route through the fixed-offset
-			// wrappers instead.
-			map(0xfc3100, 0xfc3101).rw(FUNC(asr10_boot_state::es5510_host_read_select_r), FUNC(asr10_boot_state::es5510_host_read_select_w)).umask16(0x00ff);
-			map(0xfc3102, 0xfc313f).ram();
-			map(0xfc3140, 0xfc3141).rw(FUNC(asr10_boot_state::es5510_host_write_select_gpr_r), FUNC(asr10_boot_state::es5510_host_write_select_gpr_w)).umask16(0x00ff);
-			map(0xfc3142, 0xfc317f).ram();
-			map(0xfc3180, 0xfc3181).rw(FUNC(asr10_boot_state::es5510_host_write_select_instr_r), FUNC(asr10_boot_state::es5510_host_write_select_instr_w)).umask16(0x00ff);
-			map(0xfc3182, 0xfc31bf).ram();
-			// filesystem-browser-map.md 4.27/4.28: host offset 0xe0
-			// ("Write select - GPR + INSTR", es5510.cpp host_w case 0xe0)
-			// -- proven required by firmware record type 1 (f97450's
-			// static default D4=0x1c0, unmapped and falling through to
-			// plain .ram() until this round). Only types 2/3/4 override to
-			// 0xc0/0xa0; type 1 is the only one using 0xe0.
-			map(0xfc31c0, 0xfc31c1).rw(FUNC(asr10_boot_state::es5510_host_write_select_gpr_instr_r), FUNC(asr10_boot_state::es5510_host_write_select_gpr_instr_w)).umask16(0x00ff);
-			map(0xfc31c2, 0xfc31ff).ram();
-		}
-		else
-		{
-			map(0xfc3000, 0xfc31ff).ram();
-		}
+		map(0xfc3000, 0xfc303f).rw(m_es5510_host, FUNC(es5510_device::host_r), FUNC(es5510_device::host_w)).umask16(0x00ff);
+		map(0xfc3040, 0xfc30ff).ram();
+		// FC3100-FC3101/FC3140-FC3141/FC3180-FC3181/FC31C0-FC31C1
+		// cannot map directly to host_r/host_w: each is a single-word
+		// range, so the map-relative offset MAME supplies is always 0,
+		// not the absolute ES5510 host offset (0x80/0xa0/0xc0/0xe0)
+		// the firmware intends. Route through the fixed-offset
+		// wrappers instead.
+		map(0xfc3100, 0xfc3101).rw(FUNC(asr10_boot_state::es5510_host_read_select_r), FUNC(asr10_boot_state::es5510_host_read_select_w)).umask16(0x00ff);
+		map(0xfc3102, 0xfc313f).ram();
+		map(0xfc3140, 0xfc3141).rw(FUNC(asr10_boot_state::es5510_host_write_select_gpr_r), FUNC(asr10_boot_state::es5510_host_write_select_gpr_w)).umask16(0x00ff);
+		map(0xfc3142, 0xfc317f).ram();
+		map(0xfc3180, 0xfc3181).rw(FUNC(asr10_boot_state::es5510_host_write_select_instr_r), FUNC(asr10_boot_state::es5510_host_write_select_instr_w)).umask16(0x00ff);
+		map(0xfc3182, 0xfc31bf).ram();
+		// filesystem-browser-map.md 4.27/4.28: host offset 0xe0
+		// ("Write select - GPR + INSTR", es5510.cpp host_w case 0xe0)
+		// -- proven required by firmware record type 1 (f97450's
+		// static default D4=0x1c0, unmapped and falling through to
+		// plain .ram() until this round). Only types 2/3/4 override to
+		// 0xc0/0xa0; type 1 is the only one using 0xe0.
+		map(0xfc31c0, 0xfc31c1).rw(FUNC(asr10_boot_state::es5510_host_write_select_gpr_instr_r), FUNC(asr10_boot_state::es5510_host_write_select_gpr_instr_w)).umask16(0x00ff);
+		map(0xfc31c2, 0xfc31ff).ram();
 
 		map(0xfc3200, 0xfc3fff).ram();
 	}
@@ -2788,8 +2775,8 @@ u16 asr10_boot_state::es5506_host_read_par_diag()
 }
 
 
-// ASR10_EXPERIMENT_ES5510_HOST select/commit wrappers (filesystem-browser-
-// map.md 4.24 TASK 2/3). FC3100-FC3101, FC3140-FC3141 and FC3180-FC3181 are
+// ES5510 host select/commit wrappers (filesystem-browser-map.md 4.24 TASK
+// 2/3). FC3100-FC3101, FC3140-FC3141 and FC3180-FC3181 are
 // each installed as their own single-word address_map range, so the
 // `offset` MAME hands to an .rw() handler there is always 0 (relative to
 // that range's own base address) -- never the absolute ES5510 host offset
@@ -6789,11 +6776,6 @@ void asr10_boot_state::log_run_config_header()
 	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_ES5506_HOST requested=%s effective=%u "
 		"default_when_unset=0 note=config_time_only_device_instantiation\n",
 		flag("ASR10_EXPERIMENT_ES5506_HOST").c_str(), m_es5506_host_enabled ? 1u : 0u);
-	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_ES5510_HOST requested=%s effective=%u "
-		"device_exists=%u provisional_clock_hz=10000000 default_when_unset=0 "
-		"note=config_time_only_device_instantiation_set_disable_no_execute_run_no_irq\n",
-		flag("ASR10_EXPERIMENT_ES5510_HOST").c_str(), m_es5510_host_enabled ? 1u : 0u,
-		m_es5510_host.found() ? 1u : 0u);
 	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_FC3000_VERIFY_TRACE requested=%s effective=%u "
 		"default_when_unset=0\n",
 		flag("ASR10_EXPERIMENT_FC3000_VERIFY_TRACE").c_str(), m_fc3000_verify_trace_enabled ? 1u : 0u);
@@ -9862,7 +9844,7 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 		// read_port_cb left unbound otherwise.
 	}
 
-	// ASR10_EXPERIMENT_ES5510_HOST (filesystem-browser-map.md 4.24):
+	// ES5510 host window (filesystem-browser-map.md 4.24):
 	// instantiate a stock es5510_device purely as a host-interface
 	// register bank for the FC3000-FC31FF select/commit protocol proven
 	// in 4.22/4.23. set_disable() keeps it out of the scheduler's execute
@@ -9877,17 +9859,13 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	// nothing in the proven upload/verify sequence (f973f0-f97776)
 	// touches an ESP interrupt. Host-interface correctness is this
 	// round's criterion, not audio output.
-	const char *const es5510_host_env = std::getenv("ASR10_EXPERIMENT_ES5510_HOST");
-	if (es5510_host_env && es5510_host_env[0] && es5510_host_env[0] != '0')
-	{
-		// Provisional/uncalibrated clock: 10MHz matches the real
-		// ASR-10/ESQ-1-family precedent (esqasr.cpp and esq5505.cpp both
-		// use XTAL(10'000'000) / 10_MHz_XTAL for this exact chip); not
-		// derived from ASR-10 schematics this round, and irrelevant to
-		// host_r()/host_w() correctness since the device never executes.
-		es5510_device &es5510_host(ES5510(config, m_es5510_host, XTAL(10'000'000)));
-		es5510_host.set_disable();
-	}
+	// Provisional/uncalibrated clock: 10MHz matches the real
+	// ASR-10/ESQ-1-family precedent (esqasr.cpp and esq5505.cpp both
+	// use XTAL(10'000'000) / 10_MHz_XTAL for this exact chip); not
+	// derived from ASR-10 schematics this round, and irrelevant to
+	// host_r()/host_w() correctness since the device never executes.
+	es5510_device &es5510_host(ES5510(config, m_es5510_host, XTAL(10'000'000)));
+	es5510_host.set_disable();
 
 	config.set_default_layout(layout_asr10_boot);
 }
