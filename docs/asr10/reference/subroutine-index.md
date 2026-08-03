@@ -1,13 +1,58 @@
 # ASR-10 rutinindex
 
 Slå upp en adress, förstå vad som händer där. Ingen historik, inga
-experiment, inga resonemang — de hör hemma i `investigations/`.
+experiment, inga resonemang - de hör hemma i `investigations/`.
+Läs `boot-sequence.md` för den ordnade reset-till-browser-kedjan.
 
-Statusmärkning per post:
+Statusmärkning gäller enskilda påståenden:
 
-- **V** — verifierad mot disassemblering och/eller live-körning
-- **L** — sannolik, härledd men inte bekräftad
-- **H** — hypotes, får inte byggas vidare på utan mätning
+- **[Verified]** - verifierad mot disassemblering, live-körning eller
+  servicehandbok
+- **[Likely]** - sannolik, härledd men inte bekräftad
+- **[Hypothesis]** - hypotes, får inte byggas vidare på utan mätning
+
+## Sorterad adressöversikt
+
+Adressen är identiteten; namnet får ändras när förståelsen förbättras.
+
+```
+0067EC  analog_calibrate_ch7
+006800  reference_division
+00680C  analog_calibrate_ch5
+00683A  analog_calibrate_ch0
+006864  analog_sample_8x
+0068C8  analog_calibrate_ch7_alt
+0077C2  sched_slot5_poller
+F8000C  reset_entry
+F87F40  sched_trap_entry
+F87F80  sched_context_save
+F87F92  sched_dispatch_scan
+F87FCC  sched_idle_loop
+F88108  trap7_handler
+F8812C  trap8_handler_sleep
+F88280  exception_tail
+F882AA  exception_stub_table
+F88300  irq6_tick_producer
+F8845A  duart_chan_a_break_recover
+F884BE  duart_irq_dispatch
+F884F8  raise_error_145
+F89AA2  panel_display_driver
+F89D46  error_message_formatter
+F8DAFE  par_read_raw
+F8DB1E  par_read_scaled
+F8DB30  par_filter_half
+F8DB4C  par_filter_three_quarter
+F8DB6E  par_threshold_dispatch
+F8E1DA  duart_opr_table_writer
+F97BC6  duart_init_table
+FB7BEE  ipcr_change_detect
+FB8D1E  fdc_wait_cb
+FB8D40  fdc_wait_rqm_dio
+FB8D6C  fdc_delay_loop
+FB8D78  fdc_wait_variant3
+FB8E7E  interrupt_timer_init
+FC60B0  movep_par_read
+```
 
 ## Konventioner som måste läsas först
 
@@ -16,9 +61,10 @@ utvidgas till `$FFxxxx`, inte `$00xxxx`. `$FFFC4803` och `$00FC4803` är
 **samma** 24-bitarsadress. OS:et använder båda ändarna av kortformen:
 låga celler positivt (`$0CE3`), höga negativt (`$FFD0B0`).
 
-**Diskresident kod.** Överlagringen som innehåller `$0067xx`-`$0078xx`
-ligger i `V350.img` med `file_offset = RAM + 0x2600`. Ankare: `$0067F6`
-→ `0x8DF6`. Metod i `investigations/os-code-extraction.md`.
+**Diskresident kod.** För verifierade adresser i den observerade
+V350-överlagringen har `file_offset = RAM + 0x2600` stämt. Kontrollera
+alltid bytes mot live-RAM innan närliggande adresser disassembleras.
+Metod i `investigations/os-code-extraction.md`.
 
 **ROM-avbilden.** `asr10.bin`, 256 KB, mappad `$F80000`-`$FBFFFF`, rak
 big-endian ordläsning. Offset 0-7 är SSP och PC; kod börjar på offset
@@ -28,27 +74,79 @@ big-endian ordläsning. Offset 0-7 är SSP och PC; kod börjar på offset
 `ASR10_TRACE=<duart|es5506|...>`; två körningar diffas radvis och första
 skillnaden är svaret.
 
-**KÄND BLIND FLÄCK.** Sökning efter absoluta adresser i ROM hittar
+**Känd blind fläck.** Sökning efter absoluta adresser i ROM hittar
 **inte** registerrelativa accesser (`($2,A0)` med basen i ett register).
-Det har missat fynd fyra gånger: CTU/CTL/ACR i en tabellstyrd init, en
+Det har missat fynd flera gånger: CTU/CTL/ACR i en tabellstyrd init, en
 tredje IMR-skrivning, feltabellens `FFF8xxxx`-pekare, och hela
 DUART-breakrutinen på `$F8845A`. Hittar du inte en referens du vet ska
-finnas — anta registerrelativ form innan du drar en slutsats.
+finnas - anta registerrelativ form innan du drar en slutsats.
 
----
+## Bootstrap och undantag
 
-## ROM — bootstrap och undantag
+### `$F8000C` reset_entry
 
-| Adress | Rutin | Gör | Status |
-|---|---|---|---|
-| `$F8000C` | Reset entry | `move.w #$2700,sr` — maskar allt. PC ur vektorn på offset 4. | V |
-| `$F88280` | **Gemensam exception-svans** | `ori #$700,SR`; skriver felkoden ur D0 till `($00C0).w`; anropar `$F977B0`, `$FF8D44`, `$F8CF9C`, formateraren `$F89D46`; `move.w #$1600,D7`; `jmp $FB8E3E`. Återvänder aldrig. | V |
-| `$F882AA`–`$F882DA` | Exception-stubbtabell | Fyra byte per post i vektorordning: `moveq #kod,D0` / `bra $F88280`. Vektor 2→128, 3→129, 4→131, 5→**130 (divide by zero)**, 6→132, 7→133, 8→134, 9→135, …→137/138/139. Bekräftad mot servicehandboken, elva av elva. | V |
-| `$F884F8` | ERROR 145-resning | `moveq #$91,D0` / `trap #0`. Inget CPU-undantag — firmware upptäcker själv "unknown DUART interrupt". | V |
-| `$F89D46` | Felmeddelandeformaterare | Läser felkoden ur `($00C1).w`, tre siffror, bygger `ERROR nnn - REBOOT ?` ur `$FFF824AA` + `$FFF824B1`. | V |
-| `$FB8E7E` | Avbrotts- och timerinit | GIMR←`$8040` (`$FC6812`), IMR←0 (`$FC6816`), ISR←`$FFFF` (`$FC6818`), IPR←`$FFFF` (`$FC6814`), Timer2 TRR←`$3F01` (`$FC6852`), TMR←`$003B` (`$FC6850`). | V |
+**[Verified]** `move.w #$2700,sr` maskar avbrott. PC kommer ur
+ROM-vektorn på offset 4.
 
-## ROM — schemaläggare
+Inputs: resetvektorerna i ROM.
+
+Side effects: SR maskas innan bootstrap fortsätter.
+
+### `$F88280` exception_tail
+
+**[Verified]** `ori #$700,SR`; skriver felkoden ur D0 till `($00C0).w`;
+anropar `$F977B0`, `$FF8D44`, `$F8CF9C`, formateraren `$F89D46`;
+`move.w #$1600,D7`; `jmp $FB8E3E`. Återvänder inte i observerad väg.
+
+Called by: exception-stubbarna `$F882AA`-`$F882DA`.
+
+Calls: `$F977B0`, `$FF8D44`, `$F8CF9C`, `$F89D46`; `jmp $FB8E3E`.
+
+Inputs: felkod i D0.
+
+Outputs: `($00C0).w`/`($00C1).w` innehåller felkoden för formateraren.
+
+Side effects: maskar avbrott och lämnar exceptionflödet via `$FB8E3E`.
+
+### `$F882AA` exception_stub_table
+
+**[Verified]** Bytesen är fyra byte per post: `moveq #kod,D0` /
+`bra $F88280`. Felkoderna och servicehandbokens betydelser är
+**[Verified]** mot ROM/servicehandboksmatchningen.
+
+Stubbarna ligger i ordning förenlig med vektor 2-9; vektormappningen är
+**[Likely]**, felkodernas betydelser **[Verified]**.
+
+Calls: `$F88280`.
+
+Outputs: D0 = felkod.
+
+### `$F884F8` raise_error_145
+
+**[Verified]** `moveq #$91,D0` / `trap #0`. Detta är firmwareupptäckt
+ERROR 145, inte ett CPU-undantag.
+
+Outputs: D0 = `$91`.
+
+### `$F89D46` error_message_formatter
+
+**[Verified]** Läser felkoden ur `($00C1).w`, bygger tre siffror och
+formar `ERROR nnn - REBOOT ?` ur `$FFF824AA` + `$FFF824B1`.
+
+Inputs: `($00C1).w`.
+
+Outputs: paneltext via paneldrivrutinens vanliga väg.
+
+### `$FB8E7E` interrupt_timer_init
+
+**[Verified]** Initierar MC68302-avbrotts- och timerregister: GIMR
+`$FC6812` <- `$8040`, IMR `$FC6816` <- 0, ISR `$FC6818` <- `$FFFF`,
+IPR `$FC6814` <- `$FFFF`, Timer2 TRR `$FC6852` <- `$3F01`, TMR
+`$FC6850` <- `$003B`.
+
+Side effects: armerar den MC68302/DUART-väg som producerar IRQ6-ticken.
+
+## Schemaläggare
 
 Uppgiftskontrollblock, stride `$16`, tabellgränser i `($00C6).w` och
 `($00C8).w`. Sex slots. Layout:
@@ -58,80 +156,335 @@ Uppgiftskontrollblock, stride `$16`, tabellgränser i `($00C6).w` och
 +$0A sparad SR    +$0C sparad A5  +$0E sparad USP    +$14 troskel
 ```
 
-| Adress | Rutin | Gör | Status |
-|---|---|---|---|
-| `$F87F40` | TRAP-ingång till växlaren | `movem.l` sparar register, `move SR,(A7)`, patchar återhoppsadressen på stacken med `$FFF87F66`. | V |
-| `$F87F80` | Kontextsparning | USP→`+$0E`, `(A7)+`→SR `+$0A`, `(A7)+`→PC `+$06`, maskar avbrott. | V |
-| `$F87F92` | Dispatch-skanning | Läser `+$02` mot `+$03`, `eor.b`; skiljer de sig återställs kontexten och `rte` in i uppgiften. Aktuell uppgift skrivs till `($0B6A).w`. | V |
-| `$F87FCC` | **Idle-loop** | `move.w #$2000,SR` — enda stället avbrott öppnas helt — sedan `bra $F87F92`. Att stå här är normalt. | V |
-| `$F88300` | **IRQ6-handler / pending-producent** | Kvitterar via `move.b ($FFFC481F).l,D0` (Stop Counter). Dekrementerar varje slots `+$00`; när `d1 <= ($14,a0)` görs `bclr` i `+$02` = uppgiften blir redo. **Räknare 0 → slot hoppas över för alltid.** Tickräknare i `($0B82).w`, var tionde tick körs en sekundär tabell ur `($00CA).w`, stride `$1A`, med callback-pekare på `+$16`. | V |
-| `$F8812C` | TRAP #8-handler | Skriver D0 till aktiv slots `+$00` = "sov N tick". Faktisk väntetid är `N − tröskel`, inte N. | V |
-| `$F88108` | TRAP #7-handler | Schemaläggartillstånd + gren till kontextsparning. Tar D0 som parameter. | V |
+### `$F87F40` sched_trap_entry
 
-## ROM — DUART och panel
+**[Verified]** `movem.l` sparar register, `move SR,(A7)`, patchar
+återhoppsadressen på stacken med `$FFF87F66`.
+
+Outputs: stackram för kommande kontextsparning.
+
+### `$F87F80` sched_context_save
+
+**[Verified]** USP -> `+$0E`, `(A7)+` -> SR `+$0A`, `(A7)+` -> PC
+`+$06`, maskar avbrott.
+
+Inputs: aktiv slot och trap/exception-stack.
+
+Outputs: slotens sparade kontext.
+
+### `$F87F92` sched_dispatch_scan
+
+**[Verified]** Läser `+$02` mot `+$03`, `eor.b`; skiljer de sig
+återställs kontexten och `rte` in i uppgiften. Aktuell uppgift skrivs
+till `($0B6A).w`.
+
+Inputs: primär slot-tabell.
+
+Outputs: `($0B6A).w`.
+
+### `$F87FCC` sched_idle_loop
+
+**[Verified]** `move.w #$2000,SR` öppnar avbrott helt, sedan
+`bra $F87F92`. Att stå här är normalt.
+
+Side effects: väntar på nästa producent som gör en slot redo.
+
+### `$F88108` trap7_handler
+
+**[Verified]** Schemaläggartillstånd + gren till kontextsparning. Tar
+D0 som parameter.
+
+Calls: `$F87F80` via schemaläggarflödet.
+
+### `$F8812C` trap8_handler_sleep
+
+**[Verified]** Skriver D0 till aktiva slotens `+$00` = räknare. Faktisk
+väntetid är `counter - threshold`, inte D0 direkt.
+
+Inputs: D0 = ny räknare.
+
+Outputs: aktiv slots `+$00`.
+
+### `$F88300` irq6_tick_producer
+
+**[Verified]** Kvitterar via `move.b ($FFFC481F).l,D0` (Stop Counter).
+Dekrementerar varje slots `+$00`; när `d1 <= ($14,a0)` görs `bclr` i
+`+$02` så uppgiften blir redo. Räknare 0 gör att sloten hoppas över.
+Tickräknare i `($0B82).w`; var tionde tick körs sekundärtabellen ur
+`($00CA).w`, stride `$1A`, callback-pekare på `+$16`.
+
+Known indirect entry: IRQ6-vektorvägen.
+
+Inputs: DUART counter/timer IRQ6, primär och sekundär tabell.
+
+Outputs: slotarnas pending-byte och `($0B82).w`.
+
+## DUART och panel
 
 DUART-register: bas `$FFFC4801`, stride 2, alltså register *n* på
-`$FFFC4801 + 2n`. **Kanal A = MIDI, kanal B = panel** (bevisat via
-`esq5505.cpp` rad 771-778 och via paneltext fångad på THRB).
+`$FFFC4801 + 2n`. Kanal B = panel är **[Verified]** genom faktisk
+paneltrafik på THRB/RHRB och genom RX-FIFO-fixen. Kanal A = MIDI är
+**[Likely]**; `esq5505.cpp` stödjer slutsatsen men är inte ASR-10-bevis.
 
-| Adress | Rutin | Gör | Status |
-|---|---|---|---|
-| `$F884BE` | **DUART-avbrottsdispatcher** | Läser ISR (`$FFFC480B`) och dispatchar: bit 5 RxRDY B → `($00DE).w`; bitar 2\|1 kanal A → `($00E2).w`; bit 0 TxRDY A → `($00E6).w`; bit 3 counter ready → `($8638).w`. Ingen träff → ERROR 145. **Bit 4 (TxRDY B) testas inte.** | V |
-| `$F8845A` | Kanal A break-återställning | Läser RHRA, läser SRA, skriver CRA `$40`/`$50`/`$20`/`$01`, och om SRA bit 7 (Received Break) är satt läses RHRA en extra gång för att kasta null-byten. Registerrelativ — osynlig för absolutsökning. | V |
-| `$F89AA2`–`$F89D22` | Paneldrivrutin | Tio referenser till THRB `$FFFC4817`. Skriver panelens 22-teckensrader. Felformateraren ligger direkt efter, på `$F89D46`. | V |
-| `$F8E1DA` | OPR-skrivare, tabellstyrd | `A0 = $F8E252`, index ur `($0170).w`, `OPR = ~tabell[i]`. Tabell `2E 57 36 00` → OPR `$D1, $A8, $C9, $FF`. Index cyklar 0..3. Följs av `bclr #7,($00FC6823).l` (PIO port A). | V |
-| `$F97BC6` | Tabellstyrd DUART-init | (offset, värde)-par, terminator `00FF`: `0A→16` IMR, `10→0E` MR1/2B, `1A→18` OPCR, `1C→14` SetOPR, `1E→0C` ResetOPR. | L |
-| `$FB7BEE`, `$FB7C30` | IPCR-läsare | `tst.b IPCR` följt av ovillkorlig `st` — rensar latchen. Korrekt förändringsdetektor som accepterar "ingen förändring". | V |
-| `$FB7C84` | IPCR bit 4-test | `btst #4` — enda riktiga testen av IPCR. | V |
-| `$FB7CA8` | Input Port bit 2-test | `btst #2,($FFFC481B).l`. | V |
+### Panel-RX-kedja
 
-## ROM — analoga ingångar (ES5506 PAR)
+**[Verified]** Panelsvar -> `mc68681_device` kanal B RX-FIFO -> SRB
+RxRDY -> ISR bit 5 -> `irq_cb` -> IRQ6 -> `$F884BE` -> handler via
+`($00DE)` -> RHRB pop.
 
-| Adress | Rutin | Gör | Status |
-|---|---|---|---|
-| `$F8DAFE` | PAR-avläsning, rå | `movea.l #$00FC2001,A0` / `jsr $FFFC60B0` / `asl.w #6,D2` / `ori #1,CCR` / `rts`. | V |
-| `$F8DB1E` | PAR-avläsning, skalad | Som ovan, `bra $F8DB6E`. | V |
-| `$F8DB30` | PAR + filter 1/2 | `add.w ($6,A2),D2` / `roxr.w #1,D2` — carry-bevarande medelvärde. Tillståndscell `(A2+6)`. | V |
-| `$F8DB4C` | PAR + filter 3/4 | `0,75 × gammalt + 0,25 × nytt`, samma tillståndscell. | V |
-| `$F8DB6E` | Delad svans | Tröskeljämförelse mot `(A2+8)` och `(A2+$A)`, hopptabell på `$F8DB8C` indexerad med `(A2)`. Fem kända mål. | V |
-| `$F8DB12`, `$F8DB18` | Parameterblock | Sex byte vardera, **data inte kod**. Laddas i A3. Byte 1 verkar vara offseten till tillståndscellen inom instansblocket. | H |
+### `$F884BE` duart_irq_dispatch
 
-## ROM — tabeller och dataformat
+**[Verified]** Dispatchlogiken läser ISR (`$FFFC480B`) och testar bitar:
+bit 5 RxRDY B -> indirekt pekare `($00DE).w`; bitar 2|1 kanal A ->
+indirekt pekare `($00E2).w`; bit 0 TxRDY A -> indirekt pekare
+`($00E6).w`; bit 3 counter ready -> indirekt pekare `($8638).w`. Ingen
+träff -> ERROR 145. Bit 4 (TxRDY B) testas inte.
 
-| Adress | Innehåll | Status |
-|---|---|---|
-| `$F8050E` | Namngiven feltabell, 29 pekare i `FFF8xxxx`-form → 22-teckensmeddelanden. Koder utanför faller igenom till `ERROR nnn - REBOOT ?`. | V |
-| `$FB8F2E`–`$FB9094` | Bootmeddelanden, 22 tecken styck: `DISK NOT FORMATTED`, `PLEASE INSERT DISK`, `ENSONIQ ASR-10`, `LOADING SYSTEM`, `SCSI INSTALLED`, `SEARCHING FOR SCSI DEV.` m.fl. | V |
-| `$F81003`–`$F81F87` | Ordfragmentvokabulär, 256 NUL-terminerade fragment. Skärmar byggs av fragmentindex med inbäddade kontrollbyte (`1F xx`, `16 xx`, `13 xx`). Innehåller `ANALOG INPUTS`, `A/D TO D/A`, `DC OFFSET`, `MIDI LOOP`, `GPR MONITOR`, `CALIBRAT`, ` TUNED`. | V |
-| — | **Strängtabellformat**: `<pekare.l><bredd.b><antal.b>`. 114 självvaliderande förekomster i ROM. Nyckeln till varje meny och uppräknad parameter. Ex: `$F853DA` → `$F853E0`, 12×3 = `LOW VOLTAGE` / `HIGH VOLTAGE` / `ESP RAM TEST`. | V |
+Handleridentiteterna bakom pekarna är okända; ingen har följt vart de
+pekar.
 
-## DPRAM — MOVEP-thunkbibliotek `$FC6028`–`$FC6136`
+Known indirect entry: IRQ6-vektorvägen.
+
+Calls: indirekt via `($00DE).w`, `($00E2).w`, `($00E6).w`, `($8638).w`.
+
+Inputs: DUART ISR.
+
+Side effects: dispatchar eller reser ERROR 145.
+
+### `$F8845A` duart_chan_a_break_recover
+
+**[Verified]** Läser RHRA, läser SRA, skriver CRA `$40`/`$50`/`$20`/`$01`.
+Om SRA bit 7 (Received Break) är satt läses RHRA en extra gång för att
+kasta null-byte. Registerrelativ och därför osynlig för absolutsökning.
+
+Inputs: kanal A status och RX-register.
+
+Side effects: återställer kanal A-mottagaren.
+
+### `$F89AA2`-`$F89D22` panel_display_driver
+
+**[Verified]** Tio referenser till THRB `$FFFC4817`. Skriver panelens
+22-teckensrader. Felformateraren ligger direkt efter på `$F89D46`.
+
+Outputs: kanal B TX till panelen.
+
+### `$F8E1DA` duart_opr_table_writer
+
+**[Verified]** `A0 = $F8E252`, index ur `($0170).w`, `OPR = ~tabell[i]`.
+Tabell `2E 57 36 00` ger OPR `$D1, $A8, $C9, $FF`. Följs av
+`bclr #7,($00FC6823).l` (PIO port A).
+
+Inputs: `($0170).w`.
+
+Outputs: DUART OPR och MC68302 PIO port A bit 7.
+
+### `$F97BC6` duart_init_table
+
+**[Likely]** Tabellstyrd DUART-init med (offset, värde)-par och
+terminator `00FF`: `0A->16` IMR, `10->0E` MR1/2B, `1A->18` OPCR,
+`1C->14` SetOPR, `1E->0C` ResetOPR.
+
+### `$FB7BEE` ipcr_change_detect
+
+**[Verified]** `tst.b IPCR` följt av ovillkorlig `st`; rensar latchen
+och accepterar "ingen förändring".
+
+### `$FB7C84`
+
+**[Verified]** `btst #4` på IPCR.
+
+### `$FB7CA8`
+
+**[Verified]** `btst #2,($FFFC481B).l` på DUART Input Port.
+
+## Analoga ingångar och ES5506 PAR
+
+### Board-default för PAR
+
+I nuvarande källa definieras det syntetiska PAR-värdet som
+`PAR_DIAGNOSTIC_VALUE = 0x200` i
+`asr10_boot_state::es5506_host_read_par_diag()` och används via
+`es5506_host.read_port_cb().set(FUNC(asr10_boot_state::es5506_host_read_par_diag))`
+i `asr10_boot()`.
+
+**[Verified]** Callbacken tar ingen kanalparameter och används för varje
+ES5506 PAR-läsning. Samma värde gäller därför alla firmware-valda
+kanaler. **[Verified]** Nuvarande driver har ingen användarinmatning
+eller miljövariabel som åsidosätter värdet.
+
+Det är en syntetisk analog vilonivå som möjliggör OS-kalibreringen, inte
+en uppmätt spänning och inte en bias i ljudmotorn. Kanal 7 mäts åtta
+gånger; summan blir D2 och D2 är divisor i kalibreringsfaktorn. Endast
+noll orsakar undantag. Övriga kanaler primar filter, centrum och
+trösklar.
+
+### `$F8DAFE` par_read_raw
+
+**[Verified]** `movea.l #$00FC2001,A0` / `jsr $FFFC60B0` / `asl.w #6,D2`
+/ `ori #1,CCR` / `rts`.
+
+Calls: `$FC60B0`.
+
+Outputs: rå PAR-data i D2, skiftad till firmwareformat.
+
+### `$F8DB1E` par_read_scaled
+
+**[Verified]** Samma grundläsning som `$F8DAFE`, därefter `bra $F8DB6E`.
+
+Calls: `$FC60B0`, `$F8DB6E`.
+
+### `$F8DB30` par_filter_half
+
+**[Verified]** `add.w ($6,A2),D2` / `roxr.w #1,D2`, carry-bevarande
+medelvärde. Tillståndscell `(A2+6)`.
+
+Inputs: D2 och filtertillstånd.
+
+Outputs: uppdaterat filtervärde.
+
+### `$F8DB4C` par_filter_three_quarter
+
+**[Verified]** `0,75 * gammalt + 0,25 * nytt`, samma tillståndscell som
+ovan.
+
+### `$F8DB6E` par_threshold_dispatch
+
+**[Verified]** Tröskeljämförelse mot `(A2+8)` och `(A2+$A)`, hopptabell
+på `$F8DB8C` indexerad med `(A2)`.
+
+Calls: fem kända men ännu oidentifierade hopptabellmål, se "Kända
+okända".
+
+### `$F8DB12`, `$F8DB18` parameterblock
+
+**[Verified]** Detta är data, inte kod. Sex byte vardera, laddas i A3.
+**[Hypothesis]** Byte 1 verkar vara offseten till tillståndscellen inom
+instansblocket.
+
+## Diskresident OS (V350)
+
+Ange V350-offset bara när bytesen är verifierade mot live-RAM.
+
+### `$006864` analog_sample_8x
+
+**[Verified]** `moveq #7,D7`, åtta varv. Per varv: `trap #8` skriver
+D0=4 till aktiva slotens räknare; faktisk väntan är `counter - threshold`
+och beror på slotens tröskel, som inte är uppmätt för just den här
+sloten. Rutinen yieldar därefter via `trap #7`, läser PAR med
+`jsr $FFFC60B0`, gör `asl.w #6` + `lsr.w #3` (netto `raw << 3`) och
+ackumulerar i D6. Returnerar summan i D2. Fullt utslag = `$FFC0`.
+Väljer ingen kanal.
+
+Called by: `$0067F4`, `$00681C`, `$00684A`, (`$0068C8`).
+
+Calls: `$FC60B0`, `trap #8`, `trap #7`.
+
+Inputs: aktivt PBDAT-kanalval och ES5506 PAR.
+
+Outputs: D2 = åtta mätningars summa.
+
+Side effects: schemaläggaryield mellan mätningarna.
+
+### `$0067EC` analog_calibrate_ch7
+
+**[Verified]** `ori.b #$07,($00FC6829).l` väljer kanal 7, anropar
+`$006864`, lagrar råsumma i `$0DD6`, dividerar `$A3480000` med D2 på
+`$006800`, och lagrar faktor på `$0DF2`.
+
+V350-offset: verifierat för de bytes som utgör rutinen.
+
+### `$006800` reference_division
+
+**[Verified]** `divu.w D2,D0`. Fäller ERROR 130 när D2 = 0. Endast noll
+är dödligt; `bvc` + klamp till `$FFFF` hanterar overflow avsiktligt.
+
+Inputs: D2 = kanal 7-summa.
+
+Outputs: D0 = kalibreringsfaktor eller CPU divide-by-zero.
+
+### `$00680C` analog_calibrate_ch5
+
+**[Verified]** `andi.b #$F8` + `ori.b #$05` väljer kanal 5, mäter,
+primar filtercellen `($0DC2+6)`, sätter `A3 = $F8DB12`, och anropar
+`$F8DC2E`.
+
+Calls: `$006864`, `$F8DC2E`.
+
+### `$00683A` analog_calibrate_ch0
+
+**[Verified]** `andi.b #$F8` + `ori.b #$00` väljer kanal 0, mäter,
+`mulu` mot faktorn, `swap`, lagrar `centrum+$528` på `$0DDE` och
+`centrum-$528` på `$0DE0`.
+
+Calls: `$006864`.
+
+### `$0068C8` analog_calibrate_ch7_alt
+
+**[Verified]** Kanal 7 igen, instansblock `$0DD0`, `A3 = $F8DB18`,
+`jsr $F8DB4C`, egen kopia av divisionen.
+
+Calls: `$006864`, `$F8DB4C`.
+
+### `$0077C2` sched_slot5_poller
+
+**[Verified]** Slot 5:s oändliga bakgrundspollare. `trap #8` med D0=100
+ger faktisk väntan `100 - threshold`; för slot 5 är threshold `$58`, dvs
+12 tick. Skannar tolv poster ur `($FFD0B6+index)` med en `trap #7` per
+post och hoppar tillbaka. Oändligheten är avsiktlig.
+
+Calls: `trap #8`, `trap #7`, indirekta callbacks.
+
+## FDC-väntningar
+
+Timeoutvärdet sätts på `$FB7BD6`: `move.l #$00013880,($0476).w` =
+80 000.
+
+### `$FB8D1E` fdc_wait_cb
+
+**[Verified]** `btst #4,($FFFC4001).l`; MSR bit 4 = CB (Command Busy).
+Timeout -> `$049D=$0D`, `$04AE=$20`.
+
+### `$FB8D40` fdc_wait_rqm_dio
+
+**[Verified]** `btst #7` / `btst #6`; väntar på RQM=1 och DIO=0.
+Timeout -> `$04AE=$21`.
+
+### `$FB8D78` fdc_wait_variant3
+
+**[Verified]** Tredje väntvarianten. Timeout -> `$04AE=$22`.
+
+### `$FB8D6C` fdc_delay_loop
+
+**[Verified]** Fördröjningsloop med push/pop av D3.
+
+Alla tre verifierade FDC-väntningar uppfyller villkoret på första
+pollningen i den verifierade V350-körningen; timeoutvägen tas inte och
+`$049D` blir aldrig `$0D`. Detta stänger FDC-spåret i referensen.
+
+## ROM-tabeller och dataformat
+
+| Adress | Innehåll |
+|---|---|
+| `$F8050E` | **[Verified]** Namngiven feltabell, 29 pekare i `FFF8xxxx`-form till 22-teckensmeddelanden. Koder utanför faller igenom till `ERROR nnn - REBOOT ?`. |
+| `$FB8F2E`-`$FB9094` | **[Verified]** Bootmeddelanden, 22 tecken styck: `DISK NOT FORMATTED`, `PLEASE INSERT DISK`, `ENSONIQ ASR-10`, `LOADING SYSTEM`, `SCSI INSTALLED`, `SEARCHING FOR SCSI DEV.` m.fl. |
+| `$F81003`-`$F81F87` | **[Verified]** Ordfragmentvokabulär, 256 NUL-terminerade fragment. Skärmar byggs av fragmentindex med inbäddade kontrollbyte (`1F xx`, `16 xx`, `13 xx`). |
+| - | **[Verified]** Strängtabellformat: `<pekare.l><bredd.b><antal.b>`. 114 självvaliderande förekomster i ROM. Ex: `$F853DA` -> `$F853E0`, 12x3 = `LOW VOLTAGE` / `HIGH VOLTAGE` / `ESP RAM TEST`. |
+
+## DPRAM - MOVEP-thunkbibliotek `$FC6028`-`$FC6136`
 
 Alla använder A0 som bas, satt av anroparen. Tjugo thunkar; de tre som
 används mot ES5506:
 
 | Adress | Instruktion | Mål med `A0 = $FC2001` |
 |---|---|---|
-| `$FC60B0` | `movep.l ($68,A0),D2` | `$FC2069/6B/6D/6F` = **PAR** (registerindex 13) |
-| `$FC60B6` | `movep.l ($78,A0),D0` | `$FC2079/…` = **PAGE** (index 15) |
-| `$FC60BC` | `movep.l ($70,A0),D0` | **IRQV** (index 14) |
+| `$FC60B0` | `movep.l ($68,A0),D2` | `$FC2069/6B/6D/6F` = PAR, registerindex 13 |
+| `$FC60B6` | `movep.l ($78,A0),D0` | `$FC2079/...` = PAGE, registerindex 15 |
+| `$FC60BC` | `movep.l ($70,A0),D0` | IRQV, registerindex 14 |
 
-**PAR:s byteordning.** Värdet är 10 bitar högerjusterat i en 32-bitars
-latch, så de två första MOVEP-byten är **alltid `$00`**. Data finns bara
-på `$FC206D` (bit 9:8) och `$FC206F` (bit 7:0). Läs aldrig av PAR på
+**[Verified]** PAR:s värde är 10 bitar högerjusterat i en 32-bitars
+latch, så de två första MOVEP-byten är alltid `$00`. Data finns bara på
+`$FC206D` (bit 9:8) och `$FC206F` (bit 7:0). Läs aldrig av PAR på
 `$FC2069`.
-
-## Diskresident OS (V350, `file_offset = RAM + 0x2600`)
-
-| Adress | Rutin | Gör | Status |
-|---|---|---|---|
-| `$006864` | **ADC-mätslinga** | `moveq #7,D7`, åtta varv. Per varv: `trap #8` (D0=4, sov), `trap #7` (yield), `jsr $FFFC60B0` (PAR), `asl.w #6` + `lsr.w #3` (netto `raw<<3`), ackumulera i D6. Returnerar summan i D2. Fullt utslag = `$FFC0`. Väljer ingen kanal. | V |
-| `$0067EC` | Kalibrering steg 1 | `ori.b #$07,($00FC6829).l` → **kanal 7 (referens)**, mät, lagra `$0DD6`, `divu.w D2` i `$A3480000` → faktor på `$0DF2`. | V |
-| `$006800` | `divu.w D2,D0` | Fäller `ERROR 130` när D2 = 0. Endast noll är dödligt; `bvc` + klamp till `$FFFF` hanterar overflow avsiktligt. | V |
-| `$00680C` | Kalibrering steg 2 | `andi.b #$F8` + `ori.b #$05` → **kanal 5**, mät, primar filtercellen `($0DC2+6)`, `A3 = $F8DB12`, `jsr $F8DC2E`. | V |
-| `$00683A` | Kalibrering steg 3 | `andi.b #$F8` + `ori.b #$00` → **kanal 0**, mät, `mulu` mot faktorn, `swap`, lagra `centrum+$528` på `$0DDE` och `centrum−$528` på `$0DE0`. | V |
-| `$0068C8` | Andra kalibreringsvägen | Kanal 7 igen, instansblock `$0DD0`, `A3 = $F8DB18`, `jsr $F8DB4C`, egen kopia av divisionen. | V |
-| `$0077C2`–`$007828` | **Slot 5, bakgrundspollare** | `trap #8` med D0=100 (faktisk väntan = 100 − tröskel `$58` = 12 tick), skannar tolv poster ur `($FFD0B6+index)` med en `trap #7` per post, `bra` tillbaka. **Oändlig med flit** — dess dominans i dispatchstatistik är korrekt beteende. | V |
 
 ## RAM-celler
 
@@ -146,8 +499,8 @@ på `$FC206D` (bit 9:8) och `$FC206F` (bit 7:0). Läs aldrig av PAR på
 | `$0B82` | Tickräknare |
 | `$0CE3` | Testad av slot 5 |
 | `$0DC2`, `$0DD0` | Reglageinstansblock, `$0E` isär. `+6` filtertillstånd, `+8`/`+A` trösklar |
-| `$0DD6` | Kanal 7:s råsumma |
-| `$0DDE` / `$0DE0` | Kanal 0:s dödzon, centrum ± `$528` |
+| `$0DD6` | Kanal 7:s råsumma; inte formellt divisorn |
+| `$0DDE` / `$0DE0` | Kanal 0:s dödzon, centrum +/- `$528` |
 | `$0DF2` | Kalibreringsfaktor, 0.16 fixpunkt |
 | `$FFD0B0` | Slot 5:s skanningsindex |
 
@@ -155,11 +508,11 @@ på `$FC206D` (bit 9:8) och `$FC206F` (bit 7:0). Läs aldrig av PAR på
 
 | Område | Enhet |
 |---|---|
-| `$FC2000`–`$FC207F` | ES5506, `.umask16(0x00ff)`. PAR idx 13, IRQV 14, PAGE 15 |
-| `$FC3000`–`$FC303F` | ES5510 host. `$FC31C1` = host offset `$E0`, "Write select GPR+INSTR" |
-| `$FC4801 + 2n` | SCN2681 DUART. Kanal A MIDI, kanal B panel |
-| `$FC6000`–`$FC67FF` | MC68302 DPRAM (thunkbiblioteket) |
-| `$FC6800`+ | MC68302 SIM-register. GIMR `$6812`, IPR `$6814`, IMR `$6816`, ISR `$6818`, PBDAT `$6828`/`$6829` (bit 2:0 = ADC-kanalval), Timer2 `$6850`/`$6852` |
+| `$FC2000`-`$FC207F` | ES5506, `.umask16(0x00ff)`. PAR idx 13, IRQV 14, PAGE 15 |
+| `$FC3000`-`$FC303F` | ES5510 host. `$FC31C1` = host offset `$E0`, "Write select GPR+INSTR" |
+| `$FC4801 + 2n` | SCN2681/MC68681 DUART. Kanal B panel [Verified], kanal A MIDI [Likely] |
+| `$FC6000`-`$FC67FF` | MC68302 DPRAM (thunkbiblioteket) |
+| `$FC6800`+ | MC68302 SIM-register. GIMR `$6812`, IPR `$6814`, IMR `$6816`, ISR `$6818`, PBDAT `$6828`/`$6829` (bit 2:0 = ADC-kanalval) |
 
 ## Diskformat
 
@@ -177,15 +530,56 @@ Kedjan validerar sig själv: `startblock[n] = startblock[n-1] +
 storlek[n-1]`, 17 av 17 i V350. Geometri:
 `byte_offset = (track_index*20 + (R-1)) * 512`, `track_index = C*2 + H`.
 
-## Avförda tolkningar — bygg inte vidare på dessa
+## Kända okända
 
-- **SRA bit 7 (Received Break) orsakar browserregressionen.** Testad
-  genom att tvingas hög på `7bc57b8ab45`. Ingen effekt.
-- **MAME saknar implicit timerstart (AN414).** Fel. `mc68681.cpp`
-  rad 960-982 startar timern vid ACR bit 6-övergång.
-- **DUART OPR väljer ADC-kanal.** Fel. OPR är konstant vid PAR-fönstret.
-  Kanalvalet är MC68302 PBDAT bit 2:0.
-- **`$0DD6` är divisorn vid `$006800`.** Formellt fel — divisorn är D2
-  register-direkt. Dataflödet är dock detsamma.
-- **ES5506 PAR läses på `$FC2069`.** Den byten är strukturellt alltid
-  `$00`. Se MOVEP-avsnittet.
+Formulering per post: känd anropad adress; syfte ännu inte identifierat.
+
+| Adress eller mål | Status |
+|---|---|
+| `$F977B0` | Känd anropad adress ur exception-svansen; syfte ännu inte identifierat. |
+| `$FF8D44` | Känd anropad adress ur exception-svansen; syfte ännu inte identifierat. |
+| `$F8CF9C` | Känd anropad adress ur exception-svansen; syfte ännu inte identifierat. |
+| `$FB8E3E` | Känd hoppadress ur exception-svansen; syfte ännu inte identifierat. |
+| `$F8DC2E` | Känd anropad adress ur kalibreringssteg 2; syfte ännu inte identifierat. |
+| `($00DE).w` | Känd indirekt DUART-dispatchpekare; målrutin ännu inte identifierad. |
+| `($00E2).w` | Känd indirekt DUART-dispatchpekare; målrutin ännu inte identifierad. |
+| `($00E6).w` | Känd indirekt DUART-dispatchpekare; målrutin ännu inte identifierad. |
+| `($8638).w` | Känd indirekt DUART-dispatchpekare; målrutin ännu inte identifierad. |
+| `$FFF8DBAC` | Känt hopptabellmål från `$F8DB8C`; syfte ännu inte identifierat. |
+| `$FFF8DBBC` | Känt hopptabellmål från `$F8DB8C`; syfte ännu inte identifierat. |
+| `$FFF8DBC0` | Känt hopptabellmål från `$F8DB8C`; syfte ännu inte identifierat. |
+| `$FFF8DBE2` | Känt hopptabellmål från `$F8DB8C`; syfte ännu inte identifierat. |
+| `$FFF8DBF2` | Känt hopptabellmål från `$F8DB8C`; syfte ännu inte identifierat. |
+| `$E68E` | Känd slot 5-callback; syfte ännu inte identifierat. |
+| `$7CF0` | Känd slot 5-callback; syfte ännu inte identifierat. |
+| `$71E6` | Känd slot 5-callback; syfte ännu inte identifierat. |
+| `$E63C` | Känd slot 5-callback; syfte ännu inte identifierat. |
+| `$E66E` | Känd slot 5-callback; syfte ännu inte identifierat. |
+| ROM-handlern bakom `$00DE` | Ännu inte lokaliserad. |
+| Rutinen som avslutar `KEYBOARD TUNED` | Ännu inte lokaliserad. |
+| Root-directory-parsern med typfiltret för `$03`/`$1E` | Ännu inte lokaliserad. |
+| Rutinen som formar `FILE 1  TUTORIAL BNK` | Ännu inte lokaliserad. |
+
+## Avförda tolkningar - bygg inte vidare på dessa
+
+- **[Verified]** SRA bit 7 (Received Break) orsakar inte
+  browserregressionen. Testad genom att tvingas hög på `7bc57b8ab45`;
+  ingen effekt.
+- **[Verified]** MAME saknar inte implicit timerstart (AN414).
+  `mc68681.cpp` startar timern vid ACR bit 6-övergång.
+- **[Verified]** DUART OPR väljer inte ADC-kanal. OPR är konstant vid
+  PAR-fönstret. Kanalvalet är MC68302 PBDAT bit 2:0.
+- **[Verified]** `$0DD6` är inte formellt divisorn vid `$006800`.
+  Divisorn är D2 register-direkt, även om dataflödet kommer från samma
+  kanal 7-summa.
+- **[Verified]** ES5506 PAR ska inte läsas på `$FC2069`; den byten är
+  strukturellt alltid `$00`. Se MOVEP-avsnittet.
+
+## Coverage
+
+Detta index täcker 35 namngivna adresser i den sorterade översikten:
+27 ROM-adresser, 7 diskresidenta V350-adresser och 1 DPRAM-thunk.
+
+Identifierade: 27. Delvis identifierade: 8. Kända okända: 23 poster.
+Listan är avsiktligt ofullständig; den markerar vad som är stabilt nog
+att bära vidare till kod och vad som fortfarande kräver mätning.

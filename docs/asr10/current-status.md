@@ -86,6 +86,8 @@ unless a new failing run contradicts the facts below.
 
 ## Current documents
 
+- `reference/boot-sequence.md`: ordered reset-to-`FILE 1  TUTORIAL BNK`
+  boot chain and current unknown handoff points.
 - `reference/subroutine-index.md`: verified address/routine facts.
 - `investigations/duart.md`: DUART/tick/IRQ/OPR investigation history.
 - `investigations/par-adc.md`: PAR/ADC/channel-select investigation history.
