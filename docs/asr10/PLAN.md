@@ -153,10 +153,20 @@ rad 1811  "[asr10-rom][integration][sib-guard][long][.]"   25M, dold
 rad 2383  "[asr10-rom][integration][duart-timer]"          25M, körs
 ```
 
-## 3. Hypotes: DUART X1 är 4,000 MHz, inte 3,6864
+## 3. DUART X1 = 4,000 MHz — `[Verified]`, inte längre 3,6864-antagandet
 
-Nuvarande modell antar `X1 = 3.6864 MHz`, markerat i README som
-obekräftat. Komponentlistan från fysisk ASR-10 har tre kristaller:
+**`[Verified]` 2026-08-01, `docs/asr10/tick-rate.md`.** Med den riktiga
+`m_duart`-enheten genuint kopplad till IRQ6 (`docs/asr10/mc68302-irq6-vector.md`)
+mättes tiden mellan konsekutiva IRQ6-avbrott under en levande, 53 avbrott
+lång skur: **nästan uteslutande exakt 1,000 ms mellan varven** (enstaka
+2/4 ms-luckor där CPU:n var upptagen och missade ett fönster, aldrig
+något annat grundintervall). Det är den körda, uppmätta perioden — inte
+en beräkning ur skrivna registervärden. **3,6864 MHz-antagandet är
+ström­kat; det är inte längre en fråga att testa.**
+
+Historik (kvar som bakgrund till varför hypotesen restes): tidigare
+modell antog `X1 = 3.6864 MHz`, markerat i README som obekräftat.
+Komponentlistan från fysisk ASR-10 har tre kristaller:
 
 ```
 Y1  16.000000 MHz   systemklocka (MC68302FC16C, U28)
@@ -168,18 +178,18 @@ Ingen 3,6864 MHz-kristall finns på kortet. Däremot fyra binärräknare:
 U16, U17, U21 (MC74HC161AN) och U47 (SN74F161AN). X1 är alltså härledd.
 16,000 / 4 = 4,000 MHz ligger på SCN2681:ans övre gräns.
 
-Med CTUR:CTLR = 0x07D0 = 2000:
+Med `CTUR:CTLR = 0x07D0 = 2000` (nu också självt `[Verified]` live,
+`docs/asr10/duart-imr.md` och `docs/asr10/tick-rate.md`, oberoende av
+varandra):
 
 ```
-2 x 2000 / 3 686 400 = 1,0851 ms    nuvarande antagande
-2 x 2000 / 4 000 000 = 1,0000 ms    vid X1 = 4 MHz
+2 x 2000 / 3 686 400 = 1,0851 ms    föråldrat antagande, strukket
+2 x 2000 / 4 000 000 = 1,0000 ms    X1 = 4 MHz, matchar den uppmätta perioden exakt
 ```
 
-En OS-schemaläggare tickar rimligare på jämn millisekund. Testbart och
-gratis att prova i fas 1.
-
-**Mekanism, belagd i primärkälla.** `docs/asr10/sources/es5701.vhd`
-(Buchtys rekonstruktion) visar att ES5701 tar in 16 MHz och delar med två:
+**Mekanism, belagd i primärkälla** (bakgrund, inte längre det som
+avgör frågan): `docs/asr10/sources/es5701.vhd` (Buchtys rekonstruktion)
+visar att ES5701 tar in 16 MHz och delar med två:
 
 ```vhdl
 process(clk16) begin
@@ -190,8 +200,8 @@ clk8 <= c16;
 
 Kortet har Y1 = 16,000 MHz och gott om vippor för ytterligare en delning
 (74HC74 på U13/U38/U39, 74F74 på U50/U64). Kedjan 16 → 8 → 4 MHz till
-SCN2681:ans X1 har därmed en trovärdig mekanism, inte bara aritmetik.
-Fortfarande `[Hypothesis]` tills den mätts.
+SCN2681:ans X1 har därmed en trovärdig mekanism som stämmer med den
+uppmätta perioden — bekräftande bakgrund, inte längre själva beviset.
 
 Övrigt ur komponentlistan: **U5 "ASR-10 V1.1 6457"**, 20 pinnar, är
 nästan säkert PAL:en för CS3:ans sekundäravkodning (FDC 0xFC4000,
