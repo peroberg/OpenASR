@@ -24,6 +24,10 @@ ligger i `V350.img` med `file_offset = RAM + 0x2600`. Ankare: `$0067F6`
 big-endian ordläsning. Offset 0-7 är SSP och PC; kod börjar på offset
 `$0C`.
 
+**Generella dataaccesspår.** Kör `docs/asr10/lua/asr10_trace.lua` med
+`ASR10_TRACE=<duart|es5506|...>`; två körningar diffas radvis och första
+skillnaden är svaret.
+
 **KÄND BLIND FLÄCK.** Sökning efter absoluta adresser i ROM hittar
 **inte** registerrelativa accesser (`($2,A0)` med basen i ett register).
 Det har missat fynd fyra gånger: CTU/CTL/ACR i en tabellstyrd init, en
