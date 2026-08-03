@@ -50,6 +50,9 @@ Det är storleksordningen arbetet ska hålla sig i.
    Rapportera antal rader till och antal rader från. Rena tillägg ska
    motiveras.
 
+8. **Dokumentation skrivs av en part i taget.**
+   Kör inga git-kommandon från annat håll under en pågående uppgift.
+
 ## Körning
 
 Headless, utan GUI och utan ljud:
