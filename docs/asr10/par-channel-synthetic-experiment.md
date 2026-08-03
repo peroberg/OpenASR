@@ -152,7 +152,7 @@ removed for the channel-7 calibration path.
 | `$006800` DIVU count | 2 |
 | `KEYBOARD TUNED` | not reached |
 | panel error code | none observed |
-| classification | hang/max-poll stop |
+| classification | scheduler/context-switch path; see `runtime-cycle.md` |
 
 `[Verified]` The log's `ASR10_ERROR_ENTRY_STUB pc=f882de` is not the
 first cause of this stop. Disassembly shows `$F882DE` is called normally
@@ -164,7 +164,8 @@ line, not an emitted panel error. No `ERROR 139 - REBOOT ?` or other
 panel error text appeared.
 
 `[Likely]` With all observed channels nonzero, the next blocker is no
-longer the initial PAR divide-by-zero. The run now stalls in the
+longer the initial PAR divide-by-zero. The run reaches the
 ROM scheduler/dispatcher path around `$F87F86`/`$F88118`, after the
 second calibration pass and after the PAR scan includes channels 0, 2,
-3, 4, and 5.
+3, 4, and 5. Later slot-level tracing in `runtime-cycle.md` shows this is
+normal scheduler/context-switch code, not itself a hang address.

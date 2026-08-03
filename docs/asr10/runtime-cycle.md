@@ -219,3 +219,146 @@ artefakt, samt en exakt skrivräknare för schemaläggartabellen) har
 tagits bort i sin helhet. `git diff --stat
 src/mame/ensoniq/asr10_boot.cpp` visar netto noll rader efter
 uppgiften. Ingen kompensation byggd.
+
+---
+
+# Scheduler slot resume layout after all-channel PAR experiment
+
+2026-08-03. Follow-up to `par-channel-synthetic-experiment.md`. Method:
+temporary C++ instrumentation in the existing instruction hook, gated by
+`ASR10_DIAG_SCHEDULER_SLOT_PROBE`, plus the already documented temporary
+all-channel PAR table to avoid the known channel-7 divide-by-zero path.
+All probe code and the PAR table were removed after measurement; source
+tree state returned to zero `asr10_boot.cpp` diff.
+
+Command used for the corrected vector/count run:
+
+```sh
+ASR10_DIAG_PANEL_AUTORESPOND=1 \
+ASR10_EXPERIMENT_ES5506_HOST=1 \
+ASR10_EXPERIMENT_PAR_CHANNEL_TABLE=1 \
+ASR10_DIAG_SCHEDULER_SLOT_PROBE=1 \
+SDL_VIDEODRIVER=dummy \
+./mess asr10booth -flop1 floppies/asr10booth/V350.img \
+  -video none -sound none -nothrottle -seconds_to_run 25 -log
+```
+
+## `[Verified]` Slot layout
+
+Static disassembly of ROM `$F87F76-$F87FD0` and live `$F87FC0` logs agree:
+
+| Field | Source |
+|---|---|
+| table base | lowmem `$00C6` = `$23F6` |
+| table end | lowmem `$00C8` = `$247A` |
+| stride | `$16` bytes |
+| saved PC | slot `+6`, restored by `$F87FA2` then `RTE` at `$F87FC0` |
+| saved SR | slot `+A`, saved at `$F87F86`, restored by `$F87FA6` |
+| saved A5 | slot `+C`, restored at `$F87FB4` |
+| saved USP | slot `+E`, saved at `$F87F82`, restored at `$F87FAA-$F87FAE` |
+
+The six live slots are `$23F6`, `$240C`, `$2422`, `$2438`, `$244E`, and
+`$2464`.
+
+## `[Verified]` TRAP #7 and TRAP #8 targets
+
+Live runtime vector read, delayed until the first scheduler/trap hit:
+
+```
+vector39=f88108 vector40=f8812c handler39_word0=3478 handler40_word0=007c
+```
+
+Static disassembly:
+
+```
+f88108: movea.w $b6a.w,A2
+f8810c: move.w  D0,($14,A2)
+f88110: moveq   #0,D1
+f88116: cmp.w   (A2),D0
+f8811a/f88120: clear/set bit 0 of slot +2
+f88124: set bit 0 of slot +3
+f88128: bra     $f87f80
+
+f8812c: ori     #$700,SR
+f88130: movea.w $b6a.w,A0
+f88134: move.w  D0,(A0)
+f88136: rte
+```
+
+`[Verified]` TRAP #7 is a scheduler state update plus direct branch into
+the context-save path. TRAP #8 writes `D0` to the active slot's word 0 and
+returns with `RTE`. Neither trap was classified by name alone.
+
+## `[Verified]` Dispatch counts
+
+The corrected 25-second run made 10,044 `$F87FC0` dispatches and 272,874
+idle restarts at `$F87FCC`.
+
+Per slot:
+
+| Slot | A2 | Dispatches |
+|---:|---:|---:|
+| 0 | `$23F6` | 1 |
+| 1 | `$240C` | 1 |
+| 2 | `$2422` | 1 |
+| 3 | `$2438` | 1 |
+| 4 | `$244E` | 75 |
+| 5 | `$2464` | 9,965 |
+
+Per resume PC:
+
+| Resume PC | Dispatches |
+|---:|---:|
+| `$00780C` | 9,964 |
+| `$006876` | 40 |
+| `$0069BC` | 33 |
+| `$0069CC` | 1 |
+| `$FFA2A2` | 1 |
+| `$FFC8CA` | 1 |
+| `$00738E` | 1 |
+| `$FF90F4` | 1 |
+| `$00689A` | 1 |
+| `$0077C2` | 1 |
+
+The dominant combination is slot 5 (`A2=$2464`) resuming at `$00780C`.
+
+## `[Verified]` Dominant resume PC
+
+Disassembly around `$00780C`:
+
+```
+0077c2: clr.w   $d0b4.w
+0077c6: clr.w   $d0b2.w
+0077ca: move.w  #$64,D0
+0077ce: trap    #8
+0077d0: clr.w   $d0b0.w
+0077d4: jsr     $e68e.l
+0077da: jsr     $7cf0.l
+0077e0: jsr     $7cf0.l
+0077e6: cmpi.b  #$1,$ce3.w
+0077ec: beq     $77fe
+0077ee: movea.w $d0b0.w,A0
+0077f2: tst.b   (-$2f3c,A0)
+0077f6: beq     $77fe
+0077f8: jsr     $7cf0.l
+0077fe: movea.w $d0b0.w,A0
+007804: move.b  (-$2f4a,A0),D0
+00780a: trap    #7
+00780c: addq.w  #1,$d0b0.w
+007810: cmpi.w  #$b,$d0b0.w
+007816: ble     $77d4
+007818: jsr     $71e6.w
+00781c: jsr     $e63c.l
+007822: jsr     $e66e.l
+007828: bra     $77ca
+```
+
+`[Verified]` `$00780C` is not a hang address. It is the instruction after
+the loop's TRAP #7 scheduler handoff. The task repeatedly scans indices
+`$D0B0=0..$0B`, conditionally calls `$007CF0`, and hands control back to
+the scheduler with `D0` loaded from a table at `$D0B6 + $D0B0`.
+
+`[Likely]` The dominant wait is this slot-5 task cycling through its
+12-entry scan and scheduler handoff. The observed condition gates are
+`$0CE3 == 1` and per-index bytes at `$D0C4 + $D0B0`; the exact hardware
+event or subsystem state behind those bytes remains open.
