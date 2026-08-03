@@ -123,10 +123,6 @@ private:
 	static constexpr bool ASR10_EXPERIMENT_STUB_CMD0E_RESULT = false;
 	static constexpr u8 ASR10_STUB_CMD0E_RESULT_BYTE = 0x00;
 	static constexpr bool ASR10_DIAG_PANEL_B = true;
-	static constexpr u32 ASR10_PANEL_L_MAX_REPLIES = 96;
-	static constexpr u32 ASR10_PANEL_L_MAX_ZERO_CROSSINGS = 8;
-	static constexpr u64 ASR10_PANEL_L_MAX_CYCLES_AFTER_LATER_START = 20'000'000;
-
 	static constexpr u32 ASR10_DISPLAY_LENGTH = 22;
 	static constexpr u32 ASR10_PANEL_DESCRIPTOR_TRACE_LIMIT = 64;
 	using trace_region = asr10_boot_defs::trace_region;
@@ -658,55 +654,6 @@ private:
 	u32 m_panel_b_last_parser_pc = 0xffffffffU;
 	u8 m_panel_b_last_ring_write_byte = 0;
 	bool m_panel_b_last_ring_write_valid = false;
-	bool m_panel_c_reply_71_zero_enabled = false;
-	bool m_panel_c_reply_71_zero_armed = false;
-	bool m_panel_c_reply_71_zero_injected = false;
-	bool m_panel_d1_reply_71_ff_enabled = false;
-	bool m_panel_d1_reply_71_ff_armed = false;
-	bool m_panel_d1_reply_71_ff_injected = false;
-	bool m_panel_d2_reply_71_7e_ff_enabled = false;
-	bool m_panel_d2_reply_71_armed = false;
-	bool m_panel_d2_reply_71_injected = false;
-	bool m_panel_d2_reply_7e_armed = false;
-	bool m_panel_d2_reply_7e_injected = false;
-	bool m_panel_e_ff_drain_known_ring_enabled = false;
-	bool m_panel_e_ff_drain_aborted = false;
-	bool m_panel_e_ff_drain_done = false;
-	bool m_panel_e_ff_drain_ready_valid = false;
-	bool m_panel_e_ff_drain_waiting_completion = false;
-	bool m_panel_e_f89abe_logged = false;
-	bool m_panel_e_f89ac2_logged = false;
-	u8 m_panel_e_ff_drain_next_index = 0;
-	u8 m_panel_e_ff_drain_ready_index = 0;
-	u8 m_panel_e_ff_drain_pending_index = 0;
-	u8 m_panel_e_ff_drain_pending_count = 0;
-	bool m_panel_l_ff_drain_later_rings_enabled = false;
-	bool m_panel_l_aborted = false;
-	bool m_panel_l_done = false;
-	bool m_panel_l_first_ring_setup_done = false;
-	bool m_panel_l_later_started = false;
-	bool m_panel_l_waiting_completion = false;
-	bool m_panel_l_previous_completion_observed = true;
-	bool m_panel_l_zero_pending_f89ac2 = false;
-	bool m_panel_l_stop_after_dispatch = false;
-	bool m_panel_l_final_idle_probe_queued = false;
-	bool m_panel_l_final_idle_probe_waiting = false;
-	bool m_panel_l_final_idle_f89a9a_zero_seen = false;
-	bool m_panel_l_final_idle_f89ace_seen = false;
-	bool m_panel_l_final_idle_03c5_clear_seen = false;
-	u8 m_panel_l_first_ring_index = 0;
-	u8 m_panel_l_pending_count = 0;
-	u8 m_panel_l_pending_byte = 0;
-	u8 m_panel_l_previous_byte = 0xff;
-	u8 m_panel_l_current_byte = 0xff;
-	u16 m_panel_l_zero_slot0_before = 0;
-	u16 m_panel_l_zero_slot0_after = 0;
-	u32 m_panel_l_reply_count = 0;
-	u32 m_panel_l_zero_crossing_count = 0;
-	u32 m_panel_l_pending_thrb_pc = 0xffffffffU;
-	u32 m_panel_l_current_thrb_pc = 0xffffffffU;
-	u64 m_panel_l_later_start_cycle = 0;
-	bool m_panel_autorespond_enabled = false;
 	u32 m_panel_autorespond_scheduled_count = 0;
 	u32 m_panel_autorespond_injected_count = 0;
 	u32 m_gen_counter = 0;
@@ -735,8 +682,6 @@ private:
 	// per-attempt trace of the HALL REVERB (table base $0e8e==0x00010400)
 	// type-1/record-0 GPR transaction, scoped narrowly per instruction.
 	u32 m_hall_reverb_trace_count = 0;
-	bool m_es5506_diag_par_enabled = false;
-	u16 m_es5506_diag_par_value = 0x200;
 	u32 m_es5506_diag_par_read_count = 0;
 	bool m_primary_slot_snapshot_logged = false;
 	bool m_panel_c_parser_trace_enabled = false;
@@ -954,19 +899,6 @@ private:
 	void log_panel_c_parser_trace(u32 pc, const char *event);
 	void panel_c_parser_trace_stop(const char *reason, u32 pc);
 	void panel_c_queue_rx(u8 data, const char *reason, u32 pc);
-	void panel_e_observe_thrb(u32 pc, u8 data);
-	void panel_e_note_completion(u32 pc, u16 previous_03bc, u16 current_03bc);
-	void panel_e_abort(const char *reason, u32 pc, u8 actual = 0xff);
-	bool panel_e_try_inject(u32 pc, const char *reason);
-	void panel_l_observe_thrb(u32 pc, u8 data);
-	void panel_l_note_completion(u32 pc, u16 previous_03bc, u16 current_03bc);
-	void panel_l_abort(const char *reason, u32 pc, u8 actual = 0xff);
-	void panel_l_stop(const char *reason, u32 pc);
-	bool panel_l_try_inject(u32 pc, const char *reason);
-	void panel_l_log_temporal(const char *event, u32 pc, u32 byte_address = 0xffffffffU,
-		u16 previous = 0, u16 current = 0);
-	bool panel_reply_experiment_enabled() const;
-	const char *panel_reply_experiment_name() const;
 	u32 read_stack_long(u32 address);
 	u16 read_program_word(u32 address);
 	static void floppy_drives(device_slot_interface &device);
@@ -1565,55 +1497,6 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_panel_b_last_parser_pc));
 	save_item(NAME(m_panel_b_last_ring_write_byte));
 	save_item(NAME(m_panel_b_last_ring_write_valid));
-	save_item(NAME(m_panel_c_reply_71_zero_enabled));
-	save_item(NAME(m_panel_c_reply_71_zero_armed));
-	save_item(NAME(m_panel_c_reply_71_zero_injected));
-	save_item(NAME(m_panel_d1_reply_71_ff_enabled));
-	save_item(NAME(m_panel_d1_reply_71_ff_armed));
-	save_item(NAME(m_panel_d1_reply_71_ff_injected));
-	save_item(NAME(m_panel_d2_reply_71_7e_ff_enabled));
-	save_item(NAME(m_panel_d2_reply_71_armed));
-	save_item(NAME(m_panel_d2_reply_71_injected));
-	save_item(NAME(m_panel_d2_reply_7e_armed));
-	save_item(NAME(m_panel_d2_reply_7e_injected));
-	save_item(NAME(m_panel_e_ff_drain_known_ring_enabled));
-	save_item(NAME(m_panel_e_ff_drain_aborted));
-	save_item(NAME(m_panel_e_ff_drain_done));
-	save_item(NAME(m_panel_e_ff_drain_ready_valid));
-	save_item(NAME(m_panel_e_ff_drain_waiting_completion));
-	save_item(NAME(m_panel_e_f89abe_logged));
-	save_item(NAME(m_panel_e_f89ac2_logged));
-	save_item(NAME(m_panel_e_ff_drain_next_index));
-	save_item(NAME(m_panel_e_ff_drain_ready_index));
-	save_item(NAME(m_panel_e_ff_drain_pending_index));
-	save_item(NAME(m_panel_e_ff_drain_pending_count));
-	save_item(NAME(m_panel_l_ff_drain_later_rings_enabled));
-	save_item(NAME(m_panel_l_aborted));
-	save_item(NAME(m_panel_l_done));
-	save_item(NAME(m_panel_l_first_ring_setup_done));
-	save_item(NAME(m_panel_l_later_started));
-	save_item(NAME(m_panel_l_waiting_completion));
-	save_item(NAME(m_panel_l_previous_completion_observed));
-	save_item(NAME(m_panel_l_zero_pending_f89ac2));
-	save_item(NAME(m_panel_l_stop_after_dispatch));
-	save_item(NAME(m_panel_l_final_idle_probe_queued));
-	save_item(NAME(m_panel_l_final_idle_probe_waiting));
-	save_item(NAME(m_panel_l_final_idle_f89a9a_zero_seen));
-	save_item(NAME(m_panel_l_final_idle_f89ace_seen));
-	save_item(NAME(m_panel_l_final_idle_03c5_clear_seen));
-	save_item(NAME(m_panel_l_first_ring_index));
-	save_item(NAME(m_panel_l_pending_count));
-	save_item(NAME(m_panel_l_pending_byte));
-	save_item(NAME(m_panel_l_previous_byte));
-	save_item(NAME(m_panel_l_current_byte));
-	save_item(NAME(m_panel_l_zero_slot0_before));
-	save_item(NAME(m_panel_l_zero_slot0_after));
-	save_item(NAME(m_panel_l_reply_count));
-	save_item(NAME(m_panel_l_zero_crossing_count));
-	save_item(NAME(m_panel_l_pending_thrb_pc));
-	save_item(NAME(m_panel_l_current_thrb_pc));
-	save_item(NAME(m_panel_l_later_start_cycle));
-	save_item(NAME(m_panel_autorespond_enabled));
 	save_item(NAME(m_panel_autorespond_scheduled_count));
 	save_item(NAME(m_panel_autorespond_injected_count));
 	save_item(NAME(m_lrclk_level));
@@ -1632,8 +1515,6 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_es5506_host_seen_mask));
 	save_item(NAME(m_es5506_host_access_count));
 	save_item(NAME(m_esp_select_commit_log_count));
-	save_item(NAME(m_es5506_diag_par_enabled));
-	save_item(NAME(m_es5506_diag_par_value));
 	save_item(NAME(m_es5506_diag_par_read_count));
 	save_item(NAME(m_primary_slot_snapshot_logged));
 	save_item(NAME(m_fc60b0_verified));
@@ -1871,28 +1752,6 @@ void asr10_boot_state::machine_reset()
 	m_panel_b_last_parser_pc = 0xffffffffU;
 	m_panel_b_last_ring_write_byte = 0;
 	m_panel_b_last_ring_write_valid = false;
-	const char *const panel_autorespond = std::getenv("ASR10_DIAG_PANEL_AUTORESPOND");
-	m_panel_autorespond_enabled = panel_autorespond && panel_autorespond[0] && panel_autorespond[0] != '0';
-	const char *const panel_reply_71_zero = std::getenv("ASR10_EXPERIMENT_PANEL_REPLY_71_ZERO");
-	m_panel_c_reply_71_zero_enabled = !m_panel_autorespond_enabled &&
-		panel_reply_71_zero && panel_reply_71_zero[0] && panel_reply_71_zero[0] != '0';
-	const char *const panel_reply_71_ff = std::getenv("ASR10_EXPERIMENT_PANEL_REPLY_71_FF");
-	m_panel_d1_reply_71_ff_enabled = !m_panel_autorespond_enabled && !m_panel_c_reply_71_zero_enabled &&
-		panel_reply_71_ff && panel_reply_71_ff[0] && panel_reply_71_ff[0] != '0';
-	const char *const panel_reply_71_7e_ff = std::getenv("ASR10_EXPERIMENT_PANEL_REPLY_71_7E_FF");
-	m_panel_d2_reply_71_7e_ff_enabled = !m_panel_autorespond_enabled && !m_panel_c_reply_71_zero_enabled &&
-		!m_panel_d1_reply_71_ff_enabled &&
-		panel_reply_71_7e_ff && panel_reply_71_7e_ff[0] && panel_reply_71_7e_ff[0] != '0';
-	const char *const panel_ff_drain_known_ring = std::getenv("ASR10_EXPERIMENT_PANEL_FF_DRAIN_KNOWN_RING");
-	m_panel_e_ff_drain_known_ring_enabled = !m_panel_autorespond_enabled && !m_panel_c_reply_71_zero_enabled &&
-		!m_panel_d1_reply_71_ff_enabled &&
-		!m_panel_d2_reply_71_7e_ff_enabled && panel_ff_drain_known_ring &&
-		panel_ff_drain_known_ring[0] && panel_ff_drain_known_ring[0] != '0';
-	const char *const panel_ff_drain_later_rings = std::getenv("ASR10_EXPERIMENT_PANEL_FF_DRAIN_LATER_RINGS");
-	m_panel_l_ff_drain_later_rings_enabled = !m_panel_autorespond_enabled && !m_panel_c_reply_71_zero_enabled &&
-		!m_panel_d1_reply_71_ff_enabled &&
-		!m_panel_d2_reply_71_7e_ff_enabled && !m_panel_e_ff_drain_known_ring_enabled &&
-		panel_ff_drain_later_rings && panel_ff_drain_later_rings[0] && panel_ff_drain_later_rings[0] != '0';
 	m_panel_autorespond_scheduled_count = 0;
 	m_panel_autorespond_injected_count = 0;
 	m_panel_autorespond_timer->adjust(attotime::never);
@@ -1918,71 +1777,14 @@ void asr10_boot_state::machine_reset()
 	m_divzero_frame_logged = false;
 	m_es5506_host_seen_mask.fill(0);
 	m_es5506_host_access_count = 0;
-	{
-		// Task-continuation diagnostic PAR test: requires BOTH the explicit
-		// experiment flag AND a value, narrower than the old Phase 1B gate
-		// (ASR10_DIAG_PAR_VALUE alone). NOT an analog model, NOT a claim
-		// that 0x300 (or whatever value is passed) is a real resting value.
-		const char *const par_diagnostic_env = std::getenv("ASR10_EXPERIMENT_PAR_DIAGNOSTIC");
-		const bool par_diagnostic_enabled =
-			par_diagnostic_env && par_diagnostic_env[0] && par_diagnostic_env[0] != '0';
-		const char *const par_value_env = std::getenv("ASR10_DIAG_PAR_VALUE");
-		m_es5506_diag_par_enabled = par_diagnostic_enabled && par_value_env && par_value_env[0];
-		m_es5506_diag_par_value = m_es5506_diag_par_enabled
-			? u16(std::strtoul(par_value_env, nullptr, 0)) : 0x200;
-	}
 	m_es5506_diag_par_read_count = 0;
 	m_primary_slot_snapshot_logged = false;
 	m_fc60b0_verified = false;
 	m_fc2d40_cluster_count = 0;
 	m_fc3000_cluster_count = 0;
 	const char *const panel_c_parser_trace = std::getenv("ASR10_DIAG_PANEL_C_PARSER_TRACE");
-	m_panel_c_parser_trace_enabled = m_panel_d1_reply_71_ff_enabled || m_panel_d2_reply_71_7e_ff_enabled ||
-		m_panel_e_ff_drain_known_ring_enabled || m_panel_l_ff_drain_later_rings_enabled ||
-		(panel_c_parser_trace && panel_c_parser_trace[0] && panel_c_parser_trace[0] != '0');
-	m_panel_c_reply_71_zero_armed = false;
-	m_panel_c_reply_71_zero_injected = false;
-	m_panel_d1_reply_71_ff_armed = false;
-	m_panel_d1_reply_71_ff_injected = false;
-	m_panel_d2_reply_71_armed = false;
-	m_panel_d2_reply_71_injected = false;
-	m_panel_d2_reply_7e_armed = false;
-	m_panel_d2_reply_7e_injected = false;
-	m_panel_e_ff_drain_aborted = false;
-	m_panel_e_ff_drain_done = false;
-	m_panel_e_ff_drain_ready_valid = false;
-	m_panel_e_ff_drain_waiting_completion = false;
-	m_panel_e_f89abe_logged = false;
-	m_panel_e_f89ac2_logged = false;
-	m_panel_e_ff_drain_next_index = 0;
-	m_panel_e_ff_drain_ready_index = 0;
-	m_panel_e_ff_drain_pending_index = 0;
-	m_panel_e_ff_drain_pending_count = 0;
-	m_panel_l_aborted = false;
-	m_panel_l_done = false;
-	m_panel_l_first_ring_setup_done = false;
-	m_panel_l_later_started = false;
-	m_panel_l_waiting_completion = false;
-	m_panel_l_previous_completion_observed = true;
-	m_panel_l_zero_pending_f89ac2 = false;
-	m_panel_l_stop_after_dispatch = false;
-	m_panel_l_final_idle_probe_queued = false;
-	m_panel_l_final_idle_probe_waiting = false;
-	m_panel_l_final_idle_f89a9a_zero_seen = false;
-	m_panel_l_final_idle_f89ace_seen = false;
-	m_panel_l_final_idle_03c5_clear_seen = false;
-	m_panel_l_first_ring_index = 0;
-	m_panel_l_pending_count = 0;
-	m_panel_l_pending_byte = 0;
-	m_panel_l_previous_byte = 0xff;
-	m_panel_l_current_byte = 0xff;
-	m_panel_l_zero_slot0_before = 0;
-	m_panel_l_zero_slot0_after = 0;
-	m_panel_l_reply_count = 0;
-	m_panel_l_zero_crossing_count = 0;
-	m_panel_l_pending_thrb_pc = 0xffffffffU;
-	m_panel_l_current_thrb_pc = 0xffffffffU;
-	m_panel_l_later_start_cycle = 0;
+	m_panel_c_parser_trace_enabled =
+		panel_c_parser_trace && panel_c_parser_trace[0] && panel_c_parser_trace[0] != '0';
 	m_panel_c_parser_trace_active = false;
 	m_panel_c_parser_trace_done = false;
 	m_panel_c_parser_trace_count = 0;
@@ -2610,36 +2412,16 @@ void asr10_boot_state::panel_c_parser_trace_stop(const char *reason, u32 pc)
 }
 
 
-bool asr10_boot_state::panel_reply_experiment_enabled() const
-{
-	return m_panel_autorespond_enabled ||
-		m_panel_c_reply_71_zero_enabled || m_panel_d1_reply_71_ff_enabled ||
-		m_panel_d2_reply_71_7e_ff_enabled || m_panel_e_ff_drain_known_ring_enabled ||
-		m_panel_l_ff_drain_later_rings_enabled;
-}
-
-
-const char *asr10_boot_state::panel_reply_experiment_name() const
-{
-	return m_panel_autorespond_enabled ? "ASR10_DIAG_PANEL_AUTORESPOND" :
-		m_panel_l_ff_drain_later_rings_enabled ? "ASR10_EXPERIMENT_PANEL_FF_DRAIN_LATER_RINGS" :
-		m_panel_e_ff_drain_known_ring_enabled ? "ASR10_EXPERIMENT_PANEL_FF_DRAIN_KNOWN_RING" :
-		m_panel_d2_reply_71_7e_ff_enabled ? "ASR10_EXPERIMENT_PANEL_REPLY_71_7E_FF" :
-		m_panel_d1_reply_71_ff_enabled ? "ASR10_EXPERIMENT_PANEL_REPLY_71_FF" :
-		"ASR10_EXPERIMENT_PANEL_REPLY_71_ZERO";
-}
-
-
 void asr10_boot_state::panel_c_queue_rx(u8 data, const char *reason, u32 pc)
 {
-	if (!panel_reply_experiment_enabled() || machine().side_effects_disabled())
+	if (machine().side_effects_disabled())
 		return;
 
 	m_duart->m_chanB->rx_fifo_push(data, 0);
-	logerror("%s event=rx_queued reason=%s pc=%06x "
+	logerror("ASR10_PANEL_AUTORESPOND event=rx_queued reason=%s pc=%06x "
 		"rx=%02x source=mc68681_channel_b_fifo slot0_state=%04x "
 		"slot0_queue_head=%04x slot0_queue_tail=%04x node_14f4_type=%04x count_03bc=%02x\n",
-		panel_reply_experiment_name(), reason, pc, data,
+		reason, pc, data,
 		lowmem_word(0x23d6), lowmem_word(0x23e4), lowmem_word(0x23e6), lowmem_word(0x14f6),
 		lowmem_byte(0x03bc));
 }
@@ -2654,13 +2436,10 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::lrclk_toggle)
 
 TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_autorespond_fire)
 {
-	if (!m_panel_autorespond_enabled)
-		return;
-
 	const u32 write_pc = u32(param);
 	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 	m_panel_autorespond_injected_count++;
-	logerror("ASR10_DIAG_PANEL_AUTORESPOND event=inject_response seq=%u write_pc=%06x pc=%06x byte=ff "
+	logerror("ASR10_PANEL_AUTORESPOND event=inject_response seq=%u write_pc=%06x pc=%06x byte=ff "
 		"count_03bc=%02x idle_03c5=%02x slot0_state=%04x "
 		"slot0_queue_head=%04x slot0_queue_tail=%04x node_14f4_type=%04x\n",
 		m_panel_autorespond_injected_count, write_pc, pc, lowmem_byte(0x03bc), lowmem_byte(0x03c5),
@@ -2748,16 +2527,15 @@ const char *asr10_boot_state::es5506_register_name(u32 cpu_displacement)
 
 u16 asr10_boot_state::es5506_host_read_par_diag()
 {
-	// Diagnostic-only fixed-value PAR test (ASR10_EXPERIMENT_PAR_DIAGNOSTIC).
-	// NOT an analog model, NOT a claim that this value is a real resting
-	// position for any physical control -- its sole purpose is to observe
-	// the DIVU's downstream propagation with a controlled, in-range input.
+	static constexpr u16 PAR_DIAGNOSTIC_VALUE = 0x200;
+	// Fixed-value PAR plumbing. NOT an analog model, NOT a claim that this
+	// value is a real resting position for any physical control.
 	m_es5506_diag_par_read_count++;
 	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 	logerror("ASR10_ES5506_HOST event=par_diag_read source=diagnostic_constant value=%03x "
 		"read_count=%u caller_pc=%06x\n",
-		m_es5506_diag_par_value, m_es5506_diag_par_read_count, pc);
-	return m_es5506_diag_par_value;
+		PAR_DIAGNOSTIC_VALUE, m_es5506_diag_par_read_count, pc);
+	return PAR_DIAGNOSTIC_VALUE;
 }
 
 
@@ -2936,443 +2714,6 @@ void asr10_boot_state::log_timer_secondary_callback(u32 pc)
 }
 
 
-void asr10_boot_state::panel_e_abort(const char *reason, u32 pc, u8 actual)
-{
-	if (!m_panel_e_ff_drain_known_ring_enabled || m_panel_e_ff_drain_aborted)
-		return;
-
-	m_panel_e_ff_drain_aborted = true;
-	logerror("ASR10_EXPERIMENT_PANEL_FF_DRAIN_KNOWN_RING event=abort reason=%s pc=%06x "
-		"next_index=%u ready_valid=%u ready_index=%u waiting_completion=%u pending_index=%u "
-		"actual=%02x count_03bc=%02x parser_state_03c0=%04x slot0_state=%04x "
-		"slot0_queue_head=%04x slot0_queue_tail=%04x node_14f4_type=%04x\n",
-		reason, pc, m_panel_e_ff_drain_next_index, m_panel_e_ff_drain_ready_valid ? 1 : 0,
-		m_panel_e_ff_drain_ready_index, m_panel_e_ff_drain_waiting_completion ? 1 : 0,
-		m_panel_e_ff_drain_pending_index, actual, lowmem_byte(0x03bc), lowmem_word(0x03c0),
-		lowmem_word(0x23d6), lowmem_word(0x23e4),
-		lowmem_word(0x23e6), lowmem_word(0x14f6));
-}
-
-
-bool asr10_boot_state::panel_e_try_inject(u32 pc, const char *reason)
-{
-	static constexpr u8 known_ring[] = {
-		0x71, 0x7e, 0xfc, 0x74, 0x07, 0x74, 0x06, 0x74,
-		0x05, 0x74, 0x04, 0x74, 0x03, 0x74, 0x02
-	};
-
-	if (!m_panel_e_ff_drain_known_ring_enabled || m_panel_e_ff_drain_aborted ||
-		m_panel_e_ff_drain_done || !m_panel_e_ff_drain_ready_valid)
-		return false;
-	if (m_panel_e_ff_drain_waiting_completion)
-		return false;
-	if (lowmem_word(0x03c0) != 0xb3ba)
-	{
-		panel_e_abort("parser_state_not_b3ba_before_reply", pc);
-		return false;
-	}
-	if (m_panel_e_ff_drain_ready_index == 0 && (lowmem_byte(0x03bc) != 0x0e || lowmem_word(0x03ba) != 0x0379))
-		return false;
-	if (m_panel_e_ff_drain_ready_index >= std::size(known_ring))
-	{
-		panel_e_abort("ready_index_out_of_range", pc);
-		return false;
-	}
-
-	m_panel_e_ff_drain_pending_index = m_panel_e_ff_drain_ready_index;
-	m_panel_e_ff_drain_pending_count = lowmem_byte(0x03bc);
-	m_panel_e_ff_drain_ready_valid = false;
-	m_panel_e_ff_drain_waiting_completion = true;
-	m_panel_c_parser_trace_done = false;
-	logerror("ASR10_EXPERIMENT_PANEL_FF_DRAIN_KNOWN_RING event=diagnostic_completion_probe "
-		"cycle=%u reason=%s pc=%06x expected_thrb=%02x parser_state_03c0=%04x "
-		"rx_queued=ff count_03bc_before=%02x read_ptr_03ba=%04x write_ptr_03b8=%04x "
-		"slot0_state=%04x slot0_queue_head=%04x slot0_queue_tail=%04x node_14f4_type=%04x\n",
-		m_panel_e_ff_drain_pending_index, reason, pc, known_ring[m_panel_e_ff_drain_pending_index],
-		lowmem_word(0x03c0), m_panel_e_ff_drain_pending_count, lowmem_word(0x03ba),
-		lowmem_word(0x03b8), lowmem_word(0x23d6), lowmem_word(0x23e4),
-		lowmem_word(0x23e6), lowmem_word(0x14f6));
-	panel_c_queue_rx(0xff, "known_ring_ff_completion_probe", pc);
-	return true;
-}
-
-
-void asr10_boot_state::panel_e_observe_thrb(u32 pc, u8 data)
-{
-	static constexpr u8 known_ring[] = {
-		0x71, 0x7e, 0xfc, 0x74, 0x07, 0x74, 0x06, 0x74,
-		0x05, 0x74, 0x04, 0x74, 0x03, 0x74, 0x02
-	};
-
-	if (!m_panel_e_ff_drain_known_ring_enabled || m_panel_e_ff_drain_aborted ||
-		m_panel_e_ff_drain_done)
-		return;
-	if (m_panel_e_ff_drain_next_index >= std::size(known_ring))
-	{
-		logerror("ASR10_EXPERIMENT_PANEL_FF_DRAIN_KNOWN_RING event=post_known_ring_thrb "
-			"pc=%06x byte=%02x count_03bc=%02x parser_state_03c0=%04x slot0_state=%04x "
-			"slot0_queue_head=%04x slot0_queue_tail=%04x node_14f4_type=%04x\n",
-			pc, data, lowmem_byte(0x03bc), lowmem_word(0x03c0), lowmem_word(0x23d6),
-			lowmem_word(0x23e4), lowmem_word(0x23e6), lowmem_word(0x14f6));
-		return;
-	}
-
-	const u8 index = m_panel_e_ff_drain_next_index;
-	const u8 expected = known_ring[index];
-	if (data != expected)
-	{
-		panel_e_abort("natural_thrb_mismatch", pc, data);
-		return;
-	}
-	if (m_panel_e_ff_drain_ready_valid)
-	{
-		panel_e_abort("previous_thrb_not_replied_before_next_thrb", pc, data);
-		return;
-	}
-
-	m_panel_e_ff_drain_ready_valid = true;
-	m_panel_e_ff_drain_ready_index = index;
-	m_panel_e_ff_drain_next_index++;
-	logerror("ASR10_EXPERIMENT_PANEL_FF_DRAIN_KNOWN_RING event=observe_thrb cycle=%u "
-		"pc=%06x expected_thrb=%02x actual_thrb=%02x parser_state_03c0=%04x "
-		"count_03bc=%02x read_ptr_03ba=%04x write_ptr_03b8=%04x waiting_completion=%u "
-		"slot0_state=%04x slot0_queue_head=%04x slot0_queue_tail=%04x node_14f4_type=%04x\n",
-		index, pc, expected, data, lowmem_word(0x03c0), lowmem_byte(0x03bc),
-		lowmem_word(0x03ba), lowmem_word(0x03b8),
-		m_panel_e_ff_drain_waiting_completion ? 1 : 0, lowmem_word(0x23d6),
-		lowmem_word(0x23e4), lowmem_word(0x23e6), lowmem_word(0x14f6));
-	panel_e_try_inject(pc, "thrb_observed");
-}
-
-
-void asr10_boot_state::panel_e_note_completion(u32 pc, u16 previous_03bc, u16 current_03bc)
-{
-	static constexpr u8 known_ring[] = {
-		0x71, 0x7e, 0xfc, 0x74, 0x07, 0x74, 0x06, 0x74,
-		0x05, 0x74, 0x04, 0x74, 0x03, 0x74, 0x02
-	};
-
-	if (!m_panel_e_ff_drain_known_ring_enabled || m_panel_e_ff_drain_aborted ||
-		!m_panel_e_ff_drain_waiting_completion)
-		return;
-
-	const u8 count_before = u8(previous_03bc >> 8);
-	const u8 count_after = u8(current_03bc >> 8);
-	if (count_before != m_panel_e_ff_drain_pending_count || count_after != u8(count_before - 1))
-	{
-		panel_e_abort("03bc_failed_to_decrement_by_one", pc);
-		return;
-	}
-
-	logerror("ASR10_EXPERIMENT_PANEL_FF_DRAIN_KNOWN_RING event=completion_verified cycle=%u "
-		"pc=%06x expected_thrb=%02x rhrb=ff count_03bc_before=%02x count_03bc_after=%02x "
-		"parser_state_03c0=%04x read_ptr_03ba=%04x write_ptr_03b8=%04x slot0_state=%04x "
-		"slot0_queue_head=%04x slot0_queue_tail=%04x node_14f4_type=%04x\n",
-		m_panel_e_ff_drain_pending_index, pc, known_ring[m_panel_e_ff_drain_pending_index],
-		count_before, count_after, lowmem_word(0x03c0), lowmem_word(0x03ba),
-		lowmem_word(0x03b8), lowmem_word(0x23d6), lowmem_word(0x23e4),
-		lowmem_word(0x23e6), lowmem_word(0x14f6));
-
-	m_panel_e_ff_drain_waiting_completion = false;
-	if (count_after == 0)
-	{
-		m_panel_e_ff_drain_done = true;
-		logerror("ASR10_EXPERIMENT_PANEL_FF_DRAIN_KNOWN_RING event=zero_crossing "
-			"pc=%06x cycle=%u count_03bc_before=%02x count_03bc_after=00 "
-			"slot0_state=%04x slot0_queue_head=%04x slot0_queue_tail=%04x "
-			"node_14f4_00=%04x node_14f4_02=%04x node_14f4_04=%04x node_14f4_06=%04x\n",
-			pc, m_panel_e_ff_drain_pending_index, count_before, lowmem_word(0x23d6),
-			lowmem_word(0x23e4), lowmem_word(0x23e6), lowmem_word(0x14f4),
-			lowmem_word(0x14f6), lowmem_word(0x14f8), lowmem_word(0x14fa));
-		return;
-	}
-
-	panel_e_try_inject(pc, "previous_completion_settled");
-}
-
-
-void asr10_boot_state::panel_l_log_temporal(const char *event, u32 pc, u32 byte_address, u16 previous, u16 current)
-{
-	if (!m_panel_l_ff_drain_later_rings_enabled || machine().side_effects_disabled())
-		return;
-
-	logerror("ASR10_EXPERIMENT_PANEL_FF_DRAIN_LATER_RINGS event=%s pc=%06x previous_pc=%06x "
-		"addr=%06x previous=%04x current=%04x setup_done=%u later_started=%u replies=%u "
-		"zero_crossings=%u count_03bc=%02x read_ptr_03ba=%04x write_ptr_03b8=%04x "
-		"idle_03c5=%02x prev_ring_byte=%02x current_ring_byte=%02x thrb_pc=%06x "
-		"slot0_state=%04x slot0_queue_head=%04x slot0_queue_tail=%04x "
-		"node_14f4_exists=%u node_14f4_00=%04x node_14f4_02=%04x node_14f4_04=%04x node_14f4_06=%04x\n",
-		event, pc, m_last_distinct_pc, byte_address, previous, current,
-		m_panel_l_first_ring_setup_done ? 1 : 0, m_panel_l_later_started ? 1 : 0,
-		m_panel_l_reply_count, m_panel_l_zero_crossing_count, lowmem_byte(0x03bc),
-		lowmem_word(0x03ba), lowmem_word(0x03b8), lowmem_byte(0x03c5), m_panel_l_previous_byte,
-		m_panel_l_current_byte, m_panel_l_current_thrb_pc, lowmem_word(0x23d6),
-		lowmem_word(0x23e4), lowmem_word(0x23e6), lowmem_word(0x14f6) == 0x89a2 ? 1 : 0,
-		lowmem_word(0x14f4), lowmem_word(0x14f6), lowmem_word(0x14f8), lowmem_word(0x14fa));
-}
-
-
-void asr10_boot_state::panel_l_abort(const char *reason, u32 pc, u8 actual)
-{
-	if (!m_panel_l_ff_drain_later_rings_enabled || m_panel_l_aborted || m_panel_l_done)
-		return;
-
-	m_panel_l_aborted = true;
-	logerror("ASR10_EXPERIMENT_PANEL_FF_DRAIN_LATER_RINGS event=abort reason=%s pc=%06x "
-		"actual=%02x setup_done=%u later_started=%u waiting_completion=%u previous_completion=%u "
-		"replies=%u zero_crossings=%u count_03bc=%02x parser_state_03c0=%04x "
-		"prev_ring_byte=%02x current_ring_byte=%02x pending_byte=%02x pending_count=%02x "
-		"slot0_state=%04x slot0_queue_head=%04x slot0_queue_tail=%04x node_14f4_type=%04x\n",
-		reason, pc, actual, m_panel_l_first_ring_setup_done ? 1 : 0,
-		m_panel_l_later_started ? 1 : 0, m_panel_l_waiting_completion ? 1 : 0,
-		m_panel_l_previous_completion_observed ? 1 : 0, m_panel_l_reply_count,
-		m_panel_l_zero_crossing_count, lowmem_byte(0x03bc), lowmem_word(0x03c0),
-		m_panel_l_previous_byte, m_panel_l_current_byte,
-		m_panel_l_pending_byte, m_panel_l_pending_count, lowmem_word(0x23d6),
-		lowmem_word(0x23e4), lowmem_word(0x23e6), lowmem_word(0x14f6));
-}
-
-
-void asr10_boot_state::panel_l_stop(const char *reason, u32 pc)
-{
-	if (!m_panel_l_ff_drain_later_rings_enabled || m_panel_l_done)
-		return;
-
-	m_panel_l_done = true;
-	logerror("ASR10_EXPERIMENT_PANEL_FF_DRAIN_LATER_RINGS event=stop reason=%s pc=%06x "
-		"setup_done=%u later_started=%u replies=%u zero_crossings=%u count_03bc=%02x "
-		"slot0_state=%04x slot0_queue_head=%04x slot0_queue_tail=%04x "
-		"node_14f4_00=%04x node_14f4_02=%04x node_14f4_04=%04x node_14f4_06=%04x\n",
-		reason, pc, m_panel_l_first_ring_setup_done ? 1 : 0, m_panel_l_later_started ? 1 : 0,
-		m_panel_l_reply_count, m_panel_l_zero_crossing_count, lowmem_byte(0x03bc),
-		lowmem_word(0x23d6), lowmem_word(0x23e4), lowmem_word(0x23e6),
-		lowmem_word(0x14f4), lowmem_word(0x14f6), lowmem_word(0x14f8), lowmem_word(0x14fa));
-}
-
-
-bool asr10_boot_state::panel_l_try_inject(u32 pc, const char *reason)
-{
-	if (!m_panel_l_ff_drain_later_rings_enabled || m_panel_l_aborted || m_panel_l_done)
-		return false;
-	if (m_panel_l_waiting_completion)
-		return false;
-	if (!m_panel_l_previous_completion_observed)
-	{
-		panel_l_abort("previous_completion_not_observed", pc);
-		return false;
-	}
-	if (lowmem_word(0x03c0) != 0xb3ba)
-	{
-		panel_l_abort("parser_state_not_b3ba_before_reply", pc);
-		return false;
-	}
-	if (!lowmem_byte(0x03bc))
-	{
-		panel_l_abort("03bc_zero_before_reply", pc);
-		return false;
-	}
-	if (m_panel_l_first_ring_setup_done)
-		return false;
-	if (!m_panel_l_first_ring_setup_done && m_panel_l_first_ring_index == 1 &&
-		m_panel_l_current_byte == 0x71 && (lowmem_byte(0x03bc) != 0x0e || lowmem_word(0x03ba) != 0x0379))
-		return false;
-	if (m_panel_l_current_thrb_pc != 0x00f89aa4)
-	{
-		panel_l_abort("unexpected_thrb_source", pc);
-		return false;
-	}
-	if (m_panel_l_reply_count >= ASR10_PANEL_L_MAX_REPLIES)
-	{
-		panel_l_abort("reply_safety_limit", pc);
-		return false;
-	}
-	if (m_panel_l_later_started &&
-		(u64(m_maincpu->total_cycles()) - m_panel_l_later_start_cycle) > ASR10_PANEL_L_MAX_CYCLES_AFTER_LATER_START)
-	{
-		panel_l_abort("cycle_safety_limit_after_later_start", pc);
-		return false;
-	}
-
-	m_panel_l_pending_count = lowmem_byte(0x03bc);
-	m_panel_l_pending_byte = m_panel_l_current_byte;
-	m_panel_l_pending_thrb_pc = m_panel_l_current_thrb_pc;
-	m_panel_l_waiting_completion = true;
-	m_panel_l_previous_completion_observed = false;
-	m_panel_l_reply_count++;
-	m_panel_c_parser_trace_done = false;
-	logerror("ASR10_EXPERIMENT_PANEL_FF_DRAIN_LATER_RINGS event=diagnostic_completion_probe "
-		"reason=%s pc=%06x phase=%s reply=%u rx_queued=ff pending_byte=%02x previous_byte=%02x "
-		"thrb_pc=%06x count_03bc_before=%02x parser_state_03c0=%04x read_ptr_03ba=%04x "
-		"write_ptr_03b8=%04x slot0_state=%04x slot0_queue_head=%04x slot0_queue_tail=%04x "
-		"node_14f4_type=%04x\n",
-		reason, pc, m_panel_l_first_ring_setup_done ? "later_ring" : "first_ring_setup",
-		m_panel_l_reply_count, m_panel_l_pending_byte, m_panel_l_previous_byte,
-		m_panel_l_pending_thrb_pc, m_panel_l_pending_count, lowmem_word(0x03c0),
-		lowmem_word(0x03ba), lowmem_word(0x03b8), lowmem_word(0x23d6),
-		lowmem_word(0x23e4), lowmem_word(0x23e6), lowmem_word(0x14f6));
-	panel_c_queue_rx(0xff, "later_rings_ff_completion_probe", pc);
-	return true;
-}
-
-
-void asr10_boot_state::panel_l_observe_thrb(u32 pc, u8 data)
-{
-	static constexpr u8 known_ring[] = {
-		0x71, 0x7e, 0xfc, 0x74, 0x07, 0x74, 0x06, 0x74,
-		0x05, 0x74, 0x04, 0x74, 0x03, 0x74, 0x02
-	};
-
-	if (!m_panel_l_ff_drain_later_rings_enabled || m_panel_l_aborted || m_panel_l_done)
-		return;
-	if (pc != 0x00f89aa4)
-	{
-		panel_l_abort("unexpected_thrb_source", pc, data);
-		return;
-	}
-	if (!m_panel_l_first_ring_setup_done)
-	{
-		if (m_panel_l_first_ring_index >= std::size(known_ring))
-		{
-			panel_l_abort("first_ring_index_out_of_range", pc, data);
-			return;
-		}
-		const u8 expected = known_ring[m_panel_l_first_ring_index];
-		if (data != expected)
-		{
-			panel_l_abort("first_ring_setup_thrb_mismatch", pc, data);
-			return;
-		}
-		m_panel_l_first_ring_index++;
-	}
-	else if (!m_panel_l_later_started)
-	{
-		m_panel_l_later_started = true;
-		m_panel_l_later_start_cycle = u64(m_maincpu->total_cycles());
-		panel_l_log_temporal("later_ring_start", pc);
-	}
-
-	m_panel_l_previous_byte = m_panel_l_current_byte;
-	m_panel_l_current_byte = data;
-	m_panel_l_current_thrb_pc = pc;
-	logerror("ASR10_EXPERIMENT_PANEL_FF_DRAIN_LATER_RINGS event=observe_thrb "
-		"pc=%06x phase=%s byte=%02x previous_byte=%02x count_03bc=%02x parser_state_03c0=%04x "
-		"read_ptr_03ba=%04x write_ptr_03b8=%04x waiting_completion=%u previous_completion=%u "
-		"slot0_state=%04x slot0_queue_head=%04x slot0_queue_tail=%04x node_14f4_type=%04x\n",
-		pc, m_panel_l_first_ring_setup_done ? "later_ring" : "first_ring_setup",
-		data, m_panel_l_previous_byte, lowmem_byte(0x03bc), lowmem_word(0x03c0),
-		lowmem_word(0x03ba), lowmem_word(0x03b8), m_panel_l_waiting_completion ? 1 : 0,
-		m_panel_l_previous_completion_observed ? 1 : 0, lowmem_word(0x23d6),
-		lowmem_word(0x23e4), lowmem_word(0x23e6), lowmem_word(0x14f6));
-	if (m_panel_l_first_ring_setup_done && m_panel_l_final_idle_03c5_clear_seen && data == 0x74)
-	{
-		panel_l_log_temporal("natural_second_ring_thrb_after_final_idle_completion", pc);
-		panel_l_stop("natural_second_ring_thrb_after_final_idle_completion", pc);
-	}
-	panel_l_try_inject(pc, "thrb_observed");
-}
-
-
-void asr10_boot_state::panel_l_note_completion(u32 pc, u16 previous_03bc, u16 current_03bc)
-{
-	static constexpr u8 known_ring[] = {
-		0x71, 0x7e, 0xfc, 0x74, 0x07, 0x74, 0x06, 0x74,
-		0x05, 0x74, 0x04, 0x74, 0x03, 0x74, 0x02
-	};
-
-	if (!m_panel_l_ff_drain_later_rings_enabled || m_panel_l_aborted || m_panel_l_done)
-		return;
-	if (!m_panel_l_waiting_completion)
-	{
-		if (!m_panel_l_first_ring_setup_done)
-			return;
-		panel_l_abort("unexpected_completion_without_pending_reply", pc);
-		return;
-	}
-
-	const u8 count_before = u8(previous_03bc >> 8);
-	const u8 count_after = u8(current_03bc >> 8);
-	if (count_before != m_panel_l_pending_count || count_after != u8(count_before - 1))
-	{
-		panel_l_abort("03bc_failed_to_decrement_by_one", pc);
-		return;
-	}
-
-	logerror("ASR10_EXPERIMENT_PANEL_FF_DRAIN_LATER_RINGS event=completion_verified "
-		"pc=%06x phase=%s reply=%u rhrb=ff pending_byte=%02x previous_byte=%02x "
-		"count_03bc_before=%02x count_03bc_after=%02x parser_state_03c0=%04x "
-		"read_ptr_03ba=%04x write_ptr_03b8=%04x slot0_state=%04x slot0_queue_head=%04x "
-		"slot0_queue_tail=%04x node_14f4_type=%04x\n",
-		pc, m_panel_l_first_ring_setup_done ? "later_ring" : "first_ring_setup",
-		m_panel_l_reply_count, m_panel_l_pending_byte, m_panel_l_previous_byte,
-		count_before, count_after, lowmem_word(0x03c0), lowmem_word(0x03ba),
-		lowmem_word(0x03b8), lowmem_word(0x23d6), lowmem_word(0x23e4),
-		lowmem_word(0x23e6), lowmem_word(0x14f6));
-
-	m_panel_l_waiting_completion = false;
-	m_panel_l_previous_completion_observed = true;
-	if (count_after == 0)
-	{
-		const bool setup_crossing = !m_panel_l_first_ring_setup_done && m_panel_l_first_ring_index >= std::size(known_ring);
-		if (!m_panel_l_first_ring_setup_done && !setup_crossing)
-		{
-			panel_l_abort("first_ring_zero_before_sequence_complete", pc);
-			return;
-		}
-		m_panel_l_zero_slot0_before = lowmem_word(0x23d6);
-		m_panel_l_zero_slot0_after = m_panel_l_zero_slot0_before;
-		m_panel_l_zero_pending_f89ac2 = true;
-		if (!setup_crossing)
-			m_panel_l_zero_crossing_count++;
-		logerror("ASR10_EXPERIMENT_PANEL_FF_DRAIN_LATER_RINGS event=zero_crossing "
-			"index=%u phase=%s pc=%06x count_03bc_before=%02x count_03bc_after=00 "
-			"previous_ring_byte=%02x current_ring_byte=%02x thrb_source_pc=%06x "
-			"slot0_state_before_f89ac2=%04x slot0_queue_head=%04x slot0_queue_tail=%04x "
-			"node_14f4_exists=%u node_14f4_00=%04x node_14f4_02=%04x node_14f4_04=%04x "
-			"node_14f4_06=%04x node_14f4_payload=%04x\n",
-			m_panel_l_zero_crossing_count, setup_crossing ? "first_ring_setup" : "later_ring",
-			pc, count_before, m_panel_l_previous_byte, m_panel_l_pending_byte,
-			m_panel_l_pending_thrb_pc, m_panel_l_zero_slot0_before, lowmem_word(0x23e4),
-			lowmem_word(0x23e6), lowmem_word(0x14f6) == 0x89a2 ? 1 : 0,
-			lowmem_word(0x14f4), lowmem_word(0x14f6), lowmem_word(0x14f8),
-			lowmem_word(0x14fa), lowmem_word(0x14f6));
-		if (setup_crossing)
-		{
-			m_panel_l_first_ring_setup_done = true;
-			panel_l_log_temporal("first_ring_setup_zero_complete", pc);
-			if (m_panel_l_current_byte != 0x02)
-			{
-				panel_l_abort("final_setup_byte_not_02", pc, m_panel_l_current_byte);
-				return;
-			}
-			if (lowmem_word(0x03c0) != 0xb3ba)
-			{
-				panel_l_abort("parser_state_not_b3ba_before_final_idle_probe", pc);
-				return;
-			}
-			m_panel_l_final_idle_probe_queued = true;
-			m_panel_l_final_idle_probe_waiting = true;
-			m_panel_l_reply_count++;
-			m_panel_c_parser_trace_done = false;
-			logerror("ASR10_EXPERIMENT_PANEL_FF_DRAIN_LATER_RINGS event=final_idle_completion_probe "
-				"pc=%06x reply=%u rx_queued=ff final_thrb_byte=%02x count_03bc=%02x "
-				"idle_03c5=%02x parser_state_03c0=%04x read_ptr_03ba=%04x write_ptr_03b8=%04x\n",
-				pc, m_panel_l_reply_count, m_panel_l_current_byte, lowmem_byte(0x03bc),
-				lowmem_byte(0x03c5), lowmem_word(0x03c0), lowmem_word(0x03ba),
-				lowmem_word(0x03b8));
-			panel_c_queue_rx(0xff, "final_idle_completion_after_02", pc);
-		}
-		else if (m_panel_l_zero_crossing_count >= ASR10_PANEL_L_MAX_ZERO_CROSSINGS)
-		{
-			panel_l_stop("zero_crossing_safety_limit", pc);
-		}
-	}
-	else
-	{
-		panel_l_try_inject(pc, "previous_completion_settled");
-	}
-}
-
-
 static const char *pti_entry_name(u32 entry_id);
 
 
@@ -3544,65 +2885,10 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 					if (m_panel_b_last_ring_write_valid)
 						note_panel_ring_store(pc, m_panel_b_last_ring_write_address, m_panel_b_last_ring_write_byte);
 					log_panel_b_enqueue(pc, previous, m_lowmem_shadow[offset]);
-					if (panel_reply_experiment_enabled() && u8(m_lowmem_shadow[offset] >> 8) == 0x0e &&
-						lowmem_word(0x03ba) == 0x0379 &&
-						((m_panel_c_reply_71_zero_enabled && m_panel_c_reply_71_zero_armed &&
-							!m_panel_c_reply_71_zero_injected) ||
-							(m_panel_d1_reply_71_ff_enabled && m_panel_d1_reply_71_ff_armed &&
-							!m_panel_d1_reply_71_ff_injected) ||
-							(m_panel_d2_reply_71_7e_ff_enabled && m_panel_d2_reply_71_armed &&
-							!m_panel_d2_reply_71_injected)))
-					{
-						const u8 injected = (m_panel_d1_reply_71_ff_enabled || m_panel_d2_reply_71_7e_ff_enabled) ? 0xff : 0x00;
-						if (m_panel_d2_reply_71_7e_ff_enabled)
-							m_panel_d2_reply_71_injected = true;
-						else if (m_panel_d1_reply_71_ff_enabled)
-							m_panel_d1_reply_71_ff_injected = true;
-						else
-							m_panel_c_reply_71_zero_injected = true;
-						logerror("%s event=inject_after_natural_queue "
-							"pc=%06x count_03bc=%02x write_ptr_03b8=%04x read_ptr_03ba=%04x "
-							"slot0_state=%04x slot0_queue_head=%04x slot0_queue_tail=%04x "
-							"node_14f4_type=%04x injected_rx=%02x parser_state_03c0=%04x\n",
-							panel_reply_experiment_name(), pc, lowmem_byte(0x03bc),
-							lowmem_word(0x03b8), lowmem_word(0x03ba),
-							lowmem_word(0x23d6), lowmem_word(0x23e4), lowmem_word(0x23e6),
-							lowmem_word(0x14f6), injected, lowmem_word(0x03c0));
-						panel_c_queue_rx(injected, (m_panel_d1_reply_71_ff_enabled || m_panel_d2_reply_71_7e_ff_enabled) ?
-							"thrb_71_deferred_until_count_0e_ff" :
-							"thrb_71_deferred_until_count_0e", pc);
-					}
-					if (m_panel_e_ff_drain_known_ring_enabled)
-						panel_e_try_inject(pc, "natural_queue_stable_after_71");
-					if (m_panel_l_ff_drain_later_rings_enabled && !m_panel_l_first_ring_setup_done &&
-						m_panel_l_first_ring_index)
-						panel_l_try_inject(pc, "natural_queue_stable_after_71");
-					if (m_panel_l_ff_drain_later_rings_enabled && m_panel_l_first_ring_setup_done &&
-						!m_panel_l_later_started)
-						panel_l_log_temporal("second_or_later_ring_enqueue_start", pc, byte_address, previous,
-							m_lowmem_shadow[offset]);
 				}
 				else if (pc == 0x00f89ab8)
 				{
 					log_panel_b_complete(pc, previous, m_lowmem_shadow[offset]);
-					panel_e_note_completion(pc, previous, m_lowmem_shadow[offset]);
-					panel_l_note_completion(pc, previous, m_lowmem_shadow[offset]);
-					if (m_panel_d2_reply_71_7e_ff_enabled && m_panel_d2_reply_71_injected &&
-						m_panel_d2_reply_7e_armed && !m_panel_d2_reply_7e_injected &&
-						u8(m_lowmem_shadow[offset] >> 8) == 0x0d && lowmem_word(0x03ba) == 0x037a)
-					{
-						m_panel_d2_reply_7e_injected = true;
-						m_panel_c_parser_trace_done = false;
-						logerror("%s event=inject_after_7e_completion pc=%06x count_03bc=%02x "
-							"write_ptr_03b8=%04x read_ptr_03ba=%04x slot0_state=%04x "
-							"slot0_queue_head=%04x slot0_queue_tail=%04x node_14f4_type=%04x "
-							"injected_rx=ff parser_state_03c0=%04x\n",
-							panel_reply_experiment_name(), pc, lowmem_byte(0x03bc),
-							lowmem_word(0x03b8), lowmem_word(0x03ba), lowmem_word(0x23d6),
-							lowmem_word(0x23e4), lowmem_word(0x23e6), lowmem_word(0x14f6),
-							lowmem_word(0x03c0));
-						panel_c_queue_rx(0xff, "thrb_7e_after_count_0d_ff", pc);
-					}
 				}
 			}
 			if (byte_address == 0x03c4 && ACCESSING_BITS_0_7 && pc == 0x00f89ace)
@@ -3612,31 +2898,6 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 					"slot0_queue_head=%04x slot0_queue_tail=%04x node_14f4_type=%04x\n",
 					pc, u8(previous), lowmem_byte(0x03c5), lowmem_byte(0x03bc), lowmem_word(0x03c0),
 					lowmem_word(0x23d6), lowmem_word(0x23e4), lowmem_word(0x23e6), lowmem_word(0x14f6));
-			}
-			if (m_panel_l_ff_drain_later_rings_enabled && byte_address == 0x03c4 &&
-				ACCESSING_BITS_0_7 && pc == 0x00f89ace && m_panel_l_final_idle_probe_waiting)
-			{
-				const u8 previous_03c5 = u8(previous);
-				const u8 current_03c5 = lowmem_byte(0x03c5);
-				m_panel_l_final_idle_f89ace_seen = true;
-				logerror("ASR10_EXPERIMENT_PANEL_FF_DRAIN_LATER_RINGS event=final_idle_03c5_clear "
-					"pc=%06x previous_03c5=%02x current_03c5=%02x count_03bc=%02x "
-					"parser_state_03c0=%04x f89a9a_zero_seen=%u f89ace_seen=%u\n",
-					pc, previous_03c5, current_03c5, lowmem_byte(0x03bc), lowmem_word(0x03c0),
-					m_panel_l_final_idle_f89a9a_zero_seen ? 1 : 0,
-					m_panel_l_final_idle_f89ace_seen ? 1 : 0);
-				if (previous_03c5 != 0xff || current_03c5 != 0x00)
-				{
-					panel_l_abort("final_idle_03c5_not_ff_to_00", pc, current_03c5);
-					return;
-				}
-				if (!m_panel_l_final_idle_f89a9a_zero_seen)
-				{
-					panel_l_abort("final_idle_clear_without_expected_pc_markers", pc);
-					return;
-				}
-				m_panel_l_final_idle_probe_waiting = false;
-				m_panel_l_final_idle_03c5_clear_seen = true;
 			}
 			if (pc == 0x00f89ac2 && byte_address == 0x23d6)
 			{
@@ -3658,38 +2919,7 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 						m_gen_counter, gen_hex.c_str(), m_panel_text);
 					m_gen_thrb_count = 0;
 				}
-				if (m_panel_l_ff_drain_later_rings_enabled && m_panel_l_zero_pending_f89ac2)
-				{
-					m_panel_l_zero_pending_f89ac2 = false;
-					m_panel_l_zero_slot0_after = m_lowmem_shadow[offset];
-					logerror("ASR10_EXPERIMENT_PANEL_FF_DRAIN_LATER_RINGS event=f89ac2_result "
-						"pc=%06x zero_index=%u slot0_state_before=%04x slot0_state_after=%04x "
-						"slot0_queue_head=%04x slot0_queue_tail=%04x node_14f4_00=%04x "
-						"node_14f4_02=%04x node_14f4_04=%04x node_14f4_06=%04x\n",
-						pc, m_panel_l_zero_crossing_count, previous, m_lowmem_shadow[offset],
-						lowmem_word(0x23e4), lowmem_word(0x23e6), lowmem_word(0x14f4),
-						lowmem_word(0x14f6), lowmem_word(0x14f8), lowmem_word(0x14fa));
-					if (previous == 0x0202 && m_lowmem_shadow[offset] == 0x0002)
-						m_panel_l_stop_after_dispatch = true;
 				}
-			}
-			if (m_panel_l_ff_drain_later_rings_enabled)
-			{
-				if (byte_address >= 0x14f4 && byte_address <= 0x14fa)
-				{
-					const char *event = (byte_address == 0x14f6 && m_lowmem_shadow[offset] == 0x89a2) ?
-						"node_14f4_payload_89a2_install" : "node_14f4_write";
-					panel_l_log_temporal(event, pc, byte_address, previous, m_lowmem_shadow[offset]);
-				}
-				if (byte_address == 0x23d6 && m_lowmem_shadow[offset] == 0x0202)
-					panel_l_log_temporal("slot0_transition_to_0202", pc, byte_address, previous, m_lowmem_shadow[offset]);
-				if (byte_address == 0x23e4 || byte_address == 0x23e6)
-					panel_l_log_temporal("slot0_queue_head_tail_write", pc, byte_address, previous,
-						m_lowmem_shadow[offset]);
-				if (pc == 0x00f8816e && byte_address == 0x23d6)
-					panel_l_log_temporal("trap9_enqueue_bit7_clear", pc, byte_address, previous,
-						m_lowmem_shadow[offset]);
-			}
 		}
 	}
 	if (byte_address == 0x0d06 && (m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff) == 0x0000bf22 &&
@@ -4472,12 +3702,12 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 		if (!machine().side_effects_disabled() && address == 0x00fc4816 && ACCESSING_BITS_0_7)
 			log_panel_b_rhrb(pc, u8(data), srb_before_rhrb, u8(m_duart->read(0x05)));
 	}
-	if (panel_reply_experiment_enabled() && !machine().side_effects_disabled() &&
+	if (!machine().side_effects_disabled() &&
 		address == 0x00fc4816 && ACCESSING_BITS_0_7 && BIT(srb_before_rhrb, 0))
 	{
-		logerror("%s event=rhrb_pop pc=%06x byte=%02x "
+		logerror("ASR10_PANEL_AUTORESPOND event=rhrb_pop pc=%06x byte=%02x "
 			"source=mc68681_channel_b_fifo count_03bc=%02x parser_state_03c0=%04x\n",
-			panel_reply_experiment_name(), pc, u8(data),
+			pc, u8(data),
 			lowmem_byte(0x03bc), lowmem_word(0x03c0));
 		if (m_panel_c_parser_trace_enabled && !m_panel_c_parser_trace_done && pc == 0x00ffb242 &&
 			(u8(data) == 0x00 || u8(data) == 0xff))
@@ -4587,58 +3817,16 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 		}
 		if (!machine().side_effects_disabled() && m_gen_thrb_count < m_gen_thrb_bytes.size())
 			m_gen_thrb_bytes[m_gen_thrb_count++] = character;
-		if (m_panel_autorespond_enabled && !machine().side_effects_disabled())
+		if (!machine().side_effects_disabled())
 		{
 			const char *const thrb_source = (pc == 0x00f89cb0) ? "f89cb0" :
 				(pc == 0x00f89aa4) ? "f89aa4" : "other";
 			m_panel_autorespond_scheduled_count++;
-			logerror("ASR10_DIAG_PANEL_AUTORESPOND event=schedule_response seq=%u pc=%06x source=%s "
+			logerror("ASR10_PANEL_AUTORESPOND event=schedule_response seq=%u pc=%06x source=%s "
 				"byte=%02x count_03bc=%02x idle_03c5=%02x\n",
 				m_panel_autorespond_scheduled_count, pc, thrb_source, character,
 				lowmem_byte(0x03bc), lowmem_byte(0x03c5));
 			m_panel_autorespond_timer->adjust(attotime::from_ticks(4, m_maincpu->clock()), s32(pc));
-		}
-		if (m_panel_e_ff_drain_known_ring_enabled && !machine().side_effects_disabled() &&
-			pc == 0x00f89aa4)
-			panel_e_observe_thrb(pc, character);
-		if (m_panel_l_ff_drain_later_rings_enabled && !machine().side_effects_disabled())
-		{
-			if (pc == 0x00f89aa4)
-				panel_l_observe_thrb(pc, character);
-			else if (pc == 0x00f89cb0 || pc == 0x00f89c48)
-				panel_l_log_temporal("ignored_direct_or_polled_thrb", pc);
-			else
-				panel_l_abort("unexpected_thrb_source", pc, character);
-		}
-		if (panel_reply_experiment_enabled() && !machine().side_effects_disabled() &&
-			pc == 0x00f89aa4 && character == 0x71 &&
-			((m_panel_c_reply_71_zero_enabled && !m_panel_c_reply_71_zero_armed) ||
-				(m_panel_d1_reply_71_ff_enabled && !m_panel_d1_reply_71_ff_armed) ||
-				(m_panel_d2_reply_71_7e_ff_enabled && !m_panel_d2_reply_71_armed)))
-		{
-			if (m_panel_d2_reply_71_7e_ff_enabled)
-				m_panel_d2_reply_71_armed = true;
-			else if (m_panel_d1_reply_71_ff_enabled)
-				m_panel_d1_reply_71_ff_armed = true;
-			else
-				m_panel_c_reply_71_zero_armed = true;
-			logerror("%s event=trigger_thrb_71_armed pc=%06x "
-				"byte=71 count_03bc=%02x slot0_state=%04x slot0_queue_head=%04x "
-				"slot0_queue_tail=%04x node_14f4_type=%04x\n",
-				panel_reply_experiment_name(), pc, lowmem_byte(0x03bc), lowmem_word(0x23d6), lowmem_word(0x23e4),
-				lowmem_word(0x23e6), lowmem_word(0x14f6));
-		}
-		if (m_panel_d2_reply_71_7e_ff_enabled && !machine().side_effects_disabled() &&
-			pc == 0x00f89aa4 && character == 0x7e && m_panel_d2_reply_71_injected &&
-			!m_panel_d2_reply_7e_armed)
-		{
-			m_panel_d2_reply_7e_armed = true;
-			logerror("%s event=trigger_thrb_7e_armed pc=%06x byte=7e count_03bc=%02x "
-				"slot0_state=%04x slot0_queue_head=%04x slot0_queue_tail=%04x "
-				"node_14f4_type=%04x parser_state_03c0=%04x\n",
-				panel_reply_experiment_name(), pc, lowmem_byte(0x03bc), lowmem_word(0x23d6),
-				lowmem_word(0x23e4), lowmem_word(0x23e6), lowmem_word(0x14f6),
-				lowmem_word(0x03c0));
 		}
 		if (m_seen_loading_system_prompt && !machine().side_effects_disabled())
 		{
@@ -6745,14 +5933,9 @@ void asr10_boot_state::log_run_config_header()
 
 	// requested (raw env string) / effective (parsed bool actually used) /
 	// default-when-unset, for every ASR10_* flag found in this source file.
-	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_DIAG_PANEL_AUTORESPOND requested=%s effective=%u default_when_unset=0\n",
-		flag("ASR10_DIAG_PANEL_AUTORESPOND").c_str(), m_panel_autorespond_enabled ? 1u : 0u);
 	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_DIAG_PANEL_C_PARSER_TRACE requested=%s effective=%u "
 		"default_when_unset=0 note=also_forced_on_by_any_panel_reply_71_family_flag\n",
 		flag("ASR10_DIAG_PANEL_C_PARSER_TRACE").c_str(), m_panel_c_parser_trace_enabled ? 1u : 0u);
-	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_DIAG_PAR_VALUE requested=%s effective_value=0x%04x "
-		"default_when_unset=0x0200 note=value_only_applied_if_ASR10_EXPERIMENT_PAR_DIAGNOSTIC_also_set\n",
-		flag("ASR10_DIAG_PAR_VALUE").c_str(), m_es5506_diag_par_value);
 	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_DISK_SIGNATURE_TRACE requested=%s effective=%u "
 		"default_when_unset=0\n",
 		flag("ASR10_EXPERIMENT_DISK_SIGNATURE_TRACE").c_str(), m_disk_sig_trace_enabled ? 1u : 0u);
@@ -6771,25 +5954,6 @@ void asr10_boot_state::log_run_config_header()
 	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_MC68302_GPIO_TRACE requested=%s effective=%u "
 		"default_when_unset=0\n",
 		flag("ASR10_EXPERIMENT_MC68302_GPIO_TRACE").c_str(), m_gpio_stage1_trace_enabled ? 1u : 0u);
-	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_PANEL_FF_DRAIN_KNOWN_RING requested=%s effective=%u "
-		"default_when_unset=0 note=mutually_exclusive_with_autorespond_and_other_panel_reply_flags_priority_order\n",
-		flag("ASR10_EXPERIMENT_PANEL_FF_DRAIN_KNOWN_RING").c_str(), m_panel_e_ff_drain_known_ring_enabled ? 1u : 0u);
-	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_PANEL_FF_DRAIN_LATER_RINGS requested=%s effective=%u "
-		"default_when_unset=0 note=mutually_exclusive_see_above\n",
-		flag("ASR10_EXPERIMENT_PANEL_FF_DRAIN_LATER_RINGS").c_str(), m_panel_l_ff_drain_later_rings_enabled ? 1u : 0u);
-	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_PANEL_REPLY_71_7E_FF requested=%s effective=%u "
-		"default_when_unset=0 note=mutually_exclusive_see_above\n",
-		flag("ASR10_EXPERIMENT_PANEL_REPLY_71_7E_FF").c_str(), m_panel_d2_reply_71_7e_ff_enabled ? 1u : 0u);
-	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_PANEL_REPLY_71_FF requested=%s effective=%u "
-		"default_when_unset=0 note=mutually_exclusive_see_above\n",
-		flag("ASR10_EXPERIMENT_PANEL_REPLY_71_FF").c_str(), m_panel_d1_reply_71_ff_enabled ? 1u : 0u);
-	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_PANEL_REPLY_71_ZERO requested=%s effective=%u "
-		"default_when_unset=0 note=mutually_exclusive_see_above\n",
-		flag("ASR10_EXPERIMENT_PANEL_REPLY_71_ZERO").c_str(), m_panel_c_reply_71_zero_enabled ? 1u : 0u);
-	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_PAR_DIAGNOSTIC requested=%s "
-		"effective_paired_with_DIAG_PAR_VALUE=%u default_when_unset=0 "
-		"note=BOTH_this_AND_ASR10_DIAG_PAR_VALUE_required_or_read_port_cb_stays_unbound_baseline_error130\n",
-		flag("ASR10_EXPERIMENT_PAR_DIAGNOSTIC").c_str(), m_es5506_diag_par_enabled ? 1u : 0u);
 	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_POST_TUNING_INDIRECT_TRACE requested=%s effective=%u "
 		"default_when_unset=0\n",
 		flag("ASR10_EXPERIMENT_POST_TUNING_INDIRECT_TRACE").c_str(), m_pti.enabled ? 1u : 0u);
@@ -9507,7 +8671,7 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::pc_poll)
 			panel_c_parser_trace_stop("reached_f89a9a", pc);
 		else if (pc == 0x00f89aec)
 			panel_c_parser_trace_stop("reached_f89aec", pc);
-		else if (pc == 0x00ffb3e4 && !m_panel_l_final_idle_probe_waiting)
+		else if (pc == 0x00ffb3e4)
 			panel_c_parser_trace_stop("reached_ffb3e4", pc);
 		else if (pc == 0x00ffb424)
 			panel_c_parser_trace_stop("reached_ffb424", pc);
@@ -9523,65 +8687,6 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::pc_poll)
 		if (pc == 0x00ffb286 || pc == 0x00ffb32e || pc == 0x00ffb3cc ||
 			pc == 0x00ffb3e4 || pc == 0x00ffb424 || pc == 0x00f89aec)
 			m_panel_b_last_parser_pc = pc;
-	}
-	if (m_panel_l_ff_drain_later_rings_enabled && m_panel_l_final_idle_probe_waiting &&
-		!m_panel_l_aborted && !m_panel_l_done && !machine().side_effects_disabled())
-	{
-		if (pc == 0x00f89a9a && !m_panel_l_final_idle_f89a9a_zero_seen)
-		{
-			logerror("ASR10_EXPERIMENT_PANEL_FF_DRAIN_LATER_RINGS event=final_idle_f89a9a_entry "
-				"pc=%06x previous_pc=%06x count_03bc=%02x idle_03c5=%02x "
-				"parser_state_03c0=%04x last_parser_pc=%06x\n",
-				pc, m_last_distinct_pc, lowmem_byte(0x03bc), lowmem_byte(0x03c5),
-				lowmem_word(0x03c0), m_panel_b_last_parser_pc);
-			if (lowmem_byte(0x03bc) != 0)
-			{
-				panel_l_abort("final_idle_f89a9a_entry_count_not_zero", pc, lowmem_byte(0x03bc));
-				return;
-			}
-			m_panel_l_final_idle_f89a9a_zero_seen = true;
-		}
-		else if (pc == 0x00f89ace && !m_panel_l_final_idle_f89ace_seen)
-		{
-			m_panel_l_final_idle_f89ace_seen = true;
-			logerror("ASR10_EXPERIMENT_PANEL_FF_DRAIN_LATER_RINGS event=final_idle_f89ace_reached "
-				"pc=%06x previous_pc=%06x count_03bc=%02x idle_03c5_before_clear=%02x "
-				"f89a9a_zero_seen=%u parser_state_03c0=%04x\n",
-				pc, m_last_distinct_pc, lowmem_byte(0x03bc), lowmem_byte(0x03c5),
-				m_panel_l_final_idle_f89a9a_zero_seen ? 1 : 0, lowmem_word(0x03c0));
-		}
-	}
-	if (m_panel_e_ff_drain_known_ring_enabled && m_panel_e_ff_drain_done && !machine().side_effects_disabled())
-	{
-		if (pc == 0x00f89abe && !m_panel_e_f89abe_logged)
-		{
-			m_panel_e_f89abe_logged = true;
-			logerror("ASR10_EXPERIMENT_PANEL_FF_DRAIN_KNOWN_RING event=f89abe_reached "
-				"pc=%06x previous_pc=%06x count_03bc=%02x value_00d8=%04x "
-				"slot0_state=%04x slot0_queue_head=%04x slot0_queue_tail=%04x "
-				"node_14f4_00=%04x node_14f4_02=%04x node_14f4_04=%04x node_14f4_06=%04x\n",
-				pc, m_last_distinct_pc, lowmem_byte(0x03bc), lowmem_word(0x00d8),
-				lowmem_word(0x23d6), lowmem_word(0x23e4), lowmem_word(0x23e6),
-				lowmem_word(0x14f4), lowmem_word(0x14f6), lowmem_word(0x14f8),
-				lowmem_word(0x14fa));
-		}
-		else if (pc == 0x00f89ac2 && !m_panel_e_f89ac2_logged)
-		{
-			m_panel_e_f89ac2_logged = true;
-			logerror("ASR10_EXPERIMENT_PANEL_FF_DRAIN_KNOWN_RING event=f89ac2_reached "
-				"pc=%06x previous_pc=%06x count_03bc=%02x value_00d8=%04x "
-				"slot0_state_before=%04x slot0_queue_head=%04x slot0_queue_tail=%04x "
-				"node_14f4_type=%04x\n",
-				pc, m_last_distinct_pc, lowmem_byte(0x03bc), lowmem_word(0x00d8),
-				lowmem_word(0x23d6), lowmem_word(0x23e4), lowmem_word(0x23e6),
-				lowmem_word(0x14f6));
-		}
-	}
-	if (m_panel_l_ff_drain_later_rings_enabled && m_panel_l_later_started &&
-		!m_panel_l_aborted && !m_panel_l_done && !machine().side_effects_disabled() &&
-		(u64(m_maincpu->total_cycles()) - m_panel_l_later_start_cycle) > ASR10_PANEL_L_MAX_CYCLES_AFTER_LATER_START)
-	{
-		panel_l_abort("cycle_safety_limit_after_later_start", pc);
 	}
 	const u32 d0 = u32(m_maincpu->state_int(M68K_D0));
 	if (m_seen_loading_system_prompt && !m_error139_d0_candidate_logged && (d0 == 0x0000008b || d0 == 0xffffff8b))
@@ -9629,24 +8734,6 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::pc_poll)
 				m_recent_queue_pc, m_recent_queue_slot, m_recent_queue_current,
 				m_m68302_internal_shadow[0x14 >> 1], m_m68302_internal_shadow[0x16 >> 1],
 				m_m68302_internal_shadow[0x18 >> 1], m_runtime_dispatch_entry_count);
-		}
-		if (m_panel_l_ff_drain_later_rings_enabled && m_panel_l_later_started && !machine().side_effects_disabled())
-		{
-			if (pc == 0x00f87f92 || pc == 0x00f87f96 || pc == 0x00f87fc0)
-			{
-				const u32 a2 = u32(m_maincpu->state_int(M68K_A2)) & 0x00ffffff;
-				logerror("ASR10_EXPERIMENT_PANEL_FF_DRAIN_LATER_RINGS event=dispatcher_scan "
-					"pc=%06x semantic=%s zero_index=%u a2=%06x slot0_state=%04x "
-					"slot0_queue_head=%04x slot0_queue_tail=%04x node_14f4_00=%04x "
-					"node_14f4_02=%04x node_14f4_04=%04x node_14f4_06=%04x "
-					"restored_continuation_pc=%06x stop_after_dispatch=%u\n",
-					pc, semantic, m_panel_l_zero_crossing_count, a2, lowmem_word(0x23d6),
-					lowmem_word(0x23e4), lowmem_word(0x23e6), lowmem_word(0x14f4),
-					lowmem_word(0x14f6), lowmem_word(0x14f8), lowmem_word(0x14fa),
-					m_dispatcher_rte_frame_pc, m_panel_l_stop_after_dispatch ? 1 : 0);
-				if (m_panel_l_stop_after_dispatch && a2 == 0x0023d4)
-					panel_l_stop("successful_later_slot0_wake_and_dispatch", pc);
-			}
 		}
 	}
 	log_dispatcher_rte_first_pc_probe(pc);
@@ -9805,20 +8892,7 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	es5506_host.set_addrmap(2, &asr10_boot_state::es5506_unpopulated_wavetable_map);
 	es5506_host.set_addrmap(3, &asr10_boot_state::es5506_unpopulated_wavetable_map);
 
-	// Narrowly-gated diagnostic PAR test (ASR10_EXPERIMENT_PAR_DIAGNOSTIC=1
-	// + ASR10_DIAG_PAR_VALUE=<n>): binds a single fixed diagnostic PAR
-	// value so the DIVU's downstream propagation can be observed. NOT
-	// an analog model, NOT a claim that any injected value is a real
-	// resting value -- see es5506_host_read_par_diag(). Both env vars
-	// are required; either absent leaves read_port_cb unbound (baseline
-	// ERROR 130 / PAR=0 path, matching Phase 1).
-	const char *const par_diagnostic_env = std::getenv("ASR10_EXPERIMENT_PAR_DIAGNOSTIC");
-	const bool par_diagnostic_enabled =
-		par_diagnostic_env && par_diagnostic_env[0] && par_diagnostic_env[0] != '0';
-	const char *const par_value_env = std::getenv("ASR10_DIAG_PAR_VALUE");
-	if (par_diagnostic_enabled && par_value_env && par_value_env[0])
-		es5506_host.read_port_cb().set(FUNC(asr10_boot_state::es5506_host_read_par_diag));
-	// read_port_cb left unbound otherwise.
+	es5506_host.read_port_cb().set(FUNC(asr10_boot_state::es5506_host_read_par_diag));
 
 	// ES5510 host window (filesystem-browser-map.md 4.24):
 	// instantiate a stock es5510_device purely as a host-interface
