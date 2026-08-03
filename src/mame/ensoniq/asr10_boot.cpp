@@ -1379,59 +1379,6 @@ void asr10_boot_state::machine_start()
 					first_seen ? 1 : 0, m_es5506_host_access_count);
 			});
 	}
-	// TASK2 investigative dump: static ROM content around the previously
-	// flagged-but-unverified "f8db00-f8db4e armed callback" range
-	// (subsystems.md), to check for a literal reference near fff8db12.
-	dump_loaded_code_range("task2_f8db_armed_callback_range", 0x00f8db00, 0x00f8db60);
-	// TASK2 (uPD72069 TC investigation): the CMD46 read-sector loop's known
-	// static PCs (fb8cee=fifo command/data writes, fb8db2=fifo/status
-	// reads, per ASR10_FDC_CMD46's own fifo_write_pcs/fifo_result_pcs).
-	// Disassemble the surrounding ROM to look for a write to some other
-	// (currently unmapped-as-device) address once the expected byte
-	// count is reached -- the real-hardware "software TC strobe"
-	// convention documented for the same FDC family in
-	// src/mame/akai/mpc60.cpp (a dedicated I/O write pulses tc_w(0);tc_w(1)).
-	dump_loaded_code_range("task2_fdc_read_loop_fb8c80_fb8e00", 0x00fb8c80, 0x00fb8e00);
-	dump_loaded_code_range("task2_fdc_read_loop_fb8e00_fb9100", 0x00fb8e00, 0x00fb9100);
-	dump_loaded_code_range("task2_fdc_read_loop_fb8a00_fb8c80", 0x00fb8a00, 0x00fb8c80);
-	dump_loaded_code_range("task1_fb90b2_decision_area", 0x00fb90b2, 0x00fb9280);
-	dump_loaded_code_range("task1_fb92ce_fb9600", 0x00fb92ce, 0x00fb9600);
-	dump_loaded_code_range("task1_fb9600_fb9800", 0x00fb9600, 0x00fb9800);
-	dump_loaded_code_range("task1_fbb280_fbb600", 0x00fbb280, 0x00fbb600);
-	dump_loaded_code_range("task1_fb8090_fb8120", 0x00fb8090, 0x00fb8120);
-	dump_loaded_code_range("task1_fb7c00_fb7c40", 0x00fb7c00, 0x00fb7c40);
-	dump_loaded_code_range("task1_fb89e0_fb8a00", 0x00fb89e0, 0x00fb8a00);
-	dump_loaded_code_range("task2_fb8900_fb8a10", 0x00fb8900, 0x00fb8a10);
-	dump_loaded_code_range("task2_fb8100_fb81f0", 0x00fb8100, 0x00fb81f0);
-	dump_loaded_code_range("task1_fb8006_words", 0x00f80080, 0x00f800a0);
-	dump_loaded_code_range("task1_fb93f4_fb9490", 0x00fb93f4, 0x00fb9490);
-	dump_loaded_code_range("task1_fb8830_fb8880", 0x00fb8830, 0x00fb8880);
-	dump_loaded_code_range("task4_lineA_handler", 0x00f882a0, 0x00f88320);
-	dump_loaded_code_range("task1_fb7f30_fb7fa0", 0x00fb7f30, 0x00fb7fa0);
-	dump_loaded_code_range("task4_vector_table_lineA", 0x00000000, 0x00000040);
-	dump_loaded_code_range("task2_fb8c40_fb8ce0", 0x00fb8c40, 0x00fb8ce0);
-	scan_for_ascii_string("rom_please_insert_disk", 0x00f80000, 0x00fbffff, "PLEASE INSERT DISK");
-	scan_for_ascii_string("lowmem_please_insert_disk", 0x00000000, 0x000fffff, "PLEASE INSERT DISK");
-	// TASK1 investigative scan: exhaustive search of the ENTIRE static ROM
-	// for literal `jsr $fffc60b0` (4eb9 fffc 60b0) occurrences, since the
-	// f8db00-f8db60 dump above turned up at least one such literal --
-	// contradicting an earlier session's "zero literal $fc60xx references"
-	// claim. Logs every match's address, not just a first-hit.
-	{
-		u32 matches = 0;
-		for (u32 cursor = 0x00f80000; cursor <= 0x00fbfffa; cursor += 2)
-		{
-			if (read_loaded_word(cursor) == 0x4eb9 &&
-				read_loaded_word(cursor + 2) == 0xfffc &&
-				read_loaded_word(cursor + 4) == 0x60b0)
-			{
-				logerror("ASR10_TASK1_STATIC_JSR_SCAN match=%u caller_pc=%06x target=fc60b0\n",
-					matches, cursor);
-				matches++;
-			}
-		}
-		logerror("ASR10_TASK1_STATIC_JSR_SCAN_DONE total_matches=%u range=f80000_fbffff\n", matches);
-	}
 	m_lowmem_shadow = make_unique_clear<u16[]>(LOWMEM_WORDS);
 
 	// output_finder in this MAME tree derives from device_resolver_base and
