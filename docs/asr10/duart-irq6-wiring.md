@@ -168,3 +168,56 @@ men ofarliga) tillstånd.
 rader. Inget committat i `asr10_boot.cpp` — regressionen gör att
 CLAUDE.md/uppgiftens eget villkor ("Committa bara om ingen regression")
 inte är uppfyllt.
+
+## 2026-08-03: Temporär OR:ad panel-RX-IRQ på HEAD
+
+`[Verified]`. Testad på `a2b471883b5` med en temporär, flaggad patch
+(`ASR10_EXPERIMENT_PANEL_RX_IRQ=1`) som OR:ade två IRQ6-källor:
+den riktiga `mc68681_device::irq_cb()` och en syntetisk panel-RX-källa
+från den handrullade `m_panel_c_rx_valid`-vägen. Panelvägen assertade
+bara sin egen källa när en byte köades och clearade bara sin egen källa
+när RHRB betjänades; CPU-linjen clearades endast när båda källorna var
+inaktiva. IACK-vektorn kom fortfarande från `mc68302_device::irq6_ack_vector()`.
+
+Kört med samma V350-flagguppsättning som bisectkörningarna, plus den
+temporära flaggan:
+
+```
+ASR10_DIAG_PANEL_AUTORESPOND=1
+ASR10_EXPERIMENT_DUART_COUNTER_TIMER=1
+ASR10_EXPERIMENT_ES5506_HOST=1
+ASR10_DIAG_PAR_VALUE=0x200
+ASR10_EXPERIMENT_PAR_DIAGNOSTIC=1
+ASR10_EXPERIMENT_POST_TUNING_INDIRECT_TRACE=1
+ASR10_EXPERIMENT_DISK_SIGNATURE_TRACE=1
+ASR10_EXPERIMENT_TUNING_STALL_TRACE=1
+ASR10_EXPERIMENT_FILESYSTEM_BROWSER_TRACE=1
+ASR10_EXPERIMENT_DOWNLOAD_TRACE=1
+ASR10_EXPERIMENT_FC3000_VERIFY_TRACE=1
+ASR10_EXPERIMENT_ES5510_HOST=1
+ASR10_EXPERIMENT_PANEL_RX_IRQ=1
+```
+
+Resultat: `TUTORIAL BNK` förekom inte. Panelen gick:
+
+```
+"q"
+"   ENSONIQ  ASR-10    "
+"    LOADING SYSTEM    "
+"q"
+"q"
+"q"
+"ERROR 145 - REBOOT ?"
+```
+
+`[Verified]`. Den syntetiska panel-RX-IRQ-vägen förändrar alltså booten,
+men räcker inte för att nå `KEYBOARD TUNED` eller browsern. Panel-IRQ
+är därmed en verklig del av regressionen efter att skugg-ISR:n togs
+bort, men inte den sista återstående regressionen.
+
+`[Likely]`. Nästa regressionssteg ligger efter den tidiga
+`7bc57b8ab45..5dd25adce81`-kedjan och bör sökas bland 2026-08-03-
+committarna som ändrade cleanup/wavetable/ES5506-bankbeteende.
+
+Städning: experimentpatchen togs bort före dokumentationscommitten.
+Ingen C++-ändring eller ny modell lämnades kvar.
