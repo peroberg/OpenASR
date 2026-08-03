@@ -721,7 +721,6 @@ private:
 	std::array<u8, 9> m_fdc_os_cmd_bytes{};
 	u32 m_fdc_os_cmd_pc = 0;
 	bool m_divzero_frame_logged = false;
-	bool m_es5506_host_enabled = false;
 	std::array<u8, 64> m_es5506_host_seen_mask{}; // bit0=read seen, bit1=write seen, per device offset
 	u32 m_es5506_host_access_count = 0;
 	u32 m_esp_select_commit_log_count = 0;
@@ -1293,7 +1292,7 @@ void asr10_boot_state::machine_start()
 		{
 			m_cs3_access_count[offset & 0x1fff]++;
 		});
-	// Phase 1 host-port fingerprint experiment (ASR10_EXPERIMENT_ES5506_HOST):
+	// Phase 1 host-port fingerprint observation:
 	// observation-only taps layered over the real es5506_device::read/write
 	// mapping installed in mem_map(). These are genuine DATA accesses (via
 	// MOVEP), not opcode fetches, so (unlike the four call-chain taps
@@ -1306,7 +1305,7 @@ void asr10_boot_state::machine_start()
 			0x00fc2000, 0x00fc207f, "hook_es5506_host_read_tap",
 			[this] (offs_t offset, u16 &data, u16 mem_mask)
 			{
-				if (!m_es5506_host_enabled || machine().side_effects_disabled())
+				if (machine().side_effects_disabled())
 					return;
 				if (!ACCESSING_BITS_0_7)
 					return; // even lane is unmapped by design (odd-lane-only adapter)
@@ -1348,7 +1347,7 @@ void asr10_boot_state::machine_start()
 			0x00fc2000, 0x00fc207f, "hook_es5506_host_write_tap",
 			[this] (offs_t offset, u16 &data, u16 mem_mask)
 			{
-				if (!m_es5506_host_enabled || machine().side_effects_disabled())
+				if (machine().side_effects_disabled())
 					return;
 				if (!ACCESSING_BITS_0_7)
 					return;
@@ -1630,8 +1629,6 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_fdc_os_cmd_bytes));
 	save_item(NAME(m_fdc_os_cmd_pc));
 	save_item(NAME(m_divzero_frame_logged));
-	m_es5506_host_enabled = m_es5506_host.found();
-	save_item(NAME(m_es5506_host_enabled));
 	save_item(NAME(m_es5506_host_seen_mask));
 	save_item(NAME(m_es5506_host_access_count));
 	save_item(NAME(m_esp_select_commit_log_count));
@@ -2097,26 +2094,15 @@ void asr10_boot_state::mem_map(address_map &map)
 	map(0xf00000, 0xf7ffff).ram();
 	map(0xf80000, 0xfbffff).rw(FUNC(asr10_boot_state::high_alias_r), FUNC(asr10_boot_state::high_alias_w));
 	{
-		// Phase 1 host-port fingerprint experiment
-		// (ASR10_EXPERIMENT_ES5506_HOST): flagged premise, NOT board-proven
-		// -- see docs/asr10/es5506-chain-verification.md. Narrow adapter
+		// Phase 1 host-port fingerprint mapping: NOT board-proven -- see
+		// docs/asr10/es5506-chain-verification.md. Narrow adapter
 		// owns only FC2000-FC207F; FC2080+ (and FC2Dxx/FC30xx elsewhere)
 		// are untouched .ram(), matching the exact 0x80-byte,
 		// .umask16(0x00ff) convention already proven in esqkt.cpp/
 		// macrossp.cpp/ssv.cpp for this same device.
-		const char *const es5506_host_env = std::getenv("ASR10_EXPERIMENT_ES5506_HOST");
-		const bool es5506_host_enabled =
-			es5506_host_env && es5506_host_env[0] && es5506_host_env[0] != '0';
-		if (es5506_host_enabled)
-		{
-			map(0xfc0000, 0xfc1fff).ram();
-			map(0xfc2000, 0xfc207f).rw(m_es5506_host, FUNC(es5506_device::read), FUNC(es5506_device::write)).umask16(0x00ff);
-			map(0xfc2080, 0xfc2fff).ram();
-		}
-		else
-		{
-			map(0xfc0000, 0xfc2fff).ram();
-		}
+		map(0xfc0000, 0xfc1fff).ram();
+		map(0xfc2000, 0xfc207f).rw(m_es5506_host, FUNC(es5506_device::read), FUNC(es5506_device::write)).umask16(0x00ff);
+		map(0xfc2080, 0xfc2fff).ram();
 
 		// ES5510 host window (filesystem-browser-map.md 4.24):
 		// FC3000-FC31FF is the proven ES5510 host window (4.22/4.23 -- the
@@ -2132,7 +2118,7 @@ void asr10_boot_state::mem_map(address_map &map)
 		// the containing 16-bit word address is one less (e.g. FC3001's
 		// word slot is FC3000, FC3181's word slot is FC3180). Byte-lane
 		// convention (.umask16(0x00ff), low/odd lane only) matches the
-		// proven ASR10_EXPERIMENT_ES5506_HOST adapter above; MAME's normal
+		// proven ES5506 host adapter above; MAME's normal
 		// word/byte bus-width shim (not any driver-side special case)
 		// makes this transparent to both ordinary move.b and MOVEP's
 		// spaced byte accesses. Real precedent for this exact mapping
@@ -6773,9 +6759,6 @@ void asr10_boot_state::log_run_config_header()
 	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_DOWNLOAD_TRACE requested=%s effective=%u "
 		"default_when_unset=0\n",
 		flag("ASR10_EXPERIMENT_DOWNLOAD_TRACE").c_str(), m_download_trace_enabled ? 1u : 0u);
-	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_ES5506_HOST requested=%s effective=%u "
-		"default_when_unset=0 note=config_time_only_device_instantiation\n",
-		flag("ASR10_EXPERIMENT_ES5506_HOST").c_str(), m_es5506_host_enabled ? 1u : 0u);
 	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_FC3000_VERIFY_TRACE requested=%s effective=%u "
 		"default_when_unset=0\n",
 		flag("ASR10_EXPERIMENT_FC3000_VERIFY_TRACE").c_str(), m_fc3000_verify_trace_enabled ? 1u : 0u);
@@ -9810,39 +9793,32 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	SCN2681(config, m_duart, XTAL(16'000'000) / 4);
 	m_duart->irq_cb().set_inputline(m_maincpu, 6);
 
-	// Phase 1 host-port fingerprint experiment (ASR10_EXPERIMENT_ES5506_HOST).
-	// Flagged premise, not board-proven: see
-	// docs/asr10/es5506-chain-verification.md. Instantiated only when the
-	// env var is set, so the baseline (flag absent) build/run is
-	// byte-for-byte identical to before this device existed.
-	const char *const es5506_host_env = std::getenv("ASR10_EXPERIMENT_ES5506_HOST");
-	if (es5506_host_env && es5506_host_env[0] && es5506_host_env[0] != '0')
-	{
-		// Provisional/uncalibrated: no ASR-10-specific clock citation exists
-		// for this chip in any driver; es550x_device::device_start() divides
-		// by clock() to compute m_sample_rate, so a nonzero clock is required
-		// simply to construct the device.
-		es5506_device &es5506_host(ES5506(config, m_es5506_host, XTAL(16'000'000)));
-		es5506_host.set_addrmap(0, &asr10_boot_state::es5506_wavetable_map);
-		es5506_host.set_addrmap(1, &asr10_boot_state::es5506_unpopulated_wavetable_map);
-		es5506_host.set_addrmap(2, &asr10_boot_state::es5506_unpopulated_wavetable_map);
-		es5506_host.set_addrmap(3, &asr10_boot_state::es5506_unpopulated_wavetable_map);
+	// Phase 1 host-port fingerprint mapping. Not board-proven: see
+	// docs/asr10/es5506-chain-verification.md.
+	// Provisional/uncalibrated: no ASR-10-specific clock citation exists
+	// for this chip in any driver; es550x_device::device_start() divides
+	// by clock() to compute m_sample_rate, so a nonzero clock is required
+	// simply to construct the device.
+	es5506_device &es5506_host(ES5506(config, m_es5506_host, XTAL(16'000'000)));
+	es5506_host.set_addrmap(0, &asr10_boot_state::es5506_wavetable_map);
+	es5506_host.set_addrmap(1, &asr10_boot_state::es5506_unpopulated_wavetable_map);
+	es5506_host.set_addrmap(2, &asr10_boot_state::es5506_unpopulated_wavetable_map);
+	es5506_host.set_addrmap(3, &asr10_boot_state::es5506_unpopulated_wavetable_map);
 
-		// Narrowly-gated diagnostic PAR test (ASR10_EXPERIMENT_PAR_DIAGNOSTIC=1
-		// + ASR10_DIAG_PAR_VALUE=<n>): binds a single fixed diagnostic PAR
-		// value so the DIVU's downstream propagation can be observed. NOT
-		// an analog model, NOT a claim that any injected value is a real
-		// resting value -- see es5506_host_read_par_diag(). Both env vars
-		// are required; either absent leaves read_port_cb unbound (baseline
-		// ERROR 130 / PAR=0 path, matching Phase 1).
-		const char *const par_diagnostic_env = std::getenv("ASR10_EXPERIMENT_PAR_DIAGNOSTIC");
-		const bool par_diagnostic_enabled =
-			par_diagnostic_env && par_diagnostic_env[0] && par_diagnostic_env[0] != '0';
-		const char *const par_value_env = std::getenv("ASR10_DIAG_PAR_VALUE");
-		if (par_diagnostic_enabled && par_value_env && par_value_env[0])
-			es5506_host.read_port_cb().set(FUNC(asr10_boot_state::es5506_host_read_par_diag));
-		// read_port_cb left unbound otherwise.
-	}
+	// Narrowly-gated diagnostic PAR test (ASR10_EXPERIMENT_PAR_DIAGNOSTIC=1
+	// + ASR10_DIAG_PAR_VALUE=<n>): binds a single fixed diagnostic PAR
+	// value so the DIVU's downstream propagation can be observed. NOT
+	// an analog model, NOT a claim that any injected value is a real
+	// resting value -- see es5506_host_read_par_diag(). Both env vars
+	// are required; either absent leaves read_port_cb unbound (baseline
+	// ERROR 130 / PAR=0 path, matching Phase 1).
+	const char *const par_diagnostic_env = std::getenv("ASR10_EXPERIMENT_PAR_DIAGNOSTIC");
+	const bool par_diagnostic_enabled =
+		par_diagnostic_env && par_diagnostic_env[0] && par_diagnostic_env[0] != '0';
+	const char *const par_value_env = std::getenv("ASR10_DIAG_PAR_VALUE");
+	if (par_diagnostic_enabled && par_value_env && par_value_env[0])
+		es5506_host.read_port_cb().set(FUNC(asr10_boot_state::es5506_host_read_par_diag));
+	// read_port_cb left unbound otherwise.
 
 	// ES5510 host window (filesystem-browser-map.md 4.24):
 	// instantiate a stock es5510_device purely as a host-interface
