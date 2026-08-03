@@ -89,5 +89,6 @@ unless a new failing run contradicts the facts below.
 - `reference/subroutine-index.md`: verified address/routine facts.
 - `investigations/duart.md`: DUART/tick/IRQ/OPR investigation history.
 - `investigations/par-adc.md`: PAR/ADC/channel-select investigation history.
-- `filesystem-browser-map.md`: filesystem/browser research notes; historical
-  claims are marked as such where they differ from current boot behavior.
+- `investigations/filesystem-browser-map.md`: filesystem/browser research
+  notes; historical claims are marked as such where they differ from current
+  boot behavior.
