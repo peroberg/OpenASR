@@ -4594,3 +4594,111 @@ job scratch directory (outside the repository).
 unchanged; enabled acceptance A-E all pass; `git diff --check` clean.
 **Committed** — see commit `asr10: route ES5510 host select 0xE0
 (type-1 GPR commit path)`.
+
+---
+
+### 4.29 V350 reproduction with ES5510 host and fixed PAR value: does not reach browser under current HEAD
+
+2026-08-03. Reproduction attempt requested against `V350.img`, with no new
+model, no new compensation, and no source probe. This is not a new
+filesystem theory; it records the current runtime result for the
+established ES5510/PAR flag set.
+
+Command, minimal behavior-changing flag set used in the final run:
+
+```sh
+ASR10_DIAG_PANEL_AUTORESPOND=1 \
+ASR10_EXPERIMENT_DUART_COUNTER_TIMER=1 \
+ASR10_EXPERIMENT_ES5506_HOST=1 \
+ASR10_EXPERIMENT_ES5510_HOST=1 \
+ASR10_EXPERIMENT_PAR_DIAGNOSTIC=1 \
+ASR10_DIAG_PAR_VALUE=0x200 \
+SDL_VIDEODRIVER=dummy \
+./mess asr10booth -flop1 floppies/asr10booth/V350.img \
+  -video none -sound none -nothrottle -seconds_to_run 30 -log
+```
+
+The flag header confirmed all six requested flags effective. The two PAR
+flags are both required for the fixed diagnostic PAR value to bind:
+`ASR10_DIAG_PAR_VALUE` alone is inert if
+`ASR10_EXPERIMENT_PAR_DIAGNOSTIC` is unset.
+
+Panel text observed, verbatim:
+
+```
+"q"
+"   ENSONIQ  ASR-10    "
+"    LOADING SYSTEM    "
+"q"
+"q"
+```
+
+The run did not reach:
+
+```
+TUNING KBD - HANDS OFF
+KEYBOARD TUNED
+NO INST OR BANK FILES
+FILE 1...
+```
+
+This therefore does not reproduce a real ASR-10's expected media-present
+front-panel sequence:
+
+```
+ENSONIQ ASR-10 -> SCSI INSTALLED -> SEARCHING FOR SCSI DEV
+-> PLEASE INSERT DISK -> LOADING SYSTEM
+-> TUNING KBD - HANDS OFF -> KEYBOARD TUNED -> FILE 1...
+```
+
+The first repeated failure signature after `LOADING SYSTEM` was a dense
+ES5506 bank-1 unmapped read stream:
+
+```
+[:es5506_host] ':maincpu' (FFFC60B2): unmapped bank1 memory read from 1B8978 & FFFF
+[:es5506_host] ':maincpu' (FFFC60B2): unmapped bank1 memory read from 1B8979 & FFFF
+```
+
+The stopped 30-second run still reported the existing access oracle clean:
+
+```
+ASR10_CS3_ACCESS_SUMMARY ... unknown=0
+ASR10_MC68302_ACCESS_SUMMARY ... unknown=0
+Average speed: 58.92% (29 seconds)
+```
+
+`[Verified]` V350's root sector contains real instrument/bank directory
+entries. Disk bytes around `$420`:
+
+```
+00000420: 41 53 52 2d 31 30 20 4f 53 20 20 20 01 7e 01 7e  ASR-10 OS   .~.~
+00000430: 00 00 00 18 00 00 00 00 00 1e 54 55 54 4f 52 49  ..........TUTORI
+00000440: 41 4c 20 42 4e 4b 00 07 00 01 00 00 01 96 00 00  AL BNK..........
+```
+
+Strictly, `TUTORIAL BNK` begins at disk offset `$43A`; `$420` is the
+start of the preceding `ASR-10 OS` entry in the same root-sector region.
+
+`[Verified]` The OS-load phase reads the sector range containing these
+bytes. In the traced run, `CMD46` transaction 3 reads `C=00,H=00,R=03`
+and transaction 4 reads `C=00,H=00,R=04..05`; the documented geometry is
+512-byte sectors, so the `$400-$5FF` region containing `TUTORIAL BNK` is
+covered by transaction 3. The corresponding loader/table window places
+the root table at low memory `$544`, so the `TUTORIAL BNK` name would map
+to the second 0x1a-byte entry at `$55E`.
+
+`[Verified]` The current reproduction does not reach the browser/filter
+phase, so no live evidence was produced for:
+
+- creation of a post-load internal browser file record for `TUTORIAL BNK`;
+- acceptance or rejection by the instrument/bank filter;
+- transfer into the panel/browser display structure;
+- any `FILE 1...` panel rendering.
+
+First observed loss of the expected `TUTORIAL BNK` path in this run:
+after the root-sector bytes are read by the OS-load FDC path, before any
+verified browser/filter consumer runs. The immediate blocker in the
+captured path is the ES5506 bank-1 unmapped read loop after
+`LOADING SYSTEM`, not a browser rejection of the directory entry.
+
+No source changes were made for this reproduction.
