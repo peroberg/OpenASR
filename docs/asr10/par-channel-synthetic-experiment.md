@@ -104,3 +104,67 @@ ADC model or callback is added.
 `[Rejected]` OPR-only channel selection for the `$006864` path. OPR is
 constant at this point (`internal=$D1`, physical output `$2E`) and does
 not change across the eight PAR reads.
+
+## All-channel synthetic table experiment
+
+2026-08-03. Temporary instrumentation, now removed, bound a named synthetic
+10-bit value for every PB2:0 channel. This was an experiment only; these
+values are not physical claims.
+
+| PB2:0 | Synthetic name | Synthetic PAR |
+|---:|---|---:|
+| 0 | `channel_0_boot_center` | `$200` |
+| 1 | `channel_1_midscale` | `$200` |
+| 2 | `channel_2_midscale` | `$200` |
+| 3 | `channel_3_midscale` | `$200` |
+| 4 | `channel_4_midscale` | `$200` |
+| 5 | `channel_5_filter_seed` | `$280` |
+| 6 | `channel_6_midscale` | `$200` |
+| 7 | `channel_7_reference` | `$300` |
+
+Command used:
+
+```sh
+ASR10_DIAG_PANEL_AUTORESPOND=1 \
+ASR10_EXPERIMENT_ES5506_HOST=1 \
+ASR10_EXPERIMENT_PAR_CHANNEL_TABLE=1 \
+SDL_VIDEODRIVER=dummy \
+./mess asr10booth -flop1 floppies/asr10booth/V350.img \
+  -video none -sound none -nothrottle -seconds_to_run 60 -log
+```
+
+`[Verified]` The run made 72 PAR reads, all from read PC `$FC60B0`.
+Observed channels were 7, 5, 0, 2, 3, and 4. Channels 1 and 6 were not
+requested in this 60-second path.
+
+`[Verified]` The first two `$006800` DIVU instructions both saw
+PB2:0 = 7 and `D2=$0000C000`, so the previous divide-by-zero cause was
+removed for the channel-7 calibration path.
+
+`[Verified]` Final state at the 60-second stop:
+
+| Field | Value |
+|---|---|
+| final PC | `$F87F86` |
+| previous distinct PC | `$F88118` |
+| panel text | empty string |
+| PAR reads | 72 |
+| `$006800` DIVU count | 2 |
+| `KEYBOARD TUNED` | not reached |
+| panel error code | none observed |
+| classification | hang/max-poll stop |
+
+`[Verified]` The log's `ASR10_ERROR_ENTRY_STUB pc=f882de` is not the
+first cause of this stop. Disassembly shows `$F882DE` is called normally
+from `$F87EAC` during initialization and clears scheduler/list state. Its
+diagnostic label is misleading for this run.
+
+`[Verified]` `ASR10_ERROR139_D0_CANDIDATE` is also a diagnostic candidate
+line, not an emitted panel error. No `ERROR 139 - REBOOT ?` or other
+panel error text appeared.
+
+`[Likely]` With all observed channels nonzero, the next blocker is no
+longer the initial PAR divide-by-zero. The run now stalls in the
+ROM scheduler/dispatcher path around `$F87F86`/`$F88118`, after the
+second calibration pass and after the PAR scan includes channels 0, 2,
+3, 4, and 5.
