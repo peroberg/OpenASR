@@ -744,19 +744,19 @@ private:
 	void panel_submission_trace(const char *event, const char *kind, u8 data = 0);
 	void panel_submission_summary();
 	void record_root_directory_instruction(u32 pc);
-	void dump_root_directory_history(u32 trigger_pc, u32 identity, u8 depth_before);
+
 	void log_root_directory_table_write(u32 pc, u32 byte_address, u16 previous, u16 current, u16 mem_mask);
 	void root_directory_summary();
 	void mc68302_access_summary();
-	void dump_root_directory_entry(const char *tag, u32 index);
-	void dump_root_directory_table_summary();
+
+
 	void log_cpu_context(u32 pc);
-	void log_fdc_04b0_context(bool write, u16 mem_mask);
-	void log_fdc_cmd0e_summary();
-	void log_fdc_txn_summary();
-	void log_fdc_88_f3_summary();
-	void log_fdc_cmd46_summary();
-	void log_fdc_cmd46_lowmem_store(u32 byte_address, u16 mem_mask);
+
+
+
+
+
+
 	void log_insert_disk_decision(u32 pc);
 	void log_prompt_select(u32 pc);
 	void log_04b0_countdown(u32 pc, char rw, u16 previous, u16 current);
@@ -2052,7 +2052,7 @@ u8 asr10_boot_state::maincpu_iack_r(u8 level)
 			if constexpr (ASR10_LOG_FDC_04B0_CONTEXT)
 			{
 				if (byte_address == 0x04b0)
-					log_fdc_04b0_context(false, mem_mask);
+					(void)0;
 			}
 		}
 		if (byte_address == 0x04c6 && !machine().side_effects_disabled())
@@ -2893,11 +2893,11 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 	log_lowmem_service_context(true, byte_address, previous, m_lowmem_shadow[offset], data, mem_mask);
 	log_f87f96_queue_write(byte_address, previous, m_lowmem_shadow[offset], data, mem_mask);
 	if (m_fdc_cmd46_result_complete && byte_address >= 0x04c6 && byte_address <= 0x04cc)
-		log_fdc_cmd46_lowmem_store(byte_address, mem_mask);
+		(void)0;
 	if constexpr (ASR10_LOG_FDC_04B0_CONTEXT)
 	{
 		if (m_seen_insert_disk_prompt && byte_address == 0x04b0)
-			log_fdc_04b0_context(true, mem_mask);
+			(void)0;
 	}
 	if (byte_address == 0x04b0)
 		log_04b0_countdown(m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff, 'W', previous, m_lowmem_shadow[offset]);
@@ -3239,7 +3239,7 @@ u16 asr10_boot_state::upd72069_fdc_r(offs_t offset, u16 mem_mask)
 		raw_data = m_fdc->msr_r();
 		m_fdc_last_msr = raw_data;
 		if (m_fdc_cmd0e_active && m_fdc_txn_read_count && !(raw_data & 0x40))
-			log_fdc_cmd0e_summary();
+			(void)0;
 		switch (pc)
 		{
 		case 0x00fb8d1e:
@@ -3386,8 +3386,8 @@ void asr10_boot_state::upd72069_fdc_w(offs_t offset, u16 data, u16 mem_mask)
 		if (m_fdc_txn_summary_active)
 		{
 			if (m_fdc_last_aux_command == 0x88 || m_fdc_last_aux_command == 0xf3)
-				log_fdc_88_f3_summary();
-			log_fdc_txn_summary();
+				(void)0;
+			(void)0;
 		}
 		m_fdc_transaction++;
 		m_fdc_transaction_access = 0;
@@ -4071,7 +4071,7 @@ void asr10_boot_state::note_panel_descriptor_entry(u32 pc)
 		if (outer && identity == 0x00f816c4)
 		{
 			m_root_directory_16c4_entry_count++;
-			dump_root_directory_history(pc, identity, depth_before);
+			(void)0;
 		}
 		osd_printf_info("ASR10_ROOT_DIRECTORY_DESCRIPTOR event=entry pc=%06x raw_a2=%06x identity=%06x "
 			"depth_before=%u class=%s panel=\"%s\"\n",
@@ -4234,78 +4234,6 @@ void asr10_boot_state::record_root_directory_instruction(u32 pc)
 }
 
 
-void asr10_boot_state::dump_root_directory_history(u32 trigger_pc, u32 identity, u8 depth_before)
-{
-	dump_root_directory_table_summary();
-
-	const u32 sp = u32(m_maincpu->state_int(M68K_SP)) & 0x00ffffff;
-	osd_printf_info("ASR10_ROOT_DIRECTORY_SELECTOR trigger_pc=%06x identity=%06x "
-		"depth_before=%u previous_pc=%06x caller=%06x sr=%04x "
-		"d0=%08x d1=%08x d2=%08x d3=%08x d4=%08x d5=%08x d6=%08x d7=%08x "
-		"a0=%06x a1=%06x a2=%06x a3=%06x a4=%06x a5=%06x a6=%06x sp=%06x "
-		"stack=%08x,%08x,%08x,%08x,%08x,%08x,%08x,%08x "
-		"low04b0=%02x low04b1=%02x low04b2=%02x low04b3=%02x low04be=%04x low04bf=%02x "
-		"table_nonzero=%u first_zero=%u\n",
-		trigger_pc, identity, depth_before, m_last_distinct_pc, read_stack_long(sp) & 0x00ffffff,
-		u16(m_maincpu->state_int(M68K_SR)),
-		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
-		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
-		u32(m_maincpu->state_int(M68K_D4)), u32(m_maincpu->state_int(M68K_D5)),
-		u32(m_maincpu->state_int(M68K_D6)), u32(m_maincpu->state_int(M68K_D7)),
-		u32(m_maincpu->state_int(M68K_A0)) & 0x00ffffff,
-		u32(m_maincpu->state_int(M68K_A1)) & 0x00ffffff,
-		u32(m_maincpu->state_int(M68K_A2)) & 0x00ffffff,
-		u32(m_maincpu->state_int(M68K_A3)) & 0x00ffffff,
-		u32(m_maincpu->state_int(M68K_A4)) & 0x00ffffff,
-		u32(m_maincpu->state_int(M68K_A5)) & 0x00ffffff,
-		u32(m_maincpu->state_int(M68K_A6)) & 0x00ffffff,
-		sp, read_stack_long(sp), read_stack_long(sp + 4), read_stack_long(sp + 8),
-		read_stack_long(sp + 12), read_stack_long(sp + 16), read_stack_long(sp + 20),
-		read_stack_long(sp + 24), read_stack_long(sp + 28),
-		lowmem_byte(0x04b0), lowmem_byte(0x04b1), lowmem_byte(0x04b2),
-		lowmem_byte(0x04b3), lowmem_word(0x04be), lowmem_byte(0x04bf),
-		m_root_directory_nonzero_first_word_count, m_root_directory_first_zero_index);
-
-	for (u32 i = 0; i < m_root_directory_history_count; i++)
-	{
-		const u32 slot = (m_root_directory_history_pos + ROOT_DIRECTORY_HISTORY_LIMIT -
-			m_root_directory_history_count + i) % ROOT_DIRECTORY_HISTORY_LIMIT;
-		osd_printf_info("ASR10_ROOT_DIRECTORY_HISTORY index=%u pc=%06x opcode=%04x "
-			"d0=%08x d1=%08x a0=%06x a2=%06x sp=%06x\n",
-			i, m_root_directory_history_pc[slot], m_root_directory_history_opcode[slot],
-			m_root_directory_history_d0[slot], m_root_directory_history_d1[slot],
-			m_root_directory_history_a0[slot], m_root_directory_history_a2[slot],
-			m_root_directory_history_sp[slot]);
-	}
-
-	for (u32 i = 0; i < m_root_directory_a2_change_count; i++)
-	{
-		const u32 slot = (m_root_directory_a2_change_pos + ROOT_DIRECTORY_HISTORY_LIMIT -
-			m_root_directory_a2_change_count + i) % ROOT_DIRECTORY_HISTORY_LIMIT;
-		osd_printf_info("ASR10_ROOT_DIRECTORY_A2_CHANGE index=%u pc=%06x opcode=%04x "
-			"previous=%06x current=%06x d0=%08x a0=%06x\n",
-			i, m_root_directory_a2_change_pc[slot], m_root_directory_a2_change_opcode[slot],
-			m_root_directory_a2_change_previous[slot], m_root_directory_a2_change_current[slot],
-			m_root_directory_a2_change_d0[slot], m_root_directory_a2_change_a0[slot]);
-	}
-
-	for (u32 pc = 0x00ff8840; pc <= 0x00ff8870; pc += 2)
-	{
-		osd_printf_info("ASR10_ROOT_DIRECTORY_CODE pc=%06x word=%04x\n",
-			pc, read_program_word(pc));
-	}
-	for (u32 pc = 0x00ffa640; pc <= 0x00ffa660; pc += 2)
-	{
-		osd_printf_info("ASR10_ROOT_DIRECTORY_CODE pc=%06x word=%04x\n",
-			pc, read_program_word(pc));
-	}
-	for (u32 address = 0x00ffcb10; address <= 0x00ffcb40; address += 2)
-	{
-		osd_printf_info("ASR10_ROOT_DIRECTORY_SELECTOR_TABLE address=%06x word=%04x%s\n",
-			address, read_program_word(address), address == 0x00ffcb2c ? " selected=1" : "");
-	}
-}
-
 
 void asr10_boot_state::log_root_directory_table_write(u32 pc, u32 byte_address, u16 previous, u16 current, u16 mem_mask)
 {
@@ -4349,9 +4277,9 @@ void asr10_boot_state::root_directory_summary()
 {
 	if (!m_root_directory_trace_enabled)
 		return;
-	dump_root_directory_table_summary();
+	(void)0;
 	for (u32 index = 0; index != 16; index++)
-		dump_root_directory_entry(index < 14 ? "final_nonzero_window" : "final_zero_window", index);
+		(void)0;
 	osd_printf_info("ASR10_ROOT_DIRECTORY_SUMMARY descriptor_16c4_entries=%u "
 		"direct_text_count=%u no_inst_seen=%u table_first_word_writes=%u "
 		"nonzero_first_words=%u first_zero_index=%u post_loading_fdc_accesses=%u panel=\"%s\"\n",
@@ -4472,53 +4400,6 @@ void asr10_boot_state::cs3_access_summary()
 }
 
 
-void asr10_boot_state::dump_root_directory_entry(const char *tag, u32 index)
-{
-	if (index >= 40)
-		return;
-	const u32 base = 0x0544 + index * 0x1a;
-	std::string bytes;
-	for (u32 i = 0; i < 0x1a; i++)
-	{
-		if (i)
-			bytes += ' ';
-		bytes += util::string_format("%02x", lowmem_byte(base + i));
-	}
-	std::string name;
-	for (u32 i = 2; i < 15; i++)
-	{
-		const u8 ch = lowmem_byte(base + i);
-		name += (ch >= 0x20 && ch <= 0x7e) ? char(ch) : '.';
-	}
-	osd_printf_info("ASR10_ROOT_DIRECTORY_ENTRY tag=%s index=%u address=%06x first_word=%04x "
-		"type_byte=%02x name=\"%s\" bytes=\"%s\"\n",
-		tag, index, base, lowmem_word(base), lowmem_byte(base + 1),
-		name.c_str(), bytes.c_str());
-}
-
-
-void asr10_boot_state::dump_root_directory_table_summary()
-{
-	u16 first_zero = 0xffff;
-	u16 nonzero = 0;
-	u16 last_nonzero = 0xffff;
-	for (u32 index = 0; index < 40; index++)
-	{
-		const u16 first_word = lowmem_word(0x0544 + index * 0x1a);
-		if (first_word)
-		{
-			nonzero++;
-			last_nonzero = index;
-		}
-		else if (first_zero == 0xffff)
-			first_zero = index;
-	}
-	m_root_directory_nonzero_first_word_count = nonzero;
-	m_root_directory_first_zero_index = first_zero;
-	osd_printf_info("ASR10_ROOT_DIRECTORY_TABLE_SUMMARY nonzero_first_words=%u first_zero_index=%u "
-		"last_nonzero_index=%u\n",
-		nonzero, first_zero, last_nonzero);
-}
 
 
 u32 asr10_boot_state::read_stack_long(u32 address)
@@ -6571,285 +6452,8 @@ void asr10_boot_state::log_f87f96_queue_rte(int state)
 }
 
 
-void asr10_boot_state::log_fdc_04b0_context(bool write, u16 mem_mask)
-{
-	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-	const u16 value = m_lowmem_shadow[0x04b0 >> 1];
-
-	logerror("ASR10FDC04B0_CONTEXT pc=%06x "
-		"op_m6=%04x op_m4=%04x op_m2=%04x op_0=%04x op_p2=%04x op_p4=%04x op_p6=%04x op_p8=%04x "
-		"d0=%08x d1=%08x d2=%08x d3=%08x a0=%08x a1=%08x a2=%08x a3=%08x sr=%04x "
-		"value=%04x high_byte=%u mem_mask=%04x rw=%c last_command=%02x\n",
-		pc,
-		read_code_word(pc - 6), read_code_word(pc - 4), read_code_word(pc - 2), read_code_word(pc),
-		read_code_word(pc + 2), read_code_word(pc + 4), read_code_word(pc + 6), read_code_word(pc + 8),
-		u32(m_maincpu->state_int(M68K_D0)), u32(m_maincpu->state_int(M68K_D1)),
-		u32(m_maincpu->state_int(M68K_D2)), u32(m_maincpu->state_int(M68K_D3)),
-		u32(m_maincpu->state_int(M68K_A0)), u32(m_maincpu->state_int(M68K_A1)),
-		u32(m_maincpu->state_int(M68K_A2)), u32(m_maincpu->state_int(M68K_A3)),
-		u16(m_maincpu->state_int(M68K_SR)), value, value >> 8, mem_mask,
-		write ? 'W' : 'R', m_fdc_last_aux_command);
-}
 
 
-void asr10_boot_state::log_fdc_cmd0e_summary()
-{
-	std::string result_bytes;
-	std::string result_pcs;
-	for (u8 index = 0; index < m_fdc_txn_read_count; index++)
-	{
-		if (index)
-		{
-			result_bytes += ',';
-			result_pcs += ',';
-		}
-		result_bytes += util::string_format("%02x", m_fdc_txn_read_bytes[index]);
-		result_pcs += util::string_format("%06x", m_fdc_txn_read_pcs[index]);
-	}
-
-	logerror("ASR10FDC_CMD0E_SUMMARY txn=%u command=%02x result_count=%u fifo_bytes=\"%s\" "
-		"fifo_read_pcs=\"%s\" field_04b0=%04x field_04c4=%04x field_04c6=%04x "
-		"field_04d6=%04x field_04e6=%04x insert_disk_phase=%u\n",
-		m_fdc_transaction, m_fdc_last_aux_command, m_fdc_txn_read_count,
-		result_bytes.c_str(), result_pcs.c_str(),
-		m_lowmem_shadow[0x04b0 >> 1], m_lowmem_shadow[0x04c4 >> 1],
-		m_lowmem_shadow[0x04c6 >> 1], m_lowmem_shadow[0x04d6 >> 1],
-		m_lowmem_shadow[0x04e6 >> 1], m_seen_insert_disk_prompt ? 1 : 0);
-
-	m_fdc_cmd0e_active = false;
-}
-
-
-void asr10_boot_state::log_fdc_txn_summary()
-{
-	std::string read_bytes;
-	std::string read_pcs;
-	std::string write_bytes;
-	std::string write_pcs;
-	for (u8 index = 0; index < m_fdc_txn_read_count; index++)
-	{
-		if (index)
-		{
-			read_bytes += ',';
-			read_pcs += ',';
-		}
-		read_bytes += util::string_format("%02x", m_fdc_txn_read_bytes[index]);
-		read_pcs += util::string_format("%06x", m_fdc_txn_read_pcs[index]);
-	}
-	for (u8 index = 0; index < m_fdc_txn_write_count; index++)
-	{
-		if (index)
-		{
-			write_bytes += ',';
-			write_pcs += ',';
-		}
-		write_bytes += util::string_format("%02x", m_fdc_txn_write_bytes[index]);
-		write_pcs += util::string_format("%06x", m_fdc_txn_write_pcs[index]);
-	}
-
-	logerror("ASR10FDC_TXN_SUMMARY txn=%u command=%02x result_count=%u fifo_bytes=\"%s\" "
-		"fifo_read_pcs=\"%s\" fifo_write_count=%u fifo_write_bytes=\"%s\" fifo_write_pcs=\"%s\" "
-		"field_04a6=%04x field_04ae=%04x field_04b0=%04x field_04b4=%04x field_04b6=%04x "
-		"field_04c4=%04x field_04c6=%04x field_04d6=%04x field_04e6=%04x insert_disk_phase=%u\n",
-		m_fdc_transaction, m_fdc_last_aux_command, m_fdc_txn_read_count,
-		read_bytes.c_str(), read_pcs.c_str(), m_fdc_txn_write_count,
-		write_bytes.c_str(), write_pcs.c_str(),
-		m_lowmem_shadow[0x04a6 >> 1], m_lowmem_shadow[0x04ae >> 1],
-		m_lowmem_shadow[0x04b0 >> 1], m_lowmem_shadow[0x04b4 >> 1],
-		m_lowmem_shadow[0x04b6 >> 1], m_lowmem_shadow[0x04c4 >> 1],
-		m_lowmem_shadow[0x04c6 >> 1], m_lowmem_shadow[0x04d6 >> 1],
-		m_lowmem_shadow[0x04e6 >> 1], m_seen_insert_disk_prompt ? 1 : 0);
-
-	m_fdc_txn_summary_active = false;
-}
-
-
-void asr10_boot_state::log_fdc_88_f3_summary()
-{
-	// Confirmed media probe: 88 selects 250 kbit/s, F3 is the precompensation
-	// auxiliary command, then 03 specifies timing, 07 recalibrates drive 0, and
-	// 08 senses interrupt status.  With no floppy device or media attached, the
-	// current device returns ST0=68 (failure, seek end, drive not ready).
-	std::string read_bytes;
-	std::string read_pcs;
-	std::string read_msr;
-	std::string write_bytes;
-	std::string write_pcs;
-	std::string write_msr;
-	floppy_image_device *const floppy = m_floppy_connector->get_device();
-	for (u8 index = 0; index < m_fdc_txn_read_count; index++)
-	{
-		if (index)
-		{
-			read_bytes += ',';
-			read_pcs += ',';
-			read_msr += ',';
-		}
-		read_bytes += util::string_format("%02x", m_fdc_txn_read_bytes[index]);
-		read_pcs += util::string_format("%06x", m_fdc_txn_read_pcs[index]);
-		read_msr += util::string_format("%02x", m_fdc_txn_read_msr[index]);
-	}
-	for (u8 index = 0; index < m_fdc_txn_write_count; index++)
-	{
-		if (index)
-		{
-			write_bytes += ',';
-			write_pcs += ',';
-			write_msr += ',';
-		}
-		write_bytes += util::string_format("%02x", m_fdc_txn_write_bytes[index]);
-		write_pcs += util::string_format("%06x", m_fdc_txn_write_pcs[index]);
-		write_msr += util::string_format("%02x", m_fdc_txn_write_msr[index]);
-	}
-
-	logerror("ASR10_FDC_CMD%02X txn=%u event=summary "
-		"fifo_reads=\"%s\" fifo_read_pcs=\"%s\" msr_before_reads=\"%s\" "
-		"fifo_writes=\"%s\" fifo_write_pcs=\"%s\" msr_before_writes=\"%s\" "
-		"read_source=upd72069_device stubbed=0 "
-		"drive_attached=%u media_mounted=%u ready=%u motor=%u density=%s "
-		"field_049d=%04x field_04ac=%04x field_04ae=%04x field_04b0=%04x "
-		"field_04c4=%04x field_04c6=%04x field_04d6=%04x field_04e6=%04x\n",
-		m_fdc_last_aux_command, m_fdc_transaction,
-		read_bytes.c_str(), read_pcs.c_str(), read_msr.c_str(),
-		write_bytes.c_str(), write_pcs.c_str(), write_msr.c_str(),
-		floppy ? 1 : 0, floppy && floppy->exists() ? 1 : 0,
-		floppy && !floppy->ready_r() ? 1 : 0, floppy && !floppy->mon_r() ? 1 : 0,
-		floppy && floppy->floppy_is_hd() ? "hd" : "dd",
-		m_lowmem_shadow[0x049c >> 1], m_lowmem_shadow[0x04ac >> 1],
-		m_lowmem_shadow[0x04ae >> 1], m_lowmem_shadow[0x04b0 >> 1],
-		m_lowmem_shadow[0x04c4 >> 1], m_lowmem_shadow[0x04c6 >> 1],
-		m_lowmem_shadow[0x04d6 >> 1], m_lowmem_shadow[0x04e6 >> 1]);
-}
-
-void asr10_boot_state::log_fdc_cmd46_lowmem_store(u32 byte_address, u16 mem_mask)
-{
-	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-
-	const u32 word_address = byte_address & ~u32(1);
-	const u16 value = m_lowmem_shadow[word_address >> 1];
-
-	const char *high_field = "unknown";
-	const char *low_field = "unknown";
-
-	switch (word_address)
-	{
-	case 0x04c6: high_field = "ST0"; low_field = "ST1"; break;
-	case 0x04c8: high_field = "ST2"; low_field = "C"; break;
-	case 0x04ca: high_field = "H"; low_field = "R"; break;
-	case 0x04cc: high_field = "N"; low_field = "following_state"; break;
-	}
-
-	if (ACCESSING_BITS_8_15)
-		logerror("ASR10_FDC_CMD46_RESULT_STORE txn=%u event=result_store pc=%06x addr=%06x field=%s value=%02x mem_mask=%04x\n",
-			m_fdc_cmd46_transaction, pc, word_address, high_field, u8(value >> 8), mem_mask);
-
-	if (ACCESSING_BITS_0_7)
-		logerror("ASR10_FDC_CMD46_RESULT_STORE txn=%u event=result_store pc=%06x addr=%06x field=%s value=%02x mem_mask=%04x\n",
-			m_fdc_cmd46_transaction, pc, word_address + 1, low_field, u8(value), mem_mask);
-
-	if (word_address == 0x04cc && ACCESSING_BITS_8_15)
-		log_fdc_cmd46_summary();
-}
-
-void asr10_boot_state::log_fdc_cmd46_summary()
-{
-	std::string write_bytes;
-	std::string write_pcs;
-	std::string result_bytes;
-	std::string result_pcs;
-	for (u8 index = 0; index < m_fdc_cmd46_write_count; index++)
-	{
-		if (index)
-		{
-			write_bytes += ',';
-			write_pcs += ',';
-		}
-		write_bytes += util::string_format("%02x", m_fdc_cmd46_write_bytes[index]);
-		write_pcs += util::string_format("%06x", m_fdc_cmd46_write_pcs[index]);
-	}
-	for (u8 index = 0; index < m_fdc_cmd46_result_count; index++)
-	{
-		if (index)
-		{
-			result_bytes += ',';
-			result_pcs += ',';
-		}
-		result_bytes += util::string_format("%02x", m_fdc_cmd46_result_bytes[index]);
-		result_pcs += util::string_format("%06x", m_fdc_cmd46_result_pcs[index]);
-	}
-
-	floppy_image_device *const floppy = m_floppy_connector->get_device();
-	const floppy_image_format_t *const format = floppy ? floppy->get_load_format() : nullptr;
-	const u8 command = m_fdc_cmd46_write_bytes[0];
-	const u8 select = m_fdc_cmd46_write_bytes[1];
-	const u8 c = m_fdc_cmd46_write_bytes[2];
-	const u8 h = m_fdc_cmd46_write_bytes[3];
-	const u8 r = m_fdc_cmd46_write_bytes[4];
-	const u8 n = m_fdc_cmd46_write_bytes[5];
-	const u8 eot = m_fdc_cmd46_write_bytes[6];
-	const u8 gpl = m_fdc_cmd46_write_bytes[7];
-	const u8 dtl = m_fdc_cmd46_write_bytes[8];
-	const u8 st0 = m_fdc_cmd46_result_bytes[0];
-	const u8 st1 = m_fdc_cmd46_result_bytes[1];
-	const u8 st2 = m_fdc_cmd46_result_bytes[2];
-	const u8 result_c = m_fdc_cmd46_result_bytes[3];
-	const u8 result_h = m_fdc_cmd46_result_bytes[4];
-	const u8 result_r = m_fdc_cmd46_result_bytes[5];
-	const u8 result_n = m_fdc_cmd46_result_bytes[6];
-	logerror("ASR10_FDC_CMD46 txn=%u event=summary "
-		"data_rate=%u data_rate_source=%02x "
-		"command_bytes=\"%s\" fifo_write_pcs=\"%s\" "
-		"command_byte=%02x drive_head_byte=%02x C_byte=%02x H_byte=%02x R_byte=%02x N_byte=%02x "
-		"EOT_byte=%02x GPL_byte=%02x DTL_byte=%02x "
-		"decoded_drive=%u decoded_head_select=%u decoded_C=%02x decoded_H=%02x decoded_R=%02x decoded_N=%02x "
-		"decoded_sector_size=%u decoded_EOT=%02x decoded_GPL=%02x decoded_DTL=%02x mfm=%u mt=%u sk=%u "
-		"result_bytes=\"%s\" fifo_result_pcs=\"%s\" "
-		"ST0=%02x ST1=%02x ST2=%02x result_C_byte=%02x result_H_byte=%02x result_R_byte=%02x result_N_byte=%02x "
-		"ST0_invalid=%u ST0_abnormal=%u ST0_seek_end=%u ST0_equipment_check=%u ST0_not_ready=%u "
-		"ST1_end_of_cylinder=%u ST1_data_error=%u ST1_overrun=%u ST1_no_data=%u ST1_not_writable=%u ST1_missing_address_mark=%u "
-		"ST2_control_mark=%u ST2_data_error=%u ST2_wrong_cylinder=%u ST2_scan_equal=%u ST2_scan_not_satisfied=%u "
-		"ST2_bad_cylinder=%u ST2_missing_data_address_mark=%u "
-		"decoded_result_C=%02x decoded_result_H=%02x decoded_result_R=%02x decoded_result_N=%02x "
-		"lowmem_ST0_04c6=%02x lowmem_ST1_04c7=%02x lowmem_ST2_04c8=%02x "
-		"lowmem_C_04c9=%02x lowmem_H_04ca=%02x lowmem_R_04cb=%02x lowmem_N_04cc=%02x "
-		"format=%s image_geometry=not_exposed current_cylinder=%d current_side=%u drive_sides=%d "
-		"media_mounted=%u ready=%u motor=%u density=%s read_source=upd72069_device stubbed=0 "
-		"total_fifo_reads=%u data_phase_reads=%u result_phase_reads=%u tc_asserted=0\n",
-		m_fdc_cmd46_transaction, m_fdc_data_rate, m_fdc_data_rate_source,
-		write_bytes.c_str(), write_pcs.c_str(),
-		command, select, c, h, r, n, eot, gpl, dtl,
-		select & 3, BIT(select, 2), c, h, r, n, n <= 7 ? 128U << n : 0,
-		eot, gpl, dtl, BIT(command, 6), BIT(command, 7), BIT(command, 5),
-		result_bytes.c_str(), result_pcs.c_str(),
-		st0, st1, st2, result_c, result_h, result_r, result_n,
-		BIT(st0, 7), BIT(st0, 6), BIT(st0, 5), BIT(st0, 4), BIT(st0, 3),
-		BIT(st1, 7), BIT(st1, 5), BIT(st1, 4), BIT(st1, 2), BIT(st1, 1), BIT(st1, 0),
-		BIT(st2, 6), BIT(st2, 5), BIT(st2, 4), BIT(st2, 3), BIT(st2, 2), BIT(st2, 1), BIT(st2, 0),
-		result_c, result_h, result_r, result_n,
-		u8(m_lowmem_shadow[0x04c6 >> 1] >> 8), u8(m_lowmem_shadow[0x04c6 >> 1]),
-		u8(m_lowmem_shadow[0x04c8 >> 1] >> 8), u8(m_lowmem_shadow[0x04c8 >> 1]),
-		u8(m_lowmem_shadow[0x04ca >> 1] >> 8), u8(m_lowmem_shadow[0x04ca >> 1]),
-		u8(m_lowmem_shadow[0x04cc >> 1] >> 8), format ? format->name() : "none",
-		floppy ? floppy->get_cyl() : -1, floppy ? floppy->ss_r() : 0,
-		floppy ? floppy->get_sides() : 0, floppy && floppy->exists() ? 1 : 0,
-		floppy && !floppy->ready_r() ? 1 : 0, floppy && !floppy->mon_r() ? 1 : 0,
-		floppy && floppy->floppy_is_hd() ? "hd" : "dd",
-		m_fdc_cmd46_total_fifo_reads, m_fdc_cmd46_msr_exm_seen_count,
-		m_fdc_cmd46_total_fifo_reads - m_fdc_cmd46_msr_exm_seen_count);
-
-	if (m_fdc_cmd46_transaction == 1 && !m_fdc_cmd46_first_data_logged)
-	{
-		m_fdc_cmd46_first_data_logged = true;
-		std::string hex;
-		for (u8 b : m_fdc_cmd46_first_data_bytes)
-			hex += util::string_format("%02x", b);
-		logerror("ASR10_TASK5_SECTOR_DATA txn=1 c=%02x h=%02x r=%02x first64=\"%s\"\n",
-			c, h, r, hex.c_str());
-	}
-
-	m_fdc_cmd46_active = false;
-	m_fdc_cmd46_result_complete = false;
-}
 
 
 void asr10_boot_state::log_cpu_context(u32 pc)
