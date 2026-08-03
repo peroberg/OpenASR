@@ -4714,3 +4714,91 @@ captured path is the ES5506 bank-1 unmapped read loop after
 `LOADING SYSTEM`, not a browser rejection of the directory entry.
 
 No source changes were made for this reproduction.
+
+---
+
+### 4.30 V350 browser regression bisect
+
+2026-08-03. Regression-only reproduction from clean bisect state. The
+pre-existing dirty worktree was stashed before checkout and restored after
+`git bisect reset`.
+
+Start branch/HEAD:
+
+```
+asr10-architecture-cleanup
+b162f23b022678b56063317d43e20cdcff13f0e2
+```
+
+Historical reproduction point:
+
+```
+da1b4c38525 asr10: route ES5510 host select 0xE0 (type-1 GPR commit path)
+```
+
+`make SUBTARGET=mess` is not a valid build target at that revision
+(`TARGET=mame SUBTARGET=mess` has no definition file), so the historical
+single-driver build used:
+
+```sh
+make SOURCES=src/mame/ensoniq/asr10_boot.cpp -j1
+```
+
+Command used for the V350 reproduction and bisect oracle:
+
+```sh
+SDL_VIDEODRIVER=dummy \
+ASR10_DIAG_PANEL_AUTORESPOND=1 \
+ASR10_EXPERIMENT_DUART_COUNTER_TIMER=1 \
+ASR10_EXPERIMENT_ES5506_HOST=1 \
+ASR10_DIAG_PAR_VALUE=0x200 \
+ASR10_EXPERIMENT_PAR_DIAGNOSTIC=1 \
+ASR10_EXPERIMENT_POST_TUNING_INDIRECT_TRACE=1 \
+ASR10_EXPERIMENT_DISK_SIGNATURE_TRACE=1 \
+ASR10_EXPERIMENT_TUNING_STALL_TRACE=1 \
+ASR10_EXPERIMENT_FILESYSTEM_BROWSER_TRACE=1 \
+ASR10_EXPERIMENT_DOWNLOAD_TRACE=1 \
+ASR10_EXPERIMENT_FC3000_VERIFY_TRACE=1 \
+ASR10_EXPERIMENT_ES5510_HOST=1 \
+./mame asr10booth -flop1 floppies/asr10booth/V350.img \
+  -video none -sound none -nothrottle -seconds_to_run 30 -log
+```
+
+`[Verified]` `da1b4c38525` reproduces the V350 browser milestone. The
+observed panel sequence includes:
+
+```
+"q"
+"   ENSONIQ  ASR-10    "
+"    LOADING SYSTEM    "
+"TUNING KBD - HANDS OFF"
+"    KEYBOARD TUNED"
+"FILE 1  TUTORIAL BNK"
+```
+
+`NO INST OR BANK FILES` did not reproduce for `V350.img`; the run reached
+the expected bank entry instead.
+
+`[Verified]` First bad commit from `git bisect`:
+
+```
+7bc57b8ab45403f286b04abc930f158bc6b05bb5
+asr10: replace hand-written SCN2681 model with mc68681_device
+```
+
+Immediate good/bad boundary:
+
+```
+good: 80ee114be1a161a0abf3706051660d9d8149e54a
+      asr10: add root directory descriptor/table diagnostic tracing
+bad:  7bc57b8ab45403f286b04abc930f158bc6b05bb5
+      asr10: replace hand-written SCN2681 model with mc68681_device
+```
+
+Good-side panel reached `FILE 1  TUTORIAL BNK`. Bad-side panel reached
+`TUNING KBD - HANDS OFF` and then internally `KEYBOARD TUNED`, but the
+run idled with panel state `"    KEYBOARD TUNED"` and never rendered
+`FILE 1  TUTORIAL BNK` within the same oracle window.
+
+Bisect skipped documentation-only commits. No source changes were made
+for this reproduction.
