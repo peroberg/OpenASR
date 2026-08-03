@@ -362,3 +362,163 @@ the scheduler with `D0` loaded from a table at `$D0B6 + $D0B0`.
 12-entry scan and scheduler handoff. The observed condition gates are
 `$0CE3 == 1` and per-index bytes at `$D0C4 + $D0B0`; the exact hardware
 event or subsystem state behind those bytes remains open.
+
+---
+
+# Scheduler tick/slot timing probe
+
+2026-08-03. Follow-up to the slot resume probe above. Method: temporary
+C++ observation in the existing instruction hook, gated by
+`ASR10_DIAG_SCHEDULER_TICK_PROBE`, plus the already documented temporary
+all-channel PAR table. This was used only to correlate CPU registers,
+exception-frame callers, low-memory slot fields, and writing PCs in one
+run. All probe code and the PAR table were removed after measurement;
+`asr10_boot.cpp` returned to zero diff.
+
+Command:
+
+```sh
+ASR10_DIAG_PANEL_AUTORESPOND=1 \
+ASR10_EXPERIMENT_ES5506_HOST=1 \
+ASR10_EXPERIMENT_PAR_CHANNEL_TABLE=1 \
+ASR10_DIAG_SCHEDULER_TICK_PROBE=1 \
+SDL_VIDEODRIVER=dummy \
+./mess asr10booth -flop1 floppies/asr10booth/V350.img \
+  -video none -sound none -nothrottle -seconds_to_run 25 -log
+```
+
+End of run:
+
+```
+ASR10_CS3_ACCESS_SUMMARY ... unknown=0
+ASR10_MC68302_ACCESS_SUMMARY ... unknown=0
+Average speed: 64.54% (24 seconds)
+```
+
+## `[Verified]` 100 ms slot snapshots
+
+The probe captured 251 snapshots of all six scheduler slots. A stable
+late snapshot:
+
+| Slot | Base | Counter | State +2/+3 | Pending | Saved PC | Pre-2 | Parking | Threshold |
+|---:|---:|---:|---:|---:|---:|---:|---|---:|
+| 0 | `$23F6` | `$0000` | `$02/$02` | 0 | `$F87F66` | `$601A` | other | `$0000` |
+| 1 | `$240C` | `$0000` | `$80/$80` | 0 | `$FFC8B0` | n/a | other | `$0000` |
+| 2 | `$2422` | `$0000` | `$80/$80` | 0 | `$0073EA` | `$4E46` | other | `$0000` |
+| 3 | `$2438` | `$0000` | `$80/$80` | 0 | `$F8F2FA` | `$4E46` | other | `$0000` |
+| 4 | `$244E` | `$0000` | `$08/$08` | 0 | `$F87F66` | `$601A` | other | `$0000` |
+| 5 | `$2464` | `$0064` | `$01/$01` | 0 | `$00780C` | `$4E47` | TRAP #7 yield | `$0063` |
+
+Slots 0-4 were not parked at a saved PC immediately after TRAP #8
+(`$4E48`) with a permanently zero counter. By this test, none of slots
+0-4 is unambiguously suspicious in this run.
+
+Static disassembly for the saved PCs:
+
+```
+f87f64: bra     $f87f80
+f87f66: move    USP,A0
+
+ffc8ac: lea     (A5,D2.l),A0
+ffc8b0: move.b  ($47,A0),D2
+
+0073e8: trap    #6
+0073ea: bra     $740c
+
+f8f2f8: trap    #6
+f8f2fa: jsr     $ffff9650.l
+```
+
+## `[Verified]` TRAP #8 callers
+
+The run logged 905 entries at `$F8812C`.
+
+| Caller PC | Count | Notes |
+|---:|---:|---|
+| `$0077CE` | 831 | slot 5 background poller sleep |
+| `$006870` | 40 | PAR/calibration path |
+| `$0069B4` | 33 | PAR/calibration path |
+| `$0069C4` | 1 | PAR/calibration path |
+
+Representative entries:
+
+```
+caller_pc=006870 active_slot=244e slot_index=4 d0=0004 counter_before=0000 counter_after=0004 threshold=0000
+caller_pc=0077ce active_slot=2464 slot_index=5 d0=0064 counter_before=0000 counter_after=0064 threshold=0000
+caller_pc=0077ce active_slot=2464 slot_index=5 d0=0064 counter_before=0058 counter_after=0064 threshold=0058
+```
+
+`[Verified]` TRAP #8 writes `D0` to the active slot counter. For the
+stable slot-5 loop, the threshold before the sleep is `$0058`.
+
+## `[Verified]` Slot 5 timing
+
+An early one-shot threshold read captured `$0009`, before the stable
+poller state was established. The stable value visible in later TRAP #8
+rows is `$0058`.
+
+With the firmware's 100-tick sleep value:
+
+```
+wake_after = 100 - threshold = 100 - 88 = 12 ticks
+```
+
+The measured interval between `$0077CE` passages averaged 191,994 CPU
+cycles over 830 intervals, about 12.0 ms at the 16 MHz main CPU clock.
+This matches the stable threshold-derived 12 ms wake interval.
+
+`[Likely]` Slot 5 is an intentional periodic background poller with a
+roughly 12 ms steady-state cadence in this boot path.
+
+## `[Verified]` Panel THRB references
+
+Only two of the requested panel THRB reference PCs executed:
+
+| PC | Hits | After PAR calibration |
+|---:|---:|---:|
+| `$F89AA2` | 0 | 0 |
+| `$F89BE0` | 0 | 0 |
+| `$F89C46` | 8 | 0 |
+| `$F89C86` | 0 | 0 |
+| `$F89CAE` | 2 | 0 |
+| `$F89CBC` | 0 | 0 |
+| `$F89CE8` | 0 | 0 |
+| `$F89CF6` | 0 | 0 |
+| `$F89D0E` | 0 | 0 |
+| `$F89D22` | 0 | 0 |
+
+`[Verified]` In this run, the panel driver did not hit those THRB
+reference PCs after OS calibration.
+
+## `[Verified]` Slot write attribution
+
+Every observed slot-field change was attributed to a writing PC. No
+spontaneous slot changes were observed.
+
+| Producer class | Writes |
+|---|---:|
+| IRQ6 / `$F88300` | 20,268 |
+| TRAP #8 / `$F8812C` | 905 |
+| secondary callback | 0 |
+| other writing PC | 40,155 |
+
+Top writing PCs/fields:
+
+| Count | Producer | PC | Field |
+|---:|---|---:|---:|
+| 10,230 | IRQ6 / `$F88300` | `$F88312` | `+0` |
+| 10,044 | other | `$F87FB0` | `+2` |
+| 10,039 | other | `$F88124` | `+2` |
+| 10,039 | other | `$F88120` | `+2` |
+| 10,038 | IRQ6 / `$F88300` | `$F8831A` | `+2` |
+| 9,965 | other | `$F8810C` | `+$14` |
+| 905 | TRAP #8 / `$F8812C` | `$F88134` | `+0` |
+
+`[Likely]` The large "other" group is scheduler-owned state maintenance:
+context save/ready flag handling at `$F87FB0`, TRAP #7 threshold/state
+logic at `$F8810C-$F88124`, and early boot table initialization or
+overlap such as `$FB8AB6`.
+
+`[Hypothesis]` The missing forward progress after calibration is not a
+bad slot-5 sleep interval. The next target should be the event source
+that should enqueue or wake another task after calibration completes.
