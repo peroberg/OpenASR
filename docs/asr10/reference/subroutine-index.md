@@ -3,6 +3,8 @@
 Slå upp en adress, förstå vad som händer där. Ingen historik, inga
 experiment, inga resonemang - de hör hemma i `investigations/`.
 Läs `boot-sequence.md` för den ordnade reset-till-browser-kedjan.
+Läs `vector-map.md` för CPU-exceptions, TRAP-vektorer, autovectors och
+MC68302 IACK-/interruptvektorer.
 
 Statusmärkning gäller enskilda påståenden:
 
@@ -144,7 +146,9 @@ Outputs: paneltext via paneldrivrutinens vanliga väg.
 IPR `$FC6814` <- `$FFFF`, Timer2 TRR `$FC6852` <- `$3F01`, TMR
 `$FC6850` <- `$003B`.
 
-Side effects: armerar den MC68302/DUART-väg som producerar IRQ6-ticken.
+Side effects: initierar MC68302:s interruptcontroller och Timer 2.
+Vektorstatus och skillnaden mot DUART IRQ6-vägen finns i
+`vector-map.md`.
 
 ## Schemaläggare
 
@@ -249,7 +253,8 @@ Calls: indirekt via `($00DE).w`, `($00E2).w`, `($00E6).w`, `($8638).w`.
 
 Inputs: DUART ISR.
 
-Side effects: dispatchar eller reser ERROR 145.
+Side effects: dispatchar eller reser ERROR 145. IACK-/vektordetaljerna
+finns i `vector-map.md`.
 
 ### `$F8845A` duart_chan_a_break_recover
 

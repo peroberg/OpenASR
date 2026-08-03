@@ -2,6 +2,7 @@
 
 Hela vägen från reset till `FILE 1  TUTORIAL BNK`, i ordning. Varje steg
 länkar till `subroutine-index.md` för detaljer.
+Vektor- och IACK-detaljer finns samlade i `vector-map.md`.
 
 **Ungefär hälften av övergångarna har en identifierad rutin. Resten är
 markerade `RUTIN EJ IDENTIFIERAD` och utgör arbetslistan.** Ett steg utan
@@ -30,6 +31,8 @@ ROM:en; `$F87FCC` är den enda som öppnar avbrott helt.
 
 `$FB8E7E` sätter MC68302:s avbrottskontroller och Timer 2: GIMR←`$8040`,
 IMR←0, ISR←`$FFFF`, IPR←`$FFFF`, TRR2←`$3F01`, TMR2←`$003B`.
+Timer 2 kan vara enabled som räknare här, men dess interrupt är maskerat
+i verifierad boot; se `vector-map.md`.
 
 DUART:en initieras med CTUR/CTLR←`$07D0` och ACR←`$60` (timerläge,
 X1/CLK). Det ger `2 × 2000 / 4 MHz` = **1,000 ms tick**, vilket är
@@ -150,6 +153,8 @@ bankfiler.
 Från första ticken drivs allt av `$F88300` (IRQ6-producent, dekrementerar
 slotarnas räknare och sätter pending) och `$F87F92` (dispatchskanning).
 Sex slots, stride `$16`, tabellgränser `($00C6).w`/`($00C8).w`.
+DUART counter-ready och panelens RxRDYB är separata DUART-orsaker bakom
+samma externa IRQ6/IACK-vektor; vektorkartan håller isär dem.
 
 En slot vars räknare är noll blir **aldrig** redo. `trap #8` beväpnar
 räknaren; faktisk väntan är `counter − threshold`.
