@@ -720,7 +720,6 @@ private:
 	u8 m_fdc_os_cmd_len = 0;
 	std::array<u8, 9> m_fdc_os_cmd_bytes{};
 	u32 m_fdc_os_cmd_pc = 0;
-	bool m_duart_counter_timer_enabled = false;
 	bool m_divzero_frame_logged = false;
 	bool m_es5506_host_enabled = false;
 	std::array<u8, 64> m_es5506_host_seen_mask{}; // bit0=read seen, bit1=write seen, per device offset
@@ -1017,7 +1016,7 @@ void asr10_boot_state::machine_start()
 		0x00fc2068, 0x00fc206f, "hook_fc2068_tap",
 		[this] (offs_t offset, u16 &data, u16 mem_mask)
 		{
-			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+			if (machine().side_effects_disabled())
 				return;
 			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 			const u32 address = 0x00fc2068 + offset * 2;
@@ -1058,7 +1057,7 @@ void asr10_boot_state::machine_start()
 		0x00fc2d40, 0x00fc2d7f, "hook_fc2d40_read_tap",
 		[this] (offs_t offset, u16 &data, u16 mem_mask)
 		{
-			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+			if (machine().side_effects_disabled())
 				return;
 			if (m_fc2d40_cluster_count >= 32)
 				return;
@@ -1072,7 +1071,7 @@ void asr10_boot_state::machine_start()
 		0x00fc2d40, 0x00fc2d7f, "hook_fc2d40_write_tap",
 		[this] (offs_t offset, u16 &data, u16 mem_mask)
 		{
-			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+			if (machine().side_effects_disabled())
 				return;
 			if (m_fc2d40_cluster_count >= 32)
 				return;
@@ -1133,8 +1132,6 @@ void asr10_boot_state::machine_start()
 				if (pc == 0x00f97574 && hall_reverb_type1_record0_active())
 					log_hall_reverb_event("verify_compare", pc, selected_cpu_byte_address, data, mem_mask);
 			}
-			if (!m_duart_counter_timer_enabled)
-				return;
 			m_fc3000_cluster_count++;
 			if (m_fc3000_cluster_count > 64 && (m_fc3000_cluster_count & (m_fc3000_cluster_count - 1)))
 				return;
@@ -1221,8 +1218,6 @@ void asr10_boot_state::machine_start()
 					log_hall_reverb_event(hr_event, pc, selected_cpu_byte_address, data, mem_mask);
 				}
 			}
-			if (!m_duart_counter_timer_enabled)
-				return;
 			m_fc3000_cluster_count++;
 			// TASK4 correction: this tap previously hard-capped at 32
 			// events and silently dropped everything after, which is
@@ -1248,7 +1243,7 @@ void asr10_boot_state::machine_start()
 		0x00fc222e, 0x00fc222f, "hook_fc222e_read_tap",
 		[this] (offs_t offset, u16 &data, u16 mem_mask)
 		{
-			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+			if (machine().side_effects_disabled())
 				return;
 			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 			logerror("ASR10_CLUSTER_TRACE event=fc222e_read pc=%06x mem_mask=%04x data=%04x\n",
@@ -1258,7 +1253,7 @@ void asr10_boot_state::machine_start()
 		0x00fc222e, 0x00fc222f, "hook_fc222e_write_tap",
 		[this] (offs_t offset, u16 &data, u16 mem_mask)
 		{
-			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+			if (machine().side_effects_disabled())
 				return;
 			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 			logerror("ASR10_CLUSTER_TRACE event=fc222e_write pc=%06x mem_mask=%04x data=%04x\n",
@@ -1268,7 +1263,7 @@ void asr10_boot_state::machine_start()
 		0x00fc226e, 0x00fc226f, "hook_fc226e_read_tap",
 		[this] (offs_t offset, u16 &data, u16 mem_mask)
 		{
-			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+			if (machine().side_effects_disabled())
 				return;
 			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 			logerror("ASR10_CLUSTER_TRACE event=fc226e_read pc=%06x mem_mask=%04x data=%04x\n",
@@ -1278,7 +1273,7 @@ void asr10_boot_state::machine_start()
 		0x00fc226e, 0x00fc226f, "hook_fc226e_write_tap",
 		[this] (offs_t offset, u16 &data, u16 mem_mask)
 		{
-			if (!m_duart_counter_timer_enabled || machine().side_effects_disabled())
+			if (machine().side_effects_disabled())
 				return;
 			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 			logerror("ASR10_CLUSTER_TRACE event=fc226e_write pc=%06x mem_mask=%04x data=%04x\n",
@@ -1635,7 +1630,6 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_fdc_os_cmd_len));
 	save_item(NAME(m_fdc_os_cmd_bytes));
 	save_item(NAME(m_fdc_os_cmd_pc));
-	save_item(NAME(m_duart_counter_timer_enabled));
 	save_item(NAME(m_divzero_frame_logged));
 	m_es5506_host_enabled = m_es5506_host.found();
 	save_item(NAME(m_es5506_host_enabled));
@@ -1927,8 +1921,6 @@ void asr10_boot_state::machine_reset()
 	m_fdc_os_cmd_len = 0;
 	m_fdc_os_cmd_bytes.fill(0);
 	m_fdc_os_cmd_pc = 0;
-	const char *const duart_counter_timer = std::getenv("ASR10_EXPERIMENT_DUART_COUNTER_TIMER");
-	m_duart_counter_timer_enabled = duart_counter_timer && duart_counter_timer[0] && duart_counter_timer[0] != '0';
 	m_divzero_frame_logged = false;
 	m_es5506_host_seen_mask.fill(0);
 	m_es5506_host_access_count = 0;
@@ -2661,7 +2653,6 @@ const char *asr10_boot_state::panel_reply_experiment_name() const
 		m_panel_e_ff_drain_known_ring_enabled ? "ASR10_EXPERIMENT_PANEL_FF_DRAIN_KNOWN_RING" :
 		m_panel_d2_reply_71_7e_ff_enabled ? "ASR10_EXPERIMENT_PANEL_REPLY_71_7E_FF" :
 		m_panel_d1_reply_71_ff_enabled ? "ASR10_EXPERIMENT_PANEL_REPLY_71_FF" :
-		m_duart_counter_timer_enabled ? "ASR10_EXPERIMENT_DUART_COUNTER_TIMER" :
 		"ASR10_EXPERIMENT_PANEL_REPLY_71_ZERO";
 }
 
@@ -2708,9 +2699,6 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_autorespond_fire)
 
 void asr10_boot_state::log_duart_counter_watched_pc(u32 pc)
 {
-	if (!m_duart_counter_timer_enabled)
-		return;
-
 	const char *role = nullptr;
 	switch (pc)
 	{
@@ -2865,7 +2853,7 @@ void asr10_boot_state::log_divzero_exception_frame(u32 pc)
 {
 	// One-shot: 68000 ERROR 130 (divide-by-zero) handler entry, per
 	// architecture.md's trap table (f882b6: moveq #$82). Observation only.
-	if (!m_duart_counter_timer_enabled || m_divzero_frame_logged || pc != 0x00f882b6)
+	if (m_divzero_frame_logged || pc != 0x00f882b6)
 		return;
 	m_divzero_frame_logged = true;
 
@@ -2936,7 +2924,7 @@ void asr10_boot_state::log_primary_slot_snapshot_once(u32 pc)
 	// One-shot, first entry into f88300 only. Walks the primary scheduler
 	// slot table [$00c6.w, $00c8.w), stride 0x16. Pure shadow reads via
 	// lowmem_word -- no guest RAM is mutated.
-	if (!m_duart_counter_timer_enabled || m_primary_slot_snapshot_logged || pc != 0x00f88300)
+	if (m_primary_slot_snapshot_logged || pc != 0x00f88300)
 		return;
 	m_primary_slot_snapshot_logged = true;
 
@@ -2963,7 +2951,7 @@ void asr10_boot_state::log_timer_secondary_callback(u32 pc)
 	// gated by the every-10th-tick $0b82 walk plus each entry's own
 	// +0x14 countdown reaching zero), so the one immediately preceding
 	// a fault is always captured regardless of any dedup scheme.
-	if (!m_duart_counter_timer_enabled || pc != 0x00f88352)
+	if (pc != 0x00f88352)
 		return;
 
 	const u32 entry_base = m_maincpu->state_int(M68K_A0) & 0x00ffffff;
@@ -6798,9 +6786,6 @@ void asr10_boot_state::log_run_config_header()
 	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_DOWNLOAD_TRACE requested=%s effective=%u "
 		"default_when_unset=0\n",
 		flag("ASR10_EXPERIMENT_DOWNLOAD_TRACE").c_str(), m_download_trace_enabled ? 1u : 0u);
-	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_DUART_COUNTER_TIMER requested=%s effective=%u "
-		"default_when_unset=0\n",
-		flag("ASR10_EXPERIMENT_DUART_COUNTER_TIMER").c_str(), m_duart_counter_timer_enabled ? 1u : 0u);
 	logerror("ASR10_RUN_CONFIG_FLAG name=ASR10_EXPERIMENT_ES5506_HOST requested=%s effective=%u "
 		"default_when_unset=0 note=config_time_only_device_instantiation\n",
 		flag("ASR10_EXPERIMENT_ES5506_HOST").c_str(), m_es5506_host_enabled ? 1u : 0u);
