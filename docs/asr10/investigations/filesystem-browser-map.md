@@ -1,4 +1,11 @@
-# ASR-10 Filesystem/Browser Address Map (PASS 1 complete + PASS 2 partial)
+# ASR-10 Filesystem/Browser Address Map (historical investigation)
+
+Current status, 2026-08-03: V350 boots flaglessly on current HEAD to
+`FILE 1  TUTORIAL BNK`; `docs/asr10/regression-test.sh` is the acceptance
+test. Earlier sections below are preserved as investigation history. Any
+section that describes environment flags, `NO INST OR BANK FILES` as the
+current V350 end state, or ES5510/ES5506 host paths as optional predates the
+flag-removal commits and must not be read as current driver state.
 
 This document is **PASS 1 (complete) + PASS 2 (partial)**, not a finished
 PASS 2. Section 4 adds a genuine live-access table gathered under a new,
@@ -2835,13 +2842,15 @@ browser/LOAD path either way.
 enabled for every live run. Nothing forced; not committed. No earlier
 retraction overwritten.
 
-### 4.19 Historical milestone: not reproduced on current HEAD — `NO INST OR BANK FILES` → `EFFECT DOWNLOAD FAILED` → `ERROR 032`, ERROR 130 confirmed gone (not yet reviewed)
+### 4.19 Historical milestone corrected on 2026-08-03
 
-**Historical status, 2026-08-03, HEAD `0bf6b05ebd8c`:** this section is
-not reproduced on current HEAD. The Lua per-channel PAR reproduction
-passes `ERROR 130`, but current HEAD does not reach `NO INST OR BANK
-FILES` or the later effect-download/error path described here. See
-`docs/asr10/par-lua-reproduction.md`.
+**Correction:** this section is historical, not current. Its old claim that
+the relevant path ended at `NO INST OR BANK FILES`/effect-download failure is
+not the current baseline. Reproduction of the revision that wrote the later
+browser milestone, `da1b4c38525` (2026-07-21, `asr10: route ES5510 host
+select 0xE0 (type-1 GPR commit path)`), reached `FILE 1  TUTORIAL BNK`.
+Current HEAD also reaches `FILE 1  TUTORIAL BNK` without any ASR10
+environment flags.
 
 **This section supersedes 4.15/4.16/4.17/4.18's read of "the blocker" as far
 as the *specific* stall point goes.** Those sections' node/scheduler/timer
@@ -4483,13 +4492,14 @@ throughout. **Not committed.**
 
 ---
 
-### 4.28 Historical milestone: not reproduced on current HEAD — missing `0xe0` route and `NO INST OR BANK FILES` with no error message
+### 4.28 Historical milestone corrected on 2026-08-03
 
-**Historical status, 2026-08-03, HEAD `0bf6b05ebd8c`:** this section is
-not reproduced on current HEAD. It describes a completed built-in effect
-download and `NO INST OR BANK FILES`; the current per-channel PAR
-reproduction passes `ERROR 130` but stops after `LOADING SYSTEM` panel
-traffic goes silent. See `docs/asr10/par-lua-reproduction.md`.
+**Correction:** this section is historical investigation text. The statement
+that the milestone was not reproduced on current HEAD is obsolete. The
+`da1b4c38525` revision was reproduced and reached `FILE 1  TUTORIAL BNK`;
+current HEAD reaches the same milestone flaglessly. Treat the detailed
+`0xe0` ES5510 route analysis below as evidence for the host-register fix, not
+as a description of the current final boot state.
 
 **Scope:** implements exactly the fix `§4.27` identified — one
 additional thin fixed-offset wrapper routing `FC31C0`-`FC31C1` (active
