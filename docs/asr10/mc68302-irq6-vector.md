@@ -36,6 +36,20 @@ handmodellerade skuggvillkoret. Nivåerna 1-5 och 7 är orörda — de
 fortsätter falla igenom till autovektorn precis som innan, ingen
 scope-utvidgning.
 
+**Varning för framtida drivrutiner (tillagd 2026-08-01,
+`docs/asr10/tick-rate.md`):** `irq6_ack_vector()` är **hårdkodad** mot
+`GIMR=0x8040` — den läser inte det faktiska GIMR-registret, för det
+registret finns inte modellerat i den här enheten ännu (fas 3 steg 1
+har ingen interruptcontroller alls). Om `mc68302_device` någonsin
+används av en ANNAN drivrutin, eller om ASR-10-drivrutinen börjar
+skriva ett annat värde till GIMR än det ROM:en råkar sätta idag, blir
+den returnerade vektorn fel utan att något i koden varnar för det.
+Innan dess: läs det riktiga GIMR-registret (kräver att `fc6812`
+faktiskt modelleras i `mc68302_device`, inte bara skuggas i
+drivrutinen som idag) i stället för att anta prefixet `0x40`. Det hör
+till samma fullständiga interruptcontroller (`mc68302int.cpp`,
+`PLAN.md` fas 3 steg 2) som resten av begränsningarna ovan.
+
 ## 2. Landat tillsammans med skuggborttagningen
 
 `[Verified]`. Samma `+22/-101`-ändring som `duart-irq6-wiring.md`
