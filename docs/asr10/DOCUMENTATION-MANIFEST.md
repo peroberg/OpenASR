@@ -92,10 +92,17 @@ sanning, och får inte tyst tas bort.
 Aktivt drivna frågor. `filesystem-browser-map.md` (273 KB) innehåller historiska
 påståenden som är märkta där de avviker från nuvarande bootbeteende.
 
-## `archive/` — 27 filer, oförändrade
+## `archive/` — 28 filer
 
-Avslutade eller ersatta berättelser. `sources/` (2 filer) och `lua/asr10_trace.lua`
-likaså oförändrade.
+Avslutade eller ersatta berättelser, samt projektets handoffdokument enligt etablerad
+konvention (`asr10-handoff-*`, `asr10-mame-handoff-*`).
+
+| path | kategori | status | beskriver |
+|---|---|---|---|
+| `asr10-handoff-2026-08-04.md` | archive | **aktuell** | handoff efter konsolideringen: läsordning, arbetsordning 1–8, öppna frågor, dokumentationsregler |
+
+De 27 tidigare filerna är oförändrade. `sources/` (2 filer) och `lua/asr10_trace.lua`
+likaså.
 
 ---
 
