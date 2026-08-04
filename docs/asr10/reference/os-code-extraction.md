@@ -88,3 +88,24 @@ frö/kommandorad), `unidasm` byggt lokalt, och den redan committade
 `docs/asr10/divisor-zero.md` avsnitt 1: `$0067F6` (RAM) ↔ `V350.img`
 byteoffset `0x8DF6` ↔ FDC-transaktion 9 (`C=01,H=01,R=01`-`14`,
 `R=11` av den transaktionen). Identiska, disassemblerat fritt därefter.
+
+---
+
+## Tillagg 2026-08-04: byteoffset kan nu tolkas direkt
+
+Steg 2:s byteoffset behover inte langre bara jamforas - det finns nu tva belagda
+laddningsregler. Se `os-image-layout.md` §3.
+
+```
+segment 1 (RAM under $008000):   disk = RAM + 0x2600
+segment 2 (RAM over  $008000):   disk = RAM + 0x8A00
+```
+
+Det tidigare enda exemplet (`$0067F6` <-> `0x8DF6`) ar en instans av segment 1-regeln.
+SCC-initsekvensen i V1.61 (`$00BEF2` <-> `0x148F2`) ar en runtimeverifierad instans av
+segment 2-regeln.
+
+**Gransen mellan segmenten ar inte faststalld** - den ligger i intervallet
+`($009FF6, $00BEF2]`. Verifiera darfor alltid med bytemonstersokning innan en
+offsetregel anvands; se `methods-static-analysis.md` §6. Att titta pa det forutsagda
+offsetet bekraftar bara att man kan tolka godtyckliga byte som kod.

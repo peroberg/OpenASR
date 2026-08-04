@@ -177,3 +177,68 @@ used only when the interrupt acknowledge cycle returns the autovector
 response. The current ASR-10 DUART path is different: the DUART asserts a
 board IRQ6 input, the MC68302 supplies vector `$56` during IACK, and the
 CPU fetches the handler longword from `$158`.
+
+---
+
+## Femkategorimodellen — hall isar fem olika saker som alla kallas "vektorer"
+
+Tillagt 2026-08-04 ur den statiska ROM/OS-analysen. Se `rom-os-abi.md` och
+`os-image-layout.md`.
+
+| # | kategori | var den finns | nar den galler |
+|---|---|---|---|
+| 1 | ROM:s resetvektorer | ROM `$F80000-$F80007`, synliga pa `$000000` genom CS0-overlagget | fran reset till BR0-omprogrammeringen |
+| 2 | OS-bildens vektoravbild | OS-fil `+0x0000-0x03FF`, pa disk | statisk data, kors aldrig darifran |
+| 3 | Installerade vektorer | RAM `$000000-$0003FF` | efter installation, resten av korningen |
+| 4 | MC68302:s avbrottsvektorer | genereras av SIB via GIMR/IPR/IMR | lopande |
+| 5 | Hoppbordsposter som ser ut som vektorer | bindningstabellen, DPRAM-tabellen | lopande |
+
+Kategori 2 och 3 har samma innehall men ar **inte samma sak**, och tidpunkten da 2 blir
+3 ar fortfarande `[OPEN]`.
+
+### OS-bildens vektoravbild `[V]`
+
+`os[0x000:0x0C0]` — vektor 0 till 47 — ar **byte-identisk mellan V1.61 och V3.50**.
+I `0x0C0-0x3FF` skiljer sig **13 byte** (offset 199, 201, 212, 213, 215, 217, 219, 224,
+225, 418, 419, 470, 471). Det omradet ar OS-variabler, inte vektorer.
+
+```
+v0   SSP   $00000300
+v1   PC    $00000000        <-- noll i BADA versionerna
+v2   $FFF882AA   v3 $FFF882AE   v5 $FFF882B6   v9 $FFF882C6   v10 $FFF882CA
+v4   $FFFC6000 (DPRAM)      v11 $FFFC6014 (DPRAM)
+v15  $FFF882DA   v24 $FFF882D6   v25-31 $FFF882DA
+v32  $FFF88280 (exception-svans)   v33 $FFF87F76 (schemalaggaren)
+v40  $FFF8812C   v47 $FFF88056
+```
+
+Av de 48 verkliga vektorerna (0-47) pekar **42 in i ROM och 2 i DPRAM**.
+
+**`v1 = 0` betyder att ROM inte kan gora en mjuk reset ur bilden.** Det finns ingen
+startadress i OS-filen. Se `rom-os-abi.md` §6.
+
+### Installationen till `$000000-$0003FF` ar INTE verifierad `[OPEN]`
+
+Under segment 1-regeln (`RAM = OS_offset + 0xA00`, se `os-image-layout.md`) hamnar
+bildens vektoravbild pa RAM `$000A00-$000DFF`, **inte** pa `$000000`. Nagot maste kopiera
+ned den, eller installera tabellen separat. Vilken rutin, och nar, ar okant.
+Experiment E1 (skrivtapp pa `$000000-$0003FF` och `$000A00-$000DFF` med PC loggat)
+avgor det.
+
+Tidigare formulering "OS-vektortabellen skrivs till RAM" har anvants som om den vore
+verifierad. Det ar den inte.
+
+### `$0000C0-$0003FF` ar variabler, inte vektorer `[V]`
+
+158 langord i det omradet klassades tidigare som "lagminnesvektorer" och betraktades som
+ankarkandidater. De ar OS-variabler som ligger i den oanvanda delen av
+vektortabellsregionen (vektor 48-255 anvands inte).
+
+### Att inte forvaxla
+
+| ser ut som | ar faktiskt |
+|---|---|
+| `$FFFC6000` i vektor 4 | en post i DPRAM-hoppbordet, inte en hanterare |
+| `$FFF882DA` x34 i bilden | catch-all-stubben, alltsa vektorer — **inte** 34 anrop |
+| `$8D50.w` | slot i bindningstabellen pa RAM `$008D50`, inte en variabel |
+| langord i `$0000C0-$0003FF` | OS-variabler, inte vektorer |

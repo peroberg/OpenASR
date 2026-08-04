@@ -588,3 +588,87 @@ Detta index täcker 35 namngivna adresser i den sorterade översikten:
 Identifierade: 27. Delvis identifierade: 8. Kända okända: 23 poster.
 Listan är avsiktligt ofullständig; den markerar vad som är stabilt nog
 att bära vidare till kod och vad som fortfarande kräver mätning.
+
+---
+
+## Bindningsslots - en andra sorts rutinidentitet
+
+Tillagt 2026-08-04. Se `rom-os-abi.md` for arkitekturen och
+`../static/os-binding-table.csv` for full tabell.
+
+ROM anropar 342 av 723 slots i bindningstabellen pa RAM `$00801E-$009FF6`, fran
+1254 anropsstallen, uteslutande med `jsr/jmp abs.w`. **En rutin som nas via tabellen ar
+en annan sorts rutin an en som anropas direkt** - slotmalet kan bytas av OS:et per
+version. Posterna nedan bor darfor ange sin `bindningsslot` nar en sadan finns.
+
+Kanda slotkopplingar till rutiner som redan star i det har dokumentet:
+
+| slot | ROM-anrop | mal V1.61 | mal V3.50 | kand rutin |
+|---|---|---|---|---|
+| `$8030.w` | 203 | `$F97662` | `$F97662` | **OIDENTIFIERAD** - mest anropade adressen i maskinen |
+| `$8036.w` | 13 | `$F976CA` | `$F976CA` | kritisk sektion, aterstall SR |
+| `$8638.w` | 1 | `$F88300` | `$013FD0` | `irq6_tick_producer` - **V3.50 ersatter den med OS-kod** |
+| `$8D50.w` | 2 | `$F8C1BE` | `$F8C1BE` | SCC-konfigurationshjalprutin, anropad av scc1_init/scc2_init |
+| `$9818.w` | 40 | `$F92478` | `$F92478` | OIDENTIFIERAD |
+| `$8042.w` | 35 | `$FB7788` | `$FB7788` | OIDENTIFIERAD |
+| `$8C0C.w` | 26 | `$F8B2E2` | `$F8B2E2` | OIDENTIFIERAD |
+
+`$8638.w` ar ett konkret exempel pa patchmekanismen: `irq6_tick_producer` ligger i ROM i
+V1.61 men ersatts av OS-kod i V3.50. Totalt 74 slots gor motsvarande byte.
+
+## Nya rutiner ur den statiska ROM/OS-analysen
+
+### `$FC6200` reset_bridge `[V]`
+
+De 14 byte ROM kopierar fran `$F80078` till DPRAM och hoppar till. Innehallet ar kant
+byte for byte:
+
+```
+33FC 1F01 00FC6830    move.w #$1F01,(BR0)   ROM $000000 -> $F80000
+4EF9 FFFB8E06         jmp    $FFFB8E06      PIO-init
+```
+
+Maste kora ur DPRAM eftersom BR0-skrivningen drar undan marken under koden.
+Forsta verifierade anvandningen av DPRAM som exekveringsyta.
+
+### `$F8C16C` scc1_init `[V]` / `$F8C188` scc2_init `[V]`
+
+`$F8C16C-$F8C187` respektive `$F8C188-$F8C1A1`, bada avslutade med RTS.
+Laddar kontrollblock `($12D8).w` / `($1320).w`, parameter-RAM `$FC6400` / `$FC6500`,
+registerbas `$FC6880` / `$FC6890`, anropar slot `$8D50.w`, satter `D0` till `$21`
+respektive `$23` och anropar CP-handskakningen.
+
+### `$F8C1A2` cp_command_handshake `[V]`
+
+`$F8C1A2-$F8C1BD`. Busy-wait pa CR bit 0 (FLG), skriv `D0` till CR `$FC6860`, busy-wait
+igen. `$21` = ENTER HUNT MODE SCC1, `$23` = ENTER HUNT MODE SCC2, `$81` = CP software
+reset (utfardas av OS:et).
+
+### `$008D56` scc1_isr `[V]` / `$008D92` scc2_isr `[V]`
+
+`$008D56-$008D91` respektive `$008D92-$008DCF`, bada avslutade med RTE.
+**Identisk adress i bade V1.61 och V3.50.** Anropar gemensam mottagningsrutin
+`$00643C`, gor EOI till ISR `$FC6818` med `$2000` (SCC1) respektive `$0400` (SCC2).
+
+### `$00643C` scc_rx_common `[start-V]`
+
+Gemensam mottagningsrutin for bada SCC-kanalerna. Vad den producerar ar **oppet** och
+en av projektets tre hogst prioriterade oidentifierade rutiner.
+
+### `$00BEE2` scc_receiver_enable (V1.61) `[V]`
+
+`$00BEE2-$00BF27`. Pollar PB3/LRCLK, satter ENR pa SCM2 och SCM1 med tva
+registerhallna fordrojningar, anropar `$FFFF8ECA`, avmaskar SCC1+SCC2 i IMR.
+Runtime-observerad. **I V3.50 ligger samma kod pa `$00E48A-$00E4D5`** - adressen ar
+harledd via segment 2-regeln och inte runtime-observerad.
+
+## Tre hogst prioriterade oidentifierade rutiner
+
+| adress | varfor | status |
+|---|---|---|
+| `$F97662` | slot `$8030.w`, **203 anropsstallen fran ROM** - mest anropade adressen i maskinen | oidentifierad |
+| `$F95EAA` | 1 anrop i V1.61, **33 i V3.50** - storsta versionsskillnaden i materialet | oidentifierad |
+| `$00643C` | vad SCC-mottagningen producerar | oidentifierad |
+
+Sparas maskinellt i `../static/routines.csv` med `canonical_status =
+unresolved_high_priority`.

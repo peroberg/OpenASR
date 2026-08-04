@@ -27,6 +27,27 @@ matchar.
 ROM-avbildens första åtta byte. Endast tre `move.w #imm,sr` finns i hela
 ROM:en; `$F87FCC` är den enda som öppnar avbrott helt.
 
+### 1b. DPRAM-bryggan `[V]`
+
+ROM programmerar alla fyra chip selects på `$F8001E-$F8005D`, kopierar sedan
+14 byte till MC68302:ans DPRAM och hoppar dit:
+
+```
+$F8005E  41FA 0018             lea     ($F80078),A0
+$F80062  45FA 0022             lea     ($F80086),A2
+$F80066  227C 00FC6200         movea.l #$00FC6200,A1
+$F8006C  32D8 / B5C8 / 66FA    kopiera 14 byte
+$F80072  4EF9 00FC6200         jmp     $00FC6200      <-- byter exekveringsyta
+--- kopian, körs på $FC6200 ---
+         33FC 1F01 00FC6830    move.w  #$1F01,(BR0)   ROM $000000 -> $F80000
+         4EF9 FFFB8E06         jmp     $FFFB8E06      PIO-init
+```
+
+**BR0-skrivningen drar undan marken under koden som kör** — därför måste just
+de två instruktionerna köras ur DPRAM. Första verifierade användningen av
+DPRAM som exekveringsyta. Se `memory-map.md` §1 och `subroutine-index.md`
+`$FC6200 reset_bridge`.
+
 ## 2. Hårdvaruinit `[V delvis]`
 
 `$FB8E7E` sätter MC68302:s avbrottskontroller och Timer 2: GIMR←`$8040`,
@@ -42,9 +63,12 @@ Start Counter Command utfärdas någonsin.
 `$F97BC6` ser ut att vara en tabellstyrd DUART-init i (offset, värde)-par
 `[L]` — aldrig bekräftad vid körning.
 
-**RUTIN EJ IDENTIFIERAD:** MC68302:s BAR/SCR- och chip-select-uppsättning.
-Vi vet att BAR placerar det interna fönstret på `$FC6000`, men inte var
-det skrivs.
+**LÖST 2026-08-04:** chip-select-uppsättningen sker på `$F8001E-$F8005D`,
+före allt annat, i steg 1b ovan. OR0/BR0 … OR3/BR3 skrivs som sex
+`move.w #imm,($00FC68xx).l`-par. Full avkodning med riktning och DTACK i
+`memory-map.md` §1 och `hardware-map.md`.
+
+**RUTIN EJ IDENTIFIERAD:** var BAR/SCR skrivs. Chip selects är funna, BAR är det inte.
 
 ## 3. Panelhälsning `[V]`
 
@@ -82,6 +106,34 @@ verifierad mot `V350.img`.
 **Den enskilt viktigaste luckan i kedjan.** Vi vet att koden hamnar i RAM
 och exekveras, men inte var överlämningen sker eller hur kontrollen ges
 till den.
+
+### Vad som avgränsats 2026-08-04
+
+**Verifierat:**
+
+* OS-filen ligger på diskblock 24 (offset `0x3000`), typ `$0020`, namn `ASR-10 OS`.
+* Bilden laddas i **minst två segment**: `RAM = OS_offset + 0xA00` under `$008000`
+  och `RAM = OS_offset - 0x5A00` över. Se `os-image-layout.md`.
+* **Vektor 1 (PC) = `$00000000`** i både V1.61 och V3.50. Det finns ingen startadress
+  i bilden — en "mjuk reset" där ROM laddar SSP/PC ur OS-filen är **utesluten**.
+* **ROM innehåller inte ett enda `jsr`/`jmp` med 32-bitars absolut RAM-mål.** Noll.
+
+**Kvarstående modeller:**
+
+| # | modell | bedömning |
+|---|---|---|
+| M1 | överlämning via en bindningsslot (`jmp $xxxx.w`) | starkaste kandidaten — förklarar varför ingen explicit överlämning finns i ROM: den finns i tabellen på disken |
+| M2 | registerindirekt hopp, `jmp (An)` ur en laddningsdeskriptor | ingen deskriptor funnen |
+| M3 | `rts` till en adress laddaren stackat | svår att skilja från M1 statiskt |
+
+Förstahandskandidat **bland identifierade slots**: `$801E.w` — lägsta slotten i
+tabellen, ROM anropar den 13 gånger, och den pekar in i OS-kod i båda versionerna
+(`$007144` / `$0071C6`). Det är en rangordning av kandidater, **inte en bevisad
+överlämning**.
+
+Experiment E1 skiljer M1 från M2/M3 i en körning: logga varje övergång där PC går från
+ROM-området till RAM, med från-PC och instruktionen på från-PC. Se
+`../static/prompts-E1-E4.md` och `rom-os-abi.md` §6.
 
 ## 8. Analog kalibrering `[V]`
 

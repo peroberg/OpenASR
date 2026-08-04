@@ -74,6 +74,29 @@ Do not immediately implement a full MC68302. Current work should continue recons
 
 ### MC68302 / FC68xx current findings
 
+> **RATTAT 2026-08-04 — las detta innan avsnittet nedan.**
+> Registeridentiteterna i det har avsnittet var gissningar. Ratt identitet enligt
+> MC68302 UM Table 2-9, korsvaliderad mot tre kanda skrivningar:
+>
+> ```
+> $FC6814 = IPR    Interrupt Pending Register   (gissningen stamde)
+> $FC6816 = IMR    Interrupt Mask Register      (INTE service/in-service)
+> $FC6818 = ISR    In-Service Register
+> $FC6884 = SCM1   SCC1 Mode Register           (INTE timer)
+> $FC6894 = SCM2   SCC2 Mode Register           (INTE timer)
+> $FC68B2 = SIMASK
+> $FC68B4 = SIMODE
+> ```
+>
+> Foljden: `$2400` = IMR bit 13 + bit 10 = **SCC1 + SCC2**. Skrivningen pa `$00BF1A`
+> **avmaskerar** deras avbrott. Att rensa `$FC6816` maskerar avbrottet — det kvitterar
+> ingenting. **Sparet "rensa FC6816" ar avskrivet.** EOI sker till ISR `$FC6818`, vilket
+> OS:ets SCC-hanterare redan gor korrekt.
+>
+> Allt nedan i det har avsnittet ar bevarat som historik men **galler inte**. Aktuell
+> modell: `mc68302-status.md`. Runtimeobservationerna: `runtime-service-model.md` —
+> observera att de kommer fran en **V1.61-korning**, inte fran nuvarande HEAD.
+
 Current candidate internal/register window:
 
 ```text id="7o3o9d"
@@ -194,6 +217,12 @@ Do not fake new FDC behavior to solve the current f87f9a dispatcher idle unless 
 ```
 
 ### SCSI
+
+> **VERIFIERAT 2026-08-04.** SCSI-kretsen ligger pa `$FC5001` (indexregister) och
+> `$FC5003` (dataregister), i **CS3**. ROM `$FBB5C0` laddar bada som pekare, och bade
+> ROM och bada OS-versionerna skriver `#$18` (WD33C93 Command) foljt av `#$00` (Reset).
+> Se avsnittet "SCSI ligger i CS3, inte CS1" langst ned. Hypotesen att CS1 skulle vara
+> SCSI-optionen ar motbevisad.
 
 Likely SCSI controller:
 
@@ -350,3 +379,71 @@ A producer/re-arm path after slot 2 completion, or a proven external status/time
 ## Current one-line hardware takeaway
 
 The current hardware problem is no longer simply "what chip exists where?". The immediate problem is that after the accepted-looking MC68302/FC68xx `0x2400` service sequence, baseline slot 2 callback enters `007308`, reaches the `00bf1a/00bf22` service setter, and post-service/finalizer code writes slot 2 to equalized `8080`; hardware-side work should only return to FC68xx/MC68302 details once the firmware path shows an external status/timer/completion controls the missing producer/re-arm.
+
+---
+
+## Chip selects - harledda ur ROM:s egna BR/OR-skrivningar `[V]`
+
+Tillagt 2026-08-04. Full avkodning och CS1-dossier i `memory-map.md` §1 och §5.
+Detta ar harlett ur firmware, inte ur drivrutinens `mem_map`.
+
+ROM programmerar alla fyra chip selects i en foljd pa `$F8001E-$F8005D`, fore allt
+annat. Format enligt MC68302 UM §3.6.2:
+
+```
+BR:  15-13 FC2-FC0 | 12-2 BASE ADDRESS (A23-A13) | 1 RW  | 0 EN
+OR:  15-13 DTACK   | 12-2 BASE ADDRESS MASK      | 1 MRW | 0 CFC
+```
+
+`CFC` ar **OR bit 0**, inte bit 15. `MRW = 0` betyder RW maskad (bade las och skriv).
+For samtliga fyra ar CFC = 0 - ingen FC-jamforelse ar paslagen nagonstans.
+
+| CS | BR | OR | fonster | riktning | DTACK | innehall |
+|---|---|---|---|---|---|---|
+| CS0 (reset) | `$0001` | `$3F82` | `$000000-$03FFFF` | endast lasning | 1 WS | ROM-overlagg vid boot |
+| CS0 (efter) | `$1F01` | `$3F82` | `$F80000-$FBFFFF` | endast lasning | 1 WS | ROM, 256 KB |
+| CS1 | `$1FEF` | `$FFFE` | `$FF6000-$FF7FFF` | **endast skrivning** | **extern** | **oidentifierat** |
+| CS2 | `$1F85` | `$FFFC` | `$FC2000-$FC3FFF` | las + skriv | extern | ES5506 `$FC2000`, ES5510 `$FC3000` |
+| CS3 | `$1F89` | `$7FFC` | `$FC4000-$FC5FFF` | las + skriv | 3 WS | FDC `$FC4000`, DUART `$FC4801`, SCSI `$FC5001` |
+
+Allt utanfor CS0-CS3 och BAR-fonstret (`$FC6000-$FC6FFF`) maste avkodas av kortlogiken.
+68302:an gor det inte.
+
+### CS1 `$FF6000-$FF7FFF` - oppen hardvarufraga
+
+```
+enabled
+write-selected / write-only
+external DTACK
+no function-code comparison
+function unknown
+```
+
+Fonstret ligger medvetet utanfor 68000:ans kortadresserbara omrade - en teckenutvidgad
+`abs.w` kan bara ge `$000000-$007FFF` eller `$FF8000-$FFFFFF`. CS1 kan alltsa bara nas
+med 32-bitars absolut eller registerindirekt adressering.
+
+Inga identifierade direkta absoluta eller immediate-basreferenser finns i ROM eller i
+nagon OS-version (954 pekarladdningar genomsokta; 31 traffar CS2, 5 traffar CS3, 0
+traffar CS1). Eventuell anvandning kan vara indirekt, dynamiskt harledd, ligga i en annu
+inte exekverad kodvag - eller saknas helt.
+
+RW-, MRW- och DTACK-falten ar **inte** defaultvarden. Nagon har medvetet programmerat
+CS1 som en skrivport. Experiment E4 (skrivtapp over flera anvandningsfaser) ar nasta steg.
+
+### SCSI ligger i CS3, inte CS1 `[V]`
+
+AM33C93A ar WD33C93-kompatibel: ett indexregister och ett dataregister.
+
+```
+$FC5001   indexregister
+$FC5003   dataregister
+
+ROM $FBB5C0   movea.l #$00FC5001,A4
+ROM $FBB5C6   movea.l #$00FC5003,A3
+ROM $F8A72C   move.b  #$18,($FC5001)    register $18 = Command
+OS            move.b  #$00,($FC5003)    = Reset
+```
+
+Bade ROM och **bada** OS-versionerna driver kretsen. Hypotesen att CS1 skulle vara
+SCSI-optionen ar darmed motbevisad.
