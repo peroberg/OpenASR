@@ -6,6 +6,16 @@ Date: 2026-08-10. Scope: static verification before stimulation, starting from
 No code changes were made. `INPUT_PORTS_START(asr10_boot)` remains empty at
 `src/mame/ensoniq/asr10_boot.cpp:4610-4611`.
 
+## Terminology
+
+| term | path |
+|---|---|
+| ROM receive path | `$F89CCA` (SRB) -> `$F89CEA` (RHRB) -> `$F82484` lookup |
+| runtime receive path | `$FFB0BC` (SRB) -> `$FFB0D4` (RHRB) -> `jmp` via `$0003C0` |
+
+Use these names explicitly. The two receive paths run in different phases and evidence
+for one must not be silently applied to the other.
+
 ## Verified: current harness path
 
 The existing harness injects panel ACK/status bytes through SCN2681 channel B, not
@@ -359,9 +369,9 @@ panel ACK/status:
 This is still not [Verified] for file-browser keys specifically. ACK/status bytes and
 button events may share transport while using different packet/state contexts.
 
-## Verified: receive loop is active in V3.50 FILE 1 state
+## Verified: receive paths in V3.50 FILE 1 state
 
-[Verified] Pollvägen `$F89CCA` (SRB) -> `$F89CEA` (RHRB) -> lookup finns i ROM.
+[Verified] ROM receive path `$F89CCA` (SRB) -> `$F89CEA` (RHRB) -> lookup finns i ROM.
 
 [Verified] Runtime-konsumenten av kanal B i V3.50 `FILE 1  TUTORIAL BNK`-läget läser
 SRB från `$FFB0BC` och RHRB från `$FFB0D4`. Tolv par på 1,6 ms vid inträdet i läget,
@@ -417,6 +427,63 @@ den sätter `STATUS_RECEIVER_READY` när FIFO går från tom till icke-tom och a
 
 [OPEN] Den aktiva runtime-rutinen runt `$FFB0BC/$FFB0D4` är ännu inte statiskt
 identifierad eller namngiven.
+
+## Verified: Step 0 runtime liveness profile
+
+Same run and same instrument, V3.50, no `ASR10_PANEL_SWEEP_RAW`, no injection, no
+`-log`. PC sampling was every 1024 executed instructions.
+
+| window | start | elapsed | samples | Hz | distinct PC | stop samples | top-3 share |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| A, loading | 15.011742 s | 20.000000 s | 28331 | 1416.550 | 410 | 0 | 33.5428 % |
+| B, `FILE 1` | 16.171608 s | 20.000000 s | 28315 | 1415.750 | 385 | 0 | 33.9043 % |
+
+[Verified] `FILE 1  TUTORIAL BNK` is a working runtime state under this instrument.
+Window B resembles window A in sample rate, distinct-PC count and distribution. It did
+not collapse to `stop`, and it was not a two- or three-address tight cycle. Both windows
+are dominated by the same seven-address scheduler/service cycle around
+`$F87F96/$F87F9A/$F87F9E/$F87FA0/$F87FC2/$F87FC6/$F87FCA`, with each address around
+11 % of samples.
+
+[Verified] In the same run, runtime receive path activity was limited to the already
+observed entry burst: `$FFB0BC`/SRB read 12 times and `$FFB0D4`/RHRB read 12 times,
+all between 16.171631 s and 16.173214 s. No later channel-B reads were observed during
+the 20 s `FILE 1` profile.
+
+[Verified] The 64 bytes at `$FFB0B0` in runtime begin:
+
+```text
+8f cc 0c 40 38 38 57 f8 cc d1 4e 75 12 39 ff fc
+48 13 c2 3c 00 50 67 06 61 c8 60 00 02 0a 70 00
+```
+
+The first 32 bytes and the full 64-byte dump both occur once in `V350.img` at disk
+offset `0x00D6B0`, and do not occur in the interleaved ROM image. The same binary search
+function was calibrated by finding ROM bytes `13 fc 00 00 ff fc 48 0b` once in the
+interleaved ROM at offset `0x008400`, and `TUTORIAL BNK` in `V350.img` at offsets
+`0x00043A` and `0x00061C`. The actual relocation-free core visible in the dump,
+`c2 3c 00 50 67`, also occurs once in `V350.img` at `0x00D6C2` and not in ROM. The
+literal task-text byte pattern `02 01 50 67` occurs in neither artifact.
+
+[Verified] Provenance for `$FFB0B0` is therefore V3.50 OS image data, not ROM code
+copied from `asr10.bin`. Against `reference/os-image-layout.md`, disk offset
+`0x00D6B0` maps through segment 1 (`disk = RAM + 0x2600`) to RAM `$00B0B0`; the
+runtime receive path executes the same bytes through the high `$FFxxxx` view.
+
+[Verified] IRQ6 vectoring was measured in the same run. At runtime, IVR read as `$FF`,
+longword `$000078` read as `$FFF882DA`, word `$0003C0` read as `$B392` and sign-extends
+to `$FFB392`. `maincpu_iack_r(6)` returned vector `$56` from
+`mc68302_device::irq6_ack_vector()` (`src/devices/machine/mc68302.h`), and each measured
+IRQ6 accept landed at vector-table target `$F884BE`.
+
+[OPEN] Hur bestäms IRQ6-vektorn under runtime? The measured result is driver-supplied
+vector `$56` via `maincpu_iack_r(6)`, not a proven ASR-10 hardware mechanism.
+
+[OPEN] ROM handoff history. The log was bounded to 128 distinct `(from,to)` pairs and
+reported `truncated_new_pairs=3077170`, so it is explicitly incomplete. The first
+recorded normalized transition was `$F8006C -> $FC6200` at 30.250 us. This confirms the
+DPRAM destination but differs from the older expected source `$F80072`; treat the source
+address as unresolved until the reset bridge is re-read with a tighter instrument.
 
 ## Open: key semantics
 

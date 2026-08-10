@@ -2,6 +2,15 @@
 
 Date: 2026-08-10. Scope: execution plan only. No MAME run was performed in this pass.
 
+## Terminology
+
+| term | path |
+|---|---|
+| ROM receive path | `$F89CCA` (SRB) -> `$F89CEA` (RHRB) -> `$F82484` lookup |
+| runtime receive path | `$FFB0BC` (SRB) -> `$FFB0D4` (RHRB) -> `jmp` via `$0003C0` |
+
+The sweep must state which receive path is being exercised.
+
 ## Preconditions
 
 Use V3.50 and start from the visible browser state:
@@ -19,11 +28,12 @@ Inject one raw byte, wait 500 ms of emulated time, record the observations below
 reset to the same start state before the next raw byte. Do not carry browser state
 between candidate bytes in the first sweep.
 
-Missing precondition from the first control attempt: before running the `$23/$22`
-control pair, verify that the consumer is active in the start state. A no-injection
-V3.50 run must show `$FC4813` (`SRB`) polling or `$FC4817` (`RHRB`) reads after
-`FILE 1  TUTORIAL BNK` is observed. Without that, a zero-effect control result is
-not interpretable.
+Missing precondition from the first control attempt: verify both that runtime itself is
+alive and that the specific receive path being exercised is active at the injection
+time. Step 0 measured V3.50 `FILE 1  TUTORIAL BNK` as a working runtime state, but the
+runtime receive path read `$FC4813`/SRB and `$FC4817`/RHRB only in a short entry burst
+of 12 pairs. A later zero-effect control result is not interpretable unless injection is
+aligned with, or itself causes, the runtime receive path that should consume the byte.
 
 ## Transport
 

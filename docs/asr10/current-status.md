@@ -13,6 +13,13 @@ architecture, class names and implementation do not move in either direction.
 `docs/mc68302/` is source material in this tree; `src/devices/machine/mc68302.*`
 defines the implementation.
 
+Panel receive terminology:
+
+| term | path |
+|---|---|
+| ROM receive path | `$F89CCA` (SRB) -> `$F89CEA` (RHRB) -> `$F82484` lookup |
+| runtime receive path | `$FFB0BC` (SRB) -> `$FFB0D4` (RHRB) -> `jmp` via `$0003C0` |
+
 ## Works
 
 - `asr10booth` boots `floppies/asr10booth/V350.img` with no `ASR10_*` environment
@@ -27,6 +34,10 @@ defines the implementation.
 - Current boot uses real MAME devices for the DUART host path (`mc68681`), ES5506 host
   registers, ES5510 host registers, and the FDC path used by this boot.
 - Channel B panel RX is owned by `mc68681_device`.
+- V3.50 `FILE 1  TUTORIAL BNK` is a working runtime state under the Step 0 PC profile:
+  20 s sampling showed 28315 samples, 385 distinct PCs, no `stop` samples, and the same
+  scheduler/service-cycle shape as the loading-phase calibration window. Runtime receive
+  path activity in that state is a short entry burst, not continuous polling.
 
 ## What the static analysis established
 

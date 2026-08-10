@@ -57,6 +57,7 @@
 #include <array>
 #include <cstdlib>
 #include <cstring>
+#include <unordered_map>
 #include <vector>
 
 // TODO: ASR-10 likely contains ES5701/Super-GLU-class Ensoniq ASIC.
@@ -134,6 +135,27 @@ private:
 		RING_CONTROL,
 		DIRECT_TEXT_PREFIX,
 		TEXT_PAYLOAD
+	};
+	struct pc_profile_window
+	{
+		const char *name = nullptr;
+		bool active = false;
+		bool done = false;
+		attotime start = attotime::never;
+		attotime end = attotime::never;
+		u64 instructions = 0;
+		u64 samples = 0;
+		u32 stop_samples = 0;
+		std::unordered_map<u32, u32> pc_counts;
+		std::array<u32, 64> recent_pcs{};
+		u32 recent_pos = 0;
+	};
+	struct rom_handoff_entry
+	{
+		u32 from = 0;
+		u32 to = 0;
+		attotime first_time = attotime::never;
+		u32 count = 0;
 	};
 	static u16 ascii_to_14seg(u8 character) { return asr10_boot_defs::ascii_to_14seg(character); }
 
@@ -483,6 +505,16 @@ private:
 	u32 m_pc_change_count = 0;
 	u32 m_dispatcher_hits = 0;
 	u32 m_context_hits[20]{};
+	bool m_step0_runtime_trace_enabled = false;
+	std::array<pc_profile_window, 2> m_step0_pc_profiles{};
+	bool m_step0_file1_context_logged = false;
+	bool m_step0_irq6_pending_landing = false;
+	u8 m_step0_irq6_pending_vector = 0;
+	u32 m_step0_irq6_pending_target = 0xffffffffU;
+	u32 m_step0_irq6_pending_iack_pc = 0xffffffffU;
+	std::array<rom_handoff_entry, 128> m_step0_rom_handoffs{};
+	u32 m_step0_rom_handoff_unique = 0;
+	u32 m_step0_rom_handoff_truncated = 0;
 
 	virtual void machine_start() override ATTR_COLD;
 	virtual void machine_reset() override ATTR_COLD;
@@ -533,6 +565,12 @@ private:
 	void panel_submission_trace(const char *event, const char *kind, u8 data = 0);
 	void panel_submission_summary();
 	void panel_receive_live_summary();
+	void start_pc_profile(pc_profile_window &window, const char *name);
+	void sample_pc_profile(pc_profile_window &window, u32 pc);
+	void pc_profile_summary();
+	bool normalized_rom_handoff_source(u32 pc, u32 &normalized) const;
+	void record_rom_handoff(u32 from, u32 to);
+	void rom_handoff_summary();
 	void record_root_directory_instruction(u32 pc);
 
 	void log_root_directory_table_write(u32 pc, u32 byte_address, u16 previous, u16 current, u16 mem_mask);
@@ -715,6 +753,8 @@ void asr10_boot_state::machine_start()
 	m_lrclk_timer = timer_alloc(FUNC(asr10_boot_state::lrclk_toggle), this);
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::panel_submission_summary, this));
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::panel_receive_live_summary, this));
+	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::pc_profile_summary, this));
+	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::rom_handoff_summary, this));
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::root_directory_summary, this));
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::mc68302_access_summary, this));
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::cs3_access_summary, this));
@@ -1562,6 +1602,24 @@ void asr10_boot_state::machine_reset()
 	m_pc_change_count = 0;
 	m_dispatcher_hits = 0;
 	std::fill(std::begin(m_context_hits), std::end(m_context_hits), 0);
+	{
+		const char *const step0_runtime_trace = std::getenv("ASR10_STEP0_RUNTIME_TRACE");
+		m_step0_runtime_trace_enabled =
+			step0_runtime_trace && step0_runtime_trace[0] && step0_runtime_trace[0] != '0';
+	}
+	for (auto &profile : m_step0_pc_profiles)
+	{
+		profile = pc_profile_window{};
+		profile.recent_pcs.fill(0xffffffffU);
+	}
+	m_step0_file1_context_logged = false;
+	m_step0_irq6_pending_landing = false;
+	m_step0_irq6_pending_vector = 0;
+	m_step0_irq6_pending_target = 0xffffffffU;
+	m_step0_irq6_pending_iack_pc = 0xffffffffU;
+	m_step0_rom_handoffs.fill(rom_handoff_entry{});
+	m_step0_rom_handoff_unique = 0;
+	m_step0_rom_handoff_truncated = 0;
 	std::fill_n(m_lowmem_shadow.get(), LOWMEM_WORDS, 0);
 	for (auto &entry : m_probe_or_alias_region_shadow)
 		std::fill(std::begin(entry), std::end(entry), 0);
@@ -1793,6 +1851,16 @@ u8 asr10_boot_state::maincpu_iack_r(u8 level)
 		// mc68302_device::irq6_ack_vector().
 		vector = m_maincpu->irq6_ack_vector();
 		custom_vector = true;
+		if (m_step0_runtime_trace_enabled)
+		{
+			const u32 target = lowmem_long(u32(vector) * 4) & 0x00ffffff;
+			m_step0_irq6_pending_landing = true;
+			m_step0_irq6_pending_vector = vector;
+			m_step0_irq6_pending_target = target;
+			m_step0_irq6_pending_iack_pc = pc;
+			osd_printf_info("ASR10_STEP0_IRQ6_ACCEPT time=%s iack_pc=%06x vector=%02x target=%06x\n",
+				machine().time().to_string(), pc, vector, target);
+		}
 	}
 
 	if (m_dispatcher_rte_first_pc_pending)
@@ -3131,7 +3199,20 @@ void asr10_boot_state::panel_receive_byte(u8 data)
 	if (!m_panel_receive_live_active && strstr(m_panel_text, "FILE 1  TUTORIAL BNK"))
 	{
 		m_panel_receive_live_active = true;
+		start_pc_profile(m_step0_pc_profiles[1], "B_FILE1");
 		osd_printf_info("ASR10_PANEL_RECEIVE_LIVE event=active display=\"%s\"\n", m_panel_text);
+	}
+	if (m_step0_runtime_trace_enabled && m_panel_receive_live_active && !m_step0_file1_context_logged)
+	{
+		m_step0_file1_context_logged = true;
+		auto const disable_side_effects = machine().disable_side_effects();
+		const u8 ivr = u8(m_duart->read(0x0c));
+		const u32 autovec78 = read_program_word(0x000078) << 16 | read_program_word(0x00007a);
+		const u16 word03c0 = lowmem_word(0x03c0);
+		const u32 signext03c0 = BIT(word03c0, 15) ? (0x00ff0000U | word03c0) : word03c0;
+		osd_printf_info("ASR10_STEP0_RUNTIME_CONTEXT time=%s ivr=%02x autovec78_long=%08x "
+			"word_0003c0=%04x signext_0003c0=%06x\n",
+			machine().time().to_string(), ivr, autovec78, word03c0, signext03c0);
 	}
 	if (m_panel_receive_live_active && !m_panel_receive_live_window_dumped)
 	{
@@ -3176,6 +3257,7 @@ void asr10_boot_state::flush_panel_text()
 		// whenever the PTI flag is on, from reset.
 		if (strstr(m_panel_text, "LOADING SYSTEM"))
 		{
+			start_pc_profile(m_step0_pc_profiles[0], "A_LOADING");
 			m_seen_loading_system_prompt = true;
 			m_post_loading_panel_write_count = 0;
 			m_post_loading_fdc_access_count = 0;
@@ -3227,6 +3309,170 @@ void asr10_boot_state::flush_panel_text()
 	m_panel_text_length = 0;
 	m_insert_disk_decision_logged = false;
 	m_panel_text[0] = 0;
+}
+
+
+void asr10_boot_state::start_pc_profile(pc_profile_window &window, const char *name)
+{
+	if (!m_step0_runtime_trace_enabled || window.active || window.done)
+		return;
+
+	window.name = name;
+	window.active = true;
+	window.start = machine().time();
+	window.end = window.start + attotime::from_seconds(20);
+	osd_printf_info("ASR10_STEP0_PC_PROFILE event=start window=%s time=%s duration_s=20 sample_every_instructions=1024\n",
+		name, window.start.to_string());
+}
+
+
+void asr10_boot_state::sample_pc_profile(pc_profile_window &window, u32 pc)
+{
+	if (!window.active || window.done)
+		return;
+
+	const attotime now = machine().time();
+	if (now >= window.end)
+	{
+		window.active = false;
+		window.done = true;
+		osd_printf_info("ASR10_STEP0_PC_PROFILE event=done window=%s time=%s instructions=%llu samples=%llu\n",
+			window.name ? window.name : "unknown", now.to_string(),
+			(unsigned long long)window.instructions, (unsigned long long)window.samples);
+		return;
+	}
+
+	window.instructions++;
+	if ((window.instructions & 1023) != 0)
+		return;
+
+	window.samples++;
+	window.pc_counts[pc]++;
+	window.recent_pcs[window.recent_pos++ & (window.recent_pcs.size() - 1)] = pc;
+	if (read_program_word(pc) == 0x4e72)
+		window.stop_samples++;
+}
+
+
+void asr10_boot_state::pc_profile_summary()
+{
+	if (!m_step0_runtime_trace_enabled)
+		return;
+
+	for (const pc_profile_window &window : m_step0_pc_profiles)
+	{
+		const attotime end = window.done ? window.end : machine().time();
+		const attotime elapsed = (window.start == attotime::never) ? attotime::zero : (end - window.start);
+		const double elapsed_s = elapsed.as_double();
+		const double sample_hz = elapsed_s > 0.0 ? double(window.samples) / elapsed_s : 0.0;
+		std::vector<std::pair<u32, u32>> counts;
+		counts.reserve(window.pc_counts.size());
+		for (const auto &entry : window.pc_counts)
+			counts.emplace_back(entry.first, entry.second);
+		std::sort(counts.begin(), counts.end(),
+			[](const auto &a, const auto &b)
+			{
+				if (a.second != b.second)
+					return a.second > b.second;
+				return a.first < b.first;
+			});
+		u64 top3 = 0;
+		for (size_t index = 0; index < std::min<size_t>(3, counts.size()); index++)
+			top3 += counts[index].second;
+
+		osd_printf_info("ASR10_STEP0_PC_PROFILE_SUMMARY window=%s active=%u done=%u start=%s "
+			"elapsed_s=%.6f sample_every_instructions=1024 samples=%llu sample_hz=%.3f "
+			"instructions=%llu distinct_pc=%zu stop_samples=%u top3_share=%.6f\n",
+			window.name ? window.name : "not_started", window.active ? 1 : 0, window.done ? 1 : 0,
+			window.start == attotime::never ? "never" : window.start.to_string(), elapsed_s,
+			(unsigned long long)window.samples, sample_hz,
+			(unsigned long long)window.instructions, counts.size(), window.stop_samples,
+			window.samples ? double(top3) / double(window.samples) : 0.0);
+
+		for (size_t index = 0; index < std::min<size_t>(20, counts.size()); index++)
+		{
+			osd_printf_info("ASR10_STEP0_PC_PROFILE_TOP window=%s rank=%zu pc=%06x count=%u share=%.6f\n",
+				window.name ? window.name : "not_started", index + 1, counts[index].first,
+				counts[index].second,
+				window.samples ? double(counts[index].second) / double(window.samples) : 0.0);
+		}
+
+		std::string recent;
+		const u32 recent_count = std::min<u32>(window.recent_pos, window.recent_pcs.size());
+		for (u32 i = 0; i < recent_count; i++)
+		{
+			const u32 pos = (window.recent_pos - recent_count + i) & (window.recent_pcs.size() - 1);
+			if (!recent.empty())
+				recent += ',';
+			recent += util::string_format("%06x", window.recent_pcs[pos]);
+		}
+		osd_printf_info("ASR10_STEP0_PC_PROFILE_RECENT window=%s count=%u pcs=%s\n",
+			window.name ? window.name : "not_started", recent_count, recent.c_str());
+	}
+}
+
+
+bool asr10_boot_state::normalized_rom_handoff_source(u32 pc, u32 &normalized) const
+{
+	pc &= 0x00ffffff;
+	if (pc >= 0x00f80000U && pc <= 0x00fbffffU)
+	{
+		normalized = pc;
+		return true;
+	}
+	if (pc <= ROM_MASK && m_maincpu->cs0_covers(0))
+	{
+		normalized = 0x00f80000U | (pc & ROM_MASK);
+		return true;
+	}
+	return false;
+}
+
+
+void asr10_boot_state::record_rom_handoff(u32 from, u32 to)
+{
+	if (!m_step0_runtime_trace_enabled)
+		return;
+
+	for (u32 index = 0; index < m_step0_rom_handoff_unique; index++)
+	{
+		rom_handoff_entry &entry = m_step0_rom_handoffs[index];
+		if (entry.from == from && entry.to == to)
+		{
+			entry.count++;
+			return;
+		}
+	}
+
+	if (m_step0_rom_handoff_unique >= m_step0_rom_handoffs.size())
+	{
+		m_step0_rom_handoff_truncated++;
+		return;
+	}
+
+	rom_handoff_entry &entry = m_step0_rom_handoffs[m_step0_rom_handoff_unique++];
+	entry.from = from;
+	entry.to = to;
+	entry.first_time = machine().time();
+	entry.count = 1;
+	osd_printf_info("ASR10_STEP0_ROM_HANDOFF event=first index=%u time=%s from=%06x to=%06x\n",
+		m_step0_rom_handoff_unique - 1, entry.first_time.to_string(), from, to);
+}
+
+
+void asr10_boot_state::rom_handoff_summary()
+{
+	if (!m_step0_runtime_trace_enabled)
+		return;
+
+	osd_printf_info("ASR10_STEP0_ROM_HANDOFF_SUMMARY unique=%u capacity=%zu truncated_new_pairs=%u\n",
+		m_step0_rom_handoff_unique, m_step0_rom_handoffs.size(), m_step0_rom_handoff_truncated);
+	for (u32 index = 0; index < m_step0_rom_handoff_unique; index++)
+	{
+		const rom_handoff_entry &entry = m_step0_rom_handoffs[index];
+		osd_printf_info("ASR10_STEP0_ROM_HANDOFF_PAIR index=%u first_time=%s from=%06x to=%06x count=%u\n",
+			index, entry.first_time.to_string(), entry.from, entry.to, entry.count);
+	}
 }
 
 
@@ -3292,6 +3538,30 @@ bool asr10_boot_state::is_bounded_panel_ring_control_candidate(u32 pc, u32 retur
 		void asr10_boot_state::maincpu_instruction_hook(u32 pc)
 		{
 			pc &= 0x00ffffff;
+
+			if (m_step0_runtime_trace_enabled && !machine().side_effects_disabled())
+			{
+				if (m_step0_irq6_pending_landing)
+				{
+					osd_printf_info("ASR10_STEP0_IRQ6_LAND time=%s vector=%02x iack_pc=%06x "
+						"target=%06x pc=%06x target_match=%u\n",
+						machine().time().to_string(), m_step0_irq6_pending_vector,
+						m_step0_irq6_pending_iack_pc, m_step0_irq6_pending_target, pc,
+						pc == m_step0_irq6_pending_target ? 1 : 0);
+					m_step0_irq6_pending_landing = false;
+				}
+				u32 normalized_from = 0;
+				u32 normalized_to = 0;
+				const bool from_rom = m_last_pc != 0xffffffffU &&
+					normalized_rom_handoff_source(m_last_pc, normalized_from);
+				const bool to_rom = normalized_rom_handoff_source(pc, normalized_to);
+				if (from_rom && !to_rom)
+				{
+					record_rom_handoff(normalized_from, pc);
+				}
+				sample_pc_profile(m_step0_pc_profiles[0], pc);
+				sample_pc_profile(m_step0_pc_profiles[1], pc);
+			}
 
 			if (m_root_directory_trace_enabled)
 				record_root_directory_instruction(pc);
