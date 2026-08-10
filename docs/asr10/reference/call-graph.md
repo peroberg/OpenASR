@@ -314,9 +314,11 @@ dokumentation och runtime-loggar — aldrig genom radinnehåll.
 | `mapping_basis` | vilken hypotes: `direct` eller `mirror-hypothesis` |
 
 `to_space` för `$FF8000-$FF9FFF` är **`HIGH-RAM-ALIAS-CANDIDATE`**, inte `SLOT`. Den
-logiska kopplingen till bindningstabellen är statiskt mycket stark, men den fysiska
-speglingen är `[Likely]` tills E2 är körd. 1404 kanter hänger på den hypotesen — de får
-inte se verifierade ut.
+logiska kopplingen till bindningstabellen är statiskt mycket stark, men E2 2026-08-10
+visade att data reads i `$FF8000-$FFFFFF` under V3.50-boot inte matchar motsvarande
+`$00xxxx`-innehåll i nuvarande MAME. 1404 kanter hänger fortfarande på
+`mirror-hypothesis`; de får inte se verifierade ut och ska inte ändras manuellt i den
+genererade CSV:n.
 
 **RAM-adress och filoffset är separata kolumner.** För OS-kod utanför segment 1 är
 `from_address` tom och `from_address_status` = `unmapped-segment`; koordinaten finns kvar

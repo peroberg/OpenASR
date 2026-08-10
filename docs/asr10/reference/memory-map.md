@@ -162,7 +162,7 @@ Verifierat RAM-innehåll efter boot:
 | `$00801E-$009FF6` | **ROM↔OS-bindningstabellen**, 723 slots | `rom-os-abi.md` |
 | `$00A000-$01D6A0` | OS-kod, segment 2 (V3.50) | `os-image-layout.md` |
 
-## 4. Speglingen `$FF0000-$FFFFFF` ↔ `$000000-$00FFFF`  [Likely — kör E2 innan något ändras]
+## 4. Speglingen `$FF0000-$FFFFFF` ↔ `$000000-$00FFFF`  [DISPROVEN]
 
 ROM gör **1254 `jsr/jmp abs.w`-anrop till 334 distinkta adresser i `$FF801E-$FF9FF6`**.
 Inget av de 334 målen är udda; slumpdata skulle ge omkring hälften udda. Enskilda
@@ -186,10 +186,16 @@ instruktion. Bindningstabellen är medvetet lagd i fönstrets övre halva.
 Det förklarar också `($8D50).w` i SCC-koden: det är slot `$8D50.w` i bindningstabellen,
 inte en variabel.
 
-**Drivrutinen speglar inte i dag.** `map(0xfc5020, 0xffffff).ram()` ger separat minne på
-`$FF8030`. Om speglingen är verklig landar varje anrop till de 342 anropade slotarna i
-oinitierat minne. Att maskinen bootar till `FILE 1` betyder bara att inget av dessa
-anropsställen har nåtts än. **Ändra ingenting före experiment E2.**
+**E2-resultat 2026-08-10.** En Lua read-tap över `$FF8000-$FFFFFF` under V3.50-boot
+observerade 566229 data reads. MAME exponerade inget opcode space till Lua, så
+instruktionsfetcher är fortfarande utanför coverage. De dataaccesser som jämfördes mot
+motsvarande `$00xxxx` matchade inte, exempelvis `$FF8D44 = $F9` medan `$008D44 = $00`.
+
+Slutsatsen är smal men viktig: nuvarande MAME-exekvering använder inte
+`$FF8000-$FFFFFF` som en enkel spegling av `$000000-$00FFFF` på den här bootvägen.
+Den statiska bindningstabellkopplingen är fortfarande verklig som kodmönster, men
+`mirror-hypothesis` i genererade call-graph-kanter är inte verifierad hårdvarumappning
+och får inte höjas till `direct` utan ny evidens.
 
 ## 5. CS1 — `$FF6000-$FF7FFF`  [OPEN]
 

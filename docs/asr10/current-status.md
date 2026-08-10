@@ -4,6 +4,15 @@ Current truth for the ASR-10 MAME bring-up. This file is deliberately short:
 verified reference facts belong in `reference/`, reproducible analysis output belongs in
 `static/`, and experiment history belongs in `investigations/` or `archive/`.
 
+Repo boundary: the separate MC68302 project is not part of this MAME implementation.
+Its classes, architecture and monitor infrastructure (`TraceRecorder`, `Mc68302Bus`,
+`Mc68302SystemIntegration`, Execution Monitor, Kotlin/Moira-specific design) are not
+applicable concepts for ASR-10 MAME documentation. Verified ROM/OS observations from
+this repository may later be used as evidence in the generic MC68302 project, but
+architecture, class names and implementation do not move in either direction.
+`docs/mc68302/` is source material in this tree; `src/devices/machine/mc68302.*`
+defines the implementation.
+
 ## Works
 
 - `asr10booth` boots `floppies/asr10booth/V350.img` with no `ASR10_*` environment
@@ -46,6 +55,11 @@ architectural model that did not exist before. Summary only — details in `refe
   PIO, Timer 2 configuration and its version difference, CP reset, ENTER HUNT MODE for
   SCC1/SCC2, SIMODE, SCON/SCM, LRCLK-phased receiver start, complete SCC1/SCC2 interrupt
   handlers with correct EOI. → `reference/mc68302-status.md`
+- **Current MC68302 implementation has no internal interrupt-source model.** IPR/IMR/ISR,
+  SCC/SMC parameter RAM, IDMA, Port A, timers, watchdog and SCC/SMC/SCP are
+  `known_unimplemented` shadow storage in `mc68302.cpp`. The only working interrupt path
+  at HEAD is external IRQ6 via `irq6_ack_vector()`, which explains why the panel path
+  works while SCC, Timer 2 and PB9-PB11 appear inactive. → `reference/mc68302-status.md`
 - **A control-flow database** of 5243 call-site-level edges with normalised addresses,
   evidence level and execution status. → `static/call-graph-edges.csv`,
   `reference/call-graph.md`
@@ -65,26 +79,18 @@ The static phase has produced what it usefully can. Further static work should b
 targeted at a known runtime PC, vector, hot binding slot or observed register access —
 not broad pattern search. Prompts for E1-E4 are in `static/prompts-E1-E4.md`.
 
-1. **W1C review in `mc68302.cpp`.** Pure implementation check: does IPR clear on
-   write-1, does ISR, does IACK move pending to in-service correctly, are byte lanes and
-   read-modify-write handled with hardware semantics? A real model defect may exist here,
-   but none has been shown. Does not block anything else.
-2. **E2 — the `$FFxxxx ↔ $00xxxx` mirror.** Blocks every `mem_map` change. 1404 edges in
-   `call-graph-edges.csv` depend on it. Non-destructive test: `$00BF0E` executes
-   `4EB9 FFFF8ECA` and returned cleanly to `$00BF14` in a recorded run; read-tap
-   `$FF8ECA`, dump `$008ECA`, compare.
-3. **PB9, PB10, PB11.** `IMR |= $C080` at `$F87F0A` makes these the only internal 68302
-   sources ROM itself unmasks, before the entire SCC path. All three are unidentified.
-4. **E4 — first real CS1 write.** Write-tap `$FF6000-$FF7FFF` logging address, width,
+1. **E4 — first real CS1 write.** Write-tap `$FF6000-$FF7FFF` logging address, width,
    value, PC and run phase, across boot, file browsing, instrument load, sampling,
    effect load, hardware test and option detection.
-5. **E1 — the ROM→OS handover and vector installation.** ROM contains no `jsr`/`jmp`
+2. **E1 — the ROM→OS handover and vector installation.** ROM contains no `jsr`/`jmp`
    with a 32-bit absolute RAM target, so the transfer is a binding slot, a
    register-indirect jump, or an `rts` to a stacked address.
-6. **Deterministic file-browse test.** One `DOWN` from `FILE 1  TUTORIAL BNK`, logging
+3. **Deterministic file-browse test.** One `DOWN` from `FILE 1  TUTORIAL BNK`, logging
    panel byte → DUART handler → dispatcher → binding slot → OS routine → file index →
-   panel output. This would be the first fully traversed subsystem graph.
-7. **Minimal truthful SCSI model.** AM33C93A at `$FC5001`/`$FC5003`: reset accepted,
+   panel output. This is blocked at HEAD without implementation changes: the ASR-10
+   driver has no input ports, and the existing panel harness only injects panel ACK/status
+   bytes, not user key events.
+4. **Minimal truthful SCSI model.** AM33C93A at `$FC5001`/`$FC5003`: reset accepted,
    stable status, option detection passes, no targets, commands terminate correctly.
    No fabricated disks.
 
@@ -100,6 +106,9 @@ not broad pattern search. Prompts for E1-E4 are in `static/prompts-E1-E4.md`.
 - **DPRAM contents**: SCC descriptors, buffer pointers, CP state, dynamically installed
   jump-table targets. One structured dump at chosen points would settle much of this.
 - **Timer 2's consumer**: which V3.50 routine reads TCN2 and why.
+- **PB9, PB10, PB11 consumers and physical sources.** ROM unmasks PB11/PB10/PB9 and the
+  PB10/PB11 handlers are decoded, but the static absolute-search pass found no
+  dekrementerare for `$0C3A/$0C3B` and no consumer for `$0C36/$0C37` within that method.
 - **`$F97662`** — 203 ROM call sites, unidentified. **`$F95EAA`** — 1 call in V1.61,
   33 in V3.50, unidentified. Both tracked in `static/routines.csv` with empty `name`.
 - PAR value, ADC channel identity, PB3 LRCLK board frequency, channel A wiring
@@ -115,6 +124,12 @@ Previous entries stand. Added by the static analysis:
 - **The OS image is loaded flat at one base.** At least two segment rules apply.
 - **The OS image contains a start address.** Vector 1 (PC) is `$00000000` in both
   versions; no soft reset from the image is possible.
+- **The V3.50 boot path uses `$FF8000-$FFFFFF` as a plain mirror of `$000000-$00FFFF`.**
+  A read-tap over `$FF8000-$FFFFFF` observed 566229 data reads during the V3.50 reference
+  boot, but sampled high-window values did not match corresponding `$00xxxx` contents
+  (for example `$FF8D44 = $F9` while `$008D44 = $00`). This disproves the broad mirror
+  hypothesis for current MAME behavior on that run; opcode-fetch visibility remains open
+  because Lua exposed no opcode space.
 - **`$7033` is written to DSR.** It is written to SCM. DSR has no identified absolute
   references in ROM or either OS version.
 - **`$FC6816` is a service/in-service latch.** It is IMR. `$2400` = SCC1 + SCC2.

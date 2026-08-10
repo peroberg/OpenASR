@@ -190,6 +190,11 @@ Bläddraren visar instrument (`$03`) och banker (`$1E`). Hittar den inga
 skrivs `NO INST OR BANK FILES`. V350 innehåller nio instrument och två
 banker, så meddelandet är alltid ett fel när det uppträder.
 
+V1.61 är en annan baseline: en flagglös boot med `V161.img` slutar på
+`NO INST OR BANK FILES` (rå 14-segmentsinvertering: `N0 IN5T 0R BANK FILE5`).
+Det är därför ett väntat utfall för den bilden, inte samma felindikator som
+om texten skulle uppträda med V3.50.
+
 ## 14. `FILE 1  TUTORIAL BNK` `[V som utfall]`
 
 Post 2 i katalogen, typ `$1E` = BANK. På riktig hårdvara lyser `INST` och

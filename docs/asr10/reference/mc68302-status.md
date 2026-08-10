@@ -396,6 +396,41 @@ multiplexern** framför ES5506:ans PAR-ingång.
   identifierade absoluta ROM-skrivningar. Vad de tre avmaskade stiften är fysiskt
   anslutna till är [OPEN] — de är de enda avbrottskällor ROM självt släpper fram.
 
+### PB9/PB10/PB11 statisk uppföljning 2026-08-10
+
+[Verified] ROM:s PB10- och PB11-handlers ligger kvar vid de äldre
+handlerkandidaterna:
+
+```
+PB10 $F88F06  tst.b  $0C3A.w
+              move.b #$0C,$0C3A.w
+              move.b #$01,$0C36.w
+              move.w #$4000,$FC6818.l
+              rte
+
+PB11 $F88F22  tst.b  $0C3B.w
+              move.b #$0C,$0C3B.w
+              move.b #$01,$0C37.w
+              move.w #$8000,$FC6818.l
+              rte
+```
+
+Den strukturella likheten mellan `$0C3A/$0C36` och `$0C3B/$0C37` är [Likely]
+ett gemensamt debounce- eller periodiskt service-mönster, men konsumenten är
+inte verifierad.
+
+En absolut och kort-absolut sökning i ROM samt V1.61/V3.50 identifierade ingen
+direkt dekrementerare för `$0C3A/$0C3B` och ingen direkt konsument för
+`$0C36/$0C37` utanför handlerns egna skrivningar. Det betyder endast: noll
+identifierade referenser inom den använda metoden. `(d,An)` och andra
+registerrelativa former täcks inte av den sökningen.
+
+[Verified] PB9 skiljer sig från PB10/PB11. ISR-bit `$0080` kvitteras från flera
+platser, bland annat ROM `$F8CFE0`, `$F8CFF0`, `$F8D076` samt OS-kod kring
+V350 RAM `$014862` / V161 RAM `$014A18` enligt segment-2-mappningen. Den
+omgivande koden pekar mot audio/ES5506-service, men PB9:s fysiska källa och
+eventuella flaggkonsument är fortfarande [OPEN].
+
 ---
 
 ## 5. Block utan identifierade absoluta referenser
@@ -433,24 +468,26 @@ absoluta referenser och kan skrivas registerrelativt, eller inte alls.
 
 1. **Ta reda på vad SCC1/SCC2 är kopplade till.** LRCLK-fasningen ger riktningen; det
    som saknas är fysisk verifiering och en identifierad sändare.
-2. Kontrollera W1C-semantiken för IPR och ISR i `mc68302.cpp` mot manualen — **som en
-   separat uppgift**. Att firmware använder ISR korrekt (`$2000`/`$0400` i hanterarna)
-   stärker W1C-tolkningen, men säger ingenting om implementationen. Det är ett rent
-   implementationsprov, inte en firmwarefråga:
+2. **[Verified] W1C-semantiken för IPR och ISR är inte implementerad i HEAD.**
+   `src/devices/machine/mc68302.h` anger att detta steg saknar interruptcontroller,
+   timer, IDMA och kommunikationsprocessor. `mc68302.cpp::classify_offset()` klassar
+   `$FC6812-$FC6819` (`GIMR/IPR/IMR/ISR`) som `known_unimplemented`; värdena är därför
+   shadow storage, inte MC68302-registersemantik.
 
    ```
-   IPR  skriv 1  ->  pendingbit rensas
-   IPR  skriv 0  ->  pendingbit lämnas orörd
-   ISR  skriv 1  ->  in-service-bit rensas
-   ISR  skriv 0  ->  biten lämnas orörd
-   IACK          ->  flyttar/rensar rätt pendingstate
-   IACK          ->  sätter ISR-biten för källan som tas i service
-   word- och byteskrivningar respekterar rätt byte lane
-   read-modify-write mot W1C-register ger hårdvarusemantik, inte RAM-semantik
+   0x0400-0x07ff  SCC/SMC parameter RAM      known_unimplemented
+   0x0800-0x0811  IDMA                       known_unimplemented
+   0x0812-0x0819  GIMR/IPR/IMR/ISR           known_unimplemented
+   0x081e-0x0823  Port A                     known_unimplemented
+   0x0840-0x084d  Timer 1 + watchdog         known_unimplemented
+   0x0850-0x085a  Timer 2                    known_unimplemented
+   0x0880-0x08b5  SCC1-3 / SMC / SCP         known_unimplemented
    ```
 
-   Ett verkligt modellfel kan finnas här, men **inget sådant är ännu visat**. Dra inte
-   slutsatsen att modellen är fel innan implementationen är granskad.
+   Slutsats: samtliga interna interruptkällor saknar i dag fungerande modell. Den enda
+   fungerande avbrottsvägen vid HEAD är extern IRQ6 via `irq6_ack_vector()`. Det ger en
+   gemensam förklaring till att panelvägen fungerar medan SCC, Timer 2 och PB9-PB11
+   framstår som inaktiva.
 3. **PB9, PB10 och PB11 — vad de är anslutna till.** `IMR |= $C080` på `$F87F0A` gör
    dem till de **enda interna 68302-källor ROM självt avmaskar**, och det sker före
    hela SCC-vägen. Ingen av de tre är identifierad. Detta är inte en restfråga.
