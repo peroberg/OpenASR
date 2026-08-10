@@ -61,6 +61,12 @@ architectural model that did not exist before. Summary only — details in `refe
   [Verified] The only working interrupt path at HEAD `47318563942` is external IRQ6 via
   `irq6_ack_vector()`. [OPEN] W1C semantics for IPR/ISR remain a hardware-model question
   until the interruptcontroller block is implemented. → `reference/mc68302-status.md`
+- **DUART panel path matches ROM hardware access.** [Verified] ROM-accesser till
+  `$FC4813` (SRB, RxRDY-poll) och `$FC4817` (RHRB) bekräftar att den nuvarande
+  DUART-panelmodellen motsvarar den hårdvaruväg firmwaren faktiskt använder.
+  Registerlayout, bas, udda adressering, stride och handskakning stämmer samtliga.
+  Kodsymbolen heter fortfarande `duart_panel_asr_candidate_r/w` av historiska skäl.
+  Namnbytet är en separat kodändring.
 - **A control-flow database** of 5243 call-site-level edges with normalised addresses,
   evidence level and execution status. → `static/call-graph-edges.csv`,
   `reference/call-graph.md`

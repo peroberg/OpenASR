@@ -94,16 +94,25 @@ Channel A/B observations:
 - Channel B is the panel path: `$F89CEA` reads `$FFFC4817` after polling `$FFFC4813`
   bit 0; panel output writes `$FFFC4817`.
 - Channel B init writes MRB `$13,$0F`, CSRB `$EE`, CRB `$20,$30,$40,$50,$10,$05`.
+  CSRB `$EE` selects selector `$E` for both Rx and Tx on channel B.
 - Channel A init is explicit:
   `$F88410 117c 0013 0000` writes MR1A `#$13`, `$F88416 117c 0007 0000` writes
   MR2A `#$07`, and `$F8841C 117c 00ee 0002` writes CSRA `#$EE`.
 - ACR is written at `$F88440 117c 0060 0008`, i.e. `$FC4809 <- #$60`; CTUR/CTLR are
   written by `$F88438 303c 07d0; $F8843C 0188 000c`, i.e. MOVEP word `$07D0`.
-- Baud conclusion: [OPEN]. CSRA `#$EE` selects baud selector E for both channel-A
-  halves, with ACR bit 7 clear from `#$60`. In MAME's current plain 68681/SCN2681 baud
-  tables, selector E is not a fixed baud entry. The 31.25 kbaud interpretation would
-  require a variant or external-clock interpretation not established by this pass, so
-  channel A must not be named as MIDI from this evidence alone.
+- [Verified] CSRA = `$EE` väljer selector `$E` för både Rx och Tx.
+             På 68681-kompatibel registerlayout innebär selector `$E` IP2/16.
+             Kanal A använder därmed extern klocka via IP2 och inte den
+             interna BRG:n. ACR = `$60` sätter BRG-set 1 (utan verkan för
+             kanal A), counter/timer-läge med X1/CLK som källa, och lämnar
+             IP change-of-state-avbrotten avstängda.
+
+- [Likely]   Kanal A används för MIDI. 31250 baud finns inte i den interna
+             BRG-tabellen och kräver därför extern klockning; 31250 x 16 =
+             500 kHz på IP2 är en naturlig kandidat.
+
+- [OPEN]     Vilken frekvens som faktiskt finns på IP2, samt vilken fysisk
+             anslutning kanal A bär.
 - The common counter/timer setup (`ACR #$60`, CTUR/CTLR `$07D0`) also matches the
   already documented 1.000 ms counter tick.
 
