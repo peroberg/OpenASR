@@ -168,6 +168,15 @@ private:
 		u32 to = 0;
 		attotime first_time = attotime::never;
 	};
+	struct rx_event_slot_activity
+	{
+		u32 ready_samples = 0;
+		u32 writes = 0;
+		u16 last_previous = 0;
+		u16 last_current = 0;
+		u16 last_mem_mask = 0;
+		u32 last_write_pc = 0xffffffffU;
+	};
 	static u16 ascii_to_14seg(u8 character) { return asr10_boot_defs::ascii_to_14seg(character); }
 
 	required_device<mc68302_device> m_maincpu;
@@ -538,6 +547,15 @@ private:
 	std::array<std::array<region_handoff_sample, STEP0_HANDOFF_SAMPLES_PER_CLASS>, STEP0_REGION_COUNT * STEP0_REGION_COUNT> m_step0_region_handoffs{};
 	std::array<u32, STEP0_REGION_COUNT * STEP0_REGION_COUNT> m_step0_region_handoff_counts{};
 	std::array<u32, STEP0_REGION_COUNT * STEP0_REGION_COUNT> m_step0_region_handoff_truncated{};
+	bool m_rx_event_trace_enabled = false;
+	bool m_rx_event_lowmem_dumped = false;
+	bool m_rx_event_pre_inject_dumped = false;
+	bool m_rx_event_after_reported = false;
+	u32 m_rx_event_id = 0;
+	u16 m_rx_event_slot_base = 0;
+	u16 m_rx_event_slot_end = 0;
+	u32 m_rx_event_slot_count = 0;
+	std::array<rx_event_slot_activity, 128> m_rx_event_slot_activity{};
 
 	virtual void machine_start() override ATTR_COLD;
 	virtual void machine_reset() override ATTR_COLD;
@@ -598,6 +616,11 @@ private:
 	void rom_handoff_summary();
 	void note_step0_fdc_access(bool write);
 	void step0_irq6_summary();
+	void rx_event_dump_lowmem();
+	void rx_event_dump_slots(const char *phase);
+	void rx_event_note_slot_write(u32 pc, u32 byte_address, u16 previous, u16 current, u16 mem_mask);
+	void rx_event_note_instruction(u32 pc);
+	void rx_event_summary();
 	void record_root_directory_instruction(u32 pc);
 
 	void log_root_directory_table_write(u32 pc, u32 byte_address, u16 previous, u16 current, u16 mem_mask);
@@ -783,6 +806,7 @@ void asr10_boot_state::machine_start()
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::pc_profile_summary, this));
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::rom_handoff_summary, this));
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::step0_irq6_summary, this));
+	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::rx_event_summary, this));
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::root_directory_summary, this));
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::mc68302_access_summary, this));
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::cs3_access_summary, this));
@@ -1658,6 +1682,19 @@ void asr10_boot_state::machine_reset()
 	m_step0_region_handoffs.fill({});
 	m_step0_region_handoff_counts.fill(0);
 	m_step0_region_handoff_truncated.fill(0);
+	{
+		const char *const rx_event_trace = std::getenv("ASR10_RX_EVENT_TRACE");
+		m_rx_event_trace_enabled =
+			rx_event_trace && rx_event_trace[0] && rx_event_trace[0] != '0';
+	}
+	m_rx_event_lowmem_dumped = false;
+	m_rx_event_pre_inject_dumped = false;
+	m_rx_event_after_reported = false;
+	m_rx_event_id = m_panel_sweep_raw;
+	m_rx_event_slot_base = 0;
+	m_rx_event_slot_end = 0;
+	m_rx_event_slot_count = 0;
+	m_rx_event_slot_activity.fill({});
 	std::fill_n(m_lowmem_shadow.get(), LOWMEM_WORDS, 0);
 	for (auto &entry : m_probe_or_alias_region_shadow)
 		std::fill(std::begin(entry), std::end(entry), 0);
@@ -1919,6 +1956,16 @@ u8 asr10_boot_state::maincpu_iack_r(u8 level)
 				duart_pending ? "duart" : "non_duart_or_unknown", duart_pending ? 1 : 0,
 				duart_isr, m_step0_duart_imr, duart_masked, m_step0_irq6_accept_count);
 		}
+		if (m_rx_event_trace_enabled)
+		{
+			auto const disable_side_effects = machine().disable_side_effects();
+			const u8 duart_isr = u8(m_duart->read(0x05));
+			const u32 target = lowmem_long(u32(vector) * 4) & 0x00ffffff;
+			osd_printf_info("ASR10_RX_EVENT event=irq6_accept id=%u time=%s iack_pc=%06x "
+				"isr=%02x vector=%02x target=%06x duart_irq_pending=%u imr=%02x masked=%02x\n",
+				m_rx_event_id, machine().time().to_string(), pc, duart_isr, vector, target,
+				m_duart->irq_pending() ? 1 : 0, m_step0_duart_imr, duart_isr & m_step0_duart_imr);
+		}
 	}
 
 	if (m_dispatcher_rte_first_pc_pending)
@@ -2051,6 +2098,13 @@ void asr10_boot_state::panel_c_queue_rx(u8 data, const char *reason, u32 pc)
 	const bool overflow_push = fifo_before >= (MC68681_RX_FIFO_SIZE + 1);
 	m_duart->m_chanB->rx_fifo_push(data, 0);
 	const int fifo_after = m_duart->m_chanB->rx_fifo_count();
+	if (m_rx_event_trace_enabled)
+	{
+		osd_printf_info("ASR10_RX_EVENT event=push id=%u time=%s reason=%s pc=%06x "
+			"value=%02x fifo_before=%d fifo_after=%d overflow_push=%u irq_pending=%u\n",
+			m_rx_event_id, machine().time().to_string(), reason, pc, data, fifo_before, fifo_after,
+			overflow_push ? 1 : 0, m_duart->irq_pending() ? 1 : 0);
+	}
 	if (m_panel_receive_live_active)
 	{
 		m_panel_receive_live_queue_calls++;
@@ -2099,6 +2153,9 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_sweep_fire)
 
 	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 	m_panel_sweep_injected = true;
+	if (m_rx_event_trace_enabled)
+		osd_printf_info("ASR10_RX_EVENT event=inject id=%u time=%s raw=%02x pc=%06x before=\"%s\"\n",
+			m_rx_event_id, machine().time().to_string(), m_panel_sweep_raw, pc, m_panel_sweep_before);
 	osd_printf_info("ASR10_PANEL_SWEEP event=inject raw=%02x pc=%06x before=\"%s\"\n",
 		m_panel_sweep_raw, pc, m_panel_sweep_before);
 	panel_c_queue_rx(m_panel_sweep_raw, "panel_sweep_raw", pc);
@@ -2256,6 +2313,9 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 
 	const u16 previous = m_lowmem_shadow[offset];
 	COMBINE_DATA(&m_lowmem_shadow[offset]);
+	if (!machine().side_effects_disabled())
+		rx_event_note_slot_write(m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff,
+			byte_address, previous, m_lowmem_shadow[offset], mem_mask);
 	if ((byte_address == 0x0dd6 || byte_address == 0x0df2) && !machine().side_effects_disabled())
 	{
 		const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
@@ -2967,6 +3027,15 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 	const u8 srb_before_rhrb = (address == 0x00fc4816 && ACCESSING_BITS_0_7) ? u8(m_duart->read(0x09)) : 0;
 	const int fifo_before_read = m_duart->m_chanB->rx_fifo_count();
 	u16 raw_data = ACCESSING_BITS_0_7 ? m_duart->read(word) : 0;
+	if (!machine().side_effects_disabled() && m_rx_event_trace_enabled && ACCESSING_BITS_0_7 &&
+		(address == 0x00fc4812 || address == 0x00fc4816))
+	{
+		osd_printf_info("ASR10_RX_EVENT event=duart_read id=%u time=%s pc=%06x "
+			"reg=%s address=%06x value=%02x fifo_before=%d fifo_after=%d irq_pending=%u\n",
+			m_rx_event_id, machine().time().to_string(), pc,
+			address == 0x00fc4812 ? "SRB" : "RHRB", address | 1, u8(raw_data),
+			fifo_before_read, m_duart->m_chanB->rx_fifo_count(), m_duart->irq_pending() ? 1 : 0);
+	}
 	if (!machine().side_effects_disabled() && m_panel_receive_live_active && ACCESSING_BITS_0_7)
 	{
 		const bool is_srb = address == 0x00fc4812;
@@ -3104,11 +3173,10 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 		{
 			m_step0_thrb_writes++;
 		}
-		else if (address == 0x00fc480b)
-		{
-			m_step0_duart_imr = u8(data);
-		}
 	}
+	if (!machine().side_effects_disabled() && ACCESSING_BITS_0_7 && address == 0x00fc480b &&
+		(m_step0_runtime_trace_enabled || m_rx_event_trace_enabled))
+		m_step0_duart_imr = u8(data);
 	if (!machine().side_effects_disabled() && ACCESSING_BITS_0_7 &&
 		(address == 0x00fc480b || address == 0x00fc4819))
 	{
@@ -3269,10 +3337,26 @@ void asr10_boot_state::panel_receive_byte(u8 data)
 	{
 		strncpy(m_panel_sweep_before, m_panel_text, PANEL_TEXT_LENGTH - 1);
 		m_panel_sweep_before[PANEL_TEXT_LENGTH - 1] = 0;
+		if (m_rx_event_trace_enabled && !m_rx_event_pre_inject_dumped)
+		{
+			m_rx_event_pre_inject_dumped = true;
+			osd_printf_info("ASR10_RX_EVENT event=precheck id=%u time=%s raw=%02x display=\"%s\"\n",
+				m_rx_event_id, machine().time().to_string(), m_panel_sweep_raw, m_panel_sweep_before);
+			rx_event_dump_lowmem();
+			rx_event_dump_slots("pre_inject");
+		}
 		m_panel_sweep_armed = true;
 		osd_printf_info("ASR10_PANEL_SWEEP event=precheck raw=%02x display=\"%s\" result=valid\n",
 			m_panel_sweep_raw, m_panel_sweep_before);
 		m_panel_sweep_timer->adjust(attotime::from_msec(100));
+	}
+	if (m_rx_event_trace_enabled && m_panel_sweep_injected && !m_rx_event_after_reported &&
+		strcmp(m_panel_text, m_panel_sweep_before) != 0)
+	{
+		m_rx_event_after_reported = true;
+		osd_printf_info("ASR10_RX_EVENT event=display_after id=%u time=%s raw=%02x display=\"%s\"\n",
+			m_rx_event_id, machine().time().to_string(), m_panel_sweep_raw, m_panel_text);
+		rx_event_dump_slots("after_display_change");
 	}
 	if (!m_panel_receive_live_active && strstr(m_panel_text, "FILE 1  TUTORIAL BNK"))
 	{
@@ -3652,6 +3736,165 @@ void asr10_boot_state::step0_irq6_summary()
 }
 
 
+void asr10_boot_state::rx_event_dump_lowmem()
+{
+	if (!m_rx_event_trace_enabled || m_rx_event_lowmem_dumped)
+		return;
+
+	m_rx_event_lowmem_dumped = true;
+	osd_printf_info("ASR10_RX_EVENT event=lowmem_dump id=%u base=000000 len=0400\n", m_rx_event_id);
+	for (u32 address = 0; address < 0x400; address += 0x10)
+	{
+		std::string hex;
+		for (u32 offset = 0; offset < 0x10; offset++)
+		{
+			if (offset)
+				hex += ' ';
+			hex += util::string_format("%02x", lowmem_byte(address + offset));
+		}
+		osd_printf_info("ASR10_RX_EVENT_LOWMEM address=%04x hex=\"%s\"\n", address, hex.c_str());
+	}
+}
+
+
+void asr10_boot_state::rx_event_dump_slots(const char *phase)
+{
+	if (!m_rx_event_trace_enabled)
+		return;
+
+	m_rx_event_slot_base = lowmem_word(0x00c6);
+	m_rx_event_slot_end = lowmem_word(0x00c8);
+	const u32 span = (m_rx_event_slot_end >= m_rx_event_slot_base) ? (m_rx_event_slot_end - m_rx_event_slot_base) : 0;
+	m_rx_event_slot_count = span / 0x16;
+	osd_printf_info("ASR10_RX_EVENT event=slot_table id=%u phase=%s base=%04x end=%04x "
+		"span=%04x stride=0016 stride_source=f87fc2_adda slot_count=%u exact_division=%u\n",
+		m_rx_event_id, phase, m_rx_event_slot_base, m_rx_event_slot_end, span,
+		m_rx_event_slot_count, (span && (span % 0x16) == 0) ? 1 : 0);
+
+	for (u32 slot = 0; slot < std::min<u32>(m_rx_event_slot_count, 128); slot++)
+	{
+		const u32 base = m_rx_event_slot_base + slot * 0x16;
+		std::string words;
+		for (u32 offset = 0; offset < 0x16; offset += 2)
+		{
+			if (offset)
+				words += ' ';
+			words += util::string_format("%04x", lowmem_word(base + offset));
+		}
+		osd_printf_info("ASR10_RX_EVENT_SLOT id=%u phase=%s slot=%u base=%04x "
+			"b2=%02x b3=%02x ready=%u words=\"%s\"\n",
+			m_rx_event_id, phase, slot, base, lowmem_byte(base + 2), lowmem_byte(base + 3),
+			lowmem_byte(base + 2) != lowmem_byte(base + 3) ? 1 : 0, words.c_str());
+	}
+}
+
+
+void asr10_boot_state::rx_event_note_slot_write(u32 pc, u32 byte_address, u16 previous, u16 current, u16 mem_mask)
+{
+	if (!m_rx_event_trace_enabled || !m_rx_event_pre_inject_dumped || !m_rx_event_slot_count)
+		return;
+	if (byte_address < m_rx_event_slot_base || byte_address >= m_rx_event_slot_end)
+		return;
+
+	const u32 slot = (byte_address - m_rx_event_slot_base) / 0x16;
+	if (slot >= m_rx_event_slot_activity.size())
+		return;
+
+	rx_event_slot_activity &activity = m_rx_event_slot_activity[slot];
+	activity.writes++;
+	activity.last_previous = previous;
+	activity.last_current = current;
+	activity.last_mem_mask = mem_mask;
+	activity.last_write_pc = pc;
+	osd_printf_info("ASR10_RX_EVENT event=slot_write id=%u time=%s pc=%06x slot=%u "
+		"address=%04x previous=%04x current=%04x mem_mask=%04x b2=%02x b3=%02x ready=%u writes=%u\n",
+		m_rx_event_id, machine().time().to_string(), pc, slot, byte_address, previous, current,
+		mem_mask, lowmem_byte(m_rx_event_slot_base + slot * 0x16 + 2),
+		lowmem_byte(m_rx_event_slot_base + slot * 0x16 + 3),
+		lowmem_byte(m_rx_event_slot_base + slot * 0x16 + 2) != lowmem_byte(m_rx_event_slot_base + slot * 0x16 + 3) ? 1 : 0,
+		activity.writes);
+}
+
+
+void asr10_boot_state::rx_event_note_instruction(u32 pc)
+{
+	if (!m_rx_event_trace_enabled || machine().side_effects_disabled())
+		return;
+
+	if (pc == 0x00ff8638)
+	{
+		osd_printf_info("ASR10_RX_EVENT event=pc_marker id=%u time=%s pc=ff8638\n",
+			m_rx_event_id, machine().time().to_string());
+	}
+
+	if (pc == 0x00f884d4 || pc == 0x00f884e0 || pc == 0x00f884ec || pc == 0x00f884f4)
+	{
+		const char *branch =
+			pc == 0x00f884d4 ? "RxRDYB_bit5" :
+			pc == 0x00f884e0 ? "channel_A_status_bits1_2" :
+			pc == 0x00f884ec ? "TxRDYA_bit0" : "counter_ready_bit3";
+		const char *form = pc == 0x00f884f4 ? "jmp_abs_short" : "jmp_indirect_lowmem_long";
+		const u32 target =
+			pc == 0x00f884d4 ? (lowmem_long(0x00de) & 0x00ffffff) :
+			pc == 0x00f884e0 ? (lowmem_long(0x00e2) & 0x00ffffff) :
+			pc == 0x00f884ec ? (lowmem_long(0x00e6) & 0x00ffffff) :
+			0x00ff8638U;
+		osd_printf_info("ASR10_RX_EVENT event=dispatch id=%u time=%s pc=%06x branch=%s "
+			"form=%s target=%06x ptr_de=%08x ptr_e2=%08x ptr_e6=%08x\n",
+			m_rx_event_id, machine().time().to_string(), pc, branch, form, target,
+			lowmem_long(0x00de), lowmem_long(0x00e2), lowmem_long(0x00e6));
+	}
+
+	if (pc == 0x00f87f9e && m_rx_event_slot_count)
+	{
+		const u32 a2 = u32(m_maincpu->state_int(M68K_A2)) & 0x00ffffff;
+		if (a2 >= m_rx_event_slot_base && a2 < m_rx_event_slot_end)
+		{
+			const u32 slot = (a2 - m_rx_event_slot_base) / 0x16;
+			if (slot < m_rx_event_slot_activity.size() && lowmem_byte(a2 + 2) != lowmem_byte(a2 + 3))
+				m_rx_event_slot_activity[slot].ready_samples++;
+		}
+	}
+
+	if (pc == 0x00f87fc0)
+	{
+		const u32 a2 = u32(m_maincpu->state_int(M68K_A2)) & 0x00ffffff;
+		const u32 sp = u32(m_maincpu->state_int(M68K_SP)) & 0x00ffffff;
+		const u32 slot = (m_rx_event_slot_count && a2 >= m_rx_event_slot_base && a2 < m_rx_event_slot_end)
+			? (a2 - m_rx_event_slot_base) / 0x16
+			: 0xffffffffU;
+		const u16 frame_sr = read_program_word(sp);
+		const u32 frame_pc = read_stack_long(sp + 2) & 0x00ffffff;
+		osd_printf_info("ASR10_RX_EVENT event=scheduler_rte id=%u time=%s pc=%06x slot=%u "
+			"slot_base=%06x frame_sr=%04x frame_pc=%06x frame_region=%s b2=%02x b3=%02x\n",
+			m_rx_event_id, machine().time().to_string(), pc, slot, a2, frame_sr, frame_pc,
+			address_region_guess(frame_pc), lowmem_byte(a2 + 2), lowmem_byte(a2 + 3));
+	}
+}
+
+
+void asr10_boot_state::rx_event_summary()
+{
+	if (!m_rx_event_trace_enabled)
+		return;
+
+	osd_printf_info("ASR10_RX_EVENT_SUMMARY id=%u raw=%02x injected=%u display=\"%s\" "
+		"slot_base=%04x slot_end=%04x slot_count=%u\n",
+		m_rx_event_id, m_panel_sweep_raw, m_panel_sweep_injected ? 1 : 0, m_panel_text,
+		m_rx_event_slot_base, m_rx_event_slot_end, m_rx_event_slot_count);
+	for (u32 slot = 0; slot < std::min<u32>(m_rx_event_slot_count, 128); slot++)
+	{
+		const rx_event_slot_activity &activity = m_rx_event_slot_activity[slot];
+		if (!activity.ready_samples && !activity.writes)
+			continue;
+		osd_printf_info("ASR10_RX_EVENT_SLOT_ACTIVITY id=%u slot=%u ready_samples=%u writes=%u "
+			"last_write_pc=%06x previous=%04x current=%04x mem_mask=%04x\n",
+			m_rx_event_id, slot, activity.ready_samples, activity.writes, activity.last_write_pc,
+			activity.last_previous, activity.last_current, activity.last_mem_mask);
+	}
+}
+
+
 void asr10_boot_state::note_panel_ring_store(u32 pc, u32 ring_address, u8 byte)
 {
 	if (machine().side_effects_disabled() || ring_address < 0x0378 || ring_address > 0x03b7)
@@ -3738,6 +3981,7 @@ bool asr10_boot_state::is_bounded_panel_ring_control_candidate(u32 pc, u32 retur
 				sample_pc_profile(m_step0_pc_profiles[0], pc);
 				sample_pc_profile(m_step0_pc_profiles[1], pc);
 			}
+			rx_event_note_instruction(pc);
 
 			if (m_root_directory_trace_enabled)
 				record_root_directory_instruction(pc);
