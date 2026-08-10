@@ -180,6 +180,13 @@ basen; utsträckningen antogs vara 256 och dumpen läste 218 byte strängdata, p
 utfyllnad som mappningar. Den "icke-bijektiva" struktur som drogs ur resultatet fanns
 inte.
 
+### `$FFxxxx` betyder inte alltid spegling
+
+`$FFFC4817` i en 32-bitars absolut lång operand och `$8D50.w` som teckenutvidgas till
+`$FF8D50` är två skilda mekanismer. Den första är vanlig 24-bitars periferadressering;
+den andra är grunden för den öppna hög-RAM-speglingshypotesen. Se
+`memory-map.md` §1.1.
+
 ---
 
 ## 9. Statik före stimulans

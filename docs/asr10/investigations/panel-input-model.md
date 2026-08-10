@@ -43,6 +43,75 @@ Supporting code/documentation:
 - `reference/vector-map.md` and `reference/subroutine-index.md` already describe the
   channel B RX path as verified.
 
+## Verified: 68681-compatible register layout at `$FC4801`
+
+Static ROM/OS evidence fits a 68681-compatible register file at odd byte addresses,
+base `$FC4801`, stride 2. No direct even-address accesses in `$FC4800-$FC481F` were
+identified in `asr10.bin`, `V161.img`, or `V350.img`; no `$00FC48xx` long-address form
+was identified either. The observed long-address form is `$FFFC48xx`, which is ordinary
+24-bit peripheral addressing, not low-RAM mirroring.
+
+Register-relative coverage matters here: ROM loads `$FFFC4801` into `A0` at `$F88450`
+and uses offsets from that base in the init path. Those accesses would be missed by an
+absolute-literal-only search.
+
+| reg | address | 68681-compatible role | ROM R/W | V1.61 R/W | V3.50 R/W | observed sites and immediate writes |
+|---:|---:|---|---:|---:|---:|---|
+| `$0` | `$FC4801` | MR1A/MR2A | 0/0 | 0/0 | 0/0 | base load only: `$F88450 207c fffc 4801` |
+| `$1` | `$FC4803` | SRA/CSRA | 2/0 | 0/0 | 0/0 | reads `$F8845E`, `$F8896E` |
+| `$2` | `$FC4805` | CRA | 0/7 | 0/2 | 0/2 | ROM writes `$40,$50,$20,$01,$04,$08,$20`; OS writes `$08,$04` |
+| `$3` | `$FC4807` | RHRA/THRA | 3/7 | 0/2 | 0/2 | ROM reads `$F8845A,$F88480,$F8899C`; writes include `$F88844 #$F8`; OS writes D0 |
+| `$4` | `$FC4809` | IPCR/ACR | 4/1 | 0/0 | 2/0 | ROM writes `$F88440 #$60` via `(8,A0)`; reads `$FB7BEE,$FB7C30,$FB7C84,$FB8154` |
+| `$5` | `$FC480B` | ISR/IMR | 1/3 | 0/2 | 0/2 | ROM reads `$F884C2`; writes `#$00` `$F88400`, `#$2B` `$F88448`, `#$09` `$F8A048`; OS writes `#$00` |
+| `$6` | `$FC480D` | CUR/CTUR | 0/1 | 0/0 | 0/0 | `$F88438 303c 07d0; 0188 000c` writes CTUR/CTLR as MOVEP word `$07D0` |
+| `$7` | `$FC480F` | CLR/CTLR | 0/1 | 0/0 | 0/0 | low byte of same MOVEP word `$07D0` |
+| `$8` | `$FC4811` | MR1B/MR2B | 0/2 | 0/0 | 0/0 | `$F884A0` loads base; `$F884A6 #$13`, `$F884AA #$0F` |
+| `$9` | `$FC4813` | SRB/CSRB | 4/1 | 3/0 | 3/0 | ROM reads `$F89C56,$F89CD8,$F8B95E,$F8B96C`; writes `$F884B0 #$EE` via `(18,A0)` |
+| `$A` | `$FC4815` | CRB | 0/6 | 0/0 | 0/0 | `$F88486` loads base; writes `$20,$30,$40,$50,$10`; `$F884B6 #$05` |
+| `$B` | `$FC4817` | RHRB/THRB | 4/6 | 2/0 | 2/0 | reads include `$F89CEA`; writes include panel TX at `$F89AA4,$F89C48,$F89CB0,$F89CF6,$F89D0E,$F89D22` |
+| `$C` | `$FC4819` | IVR | 0/0 | 0/0 | 0/0 | no identified access |
+| `$D` | `$FC481B` | IP/OPCR | 1/1 | 0/0 | 0/0 | read `$FB7CA8`; clear/write `$FB90BA 4239 fffc 481b` |
+| `$E` | `$FC481D` | start counter / set OP bits | 0/4 | 0/1 | 0/1 | ROM writes D0, `#$9F`, `#$D9`; OS writes D0 |
+| `$F` | `$FC481F` | stop counter / reset OP bits | 1/4 | 0/1 | 0/1 | ROM reads `$F88300`; writes D0, `#$60`, `#$26`; OS writes D0 |
+
+OS direct-access sites:
+
+- V1.61: `$015658`/`$015678` write CRA `#$08/#$04`; `$004DAA`/`$01562A` write THRA
+  from D0; `$01276C`/`$0127D2` write IMR `#$00`; `$00D82A`, `$0122F6`, `$012308`
+  read SRB; `$00D842`, `$012312` read RHRB; `$014C2C` writes start/set-OP from D0;
+  `$014C24` writes stop/reset-OP from D0.
+- V3.50: `$0188A2`/`$0188C2` write CRA `#$08/#$04`; `$004DE0`/`$018874` write THRA
+  from D0; `$013B8C`/`$01BD4E` read IPCR/ACR bit 5; `$013A14`/`$013A7A` write IMR
+  `#$00`; `$00D6BC`, `$0125CA`, `$0125DC` read SRB; `$00D6D4`, `$0125E6` read RHRB;
+  `$0175AA` writes start/set-OP from D0; `$0175A2` writes stop/reset-OP from D0.
+
+Chip select: `reference/memory-map.md` decodes CS3 as `$FC4000-$FC5FFF`, read/write,
+3 wait states. `$FC4801-$FC481F` is therefore inside CS3, below the SCSI candidate
+window at `$FC5001/$FC5003`.
+
+Channel A/B observations:
+
+- Channel B is the panel path: `$F89CEA` reads `$FFFC4817` after polling `$FFFC4813`
+  bit 0; panel output writes `$FFFC4817`.
+- Channel B init writes MRB `$13,$0F`, CSRB `$EE`, CRB `$20,$30,$40,$50,$10,$05`.
+- The common counter/timer setup writes ACR `$60` and CTUR/CTLR `$07D0`; at a 4 MHz
+  X1 clock this matches the already documented 1.000 ms counter tick.
+- No CSRA write was identified by this pass, so the static evidence does not support
+  naming channel A as MIDI yet. The observed register layout supports only the narrower
+  statement: a 68681-compatible DUART register family is present at `$FC4801`.
+
+Current driver mapping, kept separate from ROM evidence:
+
+- `src/mame/ensoniq/asr10_boot.cpp:1680` maps `$FC4800-$FC481F` to
+  `duart_panel_asr_candidate_r/w`.
+- `src/mame/ensoniq/asr10_boot.cpp:2756-2868` translates MAME word offsets to the
+  low byte lane and calls `m_duart->read(word)` / `m_duart->write(word)`.
+- `src/mame/ensoniq/asr10_boot.cpp:4650-4651` instantiates `SCN2681` at
+  `XTAL(16'000'000) / 4` and wires its IRQ to CPU line 6.
+
+That driver mapping agrees with the ROM register family, but remains a model choice.
+The hardware conclusion above comes from firmware address use.
+
 ## Verified: raw byte mapping exists
 
 Provenance of the earlier claim: `$F82484` and the example pairs first came from the
@@ -119,6 +188,83 @@ that terminology.
 
 This proves that user/panel bytes are not necessarily consumed as raw bytes. The ROM
 applies a translation table before later semantics.
+
+## Verified: raw-byte routine around `$F89D94`
+
+Nearest preceding return before `$F89D94` is `$F89D44 rts`; the surrounding routine
+entry is therefore `$F89D46`. Direct calls to `$F89D46` were not identified by the
+direct-call search below, so the entry may be reached indirectly or as part of a larger
+firmware control path.
+
+Relevant disassembly from `$F89D46` to the loop:
+
+```text
+$F89D46  6100 FE96          bsr     $F89BDE
+$F89D4A  247C FFF8 24AA     movea.l #$FFF824AA,A2
+$F89D50  4EBA FF42          jsr     ($F89C94,PC)
+$F89D54  7000               moveq   #$00,D0
+$F89D56  1038 00C1          move.b  ($00C1).w,D0
+$F89D5A  347C 80C0          movea.w #$80C0,A2
+$F89D5E  7203               moveq   #$03,D1
+$F89D60  4EBA 009C          jsr     ($F89DFE,PC)
+$F89D64  4212               clr.b   (A2)
+$F89D66  347C 80C0          movea.w #$80C0,A2
+$F89D6A  4EBA FF36          jsr     ($F89CA2,PC)
+$F89D6E  247C FFF8 24B1     movea.l #$FFF824B1,A2
+$F89D74  4EBA FF2C          jsr     ($F89CA2,PC)
+$F89D78  263C 000A 0000     move.l  #$000A0000,D3
+$F89D7E  4EB9 FFFB 8D6C     jsr     $FFFB8D6C.l
+$F89D84  6100 FE58          bsr     $F89BDE
+$F89D88  4E6D               move    USP,A5
+$F89D8A  4238 0C4A          clr.b   ($0C4A).w
+$F89D8E  6100 FF3A          bsr     $F89CCA
+$F89D92  65FA               bcs     $F89D8E
+$F89D94  B23C 0023          cmp.b   #$23,D1
+$F89D98  6602               bne     $F89D9C
+$F89D9A  4E75               rts
+$F89D9C  207C FFF8 2484     movea.l #$FFF82484,A0
+$F89DA2  1230 1000          move.b  (A0,D1.w),D1
+```
+
+The two bytes skipped by `$F89D98 6602` are exactly `$4E $75`, i.e. `rts`.
+Raw `$23` therefore exits before the table lookup. This is raw protocol handling, not
+post-lookup firmware semantics; raw `$23` would map to `$25` if it were allowed to reach
+the table.
+
+Framing:
+
+- `$F89D8E` calls `$F89CCA`.
+- `$F89CCA-$F89CE6` polls `$FFFC4813` bit 0 (`SRB RxRDYB`) with a timeout.
+- If ready, `$F89CE8 7200` clears `D1` and `$F89CEA 1239 fffc 4817` reads one byte from
+  `$FFFC4817` (`RHRB`).
+- No start byte, length field, or checksum was identified in this routine. It consumes
+  a single already-framed DUART channel-B receive byte after SRB says one is available.
+
+Post-lookup destination:
+
+- `$40` sets `($0C4A).w`.
+- `$17` copies `A7` to `A6`; `$16` copies USP to `A6`.
+- `$30-$39`, gated by `($0C4A).w`, selects an 8-byte record by `sub.b #$30,D1`,
+  `lsl.w #3,D1`, `adda.w D1,A5`; the selected pointer is dereferenced by `$F89DEE`
+  (`move.l (A5)+,D0`) and sent through `$FFF97EE8` and the panel text output path.
+- Non-digit mapped values loop back to `$F89D8E`.
+
+The mapped value is not stored into a general RAM queue by this routine. It is consumed
+directly as control flow and as an index into an `A5`-relative record table, which is
+invisible to ordinary absolute-reference searches.
+
+Direct-call coverage for this routine:
+
+- No direct `jsr`/`jmp` absolute-long or PC-relative call to `$F89D46` was identified in
+  `asr10.bin`, `V161.img`, or `V350.img`.
+- No `static/os-binding-table.csv` slot targets `$F89D46`, `$F89D8E`, or `$F89D9C`.
+- The only direct branches to `$F89D8E/$F89D9C` are internal: `$F89D92 bcs $F89D8E`,
+  `$F89DEC bra $F89D8E`, and `$F89D98 bne $F89D9C`.
+
+No alternative direct caller was found that could pre-bound `D1` differently. Coverage:
+direct absolute calls, direct PC-relative branches/calls, and binding-table targets.
+Register-indirect calls (`jsr (An)`, `jmp (An)`) are not covered, so "all call sites"
+means all identified direct call sites by these methods.
 
 ## Verified: mapped-value consumer cluster
 

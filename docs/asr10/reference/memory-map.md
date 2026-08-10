@@ -48,6 +48,34 @@ marken under sig själv. Se `boot-sequence.md` §DPRAM-bryggan.
 Allt som inte täcks av CS0–CS3 eller BAR-fönstret måste avkodas av kortlogiken.
 68302:an gör det inte.
 
+### 1.1 Två orelaterade `$FFxxxx`-mekanismer
+
+Två helt olika mekanismer producerar `$FFxxxx` i disassemblern.
+
+**A. 32-bitars absolut lång adress med `$FF`-fyllnad**
+
+```text
+move.b $FFFC4817.l,D1
+```
+
+På 68000/68302-systemets 24-bitars adressbuss maskas detta till `$FC4817`. Detta är ren
+periferadressering, ingen spegling inblandad. ROM använder denna form för bland annat
+DUART-fönstret `$FC4801-$FC481F`.
+
+**B. 16-bitars absolut kort adress**
+
+```text
+jsr $8D50.w
+```
+
+CPU:n teckenutvidgar absolut kort adress till `$FF8D50`. För att bindningstabellen på
+RAM `$008D50` ska kunna nås den vägen krävs att hårdvaran aliasar
+`$FF8000-$FFFFFF` mot `$008000-$00FFFF`. Det är speglingshypotesen, och den är
+fortfarande [OPEN] (E2).
+
+De två fallen ser nästan identiska ut i en hexdump. De är arkitektoniskt orelaterade.
+Ett fynd av typ A är aldrig evidens för eller emot typ B.
+
 ## 2. MC68302 internt fönster (BAR)
 
 BAR pekar fönstret till **`$FC6000-$FC6FFF`**, 4 KB:
