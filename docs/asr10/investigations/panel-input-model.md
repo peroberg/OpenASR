@@ -94,11 +94,18 @@ Channel A/B observations:
 - Channel B is the panel path: `$F89CEA` reads `$FFFC4817` after polling `$FFFC4813`
   bit 0; panel output writes `$FFFC4817`.
 - Channel B init writes MRB `$13,$0F`, CSRB `$EE`, CRB `$20,$30,$40,$50,$10,$05`.
-- The common counter/timer setup writes ACR `$60` and CTUR/CTLR `$07D0`; at a 4 MHz
-  X1 clock this matches the already documented 1.000 ms counter tick.
-- No CSRA write was identified by this pass, so the static evidence does not support
-  naming channel A as MIDI yet. The observed register layout supports only the narrower
-  statement: a 68681-compatible DUART register family is present at `$FC4801`.
+- Channel A init is explicit:
+  `$F88410 117c 0013 0000` writes MR1A `#$13`, `$F88416 117c 0007 0000` writes
+  MR2A `#$07`, and `$F8841C 117c 00ee 0002` writes CSRA `#$EE`.
+- ACR is written at `$F88440 117c 0060 0008`, i.e. `$FC4809 <- #$60`; CTUR/CTLR are
+  written by `$F88438 303c 07d0; $F8843C 0188 000c`, i.e. MOVEP word `$07D0`.
+- Baud conclusion: [OPEN]. CSRA `#$EE` selects baud selector E for both channel-A
+  halves, with ACR bit 7 clear from `#$60`. In MAME's current plain 68681/SCN2681 baud
+  tables, selector E is not a fixed baud entry. The 31.25 kbaud interpretation would
+  require a variant or external-clock interpretation not established by this pass, so
+  channel A must not be named as MIDI from this evidence alone.
+- The common counter/timer setup (`ACR #$60`, CTUR/CTLR `$07D0`) also matches the
+  already documented 1.000 ms counter tick.
 
 Current driver mapping, kept separate from ROM evidence:
 
@@ -189,12 +196,30 @@ that terminology.
 This proves that user/panel bytes are not necessarily consumed as raw bytes. The ROM
 applies a translation table before later semantics.
 
-## Verified: raw-byte routine around `$F89D94`
+## Verified: raw-byte helpers around `$F89C80-$F89DE0`
 
-Nearest preceding return before `$F89D94` is `$F89D44 rts`; the surrounding routine
-entry is therefore `$F89D46`. Direct calls to `$F89D46` were not identified by the
-direct-call search below, so the entry may be reached indirectly or as part of a larger
-firmware control path.
+`$F89D46` is not the entry for the receive-byte path. A pass that defines entry only as
+incoming control flow from outside the investigated interval `$F89C80-$F89DE0` shows
+multiple entrypoints/helpers in the interval:
+
+| target | incoming control flow from outside `$F89C80-$F89DE0` | interpretation |
+|---:|---|---|
+| `$F89C88` | `$F89C6C beq $F89C88` | boundary artifact: target is inside the interval but source is just before it |
+| `$F89C94` | ROM `$F87D44`, `$F87DAA`, `$F87E3C`, `$FB94B4`, `$FB94DA`; V1.61 `$0122D2`; V3.50 `$0125A6` | panel write/helper entry |
+| `$F89CA2` | ROM `$FB94D2`; also `$F89DFA bra $F89CA2` just after the interval | string-output loop helper |
+| `$F89CF6` | V1.61 `$0167F8`, `$016F14`; V3.50 `$01BAAC` | panel command/handshake helper |
+| `$F89D46` | ROM `$F8829A jsr $FFF89D46` | error-message formatter entry |
+| `$F89D8E` | `$F89DEC bra $F89D8E`, just after the interval | boundary artifact of the raw-byte loop |
+
+Full-long data occurrences with `$FF`/`$00` fill match those same direct-call operands:
+ROM has `$FFF89C94`, `$FFF89CA2`, `$FFF89D46`; V1.61/V3.50 have `$FFF89C94` and
+`$FFF89CF6`. No first-0x400 vector-table entry and no `static/os-binding-table.csv`
+slot targets this interval. `static/routines.csv` has no post for the interval, so no
+CSV correction was made.
+
+Internal exits in `$F89C80-$F89DE0`: `rts` at `$F89C86`, `$F89C92`, `$F89CAE`,
+`$F89CC8`, `$F89CE6`, `$F89CF4`, `$F89D44`, `$F89D9A`; no `rte` or terminal `jmp` was
+identified inside the interval.
 
 Relevant disassembly from `$F89D46` to the loop:
 
@@ -253,18 +278,18 @@ The mapped value is not stored into a general RAM queue by this routine. It is c
 directly as control flow and as an index into an `A5`-relative record table, which is
 invisible to ordinary absolute-reference searches.
 
-Direct-call coverage for this routine:
+Direct-call coverage:
 
-- No direct `jsr`/`jmp` absolute-long or PC-relative call to `$F89D46` was identified in
-  `asr10.bin`, `V161.img`, or `V350.img`.
+- Direct incoming flow to `$F89D46` exists at `$F8829A`.
 - No `static/os-binding-table.csv` slot targets `$F89D46`, `$F89D8E`, or `$F89D9C`.
-- The only direct branches to `$F89D8E/$F89D9C` are internal: `$F89D92 bcs $F89D8E`,
-  `$F89DEC bra $F89D8E`, and `$F89D98 bne $F89D9C`.
+- The only direct branches to `$F89D8E/$F89D9C` are loop-local or boundary-local:
+  `$F89D92 bcs $F89D8E`, `$F89DEC bra $F89D8E`, and `$F89D98 bne $F89D9C`.
 
-No alternative direct caller was found that could pre-bound `D1` differently. Coverage:
-direct absolute calls, direct PC-relative branches/calls, and binding-table targets.
-Register-indirect calls (`jsr (An)`, `jmp (An)`) are not covered, so "all call sites"
-means all identified direct call sites by these methods.
+No alternative direct caller was found that jumps into the lookup after pre-bounding
+`D1` differently. Coverage: direct absolute calls, direct PC-relative branches/calls,
+vector-table scan, `$FF`/`$00`-filled longword data occurrences, and binding-table
+targets. Register-indirect calls (`jsr (An)`, `jmp (An)`) are not covered, so "all call
+sites" means all identified direct call sites by these methods.
 
 ## Verified: mapped-value consumer cluster
 
@@ -288,6 +313,12 @@ $F89DDA  adda.w D1,A5
 The digit path is a computed record/slot access after mapping, not a general jump table
 for all mapped panel values. This pass did not identify a separate mapped-value jump
 table for `$16`, `$17`, `$23`, or `$40`.
+
+[Verified] Rå `$23` returnerar före lookupen via kodvägen `$F89D94/$F89D98`.
+`bne.s` tas när `D1 != $23`; vid likhet faller flödet till `rts`.
+Tabellposten `$23 -> $25` nås aldrig via denna väg.
+
+[Likely] Rå `$23` är panelens idle-/keepalive-/no-event-byte.
 
 `static/routines.csv` does not contain a routine interval covering `$F89D94-$F89DDA`;
 the cluster therefore falls outside all currently named routines.

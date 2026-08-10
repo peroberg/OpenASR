@@ -14,6 +14,11 @@ The sweep must not mark call-graph edges as observed unless the injected byte pr
 an actual observed firmware path. "No visible effect" is a result to journal, not proof
 that the raw value is semantically unused.
 
+Start each run from a clean V3.50 boot to the visible `FILE 1  TUTORIAL BNK` state.
+Inject one raw byte, wait 500 ms of emulated time, record the observations below, then
+reset to the same start state before the next raw byte. Do not carry browser state
+between candidate bytes in the first sweep.
+
 ## Transport
 
 Static evidence says the receiver is a 68681-compatible DUART channel B path:
@@ -45,6 +50,21 @@ Current harness injection point:
 A future sweep should inject raw bytes through the same channel-B FIFO path. It should
 not write directly to the post-lookup mapped value and should not bypass SRB/RHRB
 semantics.
+
+## Control Pair
+
+Run these first:
+
+```text
+inject $23  -> expected effect: NONE (filtered before lookup)
+inject $22  -> expected effect: SOME (maps to $05)
+```
+
+The result validates the transport before the remaining candidate raw values are
+interpreted.
+If `$22` has no effect, the injection path is broken and the sweep must stop, not be
+interpreted. If `$23` has an effect, the filter model is wrong and the `$23` conclusion
+returns to `[OPEN]`.
 
 ## Candidate Raw Values
 
@@ -101,6 +121,7 @@ For each raw value, capture:
 - whether the byte reaches `$F89CEA`
 - mapped value, if lookup occurs
 - branch outcome at `$F89D94`, `$F89DA6`, `$F89DB0`, `$F89DB8`, `$F89DC0`, `$F89DC6`
+- elapsed time from injection to first branch/logged effect
 - any scheduler/binding-slot activity that follows
 - any panel TX and resulting display text
 - whether the file-browser selection changes from `FILE 1  TUTORIAL BNK`
@@ -110,7 +131,11 @@ successful FIFO insertion. A non-response should be recorded as:
 
 ```text
 raw=$xx mapped=$yy reached_rhrb=yes/no reached_lookup=yes/no visible_effect=no
-notes=<branch point or timeout>
+elapsed_ms=500 notes=<branch point or timeout>
 ```
 
 This prevents "no visible effect" from being converted into "raw value has no meaning."
+
+If the control pair passes, continue through `$00-$25` in ascending raw order, but skip
+re-running `$22/$23` unless the harness was changed. Every run should write one
+journal row even when the only result is the calibrated non-response format above.
