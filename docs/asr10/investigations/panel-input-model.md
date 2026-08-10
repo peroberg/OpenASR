@@ -435,22 +435,24 @@ Same run and same instrument, V3.50, no `ASR10_PANEL_SWEEP_RAW`, no injection, n
 
 | window | start | elapsed | samples | Hz | distinct PC | stop samples | top-3 share |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| A, loading | 15.011742 s | 20.000000 s | 28331 | 1416.550 | 410 | 0 | 33.5428 % |
+| A, FDC load | 2.948605 s | 20.000000 s | 29780 | 1489.000 | 388 | 0 | 22.0819 % |
 | B, `FILE 1` | 16.171608 s | 20.000000 s | 28315 | 1415.750 | 385 | 0 | 33.9043 % |
 
 [Verified] `FILE 1  TUTORIAL BNK` is a working runtime state under this instrument.
-Window B resembles window A in sample rate, distinct-PC count and distribution. It did
-not collapse to `stop`, and it was not a two- or three-address tight cycle. Both windows
-are dominated by the same seven-address scheduler/service cycle around
+Window B did not collapse to `stop`, and it was not a two- or three-address tight cycle.
+The recalibrated A window started at the first FDC access and contained 1,875,897 FDC
+reads plus 359 FDC writes; it is disk/load dominated. Window B contained 0 FDC accesses
+and is scheduler dominated by the seven-address service cycle around
 `$F87F96/$F87F9A/$F87F9E/$F87FA0/$F87FC2/$F87FC6/$F87FCA`, with each address around
-11 % of samples.
+11 % of samples. The earlier loading-window comparison that started at `LOADING SYSTEM`
+was too late and mostly sampled the same post-load state.
 
 [Verified] In the same run, runtime receive path activity was limited to the already
 observed entry burst: `$FFB0BC`/SRB read 12 times and `$FFB0D4`/RHRB read 12 times,
 all between 16.171631 s and 16.173214 s. No later channel-B reads were observed during
 the 20 s `FILE 1` profile.
 
-[Verified] The 64 bytes at `$FFB0B0` in runtime begin:
+[Verified] The runtime dump read 64 bytes at `$FFB0B0`; the first 32 bytes begin:
 
 ```text
 8f cc 0c 40 38 38 57 f8 cc d1 4e 75 12 39 ff fc
@@ -465,10 +467,16 @@ interleaved ROM at offset `0x008400`, and `TUTORIAL BNK` in `V350.img` at offset
 `c2 3c 00 50 67`, also occurs once in `V350.img` at `0x00D6C2` and not in ROM. The
 literal task-text byte pattern `02 01 50 67` occurs in neither artifact.
 
-[Verified] Provenance for `$FFB0B0` is therefore V3.50 OS image data, not ROM code
-copied from `asr10.bin`. Against `reference/os-image-layout.md`, disk offset
-`0x00D6B0` maps through segment 1 (`disk = RAM + 0x2600`) to RAM `$00B0B0`; the
-runtime receive path executes the same bytes through the high `$FFxxxx` view.
+[Likely] Runtimekoden på `$FFB0xx` härstammar från V3.50:s OS-image. Stöd:
+karakteristisk sekvens träffar `V350.img` vid `0x00D6B0`, ingen träff i `asr10.bin`,
+och sökningen är kalibrerad åt båda håll. Against `reference/os-image-layout.md`, disk
+offset `0x00D6B0` maps through segment 1 (`disk = RAM + 0x2600`) to RAM `$00B0B0`; the
+runtime receive path executes matching bytes through the high `$FFxxxx` view.
+
+[OPEN] Exakt transformation mellan diskbildens bytes och runtimekopian: direkt laddning,
+patchning, relokering eller delvis modifierad kopia. Uppgradera inte till `[Verified]`
+förrän flera längre relokeringsfria sekvenser träffar på förväntat offset, eller tills
+eventuella avvikande bytes kan förklaras som runtimepatchar.
 
 [Verified] IRQ6 vectoring was measured in the same run. At runtime, IVR read as `$FF`,
 longword `$000078` read as `$FFF882DA`, word `$0003C0` read as `$B392` and sign-extends

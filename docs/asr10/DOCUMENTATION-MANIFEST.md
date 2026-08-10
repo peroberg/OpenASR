@@ -43,6 +43,7 @@ runtime-tool            instrumentering
 | path | status | källa | beskriver | ersätter / härleds ur |
 |---|---|---|---|---|
 | `boot-sequence.md` | **aktuell** | uppdaterad 2026-08-04 | reset → FILE 1 | steg 1b DPRAM-bryggan tillagt; chip-select-luckan i steg 2 stängd; steg 7 utbyggt med M1–M3 |
+| `boot-runtime-timeline.md` | **aktuell** | ny 2026-08-11 | reset → runtime, ansvarsfördelning ROM/RAM | dynamisk PC-profil, IRQ6-källor, regionklassade övergångar |
 | `call-graph.md` | **aktuell** | ny 2026-08-04 | kontrollflödesmodell, CSV-schema | ur `call-graph-edges.csv`, `routines.csv` |
 | `es5701-wiring.md` | oförändrad | i trädet | ES5701-koppling | — |
 | `hardware-map.md` | **aktuell** | uppdaterad 2026-08-04 | fysiska komponenter | chip-select-tabellen tillagd; två rättelserutor markerar föråldrade `$FC6816`- och SCSI-avsnitt som historik |

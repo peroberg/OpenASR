@@ -35,9 +35,10 @@ Panel receive terminology:
   registers, ES5510 host registers, and the FDC path used by this boot.
 - Channel B panel RX is owned by `mc68681_device`.
 - V3.50 `FILE 1  TUTORIAL BNK` is a working runtime state under the Step 0 PC profile:
-  20 s sampling showed 28315 samples, 385 distinct PCs, no `stop` samples, and the same
-  scheduler/service-cycle shape as the loading-phase calibration window. Runtime receive
-  path activity in that state is a short entry burst, not continuous polling.
+  20 s sampling showed 28315 samples, 385 distinct PCs and no `stop` samples. The
+  calibrated loading window starts at first FDC access and is disk-dominated; the FILE 1
+  window is scheduler-dominated. Runtime receive path activity in FILE 1 is a short
+  entry burst, not continuous polling.
 
 ## What the static analysis established
 
@@ -165,6 +166,8 @@ Previous entries stand. Added by the static analysis:
 - `reference/vector-map.md` — the five vector categories kept apart.
 - `reference/runtime-service-model.md` — dispatcher queue and service fields, historical
   V1.61 observations.
+- `reference/boot-runtime-timeline.md` — dynamic reset-to-runtime timeline, IRQ6 source
+  distribution and ROM/RAM execution responsibility.
 - `reference/methods-static-analysis.md` — how the results were produced, and the
   method's blind spots.
 - `reference/boot-sequence.md`, `reference/subroutine-index.md`,

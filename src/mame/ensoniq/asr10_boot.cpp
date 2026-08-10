@@ -146,16 +146,27 @@ private:
 		u64 instructions = 0;
 		u64 samples = 0;
 		u32 stop_samples = 0;
+		u32 fdc_reads = 0;
+		u32 fdc_writes = 0;
 		std::unordered_map<u32, u32> pc_counts;
 		std::array<u32, 64> recent_pcs{};
 		u32 recent_pos = 0;
 	};
-	struct rom_handoff_entry
+	enum class step0_region : u8
+	{
+		ROM,
+		DPRAM,
+		PERIPHERAL,
+		LOW_RAM,
+		HIGH_RAM,
+		OTHER,
+		COUNT
+	};
+	struct region_handoff_sample
 	{
 		u32 from = 0;
 		u32 to = 0;
 		attotime first_time = attotime::never;
-		u32 count = 0;
 	};
 	static u16 ascii_to_14seg(u8 character) { return asr10_boot_defs::ascii_to_14seg(character); }
 
@@ -512,9 +523,21 @@ private:
 	u8 m_step0_irq6_pending_vector = 0;
 	u32 m_step0_irq6_pending_target = 0xffffffffU;
 	u32 m_step0_irq6_pending_iack_pc = 0xffffffffU;
-	std::array<rom_handoff_entry, 128> m_step0_rom_handoffs{};
-	u32 m_step0_rom_handoff_unique = 0;
-	u32 m_step0_rom_handoff_truncated = 0;
+	std::array<u32, 256> m_step0_irq6_isr_hist{};
+	std::array<u32, 8> m_step0_irq6_isr_bit_hist{};
+	std::array<u32, 8> m_step0_irq6_masked_bit_hist{};
+	u32 m_step0_irq6_duart_pending_count = 0;
+	u32 m_step0_irq6_non_duart_count = 0;
+	u32 m_step0_irq6_accept_count = 0;
+	u8 m_step0_duart_imr = 0;
+	u32 m_step0_thra_writes = 0;
+	u32 m_step0_thrb_writes = 0;
+	std::unordered_map<u32, u32> m_step0_thra_write_pcs;
+	static constexpr u32 STEP0_REGION_COUNT = u32(step0_region::COUNT);
+	static constexpr u32 STEP0_HANDOFF_SAMPLES_PER_CLASS = 16;
+	std::array<std::array<region_handoff_sample, STEP0_HANDOFF_SAMPLES_PER_CLASS>, STEP0_REGION_COUNT * STEP0_REGION_COUNT> m_step0_region_handoffs{};
+	std::array<u32, STEP0_REGION_COUNT * STEP0_REGION_COUNT> m_step0_region_handoff_counts{};
+	std::array<u32, STEP0_REGION_COUNT * STEP0_REGION_COUNT> m_step0_region_handoff_truncated{};
 
 	virtual void machine_start() override ATTR_COLD;
 	virtual void machine_reset() override ATTR_COLD;
@@ -569,8 +592,12 @@ private:
 	void sample_pc_profile(pc_profile_window &window, u32 pc);
 	void pc_profile_summary();
 	bool normalized_rom_handoff_source(u32 pc, u32 &normalized) const;
+	static step0_region classify_step0_region(u32 pc);
+	static const char *step0_region_name(step0_region region);
 	void record_rom_handoff(u32 from, u32 to);
 	void rom_handoff_summary();
+	void note_step0_fdc_access(bool write);
+	void step0_irq6_summary();
 	void record_root_directory_instruction(u32 pc);
 
 	void log_root_directory_table_write(u32 pc, u32 byte_address, u16 previous, u16 current, u16 mem_mask);
@@ -755,6 +782,7 @@ void asr10_boot_state::machine_start()
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::panel_receive_live_summary, this));
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::pc_profile_summary, this));
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::rom_handoff_summary, this));
+	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::step0_irq6_summary, this));
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::root_directory_summary, this));
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::mc68302_access_summary, this));
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::cs3_access_summary, this));
@@ -1617,9 +1645,19 @@ void asr10_boot_state::machine_reset()
 	m_step0_irq6_pending_vector = 0;
 	m_step0_irq6_pending_target = 0xffffffffU;
 	m_step0_irq6_pending_iack_pc = 0xffffffffU;
-	m_step0_rom_handoffs.fill(rom_handoff_entry{});
-	m_step0_rom_handoff_unique = 0;
-	m_step0_rom_handoff_truncated = 0;
+	m_step0_irq6_isr_hist.fill(0);
+	m_step0_irq6_isr_bit_hist.fill(0);
+	m_step0_irq6_masked_bit_hist.fill(0);
+	m_step0_irq6_duart_pending_count = 0;
+	m_step0_irq6_non_duart_count = 0;
+	m_step0_irq6_accept_count = 0;
+	m_step0_duart_imr = 0;
+	m_step0_thra_writes = 0;
+	m_step0_thrb_writes = 0;
+	m_step0_thra_write_pcs.clear();
+	m_step0_region_handoffs.fill({});
+	m_step0_region_handoff_counts.fill(0);
+	m_step0_region_handoff_truncated.fill(0);
 	std::fill_n(m_lowmem_shadow.get(), LOWMEM_WORDS, 0);
 	for (auto &entry : m_probe_or_alias_region_shadow)
 		std::fill(std::begin(entry), std::end(entry), 0);
@@ -1853,13 +1891,33 @@ u8 asr10_boot_state::maincpu_iack_r(u8 level)
 		custom_vector = true;
 		if (m_step0_runtime_trace_enabled)
 		{
+			auto const disable_side_effects = machine().disable_side_effects();
+			const u8 duart_isr = u8(m_duart->read(0x05));
+			const u8 duart_masked = duart_isr & m_step0_duart_imr;
+			const bool duart_pending = m_duart->irq_pending();
 			const u32 target = lowmem_long(u32(vector) * 4) & 0x00ffffff;
 			m_step0_irq6_pending_landing = true;
 			m_step0_irq6_pending_vector = vector;
 			m_step0_irq6_pending_target = target;
 			m_step0_irq6_pending_iack_pc = pc;
-			osd_printf_info("ASR10_STEP0_IRQ6_ACCEPT time=%s iack_pc=%06x vector=%02x target=%06x\n",
-				machine().time().to_string(), pc, vector, target);
+			m_step0_irq6_accept_count++;
+			m_step0_irq6_isr_hist[duart_isr]++;
+			if (duart_pending)
+				m_step0_irq6_duart_pending_count++;
+			else
+				m_step0_irq6_non_duart_count++;
+			for (u32 bit = 0; bit != 8; bit++)
+			{
+				if (BIT(duart_isr, bit))
+					m_step0_irq6_isr_bit_hist[bit]++;
+				if (BIT(duart_masked, bit))
+					m_step0_irq6_masked_bit_hist[bit]++;
+			}
+			osd_printf_info("ASR10_STEP0_IRQ6_ACCEPT time=%s iack_pc=%06x vector=%02x target=%06x "
+				"source=%s duart_irq_pending=%u duart_isr=%02x duart_imr=%02x duart_masked=%02x count=%u\n",
+				machine().time().to_string(), pc, vector, target,
+				duart_pending ? "duart" : "non_duart_or_unknown", duart_pending ? 1 : 0,
+				duart_isr, m_step0_duart_imr, duart_masked, m_step0_irq6_accept_count);
 		}
 	}
 
@@ -2531,6 +2589,7 @@ u16 asr10_boot_state::upd72069_fdc_r(offs_t offset, u16 mem_mask)
 	const u32 address = (0x00fc4000 | (offset << 1)) | (ACCESSING_BITS_0_7 ? 1 : 0);
 	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 	(void)0;
+	note_step0_fdc_access(false);
 	++m_fdc_trace_sequence;
 	++m_fdc_transaction_access;
 
@@ -2678,6 +2737,7 @@ void asr10_boot_state::upd72069_fdc_w(offs_t offset, u16 data, u16 mem_mask)
 	const u32 address = (0x00fc4000 | (offset << 1)) | (ACCESSING_BITS_0_7 ? 1 : 0);
 	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 	(void)0;
+	note_step0_fdc_access(true);
 	++m_fdc_trace_sequence;
 
 	const char *detail = "upd72069_register_unknown";
@@ -3031,6 +3091,24 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 	(void)0;
 	if (ACCESSING_BITS_0_7)
 		m_duart->write(word, u8(data));
+	if (!machine().side_effects_disabled() && m_step0_runtime_trace_enabled && ACCESSING_BITS_0_7)
+	{
+		if (address == 0x00fc4807)
+		{
+			m_step0_thra_writes++;
+			m_step0_thra_write_pcs[pc]++;
+			osd_printf_info("ASR10_STEP0_DUART_WRITE time=%s pc=%06x reg=THRA address=%06x value=%02x count=%u\n",
+				machine().time().to_string(), pc, address, u8(data), m_step0_thra_writes);
+		}
+		else if (address == 0x00fc4817)
+		{
+			m_step0_thrb_writes++;
+		}
+		else if (address == 0x00fc480b)
+		{
+			m_step0_duart_imr = u8(data);
+		}
+	}
 	if (!machine().side_effects_disabled() && ACCESSING_BITS_0_7 &&
 		(address == 0x00fc480b || address == 0x00fc4819))
 	{
@@ -3257,7 +3335,6 @@ void asr10_boot_state::flush_panel_text()
 		// whenever the PTI flag is on, from reset.
 		if (strstr(m_panel_text, "LOADING SYSTEM"))
 		{
-			start_pc_profile(m_step0_pc_profiles[0], "A_LOADING");
 			m_seen_loading_system_prompt = true;
 			m_post_loading_panel_write_count = 0;
 			m_post_loading_fdc_access_count = 0;
@@ -3382,12 +3459,13 @@ void asr10_boot_state::pc_profile_summary()
 
 		osd_printf_info("ASR10_STEP0_PC_PROFILE_SUMMARY window=%s active=%u done=%u start=%s "
 			"elapsed_s=%.6f sample_every_instructions=1024 samples=%llu sample_hz=%.3f "
-			"instructions=%llu distinct_pc=%zu stop_samples=%u top3_share=%.6f\n",
+			"instructions=%llu distinct_pc=%zu stop_samples=%u top3_share=%.6f fdc_reads=%u fdc_writes=%u\n",
 			window.name ? window.name : "not_started", window.active ? 1 : 0, window.done ? 1 : 0,
 			window.start == attotime::never ? "never" : window.start.to_string(), elapsed_s,
 			(unsigned long long)window.samples, sample_hz,
 			(unsigned long long)window.instructions, counts.size(), window.stop_samples,
-			window.samples ? double(top3) / double(window.samples) : 0.0);
+			window.samples ? double(top3) / double(window.samples) : 0.0,
+			window.fdc_reads, window.fdc_writes);
 
 		for (size_t index = 0; index < std::min<size_t>(20, counts.size()); index++)
 		{
@@ -3429,34 +3507,60 @@ bool asr10_boot_state::normalized_rom_handoff_source(u32 pc, u32 &normalized) co
 }
 
 
+asr10_boot_state::step0_region asr10_boot_state::classify_step0_region(u32 pc)
+{
+	pc &= 0x00ffffff;
+	if (pc >= 0x00f80000U && pc <= 0x00fbffffU)
+		return step0_region::ROM;
+	if (pc >= 0x00fc6000U && pc <= 0x00fc67ffU)
+		return step0_region::DPRAM;
+	if (pc >= 0x00fc0000U && pc <= 0x00fc5fffU)
+		return step0_region::PERIPHERAL;
+	if (pc <= 0x000fffffU)
+		return step0_region::LOW_RAM;
+	if (pc >= 0x00ff8000U)
+		return step0_region::HIGH_RAM;
+	return step0_region::OTHER;
+}
+
+
+const char *asr10_boot_state::step0_region_name(step0_region region)
+{
+	switch (region)
+	{
+	case step0_region::ROM: return "ROM";
+	case step0_region::DPRAM: return "DPRAM";
+	case step0_region::PERIPHERAL: return "PERIPHERAL";
+	case step0_region::LOW_RAM: return "LOW_RAM";
+	case step0_region::HIGH_RAM: return "HIGH_RAM";
+	case step0_region::OTHER: return "OTHER";
+	case step0_region::COUNT: break;
+	}
+	return "UNKNOWN";
+}
+
+
 void asr10_boot_state::record_rom_handoff(u32 from, u32 to)
 {
 	if (!m_step0_runtime_trace_enabled)
 		return;
 
-	for (u32 index = 0; index < m_step0_rom_handoff_unique; index++)
+	const step0_region from_region = classify_step0_region(from);
+	const step0_region to_region = classify_step0_region(to);
+	const u32 class_index = u32(from_region) * STEP0_REGION_COUNT + u32(to_region);
+	const u32 count = m_step0_region_handoff_counts[class_index]++;
+	if (count < STEP0_HANDOFF_SAMPLES_PER_CLASS)
 	{
-		rom_handoff_entry &entry = m_step0_rom_handoffs[index];
-		if (entry.from == from && entry.to == to)
-		{
-			entry.count++;
-			return;
-		}
+		region_handoff_sample &entry = m_step0_region_handoffs[class_index][count];
+		entry.from = from;
+		entry.to = to;
+		entry.first_time = machine().time();
+		osd_printf_info("ASR10_STEP0_REGION_HANDOFF event=sample class=%s_to_%s sample=%u time=%s from=%06x to=%06x\n",
+			step0_region_name(from_region), step0_region_name(to_region), count,
+			entry.first_time.to_string(), from, to);
 	}
-
-	if (m_step0_rom_handoff_unique >= m_step0_rom_handoffs.size())
-	{
-		m_step0_rom_handoff_truncated++;
-		return;
-	}
-
-	rom_handoff_entry &entry = m_step0_rom_handoffs[m_step0_rom_handoff_unique++];
-	entry.from = from;
-	entry.to = to;
-	entry.first_time = machine().time();
-	entry.count = 1;
-	osd_printf_info("ASR10_STEP0_ROM_HANDOFF event=first index=%u time=%s from=%06x to=%06x\n",
-		m_step0_rom_handoff_unique - 1, entry.first_time.to_string(), from, to);
+	else
+		m_step0_region_handoff_truncated[class_index]++;
 }
 
 
@@ -3465,13 +3569,85 @@ void asr10_boot_state::rom_handoff_summary()
 	if (!m_step0_runtime_trace_enabled)
 		return;
 
-	osd_printf_info("ASR10_STEP0_ROM_HANDOFF_SUMMARY unique=%u capacity=%zu truncated_new_pairs=%u\n",
-		m_step0_rom_handoff_unique, m_step0_rom_handoffs.size(), m_step0_rom_handoff_truncated);
-	for (u32 index = 0; index < m_step0_rom_handoff_unique; index++)
+	for (u32 from = 0; from != STEP0_REGION_COUNT; from++)
 	{
-		const rom_handoff_entry &entry = m_step0_rom_handoffs[index];
-		osd_printf_info("ASR10_STEP0_ROM_HANDOFF_PAIR index=%u first_time=%s from=%06x to=%06x count=%u\n",
-			index, entry.first_time.to_string(), entry.from, entry.to, entry.count);
+		for (u32 to = 0; to != STEP0_REGION_COUNT; to++)
+		{
+			const u32 class_index = from * STEP0_REGION_COUNT + to;
+			const u32 count = m_step0_region_handoff_counts[class_index];
+			if (!count)
+				continue;
+			osd_printf_info("ASR10_STEP0_REGION_HANDOFF_SUMMARY class=%s_to_%s count=%u stored=%u truncated=%u\n",
+				step0_region_name(step0_region(from)), step0_region_name(step0_region(to)),
+				count, std::min<u32>(count, STEP0_HANDOFF_SAMPLES_PER_CLASS),
+				m_step0_region_handoff_truncated[class_index]);
+			for (u32 sample = 0; sample < std::min<u32>(count, STEP0_HANDOFF_SAMPLES_PER_CLASS); sample++)
+			{
+				const region_handoff_sample &entry = m_step0_region_handoffs[class_index][sample];
+				osd_printf_info("ASR10_STEP0_REGION_HANDOFF_SAMPLE class=%s_to_%s sample=%u time=%s from=%06x to=%06x\n",
+					step0_region_name(step0_region(from)), step0_region_name(step0_region(to)),
+					sample, entry.first_time.to_string(), entry.from, entry.to);
+			}
+		}
+	}
+}
+
+
+void asr10_boot_state::note_step0_fdc_access(bool write)
+{
+	if (!m_step0_runtime_trace_enabled || machine().side_effects_disabled())
+		return;
+	start_pc_profile(m_step0_pc_profiles[0], "A_FDC_LOAD");
+	for (pc_profile_window &window : m_step0_pc_profiles)
+	{
+		if (!window.active || window.done)
+			continue;
+		if (write)
+			window.fdc_writes++;
+		else
+			window.fdc_reads++;
+	}
+}
+
+
+void asr10_boot_state::step0_irq6_summary()
+{
+	if (!m_step0_runtime_trace_enabled)
+		return;
+
+	osd_printf_info("ASR10_STEP0_IRQ6_SUMMARY accepts=%u duart_pending=%u non_duart_or_unknown=%u "
+		"last_imr=%02x thra_writes=%u thrb_writes=%u\n",
+		m_step0_irq6_accept_count, m_step0_irq6_duart_pending_count,
+		m_step0_irq6_non_duart_count, m_step0_duart_imr,
+		m_step0_thra_writes, m_step0_thrb_writes);
+	for (u32 value = 0; value != 256; value++)
+	{
+		if (m_step0_irq6_isr_hist[value])
+			osd_printf_info("ASR10_STEP0_IRQ6_ISR_HIST isr=%02x count=%u share=%.6f\n",
+				value, m_step0_irq6_isr_hist[value],
+				m_step0_irq6_accept_count ? double(m_step0_irq6_isr_hist[value]) / double(m_step0_irq6_accept_count) : 0.0);
+	}
+	for (u32 bit = 0; bit != 8; bit++)
+	{
+		osd_printf_info("ASR10_STEP0_IRQ6_ISR_BIT bit=%u raw_count=%u masked_count=%u\n",
+			bit, m_step0_irq6_isr_bit_hist[bit], m_step0_irq6_masked_bit_hist[bit]);
+	}
+
+	std::vector<std::pair<u32, u32>> thra_pcs;
+	thra_pcs.reserve(m_step0_thra_write_pcs.size());
+	for (const auto &entry : m_step0_thra_write_pcs)
+		thra_pcs.emplace_back(entry.first, entry.second);
+	std::sort(thra_pcs.begin(), thra_pcs.end(),
+		[](const auto &a, const auto &b)
+		{
+			if (a.second != b.second)
+				return a.second > b.second;
+			return a.first < b.first;
+		});
+	for (size_t index = 0; index < std::min<size_t>(20, thra_pcs.size()); index++)
+	{
+		osd_printf_info("ASR10_STEP0_THRA_WRITE_PC rank=%zu pc=%06x count=%u\n",
+			index + 1, thra_pcs[index].first, thra_pcs[index].second);
 	}
 }
 
@@ -3550,14 +3726,14 @@ bool asr10_boot_state::is_bounded_panel_ring_control_candidate(u32 pc, u32 retur
 						pc == m_step0_irq6_pending_target ? 1 : 0);
 					m_step0_irq6_pending_landing = false;
 				}
-				u32 normalized_from = 0;
-				u32 normalized_to = 0;
-				const bool from_rom = m_last_pc != 0xffffffffU &&
-					normalized_rom_handoff_source(m_last_pc, normalized_from);
-				const bool to_rom = normalized_rom_handoff_source(pc, normalized_to);
-				if (from_rom && !to_rom)
+				u32 normalized_from = m_last_pc;
+				u32 normalized_to = pc;
+				if (m_last_pc != 0xffffffffU)
 				{
-					record_rom_handoff(normalized_from, pc);
+					(void)normalized_rom_handoff_source(m_last_pc, normalized_from);
+					(void)normalized_rom_handoff_source(pc, normalized_to);
+					if (classify_step0_region(normalized_from) != classify_step0_region(normalized_to))
+						record_rom_handoff(normalized_from, normalized_to);
 				}
 				sample_pc_profile(m_step0_pc_profiles[0], pc);
 				sample_pc_profile(m_step0_pc_profiles[1], pc);
