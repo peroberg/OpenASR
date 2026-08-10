@@ -471,9 +471,36 @@ pollningen i den verifierade V350-körningen; timeoutvägen tas inte och
 | Adress | Innehåll |
 |---|---|
 | `$F8050E` | **[Verified]** Namngiven feltabell, 29 pekare i `FFF8xxxx`-form till 22-teckensmeddelanden. Koder utanför faller igenom till `ERROR nnn - REBOOT ?`. |
-| `$FB8F2E`-`$FB9094` | **[Verified]** Bootmeddelanden, 22 tecken styck: `DISK NOT FORMATTED`, `PLEASE INSERT DISK`, `ENSONIQ ASR-10`, `LOADING SYSTEM`, `SCSI INSTALLED`, `SEARCHING FOR SCSI DEV.` m.fl. |
+| `$F82484`-`$F824A9` | **[Verified]** Panel raw->mapped-prefix, 38 byte. Lookup-bas verifierad vid `$F89D9C`; separat dataobjekt `$F824AA` begränsar prefixen. Lookupkoden saknar övre runtime-guard. |
+| `$F824AA` | **[Verified]** ROM-sträng utanför `$FB8EEE`-tabellen: `45 52 52 4F 52 20 00` = `"ERROR "\\0`, laddad av `$F89D4A 247c fff8 24aa`. |
+| `$F824B1` | **[Verified]** ROM-sträng utanför `$FB8EEE`-tabellen: `20 2D 20 52 45 42 4F 4F 54 20 3F 00` = `" - REBOOT ?"\\0`, laddad av `$F89D70 247c fff8 24b1`. |
+| `$F824C8` | **[OPEN]** Longword-pekartabell: `$FFF824E8`, `$FFF824EA`, `$FFF824EC`, `$FFF824F0`, `$FFF824EA`, `$FFF824F0`, `$FFF824EC`, `$FFF824F2`. Konsument och semantik ej identifierade. |
+| `$FB8EC8`-`$FB8F2D` | **[Verified]** Bootmeddelandetabell, 17 poster i format `<kod.w><pekare.l>`, avgränsad av att stringdata börjar på `$FB8F2E`. Från `$FB8EEE` kan samma byte också läsas som 10 poster i formen `<pekare.l><kod.w>`; det är en överlappande vy in i samma tabellområde. |
+| `$FB8F2E`-`$FB90AA` | **[Verified]** Bootmeddelanden, byte-exakt avskrivna från tabellen nedan. De är NUL-terminerade, normalt 22 tecken före terminator. |
 | `$F81003`-`$F81F87` | **[Verified]** Ordfragmentvokabulär, 256 NUL-terminerade fragment. Skärmar byggs av fragmentindex med inbäddade kontrollbyte (`1F xx`, `16 xx`, `13 xx`). |
 | - | **[Verified]** Strängtabellformat: `<pekare.l><bredd.b><antal.b>`. 114 självvaliderande förekomster i ROM. Ex: `$F853DA` -> `$F853E0`, 12x3 = `LOW VOLTAGE` / `HIGH VOLTAGE` / `ESP RAM TEST`. |
+
+Byte-exakta bootmeddelanden från `<kod.w><pekare.l>`-tabellen:
+
+| post | entry | kod | pekare | hex | ASCII |
+|---:|---:|---:|---:|---|---|
+| 0 | `$FB8EC8` | `$0100` | `$FFFB8F2E` | `20 20 44 49 53 4B 20 4E 4F 54 20 46 4F 52 4D 41 54 54 45 44 20 20 00` | `"  DISK NOT FORMATTED  "\\0` |
+| 1 | `$FB8ECE` | `$0200` | `$FFFB8F46` | `20 44 49 53 4B 20 44 41 54 41 20 43 4F 52 52 55 50 54 45 44 20 20 00` | `" DISK DATA CORRUPTED  "\\0` |
+| 2 | `$FB8ED4` | `$0400` | `$FFFB8F5E` | `20 20 20 4D 49 53 53 45 44 20 4C 4F 41 44 20 44 41 54 41 20 20 20 00` | `"   MISSED LOAD DATA   "\\0` |
+| 3 | `$FB8EDA` | `$0500` | `$FFFB8F76` | `20 20 50 4C 45 41 53 45 20 49 4E 53 45 52 54 20 44 49 53 4B 20 20 00` | `"  PLEASE INSERT DISK  "\\0` |
+| 4 | `$FB8EE0` | `$0800` | `$FFFB8F8E` | `20 44 52 49 56 45 20 4E 4F 54 20 52 45 53 50 4F 4E 44 49 4E 47 20 00` | `" DRIVE NOT RESPONDING "\\0` |
+| 5 | `$FB8EE6` | `$1000` | `$FFFB8FEC` | `20 20 4F 2E 20 53 2E 20 4E 4F 54 20 4F 4E 20 44 49 53 4B 20 20 20 00` | `"  O. S. NOT ON DISK   "\\0` |
+| 6 | `$FB8EEC` | `$FE00` | `$FFFB8FBC` | `20 20 20 45 4E 53 4F 4E 49 51 20 20 41 53 52 2D 31 30 20 20 20 20 00` | `"   ENSONIQ  ASR-10    "\\0` |
+| 7 | `$FB8EF2` | `$FF00` | `$FFFB8FD4` | `20 20 20 20 4C 4F 41 44 49 4E 47 20 53 59 53 54 45 4D 20 20 20 20 00` | `"    LOADING SYSTEM    "\\0` |
+| 8 | `$FB8EF8` | `$1100` | `$FFFB901C` | `42 41 44 20 44 49 53 4B 2F 4E 4F 54 20 45 50 53 20 44 49 53 4B 20 00` | `"BAD DISK/NOT EPS DISK "\\0` |
+| 9 | `$FB8EFE` | `$1200` | `$FFFB901C` | `42 41 44 20 44 49 53 4B 2F 4E 4F 54 20 45 50 53 20 44 49 53 4B 20 00` | `"BAD DISK/NOT EPS DISK "\\0` |
+| 10 | `$FB8F04` | `$1300` | `$FFFB901C` | `42 41 44 20 44 49 53 4B 2F 4E 4F 54 20 45 50 53 20 44 49 53 4B 20 00` | `"BAD DISK/NOT EPS DISK "\\0` |
+| 11 | `$FB8F0A` | `$1400` | `$FFFB901C` | `42 41 44 20 44 49 53 4B 2F 4E 4F 54 20 45 50 53 20 44 49 53 4B 20 00` | `"BAD DISK/NOT EPS DISK "\\0` |
+| 12 | `$FB8F10` | `$1700` | `$FFFB904C` | `49 4E 43 4F 4D 50 41 54 49 42 4C 45 20 4F 2E 53 2E 20 44 49 53 4B 00` | `"INCOMPATIBLE O.S. DISK"\\0` |
+| 13 | `$FB8F16` | `$1A00` | `$FFFB9064` | `20 20 20 49 4E 43 4F 4D 50 41 54 49 42 4C 45 20 52 4F 4D 20 20 20 00` | `"   INCOMPATIBLE ROM   "\\0` |
+| 14 | `$FB8F1C` | `$FD00` | `$FFFB907C` | `20 20 20 20 53 43 53 49 20 49 4E 53 54 41 4C 4C 45 44 20 20 20 20 00` | `"    SCSI INSTALLED    "\\0` |
+| 15 | `$FB8F22` | `$FC00` | `$FFFB9094` | `53 45 41 52 43 48 49 4E 47 20 46 4F 52 20 53 43 53 49 20 44 45 56 00` | `"SEARCHING FOR SCSI DEV"\\0` |
+| 16 | `$FB8F28` | `$0D00` | `$FFFB8FA6` | `46 49 4C 45 20 4F 50 20 45 52 52 4F 52 20 4E 55 4D 3D 20 00` | `"FILE OP ERROR NUM= "\\0` |
 
 ## DPRAM - MOVEP-thunkbibliotek `$FC6028`-`$FC6136`
 

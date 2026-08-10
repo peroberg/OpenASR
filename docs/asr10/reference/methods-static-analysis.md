@@ -169,6 +169,17 @@ träffa något känt i samma artefakt med samma parametrar. Utan positiv kontrol
 Belagt: strängsökningen efter `NO INST OR BANK FILES` gav 0 träffar i tre artefakter
 och användes som grund för ett `[Verified]`-påstående innan metoden var kalibrerad.
 
+### Verifierad bas är inte verifierad gräns
+
+En bekräftad basadress säger ingenting om hur långt tabellen sträcker sig. Bas och
+gräns är två separata påståenden med separat evidens, och det andra ärver inte det
+förstas säkerhet.
+
+Belagt: paneltabellen `$F82484`. Indexeringsinstruktionen på `$F89D9C` verifierade
+basen; utsträckningen antogs vara 256 och dumpen läste 218 byte strängdata, pekare och
+utfyllnad som mappningar. Den "icke-bijektiva" struktur som drogs ur resultatet fanns
+inte.
+
 ---
 
 ## 9. Statik före stimulans

@@ -1,257 +1,260 @@
-raw,mapped,note
-$00,$3A,collision:$00 $3F
-$01,$3B,collision:$01 $40 $99
-$02,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$03,$40,
-$04,$04,
-$05,$13,
-$06,$11,
-$07,$12,
-$08,$01,
-$09,$18,
-$0A,$20,collision:$0A $2B $2D $2F $36
-$0B,$21,collision:$0B $3A
-$0C,$30,
-$0D,$31,collision:$0D $8F
-$0E,$02,collision:$0E $B7
-$0F,$17,
-$10,$22,collision:$10 $83
-$11,$24,collision:$11 $46 $4A $4E $52 $56 $5A $5E $62 $72 $74 $85
-$12,$32,
-$13,$33,collision:$13 $91
-$14,$03,collision:$14 $6F $BB
-$15,$16,
-$16,$07,collision:$16 $B9
-$17,$43,
-$18,$34,
-$19,$35,collision:$19 $93
-$1A,$14,
-$1B,$15,
-$1C,$06,collision:$1C $A4 $AB
-$1D,$41,
-$1E,$36,
-$1F,$37,collision:$1F $95
-$20,$10,
-$21,$23,collision:$21 $3B
-$22,$05,collision:$22 $7C $80
-$23,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$24,$38,
-$25,$39,collision:$25 $97
-$26,$45,collision:$26 $31
-$27,$52,collision:$27 $28 $2A $30
-$28,$52,collision:$27 $28 $2A $30
-$29,$4F,collision:$29 $33 $34
-$2A,$52,collision:$27 $28 $2A $30
-$2B,$20,collision:$0A $2B $2D $2F $36
-$2C,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$2D,$20,collision:$0A $2B $2D $2F $36
-$2E,$2D,collision:$2E $8B
-$2F,$20,collision:$0A $2B $2D $2F $36
-$30,$52,collision:$27 $28 $2A $30
-$31,$45,collision:$26 $31
-$32,$42,
-$33,$4F,collision:$29 $33 $34
-$34,$4F,collision:$29 $33 $34
-$35,$54,
-$36,$20,collision:$0A $2B $2D $2F $36
-$37,$3F,
-$38,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$39,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$3A,$21,collision:$0B $3A
-$3B,$23,collision:$21 $3B
-$3C,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$3D,$28,
-$3E,$29,
-$3F,$3A,collision:$00 $3F
-$40,$3B,collision:$01 $40 $99
-$41,$5B,
-$42,$5C,
-$43,$5D,
-$44,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$45,$F8,collision:$45 $49 $4D $51 $55 $59 $5D $61
-$46,$24,collision:$11 $46 $4A $4E $52 $56 $5A $5E $62 $72 $74 $85
-$47,$E8,
-$48,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$49,$F8,collision:$45 $49 $4D $51 $55 $59 $5D $61
-$4A,$24,collision:$11 $46 $4A $4E $52 $56 $5A $5E $62 $72 $74 $85
-$4B,$EA,collision:$4B $57
-$4C,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$4D,$F8,collision:$45 $49 $4D $51 $55 $59 $5D $61
-$4E,$24,collision:$11 $46 $4A $4E $52 $56 $5A $5E $62 $72 $74 $85
-$4F,$EC,collision:$4F $5F
-$50,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$51,$F8,collision:$45 $49 $4D $51 $55 $59 $5D $61
-$52,$24,collision:$11 $46 $4A $4E $52 $56 $5A $5E $62 $72 $74 $85
-$53,$F0,collision:$53 $5B
-$54,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$55,$F8,collision:$45 $49 $4D $51 $55 $59 $5D $61
-$56,$24,collision:$11 $46 $4A $4E $52 $56 $5A $5E $62 $72 $74 $85
-$57,$EA,collision:$4B $57
-$58,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$59,$F8,collision:$45 $49 $4D $51 $55 $59 $5D $61
-$5A,$24,collision:$11 $46 $4A $4E $52 $56 $5A $5E $62 $72 $74 $85
-$5B,$F0,collision:$53 $5B
-$5C,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$5D,$F8,collision:$45 $49 $4D $51 $55 $59 $5D $61
-$5E,$24,collision:$11 $46 $4A $4E $52 $56 $5A $5E $62 $72 $74 $85
-$5F,$EC,collision:$4F $5F
-$60,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$61,$F8,collision:$45 $49 $4D $51 $55 $59 $5D $61
-$62,$24,collision:$11 $46 $4A $4E $52 $56 $5A $5E $62 $72 $74 $85
-$63,$F2,
-$64,$8B,collision:$64 $CF $F7 $FD
-$65,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$66,$8C,
-$67,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$68,$83,collision:$68 $6E
-$69,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$6A,$82,
-$6B,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$6C,$8E,
-$6D,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$6E,$83,collision:$68 $6E
-$6F,$03,collision:$14 $6F $BB
-$70,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$71,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$72,$24,collision:$11 $46 $4A $4E $52 $56 $5A $5E $62 $72 $74 $85
-$73,$FC,
-$74,$24,collision:$11 $46 $4A $4E $52 $56 $5A $5E $62 $72 $74 $85
-$75,$FE,
-$76,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$77,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$78,$0F,collision:$78 $7E
-$79,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$7A,$0D,collision:$7A $7F
-$7B,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$7C,$05,collision:$22 $7C $80
-$7D,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$7E,$0F,collision:$78 $7E
-$7F,$0D,collision:$7A $7F
-$80,$05,collision:$22 $7C $80
-$81,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$82,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$83,$22,collision:$10 $83
-$84,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$85,$24,collision:$11 $46 $4A $4E $52 $56 $5A $5E $62 $72 $74 $85
-$86,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$87,$27,
-$88,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$89,$2A,
-$8A,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$8B,$2D,collision:$2E $8B
-$8C,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$8D,$2F,
-$8E,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$8F,$31,collision:$0D $8F
-$90,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$91,$33,collision:$13 $91
-$92,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$93,$35,collision:$19 $93
-$94,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$95,$37,collision:$1F $95
-$96,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$97,$39,collision:$25 $97
-$98,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$99,$3B,collision:$01 $40 $99
-$9A,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$9B,$88,collision:$9B $C3 $C5 $C7 $C9 $CD $D1 $D3 $F3 $F5 $F9 $FB
-$9C,$89,collision:$9C $CB $F1 $FF
-$9D,$AE,
-$9E,$85,
-$9F,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$A0,$8F,collision:$A0 $A3 $A6
-$A1,$0A,collision:$A1 $A9
-$A2,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$A3,$8F,collision:$A0 $A3 $A6
-$A4,$06,collision:$1C $A4 $AB
-$A5,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$A6,$8F,collision:$A0 $A3 $A6
-$A7,$8D,collision:$A7 $AD $D5
-$A8,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$A9,$0A,collision:$A1 $A9
-$AA,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$AB,$06,collision:$1C $A4 $AB
-$AC,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$AD,$8D,collision:$A7 $AD $D5
-$AE,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$AF,$09,
-$B0,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$B1,$08,
-$B2,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$B3,$0B,
-$B4,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$B5,$0E,
-$B6,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$B7,$02,collision:$0E $B7
-$B8,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$B9,$07,collision:$16 $B9
-$BA,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$BB,$03,collision:$14 $6F $BB
-$BC,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$BD,$0C,collision:$BD $BF
-$BE,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$BF,$0C,collision:$BD $BF
-$C0,$00,collision:$02 $2C $38 $65 $67 $69 $6B $6D $70 $77 $79 $7B $7D $81 $9F $A2 $A5 $A8 $AA $AC $AE $B0 $B2 $B4 $B6 $B8 $BA $BC $BE $C0
-$C1,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$C2,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$C3,$88,collision:$9B $C3 $C5 $C7 $C9 $CD $D1 $D3 $F3 $F5 $F9 $FB
-$C4,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$C5,$88,collision:$9B $C3 $C5 $C7 $C9 $CD $D1 $D3 $F3 $F5 $F9 $FB
-$C6,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$C7,$88,collision:$9B $C3 $C5 $C7 $C9 $CD $D1 $D3 $F3 $F5 $F9 $FB
-$C8,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$C9,$88,collision:$9B $C3 $C5 $C7 $C9 $CD $D1 $D3 $F3 $F5 $F9 $FB
-$CA,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$CB,$89,collision:$9C $CB $F1 $FF
-$CC,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$CD,$88,collision:$9B $C3 $C5 $C7 $C9 $CD $D1 $D3 $F3 $F5 $F9 $FB
-$CE,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$CF,$8B,collision:$64 $CF $F7 $FD
-$D0,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$D1,$88,collision:$9B $C3 $C5 $C7 $C9 $CD $D1 $D3 $F3 $F5 $F9 $FB
-$D2,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$D3,$88,collision:$9B $C3 $C5 $C7 $C9 $CD $D1 $D3 $F3 $F5 $F9 $FB
-$D4,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$D5,$8D,collision:$A7 $AD $D5
-$D6,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$D7,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$D8,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$D9,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$DA,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$DB,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$DC,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$DD,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$DE,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$DF,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$E0,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$E1,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$E2,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$E3,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$E4,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$E5,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$E6,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$E7,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$E8,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$E9,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$EA,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$EB,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$EC,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$ED,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$EE,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$EF,$FF,collision:$39 $44 $48 $4C $50 $54 $58 $5C $60 $71 $C1 $D6 $D7 $D8 $D9 $DA $DB $DC $DD $DE $DF $E0 $E1 $E2 $E3 $E4 $E5 $E6 $E7 $E8 $E9 $EA $EB $EC $ED $EE $EF
-$F0,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$F1,$89,collision:$9C $CB $F1 $FF
-$F2,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$F3,$88,collision:$9B $C3 $C5 $C7 $C9 $CD $D1 $D3 $F3 $F5 $F9 $FB
-$F4,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$F5,$88,collision:$9B $C3 $C5 $C7 $C9 $CD $D1 $D3 $F3 $F5 $F9 $FB
-$F6,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$F7,$8B,collision:$64 $CF $F7 $FD
-$F8,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$F9,$88,collision:$9B $C3 $C5 $C7 $C9 $CD $D1 $D3 $F3 $F5 $F9 $FB
-$FA,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$FB,$88,collision:$9B $C3 $C5 $C7 $C9 $CD $D1 $D3 $F3 $F5 $F9 $FB
-$FC,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$FD,$8B,collision:$64 $CF $F7 $FD
-$FE,$25,collision:$23 $3C $76 $82 $84 $86 $88 $8A $8C $8E $90 $92 $94 $96 $98 $9A $C2 $C4 $C6 $C8 $CA $CC $CE $D0 $D2 $D4 $F0 $F2 $F4 $F6 $F8 $FA $FC $FE
-$FF,$89,collision:$9C $CB $F1 $FF
+# generated from interleaved ASR-10 boot ROM at $F82484-$F82583
+# mapping prefix: raw $00-$25 (38 bytes), bounded as a data object by $F89D4A bytes 24 7C FF F8 24 AA = movea.l #$FFF824AA,A2, which names $F824AA as the following ERROR string
+# lookup code $F89D9C-$F89DA2 has no upper-bound check; $F89CE8-$F89CEA clears D1 then loads one raw byte, so raw $26-$FF would index these retained bytes if presented
+raw,mapped,status,note
+$00,$3A,mapping,
+$01,$3B,mapping,
+$02,$00,mapping,
+$03,$40,mapping,
+$04,$04,mapping,
+$05,$13,mapping,
+$06,$11,mapping,
+$07,$12,mapping,
+$08,$01,mapping,
+$09,$18,mapping,
+$0A,$20,mapping,
+$0B,$21,mapping,
+$0C,$30,mapping,
+$0D,$31,mapping,
+$0E,$02,mapping,
+$0F,$17,mapping,
+$10,$22,mapping,
+$11,$24,mapping,
+$12,$32,mapping,
+$13,$33,mapping,
+$14,$03,mapping,
+$15,$16,mapping,
+$16,$07,mapping,
+$17,$43,mapping,
+$18,$34,mapping,
+$19,$35,mapping,
+$1A,$14,mapping,
+$1B,$15,mapping,
+$1C,$06,mapping,
+$1D,$41,mapping,
+$1E,$36,mapping,
+$1F,$37,mapping,
+$20,$10,mapping,
+$21,$23,mapping,
+$22,$05,mapping,
+$23,$25,mapping,
+$24,$38,mapping,
+$25,$39,mapping,
+$26,$45,beyond-verified-bound,ERROR string at $F824AA
+$27,$52,beyond-verified-bound,ERROR string at $F824AA
+$28,$52,beyond-verified-bound,ERROR string at $F824AA
+$29,$4F,beyond-verified-bound,ERROR string at $F824AA
+$2A,$52,beyond-verified-bound,ERROR string at $F824AA
+$2B,$20,beyond-verified-bound,ERROR string at $F824AA
+$2C,$00,beyond-verified-bound,ERROR string at $F824AA
+$2D,$20,beyond-verified-bound,reboot-prompt string at $F824B1
+$2E,$2D,beyond-verified-bound,reboot-prompt string at $F824B1
+$2F,$20,beyond-verified-bound,reboot-prompt string at $F824B1
+$30,$52,beyond-verified-bound,reboot-prompt string at $F824B1
+$31,$45,beyond-verified-bound,reboot-prompt string at $F824B1
+$32,$42,beyond-verified-bound,reboot-prompt string at $F824B1
+$33,$4F,beyond-verified-bound,reboot-prompt string at $F824B1
+$34,$4F,beyond-verified-bound,reboot-prompt string at $F824B1
+$35,$54,beyond-verified-bound,reboot-prompt string at $F824B1
+$36,$20,beyond-verified-bound,reboot-prompt string at $F824B1
+$37,$3F,beyond-verified-bound,reboot-prompt string at $F824B1
+$38,$00,beyond-verified-bound,reboot-prompt string at $F824B1
+$39,$FF,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$3A,$21,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$3B,$23,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$3C,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$3D,$28,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$3E,$29,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$3F,$3A,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$40,$3B,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$41,$5B,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$42,$5C,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$43,$5D,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$44,$FF,beyond-verified-bound,longword pointer table at $F824C8
+$45,$F8,beyond-verified-bound,longword pointer table at $F824C8
+$46,$24,beyond-verified-bound,longword pointer table at $F824C8
+$47,$E8,beyond-verified-bound,longword pointer table at $F824C8
+$48,$FF,beyond-verified-bound,longword pointer table at $F824C8
+$49,$F8,beyond-verified-bound,longword pointer table at $F824C8
+$4A,$24,beyond-verified-bound,longword pointer table at $F824C8
+$4B,$EA,beyond-verified-bound,longword pointer table at $F824C8
+$4C,$FF,beyond-verified-bound,longword pointer table at $F824C8
+$4D,$F8,beyond-verified-bound,longword pointer table at $F824C8
+$4E,$24,beyond-verified-bound,longword pointer table at $F824C8
+$4F,$EC,beyond-verified-bound,longword pointer table at $F824C8
+$50,$FF,beyond-verified-bound,longword pointer table at $F824C8
+$51,$F8,beyond-verified-bound,longword pointer table at $F824C8
+$52,$24,beyond-verified-bound,longword pointer table at $F824C8
+$53,$F0,beyond-verified-bound,longword pointer table at $F824C8
+$54,$FF,beyond-verified-bound,longword pointer table at $F824C8
+$55,$F8,beyond-verified-bound,longword pointer table at $F824C8
+$56,$24,beyond-verified-bound,longword pointer table at $F824C8
+$57,$EA,beyond-verified-bound,longword pointer table at $F824C8
+$58,$FF,beyond-verified-bound,longword pointer table at $F824C8
+$59,$F8,beyond-verified-bound,longword pointer table at $F824C8
+$5A,$24,beyond-verified-bound,longword pointer table at $F824C8
+$5B,$F0,beyond-verified-bound,longword pointer table at $F824C8
+$5C,$FF,beyond-verified-bound,longword pointer table at $F824C8
+$5D,$F8,beyond-verified-bound,longword pointer table at $F824C8
+$5E,$24,beyond-verified-bound,longword pointer table at $F824C8
+$5F,$EC,beyond-verified-bound,longword pointer table at $F824C8
+$60,$FF,beyond-verified-bound,longword pointer table at $F824C8
+$61,$F8,beyond-verified-bound,longword pointer table at $F824C8
+$62,$24,beyond-verified-bound,longword pointer table at $F824C8
+$63,$F2,beyond-verified-bound,longword pointer table at $F824C8
+$64,$8B,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$65,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$66,$8C,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$67,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$68,$83,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$69,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$6A,$82,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$6B,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$6C,$8E,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$6D,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$6E,$83,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$6F,$03,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$70,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$71,$FF,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$72,$24,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$73,$FC,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$74,$24,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$75,$FE,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$76,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$77,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$78,$0F,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$79,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$7A,$0D,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$7B,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$7C,$05,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$7D,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$7E,$0F,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$7F,$0D,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$80,$05,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$81,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$82,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$83,$22,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$84,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$85,$24,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$86,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$87,$27,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$88,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$89,$2A,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$8A,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$8B,$2D,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$8C,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$8D,$2F,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$8E,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$8F,$31,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$90,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$91,$33,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$92,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$93,$35,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$94,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$95,$37,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$96,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$97,$39,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$98,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$99,$3B,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$9A,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$9B,$88,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$9C,$89,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$9D,$AE,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$9E,$85,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$9F,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$A0,$8F,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$A1,$0A,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$A2,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$A3,$8F,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$A4,$06,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$A5,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$A6,$8F,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$A7,$8D,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$A8,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$A9,$0A,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$AA,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$AB,$06,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$AC,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$AD,$8D,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$AE,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$AF,$09,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$B0,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$B1,$08,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$B2,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$B3,$0B,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$B4,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$B5,$0E,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$B6,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$B7,$02,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$B8,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$B9,$07,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$BA,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$BB,$03,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$BC,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$BD,$0C,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$BE,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$BF,$0C,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$C0,$00,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$C1,$FF,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$C2,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$C3,$88,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$C4,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$C5,$88,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$C6,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$C7,$88,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$C8,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$C9,$88,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$CA,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$CB,$89,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$CC,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$CD,$88,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$CE,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$CF,$8B,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$D0,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$D1,$88,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$D2,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$D3,$88,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$D4,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$D5,$8D,beyond-verified-bound,padding at $F82559-$F82573
+$D6,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$D7,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$D8,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$D9,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$DA,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$DB,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$DC,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$DD,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$DE,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$DF,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$E0,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$E1,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$E2,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$E3,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$E4,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$E5,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$E6,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$E7,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$E8,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$E9,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$EA,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$EB,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$EC,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$ED,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$EE,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$EF,$FF,beyond-verified-bound,padding at $F82559-$F82573
+$F0,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$F1,$89,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$F2,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$F3,$88,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$F4,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$F5,$88,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$F6,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$F7,$8B,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$F8,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$F9,$88,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$FA,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$FB,$88,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$FC,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$FD,$8B,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$FE,$25,beyond-verified-bound,dumped byte beyond verified mapping prefix
+$FF,$89,beyond-verified-bound,dumped byte beyond verified mapping prefix

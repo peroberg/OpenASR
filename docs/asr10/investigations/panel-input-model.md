@@ -72,8 +72,17 @@ Addressing mode and table shape:
 - Indexing: `(A0,D1.w)`.
 - Index register: `D1.w`, cleared by `moveq #0,D1` before the byte read at `$F89CEA`.
 - Entry size: 1 byte.
-- Bounds: no table-specific `cmp`/`cmpi` before indexing. The byte read bounds the raw
-  index to `$00-$FF`; the table is therefore a dense 256-byte map.
+- Lookup guard: no upper-bound `cmp`/`cmpi`, no mask, and no normalization was found
+  before `$F89DA2`. The only branch before lookup is `$F89D94 b23c 0023` /
+  `$F89D98 6602`, which returns on raw `$23` and falls through otherwise.
+- High byte: `D1` is guaranteed zero at lookup because `$F89CE8 7200` (`moveq #0,D1`)
+  precedes `$F89CEA 1239 fffc 4817` (`move.b $FFFC4817.l,D1`).
+- Data-object bound: `$F824AA` is separately named by ROM code as the `ERROR ` string
+  base (`$F89D4A 247c fff8 24aa`, `movea.l #$FFF824AA,A2`). Therefore the verified
+  mapping prefix is `$F82484-$F824A9`, i.e. raw `$00-$25`.
+- Runtime implication: if hardware or a future harness presents raw `$26-$FF`, ROM code
+  would index beyond the verified mapping prefix into adjacent ROM data. No guard was
+  identified in this routine.
 
 Prediction test against targeted extraction:
 
@@ -82,14 +91,31 @@ Prediction test against targeted extraction:
 | `$15` | `$16` |
 | `$0F` | `$17` |
 | `$21` | `$23` |
-| `$3B` | `$23` |
 | `$03` | `$40` |
 
-All five predictions match. The full generated dump is
-`docs/asr10/static/panel-raw-map.csv` (`raw,mapped,note`, 256 entries). It records
-all raw values that collide on the same mapped value; for example both `$21` and `$3B`
-map to `$23`, and many unmapped/error-like raw values collapse to `$00`, `$25`, `$88`,
-or `$FF`.
+The in-bound predictions match. The earlier `$3B -> $23` example was an artifact of
+reading past the verified mapping prefix: raw `$3B` addresses `$F824BF`, inside the
+adjacent `" - REBOOT ?"` ROM string, not inside the panel mapping table.
+
+The full generated dump is `docs/asr10/static/panel-raw-map.csv`
+(`raw,mapped,status,note`). It retains all 256 dumped bytes, but marks only raw
+`$00-$25` as `status=mapping`; all later bytes are `status=beyond-verified-bound`.
+
+[Likely] The 38 verified mapping entries have a grouped structure:
+
+| high nibble | count | low nibbles |
+|---:|---:|---|
+| `$0x` | 8 | `0-7` |
+| `$1x` | 9 | `0-8` |
+| `$2x` | 6 | `0-5` |
+| `$3x` | 12 | `0-B` |
+| `$4x` | 3 | `0, 1, 3` |
+
+The missing `$42` is unresolved. It may be an unpopulated position, or a value whose raw
+code lies outside the verified prefix; the latter would argue that a larger logical
+input range exists despite the adjacent data-object boundary. Do not name this structure
+as a keypad matrix or scancode table until firmware or vendor documentation supplies
+that terminology.
 
 This proves that user/panel bytes are not necessarily consumed as raw bytes. The ROM
 applies a translation table before later semantics.

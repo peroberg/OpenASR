@@ -77,7 +77,7 @@ före allt annat, i steg 1b ovan. OR0/BR0 … OR3/BR3 skrivs som sex
 
 ## 4. SCSI-avsökning `[V som text, ej i emulering]`
 
-`SCSI INSTALLED` och `SEARCHING FOR SCSI DEV.` finns i samma tabell.
+`SCSI INSTALLED` och `SEARCHING FOR SCSI DEV` finns i samma tabell.
 Visas på användarens maskin, inte i emuleringen.
 
 **RUTIN EJ IDENTIFIERAD.**
@@ -193,19 +193,25 @@ banker, så meddelandet är alltid ett fel när det uppträder.
 V1.61 är en annan baseline: en flagglös boot med `V161.img` slutar på
 `NO INST OR BANK FILES` (rå 14-segmentsinvertering: `N0 IN5T 0R BANK FILE5`).
 
-[OPEN] Strängsökningens täckning är inte helt fastställd för detta påstående.
-Samma skiftlägesokänsliga sökfunktion, med samma interleavade ROM-bild, hittar ROM-
-kontrollerna `SEARCHING FOR SCSI DEV` (`asr10.bin` offset `0x39094`) och
-`INCOMPATIBLE O.S. DISK` (`0x3904C`), men missar den angivna kontrollen
-`ENSONIQ ASR-10`. Diskavbildskontrollerna träffar: `ASR-10 OS` i `V161.img`
-(`0x602`), `!44DDL+CHORUS` i `V161.img` (`0x61B`), `ASR-10 OS` i `V350.img`
+[Verified] Strängsökningen är kalibrerad mot byte-exakta kontroller. Den tidigare
+missade ROM-kontrollen var en anteckningsartefakt: ROM innehåller
+`20 20 20 45 4E 53 4F 4E 49 51 20 20 41 53 52 2D 31 30 20 20 20 20 00`
+(`"   ENSONIQ  ASR-10    "\\0`) vid `$FB8FBC`, inte den normaliserade formen
+`ENSONIQ ASR-10`.
+
+Samma sökfunktion hittar ROM-kontrollerna
+`SEARCHING FOR SCSI DEV` (`$FB9094`, bytes
+`53 45 41 52 43 48 49 4E 47 20 46 4F 52 20 53 43 53 49 20 44 45 56 00`),
+`INCOMPATIBLE O.S. DISK` (`$FB904C`) och byte-exakt `ENSONIQ`-sträng ovan.
+Diskavbildskontrollerna träffar: `ASR-10 OS` i `V161.img` (`0x602`),
+`!44DDL+CHORUS` i `V161.img` (`0x61B`), `ASR-10 OS` i `V350.img`
 (`0x420`, `0x602`) och `TUTORIAL BNK` i `V350.img` (`0x43A`, `0x61C`).
 
 Sökning efter både `NO INST OR BANK FILES` och `N0 IN5T 0R BANK FILE5` gav noll
-träffar i `asr10.bin`, `V161.img` och `V350.img`, men eftersom en positiv ROM-kontroll
-missade är nollresultatet inte ensamt verifierande. Exakt var och hur meddelandet
-konstrueras är öppet; en rimlig förklaring är att texten lagras som färdiga
-14-segmentsmönster eller byggs ur fragment snarare än som sammanhängande ASCII.
+träffar i `asr10.bin`, `V161.img` och `V350.img` med kalibrerad metod. Exakt var och
+hur meddelandet konstrueras är fortfarande öppet; en rimlig förklaring är att texten
+lagras som färdiga 14-segmentsmönster eller byggs ur fragment snarare än som
+sammanhängande ASCII.
 
 [Verified] V1.61-runtime når ett diskberoende file-browser-svar enligt den tidigare
 bootkedjans runtime-evidens; den slutsatsen beror inte på strängsökningen.

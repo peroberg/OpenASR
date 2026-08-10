@@ -92,15 +92,19 @@ minnesmappsändringar ska göras enbart utifrån den statiska analysen.
 
 ### `panel-raw-map.csv`
 
-Genererad dump av ROM-tabellen `$F82484-$F82583`.
+Genererad dump av ROM-bytena `$F82484-$F82583`.
 
 Kolumner:
 
 - `raw`: rå byte som firmware läser från DUART kanal B RHRB
-- `mapped`: byte efter ROM-tabellens `move.b (A0,D1.w),D1`
-- `note`: råvärden som kolliderar på samma mappade värde
+- `mapped`: byte som finns på `$F82484 + raw`
+- `status`: `mapping` för raw `$00-$25`, `beyond-verified-bound` därefter
+- `note`: objektidentifiering för dumpade byte bortom den verifierade mappningsprefixen
 
-Tabellen är verifierad genom indexeringskod vid `$F89D9C` och används som rådata för
+Lookup-basen är verifierad genom indexeringskod vid `$F89D9C`. Den verifierade
+mappningsprefixen slutar före `$F824AA`, som är separat belagd av
+`$F89D4A 247c fff8 24aa` (`movea.l #$FFF824AA,A2`) som `ERROR `-strängbas.
+Lookupkoden saknar samtidigt en övre gränskontroll; se
 `../investigations/panel-input-model.md`.
 
 ---
