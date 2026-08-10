@@ -236,6 +236,50 @@ De 1404 kanterna med `mapping_basis=mirror-hypothesis` står kvar. Den statiska
 bindningstabellkopplingen är fortfarande verklig som kodmönster, men MAME-datareaden
 avgör inte hårdvaruspeglingen och får inte höjas till `direct` utan ny evidens.
 
+**Runtime-fönsterobservation 2026-08-11.** [OPEN] V3.50 körde kod vid `$FFB0BC/$FFB0D4`
+i `FILE 1  TUTORIAL BNK`-läget. Samma körning dumpade 64 byte från de höga adresserna
+och motsvarande låga adresser:
+
+```text
+$FFB0BC:
+1239fffc4813c23c0050670661c86000020a7000720074001239fffc4817307803c04ed04a38ccd1677031fcb39203c04a016654610000eeb43c00806746b43c
+
+$00B0BC:
+fffba626661e0838000304c167244eb9000133c64a38049d6600018a11fc000404b060644a38016a67120838000304c1660a11fc001c049d6000016a1038049a
+
+$FFB0D4:
+1239fffc4817307803c04ed04a38ccd1677031fcb39203c04a016654610000eeb43c00806746b43c003a6518b43c0040650876024eb88912600876004eb9fff8
+
+$00B0D4:
+6600018a11fc000404b060644a38016a67120838000304c1660a11fc001c049d6000016a1038049ab03c00006716b03c000767104a3804b2660a11fc0009049d
+```
+
+Bytejämförelse: `$FFB0BC`/`$00B0BC` skiljer sig i 60 av 64 byte, första skillnad
+`+00 = $12/$FF`; `$FFB0D4`/`$00B0D4` skiljer sig i 61 av 64 byte, första skillnad
+`+00 = $12/$66`. Detta är en observation av dessa två adresser i den nuvarande
+MAME-modellen, inte en omklassificering av E2 eller av de 1404
+`mirror-hypothesis`-kanterna.
+
+Disassemblering av det exekverade höga fönstret:
+
+```text
+$FFB0B0  8FCC             dc.w    $8fcc
+$FFB0B2  0C40 3838        cmpi.w  #$3838,D0
+$FFB0B6  57F8 CCD1        seq     ($ccd1).w
+$FFB0BA  4E75             rts
+$FFB0BC  1239 FFFC 4813   move.b  $fffc4813.l,D1
+$FFB0C2  C23C 0050        and.b   #$50,D1
+$FFB0C6  6706             beq     $ffb0ce
+$FFB0C8  61C8             bsr     $ffb092
+$FFB0CA  6000 020A        bra     $ffb2d6
+$FFB0CE  7000             moveq   #$0,D0
+$FFB0D0  7200             moveq   #$0,D1
+$FFB0D2  7400             moveq   #$0,D2
+$FFB0D4  1239 FFFC 4817   move.b  $fffc4817.l,D1
+$FFB0DA  3078 03C0        movea.w ($03c0).w,A0
+$FFB0DE  4ED0             jmp     (A0)
+```
+
 ## 5. CS1 — `$FF6000-$FF7FFF`  [OPEN]
 
 Projektets största öppna hårdvarufråga. Allt känt samlat.

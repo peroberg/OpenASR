@@ -21,13 +21,13 @@ panel_autorespond_fire()
 
 Relevant code:
 
-- `src/mame/ensoniq/asr10_boot.cpp:1872-1883`: `panel_c_queue_rx()` pushes one byte
+- `src/mame/ensoniq/asr10_boot.cpp:1919-1944`: `panel_c_queue_rx()` pushes one byte
   directly into `m_duart->m_chanB->rx_fifo_push(data, 0)`.
-- `src/mame/ensoniq/asr10_boot.cpp:1894-1905`: `panel_autorespond_fire()` always injects
+- `src/mame/ensoniq/asr10_boot.cpp:1954-1965`: `panel_autorespond_fire()` always injects
   byte `$FF` as the current autoresponse.
-- `src/mame/ensoniq/asr10_boot.cpp:2927-2934`: panel output bytes written by firmware
+- `src/mame/ensoniq/asr10_boot.cpp:2982-2985`: panel output bytes written by firmware
   schedule the autoresponse timer.
-- `src/mame/ensoniq/asr10_boot.cpp:2810-2816`: reads from `$FC4816/$FC4817` pop channel B
+- `src/mame/ensoniq/asr10_boot.cpp:2829-2841`: reads from `$FC4816/$FC4817` pop channel B
   RHRB when SRB had RxRDY.
 
 Firmware dispatch path:
@@ -118,11 +118,11 @@ Channel A/B observations:
 
 Current driver mapping, kept separate from ROM evidence:
 
-- `src/mame/ensoniq/asr10_boot.cpp:1680` maps `$FC4800-$FC481F` to
+- `src/mame/ensoniq/asr10_boot.cpp:1727` maps `$FC4800-$FC481F` to
   `duart_panel_asr_candidate_r/w`.
-- `src/mame/ensoniq/asr10_boot.cpp:2756-2868` translates MAME word offsets to the
+- `src/mame/ensoniq/asr10_boot.cpp:2829-2975` translates MAME word offsets to the
   low byte lane and calls `m_duart->read(word)` / `m_duart->write(word)`.
-- `src/mame/ensoniq/asr10_boot.cpp:4650-4651` instantiates `SCN2681` at
+- `src/mame/ensoniq/asr10_boot.cpp:4803-4804` instantiates `SCN2681` at
   `XTAL(16'000'000) / 4` and wires its IRQ to CPU line 6.
 
 That driver mapping agrees with the ROM register family, but remains a model choice.
@@ -134,7 +134,7 @@ Provenance of the earlier claim: `$F82484` and the example pairs first came from
 current driver's diagnostic log plus targeted extraction from the interleaved ROM image,
 not from an independently decoded ROM index instruction.
 
-- `src/mame/ensoniq/asr10_boot.cpp:2840-2850` reads raw RHRB byte at `$F89CEA`,
+- `src/mame/ensoniq/asr10_boot.cpp:2937-2950` reads raw RHRB byte at `$F89CEA`,
   indexes ROM table `$F82484 + raw`, and logs the mapped byte.
 
 The ROM now has an independent static proof for that table:
@@ -363,25 +363,33 @@ button events may share transport while using different packet/state contexts.
 
 [Verified] Pollvägen `$F89CCA` (SRB) -> `$F89CEA` (RHRB) -> lookup finns i ROM.
 
-[Verified] Den kör under V3.50 i `FILE 1  TUTORIAL BNK`-läget. Observation:
-en 40 s körning utan injektion, utan `-log`, aktiverade mätfönstret när displaytexten
-`FILE 1  TUTORIAL BNK` observerades och räknade därefter 12 läsningar av `$FC4813`
-(`SRB`) och 12 läsningar av `$FC4817` (`RHRB`) före processens tidsgräns.
+[Verified] Runtime-konsumenten av kanal B i V3.50 `FILE 1  TUTORIAL BNK`-läget läser
+SRB från `$FFB0BC` och RHRB från `$FFB0D4`. Tolv par på 1,6 ms vid inträdet i läget,
+därefter ingen aktivitet.
+
+[Verified] `$F89CEA` läste noll gånger i samma mätfönster. ROM-pollvägen är inte den
+aktiva konsumenten i det läget.
+
+[Likely] Konsumenten är händelsedriven snarare än pollande. Skurmönstret följt av
+tystnad är förenligt med det, men avbrottsvägen är inte verifierad som enda orsak.
+
+[OPEN] Om ROM-vägen `$F89CCA/$F89CEA` används i någon annan fas. Att den inte kördes i
+FILE 1-läget säger inget om boot.
 
 [Verified] `duart_panel_asr_candidate_r/w` är en handskriven MAME-handler runt en
 instansierad `SCN2681`, inte en ren stub som returnerar färdiga panelbytes. `mem_map`
-kopplar `$FC4800-$FC481F` till handlern (`src/mame/ensoniq/asr10_boot.cpp:1719`),
-maskinkonfigurationen instansierar `SCN2681` (`src/mame/ensoniq/asr10_boot.cpp:4738`),
+kopplar `$FC4800-$FC481F` till handlern (`src/mame/ensoniq/asr10_boot.cpp:1727`),
+maskinkonfigurationen instansierar `SCN2681` (`src/mame/ensoniq/asr10_boot.cpp:4803`),
 och läs-/skrivhandlern går via `m_duart->read(word)` / `m_duart->write(word)`
-(`src/mame/ensoniq/asr10_boot.cpp:2819`, `src/mame/ensoniq/asr10_boot.cpp:2927`).
+(`src/mame/ensoniq/asr10_boot.cpp:2841`, `src/mame/ensoniq/asr10_boot.cpp:2965`).
 
 [Verified] `ASR10_PANEL_SWEEP_RAW`-injektionen och den befintliga panelharnessens
 ACK/status skriver till samma hjälpfunktion och samma kanal-B FIFO:
 `panel_sweep_fire()` anropar `panel_c_queue_rx(..., "panel_sweep_raw", ...)`
-(`src/mame/ensoniq/asr10_boot.cpp:1953-1957`), `panel_autorespond_fire()` anropar
+(`src/mame/ensoniq/asr10_boot.cpp:1974-1978`), `panel_autorespond_fire()` anropar
 `panel_c_queue_rx(0xff, "autorespond_fc4817_write", ...)`
-(`src/mame/ensoniq/asr10_boot.cpp:1937-1944`), och `panel_c_queue_rx()` gör
-`m_duart->m_chanB->rx_fifo_push(data, 0)` (`src/mame/ensoniq/asr10_boot.cpp:1911-1917`).
+(`src/mame/ensoniq/asr10_boot.cpp:1958-1965`), och `panel_c_queue_rx()` gör
+`m_duart->m_chanB->rx_fifo_push(data, 0)` (`src/mame/ensoniq/asr10_boot.cpp:1919-1927`).
 
 [Verified] Injektionen kördes i kontrollkörningarna: stdout innehöll
 `ASR10_PANEL_SWEEP event=inject raw=23 ... before="FILE 1  TUTORIAL BNK"` och motsvarande
@@ -393,18 +401,22 @@ receive-loopen är aktiv i samma startläge. Poll i boot och avbrott i runtime �
 möjlig förklaring, men poll/poll, avbrott/avbrott, FIFO/timing och redan-köade
 autorespondbytes är också förenliga med observationerna. Ingen av dem är prövad här.
 
-[Verified] En senare no-injection-körning i samma V3.50 `FILE 1  TUTORIAL BNK`-läge
-visade att den aktiva receive-konsumenten inte är ROM-vägen `$F89CCA/$F89CEA`.
-Efter att startläget observerats lästes `$FC4813` 12 gånger från `$FFB0BC` och
-`$FC4817` 12 gånger från `$FFB0D4`. Alla 12 RHRB-läsningar returnerade befintlig
-ACK/status-byte `$FF`; FIFO-djupet gick från 1 till 0 vid varje RHRB-läsning.
-Den befintliga ACK/status-harnessen anropade `panel_c_queue_rx()` 12 gånger i samma
-fönster, alltid med FIFO-djup 0 före push och 1 efter push. Inga FIFO-overrun-pushar
-observerades.
+[Verified] En senare no-injection-körning i samma läge visade att alla 12 RHRB-läsningar
+returnerade befintlig ACK/status-byte `$FF`; FIFO-djupet gick från 1 till 0 vid varje
+RHRB-läsning. Den befintliga ACK/status-harnessen anropade `panel_c_queue_rx()` 12
+gånger i samma fönster, alltid med FIFO-djup 0 före push och 1 efter push. Inga
+FIFO-overrun-pushar observerades.
+
+[Verified] DUART-avbrottsvägen är maskningsmässigt möjlig i samma modell: IMR skrevs
+med `$2B`, vilket demaskar bit `$20` (`RxRDYB/FFULLB`), och varje
+`panel_c_queue_rx()` i mätfönstret lämnade `m_duart->irq_pending() == 1`. Inga IVR-
+skrivningar till `$FC4819` observerades i körningen; drivrutinen kopplar SCN2681:s
+`irq_cb()` till CPU IRQ6. `duart_channel::rx_fifo_push()` är inte en ren FIFO-operation:
+den sätter `STATUS_RECEIVER_READY` när FIFO går från tom till icke-tom och anropar
+`update_interrupts()`.
 
 [OPEN] Den aktiva runtime-rutinen runt `$FFB0BC/$FFB0D4` är ännu inte statiskt
-identifierad eller namngiven. `$F89CEA`-vägen finns kvar som ROM-evidens, men den var
-inte den aktiva konsumenten under FILE 1-mätningen.
+identifierad eller namngiven.
 
 ## Open: key semantics
 
@@ -460,7 +472,7 @@ MAME input field transition
 
 In code terms, the eventual implementation needs to bridge from an input-port transition
 to the same receive side currently reached at
-`src/mame/ensoniq/asr10_boot.cpp:1908`, while preserving that firmware performs its own
+`src/mame/ensoniq/asr10_boot.cpp:1926`, while preserving that firmware performs its own
 raw-to-mapped lookup at `$F82484`.
 
 ## Next evidence needed

@@ -48,9 +48,9 @@ but this routine treats it as a raw-protocol exit byte.
 
 Current harness injection point:
 
-- `src/mame/ensoniq/asr10_boot.cpp:1903-1915`
+- `src/mame/ensoniq/asr10_boot.cpp:1919-1944`
 - `panel_c_queue_rx(u8 data, ...)`
-- actual FIFO insertion: `src/mame/ensoniq/asr10_boot.cpp:1908`,
+- actual FIFO insertion: `src/mame/ensoniq/asr10_boot.cpp:1926`,
   `m_duart->m_chanB->rx_fifo_push(data, 0)`
 - scriptable parameter: `ASR10_PANEL_SWEEP_RAW=0xNN`. The harness waits until
   `FILE 1  TUTORIAL BNK` is observed, prints a precheck line, then queues exactly one
@@ -59,6 +59,11 @@ Current harness injection point:
 A future sweep should inject raw bytes through the same channel-B FIFO path. It should
 not write directly to the post-lookup mapped value and should not bypass SRB/RHRB
 semantics.
+
+The existing ACK/status harness is not neutral background traffic for channel-B
+experiments. It uses the same `panel_c_queue_rx()` helper and the same DUART channel-B
+receive FIFO as `ASR10_PANEL_SWEEP_RAW`; future injection tests must either account for
+that shared FIFO or deliberately suppress/sequence ACK/status traffic.
 
 ## Control Pair
 

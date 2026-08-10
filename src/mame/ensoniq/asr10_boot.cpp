@@ -443,6 +443,7 @@ private:
 	u32 m_panel_receive_live_queue_calls = 0;
 	u32 m_panel_receive_live_fifo_overrun_pushes = 0;
 	attotime m_panel_receive_live_last_access_time = attotime::never;
+	bool m_panel_receive_live_window_dumped = false;
 	u32 m_gen_counter = 0;
 	std::array<u8, 128> m_gen_thrb_bytes{};
 	u8 m_gen_thrb_count = 0;
@@ -1504,6 +1505,7 @@ void asr10_boot_state::machine_reset()
 	m_panel_receive_live_queue_calls = 0;
 	m_panel_receive_live_fifo_overrun_pushes = 0;
 	m_panel_receive_live_last_access_time = attotime::never;
+	m_panel_receive_live_window_dumped = false;
 	if (const char *const sweep_raw = std::getenv("ASR10_PANEL_SWEEP_RAW"); sweep_raw && sweep_raw[0])
 	{
 		char *end = nullptr;
@@ -1929,9 +1931,9 @@ void asr10_boot_state::panel_c_queue_rx(u8 data, const char *reason, u32 pc)
 		if (overflow_push)
 			m_panel_receive_live_fifo_overrun_pushes++;
 		osd_printf_info("ASR10_PANEL_RECEIVE_LIVE event=queue_rx time=%s reason=%s pc=%06x "
-			"byte=%02x fifo_before=%d fifo_after=%d overflow_push=%u queue_calls=%u\n",
+			"byte=%02x fifo_before=%d fifo_after=%d overflow_push=%u irq_pending=%u queue_calls=%u\n",
 			machine().time().to_string(), reason, pc, data, fifo_before, fifo_after,
-			overflow_push ? 1 : 0, m_panel_receive_live_queue_calls);
+			overflow_push ? 1 : 0, m_duart->irq_pending() ? 1 : 0, m_panel_receive_live_queue_calls);
 	}
 	logerror("ASR10_PANEL_AUTORESPOND event=rx_queued reason=%s pc=%06x "
 		"rx=%02x source=mc68681_channel_b_fifo slot0_state=%04x "
@@ -2961,6 +2963,15 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 	(void)0;
 	if (ACCESSING_BITS_0_7)
 		m_duart->write(word, u8(data));
+	if (!machine().side_effects_disabled() && ACCESSING_BITS_0_7 &&
+		(address == 0x00fc480b || address == 0x00fc4819))
+	{
+		osd_printf_info("ASR10_PANEL_RECEIVE_LIVE event=duart_write time=%s pc=%06x "
+			"reg=%s address=%06x value=%02x irq_pending=%u\n",
+			machine().time().to_string(), pc,
+			address == 0x00fc480b ? "IMR" : "IVR",
+			address, u8(data), m_duart->irq_pending() ? 1 : 0);
+	}
 	if (address == 0x00fc4817 && ACCESSING_BITS_0_7)
 	{
 		const u8 character = u8(data);
@@ -3121,6 +3132,22 @@ void asr10_boot_state::panel_receive_byte(u8 data)
 	{
 		m_panel_receive_live_active = true;
 		osd_printf_info("ASR10_PANEL_RECEIVE_LIVE event=active display=\"%s\"\n", m_panel_text);
+	}
+	if (m_panel_receive_live_active && !m_panel_receive_live_window_dumped)
+	{
+		m_panel_receive_live_window_dumped = true;
+		auto const disable_side_effects = machine().disable_side_effects();
+		for (const u32 base : { 0x00ffb0bcU, 0x0000b0bcU, 0x00ffb0d4U, 0x0000b0d4U, 0x00ffb0b0U })
+		{
+			char hex[129]{};
+			for (u32 index = 0; index != 64; index++)
+			{
+				const u8 byte = m_maincpu->space(AS_PROGRAM).read_byte(base + index);
+				snprintf(&hex[index * 2], 3, "%02x", byte);
+			}
+			osd_printf_info("ASR10_PANEL_RECEIVE_LIVE_DUMP base=%06x len=64 hex=%s\n",
+				base & 0x00ffffff, hex);
+		}
 	}
 
 	(void)0;
