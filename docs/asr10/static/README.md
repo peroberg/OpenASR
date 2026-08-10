@@ -475,8 +475,9 @@ OS-filen i respektive avbild: block 24, diskoffset `0x3000`. V1.61 173 block
 
 | fil | rader | typ | SHA-256 (16) |
 |---|---|---|---|
-| `call-graph-edges.csv` | 5 243 + rubrik | **genererad** | `b8bfb32053274a66` |
+| `call-graph-edges.csv` | 5 248 + rubrik | **genererad** | `e69743aae86c8277` |
 | `os-binding-table.csv` | 723 + rubrik | **genererad** | `600f646943d5a3a7` |
+| `panel-raw-byte-sweep-v350.csv` | 256 + rubrik | **genererad** | `8a575265c39f66fa` |
 | `rom-abi-entrypoints.csv` | 1 054 + rubrik | **genererad** | `6293e5c9cffeb4f4` |
 | `routines.csv` | 25 + rubrik | **handkurerad** | `8aba2712c91a6a04` |
 
@@ -500,8 +501,11 @@ call-graph-edges.csv
     Kontrollflodeskanter pa ANROPSSTALLENIVA, inte rutinniva.
     executed=unknown betyder INTE att kanten ar falsk eller oanvand -
     det betyder att ingen namngiven observation annu ar knuten till den.
-    Nulage: observed 7, inferred_from_trace 3,
+    Nulage: observed 12, inferred_from_trace 3,
     not_reached_in_bounded_run 4, unknown 5229.
+    Evidence-fordelning: static-abs.l 2285, static-table 1490,
+    static-abs.w 1362, static-vectortable 92, runtime-PC 8,
+    observed 5, static 4, static+arch 2.
 
 routines.csv
     Rutinidentiteter med explicit gransevidens och proveniens.

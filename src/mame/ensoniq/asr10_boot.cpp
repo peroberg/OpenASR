@@ -475,9 +475,16 @@ private:
 	u32 m_panel_autorespond_scheduled_count = 0;
 	u32 m_panel_autorespond_injected_count = 0;
 	bool m_panel_sweep_enabled = false;
+	bool m_panel_sweep_all_enabled = false;
 	bool m_panel_sweep_armed = false;
 	bool m_panel_sweep_injected = false;
+	bool m_panel_sweep_waiting_sample = false;
+	bool m_panel_sweep_consumed = false;
 	u8 m_panel_sweep_raw = 0;
+	u8 m_panel_sweep_consumed_value = 0;
+	u16 m_panel_sweep_current = 0;
+	u16 m_panel_sweep_end = 0xff;
+	u32 m_panel_sweep_dispatch_target = 0xffffffffU;
 	char m_panel_sweep_before[PANEL_TEXT_LENGTH]{};
 	bool m_panel_receive_live_active = false;
 	u32 m_panel_receive_live_srb_reads = 0;
@@ -595,6 +602,7 @@ private:
 
 	void panel_receive_byte(u8 data);
 	void flush_panel_text();
+	std::string current_display_text() const;
 	void note_panel_ring_store(u32 pc, u32 ring_address, u8 byte);
 	panel_byte_role consume_panel_ring_role(u32 pc);
 	bool is_bounded_panel_ring_control_candidate(u32 pc, u32 return_pc, u32 previous_pc) const;
@@ -1586,9 +1594,16 @@ void asr10_boot_state::machine_reset()
 	m_panel_autorespond_injected_count = 0;
 	m_panel_autorespond_timer->adjust(attotime::never);
 	m_panel_sweep_enabled = false;
+	m_panel_sweep_all_enabled = false;
 	m_panel_sweep_armed = false;
 	m_panel_sweep_injected = false;
+	m_panel_sweep_waiting_sample = false;
+	m_panel_sweep_consumed = false;
 	m_panel_sweep_raw = 0;
+	m_panel_sweep_consumed_value = 0;
+	m_panel_sweep_current = 0;
+	m_panel_sweep_end = 0xff;
+	m_panel_sweep_dispatch_target = 0xffffffffU;
 	std::fill(std::begin(m_panel_sweep_before), std::end(m_panel_sweep_before), 0);
 	m_panel_sweep_timer->adjust(attotime::never);
 	m_panel_receive_live_active = false;
@@ -1613,6 +1628,33 @@ void asr10_boot_state::machine_reset()
 		{
 			osd_printf_info("ASR10_PANEL_SWEEP event=config_invalid value=\"%s\"\n", sweep_raw);
 		}
+	}
+	if (const char *const sweep_all = std::getenv("ASR10_PANEL_SWEEP_ALL");
+		sweep_all && sweep_all[0] && sweep_all[0] != '0')
+	{
+		m_panel_sweep_enabled = true;
+		m_panel_sweep_all_enabled = true;
+		m_panel_sweep_current = 0;
+		m_panel_sweep_end = 0xff;
+		if (const char *const sweep_start = std::getenv("ASR10_PANEL_SWEEP_START"); sweep_start && sweep_start[0])
+		{
+			char *end = nullptr;
+			const unsigned long parsed = std::strtoul(sweep_start, &end, 0);
+			if (end && *end == 0 && parsed <= 0xff)
+				m_panel_sweep_current = u16(parsed);
+		}
+		if (const char *const sweep_end = std::getenv("ASR10_PANEL_SWEEP_END"); sweep_end && sweep_end[0])
+		{
+			char *end = nullptr;
+			const unsigned long parsed = std::strtoul(sweep_end, &end, 0);
+			if (end && *end == 0 && parsed <= 0xff)
+				m_panel_sweep_end = u16(parsed);
+		}
+		if (m_panel_sweep_current > m_panel_sweep_end)
+			m_panel_sweep_current = m_panel_sweep_end;
+		m_panel_sweep_raw = u8(m_panel_sweep_current);
+		osd_printf_info("ASR10_PANEL_SWEEP event=config_all start=%02x end=%02x\n",
+			m_panel_sweep_current, m_panel_sweep_end);
 	}
 	// Board-level LRCLK into PB3 (GPIO input, docs/mc68302/pin-function-map.md):
 	// external to the 68302, always running once the machine is up, not a
@@ -1776,6 +1818,18 @@ void asr10_boot_state::set_display_text(const char *text)
 		m_display[index] = ascii_to_14seg(character);
 		m_display_position = index + 1;
 	}
+}
+
+
+std::string asr10_boot_state::current_display_text() const
+{
+	std::string text;
+	text.reserve(ASR10_DISPLAY_LENGTH);
+	for (u8 character : m_display_chars)
+		text.push_back(char(character ? character : ' '));
+	while (!text.empty() && text.back() == ' ')
+		text.pop_back();
+	return text;
 }
 
 void asr10_boot_state::mem_map(address_map &map)
@@ -2148,17 +2202,47 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_autorespond_fire)
 
 TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_sweep_fire)
 {
-	if (!m_panel_sweep_enabled || m_panel_sweep_injected || machine().side_effects_disabled())
+	if (!m_panel_sweep_enabled || machine().side_effects_disabled())
 		return;
 
 	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
-	m_panel_sweep_injected = true;
+	if (m_panel_sweep_all_enabled && m_panel_sweep_waiting_sample)
+	{
+		const std::string after = current_display_text();
+		const bool changed = std::strcmp(m_panel_sweep_before, after.c_str()) != 0;
+		osd_printf_info("ASR10_PANEL_SWEEP_RESULT raw=%02x consumed=%u consumed_value=%02x "
+			"dispatch_target=%06x before=\"%s\" after=\"%s\" changed=%u\n",
+			m_panel_sweep_raw, m_panel_sweep_consumed ? 1 : 0, m_panel_sweep_consumed_value,
+			m_panel_sweep_dispatch_target, m_panel_sweep_before, after.c_str(), changed ? 1 : 0);
+		if (!m_panel_sweep_consumed || changed || m_panel_sweep_current >= m_panel_sweep_end)
+		{
+			machine().schedule_exit();
+			return;
+		}
+		m_panel_sweep_current++;
+		m_panel_sweep_raw = u8(m_panel_sweep_current);
+		std::strncpy(m_panel_sweep_before, after.c_str(), PANEL_TEXT_LENGTH - 1);
+		m_panel_sweep_before[PANEL_TEXT_LENGTH - 1] = 0;
+		m_panel_sweep_consumed = false;
+		m_panel_sweep_consumed_value = 0;
+		m_panel_sweep_dispatch_target = 0xffffffffU;
+		m_panel_sweep_waiting_sample = false;
+		m_panel_sweep_timer->adjust(attotime::from_msec(20));
+		return;
+	}
+
+	if (!m_panel_sweep_all_enabled && m_panel_sweep_injected)
+		return;
+
 	if (m_rx_event_trace_enabled)
 		osd_printf_info("ASR10_RX_EVENT event=inject id=%u time=%s raw=%02x pc=%06x before=\"%s\"\n",
 			m_rx_event_id, machine().time().to_string(), m_panel_sweep_raw, pc, m_panel_sweep_before);
 	osd_printf_info("ASR10_PANEL_SWEEP event=inject raw=%02x pc=%06x before=\"%s\"\n",
 		m_panel_sweep_raw, pc, m_panel_sweep_before);
+	m_panel_sweep_injected = true;
+	m_panel_sweep_waiting_sample = true;
 	panel_c_queue_rx(m_panel_sweep_raw, "panel_sweep_raw", pc);
+	m_panel_sweep_timer->adjust(attotime::from_msec(100));
 }
 
 
@@ -2316,6 +2400,15 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 	if (!machine().side_effects_disabled())
 		rx_event_note_slot_write(m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff,
 			byte_address, previous, m_lowmem_shadow[offset], mem_mask);
+	if (!machine().side_effects_disabled() && m_panel_sweep_enabled && m_panel_sweep_waiting_sample &&
+		byte_address >= 0x03c0 && byte_address <= 0x03c6)
+	{
+		const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+		osd_printf_info("ASR10_PANEL_SWEEP_TAIL_WRITE raw=%02x time=%s pc=%06x "
+			"address=%04x previous=%04x current=%04x mem_mask=%04x\n",
+			m_panel_sweep_raw, machine().time().to_string(), pc, byte_address,
+			previous, m_lowmem_shadow[offset], mem_mask);
+	}
 	if ((byte_address == 0x0dd6 || byte_address == 0x0df2) && !machine().side_effects_disabled())
 	{
 		const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
@@ -3036,6 +3129,24 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 			address == 0x00fc4812 ? "SRB" : "RHRB", address | 1, u8(raw_data),
 			fifo_before_read, m_duart->m_chanB->rx_fifo_count(), m_duart->irq_pending() ? 1 : 0);
 	}
+	if (!machine().side_effects_disabled() && m_panel_sweep_enabled && m_panel_sweep_waiting_sample &&
+		ACCESSING_BITS_0_7 && address == 0x00fc4816 && pc == 0x00ffb0d4 && u8(raw_data) == m_panel_sweep_raw)
+	{
+		m_panel_sweep_consumed = true;
+		m_panel_sweep_consumed_value = u8(raw_data);
+		const u16 word03c0 = lowmem_word(0x03c0);
+		const u32 target03c0 = BIT(word03c0, 15) ? (0x00ff0000U | word03c0) : word03c0;
+		std::string hex;
+		for (u32 index = 0; index != 64; index++)
+		{
+			if (index)
+				hex += ' ';
+			hex += util::string_format("%02x", m_maincpu->space(AS_PROGRAM).read_byte(target03c0 + index));
+		}
+		osd_printf_info("ASR10_PANEL_SWEEP_TAIL raw=%02x rhrb_pc=%06x value=%02x "
+			"word_03c0=%04x target=%06x target64=\"%s\"\n",
+			m_panel_sweep_raw, pc, u8(raw_data), word03c0, target03c0, hex.c_str());
+	}
 	if (!machine().side_effects_disabled() && m_panel_receive_live_active && ACCESSING_BITS_0_7)
 	{
 		const bool is_srb = address == 0x00fc4812;
@@ -3335,8 +3446,13 @@ void asr10_boot_state::panel_receive_byte(u8 data)
 	if (m_panel_sweep_enabled && !m_panel_sweep_armed && !m_panel_sweep_injected &&
 		strstr(m_panel_text, "FILE 1  TUTORIAL BNK"))
 	{
-		strncpy(m_panel_sweep_before, m_panel_text, PANEL_TEXT_LENGTH - 1);
+		const std::string display = current_display_text();
+		strncpy(m_panel_sweep_before, display.c_str(), PANEL_TEXT_LENGTH - 1);
 		m_panel_sweep_before[PANEL_TEXT_LENGTH - 1] = 0;
+		for (u32 index = 0; index != 10; index++)
+			osd_printf_info("ASR10_DISPLAY_VERIFY sample=%u display=\"%s\" expected=\"FILE 1  TUTORIAL BNK\" match=%u\n",
+				index + 1, current_display_text().c_str(),
+				current_display_text() == "FILE 1  TUTORIAL BNK" ? 1 : 0);
 		if (m_rx_event_trace_enabled && !m_rx_event_pre_inject_dumped)
 		{
 			m_rx_event_pre_inject_dumped = true;
@@ -3351,11 +3467,11 @@ void asr10_boot_state::panel_receive_byte(u8 data)
 		m_panel_sweep_timer->adjust(attotime::from_msec(100));
 	}
 	if (m_rx_event_trace_enabled && m_panel_sweep_injected && !m_rx_event_after_reported &&
-		strcmp(m_panel_text, m_panel_sweep_before) != 0)
+		current_display_text() != m_panel_sweep_before)
 	{
 		m_rx_event_after_reported = true;
 		osd_printf_info("ASR10_RX_EVENT event=display_after id=%u time=%s raw=%02x display=\"%s\"\n",
-			m_rx_event_id, machine().time().to_string(), m_panel_sweep_raw, m_panel_text);
+			m_rx_event_id, machine().time().to_string(), m_panel_sweep_raw, current_display_text().c_str());
 		rx_event_dump_slots("after_display_change");
 	}
 	if (!m_panel_receive_live_active && strstr(m_panel_text, "FILE 1  TUTORIAL BNK"))
@@ -3880,7 +3996,7 @@ void asr10_boot_state::rx_event_summary()
 
 	osd_printf_info("ASR10_RX_EVENT_SUMMARY id=%u raw=%02x injected=%u display=\"%s\" "
 		"slot_base=%04x slot_end=%04x slot_count=%u\n",
-		m_rx_event_id, m_panel_sweep_raw, m_panel_sweep_injected ? 1 : 0, m_panel_text,
+		m_rx_event_id, m_panel_sweep_raw, m_panel_sweep_injected ? 1 : 0, current_display_text().c_str(),
 		m_rx_event_slot_base, m_rx_event_slot_end, m_rx_event_slot_count);
 	for (u32 slot = 0; slot < std::min<u32>(m_rx_event_slot_count, 128); slot++)
 	{
@@ -3980,6 +4096,18 @@ bool asr10_boot_state::is_bounded_panel_ring_control_candidate(u32 pc, u32 retur
 				}
 				sample_pc_profile(m_step0_pc_profiles[0], pc);
 				sample_pc_profile(m_step0_pc_profiles[1], pc);
+			}
+			if (m_panel_sweep_enabled && m_panel_sweep_waiting_sample && !m_panel_sweep_consumed &&
+				!machine().side_effects_disabled())
+			{
+				if (pc == 0x00f884d4)
+					m_panel_sweep_dispatch_target = lowmem_long(0x00de) & 0x00ffffff;
+				else if (pc == 0x00f884e0)
+					m_panel_sweep_dispatch_target = lowmem_long(0x00e2) & 0x00ffffff;
+				else if (pc == 0x00f884ec)
+					m_panel_sweep_dispatch_target = lowmem_long(0x00e6) & 0x00ffffff;
+				else if (pc == 0x00f884f4)
+					m_panel_sweep_dispatch_target = 0x00ff8638U;
 			}
 			rx_event_note_instruction(pc);
 
