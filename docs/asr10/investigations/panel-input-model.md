@@ -393,6 +393,19 @@ receive-loopen är aktiv i samma startläge. Poll i boot och avbrott i runtime �
 möjlig förklaring, men poll/poll, avbrott/avbrott, FIFO/timing och redan-köade
 autorespondbytes är också förenliga med observationerna. Ingen av dem är prövad här.
 
+[Verified] En senare no-injection-körning i samma V3.50 `FILE 1  TUTORIAL BNK`-läge
+visade att den aktiva receive-konsumenten inte är ROM-vägen `$F89CCA/$F89CEA`.
+Efter att startläget observerats lästes `$FC4813` 12 gånger från `$FFB0BC` och
+`$FC4817` 12 gånger från `$FFB0D4`. Alla 12 RHRB-läsningar returnerade befintlig
+ACK/status-byte `$FF`; FIFO-djupet gick från 1 till 0 vid varje RHRB-läsning.
+Den befintliga ACK/status-harnessen anropade `panel_c_queue_rx()` 12 gånger i samma
+fönster, alltid med FIFO-djup 0 före push och 1 efter push. Inga FIFO-overrun-pushar
+observerades.
+
+[OPEN] Den aktiva runtime-rutinen runt `$FFB0BC/$FFB0D4` är ännu inte statiskt
+identifierad eller namngiven. `$F89CEA`-vägen finns kvar som ROM-evidens, men den var
+inte den aktiva konsumenten under FILE 1-mätningen.
+
 ## Open: key semantics
 
 The exact `DOWN`, `UP` and `ENTER` byte values are not identified.

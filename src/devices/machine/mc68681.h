@@ -33,6 +33,7 @@ public:
 
 	void rx_fifo_push(uint8_t data, uint8_t errors);
 	uint8_t read_rx_fifo();
+	int rx_fifo_count() const { return rx_fifo_num; }
 
 	void baud_updated();
 

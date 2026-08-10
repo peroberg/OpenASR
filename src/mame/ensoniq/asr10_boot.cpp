@@ -440,6 +440,9 @@ private:
 	bool m_panel_receive_live_active = false;
 	u32 m_panel_receive_live_srb_reads = 0;
 	u32 m_panel_receive_live_rhrb_reads = 0;
+	u32 m_panel_receive_live_queue_calls = 0;
+	u32 m_panel_receive_live_fifo_overrun_pushes = 0;
+	attotime m_panel_receive_live_last_access_time = attotime::never;
 	u32 m_gen_counter = 0;
 	std::array<u8, 128> m_gen_thrb_bytes{};
 	u8 m_gen_thrb_count = 0;
@@ -1498,6 +1501,9 @@ void asr10_boot_state::machine_reset()
 	m_panel_receive_live_active = false;
 	m_panel_receive_live_srb_reads = 0;
 	m_panel_receive_live_rhrb_reads = 0;
+	m_panel_receive_live_queue_calls = 0;
+	m_panel_receive_live_fifo_overrun_pushes = 0;
+	m_panel_receive_live_last_access_time = attotime::never;
 	if (const char *const sweep_raw = std::getenv("ASR10_PANEL_SWEEP_RAW"); sweep_raw && sweep_raw[0])
 	{
 		char *end = nullptr;
@@ -1913,7 +1919,20 @@ void asr10_boot_state::panel_c_queue_rx(u8 data, const char *reason, u32 pc)
 	if (machine().side_effects_disabled())
 		return;
 
+	const int fifo_before = m_duart->m_chanB->rx_fifo_count();
+	const bool overflow_push = fifo_before >= (MC68681_RX_FIFO_SIZE + 1);
 	m_duart->m_chanB->rx_fifo_push(data, 0);
+	const int fifo_after = m_duart->m_chanB->rx_fifo_count();
+	if (m_panel_receive_live_active)
+	{
+		m_panel_receive_live_queue_calls++;
+		if (overflow_push)
+			m_panel_receive_live_fifo_overrun_pushes++;
+		osd_printf_info("ASR10_PANEL_RECEIVE_LIVE event=queue_rx time=%s reason=%s pc=%06x "
+			"byte=%02x fifo_before=%d fifo_after=%d overflow_push=%u queue_calls=%u\n",
+			machine().time().to_string(), reason, pc, data, fifo_before, fifo_after,
+			overflow_push ? 1 : 0, m_panel_receive_live_queue_calls);
+	}
 	logerror("ASR10_PANEL_AUTORESPOND event=rx_queued reason=%s pc=%06x "
 		"rx=%02x source=mc68681_channel_b_fifo slot0_state=%04x "
 		"slot0_queue_head=%04x slot0_queue_tail=%04x node_14f4_type=%04x count_03bc=%02x\n",
@@ -2816,13 +2835,30 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 	// counter commands, MR/CR/SR, RHR/THR) lives in m_duart now. Panel reply
 	// bytes are injected into channel B's RX FIFO, not shadowed here.
 	const u8 srb_before_rhrb = (address == 0x00fc4816 && ACCESSING_BITS_0_7) ? u8(m_duart->read(0x09)) : 0;
+	const int fifo_before_read = m_duart->m_chanB->rx_fifo_count();
 	u16 raw_data = ACCESSING_BITS_0_7 ? m_duart->read(word) : 0;
 	if (!machine().side_effects_disabled() && m_panel_receive_live_active && ACCESSING_BITS_0_7)
 	{
-		if (address == 0x00fc4812)
-			m_panel_receive_live_srb_reads++;
-		else if (address == 0x00fc4816)
-			m_panel_receive_live_rhrb_reads++;
+		const bool is_srb = address == 0x00fc4812;
+		const bool is_rhrb = address == 0x00fc4816;
+		if (is_srb || is_rhrb)
+		{
+			const attotime now = machine().time();
+			const double delta_ms = (m_panel_receive_live_last_access_time == attotime::never)
+				? -1.0
+				: (now - m_panel_receive_live_last_access_time).as_double() * 1000.0;
+			m_panel_receive_live_last_access_time = now;
+			if (is_srb)
+				m_panel_receive_live_srb_reads++;
+			else
+				m_panel_receive_live_rhrb_reads++;
+			osd_printf_info("ASR10_PANEL_RECEIVE_LIVE event=duart_read time=%s delta_ms=%.3f "
+				"pc=%06x reg=%s address=%06x data=%02x fifo_before=%d fifo_after=%d "
+				"srb_reads=%u rhrb_reads=%u\n",
+				now.to_string(), delta_ms, pc, is_srb ? "SRB" : "RHRB",
+				address | 1, u8(raw_data), fifo_before_read, m_duart->m_chanB->rx_fifo_count(),
+				m_panel_receive_live_srb_reads, m_panel_receive_live_rhrb_reads);
+		}
 	}
 	if (address == 0x00fc4808 && ACCESSING_BITS_0_7)
 	{
@@ -3414,10 +3450,12 @@ void asr10_boot_state::panel_submission_summary()
 void asr10_boot_state::panel_receive_live_summary()
 {
 	osd_printf_info("ASR10_PANEL_RECEIVE_LIVE_SUMMARY active=%u fc4813_srb_reads=%u "
-		"fc4817_rhrb_reads=%u\n",
+		"fc4817_rhrb_reads=%u queue_calls=%u fifo_overrun_pushes=%u\n",
 		m_panel_receive_live_active ? 1 : 0,
 		m_panel_receive_live_srb_reads,
-		m_panel_receive_live_rhrb_reads);
+		m_panel_receive_live_rhrb_reads,
+		m_panel_receive_live_queue_calls,
+		m_panel_receive_live_fifo_overrun_pushes);
 }
 
 
