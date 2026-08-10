@@ -169,6 +169,19 @@ träffa något känt i samma artefakt med samma parametrar. Utan positiv kontrol
 Belagt: strängsökningen efter `NO INST OR BANK FILES` gav 0 träffar i tre artefakter
 och användes som grund för ett `[Verified]`-påstående innan metoden var kalibrerad.
 
+## Kalibrera inte bara instrumentet — verifiera att mätobjektet kör
+
+Ett uteblivet svar kan bero på fel instrument eller på en inaktiv konsument. De två ger
+identiska observationer, och ett kontrollpar som förutsätter att konsumenten kör kan
+inte skilja dem åt.
+
+Innan en stimulans tolkas ska det vara observerat att den del av systemet som ska
+reagera är aktiv under mätningen.
+
+Belagt: panelsvepningen mot V3.50. Kontrollparet `$23`/`$22` gav noll effekt för båda
+värdena. Det var inte observerat om receive-rutinen alls kördes i FILE 1-läget, vilket
+gjorde nollresultatet otolkbart i stället för informativt.
+
 ### Verifierad bas är inte verifierad gräns
 
 En bekräftad basadress säger ingenting om hur långt tabellen sträcker sig. Bas och

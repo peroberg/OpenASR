@@ -359,6 +359,40 @@ panel ACK/status:
 This is still not [Verified] for file-browser keys specifically. ACK/status bytes and
 button events may share transport while using different packet/state contexts.
 
+## Verified: receive loop is active in V3.50 FILE 1 state
+
+[Verified] Pollvägen `$F89CCA` (SRB) -> `$F89CEA` (RHRB) -> lookup finns i ROM.
+
+[Verified] Den kör under V3.50 i `FILE 1  TUTORIAL BNK`-läget. Observation:
+en 40 s körning utan injektion, utan `-log`, aktiverade mätfönstret när displaytexten
+`FILE 1  TUTORIAL BNK` observerades och räknade därefter 12 läsningar av `$FC4813`
+(`SRB`) och 12 läsningar av `$FC4817` (`RHRB`) före processens tidsgräns.
+
+[Verified] `duart_panel_asr_candidate_r/w` är en handskriven MAME-handler runt en
+instansierad `SCN2681`, inte en ren stub som returnerar färdiga panelbytes. `mem_map`
+kopplar `$FC4800-$FC481F` till handlern (`src/mame/ensoniq/asr10_boot.cpp:1719`),
+maskinkonfigurationen instansierar `SCN2681` (`src/mame/ensoniq/asr10_boot.cpp:4738`),
+och läs-/skrivhandlern går via `m_duart->read(word)` / `m_duart->write(word)`
+(`src/mame/ensoniq/asr10_boot.cpp:2819`, `src/mame/ensoniq/asr10_boot.cpp:2927`).
+
+[Verified] `ASR10_PANEL_SWEEP_RAW`-injektionen och den befintliga panelharnessens
+ACK/status skriver till samma hjälpfunktion och samma kanal-B FIFO:
+`panel_sweep_fire()` anropar `panel_c_queue_rx(..., "panel_sweep_raw", ...)`
+(`src/mame/ensoniq/asr10_boot.cpp:1953-1957`), `panel_autorespond_fire()` anropar
+`panel_c_queue_rx(0xff, "autorespond_fc4817_write", ...)`
+(`src/mame/ensoniq/asr10_boot.cpp:1937-1944`), och `panel_c_queue_rx()` gör
+`m_duart->m_chanB->rx_fifo_push(data, 0)` (`src/mame/ensoniq/asr10_boot.cpp:1911-1917`).
+
+[Verified] Injektionen kördes i kontrollkörningarna: stdout innehöll
+`ASR10_PANEL_SWEEP event=inject raw=23 ... before="FILE 1  TUTORIAL BNK"` och motsvarande
+rad för raw `$22`. Ingen post-injection `ASR10_PANEL_SWEEP event=rhrb raw=22/23` sågs
+före timeout.
+
+[OPEN] Varför de injicerade `$22/$23`-bytena inte observerades vid `$F89CEA` trots att
+receive-loopen är aktiv i samma startläge. Poll i boot och avbrott i runtime är en
+möjlig förklaring, men poll/poll, avbrott/avbrott, FIFO/timing och redan-köade
+autorespondbytes är också förenliga med observationerna. Ingen av dem är prövad här.
+
 ## Open: key semantics
 
 The exact `DOWN`, `UP` and `ENTER` byte values are not identified.
@@ -413,7 +447,7 @@ MAME input field transition
 
 In code terms, the eventual implementation needs to bridge from an input-port transition
 to the same receive side currently reached at
-`src/mame/ensoniq/asr10_boot.cpp:1877`, while preserving that firmware performs its own
+`src/mame/ensoniq/asr10_boot.cpp:1908`, while preserving that firmware performs its own
 raw-to-mapped lookup at `$F82484`.
 
 ## Next evidence needed

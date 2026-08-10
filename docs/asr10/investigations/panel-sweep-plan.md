@@ -19,6 +19,12 @@ Inject one raw byte, wait 500 ms of emulated time, record the observations below
 reset to the same start state before the next raw byte. Do not carry browser state
 between candidate bytes in the first sweep.
 
+Missing precondition from the first control attempt: before running the `$23/$22`
+control pair, verify that the consumer is active in the start state. A no-injection
+V3.50 run must show `$FC4813` (`SRB`) polling or `$FC4817` (`RHRB`) reads after
+`FILE 1  TUTORIAL BNK` is observed. Without that, a zero-effect control result is
+not interpretable.
+
 ## Transport
 
 Static evidence says the receiver is a 68681-compatible DUART channel B path:

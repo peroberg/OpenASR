@@ -437,6 +437,9 @@ private:
 	bool m_panel_sweep_injected = false;
 	u8 m_panel_sweep_raw = 0;
 	char m_panel_sweep_before[PANEL_TEXT_LENGTH]{};
+	bool m_panel_receive_live_active = false;
+	u32 m_panel_receive_live_srb_reads = 0;
+	u32 m_panel_receive_live_rhrb_reads = 0;
 	u32 m_gen_counter = 0;
 	std::array<u8, 128> m_gen_thrb_bytes{};
 	u8 m_gen_thrb_count = 0;
@@ -525,6 +528,7 @@ private:
 	void panel_descriptor_trace(const char *event, u32 pc, u32 raw_a2, u32 identity, u8 depth_before, u8 depth_after, const char *classification);
 	void panel_submission_trace(const char *event, const char *kind, u8 data = 0);
 	void panel_submission_summary();
+	void panel_receive_live_summary();
 	void record_root_directory_instruction(u32 pc);
 
 	void log_root_directory_table_write(u32 pc, u32 byte_address, u16 previous, u16 current, u16 mem_mask);
@@ -706,6 +710,7 @@ void asr10_boot_state::machine_start()
 	m_panel_sweep_timer = timer_alloc(FUNC(asr10_boot_state::panel_sweep_fire), this);
 	m_lrclk_timer = timer_alloc(FUNC(asr10_boot_state::lrclk_toggle), this);
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::panel_submission_summary, this));
+	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::panel_receive_live_summary, this));
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::root_directory_summary, this));
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::mc68302_access_summary, this));
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::cs3_access_summary, this));
@@ -1490,6 +1495,9 @@ void asr10_boot_state::machine_reset()
 	m_panel_sweep_raw = 0;
 	std::fill(std::begin(m_panel_sweep_before), std::end(m_panel_sweep_before), 0);
 	m_panel_sweep_timer->adjust(attotime::never);
+	m_panel_receive_live_active = false;
+	m_panel_receive_live_srb_reads = 0;
+	m_panel_receive_live_rhrb_reads = 0;
 	if (const char *const sweep_raw = std::getenv("ASR10_PANEL_SWEEP_RAW"); sweep_raw && sweep_raw[0])
 	{
 		char *end = nullptr;
@@ -2809,6 +2817,13 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 	// bytes are injected into channel B's RX FIFO, not shadowed here.
 	const u8 srb_before_rhrb = (address == 0x00fc4816 && ACCESSING_BITS_0_7) ? u8(m_duart->read(0x09)) : 0;
 	u16 raw_data = ACCESSING_BITS_0_7 ? m_duart->read(word) : 0;
+	if (!machine().side_effects_disabled() && m_panel_receive_live_active && ACCESSING_BITS_0_7)
+	{
+		if (address == 0x00fc4812)
+			m_panel_receive_live_srb_reads++;
+		else if (address == 0x00fc4816)
+			m_panel_receive_live_rhrb_reads++;
+	}
 	if (address == 0x00fc4808 && ACCESSING_BITS_0_7)
 	{
 		raw_data = ASR10_DUART_INPUT_CHANGE_STUB;
@@ -3065,6 +3080,11 @@ void asr10_boot_state::panel_receive_byte(u8 data)
 		osd_printf_info("ASR10_PANEL_SWEEP event=precheck raw=%02x display=\"%s\" result=valid\n",
 			m_panel_sweep_raw, m_panel_sweep_before);
 		m_panel_sweep_timer->adjust(attotime::from_msec(100));
+	}
+	if (!m_panel_receive_live_active && strstr(m_panel_text, "FILE 1  TUTORIAL BNK"))
+	{
+		m_panel_receive_live_active = true;
+		osd_printf_info("ASR10_PANEL_RECEIVE_LIVE event=active display=\"%s\"\n", m_panel_text);
 	}
 
 	(void)0;
@@ -3388,6 +3408,16 @@ void asr10_boot_state::panel_submission_summary()
 		m_panel_diag_path_a_identity_mismatch_count, m_panel_diag_descriptor_trace_count,
 		ASR10_PANEL_DESCRIPTOR_TRACE_LIMIT, m_panel_diag_ring_control_role_count,
 		m_panel_diag_direct_text_begin_count, m_panel_diag_direct_text_end_count);
+}
+
+
+void asr10_boot_state::panel_receive_live_summary()
+{
+	osd_printf_info("ASR10_PANEL_RECEIVE_LIVE_SUMMARY active=%u fc4813_srb_reads=%u "
+		"fc4817_rhrb_reads=%u\n",
+		m_panel_receive_live_active ? 1 : 0,
+		m_panel_receive_live_srb_reads,
+		m_panel_receive_live_rhrb_reads);
 }
 
 
