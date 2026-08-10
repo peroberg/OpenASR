@@ -72,13 +72,18 @@ den rensar alltså allt *utom* SCC1/SCC2. Att `$FC6814` observerats gå `240b ->
 måste därför bero på IACK-rensningen (manualens normalväg i vektoriserad miljö) eller på
 att emulerade IPR inte implementerar W1C.
 
-**Kontrolluppgift stängd:** i HEAD är IPR/ISR W1C inte implementerat. `mc68302.h`
-anger att interruptcontrollern saknas i detta steg, och `mc68302.cpp::classify_offset()`
-klassar `0x0812-0x0819` (`GIMR/IPR/IMR/ISR`) som `known_unimplemented` shadow storage.
-Samma funktion klassar även SCC/SMC parameter RAM, IDMA, Port A, Timer 1/watchdog,
-Timer 2 och SCC1-3/SMC/SCP som `known_unimplemented`. Den enda fungerande
-avbrottsvägen vid HEAD är extern IRQ6 via `irq6_ack_vector()`; samtliga interna
-interruptkällor saknar fungerande modell.
+**Kontrolluppgift omklassad till [OPEN]:** [Verified] MC68302-enhetens
+interruptcontrollerblock (`IPR/IMR/ISR`) är klassat `known_unimplemented` i
+`mc68302.cpp::classify_offset()` (`src/devices/machine/mc68302.cpp`, rader 200-209 i
+den granskade arbetskopian). `mc68302.h` anger att interruptcontrollern saknas i detta
+steg (`src/devices/machine/mc68302.h`, rader 3-8). [Verified] Enda fungerande
+avbrottsvägen vid HEAD `47318563942` är extern IRQ6 via `irq6_ack_vector()`
+(`src/devices/machine/mc68302.h`, rader 86-94).
+
+[OPEN] W1C-semantiken i modellen. Frågan kan inte prövas förrän blocket implementeras.
+Manualen föreskriver write-1-to-clear för IPR och ISR. Checklistan ovan är därmed
+kravspecifikation för den kommande implementationen, inte en granskningslista på
+befintlig kod.
 
 ---
 

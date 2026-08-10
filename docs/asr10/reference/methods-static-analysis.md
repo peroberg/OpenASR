@@ -145,6 +145,19 @@ SCC-skrivningarna via A3.
 "inga *absoluta* referenser hittade". Det är inte samma sak som "används inte".
 CS1-analysen är för närvarande helt beroende av den distinktionen.
 
+### Frånvaro av implementation är inte hårdvaruevidens
+
+Frånvaro av implementation är inte ett svar på en fråga om hårdvaran.
+
+```
+"noll referenser"   betyder  "noll identifierade absoluta referenser"
+"ej implementerat"  betyder  "inte byggt än" -- aldrig "utrett och avfärdat"
+"MAME gör inte X"   betyder  "modellen gör inte X" -- aldrig "maskinen gör inte X"
+```
+
+Belagt två gånger i rättelsepasset efter `47318563942`: W1C och E2. Båda gångerna var
+observationen riktig och etiketten fel.
+
 ---
 
 ## 8. Rapportdisciplin

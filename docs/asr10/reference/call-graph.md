@@ -314,11 +314,17 @@ dokumentation och runtime-loggar — aldrig genom radinnehåll.
 | `mapping_basis` | vilken hypotes: `direct` eller `mirror-hypothesis` |
 
 `to_space` för `$FF8000-$FF9FFF` är **`HIGH-RAM-ALIAS-CANDIDATE`**, inte `SLOT`. Den
-logiska kopplingen till bindningstabellen är statiskt mycket stark, men E2 2026-08-10
-visade att data reads i `$FF8000-$FFFFFF` under V3.50-boot inte matchar motsvarande
-`$00xxxx`-innehåll i nuvarande MAME. 1404 kanter hänger fortfarande på
-`mirror-hypothesis`; de får inte se verifierade ut och ska inte ändras manuellt i den
-genererade CSV:n.
+logiska kopplingen till bindningstabellen är statiskt mycket stark, men speglingen är
+fortfarande [OPEN]. E2 2026-08-10 observerade 566229 data reads i `$FF8000-$FFFFFF`
+under V3.50-boot och en mismatch mot `$00xxxx`, men avgjorde inte om fönstret var
+avkodat, om värdet var open bus, eller om opcode-fetcher speglar. Det ursprungliga
+V1.61-testfallet `$00BF0E -> FFFF8ECA -> $00BF14` är inte kört i denna runda.
+
+`static/call-graph-edges.csv` har fortfarande exakt 1404 rader med
+`mapping_basis=mirror-hypothesis`. SHA-256 börjar `b8bfb32053274a66`, samma prefix som
+i konsolideringsmanifestet och `static/README.md`; full hash i rättelsepasset:
+`b8bfb32053274a66e504dd6d929e08d25b0efad68973b91a0f5606cdf0078c20`. Kanterna får inte
+se verifierade ut och ska inte ändras manuellt i den genererade CSV:n.
 
 **RAM-adress och filoffset är separata kolumner.** För OS-kod utanför segment 1 är
 `from_address` tom och `from_address_status` = `unmapped-segment`; koordinaten finns kvar

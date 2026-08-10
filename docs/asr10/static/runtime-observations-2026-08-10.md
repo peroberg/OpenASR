@@ -6,7 +6,7 @@ Scope: ASR-10 MAME dynamic-verification round 1 at HEAD
 No emulator source code was changed. `asr10_boot.cpp` `mem_map` was not edited.
 Runs did not use MAME `-log`.
 
-## W1C close-out
+## W1C implementation status
 
 Evidence level: [Verified].
 
@@ -18,14 +18,22 @@ controller range `$0812-$0819` (`GIMR/IPR/IMR/ISR`) as
 IDMA, Port A, Timer 1/watchdog, Timer 2, and SCC1-3/SMC/SCP as
 `known_unimplemented`.
 
-Conclusion: W1C semantics for IPR/ISR are not implemented at current HEAD. All
-internal MC68302 interrupt sources lack a working model. The working interrupt
-path is external IRQ6 through `irq6_ack_vector()`, which explains why the panel
-path works while SCC, Timer 2 and PB9-PB11 appear inactive.
+[Verified] MC68302-enhetens interruptcontrollerblock (`IPR/IMR/ISR`) är klassat
+`known_unimplemented` i `src/devices/machine/mc68302.cpp::classify_offset()` (rader
+200-209 i den granskade arbetskopian). `src/devices/machine/mc68302.h` anger att detta
+steg saknar interruptcontroller, timer, IDMA och kommunikationsprocessor (rader 3-8).
+
+[Verified] Enda fungerande avbrottsvägen vid HEAD `47318563942` är extern IRQ6 via
+`irq6_ack_vector()` (`src/devices/machine/mc68302.h`, rader 86-94).
+
+[OPEN] W1C-semantiken i modellen. Frågan kan inte prövas förrän blocket implementeras.
+Manualen föreskriver write-1-to-clear för IPR och ISR; detta är kravspecifikation för
+kommande implementation, inte en slutsats om befintlig kod.
 
 ## E2 high-window read tap
 
-Evidence level: [Verified] for current MAME behavior on this V3.50 boot path.
+Evidence level: [OPEN] for the hardware mirror question; [Verified] for the data-read
+observations from current MAME on this V3.50 boot path.
 
 Command, without `-log`:
 
@@ -46,7 +54,7 @@ E2_SUMMARY total=566229 data_reads=566229 instruction_reads=0 opcode_tap_install
 E2_FIRST kind=data address=FF8D44 pc=F87EC2 low_address=008D44 value=F9
 ```
 
-First comparisons disproved equality for the tested accesses:
+First comparisons showed mismatches for the tested data accesses:
 
 ```text
 E2_ACCESS seq=1 kind=data address=FF8D44 pc=F87EC2 value=F9 low_address=008D44 low_value=00 match=0
@@ -63,13 +71,35 @@ E2_HIST rank=3 address=FF863A count=44942
 E2_HIST rank=4 address=FF863C count=44942
 E2_HIST rank=5 address=FF80FE count=24607
 E2_HIST rank=6 address=FF80FC count=24606
+E2_HIST rank=7 address=FFA268 count=7473
+E2_HIST rank=8 address=FFA260 count=7468
+E2_HIST rank=9 address=FFD0B6 count=7468
+E2_HIST rank=10 address=FFD0C4 count=7468
 ```
 
-Conclusion: `$FF8000-$FFFFFF` is accessed during the V3.50 reference boot, but
-the sampled high-window data is not the same as corresponding `$00xxxx`
-contents in current MAME. The broad `$FFxxxx == $00xxxx` mirror hypothesis is
-therefore not valid for this observed MAME execution. Generated call-graph CSVs
-were not edited manually.
+[OPEN] Spegling `$FFxxxx` <-> `$00xxxx`.
+
+Observed:
+
+- 566229 data reads in `$FF8000-$FFFFFF` during the V3.50 run.
+- `$FF8D44 = $F9` and `$008D44 = $00` in the same run.
+
+Not established:
+
+- whether the high window is decoded in `mem_map`
+- whether `$F9` is memory contents or open bus
+- whether opcode fetches mirror; Lua had no opcode-space access
+- sample timing relative to OS loading
+
+Not performed: the original V1.61 test case where `$00BF0E` executes
+`4EB9 FFFF8ECA` and returned cleanly to `$00BF14` in the historical run. V3.50 has the
+corresponding sequence at `$00E48A`, not `$00BEE2`.
+
+Generated call-graph CSVs were not edited manually. `static/call-graph-edges.csv` still
+has exactly 1404 rows with `mapping_basis=mirror-hypothesis`. Its SHA-256 starts
+`b8bfb32053274a66`, matching the consolidation manifest and `static/README.md`; full
+hash observed in this correction pass:
+`b8bfb32053274a66e504dd6d929e08d25b0efad68973b91a0f5606cdf0078c20`.
 
 Coverage: data reads only; opcode-fetch visibility remains [OPEN] because Lua
 reported no opcode space.
@@ -92,15 +122,30 @@ DISPLAY_SUMMARY changes=18 final="N0 IN5T 0R BANK FILE5 "
 ```
 
 The 14-segment glyphs for `O`/`0` and `S`/`5` are ambiguous in this inverse
-decoder. Normalized panel text:
+decoder; `docs/asr10/lua/asr10_display_probe.lua` now carries an explicit ambiguity
+table and reproducible normalized-text table. Normalized panel text:
 
 ```text
 NO INST OR BANK FILES
 ```
 
-This means V1.61 does not land on a `FILE 1 ...` bank entry. It is useful for OS
-and effect-file experiments, but not as a direct replacement for the V3.50
-file-browser baseline.
+String search, case-insensitive:
+
+```text
+asr10.bin  "NO INST OR BANK FILES"  0 hits
+asr10.bin  "N0 IN5T 0R BANK FILE5"  0 hits
+V161.img   "NO INST OR BANK FILES"  0 hits
+V161.img   "N0 IN5T 0R BANK FILE5"  0 hits
+V350.img   "NO INST OR BANK FILES"  0 hits
+V350.img   "N0 IN5T 0R BANK FILE5"  0 hits
+```
+
+No offsets were found. This does not prove the message has no producer; the string can
+be assembled character by character or from fragments.
+
+[Verified] V1.61's OS loads, executes and writes to the panel. It does not land on a
+`FILE 1 ...` bank entry. V1.61 is useful for OS and effect-file experiments, but not as
+a direct replacement for the V3.50 file-browser baseline.
 
 ## Deterministic file-browse test
 

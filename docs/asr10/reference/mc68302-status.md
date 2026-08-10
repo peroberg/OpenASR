@@ -116,7 +116,9 @@ Samma fråga gäller ISR (`$FC6818`), där EOI ska ske genom att skriva en etta.
 ### Open
 
 * Vilken av bitarna 4/6/9 (TIMER3/TIMER2/TIMER1) som någonsin avmaskeras.
-* Om `mc68302.cpp` implementerar W1C för IPR och ISR.
+* [OPEN] W1C-semantiken i MC68302-modellen. Manualen föreskriver
+  write-1-to-clear för IPR och ISR, men blocket är ännu inte implementerat i
+  MAME-enheten och kan därför inte prövas.
 * GIMR `$8040` bitvis betydelse.
 
 ---
@@ -468,11 +470,36 @@ absoluta referenser och kan skrivas registerrelativt, eller inte alls.
 
 1. **Ta reda på vad SCC1/SCC2 är kopplade till.** LRCLK-fasningen ger riktningen; det
    som saknas är fysisk verifiering och en identifierad sändare.
-2. **[Verified] W1C-semantiken för IPR och ISR är inte implementerad i HEAD.**
-   `src/devices/machine/mc68302.h` anger att detta steg saknar interruptcontroller,
-   timer, IDMA och kommunikationsprocessor. `mc68302.cpp::classify_offset()` klassar
-   `$FC6812-$FC6819` (`GIMR/IPR/IMR/ISR`) som `known_unimplemented`; värdena är därför
-   shadow storage, inte MC68302-registersemantik.
+2. **MC68302-interruptcontrollern och W1C-frågan.**
+
+   [Verified] MC68302-enhetens interruptcontrollerblock (`IPR/IMR/ISR`) är klassat
+   `known_unimplemented` i `src/devices/machine/mc68302.cpp::classify_offset()`
+   (rader 200-209 i den granskade arbetskopian). `src/devices/machine/mc68302.h`
+   anger också uttryckligen att detta steg saknar interruptcontroller, timer, IDMA och
+   kommunikationsprocessor (rader 3-8).
+
+   [Verified] Enda fungerande avbrottsvägen vid HEAD `47318563942` är extern IRQ6 via
+   `irq6_ack_vector()` (`src/devices/machine/mc68302.h`, rader 86-94).
+
+   [OPEN] W1C-semantiken i modellen. Frågan kan inte prövas förrän blocket
+   implementeras. Manualen föreskriver write-1-to-clear för IPR och ISR. Checklistan
+   nedan är därmed kravspecifikation för den kommande implementationen, inte en
+   granskningslista på befintlig kod.
+
+   ```
+   IPR  skriv 1  ->  pendingbit rensas
+   IPR  skriv 0  ->  pendingbit lämnas orörd
+   ISR  skriv 1  ->  in-service-bit rensas
+   ISR  skriv 0  ->  biten lämnas orörd
+   IACK          ->  flyttar/rensar rätt pendingstate
+   IACK          ->  sätter ISR-biten för källan som tas i service
+   word- och byteskrivningar respekterar rätt byte lane
+   read-modify-write mot W1C-register ger hårdvarusemantik, inte RAM-semantik
+   ```
+
+   Nuvarande implementation klassar även följande interna block som
+   `known_unimplemented`, vilket förklarar varför panelvägen fungerar medan SCC, Timer 2
+   och PB9-PB11 framstår som inaktiva:
 
    ```
    0x0400-0x07ff  SCC/SMC parameter RAM      known_unimplemented
@@ -483,11 +510,6 @@ absoluta referenser och kan skrivas registerrelativt, eller inte alls.
    0x0850-0x085a  Timer 2                    known_unimplemented
    0x0880-0x08b5  SCC1-3 / SMC / SCP         known_unimplemented
    ```
-
-   Slutsats: samtliga interna interruptkällor saknar i dag fungerande modell. Den enda
-   fungerande avbrottsvägen vid HEAD är extern IRQ6 via `irq6_ack_vector()`. Det ger en
-   gemensam förklaring till att panelvägen fungerar medan SCC, Timer 2 och PB9-PB11
-   framstår som inaktiva.
 3. **PB9, PB10 och PB11 — vad de är anslutna till.** `IMR |= $C080` på `$F87F0A` gör
    dem till de **enda interna 68302-källor ROM självt avmaskar**, och det sker före
    hela SCC-vägen. Ingen av de tre är identifierad. Detta är inte en restfråga.

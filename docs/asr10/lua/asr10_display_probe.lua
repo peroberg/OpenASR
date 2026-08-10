@@ -46,6 +46,19 @@ local GLYPH = {
   [0x1409] = "Z",
 }
 
+local AMBIGUOUS_GLYPHS = {
+  [0x003f] = { raw = "0", alternatives = "0/O" },
+  [0x00ed] = { raw = "5", alternatives = "5/S" },
+}
+
+local NORMALIZED_TEXT = {
+  ["   EN50NIQ  A5R-10    "] = "   ENSONIQ  ASR-10    ",
+  ["    L0ADING 5Y5TEM    "] = "    LOADING SYSTEM    ",
+  ["TUNING KBD - HAND5 0FF"] = "TUNING KBD - HANDS OFF",
+  ["    KEYB0ARD TUNED    "] = "    KEYBOARD TUNED    ",
+  ["N0 IN5T 0R BANK FILE5 "] = "NO INST OR BANK FILES ",
+}
+
 local display = {
   last = nil,
   changes = 0,
@@ -60,15 +73,24 @@ local function read_text()
   return table.concat(chars)
 end
 
+local function normalize_text(text)
+  return NORMALIZED_TEXT[text] or text
+end
+
 display.frame_notifier = emu.add_machine_frame_notifier(function()
   local text = read_text()
   if text ~= display.last then
     display.changes = display.changes + 1
     display.last = text
-    print(string.format("DISPLAY_CHANGE seq=%u text=\"%s\"", display.changes, text))
+    print(string.format(
+      "DISPLAY_CHANGE seq=%u text=\"%s\" normalized=\"%s\"",
+      display.changes, text, normalize_text(text)))
   end
 end)
 
 display.stop_notifier = emu.add_machine_stop_notifier(function()
-  print(string.format("DISPLAY_SUMMARY changes=%u final=\"%s\"", display.changes, display.last or ""))
+  local final = display.last or ""
+  print(string.format(
+    "DISPLAY_SUMMARY changes=%u final=\"%s\" normalized=\"%s\"",
+    display.changes, final, normalize_text(final)))
 end)

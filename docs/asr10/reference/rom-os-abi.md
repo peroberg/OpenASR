@@ -162,7 +162,7 @@ Verifierat ur ROM:s egen kod:
 | Exakt hur ROM lämnar över kontrollen | [OPEN] — se §6 | E1 |
 | När vektortabellen installeras på `$000000` | [OPEN] | E1 |
 | Var det 0x6400 byte stora hoppet i filen ligger | [OPEN] | E3 |
-| Om `$FFxxxx` verkligen speglar `$00xxxx` | [DISPROVEN] för nuvarande MAME V3.50 data reads; opcode-fetch coverage [OPEN] | E2 2026-08-10 |
+| Om `$FFxxxx` verkligen speglar `$00xxxx` | [OPEN]; V3.50 data reads observerade mismatch, men opcode-fetch, decode/open-bus och V1.61-testfallet är inte avgjorda | E2 2026-08-10 + senare V1.61 |
 | DPRAM-hoppbordets innehåll | [Likely struktur, innehåll OPEN] | dumpa DPRAM efter boot |
 | CS1 `$FF6000-$FF7FFF` | [OPEN] | E4 |
 | `$F95EAA` — 1 anrop i V1.61, 33 i V3.50 | [OPEN] | statisk |

@@ -55,11 +55,12 @@ architectural model that did not exist before. Summary only — details in `refe
   PIO, Timer 2 configuration and its version difference, CP reset, ENTER HUNT MODE for
   SCC1/SCC2, SIMODE, SCON/SCM, LRCLK-phased receiver start, complete SCC1/SCC2 interrupt
   handlers with correct EOI. → `reference/mc68302-status.md`
-- **Current MC68302 implementation has no internal interrupt-source model.** IPR/IMR/ISR,
-  SCC/SMC parameter RAM, IDMA, Port A, timers, watchdog and SCC/SMC/SCP are
-  `known_unimplemented` shadow storage in `mc68302.cpp`. The only working interrupt path
-  at HEAD is external IRQ6 via `irq6_ack_vector()`, which explains why the panel path
-  works while SCC, Timer 2 and PB9-PB11 appear inactive. → `reference/mc68302-status.md`
+- **Current MC68302 implementation has no internal interrupt-source model.**
+  [Verified] IPR/IMR/ISR, SCC/SMC parameter RAM, IDMA, Port A, timers, watchdog and
+  SCC/SMC/SCP are `known_unimplemented` shadow storage in `mc68302.cpp`.
+  [Verified] The only working interrupt path at HEAD `47318563942` is external IRQ6 via
+  `irq6_ack_vector()`. [OPEN] W1C semantics for IPR/ISR remain a hardware-model question
+  until the interruptcontroller block is implemented. → `reference/mc68302-status.md`
 - **A control-flow database** of 5243 call-site-level edges with normalised addresses,
   evidence level and execution status. → `static/call-graph-edges.csv`,
   `reference/call-graph.md`
@@ -85,12 +86,18 @@ not broad pattern search. Prompts for E1-E4 are in `static/prompts-E1-E4.md`.
 2. **E1 — the ROM→OS handover and vector installation.** ROM contains no `jsr`/`jmp`
    with a 32-bit absolute RAM target, so the transfer is a binding slot, a
    register-indirect jump, or an `rts` to a stacked address.
-3. **Deterministic file-browse test.** One `DOWN` from `FILE 1  TUTORIAL BNK`, logging
+3. **E2 — `$FFxxxx ↔ $00xxxx` mirror.** [OPEN] The V3.50 read tap observed 566229 data
+   reads in `$FF8000-$FFFFFF` and a sampled mismatch (`$FF8D44 = $F9`, `$008D44 = $00`),
+   but it did not answer the hardware mirror question: opcode fetches were not visible
+   to Lua, the original V1.61 `$00BF0E` test case was not run, and the high window's
+   decode/open-bus status in current `mem_map` was not established. The 1404 generated
+   `mapping_basis=mirror-hypothesis` edges remain unchanged.
+4. **Deterministic file-browse test.** One `DOWN` from `FILE 1  TUTORIAL BNK`, logging
    panel byte → DUART handler → dispatcher → binding slot → OS routine → file index →
    panel output. This is blocked at HEAD without implementation changes: the ASR-10
    driver has no input ports, and the existing panel harness only injects panel ACK/status
    bytes, not user key events.
-4. **Minimal truthful SCSI model.** AM33C93A at `$FC5001`/`$FC5003`: reset accepted,
+5. **Minimal truthful SCSI model.** AM33C93A at `$FC5001`/`$FC5003`: reset accepted,
    stable status, option detection passes, no targets, commands terminate correctly.
    No fabricated disks.
 
@@ -124,12 +131,6 @@ Previous entries stand. Added by the static analysis:
 - **The OS image is loaded flat at one base.** At least two segment rules apply.
 - **The OS image contains a start address.** Vector 1 (PC) is `$00000000` in both
   versions; no soft reset from the image is possible.
-- **The V3.50 boot path uses `$FF8000-$FFFFFF` as a plain mirror of `$000000-$00FFFF`.**
-  A read-tap over `$FF8000-$FFFFFF` observed 566229 data reads during the V3.50 reference
-  boot, but sampled high-window values did not match corresponding `$00xxxx` contents
-  (for example `$FF8D44 = $F9` while `$008D44 = $00`). This disproves the broad mirror
-  hypothesis for current MAME behavior on that run; opcode-fetch visibility remains open
-  because Lua exposed no opcode space.
 - **`$7033` is written to DSR.** It is written to SCM. DSR has no identified absolute
   references in ROM or either OS version.
 - **`$FC6816` is a service/in-service latch.** It is IMR. `$2400` = SCC1 + SCC2.
