@@ -193,14 +193,22 @@ banker, så meddelandet är alltid ett fel när det uppträder.
 V1.61 är en annan baseline: en flagglös boot med `V161.img` slutar på
 `NO INST OR BANK FILES` (rå 14-segmentsinvertering: `N0 IN5T 0R BANK FILE5`).
 
-[Verified] V1.61:s OS laddas, exekverar och skriver till panelen. Sökning efter både
-`NO INST OR BANK FILES` och `N0 IN5T 0R BANK FILE5`, skiftlägesokänsligt, gav noll
-träffar i `asr10.bin` (interleavad ROM-bild från ROM-halvorna), `V161.img` och
-`V350.img`. Noll träffar betyder här noll identifierade strängreferenser inom den
-använda metoden; texten kan vara konstruerad tecken för tecken eller via fragment.
-Runtimeutfallet är ändå positivt: V1.61 når inte en ROM-only prompt, utan ett
-diskberoende file-browser-svar. Det är ett väntat utfall för den bilden, inte samma
-felindikator som om texten skulle uppträda med V3.50.
+[OPEN] Strängsökningens täckning är inte helt fastställd för detta påstående.
+Samma skiftlägesokänsliga sökfunktion, med samma interleavade ROM-bild, hittar ROM-
+kontrollerna `SEARCHING FOR SCSI DEV` (`asr10.bin` offset `0x39094`) och
+`INCOMPATIBLE O.S. DISK` (`0x3904C`), men missar den angivna kontrollen
+`ENSONIQ ASR-10`. Diskavbildskontrollerna träffar: `ASR-10 OS` i `V161.img`
+(`0x602`), `!44DDL+CHORUS` i `V161.img` (`0x61B`), `ASR-10 OS` i `V350.img`
+(`0x420`, `0x602`) och `TUTORIAL BNK` i `V350.img` (`0x43A`, `0x61C`).
+
+Sökning efter både `NO INST OR BANK FILES` och `N0 IN5T 0R BANK FILE5` gav noll
+träffar i `asr10.bin`, `V161.img` och `V350.img`, men eftersom en positiv ROM-kontroll
+missade är nollresultatet inte ensamt verifierande. Exakt var och hur meddelandet
+konstrueras är öppet; en rimlig förklaring är att texten lagras som färdiga
+14-segmentsmönster eller byggs ur fragment snarare än som sammanhängande ASCII.
+
+[Verified] V1.61-runtime når ett diskberoende file-browser-svar enligt den tidigare
+bootkedjans runtime-evidens; den slutsatsen beror inte på strängsökningen.
 
 ## 14. `FILE 1  TUTORIAL BNK` `[V som utfall]`
 

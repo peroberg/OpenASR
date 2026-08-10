@@ -1,6 +1,7 @@
 # ASR-10 panel input model
 
-Date: 2026-08-10. Scope: correction pass after `47318563942`, task 5.
+Date: 2026-08-10. Scope: static verification before stimulation, starting from
+`f102b959c60`.
 
 No code changes were made. `INPUT_PORTS_START(asr10_boot)` remains empty at
 `src/mame/ensoniq/asr10_boot.cpp:4610-4611`.
@@ -44,12 +45,37 @@ Supporting code/documentation:
 
 ## Verified: raw byte mapping exists
 
-The current driver contains a diagnostic log for the ROM's raw panel-byte mapping table:
+Provenance of the earlier claim: `$F82484` and the example pairs first came from the
+current driver's diagnostic log plus targeted extraction from the interleaved ROM image,
+not from an independently decoded ROM index instruction.
 
 - `src/mame/ensoniq/asr10_boot.cpp:2840-2850` reads raw RHRB byte at `$F89CEA`,
   indexes ROM table `$F82484 + raw`, and logs the mapped byte.
 
-Targeted extraction from the interleaved ROM image gives these examples:
+The ROM now has an independent static proof for that table:
+
+```text
+$F89CEA  move.b  $FFFC4817.l,D1      ; read DUART channel B RHRB
+$F89D9C  movea.l #$FFF82484,A0
+$F89DA2  move.b  (A0,D1.w),D1        ; raw -> mapped byte
+```
+
+Search coverage:
+
+- Absolute bases in `$F82480-$F82490`: one hit, `$F89D9C movea.l #$FFF82484,A0`.
+- PC-relative `lea (d16,PC),An` whose target lands in `$F82480-$F82490`: zero hits.
+- `lea abs.{w,l}` and `movea.l #imm,An` bases in the same interval: only the hit above.
+
+Addressing mode and table shape:
+
+- Base load: absolute immediate long, `movea.l #$FFF82484,A0`.
+- Indexing: `(A0,D1.w)`.
+- Index register: `D1.w`, cleared by `moveq #0,D1` before the byte read at `$F89CEA`.
+- Entry size: 1 byte.
+- Bounds: no table-specific `cmp`/`cmpi` before indexing. The byte read bounds the raw
+  index to `$00-$FF`; the table is therefore a dense 256-byte map.
+
+Prediction test against targeted extraction:
 
 | raw byte | mapped byte |
 |---:|---:|
@@ -59,8 +85,52 @@ Targeted extraction from the interleaved ROM image gives these examples:
 | `$3B` | `$23` |
 | `$03` | `$40` |
 
+All five predictions match. The full generated dump is
+`docs/asr10/static/panel-raw-map.csv` (`raw,mapped,note`, 256 entries). It records
+all raw values that collide on the same mapped value; for example both `$21` and `$3B`
+map to `$23`, and many unmapped/error-like raw values collapse to `$00`, `$25`, `$88`,
+or `$FF`.
+
 This proves that user/panel bytes are not necessarily consumed as raw bytes. The ROM
 applies a translation table before later semantics.
+
+## Verified: mapped-value consumer cluster
+
+The first consumer is in the same ROM routine immediately after the table lookup:
+
+```text
+$F89D94  cmp.b  #$23,D1              ; raw value, before mapping: early exit
+$F89DA6  cmp.b  #$40,D1              ; mapped value
+$F89DAC  st     $0C4A.w
+$F89DB0  cmp.b  #$17,D1              ; mapped value
+$F89DB6  movea.l A7,A6
+$F89DB8  cmp.b  #$16,D1              ; mapped value
+$F89DBE  move    USP,A6
+$F89DC0  cmp.b  #$30,D1              ; mapped digit lower bound
+$F89DC6  cmp.b  #$39,D1              ; mapped digit upper bound
+$F89DD4  sub.b  #$30,D1
+$F89DD8  lsl.w  #3,D1
+$F89DDA  adda.w D1,A5
+```
+
+The digit path is a computed record/slot access after mapping, not a general jump table
+for all mapped panel values. This pass did not identify a separate mapped-value jump
+table for `$16`, `$17`, `$23`, or `$40`.
+
+`static/routines.csv` does not contain a routine interval covering `$F89D94-$F89DDA`;
+the cluster therefore falls outside all currently named routines.
+
+Secondary static clusters:
+
+- ROM `$F8BB14-$F8BBDC` compares several mapped-table values (`$25`, `$23`, `$16`,
+  `$30`, `$24`, `$22`, `$20`, `$21`). This is a candidate cluster only; this pass did
+  not establish dataflow from the panel table to it.
+- `V161.img` raw disk offsets around `$005178-$005380` contain a dense small-constant
+  comparison cluster including `$17`, `$24`, `$22`, `$14`, `$11`, and digit-like
+  values. As raw disk offsets these fall outside all known `static/routines.csv`
+  intervals.
+- `V350.img` raw disk offsets `$016AD2-$016B38` contain a similar comparison cluster.
+  As raw disk offsets these also fall outside all known `static/routines.csv` intervals.
 
 ## Likely: user input uses the same channel B receive transport
 
@@ -81,13 +151,30 @@ button events may share transport while using different packet/state contexts.
 
 The exact `DOWN`, `UP` and `ENTER` byte values are not identified.
 
-Known candidates from current code/log focus are mapped bytes `$16`, `$17`, `$23` and
-`$40`, because `asr10_boot.cpp:2846-2850` already logs those as named diagnostic
-booleans. However, the current evidence does not bind any of them to `DOWN`, `UP` or
-`ENTER` in the V3.50 file browser.
+Known mapped values under current focus are `$16`, `$17`, `$23` and `$40`, but the
+current evidence still does not bind any of them to `DOWN`, `UP` or `ENTER` in the
+V3.50 file browser. `$23` is also explicitly tested as a raw value before mapping at
+`$F89D94`, so it must not be treated as only a post-table semantic code.
 
 Therefore no `INPUT_PORTS` implementation should be written yet. A guessed mapping would
 create false `executed=observed` edges in the call-graph database.
+
+## Service documentation check
+
+Searched vendor material only under `/Users/paroberg/develop/asr10/docs/sources/`:
+
+- `ensoniq/deepsonic/ensoniq_asr10_manual.extracted.txt`
+- `ensoniq/r-massive/service/Ensoniq_ASR10_ASR88_Service_Manual.pdf`
+- `ensoniq/r-massive/schematics/Ensoniq_EPS16Plus_Schematics_Mainboard_PSU_Keypad_Display_KPC_Memory_Output.pdf`
+- `ensoniq/r-massive/hardware/Ensoniq_SuperGLU_ES5701_Technical_Specification.pdf`
+- R-Massive index/article/software text files
+
+Search terms covered scancode/scan code/raw code/key code/button code/panel code,
+keypad/button matrix, front panel, and named UP/DOWN/ENTER button phrases.
+
+[OPEN] No vendor table of ASR-10 panel scancodes was identified by this method. The
+service manual mentions the Enter button as a user feature and describes front-panel
+mechanical service, but does not document the raw bytes or mapped bytes seen by the ROM.
 
 ## Minimal input-port shape once mapping is known
 

@@ -90,6 +90,19 @@ Förslag till runtimeexperiment för:
 Prompterna är arbetsunderlag och ska granskas innan körning. Inga
 minnesmappsändringar ska göras enbart utifrån den statiska analysen.
 
+### `panel-raw-map.csv`
+
+Genererad dump av ROM-tabellen `$F82484-$F82583`.
+
+Kolumner:
+
+- `raw`: rå byte som firmware läser från DUART kanal B RHRB
+- `mapped`: byte efter ROM-tabellens `move.b (A0,D1.w),D1`
+- `note`: råvärden som kolliderar på samma mappade värde
+
+Tabellen är verifierad genom indexeringskod vid `$F89D9C` och används som rådata för
+`../investigations/panel-input-model.md`.
+
 ---
 
 # Sammanfattning av uppnådda resultat

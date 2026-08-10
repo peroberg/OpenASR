@@ -160,7 +160,30 @@ observationen riktig och etiketten fel.
 
 ---
 
-## 8. Rapportdisciplin
+## 8. Kalibrera instrumentet innan mätningen tolkas
+
+En sökning som ger noll träffar är inte ett resultat förrän samma sökning har visats
+träffa något känt i samma artefakt med samma parametrar. Utan positiv kontroll är
+"noll träffar" och "sökningen är trasig" omöjliga att skilja åt.
+
+Belagt: strängsökningen efter `NO INST OR BANK FILES` gav 0 träffar i tre artefakter
+och användes som grund för ett `[Verified]`-påstående innan metoden var kalibrerad.
+
+---
+
+## 9. Statik före stimulans
+
+Identifiera först, stimulera sedan. Inte för att statisk analys är finare, utan för att
+den krymper stimulansens sökrymd. En råbytesvepning över 128 värden utan förkunskap ger
+128 okända experiment; samma svepning efter att tabellen och dess konsumenter är
+identifierade ger tio riktade.
+
+Belagt fyra gånger: bindningstabellen, ROM->OS-överlämningen, PB10/PB11,
+segmentreglerna. Alla blev enkla först när statiken hade begränsat sökrymden.
+
+---
+
+## 10. Rapportdisciplin
 
 Fyra nivåer, plus täckning:
 
