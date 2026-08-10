@@ -56,6 +56,7 @@
 #include <algorithm>
 #include <array>
 #include <cstdlib>
+#include <cstring>
 #include <vector>
 
 // TODO: ASR-10 likely contains ES5701/Super-GLU-class Ensoniq ASIC.
@@ -153,6 +154,7 @@ private:
 	emu_timer *m_prompt_select_timer = nullptr;
 	emu_timer *m_synth_68302_timer_irq_timer = nullptr;
 	emu_timer *m_panel_autorespond_timer = nullptr;
+	emu_timer *m_panel_sweep_timer = nullptr;
 	emu_timer *m_lrclk_timer = nullptr;
 	bool m_lrclk_level = false;
 	memory_passthrough_handler m_hook_fc2068_tap;
@@ -430,6 +432,11 @@ private:
 	bool m_panel_b_last_ring_write_valid = false;
 	u32 m_panel_autorespond_scheduled_count = 0;
 	u32 m_panel_autorespond_injected_count = 0;
+	bool m_panel_sweep_enabled = false;
+	bool m_panel_sweep_armed = false;
+	bool m_panel_sweep_injected = false;
+	u8 m_panel_sweep_raw = 0;
+	char m_panel_sweep_before[PANEL_TEXT_LENGTH]{};
 	u32 m_gen_counter = 0;
 	std::array<u8, 128> m_gen_thrb_bytes{};
 	u8 m_gen_thrb_count = 0;
@@ -497,6 +504,7 @@ private:
 	TIMER_CALLBACK_MEMBER(prompt_select_poll);
 	TIMER_CALLBACK_MEMBER(synth_68302_timer_irq);
 	TIMER_CALLBACK_MEMBER(panel_autorespond_fire);
+	TIMER_CALLBACK_MEMBER(panel_sweep_fire);
 	TIMER_CALLBACK_MEMBER(lrclk_toggle);
 	u8 maincpu_iack_r(u8 level);
 
@@ -695,6 +703,7 @@ void asr10_boot_state::machine_start()
 	m_prompt_select_timer = timer_alloc(FUNC(asr10_boot_state::prompt_select_poll), this);
 	m_synth_68302_timer_irq_timer = timer_alloc(FUNC(asr10_boot_state::synth_68302_timer_irq), this);
 	m_panel_autorespond_timer = timer_alloc(FUNC(asr10_boot_state::panel_autorespond_fire), this);
+	m_panel_sweep_timer = timer_alloc(FUNC(asr10_boot_state::panel_sweep_fire), this);
 	m_lrclk_timer = timer_alloc(FUNC(asr10_boot_state::lrclk_toggle), this);
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::panel_submission_summary, this));
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::root_directory_summary, this));
@@ -1475,6 +1484,28 @@ void asr10_boot_state::machine_reset()
 	m_panel_autorespond_scheduled_count = 0;
 	m_panel_autorespond_injected_count = 0;
 	m_panel_autorespond_timer->adjust(attotime::never);
+	m_panel_sweep_enabled = false;
+	m_panel_sweep_armed = false;
+	m_panel_sweep_injected = false;
+	m_panel_sweep_raw = 0;
+	std::fill(std::begin(m_panel_sweep_before), std::end(m_panel_sweep_before), 0);
+	m_panel_sweep_timer->adjust(attotime::never);
+	if (const char *const sweep_raw = std::getenv("ASR10_PANEL_SWEEP_RAW"); sweep_raw && sweep_raw[0])
+	{
+		char *end = nullptr;
+		const unsigned long parsed = std::strtoul(sweep_raw, &end, 0);
+		if (end && *end == 0 && parsed <= 0xff)
+		{
+			m_panel_sweep_enabled = true;
+			m_panel_sweep_raw = u8(parsed);
+			osd_printf_info("ASR10_PANEL_SWEEP event=config raw=%02x source=ASR10_PANEL_SWEEP_RAW\n",
+				m_panel_sweep_raw);
+		}
+		else
+		{
+			osd_printf_info("ASR10_PANEL_SWEEP event=config_invalid value=\"%s\"\n", sweep_raw);
+		}
+	}
 	// Board-level LRCLK into PB3 (GPIO input, docs/mc68302/pin-function-map.md):
 	// external to the 68302, always running once the machine is up, not a
 	// register-driven behavior. Rate is [Hypothesis]: PLAN.md section 0's
@@ -1903,6 +1934,19 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_autorespond_fire)
 		lowmem_word(0x23d6), lowmem_word(0x23e4),
 		lowmem_word(0x23e6), lowmem_word(0x14f6));
 	panel_c_queue_rx(0xff, "autorespond_fc4817_write", write_pc);
+}
+
+
+TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_sweep_fire)
+{
+	if (!m_panel_sweep_enabled || m_panel_sweep_injected || machine().side_effects_disabled())
+		return;
+
+	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+	m_panel_sweep_injected = true;
+	osd_printf_info("ASR10_PANEL_SWEEP event=inject raw=%02x pc=%06x before=\"%s\"\n",
+		m_panel_sweep_raw, pc, m_panel_sweep_before);
+	panel_c_queue_rx(m_panel_sweep_raw, "panel_sweep_raw", pc);
 }
 
 
@@ -2843,6 +2887,9 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 			const u32 mapped_address = 0x00f82484 + raw_byte;
 			const u16 mapped_word = read_code_word(mapped_address & ~1U);
 			const u8 mapped_byte = BIT(mapped_address, 0) ? u8(mapped_word) : u8(mapped_word >> 8);
+			if (m_panel_sweep_enabled)
+				osd_printf_info("ASR10_PANEL_SWEEP event=rhrb raw=%02x mapped=%02x pc=%06x\n",
+					raw_byte, mapped_byte, pc);
 			logerror("ASR10_PANEL_INPUT_BYTE pc=%06x raw=%02x mapped=%02x "
 				"accepted_reboot_confirm=%u mapped_23=%u mapped_40=%u mapped_17=%u mapped_16=%u\n",
 				pc, raw_byte, mapped_byte, mapped_byte == 0x23 ? 1 : 0,
@@ -3008,6 +3055,17 @@ void asr10_boot_state::panel_receive_byte(u8 data)
 
 	m_panel_text[m_panel_text_length++] = char(data);
 	m_panel_text[m_panel_text_length] = 0;
+
+	if (m_panel_sweep_enabled && !m_panel_sweep_armed && !m_panel_sweep_injected &&
+		strstr(m_panel_text, "FILE 1  TUTORIAL BNK"))
+	{
+		strncpy(m_panel_sweep_before, m_panel_text, PANEL_TEXT_LENGTH - 1);
+		m_panel_sweep_before[PANEL_TEXT_LENGTH - 1] = 0;
+		m_panel_sweep_armed = true;
+		osd_printf_info("ASR10_PANEL_SWEEP event=precheck raw=%02x display=\"%s\" result=valid\n",
+			m_panel_sweep_raw, m_panel_sweep_before);
+		m_panel_sweep_timer->adjust(attotime::from_msec(100));
+	}
 
 	(void)0;
 

@@ -1,0 +1,9 @@
+# generated from V3.50 panel raw-byte control sweep on 2026-08-10
+# image: floppies/asr10booth/V350.img
+# start condition required: display text FILE 1  TUTORIAL BNK before injection
+# injection path: ASR10_PANEL_SWEEP_RAW -> panel_c_queue_rx() -> DUART channel B RX FIFO
+# timeout: 20 seconds per clean run, no MAME -log flag
+# result: control pair failed; remaining raw values were not run
+raw,mapped,display_before,display_after,reached_rhrb_after_injection,effect_unambiguous,result,notes
+$23,$25,"FILE 1  TUTORIAL BNK","FILE 1  TUTORIAL BNK",no,no,control-pass-no-effect,"Expected no effect for raw $23. Injection was queued after valid start precheck; no post-injection $F89CEA RHRB read was observed before timeout."
+$22,$05,"FILE 1  TUTORIAL BNK","FILE 1  TUTORIAL BNK",no,no,control-fail-no-effect,"Expected some effect for raw $22. Injection was queued after valid start precheck; no post-injection $F89CEA RHRB read was observed before timeout. Sweep aborted; no remaining raw values interpreted."

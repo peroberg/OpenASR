@@ -57,17 +57,23 @@ local NORMALIZED_TEXT = {
   ["TUNING KBD - HAND5 0FF"] = "TUNING KBD - HANDS OFF",
   ["    KEYB0ARD TUNED    "] = "    KEYBOARD TUNED    ",
   ["N0 IN5T 0R BANK FILE5 "] = "NO INST OR BANK FILES ",
+  ["FILE 1  TUT0RIAL BNK  "] = "FILE 1  TUTORIAL BNK  ",
 }
 
 local display = {
   last = nil,
   changes = 0,
+  outputs = {},
 }
+
+for index = 0, 21 do
+  display.outputs[index] = manager.machine.devices[":"]:output(string.format("digit%u", index))
+end
 
 local function read_text()
   local chars = {}
   for index = 0, 21 do
-    local value = manager.machine.output:get_indexed_value("digit", index)
+    local value = display.outputs[index]:get()
     chars[#chars + 1] = GLYPH[value] or "?"
   end
   return table.concat(chars)
