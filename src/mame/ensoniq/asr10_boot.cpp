@@ -197,6 +197,8 @@ private:
 	emu_timer *m_synth_68302_timer_irq_timer = nullptr;
 	emu_timer *m_panel_autorespond_timer = nullptr;
 	emu_timer *m_panel_sweep_timer = nullptr;
+	emu_timer *m_panel_file1_tx_timer = nullptr;
+	emu_timer *m_panel_frame_timer = nullptr;
 	emu_timer *m_lrclk_timer = nullptr;
 	bool m_lrclk_level = false;
 	memory_passthrough_handler m_hook_fc2068_tap;
@@ -503,6 +505,22 @@ private:
 	u16 m_panel_reply_substitute_state_before = 0;
 	u16 m_panel_reply_substitute_buf_before = 0;
 	char m_panel_reply_substitute_display_before[PANEL_TEXT_LENGTH]{};
+	bool m_panel_file1_tx_window_enabled = false;
+	bool m_panel_file1_tx_window_active = false;
+	bool m_panel_file1_tx_window_done = false;
+	u32 m_panel_file1_tx_window_count = 0;
+	bool m_panel_frame_enabled = false;
+	bool m_panel_frame_active = false;
+	bool m_panel_frame_result_done = false;
+	std::array<u8, 16> m_panel_frame_bytes{};
+	u32 m_panel_frame_length = 0;
+	u32 m_panel_frame_index = 0;
+	u32 m_panel_frame_delay_us = 24;
+	bool m_panel_frame_completion_seen = false;
+	u32 m_panel_frame_completion_pc = 0xffffffffU;
+	u16 m_panel_frame_state_before = 0;
+	u16 m_panel_frame_buf_before = 0;
+	char m_panel_frame_display_before[PANEL_TEXT_LENGTH]{};
 	bool m_panel_receive_live_active = false;
 	u32 m_panel_receive_live_srb_reads = 0;
 	u32 m_panel_receive_live_rhrb_reads = 0;
@@ -609,6 +627,8 @@ private:
 	TIMER_CALLBACK_MEMBER(synth_68302_timer_irq);
 	TIMER_CALLBACK_MEMBER(panel_autorespond_fire);
 	TIMER_CALLBACK_MEMBER(panel_sweep_fire);
+	TIMER_CALLBACK_MEMBER(panel_file1_tx_done);
+	TIMER_CALLBACK_MEMBER(panel_frame_fire);
 	TIMER_CALLBACK_MEMBER(lrclk_toggle);
 	u8 maincpu_iack_r(u8 level);
 
@@ -825,6 +845,8 @@ void asr10_boot_state::machine_start()
 	m_synth_68302_timer_irq_timer = timer_alloc(FUNC(asr10_boot_state::synth_68302_timer_irq), this);
 	m_panel_autorespond_timer = timer_alloc(FUNC(asr10_boot_state::panel_autorespond_fire), this);
 	m_panel_sweep_timer = timer_alloc(FUNC(asr10_boot_state::panel_sweep_fire), this);
+	m_panel_file1_tx_timer = timer_alloc(FUNC(asr10_boot_state::panel_file1_tx_done), this);
+	m_panel_frame_timer = timer_alloc(FUNC(asr10_boot_state::panel_frame_fire), this);
 	m_lrclk_timer = timer_alloc(FUNC(asr10_boot_state::lrclk_toggle), this);
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::panel_submission_summary, this));
 	machine().add_notifier(MACHINE_NOTIFY_EXIT, machine_notify_delegate(&asr10_boot_state::panel_receive_live_summary, this));
@@ -1673,6 +1695,71 @@ void asr10_boot_state::machine_reset()
 		osd_printf_info("ASR10_PANEL_REPLY_SUBSTITUTE event=config value=%02x tx=%02x occurrence=%u\n",
 			m_panel_reply_substitute_value, m_panel_reply_substitute_tx, m_panel_reply_substitute_occurrence);
 	}
+	m_panel_file1_tx_window_enabled = false;
+	m_panel_file1_tx_window_active = false;
+	m_panel_file1_tx_window_done = false;
+	m_panel_file1_tx_window_count = 0;
+	m_panel_file1_tx_timer->adjust(attotime::never);
+	if (const char *const file1_tx = std::getenv("ASR10_PANEL_FILE1_TX_WINDOW");
+		file1_tx && file1_tx[0] && file1_tx[0] != '0')
+	{
+		m_panel_file1_tx_window_enabled = true;
+		osd_printf_info("ASR10_PANEL_FILE1_TX event=config seconds=20\n");
+	}
+	m_panel_frame_enabled = false;
+	m_panel_frame_active = false;
+	m_panel_frame_result_done = false;
+	m_panel_frame_bytes.fill(0);
+	m_panel_frame_length = 0;
+	m_panel_frame_index = 0;
+	m_panel_frame_delay_us = 24;
+	m_panel_frame_completion_seen = false;
+	m_panel_frame_completion_pc = 0xffffffffU;
+	m_panel_frame_state_before = 0;
+	m_panel_frame_buf_before = 0;
+	std::fill(std::begin(m_panel_frame_display_before), std::end(m_panel_frame_display_before), 0);
+	m_panel_frame_timer->adjust(attotime::never);
+	if (const char *const frame = std::getenv("ASR10_PANEL_FRAME_SEQUENCE"); frame && frame[0])
+	{
+		const char *cursor = frame;
+		while (*cursor && m_panel_frame_length < m_panel_frame_bytes.size())
+		{
+			while (*cursor == ' ' || *cursor == ',' || *cursor == ':' || *cursor == '-')
+				cursor++;
+			if (!*cursor)
+				break;
+			char *end = nullptr;
+			const unsigned long parsed = std::strtoul(cursor, &end, 16);
+			if (end == cursor || parsed > 0xff)
+				break;
+			m_panel_frame_bytes[m_panel_frame_length++] = u8(parsed);
+			cursor = end;
+		}
+		if (m_panel_frame_length)
+		{
+			m_panel_frame_enabled = true;
+			if (const char *const delay = std::getenv("ASR10_PANEL_FRAME_DELAY_US"); delay && delay[0])
+			{
+				char *end = nullptr;
+				const unsigned long parsed = std::strtoul(delay, &end, 0);
+				if (end && *end == 0 && parsed > 0 && parsed <= 1000000)
+					m_panel_frame_delay_us = u32(parsed);
+			}
+			std::string bytes;
+			for (u32 index = 0; index != m_panel_frame_length; index++)
+			{
+				if (index)
+					bytes += ' ';
+				bytes += util::string_format("%02x", m_panel_frame_bytes[index]);
+			}
+			osd_printf_info("ASR10_PANEL_FRAME event=config bytes=\"%s\" delay_us=%u\n",
+				bytes.c_str(), m_panel_frame_delay_us);
+		}
+		else
+		{
+			osd_printf_info("ASR10_PANEL_FRAME event=config_invalid value=\"%s\"\n", frame);
+		}
+	}
 	m_panel_receive_live_active = false;
 	m_panel_receive_live_srb_reads = 0;
 	m_panel_receive_live_rhrb_reads = 0;
@@ -2319,6 +2406,72 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_sweep_fire)
 	m_panel_sweep_waiting_sample = true;
 	panel_c_queue_rx(m_panel_sweep_raw, "panel_sweep_raw", pc);
 	m_panel_sweep_timer->adjust(attotime::from_msec(100));
+}
+
+
+TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_file1_tx_done)
+{
+	if (!m_panel_file1_tx_window_enabled || m_panel_file1_tx_window_done)
+		return;
+
+	m_panel_file1_tx_window_done = true;
+	m_panel_file1_tx_window_active = false;
+	osd_printf_info("ASR10_PANEL_FILE1_TX_SUMMARY tx_count=%u display=\"%s\" time=%s\n",
+		m_panel_file1_tx_window_count, current_display_text().c_str(), machine().time().to_string());
+	machine().schedule_exit();
+}
+
+
+TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_frame_fire)
+{
+	if (!m_panel_frame_enabled || !m_panel_frame_active || machine().side_effects_disabled())
+		return;
+
+	if (m_panel_frame_index < m_panel_frame_length)
+	{
+		const u8 data = m_panel_frame_bytes[m_panel_frame_index++];
+		const u16 state_before = lowmem_word(0x03c0);
+		const u16 buf_before = lowmem_word(0x03c4);
+		osd_printf_info("ASR10_PANEL_FRAME event=inject index=%u value=%02x time=%s "
+			"state03c0_before=%04x buf03c4_before=%04x\n",
+			m_panel_frame_index - 1, data, machine().time().to_string(), state_before, buf_before);
+		panel_c_queue_rx(data, "panel_frame_sequence", m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff);
+		osd_printf_info("ASR10_PANEL_FRAME event=queued index=%u value=%02x time=%s "
+			"state03c0_after_queue=%04x buf03c4_after_queue=%04x\n",
+			m_panel_frame_index - 1, data, machine().time().to_string(), lowmem_word(0x03c0), lowmem_word(0x03c4));
+		m_panel_frame_timer->adjust(m_panel_frame_index < m_panel_frame_length
+			? attotime::from_usec(m_panel_frame_delay_us)
+			: attotime::from_msec(20));
+		return;
+	}
+
+	if (!m_panel_frame_result_done)
+	{
+		m_panel_frame_result_done = true;
+		u32 ready_slots = 0;
+		const u16 slot_base = lowmem_word(0x00c6);
+		const u16 slot_end = lowmem_word(0x00c8);
+		const u32 span = (slot_end >= slot_base) ? (slot_end - slot_base) : 0;
+		const u32 slot_count = span / 0x16;
+		for (u32 slot = 0; slot < slot_count && slot < 128; slot++)
+		{
+			const u32 base = slot_base + slot * 0x16;
+			if (lowmem_byte(base + 2) != lowmem_byte(base + 3))
+				ready_slots++;
+		}
+		osd_printf_info("ASR10_PANEL_FRAME_RESULT completion_seen=%u completion_pc=%06x "
+			"display_before=\"%s\" display_after=\"%s\" changed=%u "
+			"state03c0_before=%04x state03c0_after=%04x buf03c4_before=%04x "
+			"buf03c4_after=%04x ready_slots=%u slot_base=%04x slot_end=%04x "
+			"slot_count=%u time=%s\n",
+			m_panel_frame_completion_seen ? 1 : 0, m_panel_frame_completion_pc,
+			m_panel_frame_display_before, current_display_text().c_str(),
+			std::strcmp(m_panel_frame_display_before, current_display_text().c_str()) != 0 ? 1 : 0,
+			m_panel_frame_state_before, lowmem_word(0x03c0), m_panel_frame_buf_before,
+			lowmem_word(0x03c4), ready_slots, slot_base, slot_end, slot_count,
+			machine().time().to_string());
+		machine().schedule_exit();
+	}
 }
 
 
@@ -3373,6 +3526,15 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 			m_panel_b_conversation_seq, machine().time().to_string(), pc, u8(data),
 			lowmem_word(0x03c0), lowmem_word(0x03c0), lowmem_word(0x03c4), lowmem_word(0x03c4));
 	}
+	if (!machine().side_effects_disabled() && m_panel_file1_tx_window_active &&
+		ACCESSING_BITS_0_7 && address == 0x00fc4817)
+	{
+		m_panel_file1_tx_window_count++;
+		osd_printf_info("ASR10_PANEL_FILE1_TX seq=%u time=%s pc=%06x value=%02x "
+			"state03c0=%04x buf03c4=%04x display=\"%s\"\n",
+			m_panel_file1_tx_window_count, machine().time().to_string(), pc, u8(data),
+			lowmem_word(0x03c0), lowmem_word(0x03c4), current_display_text().c_str());
+	}
 	if (!machine().side_effects_disabled() && m_step0_runtime_trace_enabled && ACCESSING_BITS_0_7)
 	{
 		if (address == 0x00fc4807)
@@ -3645,6 +3807,34 @@ void asr10_boot_state::panel_receive_byte(u8 data)
 			m_panel_reply_substitute_buf_before, lowmem_word(0x03c4),
 			ready_slots, slot_base, slot_end, slot_count, machine().time().to_string());
 		machine().schedule_exit();
+	}
+	if (m_panel_file1_tx_window_enabled && !m_panel_file1_tx_window_active &&
+		!m_panel_file1_tx_window_done && strstr(m_panel_text, "FILE 1  TUTORIAL BNK"))
+	{
+		m_panel_file1_tx_window_active = true;
+		m_panel_file1_tx_window_count = 0;
+		osd_printf_info("ASR10_PANEL_FILE1_TX event=active display=\"%s\" time=%s\n",
+			current_display_text().c_str(), machine().time().to_string());
+		m_panel_file1_tx_timer->adjust(attotime::from_seconds(20));
+	}
+	if (m_panel_frame_enabled && !m_panel_frame_active && !m_panel_frame_result_done &&
+		strstr(m_panel_text, "FILE 1  TUTORIAL BNK"))
+	{
+		m_panel_frame_active = true;
+		const std::string before = current_display_text();
+		std::strncpy(m_panel_frame_display_before, before.c_str(), PANEL_TEXT_LENGTH - 1);
+		m_panel_frame_display_before[PANEL_TEXT_LENGTH - 1] = 0;
+		m_panel_frame_state_before = lowmem_word(0x03c0);
+		m_panel_frame_buf_before = lowmem_word(0x03c4);
+		m_panel_frame_index = 0;
+		osd_printf_info("ASR10_PANEL_FRAME event=active display=\"%s\" time=%s "
+			"state03c0=%04x buf03c4=%04x delay_us=%u length=%u\n",
+			m_panel_frame_display_before, machine().time().to_string(),
+			m_panel_frame_state_before, m_panel_frame_buf_before,
+			m_panel_frame_delay_us, m_panel_frame_length);
+		m_pc_timer->adjust(attotime::from_ticks(1, m_maincpu->clock()), 0,
+			attotime::from_ticks(1, m_maincpu->clock()));
+		m_panel_frame_timer->adjust(attotime::from_msec(100));
 	}
 	if (m_step0_runtime_trace_enabled && m_panel_receive_live_active && !m_step0_file1_context_logged)
 	{
@@ -5570,6 +5760,15 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::pc_poll)
 {
 	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
 	m_pc_poll_count++;
+	if (m_panel_frame_active && !m_panel_frame_completion_seen &&
+		(pc == 0x00ffb43e || pc == 0x00ffb488 || pc == 0x00ffb4cc))
+	{
+		m_panel_frame_completion_seen = true;
+		m_panel_frame_completion_pc = pc;
+		osd_printf_info("ASR10_PANEL_FRAME event=completion pc=%06x time=%s "
+			"state03c0=%04x buf03c4=%04x\n",
+			pc, machine().time().to_string(), lowmem_word(0x03c0), lowmem_word(0x03c4));
+	}
 	if (m_panel_c_parser_trace_active && pc != m_panel_c_parser_trace_last_pc)
 	{
 		m_panel_c_parser_trace_last_pc = pc;

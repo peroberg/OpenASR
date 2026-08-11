@@ -1,0 +1,8 @@
+# Generated from /tmp/asr10-frame-4001.log. Do not edit by hand.
+# Run: ASR10_PANEL_FRAME_SEQUENCE=40,01, delay 24 us, V3.50 FILE 1, no -log.
+event,index,value,time,state03c0_before,state03c0_after_queue,buf03c4_before,buf03c4_after_queue,completion_seen,completion_pc,display_before,display_after,changed,state03c0_after,buf03c4_after,ready_slots
+inject,0,40,"0016.271,608,375",b392,,0000,,,,,,,,,
+queued,0,40,"0016.271,608,375",,b392,,0000,,,,,,,,
+inject,1,01,"0016.271,632,375",b0e0,,4000,,,,,,,,,
+queued,1,01,"0016.271,632,375",,b0e0,,4000,,,,,,,,
+result,,,"0016.291,632,375",,,,,0,ffffffff,FILE 1  TUTORIAL BNK,FILE 1  TUTORIAL BNK,0,b392,2400,0

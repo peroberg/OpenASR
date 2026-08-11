@@ -92,6 +92,15 @@ Generated partial results are in
 `FILE 1`. Non-`$FF` pilot substitutions changed system behavior before the file
 browser state was reached.
 
+[Verified] Substitution of the harness `$FF` reply at the FIRST TX `$74` stops
+the boot for all tested values (`$00`, `$7F`, `$80`, `$BF`, `$C0-$C4`, `$74`).
+Only `$FF` reaches `FILE 1`.
+
+[Likely] `$FF` is an obligatory empty reply during the boot tuning phase.
+
+Caveat: the substitution point was before `FILE 1`. The pilot says nothing
+about panel input during runtime.
+
 [OPEN] Whether any non-`$FF` reply produces a useful browser-visible key event.
 This pass substituted the first boot scan response, not a known steady-state
 file-browser poll.
