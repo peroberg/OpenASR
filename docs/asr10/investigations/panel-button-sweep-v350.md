@@ -107,9 +107,56 @@ Observed `$77-$7B` command/value pairs beyond that baseline:
 [Verified dynamic] `$77`, `$78`, `$79`, `$7A` and `$7B` behave as
 two-byte display-side control/register writes during these runs.
 
-[OPEN] Indicator names for individual bits. The TX stream identifies raw
-register/value changes, but this pass did not observe physical annunciator
-state and therefore does not map bits to `LOAD`, `CMD`, `EDIT`, etc.
+Additional clean candidate runs with the working `ASR10PANEL` device captured
+the final raw annunciator register state after the button press:
+
+| button | display after press | final `$77-$7B` state |
+|---:|---|---|
+| `$05` | `FREE SYSTEM BLKS=31274` | `$77=$0C`, `$78=$0C`, `$79=$0F`, `$7A=$0B`, `$7B=$0B` |
+| `$06` | `CREATE NEW INSTRUMENT` | `$77=$0D`, `$78=$0F`, `$79=$0F`, `$7A=$0B`, `$7B=$0B` |
+| `$07` | `FX=INST    HALL REVERB` | `$77=$07`, `$78=$0E`, `$79=$0F`, `$7A=$0B`, `$7B=$0B` |
+| `$1B` | `NO DISK DIRECTORIES` | `$77=$0C`, `$78=$0E`, `$79=$0F`, `$7A=$0B`, `$7B=$0B` |
+| `$20` | `REC SRC=INPUTDRY LEFT` | `$77=$0D`, `$78=$0D`, `$79=$0F`, `$7A=$0B`, `$7B=$0B` |
+
+Conservative bit observations from these five mode changes:
+
+| command | bit/value | observed with | indicator name |
+|---:|---:|---|---|
+| `$77` | bit 0 set | `$06`, `$07`, `$20` | `[OPEN]` |
+| `$77` | bit 1 set | `$07` only among this set | `[OPEN]` |
+| `$77` | bit 2 set | `$05`, `$07`, `$1B` | `[OPEN]` |
+| `$77` | bit 3 set | `$05`, `$06`, `$1B`, `$20` | `[OPEN]` |
+| `$78` | bit 0 set | `$06`, `$20` | `[OPEN]` |
+| `$78` | bit 1 set | `$07`, `$1B` | `[OPEN]` |
+| `$78` | bit 2 set | `$05`, `$20` | `[OPEN]` |
+| `$78` | bit 3 set | all five candidate runs | `[OPEN]` |
+| `$79` | bits 0-3 set | all five candidate runs | `[OPEN]` |
+| `$7A` | bits 0,1,3 set | all five candidate runs | `[OPEN]` |
+| `$7B` | bits 0,1,3 set | all five candidate runs | `[OPEN]` |
+
+[OPEN] Indicator names for individual bits. These runs read the ASR panel
+device's raw annunciator registers, but there is still no independent
+observation tying a raw bit to the printed labels `LOAD`, `CMD`, `EDIT`,
+`INST`, etc. Do not name a bit until a label is observed changing.
+
+## Button name hypotheses
+
+Names below are based on visible effects from clean per-button runs. They are
+`[Likely]` only; none yet has two independent effects.
+
+| button | proposed name | support |
+|---:|---|---|
+| `$05` | `[Likely] SYSTEM` | Display changes to `FREE SYSTEM BLKS=31274`. |
+| `$06` | `[Likely] INST` | Display changes to `CREATE NEW INSTRUMENT`. |
+| `$07` | `[Likely] EFFECTS/FX` | Display changes to `FX=INST    HALL REVERB`. No exact printed `FX` label exists in the ASR-10 field list, so the front-panel label remains `[OPEN]`. |
+| `$09` | `[Likely] previous file/page` | From `FILE 1`, display jumps to `FILE 16 44LUSH PLATE`, consistent with wraparound navigation. |
+| `$0A` | `[Likely] next file` | From `FILE 1`, display changes to `FILE 2  JM DIGI SYN`. |
+| `$0B` | `[Likely] previous-file/backward navigation variant` | From `FILE 1`, display changes to `FILE 14 BLUES ORGAN`; exact label `[OPEN]`. |
+| `$10` | `[Likely] file info/storage` | Display changes to `7     BLKS`. Exact front-panel label `[OPEN]`. |
+| `$11` | `[Likely] file info/storage` | Same visible `7     BLKS` effect as `$10`; exact distinction `[OPEN]`. |
+| `$15` | `[Likely] SEQ` | Display changes to `FILE 9  TUTORIAL SEQ`. |
+| `$1B` | `[Likely] directory` | Display changes to `NO DISK DIRECTORIES`. No exact printed label is assigned yet. |
+| `$20` | `[Likely] record/input-source edit` | Display changes to `REC SRC=INPUTDRY LEFT`. |
 
 ## ASR-10 panel device pilot
 
@@ -123,7 +170,7 @@ Verification:
 | step | result |
 |---:|---|
 | 1. boot to `FILE 1  TUTORIAL BNK` | passed before and after external DUART clocks |
-| 2. display text rendered via new panel unit | still incomplete: bit transfer works, but panel-device text shadow read `FE2JDI Y` for `FILE 2  JM DIGI SYN` |
+| 2. display text rendered via new panel unit | passed: `FILE 2  JM DIGI SYN` rendered 21/21 bytes through `ASR10PANEL` |
 | 3. `$0A` button via panel unit gives `FILE 1 -> FILE 2` | passed after external DUART clocks |
 
 [Verified] ASR-10 now clocks the DUART like the EPS/VFX-family panel path:
@@ -131,10 +178,35 @@ Verification:
 that maps to IP3/IP4/IP5/IP6; CSRB `$EE` selects IP5/16 for channel B, i.e.
 62,500 baud, matching `esqpanel_device::device_reset()`.
 
-[OPEN] The remaining panel-device display problem is parsing/rendering, not a
-dead serial link: channel B now transfers in both directions, and
-`set_button($0A)` reaches the runtime receive path. The direct two-byte frame
-injection remains verified and is not invalidated by this pilot.
+[Verified] The panel channel is half-duplex request/reply in the ASR-10 V3.50
+file browser. Host writes one byte to THRB, polls SRB until RxRDY, then writes
+the next byte. The `FILE 2  JM DIGI SYN` TX intervals after the first string
+byte were:
+
+```text
+362.375, 361.000, 361.250, 361.500, 361.250, 361.500, 361.625,
+361.500, 361.500, 361.125, 361.375, 361.625, 361.125, 361.250,
+361.000, 361.375, 361.375, 361.625, 361.375, 422.500 us
+```
+
+One SRB read occurred before each THRB write. SRB was `$0D`, i.e. RxRDY +
+TxRDY + TxEMT. The ~361 us cadence is two 62500-baud 8N2 character times
+(176 us host byte + 176 us panel reply) plus firmware latency. IP5 is 1 MHz
+with CSRB selector `$E`.
+
+[Verified] The panel device renders the full `FILE 2  JM DIGI SYN` display:
+21/21 bytes arrived at the panel device and `set_button($0A)` gives
+`FILE 1 -> FILE 2`.
+
+[Verified] The old direct `$FF` autoresponse harness is no longer the active
+default path; it is opt-in only through `ASR10_PANEL_LEGACY_AUTORESPOND`.
+The ASR-10 panel device itself supplies `$FF` as the serial idle reply.
+
+[Verified] The `$FF` reply is an ASR-10 requirement in the current model:
+when `ASR10PANEL` was changed to inherit the base EPS echo semantics, V3.50
+stalled in `LOADING SYSTEM` and did not reach `FILE 1` within the 45 s test
+window. Restoring the `$FF` reply restored boot, complete display rendering,
+and `$0A` button behavior.
 
 ## `$03C8`
 

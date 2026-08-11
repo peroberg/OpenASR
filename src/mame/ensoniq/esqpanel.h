@@ -104,6 +104,7 @@ class asr10panel_device : public esqpanel_device {
 public:
 	asr10panel_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock = 0);
 	std::string current_text() const;
+	std::string annunciator_summary() const;
 
 protected:
 	virtual void device_add_mconfig(machine_config &config) override ATTR_COLD;

@@ -6,7 +6,7 @@ Evidence distribution in this document:
 
 | evidence | count |
 |---|---:|
-| `[Verified dynamic]` | 9 |
+| `[Verified dynamic]` | 10 |
 | `[Verified static]` | 3 |
 | `[Likely]` | 1 |
 | `[OPEN]` | 4 |
@@ -24,6 +24,7 @@ Evidence distribution in this document:
 | 15.032439875 s onward | ROM IRQ dispatcher | IRQ6 accept returns vector `$56` and lands at `$F884BE`. | Driver `maincpu_iack_r(6)` supplies `mc68302_device::irq6_ack_vector() == $56`; vector-table target is `$F884BE`. | `[Verified dynamic]`, `[OPEN]` hardware vector source |
 | 15.032-60.0 s | ROM IRQ dispatcher | 45,095 IRQ6 accepts are all DUART-pending. ISR histogram: `$08` 44,942; `$20` 148; `$28` 4; `$01` 1. | DUART counter-ready bit 3 dominates. RxRDYB bit 5 is present 152 times. TxRDYA bit 0 appears once. | `[Verified dynamic]` |
 | 16.171608375 s | high RAM + ROM | `FILE 1  TUTORIAL BNK` becomes visible; `$0003C0 = $B392`, sign-extending to `$FFB392`. | Runtime receive path jumps through `$0003C0`; ROM services remain active. | `[Verified dynamic]` |
+| 16.211-16.319 s | high RAM + ROM + panel device | Panelkanalen är halv duplex fråga/svar. Host skriver en byte till THRB, pollar SRB tills RxRDY, skriver nästa. Intervall ~361 us = två teckentider vid 62500 baud 8N2 plus latens. 62500 baud är mätt ur firmwarens egen kadens, inte ärvt från EPS-16; IP5 = 1 MHz vid CSRB selector `$E`. `ASR10PANEL` renderar 21/21 byte för `FILE 2  JM DIGI SYN`, och `set_button($0A)` ger `FILE 1 -> FILE 2`. | Channel-B TX timing trace with legacy FIFO autoresponse disabled; ASR panel serial `$ff` response active. | `[Verified dynamic]` |
 | 16.171631250-16.173213750 s | high RAM receive path | Runtime receive path performs 12 SRB/RHRB pairs at `$FFB0BC/$FFB0D4`, consuming 12 `$FF` ACK/status bytes. | Channel-B FIFO bytes from the existing ACK/status harness. | `[Verified dynamic]` |
 | 16.171608-36.171608 s | ROM scheduler loop | FILE 1 profile is scheduler dominated: 28,315 samples, 385 distinct PCs, 0 `stop` samples, top-3 share 33.9043 %, 0 FDC accesses. | Scheduler scans slots at `$F87F92-$F87FD0`; idle path opens interrupts and loops. | `[Verified dynamic]` |
 | runtime provenance | high RAM view of OS image | `$FFB0B0` bytes probably come from V3.50 OS image at disk offset `0x00D6B0`, mapping to RAM `$00B0B0` under segment 1. | Full 64-byte sequence matches V350 once and not interleaved ROM. | `[Likely]`, `[OPEN]` direct load vs patch/relocation |

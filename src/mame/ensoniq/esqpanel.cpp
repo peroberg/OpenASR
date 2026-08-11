@@ -800,10 +800,9 @@ void asr10panel_device::rcv_complete()
 	const uint8_t data = get_received_char();
 	debug_rx_complete(data);
 
-	// ASR-10 uses the EPS-family two-byte panel protocol for keys, but its
-	// idle response to host display/scan traffic is $ff. Keep this in the
-	// ASR-specific subclass; esqpanel_device's EPS echo behavior is shared
-	// with other Ensoniq drivers.
+	// ASR-10 uses the EPS-family two-byte panel protocol for keys, but boot
+	// stalls in LOADING SYSTEM if display/scan traffic is echoed. The observed
+	// idle response on the working ASR path is $ff.
 	if (!m_disable_eps_echo)
 		xmit_char(0xff);
 
@@ -888,6 +887,18 @@ void asr10panel_device::send_to_display(uint8_t data)
 std::string asr10panel_device::current_text() const
 {
 	return std::string(m_text_chars.begin(), m_text_chars.end());
+}
+
+std::string asr10panel_device::annunciator_summary() const
+{
+	std::string result;
+	for (u32 index = 0; index != m_annunciator_state.size(); index++)
+	{
+		if (index)
+			result += ' ';
+		result += util::string_format("%02x:%02x", 0x77 + index, m_annunciator_state[index]);
+	}
+	return result;
 }
 
 asr10panel_device::asr10panel_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :

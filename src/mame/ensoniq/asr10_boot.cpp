@@ -2675,10 +2675,12 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_frame_fire)
 			std::strncpy(m_panel_button_sweep_display_after_press, after_press.c_str(), PANEL_TEXT_LENGTH - 1);
 			m_panel_button_sweep_display_after_press[PANEL_TEXT_LENGTH - 1] = 0;
 			osd_printf_info("ASR10_PANEL_BUTTON_SWEEP event=after_press button=%02x display=\"%s\" "
-				"time=%s state03c0=%04x buf03c4=%04x gate03c8=%04x ready_slots=%u\n",
+				"time=%s state03c0=%04x buf03c4=%04x gate03c8=%04x ready_slots=%u "
+				"annunciators=\"%s\"\n",
 				button, m_panel_button_sweep_display_after_press, machine().time().to_string(),
 				m_panel_button_sweep_state_after_press, m_panel_button_sweep_buf_after_press,
-				m_panel_button_sweep_gate_after_press, m_panel_button_sweep_ready_after_press);
+				m_panel_button_sweep_gate_after_press, m_panel_button_sweep_ready_after_press,
+				m_panel->annunciator_summary().c_str());
 		}
 
 		if (m_panel_button_sweep_use_device && m_panel_button_sweep_phase == 2)
@@ -2732,7 +2734,7 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_frame_fire)
 			"state03c0_after_release=%04x buf03c4_before=%04x buf03c4_after_press=%04x "
 			"buf03c4_after_release=%04x gate03c8_before=%04x gate03c8_after_press=%04x "
 			"gate03c8_after_release=%04x ready_slots_after_press=%u ready_slots_after_release=%u "
-			"tx_count=%u tx_truncated=%u tx_bytes=\"%s\" time=%s\n",
+			"annunciators_after_release=\"%s\" tx_count=%u tx_truncated=%u tx_bytes=\"%s\" time=%s\n",
 			button, 0x80 | button, button,
 			m_panel_button_sweep_display_before, m_panel_button_sweep_display_after_press,
 			current_display_text().c_str(), m_panel->current_text().c_str(),
@@ -2742,8 +2744,9 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_frame_fire)
 			m_panel_button_sweep_buf_after_press, buf_after_release,
 			m_panel_button_sweep_gate_before, m_panel_button_sweep_gate_after_press,
 			gate_after_release, m_panel_button_sweep_ready_after_press,
-			ready_after_release, m_panel_button_sweep_tx_count, tx_truncated ? 1 : 0,
-			tx_bytes.c_str(), machine().time().to_string());
+			ready_after_release, m_panel->annunciator_summary().c_str(),
+			m_panel_button_sweep_tx_count, tx_truncated ? 1 : 0, tx_bytes.c_str(),
+			machine().time().to_string());
 		m_panel_button_sweep_count++;
 		if (!changed_press && !changed_release && m_panel_button_sweep_current < m_panel_button_sweep_end)
 		{

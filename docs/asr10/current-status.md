@@ -82,17 +82,19 @@ architectural model that did not exist before. Summary only — details in `refe
 - **Panel button frames are now proven dynamically.** [Verified] Knappframe
   `($80|$0A, $00)` flyttar `FILE 1  TUTORIAL BNK` till `FILE 2  JM DIGI SYN`
   i V3.50 via runtime receive path. [Likely] `$0A` är nästa fil.
+- **Panel channel is functional through the ASR panel device.** [Verified]
+  Panelkanalen är halv duplex fråga/svar. Host skriver en byte till THRB,
+  pollar SRB tills RxRDY, skriver nästa. Intervall ~361 us = två teckentider
+  vid 62500 baud 8N2 plus latens. [Verified] 62500 baud är mätt ur firmwarens
+  egen kadens, inte ärvt från EPS-16. IP5 = 1 MHz vid CSRB selector `$E`.
+  [Verified] Panelen fungerar i båda riktningar genom `ASR10PANEL`: 21/21 byte
+  renderas, `set_button($0A)` ger `FILE 1 -> FILE 2`.
 - **A control-flow database** of 5243 call-site-level edges with normalised addresses,
   evidence level and execution status. → `static/call-graph-edges.csv`,
   `reference/call-graph.md`
 
 ## Does not work
 
-- ASR-10-panelenheten är kopplad som pilot men inte färdig: vanlig boot fungerar
-  och `$0A` via `esqpanel_device::set_button()` flyttar `FILE 1 -> FILE 2` efter
-  att DUARTens externa panelklocka satts. Panelenhetens egen textskugga renderar
-  fortfarande inte hela ASR-10-displaysträngen korrekt. Den direkta frame-
-  injektionen behålls tills panelenheten är fullt verifierad.
 - Audio output, sampling, sequencer behaviour, and complete ES5506/ES5510 sound
   integration are not working end-to-end.
 - DUART channel A RX is not wired to a real external source.
