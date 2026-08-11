@@ -55,6 +55,10 @@ protected:
 	virtual void tra_callback() override;    // Tx send bit
 
 	virtual void send_to_display(uint8_t data) = 0;
+	virtual void debug_rx_complete(uint8_t data) { }
+	virtual void debug_send_to_display(uint8_t data) { }
+	virtual void debug_xmit_char(uint8_t data) { }
+	virtual void debug_tra_complete() { }
 
 	std::set<int> m_pressed_buttons;
 	TIMER_CALLBACK_MEMBER(check_external_panel_server);
@@ -105,6 +109,7 @@ protected:
 	virtual void device_add_mconfig(machine_config &config) override ATTR_COLD;
 	virtual void device_start() override ATTR_COLD;
 	virtual void device_reset() override ATTR_COLD;
+	virtual void rcv_complete() override;
 	virtual void send_to_display(uint8_t data) override;
 
 	required_device<esq1x22_device> m_vfd;
@@ -117,6 +122,17 @@ private:
 	std::array<uint8_t, 22> m_text_chars{};
 	uint8_t m_text_position = 0;
 	uint8_t m_pending_annunciator_command = 0;
+	bool m_trace_panel_bytes = false;
+	bool m_disable_eps_echo = false;
+	uint32_t m_trace_rx_complete_count = 0;
+	uint32_t m_trace_send_to_display_count = 0;
+	uint32_t m_trace_xmit_char_count = 0;
+	uint32_t m_trace_tra_complete_count = 0;
+
+	virtual void debug_rx_complete(uint8_t data) override;
+	virtual void debug_send_to_display(uint8_t data) override;
+	virtual void debug_xmit_char(uint8_t data) override;
+	virtual void debug_tra_complete() override;
 };
 
 class esqpanel2x40_device : public esqpanel_device {

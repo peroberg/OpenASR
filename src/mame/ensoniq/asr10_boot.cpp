@@ -477,8 +477,13 @@ private:
 	u32 m_panel_b_last_parser_pc = 0xffffffffU;
 	u8 m_panel_b_last_ring_write_byte = 0;
 	bool m_panel_b_last_ring_write_valid = false;
+	bool m_panel_autorespond_enabled = false;
 	u32 m_panel_autorespond_scheduled_count = 0;
 	u32 m_panel_autorespond_injected_count = 0;
+	u32 m_panel_tx_timing_thrb_count = 0;
+	u32 m_panel_tx_timing_srb_count = 0;
+	u32 m_panel_tx_timing_srb_since_last_thrb = 0;
+	attotime m_panel_tx_timing_last_thrb_time = attotime::never;
 	bool m_panel_sweep_enabled = false;
 	bool m_panel_sweep_all_enabled = false;
 	bool m_panel_sweep_armed = false;
@@ -1677,8 +1682,16 @@ void asr10_boot_state::machine_reset()
 	m_panel_b_last_parser_pc = 0xffffffffU;
 	m_panel_b_last_ring_write_byte = 0;
 	m_panel_b_last_ring_write_valid = false;
+	m_panel_autorespond_enabled = false;
+	if (const char *const autorespond = std::getenv("ASR10_PANEL_LEGACY_AUTORESPOND");
+		autorespond && autorespond[0] && autorespond[0] != '0')
+		m_panel_autorespond_enabled = true;
 	m_panel_autorespond_scheduled_count = 0;
 	m_panel_autorespond_injected_count = 0;
+	m_panel_tx_timing_thrb_count = 0;
+	m_panel_tx_timing_srb_count = 0;
+	m_panel_tx_timing_srb_since_last_thrb = 0;
+	m_panel_tx_timing_last_thrb_time = attotime::never;
 	m_panel_autorespond_timer->adjust(attotime::never);
 	m_panel_sweep_enabled = false;
 	m_panel_sweep_all_enabled = false;
@@ -3775,6 +3788,19 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 			address == 0x00fc4812 ? "SRB" : "RHRB", address | 1, u8(raw_data),
 			fifo_before_read, m_duart->m_chanB->rx_fifo_count(), m_duart->irq_pending() ? 1 : 0);
 	}
+	if (!machine().side_effects_disabled() && m_panel_button_sweep_active &&
+		ACCESSING_BITS_0_7 && address == 0x00fc4812)
+	{
+		m_panel_tx_timing_srb_count++;
+		m_panel_tx_timing_srb_since_last_thrb++;
+		const double since_last_thrb_us = (m_panel_tx_timing_last_thrb_time == attotime::never)
+			? -1.0
+			: (machine().time() - m_panel_tx_timing_last_thrb_time).as_double() * 1000000.0;
+		osd_printf_info("ASR10_PANEL_TX_TIMING event=srb_read seq=%u time=%s pc=%06x "
+			"value=%02x since_last_thrb_us=%.3f srb_since_last_thrb=%u\n",
+			m_panel_tx_timing_srb_count, machine().time().to_string(), pc, u8(raw_data),
+			since_last_thrb_us, m_panel_tx_timing_srb_since_last_thrb);
+	}
 	if (!machine().side_effects_disabled() && m_panel_sweep_enabled && m_panel_sweep_waiting_sample &&
 		ACCESSING_BITS_0_7 && address == 0x00fc4816 && pc == 0x00ffb0d4 && u8(raw_data) == m_panel_sweep_raw)
 	{
@@ -3940,6 +3966,17 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 	if (!machine().side_effects_disabled() && m_panel_button_sweep_active &&
 		ACCESSING_BITS_0_7 && address == 0x00fc4817)
 	{
+		const attotime now = machine().time();
+		const double delta_us = (m_panel_tx_timing_last_thrb_time == attotime::never)
+			? -1.0
+			: (now - m_panel_tx_timing_last_thrb_time).as_double() * 1000000.0;
+		m_panel_tx_timing_thrb_count++;
+		osd_printf_info("ASR10_PANEL_TX_TIMING event=thrb_write seq=%u time=%s pc=%06x "
+			"value=%02x delta_us=%.3f srb_reads_since_previous=%u\n",
+			m_panel_tx_timing_thrb_count, now.to_string(), pc, u8(data), delta_us,
+			m_panel_tx_timing_srb_since_last_thrb);
+		m_panel_tx_timing_last_thrb_time = now;
+		m_panel_tx_timing_srb_since_last_thrb = 0;
 		if (m_panel_button_sweep_tx_count < m_panel_button_sweep_tx_bytes.size())
 			m_panel_button_sweep_tx_bytes[m_panel_button_sweep_tx_count] = u8(data);
 		m_panel_button_sweep_tx_count++;
@@ -4034,7 +4071,7 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 		}
 		if (!machine().side_effects_disabled() && m_gen_thrb_count < m_gen_thrb_bytes.size())
 			m_gen_thrb_bytes[m_gen_thrb_count++] = character;
-		if (!machine().side_effects_disabled())
+		if (!machine().side_effects_disabled() && m_panel_autorespond_enabled)
 		{
 			const char *const thrb_source = (pc == 0x00f89cb0) ? "f89cb0" :
 				(pc == 0x00f89aa4) ? "f89aa4" : "other";

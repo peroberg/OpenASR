@@ -506,6 +506,7 @@ void esqpanel_device::rcv_complete()    // Rx completed receiving byte
 {
 	receive_register_extract();
 	uint8_t data = get_received_char();
+	debug_rx_complete(data);
 
 //  if (data >= 0xe0) LOG("Got %02x from motherboard (second %s)\n", data, m_expect_calibration_second_byte ? "yes" : "no");
 
@@ -592,6 +593,7 @@ void esqpanel_device::rcv_complete()    // Rx completed receiving byte
 	// If this was not inhibited, send this to the display as well.
 	if (!skip_display)
 	{
+		debug_send_to_display(data);
 		send_to_display(data);
 	}
 }
@@ -599,6 +601,7 @@ void esqpanel_device::rcv_complete()    // Rx completed receiving byte
 void esqpanel_device::tra_complete()    // Tx completed sending byte
 {
 //  LOG("panel Tx complete\n");
+	debug_tra_complete();
 	// is there more waiting to send?
 	if (m_xmit_read != m_xmit_write)
 	{
@@ -622,6 +625,7 @@ void esqpanel_device::tra_callback()    // Tx send bit
 void esqpanel_device::xmit_char(uint8_t data)
 {
 //  LOG("Panel: xmit %02x\n", data);
+	debug_xmit_char(data);
 
 	// if tx is busy it'll pick this up automatically when it completes
 	if (!m_tx_busy)
@@ -764,16 +768,87 @@ void asr10panel_device::device_reset()
 {
 	esqpanel_device::device_reset();
 
+	// ASR-10 channel B measured cadence: host writes are paced by one 62500
+	// baud character time each way (176 us TX + 176 us $ff reply). No vendor
+	// source in docs/asr10/sources/ currently identifies a different panel
+	// clock, so keep the ASR-specific rate explicit here rather than relying
+	// on the EPS base-class default.
+	set_rcv_rate(62500);
+	set_tra_rate(62500);
+
 	m_annunciator_state.fill(0);
 	m_instrument_lamp_state.fill(0);
 	m_text_chars.fill(' ');
 	m_text_position = 0;
 	m_pending_annunciator_command = 0;
+	m_trace_panel_bytes = std::getenv("ASR10_PANEL_DEVICE_BYTE_TRACE") != nullptr;
+	m_disable_eps_echo = std::getenv("ASR10_PANEL_DISABLE_ECHO") != nullptr;
+	m_trace_rx_complete_count = 0;
+	m_trace_send_to_display_count = 0;
+	m_trace_xmit_char_count = 0;
+	m_trace_tra_complete_count = 0;
 
 	for (u32 index = 0; index != m_annunciator_state.size(); index++)
 		m_annunciator_regs[index] = 0;
 	for (u32 index = 0; index != m_instrument_lamp_state.size(); index++)
 		m_instrument_lamps[index] = 0;
+}
+
+void asr10panel_device::rcv_complete()
+{
+	receive_register_extract();
+	const uint8_t data = get_received_char();
+	debug_rx_complete(data);
+
+	// ASR-10 uses the EPS-family two-byte panel protocol for keys, but its
+	// idle response to host display/scan traffic is $ff. Keep this in the
+	// ASR-specific subclass; esqpanel_device's EPS echo behavior is shared
+	// with other Ensoniq drivers.
+	if (!m_disable_eps_echo)
+		xmit_char(0xff);
+
+	debug_send_to_display(data);
+	send_to_display(data);
+}
+
+void asr10panel_device::debug_rx_complete(uint8_t data)
+{
+	if (!m_trace_panel_bytes || machine().side_effects_disabled())
+		return;
+
+	m_trace_rx_complete_count++;
+	osd_printf_info("ASR10_PANEL_DEVICE_BYTE event=rcv_complete seq=%u time=%s value=%02x text=\"%s\"\n",
+		m_trace_rx_complete_count, machine().time().to_string(), data, current_text().c_str());
+}
+
+void asr10panel_device::debug_send_to_display(uint8_t data)
+{
+	if (!m_trace_panel_bytes || machine().side_effects_disabled())
+		return;
+
+	m_trace_send_to_display_count++;
+	osd_printf_info("ASR10_PANEL_DEVICE_BYTE event=send_to_display seq=%u time=%s value=%02x text_before=\"%s\"\n",
+		m_trace_send_to_display_count, machine().time().to_string(), data, current_text().c_str());
+}
+
+void asr10panel_device::debug_xmit_char(uint8_t data)
+{
+	if (!m_trace_panel_bytes || machine().side_effects_disabled())
+		return;
+
+	m_trace_xmit_char_count++;
+	osd_printf_info("ASR10_PANEL_DEVICE_BYTE event=xmit_char seq=%u time=%s value=%02x text=\"%s\"\n",
+		m_trace_xmit_char_count, machine().time().to_string(), data, current_text().c_str());
+}
+
+void asr10panel_device::debug_tra_complete()
+{
+	if (!m_trace_panel_bytes || machine().side_effects_disabled())
+		return;
+
+	m_trace_tra_complete_count++;
+	osd_printf_info("ASR10_PANEL_DEVICE_BYTE event=tra_complete seq=%u time=%s text=\"%s\"\n",
+		m_trace_tra_complete_count, machine().time().to_string(), current_text().c_str());
 }
 
 void asr10panel_device::send_to_display(uint8_t data)
