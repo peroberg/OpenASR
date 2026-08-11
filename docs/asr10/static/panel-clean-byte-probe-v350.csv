@@ -1,0 +1,19 @@
+# Generated from /tmp/asr10-clean-byte-*.log. Do not edit by hand.
+# Run: one V3.50 boot per raw value, FILE 1  TUTORIAL BNK precheck, no -log.
+raw,consumed,dispatch_target,display_before,display_after,changed,state03c0_at_rhrb,target_at_rhrb,state03c0_writes,buf03c4_writes,observed_path
+00,1,ffb0bc,FILE 1  TUTORIAL BNK,FILE 1  TUTORIAL BNK,0,b392,ffb392,03c0@ffb3a6:b392->b20a ; 03c0@ffb3b2:b20a->b0e0,03c4@ffb3b8:0000->0000,normal-bit7-clear-to-b0e0
+11,1,ffb0bc,FILE 1  TUTORIAL BNK,FILE 1  TUTORIAL BNK,0,b392,ffb392,03c0@ffb3a6:b392->b20a ; 03c0@ffb3b2:b20a->b0e0,03c4@ffb3b8:0000->1100,normal-bit7-clear-to-b0e0
+22,1,ffb0bc,FILE 1  TUTORIAL BNK,FILE 1  TUTORIAL BNK,0,b392,ffb392,03c0@ffb3a6:b392->b20a ; 03c0@ffb3b2:b20a->b0e0,03c4@ffb3b8:0000->2200,normal-bit7-clear-to-b0e0
+33,1,ffb0bc,FILE 1  TUTORIAL BNK,FILE 1  TUTORIAL BNK,0,b392,ffb392,03c0@ffb3a6:b392->b20a ; 03c0@ffb3b2:b20a->b0e0,03c4@ffb3b8:0000->3300,normal-bit7-clear-to-b0e0
+44,1,ffb0bc,FILE 1  TUTORIAL BNK,FILE 1  TUTORIAL BNK,0,b392,ffb392,03c0@ffb3a6:b392->b20a ; 03c0@ffb3b2:b20a->b0e0,03c4@ffb3b8:0000->4400,normal-bit7-clear-to-b0e0
+55,1,ffb0bc,FILE 1  TUTORIAL BNK,FILE 1  TUTORIAL BNK,0,b392,ffb392,03c0@ffb3a6:b392->b20a ; 03c0@ffb3b2:b20a->b0e0,03c4@ffb3b8:0000->5500,normal-bit7-clear-to-b0e0
+66,1,ffb0bc,FILE 1  TUTORIAL BNK,FILE 1  TUTORIAL BNK,0,b392,ffb392,03c0@ffb3a6:b392->b20a ; 03c0@ffb3b2:b20a->b0e0,03c4@ffb3b8:0000->6600,normal-bit7-clear-to-b0e0
+77,1,ffb0bc,FILE 1  TUTORIAL BNK,FILE 1  TUTORIAL BNK,0,b392,ffb392,03c0@ffb3a6:b392->b20a ; 03c0@ffb3b2:b20a->b0e0,03c4@ffb3b8:0000->7700,normal-bit7-clear-to-b0e0
+88,1,ffb0bc,FILE 1  TUTORIAL BNK,FILE 1  TUTORIAL BNK,0,b392,ffb392,03c0@ffb3a6:b392->b20a,03c4@ffb3b8:0000->0800,normal-bit7-set-to-b20a
+99,1,ffb0bc,FILE 1  TUTORIAL BNK,FILE 1  TUTORIAL BNK,0,b392,ffb392,03c0@ffb3a6:b392->b20a,03c4@ffb3b8:0000->1900,normal-bit7-set-to-b20a
+aa,1,ffb0bc,FILE 1  TUTORIAL BNK,FILE 1  TUTORIAL BNK,0,b392,ffb392,03c0@ffb3a6:b392->b20a,03c4@ffb3b8:0000->2a00,normal-bit7-set-to-b20a
+bb,1,ffb0bc,FILE 1  TUTORIAL BNK,FILE 1  TUTORIAL BNK,0,b392,ffb392,03c0@ffb3a6:b392->b20a,03c4@ffb3b8:0000->3b00,normal-bit7-set-to-b20a
+cc,1,ffb0bc,FILE 1  TUTORIAL BNK,FILE 1  TUTORIAL BNK,0,b392,ffb392,03c2@ffb3c0:b392->b392 ; 03c0@ffb3f4:b392->b392,,special-b3c0
+dd,1,ffb0bc,FILE 1  TUTORIAL BNK,FILE 1  TUTORIAL BNK,0,b392,ffb392,03c2@ffb3c0:b392->b392 ; 03c0@ffb3f4:b392->b392,,special-b3c0
+ee,1,ffb0bc,FILE 1  TUTORIAL BNK,FILE 1  TUTORIAL BNK,0,b392,ffb392,03c2@ffb3c0:b392->b392 ; 03c0@ffb3f4:b392->b392,,special-b3c0
+ff,1,ffb0bc,FILE 1  TUTORIAL BNK,FILE 1  TUTORIAL BNK,0,b392,ffb392,03c2@ffb3c0:b392->b392,03c4@f89ace:0000->0000,special-b3c0

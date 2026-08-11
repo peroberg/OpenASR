@@ -94,3 +94,22 @@ tail: $03C0=$B0E0 -> target $FFB0E0, then store via $FFB1BE to $03C4
 No raw byte produced a visible display change in this start state. This is a runtime
 observation about the current state and transport path, not a conclusion that the byte
 has no meaning in other states.
+
+## Interpretation and caveats
+
+[Verified] 256 raw values were consumed at `$FFB0D4`. Zero display changes were
+observed.
+
+[Verified] `$03C0` is rewritten by the handler: `$B392 -> $B20A -> $B0E0`.
+`$03C4` accumulates the byte in the high halfword lane; the `$22` case changed
+`$03C4` from `$4400` to `$2200`.
+
+[Likely] The panel protocol is multi-byte. A single byte is not a complete panel
+event.
+
+[OPEN] Frame length and format.
+
+Caveat: the `$00-$FF` sweep ran in one emulator run, so each byte advanced the state
+machine for the next byte. The per-raw-value results are not independent; only the
+aggregate result is valid: all 256 bytes were consumed, and none produced a display
+change in that chained run.

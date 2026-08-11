@@ -486,6 +486,11 @@ private:
 	u16 m_panel_sweep_end = 0xff;
 	u32 m_panel_sweep_dispatch_target = 0xffffffffU;
 	char m_panel_sweep_before[PANEL_TEXT_LENGTH]{};
+	bool m_panel_b_conversation_enabled = false;
+	bool m_panel_b_conversation_done = false;
+	u32 m_panel_b_conversation_seq = 0;
+	u32 m_panel_b_conversation_thrb = 0;
+	u32 m_panel_b_conversation_rhrb = 0;
 	bool m_panel_receive_live_active = false;
 	u32 m_panel_receive_live_srb_reads = 0;
 	u32 m_panel_receive_live_rhrb_reads = 0;
@@ -1606,6 +1611,15 @@ void asr10_boot_state::machine_reset()
 	m_panel_sweep_dispatch_target = 0xffffffffU;
 	std::fill(std::begin(m_panel_sweep_before), std::end(m_panel_sweep_before), 0);
 	m_panel_sweep_timer->adjust(attotime::never);
+	{
+		const char *const panel_b_conversation = std::getenv("ASR10_PANEL_B_CONVERSATION");
+		m_panel_b_conversation_enabled =
+			panel_b_conversation && panel_b_conversation[0] && panel_b_conversation[0] != '0';
+	}
+	m_panel_b_conversation_done = false;
+	m_panel_b_conversation_seq = 0;
+	m_panel_b_conversation_thrb = 0;
+	m_panel_b_conversation_rhrb = 0;
 	m_panel_receive_live_active = false;
 	m_panel_receive_live_srb_reads = 0;
 	m_panel_receive_live_rhrb_reads = 0;
@@ -3119,7 +3133,22 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 	// bytes are injected into channel B's RX FIFO, not shadowed here.
 	const u8 srb_before_rhrb = (address == 0x00fc4816 && ACCESSING_BITS_0_7) ? u8(m_duart->read(0x09)) : 0;
 	const int fifo_before_read = m_duart->m_chanB->rx_fifo_count();
+	const u16 conv_03c0_before = lowmem_word(0x03c0);
+	const u16 conv_03c4_before = lowmem_word(0x03c4);
 	u16 raw_data = ACCESSING_BITS_0_7 ? m_duart->read(word) : 0;
+	if (!machine().side_effects_disabled() && m_panel_b_conversation_enabled &&
+		!m_panel_b_conversation_done && ACCESSING_BITS_0_7 && address == 0x00fc4816 &&
+		(fifo_before_read || pc == 0x00ffb0d4))
+	{
+		m_panel_b_conversation_seq++;
+		m_panel_b_conversation_rhrb++;
+		osd_printf_info("ASR10_PANEL_B_CONVERSATION seq=%u dir=RX reg=RHRB time=%s pc=%06x "
+			"value=%02x fifo_before=%d fifo_after=%d state03c0_before=%04x state03c0_after=%04x "
+			"buf03c4_before=%04x buf03c4_after=%04x\n",
+			m_panel_b_conversation_seq, machine().time().to_string(), pc, u8(raw_data),
+			fifo_before_read, m_duart->m_chanB->rx_fifo_count(),
+			conv_03c0_before, lowmem_word(0x03c0), conv_03c4_before, lowmem_word(0x03c4));
+	}
 	if (!machine().side_effects_disabled() && m_rx_event_trace_enabled && ACCESSING_BITS_0_7 &&
 		(address == 0x00fc4812 || address == 0x00fc4816))
 	{
@@ -3271,6 +3300,17 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 	(void)0;
 	if (ACCESSING_BITS_0_7)
 		m_duart->write(word, u8(data));
+	if (!machine().side_effects_disabled() && m_panel_b_conversation_enabled &&
+		!m_panel_b_conversation_done && ACCESSING_BITS_0_7 && address == 0x00fc4817)
+	{
+		m_panel_b_conversation_seq++;
+		m_panel_b_conversation_thrb++;
+		osd_printf_info("ASR10_PANEL_B_CONVERSATION seq=%u dir=TX reg=THRB time=%s pc=%06x "
+			"value=%02x state03c0_before=%04x state03c0_after=%04x "
+			"buf03c4_before=%04x buf03c4_after=%04x\n",
+			m_panel_b_conversation_seq, machine().time().to_string(), pc, u8(data),
+			lowmem_word(0x03c0), lowmem_word(0x03c0), lowmem_word(0x03c4), lowmem_word(0x03c4));
+	}
 	if (!machine().side_effects_disabled() && m_step0_runtime_trace_enabled && ACCESSING_BITS_0_7)
 	{
 		if (address == 0x00fc4807)
@@ -3479,6 +3519,17 @@ void asr10_boot_state::panel_receive_byte(u8 data)
 		m_panel_receive_live_active = true;
 		start_pc_profile(m_step0_pc_profiles[1], "B_FILE1");
 		osd_printf_info("ASR10_PANEL_RECEIVE_LIVE event=active display=\"%s\"\n", m_panel_text);
+	}
+	if (m_panel_b_conversation_enabled && !m_panel_b_conversation_done &&
+		strstr(m_panel_text, "FILE 1  TUTORIAL BNK"))
+	{
+		m_panel_b_conversation_done = true;
+		osd_printf_info("ASR10_PANEL_B_CONVERSATION_SUMMARY seq=%u tx_thrb=%u rx_rhrb=%u "
+			"display=\"%s\" state03c0=%04x buf03c4=%04x time=%s\n",
+			m_panel_b_conversation_seq, m_panel_b_conversation_thrb, m_panel_b_conversation_rhrb,
+			current_display_text().c_str(), lowmem_word(0x03c0), lowmem_word(0x03c4),
+			machine().time().to_string());
+		machine().schedule_exit();
 	}
 	if (m_step0_runtime_trace_enabled && m_panel_receive_live_active && !m_step0_file1_context_logged)
 	{
