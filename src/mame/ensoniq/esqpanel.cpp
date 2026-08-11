@@ -901,6 +901,29 @@ std::string asr10panel_device::annunciator_summary() const
 	return result;
 }
 
+static INPUT_PORTS_START(asr10panel_device)
+	PORT_START("buttons")
+	PORT_BIT(0x0001, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_0A") PORT_CODE(KEYCODE_DOWN) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x0a)
+	PORT_BIT(0x0002, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_05") PORT_CODE(KEYCODE_5) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x05)
+	PORT_BIT(0x0004, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_06") PORT_CODE(KEYCODE_6) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x06)
+	PORT_BIT(0x0008, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_07") PORT_CODE(KEYCODE_7) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x07)
+	PORT_BIT(0x0010, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_10") PORT_CODE(KEYCODE_1) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x10)
+	PORT_BIT(0x0020, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_11") PORT_CODE(KEYCODE_2) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x11)
+	PORT_BIT(0x0040, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_15") PORT_CODE(KEYCODE_S) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x15)
+	PORT_BIT(0x0080, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_1B") PORT_CODE(KEYCODE_B) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x1b)
+	PORT_BIT(0x0100, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_20") PORT_CODE(KEYCODE_R) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x20)
+INPUT_PORTS_END
+
+ioport_constructor asr10panel_device::device_input_ports() const
+{
+	return INPUT_PORTS_NAME(asr10panel_device);
+}
+
+INPUT_CHANGED_MEMBER(asr10panel_device::button_change)
+{
+	esqpanel_device::set_button(param, newval != 0);
+}
+
 asr10panel_device::asr10panel_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :
 	esqpanel_device(mconfig, ASR10PANEL, tag, owner, clock),
 	m_vfd(*this, "vfd"),

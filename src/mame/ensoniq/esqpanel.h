@@ -106,10 +106,13 @@ public:
 	std::string current_text() const;
 	std::string annunciator_summary() const;
 
+	DECLARE_INPUT_CHANGED_MEMBER(button_change);
+
 protected:
 	virtual void device_add_mconfig(machine_config &config) override ATTR_COLD;
 	virtual void device_start() override ATTR_COLD;
 	virtual void device_reset() override ATTR_COLD;
+	virtual ioport_constructor device_input_ports() const override;
 	virtual void rcv_complete() override;
 	virtual void send_to_display(uint8_t data) override;
 
