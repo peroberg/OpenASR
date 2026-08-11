@@ -530,6 +530,11 @@ private:
 	bool m_panel_es5506_after_frame_trace = false;
 	bool m_panel_es5506_after_frame_active = false;
 	u32 m_panel_es5506_after_frame_write_count = 0;
+	bool m_panel_03c0_block_trace_enabled = false;
+	bool m_panel_03c0_block_trace_active = false;
+	bool m_panel_03c0_block_trace_done = false;
+	u32 m_panel_03c0_block_trace_count = 0;
+	std::array<u8, 16> m_panel_frame_block_before{};
 	bool m_panel_receive_live_active = false;
 	u32 m_panel_receive_live_srb_reads = 0;
 	u32 m_panel_receive_live_rhrb_reads = 0;
@@ -1747,6 +1752,17 @@ void asr10_boot_state::machine_reset()
 	m_panel_es5506_after_frame_trace = false;
 	m_panel_es5506_after_frame_active = false;
 	m_panel_es5506_after_frame_write_count = 0;
+	m_panel_03c0_block_trace_enabled = false;
+	m_panel_03c0_block_trace_active = false;
+	m_panel_03c0_block_trace_done = false;
+	m_panel_03c0_block_trace_count = 0;
+	m_panel_frame_block_before.fill(0);
+	if (const char *const block_trace = std::getenv("ASR10_PANEL_03C0_BLOCK_TRACE");
+		block_trace && block_trace[0] && block_trace[0] != '0')
+	{
+		m_panel_03c0_block_trace_enabled = true;
+		osd_printf_info("ASR10_PANEL_03C0_BLOCK event=config seconds=20\n");
+	}
 	m_panel_frame_timer->adjust(attotime::never);
 	if (const char *const delay = std::getenv("ASR10_PANEL_FRAME_DELAY_US"); delay && delay[0])
 	{
@@ -2292,6 +2308,16 @@ u8 asr10_boot_state::maincpu_iack_r(u8 level)
 	if (!m_maincpu->cs0_covers(0))
 	{
 		const u16 data = m_lowmem_shadow[offset] & mem_mask;
+		if (!machine().side_effects_disabled() && m_panel_03c0_block_trace_active &&
+			byte_address >= 0x03c0 && byte_address <= 0x03ce)
+		{
+			const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+			m_panel_03c0_block_trace_count++;
+			osd_printf_info("ASR10_PANEL_03C0_BLOCK seq=%u direction=read time=%s pc=%06x "
+				"address=%04x value=%04x mem_mask=%04x\n",
+				m_panel_03c0_block_trace_count, machine().time().to_string(), pc,
+				byte_address, data, mem_mask);
+		}
 		if (byte_address == 0x04ee && !machine().side_effects_disabled())
 			(void)0;
 		else if (byte_address == 0x049c && !machine().side_effects_disabled())
@@ -2479,6 +2505,15 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_sweep_fire)
 
 TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_file1_tx_done)
 {
+	if (m_panel_03c0_block_trace_active && !m_panel_03c0_block_trace_done)
+	{
+		m_panel_03c0_block_trace_done = true;
+		m_panel_03c0_block_trace_active = false;
+		osd_printf_info("ASR10_PANEL_03C0_BLOCK_SUMMARY access_count=%u display=\"%s\" time=%s\n",
+			m_panel_03c0_block_trace_count, current_display_text().c_str(), machine().time().to_string());
+		machine().schedule_exit();
+		return;
+	}
 	if (!m_panel_file1_tx_window_enabled || m_panel_file1_tx_window_done)
 		return;
 
@@ -2529,17 +2564,40 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_frame_fire)
 				ready_slots++;
 		}
 		const bool changed = std::strcmp(m_panel_frame_display_before, current_display_text().c_str()) != 0;
+		std::string block_before;
+		std::string block_after;
+		std::string block_diff;
+		for (u32 offset = 0; offset != m_panel_frame_block_before.size(); offset++)
+		{
+			const u8 after = lowmem_byte(0x03c0 + offset);
+			if (offset)
+			{
+				block_before += ' ';
+				block_after += ' ';
+			}
+			block_before += util::string_format("%02x", m_panel_frame_block_before[offset]);
+			block_after += util::string_format("%02x", after);
+			if (m_panel_frame_block_before[offset] != after)
+			{
+				if (!block_diff.empty())
+					block_diff += ';';
+				block_diff += util::string_format("%04x:%02x->%02x",
+					0x03c0 + offset, m_panel_frame_block_before[offset], after);
+			}
+		}
 		osd_printf_info("ASR10_PANEL_FRAME_RESULT completion_seen=%u completion_pc=%06x "
 			"display_before=\"%s\" display_after=\"%s\" changed=%u "
 			"state03c0_before=%04x state03c0_after=%04x buf03c4_before=%04x "
 			"buf03c4_after=%04x ready_slots=%u slot_base=%04x slot_end=%04x "
-			"slot_count=%u es5506_writes=%u time=%s\n",
+			"slot_count=%u es5506_writes=%u block03c0_before=\"%s\" "
+			"block03c0_after=\"%s\" block03c0_diff=\"%s\" time=%s\n",
 			m_panel_frame_completion_seen ? 1 : 0, m_panel_frame_completion_pc,
 			m_panel_frame_display_before, current_display_text().c_str(),
 			changed ? 1 : 0,
 			m_panel_frame_state_before, lowmem_word(0x03c0), m_panel_frame_buf_before,
 			lowmem_word(0x03c4), ready_slots, slot_base, slot_end, slot_count,
-			m_panel_es5506_after_frame_write_count, machine().time().to_string());
+			m_panel_es5506_after_frame_write_count, block_before.c_str(), block_after.c_str(),
+			block_diff.c_str(), machine().time().to_string());
 		if (m_panel_frontpanel_sweep_enabled)
 		{
 			osd_printf_info("ASR10_PANEL_FRONTPANEL_SWEEP_RESULT first=%02x second=%02x "
@@ -2731,6 +2789,16 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 
 	const u16 previous = m_lowmem_shadow[offset];
 	COMBINE_DATA(&m_lowmem_shadow[offset]);
+	if (!machine().side_effects_disabled() && m_panel_03c0_block_trace_active &&
+		byte_address >= 0x03c0 && byte_address <= 0x03ce)
+	{
+		const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+		m_panel_03c0_block_trace_count++;
+		osd_printf_info("ASR10_PANEL_03C0_BLOCK seq=%u direction=write time=%s pc=%06x "
+			"address=%04x previous=%04x value=%04x mem_mask=%04x\n",
+			m_panel_03c0_block_trace_count, machine().time().to_string(), pc,
+			byte_address, previous, m_lowmem_shadow[offset], mem_mask);
+	}
 	if (!machine().side_effects_disabled())
 		rx_event_note_slot_write(m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff,
 			byte_address, previous, m_lowmem_shadow[offset], mem_mask);
@@ -3922,6 +3990,15 @@ void asr10_boot_state::panel_receive_byte(u8 data)
 			current_display_text().c_str(), machine().time().to_string());
 		m_panel_file1_tx_timer->adjust(attotime::from_seconds(20));
 	}
+	if (m_panel_03c0_block_trace_enabled && !m_panel_03c0_block_trace_active &&
+		!m_panel_03c0_block_trace_done && strstr(m_panel_text, "FILE 1  TUTORIAL BNK"))
+	{
+		m_panel_03c0_block_trace_active = true;
+		m_panel_03c0_block_trace_count = 0;
+		osd_printf_info("ASR10_PANEL_03C0_BLOCK event=active display=\"%s\" time=%s\n",
+			current_display_text().c_str(), machine().time().to_string());
+		m_panel_file1_tx_timer->adjust(attotime::from_seconds(20));
+	}
 	if (m_panel_frame_enabled && !m_panel_frame_active && !m_panel_frame_result_done &&
 		strstr(m_panel_text, "FILE 1  TUTORIAL BNK"))
 	{
@@ -3931,6 +4008,8 @@ void asr10_boot_state::panel_receive_byte(u8 data)
 		m_panel_frame_display_before[PANEL_TEXT_LENGTH - 1] = 0;
 		m_panel_frame_state_before = lowmem_word(0x03c0);
 		m_panel_frame_buf_before = lowmem_word(0x03c4);
+		for (u32 offset = 0; offset != m_panel_frame_block_before.size(); offset++)
+			m_panel_frame_block_before[offset] = lowmem_byte(0x03c0 + offset);
 		m_panel_frame_index = 0;
 		osd_printf_info("ASR10_PANEL_FRAME event=active display=\"%s\" time=%s "
 			"state03c0=%04x buf03c4=%04x delay_us=%u length=%u\n",

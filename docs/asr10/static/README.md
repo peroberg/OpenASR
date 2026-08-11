@@ -479,9 +479,12 @@ OS-filen i respektive avbild: block 24, diskoffset `0x3000`. V1.61 173 block
 | `call-graph-observations-v350-rx22.csv` | 5 + rubrik | **runtime-observationer** | `aa0ee0423c32f1ab` |
 | `os-binding-table.csv` | 723 + rubrik | **genererad** | `600f646943d5a3a7` |
 | `panel-file1-tx-window-v350.csv` | 11 + rubrik | **genererad** | `e8deb6af538aef62` |
+| `panel-03c0-block-trace-v350-file1.csv` | 475 + rubrik | **genererad** | `39410814e2bbb5d8` |
+| `panel-frame-blockdiff-v350-4040.csv` | 1 + rubrik | **genererad** | `bddf8c2f54b131fa` |
 | `panel-frame-injection-v350-4001.csv` | 5 + rubrik | **genererad** | `f94f851dc31e8bbf` |
 | `panel-frame-injection-v350-4040-es5506.csv` | 3 + rubrik | **genererad** | `7c6adea901116f51` |
 | `panel-frontpanel-branch-sweep-v350-003f.csv` | 64 + rubrik | **genererad** | `373cb59ed83720e8` |
+| `panel-frontpanel-branch-sweep-v350-407f.csv` | 64 + rubrik | **genererad** | `667d7173527105ce` |
 | `panel-frontpanel-branch-sweep-v350-80bf.csv` | 64 + rubrik | **genererad** | `68690a0477e2e690` |
 | `panel-raw-byte-sweep-v350.csv` | 256 + rubrik | **genererad** | `8a575265c39f66fa` |
 | `panel-reply-substitution-v350.csv` | 11 + rubrik | **genererad, partiell** | `17bfe2306e3f2ba4` |

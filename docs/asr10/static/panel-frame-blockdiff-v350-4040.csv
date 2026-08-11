@@ -1,0 +1,4 @@
+# Generated from /tmp/asr10-frame-4040-blockdiff.log. Do not edit by hand.
+# Run: ASR10_PANEL_FRAME_SEQUENCE=40,40, V3.50 FILE 1, 50 ms settle, no -log.
+frame,display_before,display_after,changed,state03c0_before,state03c0_after,buf03c4_before,buf03c4_after,ready_slots,block03c0_before,block03c0_after,block03c0_diff
+40 40,FILE 1  TUTORIAL BNK,FILE 1  TUTORIAL BNK,0,b392,b392,0000,2400,0,b3 92 b3 92 00 00 00 00 00 00 00 00 00 00 00 00,b3 92 b3 92 24 00 00 00 00 00 00 00 00 00 00 00,03c4:00->24
