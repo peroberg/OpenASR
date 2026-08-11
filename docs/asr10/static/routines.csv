@@ -15,7 +15,7 @@ rom_f8c1a2,cp_command_handshake,cp_command_handshake,resolved,$F8C1A2,$F8C1BD,RO
 rom_f8c1be,scc_config_helper,scc_config_helper,partially_resolved,$F8C1BE,,ROM,ROM,"bindningsslot $8D50 pekar hit",start-verified,mc68302-status.md,"anropad av bade scc1_init och scc2_init; funktion ej avkodad"
 rom_f8c142,lrclk_edge_detect,lrclk_edge_detect,resolved,$F8C142,,ROM,ROM,"kand PB3/LRCLK-flankdetektor",start-verified,mc68302-status.md,"$7FFF timeout -> ERROR 009"
 rom_f884be,duart_dispatch,duart_dispatch,resolved,$F884BE,,ROM,ROM,"kand DUART-dispatcher",start-verified,call-graph.md,
-rom_f97662,,,unresolved_high_priority,$F97662,,ROM,ROM,"bindningsslot $8030; 203 anropsstallen fran ROM",start-verified,static-analysis,"HOGSTA PRIORITET - mest anropade adressen i maskinen"
+rom_f97662,host_port_verified_write_read,host_port_verified_write_read,resolved,$F97662,$F976AF,ROM,ROM,"bindningsslot $8030; 203 anropsstallen fran ROM",verified,panel-button-sweep-v350.md,"$03C8-gated host-port write/read with compare/retry"
 rom_f95eaa,,,unresolved_high_priority,$F95EAA,,ROM,ROM,"1 anrop i V1.61, 33 i V3.50",start-verified,static-analysis,"storsta versionsskillnaden i materialet"
 os_008d56,scc1_isr,scc1_isr,resolved,$008D56,$008D91,OS-RAM,V161;V350,"RTE pa $008D90; adressen verifierat IDENTISK i bada versionerna",verified,mc68302-status.md,"EOI ISR <- $2000"
 os_008d92,scc2_isr,scc2_isr,resolved,$008D92,$008DCF,OS-RAM,V161;V350,"RTE pa $008DCE; adressen verifierat IDENTISK i bada versionerna",verified,mc68302-status.md,"EOI ISR <- $0400"

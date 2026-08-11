@@ -527,6 +527,22 @@ private:
 	u8 m_panel_frontpanel_sweep_end = 0x3f;
 	u8 m_panel_frontpanel_sweep_second = 0x40;
 	u32 m_panel_frontpanel_sweep_count = 0;
+	bool m_panel_button_sweep_enabled = false;
+	bool m_panel_button_sweep_active = false;
+	bool m_panel_button_sweep_done = false;
+	u8 m_panel_button_sweep_current = 0;
+	u8 m_panel_button_sweep_end = 0x3f;
+	u32 m_panel_button_sweep_phase = 0;
+	u32 m_panel_button_sweep_count = 0;
+	u16 m_panel_button_sweep_state_before = 0;
+	u16 m_panel_button_sweep_buf_before = 0;
+	u16 m_panel_button_sweep_gate_before = 0;
+	u16 m_panel_button_sweep_state_after_press = 0;
+	u16 m_panel_button_sweep_buf_after_press = 0;
+	u16 m_panel_button_sweep_gate_after_press = 0;
+	u32 m_panel_button_sweep_ready_after_press = 0;
+	char m_panel_button_sweep_display_before[PANEL_TEXT_LENGTH]{};
+	char m_panel_button_sweep_display_after_press[PANEL_TEXT_LENGTH]{};
 	bool m_panel_es5506_after_frame_trace = false;
 	bool m_panel_es5506_after_frame_active = false;
 	u32 m_panel_es5506_after_frame_write_count = 0;
@@ -824,6 +840,7 @@ private:
 	u8 lowmem_byte(u32 address) const;
 	u16 lowmem_word(u32 address) const;
 	u32 lowmem_long(u32 address) const;
+	u32 panel_ready_slot_count() const;
 
 
 
@@ -1749,6 +1766,22 @@ void asr10_boot_state::machine_reset()
 	m_panel_frontpanel_sweep_end = 0x3f;
 	m_panel_frontpanel_sweep_second = 0x40;
 	m_panel_frontpanel_sweep_count = 0;
+	m_panel_button_sweep_enabled = false;
+	m_panel_button_sweep_active = false;
+	m_panel_button_sweep_done = false;
+	m_panel_button_sweep_current = 0;
+	m_panel_button_sweep_end = 0x3f;
+	m_panel_button_sweep_phase = 0;
+	m_panel_button_sweep_count = 0;
+	m_panel_button_sweep_state_before = 0;
+	m_panel_button_sweep_buf_before = 0;
+	m_panel_button_sweep_gate_before = 0;
+	m_panel_button_sweep_state_after_press = 0;
+	m_panel_button_sweep_buf_after_press = 0;
+	m_panel_button_sweep_gate_after_press = 0;
+	m_panel_button_sweep_ready_after_press = 0;
+	std::fill(std::begin(m_panel_button_sweep_display_before), std::end(m_panel_button_sweep_display_before), 0);
+	std::fill(std::begin(m_panel_button_sweep_display_after_press), std::end(m_panel_button_sweep_display_after_press), 0);
 	m_panel_es5506_after_frame_trace = false;
 	m_panel_es5506_after_frame_active = false;
 	m_panel_es5506_after_frame_write_count = 0;
@@ -1809,6 +1842,32 @@ void asr10_boot_state::machine_reset()
 			"delay_us=%u settle_ms=%u\n",
 			m_panel_frontpanel_sweep_current, m_panel_frontpanel_sweep_end,
 			m_panel_frontpanel_sweep_second, m_panel_frame_delay_us, m_panel_frame_settle_ms);
+	}
+	if (const char *const button_sweep = std::getenv("ASR10_PANEL_BUTTON_SWEEP");
+		button_sweep && button_sweep[0] && button_sweep[0] != '0')
+	{
+		m_panel_frame_enabled = true;
+		m_panel_button_sweep_enabled = true;
+		if (const char *const start = std::getenv("ASR10_PANEL_BUTTON_SWEEP_START"); start && start[0])
+		{
+			char *end = nullptr;
+			const unsigned long parsed = std::strtoul(start, &end, 0);
+			if (end && *end == 0 && parsed <= 0x3f)
+				m_panel_button_sweep_current = u8(parsed);
+		}
+		if (const char *const end_value = std::getenv("ASR10_PANEL_BUTTON_SWEEP_END"); end_value && end_value[0])
+		{
+			char *end = nullptr;
+			const unsigned long parsed = std::strtoul(end_value, &end, 0);
+			if (end && *end == 0 && parsed <= 0x3f)
+				m_panel_button_sweep_end = u8(parsed);
+		}
+		if (m_panel_button_sweep_current > m_panel_button_sweep_end)
+			m_panel_button_sweep_current = m_panel_button_sweep_end;
+		osd_printf_info("ASR10_PANEL_BUTTON_SWEEP event=config start=%02x end=%02x "
+			"delay_us=%u settle_ms=%u\n",
+			m_panel_button_sweep_current, m_panel_button_sweep_end,
+			m_panel_frame_delay_us, m_panel_frame_settle_ms);
 	}
 	if (const char *const frame = std::getenv("ASR10_PANEL_FRAME_SEQUENCE"); frame && frame[0])
 	{
@@ -2369,6 +2428,21 @@ u32 asr10_boot_state::lowmem_long(u32 address) const
 	return (u32(lowmem_word(address)) << 16) | lowmem_word(address + 2);
 }
 
+u32 asr10_boot_state::panel_ready_slot_count() const
+{
+	u32 ready_slots = 0;
+	const u16 slot_base = lowmem_word(0x00c6);
+	const u16 slot_end = lowmem_word(0x00c8);
+	const u32 span = (slot_end >= slot_base) ? (slot_end - slot_base) : 0;
+	const u32 slot_count = span / 0x16;
+	for (u32 slot = 0; slot < slot_count && slot < 128; slot++)
+	{
+		const u32 base = slot_base + slot * 0x16;
+		if (lowmem_byte(base + 2) != lowmem_byte(base + 3))
+			ready_slots++;
+	}
+	return ready_slots;
+}
 
 
 
@@ -2529,6 +2603,108 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_frame_fire)
 {
 	if (!m_panel_frame_enabled || !m_panel_frame_active || machine().side_effects_disabled())
 		return;
+
+	if (m_panel_button_sweep_enabled)
+	{
+		const u8 button = m_panel_button_sweep_current;
+		const u8 value = (m_panel_button_sweep_phase == 0) ? (0x80 | button)
+			: (m_panel_button_sweep_phase == 1) ? 0x00
+			: (m_panel_button_sweep_phase == 2) ? button
+			: (m_panel_button_sweep_phase == 3) ? 0x00
+			: 0x00;
+
+		if (m_panel_button_sweep_phase < 2)
+		{
+			osd_printf_info("ASR10_PANEL_BUTTON_SWEEP event=inject_press button=%02x index=%u "
+				"value=%02x time=%s state03c0_before=%04x buf03c4_before=%04x gate03c8_before=%04x\n",
+				button, m_panel_button_sweep_phase, value, machine().time().to_string(),
+				lowmem_word(0x03c0), lowmem_word(0x03c4), lowmem_word(0x03c8));
+			panel_c_queue_rx(value, "panel_button_sweep_press", m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff);
+			m_panel_button_sweep_phase++;
+			m_panel_frame_timer->adjust(m_panel_button_sweep_phase < 2
+				? attotime::from_usec(m_panel_frame_delay_us)
+				: attotime::from_msec(m_panel_frame_settle_ms));
+			return;
+		}
+
+		if (m_panel_button_sweep_phase == 2)
+		{
+			m_panel_button_sweep_state_after_press = lowmem_word(0x03c0);
+			m_panel_button_sweep_buf_after_press = lowmem_word(0x03c4);
+			m_panel_button_sweep_gate_after_press = lowmem_word(0x03c8);
+			m_panel_button_sweep_ready_after_press = panel_ready_slot_count();
+			const std::string after_press = current_display_text();
+			std::strncpy(m_panel_button_sweep_display_after_press, after_press.c_str(), PANEL_TEXT_LENGTH - 1);
+			m_panel_button_sweep_display_after_press[PANEL_TEXT_LENGTH - 1] = 0;
+			osd_printf_info("ASR10_PANEL_BUTTON_SWEEP event=after_press button=%02x display=\"%s\" "
+				"time=%s state03c0=%04x buf03c4=%04x gate03c8=%04x ready_slots=%u\n",
+				button, m_panel_button_sweep_display_after_press, machine().time().to_string(),
+				m_panel_button_sweep_state_after_press, m_panel_button_sweep_buf_after_press,
+				m_panel_button_sweep_gate_after_press, m_panel_button_sweep_ready_after_press);
+		}
+
+		if (m_panel_button_sweep_phase >= 2 && m_panel_button_sweep_phase < 4)
+		{
+			osd_printf_info("ASR10_PANEL_BUTTON_SWEEP event=inject_release button=%02x index=%u "
+				"value=%02x time=%s state03c0_before=%04x buf03c4_before=%04x gate03c8_before=%04x\n",
+				button, m_panel_button_sweep_phase - 2, value, machine().time().to_string(),
+				lowmem_word(0x03c0), lowmem_word(0x03c4), lowmem_word(0x03c8));
+			panel_c_queue_rx(value, "panel_button_sweep_release", m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff);
+			m_panel_button_sweep_phase++;
+			m_panel_frame_timer->adjust(m_panel_button_sweep_phase < 4
+				? attotime::from_usec(m_panel_frame_delay_us)
+				: attotime::from_msec(m_panel_frame_settle_ms));
+			return;
+		}
+
+		const u16 state_after_release = lowmem_word(0x03c0);
+		const u16 buf_after_release = lowmem_word(0x03c4);
+		const u16 gate_after_release = lowmem_word(0x03c8);
+		const u32 ready_after_release = panel_ready_slot_count();
+		const bool changed_press = std::strcmp(m_panel_button_sweep_display_before,
+			m_panel_button_sweep_display_after_press) != 0;
+		const bool changed_release = std::strcmp(m_panel_button_sweep_display_before,
+			current_display_text().c_str()) != 0;
+		osd_printf_info("ASR10_PANEL_BUTTON_SWEEP_RESULT button=%02x press_first=%02x release_first=%02x "
+			"display_before=\"%s\" display_after_press=\"%s\" display_after_release=\"%s\" "
+			"changed_press=%u changed_release=%u state03c0_before=%04x state03c0_after_press=%04x "
+			"state03c0_after_release=%04x buf03c4_before=%04x buf03c4_after_press=%04x "
+			"buf03c4_after_release=%04x gate03c8_before=%04x gate03c8_after_press=%04x "
+			"gate03c8_after_release=%04x ready_slots_after_press=%u ready_slots_after_release=%u time=%s\n",
+			button, 0x80 | button, button,
+			m_panel_button_sweep_display_before, m_panel_button_sweep_display_after_press,
+			current_display_text().c_str(), changed_press ? 1 : 0, changed_release ? 1 : 0,
+			m_panel_button_sweep_state_before, m_panel_button_sweep_state_after_press,
+			state_after_release, m_panel_button_sweep_buf_before,
+			m_panel_button_sweep_buf_after_press, buf_after_release,
+			m_panel_button_sweep_gate_before, m_panel_button_sweep_gate_after_press,
+			gate_after_release, m_panel_button_sweep_ready_after_press,
+			ready_after_release, machine().time().to_string());
+		m_panel_button_sweep_count++;
+		if (!changed_press && !changed_release && m_panel_button_sweep_current < m_panel_button_sweep_end)
+		{
+			m_panel_button_sweep_current++;
+			m_panel_button_sweep_phase = 0;
+			const std::string before = current_display_text();
+			std::strncpy(m_panel_button_sweep_display_before, before.c_str(), PANEL_TEXT_LENGTH - 1);
+			m_panel_button_sweep_display_before[PANEL_TEXT_LENGTH - 1] = 0;
+			m_panel_button_sweep_display_after_press[0] = 0;
+			m_panel_button_sweep_state_before = lowmem_word(0x03c0);
+			m_panel_button_sweep_buf_before = lowmem_word(0x03c4);
+			m_panel_button_sweep_gate_before = lowmem_word(0x03c8);
+			m_panel_frame_timer->adjust(attotime::from_msec(20));
+			return;
+		}
+
+		osd_printf_info("ASR10_PANEL_BUTTON_SWEEP_SUMMARY buttons=%u stopped_on_change=%u "
+			"last_button=%02x display=\"%s\" time=%s\n",
+			m_panel_button_sweep_count, (changed_press || changed_release) ? 1 : 0,
+			button, current_display_text().c_str(), machine().time().to_string());
+		m_panel_button_sweep_done = true;
+		m_panel_frame_result_done = true;
+		machine().schedule_exit();
+		return;
+	}
 
 	if (m_panel_frame_index < m_panel_frame_length)
 	{
@@ -4006,6 +4182,26 @@ void asr10_boot_state::panel_receive_byte(u8 data)
 		const std::string before = current_display_text();
 		std::strncpy(m_panel_frame_display_before, before.c_str(), PANEL_TEXT_LENGTH - 1);
 		m_panel_frame_display_before[PANEL_TEXT_LENGTH - 1] = 0;
+		if (m_panel_button_sweep_enabled)
+		{
+			m_panel_button_sweep_active = true;
+			m_panel_button_sweep_phase = 0;
+			std::strncpy(m_panel_button_sweep_display_before, before.c_str(), PANEL_TEXT_LENGTH - 1);
+			m_panel_button_sweep_display_before[PANEL_TEXT_LENGTH - 1] = 0;
+			m_panel_button_sweep_state_before = lowmem_word(0x03c0);
+			m_panel_button_sweep_buf_before = lowmem_word(0x03c4);
+			m_panel_button_sweep_gate_before = lowmem_word(0x03c8);
+			osd_printf_info("ASR10_PANEL_BUTTON_SWEEP event=active display=\"%s\" time=%s "
+				"button=%02x state03c0=%04x buf03c4=%04x gate03c8=%04x delay_us=%u settle_ms=%u\n",
+				m_panel_button_sweep_display_before, machine().time().to_string(),
+				m_panel_button_sweep_current, m_panel_button_sweep_state_before,
+				m_panel_button_sweep_buf_before, m_panel_button_sweep_gate_before,
+				m_panel_frame_delay_us, m_panel_frame_settle_ms);
+			m_pc_timer->adjust(attotime::from_ticks(1, m_maincpu->clock()), 0,
+				attotime::from_ticks(1, m_maincpu->clock()));
+			m_panel_frame_timer->adjust(attotime::from_msec(100));
+			return;
+		}
 		m_panel_frame_state_before = lowmem_word(0x03c0);
 		m_panel_frame_buf_before = lowmem_word(0x03c4);
 		for (u32 offset = 0; offset != m_panel_frame_block_before.size(); offset++)

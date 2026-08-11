@@ -480,6 +480,7 @@ OS-filen i respektive avbild: block 24, diskoffset `0x3000`. V1.61 173 block
 | `os-binding-table.csv` | 723 + rubrik | **genererad** | `600f646943d5a3a7` |
 | `panel-file1-tx-window-v350.csv` | 11 + rubrik | **genererad** | `e8deb6af538aef62` |
 | `panel-03c0-block-trace-v350-file1.csv` | 475 + rubrik | **genererad** | `39410814e2bbb5d8` |
+| `panel-button-sweep-v350.csv` | 64 + rubrik | **genererad** | `8216a603bcf205b8` |
 | `panel-frame-blockdiff-v350-4040.csv` | 1 + rubrik | **genererad** | `bddf8c2f54b131fa` |
 | `panel-frame-injection-v350-4001.csv` | 5 + rubrik | **genererad** | `f94f851dc31e8bbf` |
 | `panel-frame-injection-v350-4040-es5506.csv` | 3 + rubrik | **genererad** | `7c6adea901116f51` |
@@ -489,7 +490,7 @@ OS-filen i respektive avbild: block 24, diskoffset `0x3000`. V1.61 173 block
 | `panel-raw-byte-sweep-v350.csv` | 256 + rubrik | **genererad** | `8a575265c39f66fa` |
 | `panel-reply-substitution-v350.csv` | 11 + rubrik | **genererad, partiell** | `17bfe2306e3f2ba4` |
 | `rom-abi-entrypoints.csv` | 1 054 + rubrik | **genererad** | `6293e5c9cffeb4f4` |
-| `routines.csv` | 25 + rubrik | **handkurerad** | `8aba2712c91a6a04` |
+| `routines.csv` | 25 + rubrik | **handkurerad** | `57f59f0f042b6c` |
 
 Genererade filer far **inte** redigeras for hand - de skrivs over vid nasta korning.
 Runtime-observationer hor hemma i en separat fil som slas ihop vid generering.

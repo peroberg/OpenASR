@@ -134,8 +134,9 @@ not broad pattern search. Prompts for E1-E4 are in `static/prompts-E1-E4.md`.
 - **PB9, PB10, PB11 consumers and physical sources.** ROM unmasks PB11/PB10/PB9 and the
   PB10/PB11 handlers are decoded, but the static absolute-search pass found no
   dekrementerare for `$0C3A/$0C3B` and no consumer for `$0C36/$0C37` within that method.
-- **`$F97662`** — 203 ROM call sites, unidentified. **`$F95EAA`** — 1 call in V1.61,
-  33 in V3.50, unidentified. Both tracked in `static/routines.csv` with empty `name`.
+- **`$F95EAA`** — 1 call in V1.61, 33 in V3.50, unidentified. `$F97662` is no
+  longer in this group: it is a `$03C8`-gated low-level host-port verified
+  write/read service; see `investigations/panel-button-sweep-v350.md`.
 - PAR value, ADC channel identity, PB3 LRCLK board frequency, channel A wiring
   (unchanged from previous status).
 

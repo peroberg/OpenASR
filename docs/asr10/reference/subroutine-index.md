@@ -689,13 +689,33 @@ registerhallna fordrojningar, anropar `$FFFF8ECA`, avmaskar SCC1+SCC2 i IMR.
 Runtime-observerad. **I V3.50 ligger samma kod pa `$00E48A-$00E4D5`** - adressen ar
 harledd via segment 2-regeln och inte runtime-observerad.
 
-## Tre hogst prioriterade oidentifierade rutiner
+## Hogst prioriterade oidentifierade rutiner
 
 | adress | varfor | status |
 |---|---|---|
-| `$F97662` | slot `$8030.w`, **203 anropsstallen fran ROM** - mest anropade adressen i maskinen | oidentifierad |
 | `$F95EAA` | 1 anrop i V1.61, **33 i V3.50** - storsta versionsskillnaden i materialet | oidentifierad |
 | `$00643C` | vad SCC-mottagningen producerar | oidentifierad |
 
 Sparas maskinellt i `../static/routines.csv` med `canonical_status =
 unresolved_high_priority`.
+
+### `$F97662` host_port_verified_write_read `[V]`
+
+Tidigare den mest anropade oidentifierade ROM-rutinen. Slot `$8030.w` pekar hit
+och statiken har 203 ROM-anropsstallen.
+
+`$F97662` testar först `$03C8.w`:
+
+```asm
+f97662  4a38 03c8       tst.b   $03c8.w
+f97666  66e4            bne     $f9764c
+```
+
+Om `$03C8` är icke-noll returnerar rutinen direkt. Om `$03C8` är noll utför
+rutinen en host-port-transaktion via `$FFFC3001`, skriver data med `movep`,
+läser tillbaka via `$F97718`, jämför mot ursprungsvärdet och provar om upp till
+tio gånger.
+
+`$03C8` är därmed en gateflagga, inte en kö eller mailbox. Identifierade ROM-
+skrivare i samma test-/kalibreringskluster sätter och nollställer flaggan runt
+lågnivåtransaktionerna; se `../investigations/panel-button-sweep-v350.md`.

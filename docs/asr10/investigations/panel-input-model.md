@@ -587,3 +587,27 @@ panelen i vila.
 
 Förbehåll: substitutionsspåret läggs ner som stimulusform. Piloten står kvar
 som giltig observation om bootens tuningfas.
+
+## Button protocol and FILE 1 sweep
+
+[Verified] MAME:s `esqpanel_device` implementerar protokollet:
+knapp = `($80|btn, $00)` / `(btn, $00)`, key down = `($80|key, vel)`,
+key pressure = `($40|key, pr)`, key up = `(key, $40)`.
+
+[Verified] Kodningen matchar completion-vägarna `$B43E`/`$B4CC`/`$B488`, och
+`subi.b #$1c` ger key -> MIDI-not `36 + key`, alltså C2 och uppåt.
+
+[Verified] `ESQPANEL1X22` är EPS-16/EPS-16+-panelen, 22 tecken, `eps_mode`,
+på DUART kanal B med MIDI på kanal A (`src/mame/ensoniq/esq5505.cpp:827`).
+ASR-10:s displaysträngar är 22 tecken.
+
+[Verified] De 192 tidigare ramarna hade andra byte `$40` och var
+klaviaturhändelser, inte knappar.
+
+[Verified] Knappsvepet `$00-$3F` från `FILE 1  TUTORIAL BNK` gav
+displayändringar för `$05`, `$06`, `$07`, `$09`, `$0A`, `$0B`, `$10`, `$11`,
+`$13`, `$15`, `$19`, `$1B`, `$1F` och `$20`. Se
+`docs/asr10/investigations/panel-button-sweep-v350.md`.
+
+[OPEN] Humanlästa ASR-10-knappnamn för dessa nummer. Effekterna är verkliga,
+men passet namnger inte `$05`, `$06` osv. som specifika frontpanelsknappar.
