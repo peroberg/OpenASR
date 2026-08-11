@@ -38,17 +38,23 @@ Method:
 
 ```text
 for button n = $00-$3F:
+  boot cleanly to FILE 1  TUTORIAL BNK
   inject press   $80|n, $00
   wait 50 ms
   inject release n,     $00
   wait 50 ms
+  read display and end the run
 ```
 
-Each run started from `FILE 1  TUTORIAL BNK`. If a button changed the display,
-the run stopped and the next run resumed from the following button number.
+Each button was run independently from `FILE 1  TUTORIAL BNK`.
 
 Generated data:
 `docs/asr10/static/panel-button-sweep-v350.csv`.
+
+The earlier table is preserved as
+`docs/asr10/static/panel-button-sweep-v350-cumulative.csv`. It was cumulative:
+when one button changed state, later buttons inherited that state. It is valid
+history, but not an independent button map.
 
 Display-changing buttons:
 
@@ -58,16 +64,16 @@ Display-changing buttons:
 | `$06` | `CREATE NEW INSTRUMENT` | display change, no ready slots |
 | `$07` | `  HALL REVERBcrg` | display change, no ready slots |
 | `$09` | `FILE 16 44LUSH PLATE` | display change, no ready slots |
-| `$0A` | `FILE 2  JM DIGI SYN` | display change, no ready slots |
+| `$0A` | `FILE 2  JM DIGI SYN` | [Likely] nästa fil |
 | `$0B` | `FILE 14 BLUES ORGAN` | display change, no ready slots |
-| `$10` | `7     BLKS` | ready slot observed after release |
+| `$10` | `7     BLKS` | display change, no ready slots |
 | `$11` | `7     BLKS` | display change, no ready slots |
-| `$13` | `FILE 23 44EQ+DDL+CHO` | display change, no ready slots |
 | `$15` | `FILE 9  TUTORIAL SEQ` | display change, no ready slots |
-| `$19` | `NO SUCH FILE` | display change, no ready slots |
 | `$1B` | `NO DISK DIRECTORIES` | display change, no ready slots |
-| `$1F` | `NO SUCH FILE` | display change, no ready slots |
 | `$20` | `LEFT` | display change, no ready slots |
+
+[Verified dynamic] `$13`, `$19` and `$1F` were display-changing only in the
+cumulative table and did not reproduce in the clean per-button runs.
 
 [Verified dynamic] The runtime receive pipe is connected past `$03C4` for
 button frames: valid button frames reach user-visible file-browser behavior.
@@ -75,6 +81,54 @@ button frames: valid button frames reach user-visible file-browser behavior.
 [OPEN] Human names for the button numbers. Several effects look like browser
 navigation or mode commands, but this pass does not label `$05`, `$06`, etc. as
 specific ASR-10 front-panel labels.
+
+## TX bytes and annunciator candidates
+
+The clean sweep logged all channel B TX bytes for each button run. Every run
+starts with the same idle/update sequence:
+
+```text
+15 78 0e 77 0e 77 07 7b 0b 7a 0b
+```
+
+Observed `$77-$7B` command/value pairs beyond that baseline:
+
+| button | display | additional pairs |
+|---:|---|---|
+| `$05` | `31274` | `$78=$0F`, `$77=$05`, `$78=$07`, `$77=$0C`, `$78=$0C` |
+| `$06` | `CREATE NEW INSTRUMENT` | `$78=$07`, `$78=$0F`, `$77=$0D` |
+| `$09` | `FILE 16 44LUSH PLATE` | `$78=$0F`, `$79=$0F`, `$78=$07`, `$77=$0C`, `$7A=$7F`, `$7A=$78` |
+| `$0A` | `FILE 2  JM DIGI SYN` | `$78=$07` |
+| `$0B` | `FILE 14 BLUES ORGAN` | `$78=$07` |
+| `$15` | `FILE 9  TUTORIAL SEQ` | `$78=$0F`, `$79=$0F`, `$78=$07`, `$77=$02`, `$78=$02` |
+| `$1B` | `NO DISK DIRECTORIES` | `$78=$0F`, `$79=$0F`, `$78=$07`, `$77=$0C` |
+| `$20` | `LEFT` | `$78=$0F`, `$77=$0D`, `$78=$07`, `$78=$0D` |
+
+[Verified dynamic] `$77`, `$78`, `$79`, `$7A` and `$7B` behave as
+two-byte display-side control/register writes during these runs.
+
+[OPEN] Indicator names for individual bits. The TX stream identifies raw
+register/value changes, but this pass did not observe physical annunciator
+state and therefore does not map bits to `LOAD`, `CMD`, `EDIT`, etc.
+
+## ASR-10 panel device pilot
+
+[Verified] A new `ASR10PANEL` device subclasses `esqpanel_device`, sets
+EPS-mode behavior, contains a 1x22 VFD path and raw `$77-$7B` annunciator
+register outputs. It is wired as `panel.write_tx() -> DUART rx_b_w` and
+`DUART b_tx_cb -> panel.rx_w`.
+
+Verification:
+
+| step | result |
+|---:|---|
+| 1. boot to `FILE 1  TUTORIAL BNK` | passed |
+| 2. display text rendered via new panel unit | failed: panel-device text shadow stayed blank |
+| 3. `$0A` button via panel unit gives `FILE 1 -> FILE 2` | failed: no display change |
+
+[OPEN] Why the bit-serial panel path did not receive/render the boot text and
+why `set_button($0A)` did not reach the runtime receive path. The direct
+two-byte frame injection remains verified and is not invalidated by this pilot.
 
 ## `$03C8`
 

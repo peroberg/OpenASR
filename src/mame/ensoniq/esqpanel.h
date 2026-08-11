@@ -10,6 +10,7 @@
 
 #include "diserial.h"
 
+#include <array>
 #include <iostream>
 #include <set>
 #include <vector>
@@ -93,6 +94,29 @@ protected:
 	virtual void send_to_display(uint8_t data) override { m_vfd->write_char(data); }
 
 	required_device<esq1x22_device> m_vfd;
+};
+
+class asr10panel_device : public esqpanel_device {
+public:
+	asr10panel_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock = 0);
+	std::string current_text() const;
+
+protected:
+	virtual void device_add_mconfig(machine_config &config) override ATTR_COLD;
+	virtual void device_start() override ATTR_COLD;
+	virtual void device_reset() override ATTR_COLD;
+	virtual void send_to_display(uint8_t data) override;
+
+	required_device<esq1x22_device> m_vfd;
+	output_finder<5> m_annunciator_regs;
+	output_finder<8> m_instrument_lamps;
+
+private:
+	std::array<uint8_t, 5> m_annunciator_state{};
+	std::array<uint8_t, 8> m_instrument_lamp_state{};
+	std::array<uint8_t, 22> m_text_chars{};
+	uint8_t m_text_position = 0;
+	uint8_t m_pending_annunciator_command = 0;
 };
 
 class esqpanel2x40_device : public esqpanel_device {
@@ -192,6 +216,7 @@ protected:
 };
 
 DECLARE_DEVICE_TYPE(ESQPANEL1X22,     esqpanel1x22_device)
+DECLARE_DEVICE_TYPE(ASR10PANEL,       asr10panel_device)
 DECLARE_DEVICE_TYPE(ESQPANEL2X40,     esqpanel2x40_device)
 DECLARE_DEVICE_TYPE(ESQPANEL2X40_VFX, esqpanel2x40_vfx_device)
 DECLARE_DEVICE_TYPE(ESQPANEL2X40_SQ1, esqpanel2x40_sq1_device)

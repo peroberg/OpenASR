@@ -480,7 +480,8 @@ OS-filen i respektive avbild: block 24, diskoffset `0x3000`. V1.61 173 block
 | `os-binding-table.csv` | 723 + rubrik | **genererad** | `600f646943d5a3a7` |
 | `panel-file1-tx-window-v350.csv` | 11 + rubrik | **genererad** | `e8deb6af538aef62` |
 | `panel-03c0-block-trace-v350-file1.csv` | 475 + rubrik | **genererad** | `39410814e2bbb5d8` |
-| `panel-button-sweep-v350.csv` | 64 + rubrik | **genererad** | `8216a603bcf205b8` |
+| `panel-button-sweep-v350.csv` | 64 + rubrik | **genererad, oberoende körningar** | `29583d8c6f3ff27` |
+| `panel-button-sweep-v350-cumulative.csv` | 64 + rubrik | **genererad, kumulativ historik** | `8216a603bcf205b8` |
 | `panel-frame-blockdiff-v350-4040.csv` | 1 + rubrik | **genererad** | `bddf8c2f54b131fa` |
 | `panel-frame-injection-v350-4001.csv` | 5 + rubrik | **genererad** | `f94f851dc31e8bbf` |
 | `panel-frame-injection-v350-4040-es5506.csv` | 3 + rubrik | **genererad** | `7c6adea901116f51` |

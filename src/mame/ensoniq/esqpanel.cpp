@@ -414,6 +414,7 @@ namespace esqpanel {
 //**************************************************************************
 
 DEFINE_DEVICE_TYPE(ESQPANEL1X22,     esqpanel1x22_device,     "esqpanel122",     "Ensoniq front panel with 1x22 VFD")
+DEFINE_DEVICE_TYPE(ASR10PANEL,       asr10panel_device,       "asr10panel",      "Ensoniq ASR-10 front panel with 1x22 VFD and annunciators")
 DEFINE_DEVICE_TYPE(ESQPANEL2X40,     esqpanel2x40_device,     "esqpanel240",     "Ensoniq front panel with 2x40 VFD")
 DEFINE_DEVICE_TYPE(ESQPANEL2X40_VFX, esqpanel2x40_vfx_device, "esqpanel240_vfx", "Ensoniq front panel with 2x40 VFD for VFX family")
 DEFINE_DEVICE_TYPE(ESQPANEL2X16_SQ1, esqpanel2x16_sq1_device, "esqpanel216_sq1", "Ensoniq front panel with 2x16 LCD")
@@ -739,6 +740,88 @@ void esqpanel1x22_device::device_add_mconfig(machine_config &config)
 esqpanel1x22_device::esqpanel1x22_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :
 	esqpanel_device(mconfig, ESQPANEL1X22, tag, owner, clock),
 	m_vfd(*this, "vfd")
+{
+	m_eps_mode = true;
+}
+
+void asr10panel_device::device_add_mconfig(machine_config &config)
+{
+	ESQ1X22(config, m_vfd, 60);
+}
+
+void asr10panel_device::device_start()
+{
+	esqpanel_device::device_start();
+
+	save_item(NAME(m_annunciator_state));
+	save_item(NAME(m_instrument_lamp_state));
+	save_item(NAME(m_text_chars));
+	save_item(NAME(m_text_position));
+	save_item(NAME(m_pending_annunciator_command));
+}
+
+void asr10panel_device::device_reset()
+{
+	esqpanel_device::device_reset();
+
+	m_annunciator_state.fill(0);
+	m_instrument_lamp_state.fill(0);
+	m_text_chars.fill(' ');
+	m_text_position = 0;
+	m_pending_annunciator_command = 0;
+
+	for (u32 index = 0; index != m_annunciator_state.size(); index++)
+		m_annunciator_regs[index] = 0;
+	for (u32 index = 0; index != m_instrument_lamp_state.size(); index++)
+		m_instrument_lamps[index] = 0;
+}
+
+void asr10panel_device::send_to_display(uint8_t data)
+{
+	if (m_pending_annunciator_command)
+	{
+		const u32 index = m_pending_annunciator_command - 0x77;
+		m_annunciator_state[index] = data;
+		m_annunciator_regs[index] = data;
+
+		// Current evidence only identifies raw $77-$7b registers. Keep the
+		// eight ASR-10 instrument lamps modeled as raw outputs until a bit map
+		// is observed.
+		m_pending_annunciator_command = 0;
+		return;
+	}
+
+	if (data >= 0x77 && data <= 0x7b)
+	{
+		m_pending_annunciator_command = data;
+		return;
+	}
+
+	if (data < 0x20 || data > 0x7e)
+	{
+		m_text_chars.fill(' ');
+		m_text_position = 0;
+	}
+	else if (m_text_position < m_text_chars.size())
+	{
+		if (m_text_position == 0)
+			m_text_chars.fill(' ');
+		m_text_chars[m_text_position++] = data;
+	}
+
+	m_vfd->write_char(data);
+}
+
+std::string asr10panel_device::current_text() const
+{
+	return std::string(m_text_chars.begin(), m_text_chars.end());
+}
+
+asr10panel_device::asr10panel_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :
+	esqpanel_device(mconfig, ASR10PANEL, tag, owner, clock),
+	m_vfd(*this, "vfd"),
+	m_annunciator_regs(*this, "asr10_annreg%u", 0U),
+	m_instrument_lamps(*this, "asr10_instlamp%u", 0U)
 {
 	m_eps_mode = true;
 }

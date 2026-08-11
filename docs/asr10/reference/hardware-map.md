@@ -270,6 +270,9 @@ ASR-specific unknowns:
 ```text id="c0q1pt"
 - actual ES5506 address window
 - actual ES5510 address window
+- [OPEN] `$FC3001`: `$F97662` gör host-port write/read mot `$FFFC3001`
+  med retry. Adressen saknar egen hardware-map-post; vilken chip select
+  den tillhör utreds inte i detta pass.
 - sample RAM mapping
 - glue/chipselect behavior
 - external delay/work RAM for ESP if applicable

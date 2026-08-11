@@ -79,14 +79,19 @@ architectural model that did not exist before. Summary only — details in `refe
   Registerlayout, bas, udda adressering, stride och handskakning stämmer samtliga.
   Kodsymbolen heter fortfarande `duart_panel_asr_candidate_r/w` av historiska skäl.
   Namnbytet är en separat kodändring.
+- **Panel button frames are now proven dynamically.** [Verified] Knappframe
+  `($80|$0A, $00)` flyttar `FILE 1  TUTORIAL BNK` till `FILE 2  JM DIGI SYN`
+  i V3.50 via runtime receive path. [Likely] `$0A` är nästa fil.
 - **A control-flow database** of 5243 call-site-level edges with normalised addresses,
   evidence level and execution status. → `static/call-graph-edges.csv`,
   `reference/call-graph.md`
 
 ## Does not work
 
-- Button navigation is not implemented far enough to prove `FILE 2` or normal
-  file-browser interaction.
+- ASR-10-panelenheten är kopplad som pilot men inte färdig: vanlig boot fungerar,
+  men panelenhetens egen textskugga renderade inte `FILE 1`, och `$0A` via
+  `esqpanel_device::set_button()` gav ingen displayändring. Den direkta
+  frame-injektionen fungerar.
 - Audio output, sampling, sequencer behaviour, and complete ES5506/ES5510 sound
   integration are not working end-to-end.
 - DUART channel A RX is not wired to a real external source.

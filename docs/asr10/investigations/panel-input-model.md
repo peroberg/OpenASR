@@ -604,10 +604,26 @@ ASR-10:s displaysträngar är 22 tecken.
 [Verified] De 192 tidigare ramarna hade andra byte `$40` och var
 klaviaturhändelser, inte knappar.
 
-[Verified] Knappsvepet `$00-$3F` från `FILE 1  TUTORIAL BNK` gav
-displayändringar för `$05`, `$06`, `$07`, `$09`, `$0A`, `$0B`, `$10`, `$11`,
-`$13`, `$15`, `$19`, `$1B`, `$1F` och `$20`. Se
-`docs/asr10/investigations/panel-button-sweep-v350.md`.
+[Verified] Det oberoende knappsvepet `$00-$3F` från `FILE 1  TUTORIAL BNK`
+gav displayändringar för `$05`, `$06`, `$07`, `$09`, `$0A`, `$0B`, `$10`,
+`$11`, `$15`, `$1B` och `$20`. Varje knapp kördes från en ren boot till
+`FILE 1`, med tryck `($80|n, $00)` och släpp `(n, $00)`.
+
+[Verified] Knappframe `($80|$0A, $00)` flyttar `FILE 1  TUTORIAL BNK` till
+`FILE 2  JM DIGI SYN` i V3.50.
+
+[Likely] `$0A` är nästa fil.
+
+[Verified] Den äldre tabellen var kumulativ. `$13`, `$19` och `$1F` gav
+displayändringar där, men reproducerades inte i de oberoende per-knapp-
+körningarna. Den gamla tabellen finns kvar som
+`docs/asr10/static/panel-button-sweep-v350-cumulative.csv`; den aktuella rena
+tabellen är `docs/asr10/static/panel-button-sweep-v350.csv`.
+
+[Verified] `$03C8` är inhibit-flagga för `$F97662`, som gör host-port
+write/read mot `$FFFC3001` med retry.
+
+[OPEN] `$FC3001` saknas i `hardware-map.md`. Vilken chip select?
 
 [OPEN] Humanlästa ASR-10-knappnamn för dessa nummer. Effekterna är verkliga,
 men passet namnger inte `$05`, `$06` osv. som specifika frontpanelsknappar.

@@ -46,6 +46,7 @@
 #include "machine/mc68681.h"
 #include "machine/upd765.h"
 
+#include "esqpanel.h"
 #include "formats/esq16_dsk.h"
 #include "sound/es5506.h"
 #include "cpu/es5510/es5510.h"
@@ -77,6 +78,7 @@ public:
 		, m_fdc(*this, "fdc")
 		, m_floppy_connector(*this, "fdc:0")
 		, m_duart(*this, "duart")
+		, m_panel(*this, "panel")
 		, m_rom(*this, "maincpu")
 		, m_es5506_host(*this, "es5506_host")
 		, m_es5510_host(*this, "es5510_host")
@@ -183,6 +185,7 @@ private:
 	required_device<upd72069_device> m_fdc;
 	required_device<floppy_connector> m_floppy_connector;
 	required_device<scn2681_device> m_duart;
+	required_device<asr10panel_device> m_panel;
 	required_memory_region m_rom;
 
 	optional_device<es5506_device> m_es5506_host;
@@ -530,6 +533,7 @@ private:
 	bool m_panel_button_sweep_enabled = false;
 	bool m_panel_button_sweep_active = false;
 	bool m_panel_button_sweep_done = false;
+	bool m_panel_button_sweep_use_device = false;
 	u8 m_panel_button_sweep_current = 0;
 	u8 m_panel_button_sweep_end = 0x3f;
 	u32 m_panel_button_sweep_phase = 0;
@@ -543,6 +547,8 @@ private:
 	u32 m_panel_button_sweep_ready_after_press = 0;
 	char m_panel_button_sweep_display_before[PANEL_TEXT_LENGTH]{};
 	char m_panel_button_sweep_display_after_press[PANEL_TEXT_LENGTH]{};
+	std::array<u8, 64> m_panel_button_sweep_tx_bytes{};
+	u32 m_panel_button_sweep_tx_count = 0;
 	bool m_panel_es5506_after_frame_trace = false;
 	bool m_panel_es5506_after_frame_active = false;
 	u32 m_panel_es5506_after_frame_write_count = 0;
@@ -1769,6 +1775,7 @@ void asr10_boot_state::machine_reset()
 	m_panel_button_sweep_enabled = false;
 	m_panel_button_sweep_active = false;
 	m_panel_button_sweep_done = false;
+	m_panel_button_sweep_use_device = false;
 	m_panel_button_sweep_current = 0;
 	m_panel_button_sweep_end = 0x3f;
 	m_panel_button_sweep_phase = 0;
@@ -1782,6 +1789,8 @@ void asr10_boot_state::machine_reset()
 	m_panel_button_sweep_ready_after_press = 0;
 	std::fill(std::begin(m_panel_button_sweep_display_before), std::end(m_panel_button_sweep_display_before), 0);
 	std::fill(std::begin(m_panel_button_sweep_display_after_press), std::end(m_panel_button_sweep_display_after_press), 0);
+	m_panel_button_sweep_tx_bytes.fill(0);
+	m_panel_button_sweep_tx_count = 0;
 	m_panel_es5506_after_frame_trace = false;
 	m_panel_es5506_after_frame_active = false;
 	m_panel_es5506_after_frame_write_count = 0;
@@ -1848,6 +1857,9 @@ void asr10_boot_state::machine_reset()
 	{
 		m_panel_frame_enabled = true;
 		m_panel_button_sweep_enabled = true;
+		if (const char *const use_device = std::getenv("ASR10_PANEL_BUTTON_SWEEP_DEVICE");
+			use_device && use_device[0] && use_device[0] != '0')
+			m_panel_button_sweep_use_device = true;
 		if (const char *const start = std::getenv("ASR10_PANEL_BUTTON_SWEEP_START"); start && start[0])
 		{
 			char *end = nullptr;
@@ -1865,9 +1877,10 @@ void asr10_boot_state::machine_reset()
 		if (m_panel_button_sweep_current > m_panel_button_sweep_end)
 			m_panel_button_sweep_current = m_panel_button_sweep_end;
 		osd_printf_info("ASR10_PANEL_BUTTON_SWEEP event=config start=%02x end=%02x "
-			"delay_us=%u settle_ms=%u\n",
+			"delay_us=%u settle_ms=%u device=%u\n",
 			m_panel_button_sweep_current, m_panel_button_sweep_end,
-			m_panel_frame_delay_us, m_panel_frame_settle_ms);
+			m_panel_frame_delay_us, m_panel_frame_settle_ms,
+			m_panel_button_sweep_use_device ? 1 : 0);
 	}
 	if (const char *const frame = std::getenv("ASR10_PANEL_FRAME_SEQUENCE"); frame && frame[0])
 	{
@@ -2613,6 +2626,18 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_frame_fire)
 			: (m_panel_button_sweep_phase == 3) ? 0x00
 			: 0x00;
 
+		if (m_panel_button_sweep_use_device && m_panel_button_sweep_phase == 0)
+		{
+			osd_printf_info("ASR10_PANEL_BUTTON_SWEEP event=panel_device_press button=%02x "
+				"time=%s state03c0_before=%04x buf03c4_before=%04x gate03c8_before=%04x\n",
+				button, machine().time().to_string(), lowmem_word(0x03c0),
+				lowmem_word(0x03c4), lowmem_word(0x03c8));
+			m_panel->set_button(button, true);
+			m_panel_button_sweep_phase = 2;
+			m_panel_frame_timer->adjust(attotime::from_msec(m_panel_frame_settle_ms));
+			return;
+		}
+
 		if (m_panel_button_sweep_phase < 2)
 		{
 			osd_printf_info("ASR10_PANEL_BUTTON_SWEEP event=inject_press button=%02x index=%u "
@@ -2643,6 +2668,18 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_frame_fire)
 				m_panel_button_sweep_gate_after_press, m_panel_button_sweep_ready_after_press);
 		}
 
+		if (m_panel_button_sweep_use_device && m_panel_button_sweep_phase == 2)
+		{
+			osd_printf_info("ASR10_PANEL_BUTTON_SWEEP event=panel_device_release button=%02x "
+				"time=%s state03c0_before=%04x buf03c4_before=%04x gate03c8_before=%04x\n",
+				button, machine().time().to_string(), lowmem_word(0x03c0),
+				lowmem_word(0x03c4), lowmem_word(0x03c8));
+			m_panel->set_button(button, false);
+			m_panel_button_sweep_phase = 4;
+			m_panel_frame_timer->adjust(attotime::from_msec(m_panel_frame_settle_ms));
+			return;
+		}
+
 		if (m_panel_button_sweep_phase >= 2 && m_panel_button_sweep_phase < 4)
 		{
 			osd_printf_info("ASR10_PANEL_BUTTON_SWEEP event=inject_release button=%02x index=%u "
@@ -2661,25 +2698,39 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_frame_fire)
 		const u16 buf_after_release = lowmem_word(0x03c4);
 		const u16 gate_after_release = lowmem_word(0x03c8);
 		const u32 ready_after_release = panel_ready_slot_count();
+		std::string tx_bytes;
+		const u32 tx_stored = std::min<u32>(m_panel_button_sweep_tx_count,
+			m_panel_button_sweep_tx_bytes.size());
+		for (u32 index = 0; index != tx_stored; index++)
+		{
+			if (index)
+				tx_bytes += ' ';
+			tx_bytes += util::string_format("%02x", m_panel_button_sweep_tx_bytes[index]);
+		}
+		const bool tx_truncated = m_panel_button_sweep_tx_count > m_panel_button_sweep_tx_bytes.size();
 		const bool changed_press = std::strcmp(m_panel_button_sweep_display_before,
 			m_panel_button_sweep_display_after_press) != 0;
 		const bool changed_release = std::strcmp(m_panel_button_sweep_display_before,
 			current_display_text().c_str()) != 0;
 		osd_printf_info("ASR10_PANEL_BUTTON_SWEEP_RESULT button=%02x press_first=%02x release_first=%02x "
 			"display_before=\"%s\" display_after_press=\"%s\" display_after_release=\"%s\" "
+			"panel_device_display=\"%s\" "
 			"changed_press=%u changed_release=%u state03c0_before=%04x state03c0_after_press=%04x "
 			"state03c0_after_release=%04x buf03c4_before=%04x buf03c4_after_press=%04x "
 			"buf03c4_after_release=%04x gate03c8_before=%04x gate03c8_after_press=%04x "
-			"gate03c8_after_release=%04x ready_slots_after_press=%u ready_slots_after_release=%u time=%s\n",
+			"gate03c8_after_release=%04x ready_slots_after_press=%u ready_slots_after_release=%u "
+			"tx_count=%u tx_truncated=%u tx_bytes=\"%s\" time=%s\n",
 			button, 0x80 | button, button,
 			m_panel_button_sweep_display_before, m_panel_button_sweep_display_after_press,
-			current_display_text().c_str(), changed_press ? 1 : 0, changed_release ? 1 : 0,
+			current_display_text().c_str(), m_panel->current_text().c_str(),
+			changed_press ? 1 : 0, changed_release ? 1 : 0,
 			m_panel_button_sweep_state_before, m_panel_button_sweep_state_after_press,
 			state_after_release, m_panel_button_sweep_buf_before,
 			m_panel_button_sweep_buf_after_press, buf_after_release,
 			m_panel_button_sweep_gate_before, m_panel_button_sweep_gate_after_press,
 			gate_after_release, m_panel_button_sweep_ready_after_press,
-			ready_after_release, machine().time().to_string());
+			ready_after_release, m_panel_button_sweep_tx_count, tx_truncated ? 1 : 0,
+			tx_bytes.c_str(), machine().time().to_string());
 		m_panel_button_sweep_count++;
 		if (!changed_press && !changed_release && m_panel_button_sweep_current < m_panel_button_sweep_end)
 		{
@@ -2692,6 +2743,8 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_frame_fire)
 			m_panel_button_sweep_state_before = lowmem_word(0x03c0);
 			m_panel_button_sweep_buf_before = lowmem_word(0x03c4);
 			m_panel_button_sweep_gate_before = lowmem_word(0x03c8);
+			m_panel_button_sweep_tx_bytes.fill(0);
+			m_panel_button_sweep_tx_count = 0;
 			m_panel_frame_timer->adjust(attotime::from_msec(20));
 			return;
 		}
@@ -3884,6 +3937,18 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 			m_panel_file1_tx_window_count, machine().time().to_string(), pc, u8(data),
 			lowmem_word(0x03c0), lowmem_word(0x03c4), current_display_text().c_str());
 	}
+	if (!machine().side_effects_disabled() && m_panel_button_sweep_active &&
+		ACCESSING_BITS_0_7 && address == 0x00fc4817)
+	{
+		if (m_panel_button_sweep_tx_count < m_panel_button_sweep_tx_bytes.size())
+			m_panel_button_sweep_tx_bytes[m_panel_button_sweep_tx_count] = u8(data);
+		m_panel_button_sweep_tx_count++;
+		osd_printf_info("ASR10_PANEL_BUTTON_SWEEP_TX button=%02x seq=%u time=%s pc=%06x "
+			"value=%02x state03c0=%04x buf03c4=%04x gate03c8=%04x display=\"%s\"\n",
+			m_panel_button_sweep_current, m_panel_button_sweep_tx_count,
+			machine().time().to_string(), pc, u8(data), lowmem_word(0x03c0),
+			lowmem_word(0x03c4), lowmem_word(0x03c8), current_display_text().c_str());
+	}
 	if (!machine().side_effects_disabled() && m_step0_runtime_trace_enabled && ACCESSING_BITS_0_7)
 	{
 		if (address == 0x00fc4807)
@@ -4191,12 +4256,15 @@ void asr10_boot_state::panel_receive_byte(u8 data)
 			m_panel_button_sweep_state_before = lowmem_word(0x03c0);
 			m_panel_button_sweep_buf_before = lowmem_word(0x03c4);
 			m_panel_button_sweep_gate_before = lowmem_word(0x03c8);
-			osd_printf_info("ASR10_PANEL_BUTTON_SWEEP event=active display=\"%s\" time=%s "
-				"button=%02x state03c0=%04x buf03c4=%04x gate03c8=%04x delay_us=%u settle_ms=%u\n",
-				m_panel_button_sweep_display_before, machine().time().to_string(),
+			m_panel_button_sweep_tx_bytes.fill(0);
+			m_panel_button_sweep_tx_count = 0;
+			osd_printf_info("ASR10_PANEL_BUTTON_SWEEP event=active display=\"%s\" panel_device_display=\"%s\" time=%s "
+				"button=%02x state03c0=%04x buf03c4=%04x gate03c8=%04x delay_us=%u settle_ms=%u device=%u\n",
+				m_panel_button_sweep_display_before, m_panel->current_text().c_str(), machine().time().to_string(),
 				m_panel_button_sweep_current, m_panel_button_sweep_state_before,
 				m_panel_button_sweep_buf_before, m_panel_button_sweep_gate_before,
-				m_panel_frame_delay_us, m_panel_frame_settle_ms);
+				m_panel_frame_delay_us, m_panel_frame_settle_ms,
+				m_panel_button_sweep_use_device ? 1 : 0);
 			m_pc_timer->adjust(attotime::from_ticks(1, m_maincpu->clock()), 0,
 				attotime::from_ticks(1, m_maincpu->clock()));
 			m_panel_frame_timer->adjust(attotime::from_msec(100));
@@ -6350,11 +6418,11 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	// divides the 16MHz system clock by two on-chip; docs/asr10/PLAN.md
 	// section 3 hypothesizes a further /2 (spare 74HC74/74F74 flip-flops
 	// on the board) yields 16/4 = 4.000MHz into X1, matching the 4MHz X1
-	// this same SCN2681 runs at on esqkt.cpp/esq5505.cpp. Channel A (MIDI)
-	// and channel B (front panel) are not wired to anything yet -- the
-	// panel byte transport still runs through the hand-written taps in
-	// duart_panel_asr_candidate_r/w until a real esqpanel-style receiver
-	// exists. The IRQ output, however, is a real pin on a real device --
+	// this same SCN2681 runs at on esqkt.cpp/esq5505.cpp. Channel B is
+	// wired to an ASR-10-specific esqpanel-derived device. The hand-written
+	// taps in duart_panel_asr_candidate_r/w remain for ASR-10 boot/status
+	// responses and diagnostics while the panel model is brought up. The IRQ
+	// output, however, is a real pin on a real device --
 	// docs/asr10/duart-imr.md found it genuinely pending (counter/timer
 	// ready) 159/160 of the time and never wired to anything. Wired here
 	// the same way esq5505.cpp wires its own SCN2681 (irq_cb() ->
@@ -6365,6 +6433,10 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	// why the irq_cb wiring alone regresses the boot without it.
 	SCN2681(config, m_duart, XTAL(16'000'000) / 4);
 	m_duart->irq_cb().set_inputline(m_maincpu, 6);
+	m_duart->b_tx_cb().set(m_panel, FUNC(asr10panel_device::rx_w));
+
+	ASR10PANEL(config, m_panel);
+	m_panel->write_tx().set(m_duart, FUNC(scn2681_device::rx_b_w));
 
 	// Phase 1 host-port fingerprint mapping. Not board-proven: see
 	// docs/asr10/es5506-chain-verification.md.
