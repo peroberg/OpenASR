@@ -578,3 +578,12 @@ asynkront anländande byte.
 
 Förbehåll: de 256 asynkrona injektionerna testade fel stimulusform. Resultatet
 står kvar som giltigt för asynkrona byte.
+
+[Verified] Under 20 s i FILE 1-läget sändes 11 TX-byte
+(`15 78 0e 77 0e 77 07 7b 0b 7a 0b`) och inget `$74`. Maskinen avsöker inte
+panelen i vila.
+
+[Likely] Panelen är initiativtagare och sänder oombedda tvåbytesramar.
+
+Förbehåll: substitutionsspåret läggs ner som stimulusform. Piloten står kvar
+som giltig observation om bootens tuningfas.

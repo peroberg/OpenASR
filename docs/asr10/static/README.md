@@ -480,6 +480,9 @@ OS-filen i respektive avbild: block 24, diskoffset `0x3000`. V1.61 173 block
 | `os-binding-table.csv` | 723 + rubrik | **genererad** | `600f646943d5a3a7` |
 | `panel-file1-tx-window-v350.csv` | 11 + rubrik | **genererad** | `e8deb6af538aef62` |
 | `panel-frame-injection-v350-4001.csv` | 5 + rubrik | **genererad** | `f94f851dc31e8bbf` |
+| `panel-frame-injection-v350-4040-es5506.csv` | 3 + rubrik | **genererad** | `7c6adea901116f51` |
+| `panel-frontpanel-branch-sweep-v350-003f.csv` | 64 + rubrik | **genererad** | `373cb59ed83720e8` |
+| `panel-frontpanel-branch-sweep-v350-80bf.csv` | 64 + rubrik | **genererad** | `68690a0477e2e690` |
 | `panel-raw-byte-sweep-v350.csv` | 256 + rubrik | **genererad** | `8a575265c39f66fa` |
 | `panel-reply-substitution-v350.csv` | 11 + rubrik | **genererad, partiell** | `17bfe2306e3f2ba4` |
 | `rom-abi-entrypoints.csv` | 1 054 + rubrik | **genererad** | `6293e5c9cffeb4f4` |

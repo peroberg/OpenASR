@@ -1,0 +1,6 @@
+# Generated from /tmp/asr10-frame-4040-es5506.log. Do not edit by hand.
+# Run: ASR10_PANEL_FRAME_SEQUENCE=40,40, 24 us interbyte, 50 ms ES5506 write window, no -log.
+event,index,value,time,state03c0_before,buf03c4_before,completion_seen,completion_pc,display_before,display_after,changed,state03c0_after,buf03c4_after,ready_slots,es5506_writes
+inject,0,40,"0016.271,608,375",b392,0000,,,,,,,,,
+inject,1,40,"0016.271,632,375",b0e0,4000,,,,,,,,,
+result,,,"0016.321,632,375",,,0,ffffffff,FILE 1  TUTORIAL BNK,FILE 1  TUTORIAL BNK,0,b392,2400,0,0
