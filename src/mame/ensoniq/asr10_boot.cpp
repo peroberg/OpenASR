@@ -6434,6 +6434,9 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	SCN2681(config, m_duart, XTAL(16'000'000) / 4);
 	m_duart->irq_cb().set_inputline(m_maincpu, 6);
 	m_duart->b_tx_cb().set(m_panel, FUNC(asr10panel_device::rx_w));
+	// set_clocks() maps to IP3/IP4/IP5/IP6. With CSRA/CSRB selector $E,
+	// mc68681.cpp uses IP3/16 for channel A and IP5/16 for channel B.
+	m_duart->set_clocks(500'000, 500'000, 1'000'000, 1'000'000);
 
 	ASR10PANEL(config, m_panel);
 	m_panel->write_tx().set(m_duart, FUNC(scn2681_device::rx_b_w));

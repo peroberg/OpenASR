@@ -105,6 +105,11 @@ Channel A/B observations:
   bit 0; panel output writes `$FFFC4817`.
 - Channel B init writes MRB `$13,$0F`, CSRB `$EE`, CRB `$20,$30,$40,$50,$10,$05`.
   CSRB `$EE` selects selector `$E` for both Rx and Tx on channel B.
+- In MAME's `mc68681.cpp`, `set_clocks(clk3, clk4, clk5, clk6)` stores IP3/IP4/IP5/IP6.
+  For the base 68681 model, selector `$E` maps channel A to IP3/16 and channel B to
+  IP5/16. The ASR-10 driver therefore sets IP3/IP4 to 500 kHz and IP5/IP6 to
+  1 MHz, yielding 31,250 baud on channel A and 62,500 baud on channel B for
+  CSRA/CSRB `$EE`.
 - Channel A init is explicit:
   `$F88410 117c 0013 0000` writes MR1A `#$13`, `$F88416 117c 0007 0000` writes
   MR2A `#$07`, and `$F8841C 117c 00ee 0002` writes CSRA `#$EE`.

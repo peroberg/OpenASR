@@ -122,13 +122,19 @@ Verification:
 
 | step | result |
 |---:|---|
-| 1. boot to `FILE 1  TUTORIAL BNK` | passed |
-| 2. display text rendered via new panel unit | failed: panel-device text shadow stayed blank |
-| 3. `$0A` button via panel unit gives `FILE 1 -> FILE 2` | failed: no display change |
+| 1. boot to `FILE 1  TUTORIAL BNK` | passed before and after external DUART clocks |
+| 2. display text rendered via new panel unit | still incomplete: bit transfer works, but panel-device text shadow read `FE2JDI Y` for `FILE 2  JM DIGI SYN` |
+| 3. `$0A` button via panel unit gives `FILE 1 -> FILE 2` | passed after external DUART clocks |
 
-[OPEN] Why the bit-serial panel path did not receive/render the boot text and
-why `set_button($0A)` did not reach the runtime receive path. The direct
-two-byte frame injection remains verified and is not invalidated by this pilot.
+[Verified] ASR-10 now clocks the DUART like the EPS/VFX-family panel path:
+`set_clocks(500'000, 500'000, 1'000'000, 1'000'000)`. In MAME's 68681 model
+that maps to IP3/IP4/IP5/IP6; CSRB `$EE` selects IP5/16 for channel B, i.e.
+62,500 baud, matching `esqpanel_device::device_reset()`.
+
+[OPEN] The remaining panel-device display problem is parsing/rendering, not a
+dead serial link: channel B now transfers in both directions, and
+`set_button($0A)` reaches the runtime receive path. The direct two-byte frame
+injection remains verified and is not invalidated by this pilot.
 
 ## `$03C8`
 

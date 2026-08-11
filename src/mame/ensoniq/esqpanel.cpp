@@ -797,15 +797,13 @@ void asr10panel_device::send_to_display(uint8_t data)
 		return;
 	}
 
-	if (data < 0x20 || data > 0x7e)
+	if (data == 0x66)
 	{
 		m_text_chars.fill(' ');
 		m_text_position = 0;
 	}
-	else if (m_text_position < m_text_chars.size())
+	else if (data >= 0x20 && data <= 0x5f && m_text_position < m_text_chars.size())
 	{
-		if (m_text_position == 0)
-			m_text_chars.fill(' ');
 		m_text_chars[m_text_position++] = data;
 	}
 

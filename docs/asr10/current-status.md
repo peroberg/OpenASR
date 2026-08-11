@@ -88,10 +88,11 @@ architectural model that did not exist before. Summary only — details in `refe
 
 ## Does not work
 
-- ASR-10-panelenheten är kopplad som pilot men inte färdig: vanlig boot fungerar,
-  men panelenhetens egen textskugga renderade inte `FILE 1`, och `$0A` via
-  `esqpanel_device::set_button()` gav ingen displayändring. Den direkta
-  frame-injektionen fungerar.
+- ASR-10-panelenheten är kopplad som pilot men inte färdig: vanlig boot fungerar
+  och `$0A` via `esqpanel_device::set_button()` flyttar `FILE 1 -> FILE 2` efter
+  att DUARTens externa panelklocka satts. Panelenhetens egen textskugga renderar
+  fortfarande inte hela ASR-10-displaysträngen korrekt. Den direkta frame-
+  injektionen behålls tills panelenheten är fullt verifierad.
 - Audio output, sampling, sequencer behaviour, and complete ES5506/ES5510 sound
   integration are not working end-to-end.
 - DUART channel A RX is not wired to a real external source.
