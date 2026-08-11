@@ -491,6 +491,18 @@ private:
 	u32 m_panel_b_conversation_seq = 0;
 	u32 m_panel_b_conversation_thrb = 0;
 	u32 m_panel_b_conversation_rhrb = 0;
+	bool m_panel_reply_substitute_enabled = false;
+	bool m_panel_reply_substitute_pending = false;
+	bool m_panel_reply_substitute_used = false;
+	bool m_panel_reply_substitute_done = false;
+	u8 m_panel_reply_substitute_value = 0xff;
+	u8 m_panel_reply_substitute_tx = 0x74;
+	u32 m_panel_reply_substitute_occurrence = 1;
+	u32 m_panel_reply_substitute_match_count = 0;
+	u32 m_panel_reply_substitute_event_seq = 0;
+	u16 m_panel_reply_substitute_state_before = 0;
+	u16 m_panel_reply_substitute_buf_before = 0;
+	char m_panel_reply_substitute_display_before[PANEL_TEXT_LENGTH]{};
 	bool m_panel_receive_live_active = false;
 	u32 m_panel_receive_live_srb_reads = 0;
 	u32 m_panel_receive_live_rhrb_reads = 0;
@@ -1620,6 +1632,47 @@ void asr10_boot_state::machine_reset()
 	m_panel_b_conversation_seq = 0;
 	m_panel_b_conversation_thrb = 0;
 	m_panel_b_conversation_rhrb = 0;
+	m_panel_reply_substitute_enabled = false;
+	m_panel_reply_substitute_pending = false;
+	m_panel_reply_substitute_used = false;
+	m_panel_reply_substitute_done = false;
+	m_panel_reply_substitute_value = 0xff;
+	m_panel_reply_substitute_tx = 0x74;
+	m_panel_reply_substitute_occurrence = 1;
+	m_panel_reply_substitute_match_count = 0;
+	m_panel_reply_substitute_event_seq = 0;
+	m_panel_reply_substitute_state_before = 0;
+	m_panel_reply_substitute_buf_before = 0;
+	std::fill(std::begin(m_panel_reply_substitute_display_before), std::end(m_panel_reply_substitute_display_before), 0);
+	if (const char *const reply_substitute = std::getenv("ASR10_PANEL_REPLY_SUBSTITUTE");
+		reply_substitute && reply_substitute[0] && reply_substitute[0] != '0')
+	{
+		m_panel_reply_substitute_enabled = true;
+		if (const char *const value = std::getenv("ASR10_PANEL_REPLY_SUBSTITUTE_VALUE"); value && value[0])
+		{
+			char *end = nullptr;
+			const unsigned long parsed = std::strtoul(value, &end, 0);
+			if (end && *end == 0 && parsed <= 0xff)
+				m_panel_reply_substitute_value = u8(parsed);
+		}
+		if (const char *const tx = std::getenv("ASR10_PANEL_REPLY_SUBSTITUTE_TX"); tx && tx[0])
+		{
+			char *end = nullptr;
+			const unsigned long parsed = std::strtoul(tx, &end, 0);
+			if (end && *end == 0 && parsed <= 0xff)
+				m_panel_reply_substitute_tx = u8(parsed);
+		}
+		if (const char *const occurrence = std::getenv("ASR10_PANEL_REPLY_SUBSTITUTE_OCCURRENCE");
+			occurrence && occurrence[0])
+		{
+			char *end = nullptr;
+			const unsigned long parsed = std::strtoul(occurrence, &end, 0);
+			if (end && *end == 0 && parsed > 0 && parsed <= 0xffff)
+				m_panel_reply_substitute_occurrence = u32(parsed);
+		}
+		osd_printf_info("ASR10_PANEL_REPLY_SUBSTITUTE event=config value=%02x tx=%02x occurrence=%u\n",
+			m_panel_reply_substitute_value, m_panel_reply_substitute_tx, m_panel_reply_substitute_occurrence);
+	}
 	m_panel_receive_live_active = false;
 	m_panel_receive_live_srb_reads = 0;
 	m_panel_receive_live_rhrb_reads = 0;
@@ -2203,14 +2256,23 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::panel_autorespond_fire)
 {
 	const u32 write_pc = u32(param);
 	const u32 pc = m_maincpu->state_int(STATE_GENPCBASE) & 0x00ffffff;
+	const bool substitute = m_panel_reply_substitute_pending;
+	const u8 response = substitute ? m_panel_reply_substitute_value : 0xff;
+	m_panel_reply_substitute_pending = false;
 	m_panel_autorespond_injected_count++;
-	logerror("ASR10_PANEL_AUTORESPOND event=inject_response seq=%u write_pc=%06x pc=%06x byte=ff "
+	logerror("ASR10_PANEL_AUTORESPOND event=inject_response seq=%u write_pc=%06x pc=%06x byte=%02x "
 		"count_03bc=%02x idle_03c5=%02x slot0_state=%04x "
 		"slot0_queue_head=%04x slot0_queue_tail=%04x node_14f4_type=%04x\n",
-		m_panel_autorespond_injected_count, write_pc, pc, lowmem_byte(0x03bc), lowmem_byte(0x03c5),
+		m_panel_autorespond_injected_count, write_pc, pc, response, lowmem_byte(0x03bc), lowmem_byte(0x03c5),
 		lowmem_word(0x23d6), lowmem_word(0x23e4),
 		lowmem_word(0x23e6), lowmem_word(0x14f6));
-	panel_c_queue_rx(0xff, "autorespond_fc4817_write", write_pc);
+	if (substitute)
+		osd_printf_info("ASR10_PANEL_REPLY_SUBSTITUTE event=inject seq=%u value=%02x "
+			"tx=%02x occurrence=%u time=%s state03c0=%04x buf03c4=%04x\n",
+			m_panel_reply_substitute_event_seq, response, m_panel_reply_substitute_tx,
+			m_panel_reply_substitute_occurrence, machine().time().to_string(),
+			lowmem_word(0x03c0), lowmem_word(0x03c4));
+	panel_c_queue_rx(response, substitute ? "reply_substitute_fc4817_write" : "autorespond_fc4817_write", write_pc);
 }
 
 
@@ -3405,6 +3467,29 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 				"byte=%02x count_03bc=%02x idle_03c5=%02x\n",
 				m_panel_autorespond_scheduled_count, pc, thrb_source, character,
 				lowmem_byte(0x03bc), lowmem_byte(0x03c5));
+			if (m_panel_reply_substitute_enabled && !m_panel_reply_substitute_used &&
+				character == m_panel_reply_substitute_tx)
+			{
+				m_panel_reply_substitute_match_count++;
+				if (m_panel_reply_substitute_match_count == m_panel_reply_substitute_occurrence)
+				{
+					m_panel_reply_substitute_pending = true;
+					m_panel_reply_substitute_used = true;
+					m_panel_reply_substitute_event_seq = m_panel_autorespond_scheduled_count;
+					m_panel_reply_substitute_state_before = lowmem_word(0x03c0);
+					m_panel_reply_substitute_buf_before = lowmem_word(0x03c4);
+					const std::string before = current_display_text();
+					std::strncpy(m_panel_reply_substitute_display_before, before.c_str(), PANEL_TEXT_LENGTH - 1);
+					m_panel_reply_substitute_display_before[PANEL_TEXT_LENGTH - 1] = 0;
+					osd_printf_info("ASR10_PANEL_REPLY_SUBSTITUTE event=schedule seq=%u value=%02x "
+						"tx=%02x occurrence=%u pc=%06x time=%s display_before=\"%s\" "
+						"state03c0_before=%04x buf03c4_before=%04x\n",
+						m_panel_reply_substitute_event_seq, m_panel_reply_substitute_value,
+						m_panel_reply_substitute_tx, m_panel_reply_substitute_occurrence, pc,
+						machine().time().to_string(), m_panel_reply_substitute_display_before,
+						m_panel_reply_substitute_state_before, m_panel_reply_substitute_buf_before);
+				}
+			}
 			m_panel_autorespond_timer->adjust(attotime::from_ticks(4, m_maincpu->clock()), s32(pc));
 		}
 		if (m_seen_loading_system_prompt && !machine().side_effects_disabled())
@@ -3529,6 +3614,36 @@ void asr10_boot_state::panel_receive_byte(u8 data)
 			m_panel_b_conversation_seq, m_panel_b_conversation_thrb, m_panel_b_conversation_rhrb,
 			current_display_text().c_str(), lowmem_word(0x03c0), lowmem_word(0x03c4),
 			machine().time().to_string());
+		machine().schedule_exit();
+	}
+	if (m_panel_reply_substitute_enabled && !m_panel_reply_substitute_done &&
+		strstr(m_panel_text, "FILE 1  TUTORIAL BNK"))
+	{
+		m_panel_reply_substitute_done = true;
+		u32 ready_slots = 0;
+		const u16 slot_base = lowmem_word(0x00c6);
+		const u16 slot_end = lowmem_word(0x00c8);
+		const u32 span = (slot_end >= slot_base) ? (slot_end - slot_base) : 0;
+		const u32 slot_count = span / 0x16;
+		for (u32 slot = 0; slot < slot_count && slot < 128; slot++)
+		{
+			const u32 base = slot_base + slot * 0x16;
+			if (lowmem_byte(base + 2) != lowmem_byte(base + 3))
+				ready_slots++;
+		}
+		osd_printf_info("ASR10_PANEL_REPLY_SUBSTITUTE_RESULT value=%02x substituted=%u "
+			"tx=%02x occurrence=%u seq=%u display_before=\"%s\" display_after=\"%s\" "
+			"changed=%u state03c0_before=%04x state03c0_after=%04x "
+			"buf03c4_before=%04x buf03c4_after=%04x ready_slots=%u slot_base=%04x "
+			"slot_end=%04x slot_count=%u time=%s\n",
+			m_panel_reply_substitute_value, m_panel_reply_substitute_used ? 1 : 0,
+			m_panel_reply_substitute_tx, m_panel_reply_substitute_occurrence,
+			m_panel_reply_substitute_event_seq, m_panel_reply_substitute_display_before,
+			current_display_text().c_str(),
+			std::strcmp(m_panel_reply_substitute_display_before, current_display_text().c_str()) != 0 ? 1 : 0,
+			m_panel_reply_substitute_state_before, lowmem_word(0x03c0),
+			m_panel_reply_substitute_buf_before, lowmem_word(0x03c4),
+			ready_slots, slot_base, slot_end, slot_count, machine().time().to_string());
 		machine().schedule_exit();
 	}
 	if (m_step0_runtime_trace_enabled && m_panel_receive_live_active && !m_step0_file1_context_logged)

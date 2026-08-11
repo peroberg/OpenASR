@@ -475,14 +475,20 @@ OS-filen i respektive avbild: block 24, diskoffset `0x3000`. V1.61 173 block
 
 | fil | rader | typ | SHA-256 (16) |
 |---|---|---|---|
-| `call-graph-edges.csv` | 5 248 + rubrik | **genererad** | `e69743aae86c8277` |
+| `call-graph-edges.csv` | 5 243 + rubrik | **genererad bas** | `472373eea0fac895` |
+| `call-graph-observations-v350-rx22.csv` | 5 + rubrik | **runtime-observationer** | `aa0ee0423c32f1ab` |
 | `os-binding-table.csv` | 723 + rubrik | **genererad** | `600f646943d5a3a7` |
 | `panel-raw-byte-sweep-v350.csv` | 256 + rubrik | **genererad** | `8a575265c39f66fa` |
+| `panel-reply-substitution-v350.csv` | 11 + rubrik | **genererad, partiell** | `17bfe2306e3f2ba4` |
 | `rom-abi-entrypoints.csv` | 1 054 + rubrik | **genererad** | `6293e5c9cffeb4f4` |
 | `routines.csv` | 25 + rubrik | **handkurerad** | `8aba2712c91a6a04` |
 
 Genererade filer far **inte** redigeras for hand - de skrivs over vid nasta korning.
 Runtime-observationer hor hemma i en separat fil som slas ihop vid generering.
+`call-graph-observations-v350-rx22.csv` innehaller de fem rx22-kanter som forst
+lades direkt i `call-graph-edges.csv`; regenerering ska appenda dessa rader
+efter den genererade basen, med oforandrade `edge_id`, `execution_source` och
+tidsstamplar.
 `routines.csv` ar motsatsen: den vaxer en rad i taget, med explicit `boundary_evidence`
 och `source_document` per post.
 
@@ -501,11 +507,13 @@ call-graph-edges.csv
     Kontrollflodeskanter pa ANROPSSTALLENIVA, inte rutinniva.
     executed=unknown betyder INTE att kanten ar falsk eller oanvand -
     det betyder att ingen namngiven observation annu ar knuten till den.
-    Nulage: observed 12, inferred_from_trace 3,
+    Genererad bas: observed 7, inferred_from_trace 3,
     not_reached_in_bounded_run 4, unknown 5229.
-    Evidence-fordelning: static-abs.l 2285, static-table 1490,
-    static-abs.w 1362, static-vectortable 92, runtime-PC 8,
-    observed 5, static 4, static+arch 2.
+    Sammanslagen vy med runtime-observationer: observed 12,
+    inferred_from_trace 3, not_reached_in_bounded_run 4, unknown 5229.
+    Evidence-fordelning i sammanslagen vy: static-abs.l 2285,
+    static-table 1490, static-abs.w 1362, static-vectortable 92,
+    runtime-PC 8, observed 5, static 4, static+arch 2.
 
 routines.csv
     Rutinidentiteter med explicit gransevidens och proveniens.

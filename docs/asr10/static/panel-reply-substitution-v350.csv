@@ -1,0 +1,14 @@
+# Generated from /tmp/asr10-reply-subst-*.log. Do not edit by hand.
+# Run: V3.50, substitute first response to TX $74, no -log. Full $00-$FF sweep was not completed.
+value,tx_match,occurrence,scheduled,injected,reached_file1,display_before,display_after,changed,state03c0_before,state03c0_after,buf03c4_before,buf03c4_after,ready_slots,result
+c0,74,1,1,1,0,q,,,b392,,0000,,,no-file1-within-45s
+c1,74,1,1,1,0,q,,,b392,,0000,,,no-file1-within-45s
+c2,74,1,1,1,0,q,,,b392,,0000,,,no-file1-within-45s
+c3,74,1,1,1,0,q,,,b392,,0000,,,no-file1-within-45s
+c4,74,1,1,1,0,q,,,b392,,0000,,,no-file1-within-45s
+ff,74,1,1,1,1,q,FILE 1  TUTORIAL BNK,1,b392,b392,0000,0000,2,reached-file1
+00,74,1,1,1,0,q,,,b392,,0000,,,no-file1-within-45s
+7f,74,1,1,1,0,q,,,b392,,0000,,,no-file1-within-45s
+80,74,1,1,1,0,q,,,b392,,0000,,,no-file1-within-45s
+bf,74,1,1,1,0,q,,,b392,,0000,,,no-file1-within-45s
+74,74,1,1,1,0,q,,,b392,,0000,,,no-file1-within-45s

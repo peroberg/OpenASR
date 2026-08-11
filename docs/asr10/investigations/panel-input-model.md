@@ -561,3 +561,20 @@ Do not add input ports until at least one of these is true:
 
 Until then, the deterministic file-browse test remains blocked by missing input
 semantics, not merely by missing `INPUT_PORTS` syntax.
+
+## Channel B reply model
+
+[Verified] Kanal B är en fråga-svar-länk. Maskinen sänder 198 byte, panelen
+svarar 196 i den loggade V3.50-körningen till `FILE 1  TUTORIAL BNK`.
+Displaytext sänds byte för byte på TX.
+
+[Verified] Harnessen svarar `$FF` på allt. `$FF` ligger i kontrollintervallet
+`$C0-$FF`.
+
+[Likely] `$FF` är protokollets tomsvar: "ingen händelse".
+
+[Likely] Ett tangenttryck är ett avvikande svar på panelavsökningen, inte en
+asynkront anländande byte.
+
+Förbehåll: de 256 asynkrona injektionerna testade fel stimulusform. Resultatet
+står kvar som giltigt för asynkrona byte.
