@@ -269,7 +269,6 @@ private:
 	bool m_fc6816_service_setter_dump_logged = false;
 	bool m_fc6816_service_2400_set_by_runtime = false;
 	bool m_fc6816_service_0d06_set_after_runtime = false;
-	bool m_fc6816_service_2400_clear_experiment_done = false;
 	u32 m_fc6816_service_setter_rte_count = 0;
 	u32 m_fc6816_service_0d06_rte_count = 0;
 	u32 m_fc6816_service_setter_pc = 0xffffffff;
@@ -906,7 +905,6 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_fc6816_service_setter_dump_logged));
 	save_item(NAME(m_fc6816_service_2400_set_by_runtime));
 	save_item(NAME(m_fc6816_service_0d06_set_after_runtime));
-	save_item(NAME(m_fc6816_service_2400_clear_experiment_done));
 	save_item(NAME(m_fc6816_service_setter_rte_count));
 	save_item(NAME(m_fc6816_service_0d06_rte_count));
 	save_item(NAME(m_fc6816_service_setter_pc));
@@ -1073,7 +1071,6 @@ void asr10_boot_state::machine_reset()
 	m_fc6816_service_setter_dump_logged = false;
 	m_fc6816_service_2400_set_by_runtime = false;
 	m_fc6816_service_0d06_set_after_runtime = false;
-	m_fc6816_service_2400_clear_experiment_done = false;
 	m_fc6816_service_setter_rte_count = 0;
 	m_fc6816_service_0d06_rte_count = 0;
 	m_fc6816_service_setter_pc = 0xffffffff;

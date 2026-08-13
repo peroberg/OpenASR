@@ -25,6 +25,11 @@ Panel receive terminology:
 - `asr10booth` boots `floppies/asr10booth/V350.img` with no `ASR10_*` environment
   variables to:
 
+- Category A/B/C cleanup status: `src/mame/ensoniq/asr10_boot.cpp` is 3580
+  lines after the final dead C-experiment crumb removal. No experimental
+  fabrication remains in the driver except `ASR10_MISSING_FDC_RATE_SOURCE`.
+  The remaining `$FF` panel idle response lives in the ASR panel device and is
+  documented separately as synthetic model behavior, not a driver A experiment.
   ```text
   ENSONIQ ASR-10 -> LOADING SYSTEM -> FILE 1  TUTORIAL BNK
   ```
