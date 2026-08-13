@@ -22,6 +22,7 @@
 #include "logmacro.h"
 
 
+#include "asr10_panel.lh"
 #include "esq2by40_vfx.lh"
 #include "sd1.lh"
 #include "sd132.lh"
@@ -751,6 +752,7 @@ esqpanel1x22_device::esqpanel1x22_device(const machine_config &mconfig, const ch
 void asr10panel_device::device_add_mconfig(machine_config &config)
 {
 	ESQ1X22(config, m_vfd, 60);
+	config.set_default_layout(layout_asr10_panel);
 }
 
 void asr10panel_device::device_start()
@@ -781,12 +783,7 @@ void asr10panel_device::device_reset()
 	m_text_chars.fill(' ');
 	m_text_position = 0;
 	m_pending_annunciator_command = 0;
-	m_trace_panel_bytes = std::getenv("ASR10_PANEL_DEVICE_BYTE_TRACE") != nullptr;
 	m_disable_eps_echo = std::getenv("ASR10_PANEL_DISABLE_ECHO") != nullptr;
-	m_trace_rx_complete_count = 0;
-	m_trace_send_to_display_count = 0;
-	m_trace_xmit_char_count = 0;
-	m_trace_tra_complete_count = 0;
 
 	for (u32 index = 0; index != m_annunciator_state.size(); index++)
 		m_annunciator_regs[index] = 0;
@@ -810,45 +807,6 @@ void asr10panel_device::rcv_complete()
 	send_to_display(data);
 }
 
-void asr10panel_device::debug_rx_complete(uint8_t data)
-{
-	if (!m_trace_panel_bytes || machine().side_effects_disabled())
-		return;
-
-	m_trace_rx_complete_count++;
-	osd_printf_info("ASR10_PANEL_DEVICE_BYTE event=rcv_complete seq=%u time=%s value=%02x text=\"%s\"\n",
-		m_trace_rx_complete_count, machine().time().to_string(), data, current_text().c_str());
-}
-
-void asr10panel_device::debug_send_to_display(uint8_t data)
-{
-	if (!m_trace_panel_bytes || machine().side_effects_disabled())
-		return;
-
-	m_trace_send_to_display_count++;
-	osd_printf_info("ASR10_PANEL_DEVICE_BYTE event=send_to_display seq=%u time=%s value=%02x text_before=\"%s\"\n",
-		m_trace_send_to_display_count, machine().time().to_string(), data, current_text().c_str());
-}
-
-void asr10panel_device::debug_xmit_char(uint8_t data)
-{
-	if (!m_trace_panel_bytes || machine().side_effects_disabled())
-		return;
-
-	m_trace_xmit_char_count++;
-	osd_printf_info("ASR10_PANEL_DEVICE_BYTE event=xmit_char seq=%u time=%s value=%02x text=\"%s\"\n",
-		m_trace_xmit_char_count, machine().time().to_string(), data, current_text().c_str());
-}
-
-void asr10panel_device::debug_tra_complete()
-{
-	if (!m_trace_panel_bytes || machine().side_effects_disabled())
-		return;
-
-	m_trace_tra_complete_count++;
-	osd_printf_info("ASR10_PANEL_DEVICE_BYTE event=tra_complete seq=%u time=%s text=\"%s\"\n",
-		m_trace_tra_complete_count, machine().time().to_string(), current_text().c_str());
-}
 
 void asr10panel_device::send_to_display(uint8_t data)
 {
@@ -902,16 +860,93 @@ std::string asr10panel_device::annunciator_summary() const
 }
 
 static INPUT_PORTS_START(asr10panel_device)
-	PORT_START("buttons")
-	PORT_BIT(0x0001, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_0A") PORT_CODE(KEYCODE_DOWN) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x0a)
-	PORT_BIT(0x0002, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_05") PORT_CODE(KEYCODE_5) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x05)
-	PORT_BIT(0x0004, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_06") PORT_CODE(KEYCODE_6) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x06)
-	PORT_BIT(0x0008, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_07") PORT_CODE(KEYCODE_7) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x07)
-	PORT_BIT(0x0010, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_10") PORT_CODE(KEYCODE_1) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x10)
-	PORT_BIT(0x0020, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_11") PORT_CODE(KEYCODE_2) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x11)
-	PORT_BIT(0x0040, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_15") PORT_CODE(KEYCODE_S) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x15)
-	PORT_BIT(0x0080, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_1B") PORT_CODE(KEYCODE_B) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x1b)
-	PORT_BIT(0x0100, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_20") PORT_CODE(KEYCODE_R) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x20)
+#define ASR10_PANEL_BUTTON(mask, name, param) \
+	PORT_BIT(mask, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME(name) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), param)
+
+	PORT_START("buttons_0")
+	ASR10_PANEL_BUTTON(0x00000001, "BTN_00", 0x00)
+	ASR10_PANEL_BUTTON(0x00000002, "BTN_01", 0x01)
+	ASR10_PANEL_BUTTON(0x00000004, "BTN_02", 0x02)
+	ASR10_PANEL_BUTTON(0x00000008, "BTN_03", 0x03)
+	ASR10_PANEL_BUTTON(0x00000010, "BTN_04", 0x04)
+	ASR10_PANEL_BUTTON(0x00000020, "BTN_05", 0x05)
+	ASR10_PANEL_BUTTON(0x00000040, "BTN_06", 0x06)
+	ASR10_PANEL_BUTTON(0x00000080, "BTN_07", 0x07)
+	ASR10_PANEL_BUTTON(0x00000100, "BTN_08", 0x08)
+	ASR10_PANEL_BUTTON(0x00000200, "BTN_09", 0x09)
+	PORT_BIT(0x00000400, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_0A") PORT_CODE(KEYCODE_DOWN) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x0a)
+	PORT_BIT(0x00000800, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_0B") PORT_CODE(KEYCODE_UP) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x0b)
+	PORT_BIT(0x00001000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_0C") PORT_CODE(KEYCODE_LEFT) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x0c)
+	PORT_BIT(0x00002000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_0D") PORT_CODE(KEYCODE_RIGHT) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x0d)
+	ASR10_PANEL_BUTTON(0x00004000, "BTN_0E", 0x0e)
+	ASR10_PANEL_BUTTON(0x00008000, "BTN_0F", 0x0f)
+	ASR10_PANEL_BUTTON(0x00010000, "BTN_10", 0x10)
+	ASR10_PANEL_BUTTON(0x00020000, "BTN_11", 0x11)
+	ASR10_PANEL_BUTTON(0x00040000, "BTN_12", 0x12)
+	ASR10_PANEL_BUTTON(0x00080000, "BTN_13", 0x13)
+	ASR10_PANEL_BUTTON(0x00100000, "BTN_14", 0x14)
+	ASR10_PANEL_BUTTON(0x00200000, "BTN_15", 0x15)
+	ASR10_PANEL_BUTTON(0x00400000, "BTN_16", 0x16)
+	ASR10_PANEL_BUTTON(0x00800000, "BTN_17", 0x17)
+	ASR10_PANEL_BUTTON(0x01000000, "BTN_18", 0x18)
+	ASR10_PANEL_BUTTON(0x02000000, "BTN_19", 0x19)
+	ASR10_PANEL_BUTTON(0x04000000, "BTN_1A", 0x1a)
+	ASR10_PANEL_BUTTON(0x08000000, "BTN_1B", 0x1b)
+	ASR10_PANEL_BUTTON(0x10000000, "BTN_1C", 0x1c)
+	ASR10_PANEL_BUTTON(0x20000000, "BTN_1D", 0x1d)
+	ASR10_PANEL_BUTTON(0x40000000, "BTN_1E", 0x1e)
+	ASR10_PANEL_BUTTON(0x80000000, "BTN_1F", 0x1f)
+
+	PORT_START("buttons_32")
+	ASR10_PANEL_BUTTON(0x00000001, "BTN_20", 0x20)
+	ASR10_PANEL_BUTTON(0x00000002, "BTN_21", 0x21)
+	ASR10_PANEL_BUTTON(0x00000004, "BTN_22", 0x22)
+	ASR10_PANEL_BUTTON(0x00000008, "BTN_23", 0x23)
+	ASR10_PANEL_BUTTON(0x00000010, "BTN_24", 0x24)
+	ASR10_PANEL_BUTTON(0x00000020, "BTN_25", 0x25)
+	ASR10_PANEL_BUTTON(0x00000040, "BTN_26", 0x26)
+	ASR10_PANEL_BUTTON(0x00000080, "BTN_27", 0x27)
+	ASR10_PANEL_BUTTON(0x00000100, "BTN_28", 0x28)
+	ASR10_PANEL_BUTTON(0x00000200, "BTN_29", 0x29)
+	ASR10_PANEL_BUTTON(0x00000400, "BTN_2A", 0x2a)
+	ASR10_PANEL_BUTTON(0x00000800, "BTN_2B", 0x2b)
+	ASR10_PANEL_BUTTON(0x00001000, "BTN_2C", 0x2c)
+	ASR10_PANEL_BUTTON(0x00002000, "BTN_2D", 0x2d)
+	ASR10_PANEL_BUTTON(0x00004000, "BTN_2E", 0x2e)
+	ASR10_PANEL_BUTTON(0x00008000, "BTN_2F", 0x2f)
+	ASR10_PANEL_BUTTON(0x00010000, "BTN_30", 0x30)
+	ASR10_PANEL_BUTTON(0x00020000, "BTN_31", 0x31)
+	ASR10_PANEL_BUTTON(0x00040000, "BTN_32", 0x32)
+	ASR10_PANEL_BUTTON(0x00080000, "BTN_33", 0x33)
+	ASR10_PANEL_BUTTON(0x00100000, "BTN_34", 0x34)
+	ASR10_PANEL_BUTTON(0x00200000, "BTN_35", 0x35)
+	ASR10_PANEL_BUTTON(0x00400000, "BTN_36", 0x36)
+	ASR10_PANEL_BUTTON(0x00800000, "BTN_37", 0x37)
+	ASR10_PANEL_BUTTON(0x01000000, "BTN_38", 0x38)
+	ASR10_PANEL_BUTTON(0x02000000, "BTN_39", 0x39)
+	ASR10_PANEL_BUTTON(0x04000000, "BTN_3A", 0x3a)
+	ASR10_PANEL_BUTTON(0x08000000, "BTN_3B", 0x3b)
+	ASR10_PANEL_BUTTON(0x10000000, "BTN_3C", 0x3c)
+	ASR10_PANEL_BUTTON(0x20000000, "BTN_3D", 0x3d)
+	ASR10_PANEL_BUTTON(0x40000000, "BTN_3E", 0x3e)
+	ASR10_PANEL_BUTTON(0x80000000, "BTN_3F", 0x3f)
+
+#undef ASR10_PANEL_BUTTON
+
+	PORT_START("analog_data_entry")
+	configurer.field_alloc(IPT_ADJUSTER, 0x200, 0x3ff, "Data Entry");
+	configurer.field_set_min_max(0, 0x3ff);
+	PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::analog_value_change), 3)
+
+	PORT_START("analog_input_level")
+	configurer.field_alloc(IPT_ADJUSTER, 0x200, 0x3ff, "Input Level");
+	configurer.field_set_min_max(0, 0x3ff);
+	PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::analog_value_change), 4)
+
+	PORT_START("analog_volume")
+	configurer.field_alloc(IPT_ADJUSTER, 0x3ff, 0x3ff, "Volume");
+	configurer.field_set_min_max(0, 0x3ff);
+	PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::analog_value_change), 5)
 INPUT_PORTS_END
 
 ioport_constructor asr10panel_device::device_input_ports() const
@@ -922,6 +957,13 @@ ioport_constructor asr10panel_device::device_input_ports() const
 INPUT_CHANGED_MEMBER(asr10panel_device::button_change)
 {
 	esqpanel_device::set_button(param, newval != 0);
+}
+
+INPUT_CHANGED_MEMBER(asr10panel_device::analog_value_change)
+{
+	const int channel = param;
+	const int clamped = std::clamp(int(newval), 0, 1023);
+	set_analog_value(channel, u16(clamped << 6));
 }
 
 asr10panel_device::asr10panel_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :
