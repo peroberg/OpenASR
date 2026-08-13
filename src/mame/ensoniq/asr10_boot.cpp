@@ -37,7 +37,6 @@
  **************************************************************************/
 
 #include "emu.h"
-#include "asr10_boot_defs.h"
 #include "main.h"
 
 #include "cpu/m68000/m68000.h"
@@ -78,7 +77,6 @@ public:
 		, m_rom(*this, "maincpu")
 		, m_es5506_host(*this, "es5506_host")
 		, m_es5510_host(*this, "es5510_host")
-	        , m_display(*this, "digit%u", 0U)
 	{
 	}
 
@@ -90,11 +88,8 @@ private:
 	static constexpr u32 ROM_MASK = 0x0003ffff;
 	static constexpr u32 LOWMEM_WORDS = 0x00100000 / 2;
 	static constexpr u32 PROBE_OR_ALIAS_REGION_COUNT = 4;
-	static constexpr u32 PANEL_TEXT_LENGTH = 64;
 
 	static constexpr bool ASR10_MISSING_FDC_RATE_SOURCE = true;
-	static constexpr u32 ASR10_DISPLAY_LENGTH = 22;
-	static u16 ascii_to_14seg(u8 character) { return asr10_boot_defs::ascii_to_14seg(character); }
 
 	required_device<mc68302_device> m_maincpu;
 	required_device<upd72069_device> m_fdc;
@@ -106,10 +101,6 @@ private:
 	optional_device<es5506_device> m_es5506_host;
 	optional_device<es5510_device> m_es5510_host;
 
-	output_finder<ASR10_DISPLAY_LENGTH> m_display;
-	std::array<u8, ASR10_DISPLAY_LENGTH> m_display_chars{};
-	u8 m_display_position = 0;
-
 	emu_timer *m_lrclk_timer = nullptr;
 	bool m_lrclk_level = false;
 
@@ -118,9 +109,6 @@ private:
 	u16 m_m68302_internal_shadow[0x80]{};
 	u8 m_duart_io = 0;
 	std::array<u16, 8> m_analog_values{};
-	char m_panel_text[PANEL_TEXT_LENGTH]{};
-	u32 m_panel_text_length = 0;
-	u8 m_panel_transport_pending_marker = 0;
 
 	virtual void machine_start() override ATTR_COLD;
 	virtual void machine_reset() override ATTR_COLD;
@@ -152,9 +140,6 @@ private:
 	u16 probe_or_alias_region_r_at(u32 base, offs_t offset, u16 mem_mask);
 	void probe_or_alias_region_w_at(u32 base, offs_t offset, u16 data, u16 mem_mask);
 
-	void panel_receive_byte(u8 data);
-	void flush_panel_text();
-	std::string current_display_text() const;
 
 
 
@@ -262,8 +247,6 @@ private:
 	static void floppy_drives(device_slot_interface &device);
 	static void floppy_formats(format_registration &fr);
 
-	void clear_display();
-	void set_display_text(const char *text);
 };
 
 
@@ -272,18 +255,9 @@ void asr10_boot_state::machine_start()
 	m_lrclk_timer = timer_alloc(FUNC(asr10_boot_state::lrclk_toggle), this);
 	m_lowmem_shadow = make_unique_clear<u16[]>(LOWMEM_WORDS);
 
-	// output_finder in this MAME tree derives from device_resolver_base and
-	// resolves itself automatically (like required_device); there is no
-	// resolve() member to call here.
-	save_item(NAME(m_display_chars));
-	save_item(NAME(m_display_position));
-
 	save_pointer(NAME(m_lowmem_shadow), LOWMEM_WORDS);
 	save_item(NAME(m_probe_or_alias_region_shadow));
 	save_item(NAME(m_m68302_internal_shadow));
-	save_item(NAME(m_panel_text));
-	save_item(NAME(m_panel_text_length));
-	save_item(NAME(m_panel_transport_pending_marker));
 	save_item(NAME(m_lrclk_level));
 }
 
@@ -300,19 +274,6 @@ void asr10_boot_state::machine_reset()
 	m_analog_values[6] = 0x8000; // neutral/unassigned
 	m_analog_values[7] = 0x8000; // neutral/unassigned
 
-	m_panel_text_length = 0;
-	m_panel_transport_pending_marker = 0;
-	m_display_chars.fill(' ');
-	m_display_position = 0;
-
-	set_display_text("----------------------");
-
-	for (u32 index = 0; index < ASR10_DISPLAY_LENGTH; index++)
-		m_display[index] = 0xffff;
-	clear_display();
-	set_display_text("----------------------");
-
-	std::fill(std::begin(m_panel_text), std::end(m_panel_text), 0);
 	// Board-level LRCLK into PB3 (GPIO input, docs/mc68302/pin-function-map.md):
 	// external to the 68302, always running once the machine is up, not a
 	// register-driven behavior. The rate is provisionally derived from the
@@ -325,43 +286,6 @@ void asr10_boot_state::machine_reset()
 		std::fill(std::begin(entry), std::end(entry), 0);
 	std::fill(std::begin(m_m68302_internal_shadow), std::end(m_m68302_internal_shadow), 0);
 
-}
-
-void asr10_boot_state::clear_display()
-{
-	m_display_chars.fill(' ');
-	m_display_position = 0;
-
-	for (u32 index = 0; index < ASR10_DISPLAY_LENGTH; index++)
-		m_display[index] = 0;
-}
-
-void asr10_boot_state::set_display_text(const char *text)
-{
-	clear_display();
-
-	for (u32 index = 0;
-		index < ASR10_DISPLAY_LENGTH && text[index];
-		index++)
-	{
-		const u8 character = u8(text[index]);
-
-		m_display_chars[index] = character;
-		m_display[index] = ascii_to_14seg(character);
-		m_display_position = index + 1;
-	}
-}
-
-
-std::string asr10_boot_state::current_display_text() const
-{
-	std::string text;
-	text.reserve(ASR10_DISPLAY_LENGTH);
-	for (u8 character : m_display_chars)
-		text.push_back(char(character ? character : ' '));
-	while (!text.empty() && text.back() == ' ')
-		text.pop_back();
-	return text;
 }
 
 void asr10_boot_state::mem_map(address_map &map)
@@ -704,59 +628,8 @@ u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
 void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 mem_mask)
 {
 	const u32 word = offset & 0x0f;
-	const u32 address = (0x00fc4800 | (offset << 1)) | (ACCESSING_BITS_0_7 ? 1 : 0);
 	if (ACCESSING_BITS_0_7)
 		m_duart->write(word, u8(data));
-	if (address == 0x00fc4817 && ACCESSING_BITS_0_7)
-		panel_receive_byte(u8(data));
-}
-
-
-
-void asr10_boot_state::panel_receive_byte(u8 data)
-{
-	if (m_panel_transport_pending_marker)
-	{
-		m_panel_transport_pending_marker = 0;
-		return;
-	}
-
-	if (data >= 0x77 && data <= 0x7c)
-	{
-		flush_panel_text();
-		m_panel_transport_pending_marker = data;
-		return;
-	}
-
-	if (data < 0x20 || data > 0x7e)
-	{
-		flush_panel_text();
-		return;
-	}
-
-	// Ny textsekvens: töm den visuella displayen.
-	if (m_panel_text_length == 0)
-		clear_display();
-
-	// Visa samma tecken som diagnostikbufferten tar emot.
-	if (m_display_position < ASR10_DISPLAY_LENGTH)
-	{
-		m_display_chars[m_display_position] = data;
-		m_display[m_display_position] = ascii_to_14seg(data);
-		m_display_position++;
-	}
-
-	if (m_panel_text_length == PANEL_TEXT_LENGTH - 1)
-		flush_panel_text();
-
-	m_panel_text[m_panel_text_length++] = char(data);
-	m_panel_text[m_panel_text_length] = 0;
-}
-
-void asr10_boot_state::flush_panel_text()
-{
-	m_panel_text_length = 0;
-	m_panel_text[0] = 0;
 }
 
 
