@@ -38,6 +38,7 @@ Line-count checkpoints:
 | historical baseline | 6916 |
 | after `f5e189eb39d` | 3583 |
 | after `8b45f56d22a` | 3580 |
+| after structural cleanup | 952 |
 
 ## Category C - experiment/sweeps
 
@@ -63,10 +64,8 @@ change guest-visible behavior.
 Final status:
 
 - No `std::getenv("ASR10_...")` controls remain in `asr10_boot.cpp`.
-- `ASR10_DIAG_PANEL_B` remains as a deliberately deferred compile-time logging
-  gate.
-- Always-on diagnostic labels/log record names remain where applicable; these
-  are not controls and are not behavior-changing fabrication.
+- No trace, profile, summary, poller or diagnostic logging system remains in
+  `asr10_boot.cpp`.
 
 ## Category A - behavior-changing fabrication
 
@@ -99,15 +98,21 @@ The ASR panel `$FF` response is deliberately tracked outside the driver cleanup:
 
 ## Final state
 
-- `src/mame/ensoniq/asr10_boot.cpp` is 3580 lines after the final cleanup pass.
+- `src/mame/ensoniq/asr10_boot.cpp` was reduced from 3580 to 952 lines by the
+  structural cleanup that removed obsolete runtime instrumentation and kept the
+  driver to the current machine model, adapters and documented workaround.
 - `std::getenv` in `asr10_boot.cpp`: 0.
 - Remaining `ASR10_*` driver controls are:
-  `ASR10_MISSING_FDC_RATE_SOURCE`, `ASR10_DIAG_PANEL_B`,
-  `ASR10_DISPLAY_LENGTH`, and log record names.
+  `ASR10_MISSING_FDC_RATE_SOURCE` and `ASR10_DISPLAY_LENGTH`.
 - Category A remaining in driver: `ASR10_MISSING_FDC_RATE_SOURCE` only.
-- Category B remaining in driver: `ASR10_DIAG_PANEL_B` and always-on diagnostic
-  labels/log record names where applicable.
+- Category B remaining in driver: none known.
 - Category C remaining in driver: none known.
+- Normal boot requires no experiment flags.
+- Verification after structural cleanup: `make SUBTARGET=mame -j4`,
+  `docs/asr10/regression-test.sh` (5/5), `git diff --check`, and a normal
+  no-Lua launch of `./mame asr10booth -flop1 floppies/asr10booth/V350.img`
+  all remained working. The regression harness verified `FILE 1  TUTORIAL BNK`
+  and panel button navigation to `FILE 2`.
 
 Verification command, 2026-08-13:
 

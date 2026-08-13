@@ -75,11 +75,13 @@ Panel receive terminology:
   rather than a fixed `$0200` constant. V3.50 still boots to
   `FILE 1  TUTORIAL BNK`; observed PAR reads returned raw `$0200` from channel 6
   (`left_aligned=$8000`), a centered 10-bit value.
-- Category A/B/C cleanup status: `src/mame/ensoniq/asr10_boot.cpp` is 3580
-  lines after the final dead C-experiment crumb removal. No experimental
-  fabrication remains in the driver except `ASR10_MISSING_FDC_RATE_SOURCE`.
-  The remaining `$FF` panel idle response lives in the ASR panel device and is
-  documented separately as synthetic model behavior, not a driver A experiment.
+- Category A/B/C cleanup status: `src/mame/ensoniq/asr10_boot.cpp` was reduced
+  from 3580 to 952 lines by the structural cleanup. No runtime experiment,
+  trace, profile, summary or getenv-controlled instrumentation remains in the
+  driver. No experimental fabrication remains in the driver except
+  `ASR10_MISSING_FDC_RATE_SOURCE`. The normal boot path requires no
+  experiment flags. Build, regression, normal boot and panel button navigation
+  were rechecked after the cleanup.
 - Channel B panel RX is owned by `mc68681_device`.
 - V3.50 `FILE 1  TUTORIAL BNK` is a working runtime state under the Step 0 PC profile:
   20 s sampling showed 28315 samples, 385 distinct PCs and no `stop` samples. The
