@@ -306,22 +306,16 @@ och accepterar "ingen förändring".
 
 ### Board-default för PAR
 
-I nuvarande källa definieras det syntetiska PAR-värdet som
-`PAR_DIAGNOSTIC_VALUE = 0x200` i
-`asr10_boot_state::es5506_host_read_par_diag()` och används via
-`es5506_host.read_port_cb().set(FUNC(asr10_boot_state::es5506_host_read_par_diag))`
-i `asr10_boot()`.
+I nuvarande källa används `asr10_boot_state::analog_r()` via
+`es5506_host.read_port_cb().set(FUNC(asr10_boot_state::analog_r))` i
+`asr10_boot()`. Paneldevice kan uppdatera kanalvärden via
+`m_panel->write_analog().set(FUNC(asr10_boot_state::analog_w))`.
 
-**[Verified]** Callbacken tar ingen kanalparameter och används för varje
-ES5506 PAR-läsning. Samma värde gäller därför alla firmware-valda
-kanaler. **[Verified]** Nuvarande driver har ingen användarinmatning
-eller miljövariabel som åsidosätter värdet.
-
-Det är en syntetisk analog vilonivå som möjliggör OS-kalibreringen, inte
-en uppmätt spänning och inte en bias i ljudmotorn. Kanal 7 mäts åtta
-gånger; summan blir D2 och D2 är divisor i kalibreringsfaktorn. Endast
-noll orsakar undantag. Övriga kanaler primar filter, centrum och
-trösklar.
+**[Verified]** Callbacken läser den firmware-valda kanalen ur panelens analoga
+latch och returnerar motsvarande 10-bitarsvärde. Omappade kanaler har
+board-defaults så att OS-kalibreringen inte dividerar med noll. Kanal 7 mäts
+åtta gånger; summan blir D2 och D2 är divisor i kalibreringsfaktorn. Övriga
+kanaler primar filter, centrum och trösklar.
 
 ### `$F8DAFE` par_read_raw
 

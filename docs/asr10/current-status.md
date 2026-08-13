@@ -22,22 +22,64 @@ Panel receive terminology:
 
 ## Works
 
-- `asr10booth` boots `floppies/asr10booth/V350.img` with no `ASR10_*` environment
-  variables to:
+- Current `asr10booth` boots `floppies/asr10booth/V350.img` with no `ASR10_*`
+  environment variables to:
 
-- Category A/B/C cleanup status: `src/mame/ensoniq/asr10_boot.cpp` is 3580
-  lines after the final dead C-experiment crumb removal. No experimental
-  fabrication remains in the driver except `ASR10_MISSING_FDC_RATE_SOURCE`.
-  The remaining `$FF` panel idle response lives in the ASR panel device and is
-  documented separately as synthetic model behavior, not a driver A experiment.
   ```text
   ENSONIQ ASR-10 -> LOADING SYSTEM -> FILE 1  TUTORIAL BNK
   ```
+
+  The failed intermediate Disk Ready trial wired DUART IP0 from floppy
+  loaded + motor-active state and stopped in repeated `PLEASE INSERT DISK`.
+  Current code instead drives DUART IP0 from the uPD72069 index callback; the
+  old PC-dependent `$FC4809` bit-4 stub was not reintroduced.
 
 - The acceptance test is `docs/asr10/regression-test.sh`. Tag
   `asr10-file1-2026-08-03` marks the first documented milestone.
 - Current boot uses real MAME devices for the DUART host path (`mc68681`), ES5506 host
   registers, ES5510 host registers, and the FDC path used by this boot.
+- Current boot to `FILE 1` still depends on synthetic driver behavior, but the
+  `$FC4809` base-value stub and PC-specific bit-4 stub have been removed.
+  [Verified dynamic] The isolated `$FC4809` base value `$00` was obsolete for
+  V3.50 boot-to-FILE1.
+- [Verified dynamic] DUART IP0 is ASR-10 floppy INDEX, driven from uPD72069
+  `idx_wr_callback()` in parallel with the FDC's own internal index handling.
+  V3.50 boots to `FILE 1  TUTORIAL BNK` without the old PC-dependent
+  `$FC4809` bit-4 stub. Negative control without mounted disk fails with
+  `$049D=$05` from `$FB7C9E`, confirming that rotation/index pulses are what the
+  IPCR change test observes. [DISPROVEN] IP0 = floppy loaded && motor active;
+  that predicate stayed in `PLEASE INSERT DISK` with `$049D=$05`.
+- [OPEN] `ASR10_MISSING_FDC_RATE_SOURCE`: where ASR-10 sets the uPD72069 data
+  transfer rate to 500 kbit/s for the boot read path. The current workaround
+  still forces `set_rate(500000)` for aux command `$88`; retested after the
+  IP0/index fix, disabling it still stalls at `PLEASE INSERT DISK` with
+  repeated `$049D=$0D`. The failing transfer is reached after aux `$88`, aux
+  `$F3`, and Read Data command `$46 ...`; MAME decodes `$88` as 250 kbit/s,
+  while `$98`/`$C8` would select 500 kbit/s. No other locally inspectable
+  firmware in this checkout was shown to exercise that 72069 rate table:
+  `mpc2000`, `mpc3000`, and `s3000` instantiate `UPD72069`, but their ROMs are
+  not present under local `roms/`.
+- [OPEN] FDC completion interrupt path. Static code reading found no
+  `m_fdc->intrq_wr_callback()` and no `m_fdc->drq_wr_callback()` in
+  `asr10_boot.cpp`; the only FDC signal currently wired out is index into
+  DUART IP0. No firmware vector handler that both touches `$FC4000-$FC4003`
+  and posts scheduler work was identified by the direct-vector/short-absolute
+  method. [Likely] The suspended instrument-load task is waiting for an FDC
+  completion signal that the driver does not yet deliver.
+- [OPEN] FDC-/instrumentinläsningsspåret är avslutat i nuvarande omfattning;
+  se `investigations/instrument-load-v350.md`. Blockerare:
+  Instrumentinläsningen väljer FDC DMA-/avbrottsvägen, men ASR-10-modellen har
+  ingen kopplad FDC intrq/drq-väg och ingen implementerad MC68302-intern
+  interruptcontroller som kan leverera fullbordanssignalen.
+- [Verified dynamic] ES5506 PAR now reads through the ASR-10 panel analog path
+  rather than a fixed `$0200` constant. V3.50 still boots to
+  `FILE 1  TUTORIAL BNK`; observed PAR reads returned raw `$0200` from channel 6
+  (`left_aligned=$8000`), a centered 10-bit value.
+- Category A/B/C cleanup status: `src/mame/ensoniq/asr10_boot.cpp` is 3580
+  lines after the final dead C-experiment crumb removal. No experimental
+  fabrication remains in the driver except `ASR10_MISSING_FDC_RATE_SOURCE`.
+  The remaining `$FF` panel idle response lives in the ASR panel device and is
+  documented separately as synthetic model behavior, not a driver A experiment.
 - Channel B panel RX is owned by `mc68681_device`.
 - V3.50 `FILE 1  TUTORIAL BNK` is a working runtime state under the Step 0 PC profile:
   20 s sampling showed 28315 samples, 385 distinct PCs and no `stop` samples. The
@@ -103,7 +145,8 @@ architectural model that did not exist before. Summary only — details in `refe
 - Audio output, sampling, sequencer behaviour, and complete ES5506/ES5510 sound
   integration are not working end-to-end.
 - DUART channel A RX is not wired to a real external source.
-- The fixed PAR value is plumbing only.
+- ES5506 PAR has a real panel-analog route, but the wider ADC channel identity
+  and audio-side effects are not fully verified.
 
 ## Next phase: dynamic verification
 

@@ -95,7 +95,7 @@ committad instrumentering, `asr10_boot.cpp:9514`) plus `ASR10PANEL`/
 `ASR10PHASE` för fas. Alla transaktioner är kommando `0x46` (READ DATA,
 MFM). Två aux-registerskrivningar föregår läsningarna (rad `fc4001`,
 inte NEC765-kommandon): `0x88` (datahastighetsval, tvingas 500 kbps av
-den redan dokumenterade `ASR10_EXPERIMENT_CMD88_RATE_500K`, se
+den redan dokumenterade `ASR10_MISSING_FDC_RATE_SOURCE`, se
 `fdc-map.md`) och `0xF3` (precompensation).
 
 **`V161.img`, 20 transaktioner, cylinder 0-4:**

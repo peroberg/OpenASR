@@ -182,6 +182,21 @@ Belagt: panelsvepningen mot V3.50. Kontrollparet `$23`/`$22` gav noll effekt fö
 värdena. Det var inte observerat om receive-rutinen alls kördes i FILE 1-läget, vilket
 gjorde nollresultatet otolkbart i stället för informativt.
 
+## Observation i Lua, maskinmodell i C++
+
+Allt som bara observerar - taps, räknare, PC-sampling, byteloggar, dumpar,
+CSV-export - skrivs som Lua-skript under `docs/asr10/lua/` och körs med
+`-autoboot_script`. Det kan kastas när frågan är besvarad.
+
+Allt som ändrar maskinens beteende - stubbar, påtvingade värden, syntetiska
+svar - ligger i drivrutinen, ska vara namngivet efter den hårdvarufunktion det
+ersätter, och ska vara noll när arbetet är klart.
+
+Skälet är inte prydlighet. När båda sorterna ligger i samma fil går det inte
+längre att se vilka switchar som bara tittar och vilka som ljuger för maskinen.
+Det kostade ett helt granskningspass att ta reda på vilka tre av ~160 som var
+aktiva som standard, och två av dem påverkade bootvägen.
+
 ### Verifierad bas är inte verifierad gräns
 
 En bekräftad basadress säger ingenting om hur långt tabellen sträcker sig. Bas och

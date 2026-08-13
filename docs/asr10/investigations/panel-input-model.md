@@ -16,6 +16,39 @@ No code changes were made. `INPUT_PORTS_START(asr10_boot)` remains empty at
 Use these names explicitly. The two receive paths run in different phases and evidence
 for one must not be silently applied to the other.
 
+## Panel keyboard input pilot
+
+[Verified] Initial MAME keyboard inputs are wired through the ASR panel device,
+not through a driver-side injection shortcut. The path is input port ->
+`asr10panel_device::button_change()` -> `esqpanel_device::set_button()` -> 62500
+baud serial transport -> SCN2681 channel B -> IRQ6 -> firmware.
+
+[Verified] Internal input identities remain button numbers (`BTN_XX`). Physical
+labels are not assigned from the sweep alone.
+
+[OPEN] The next input step is mapping the observed button IDs to the physical
+ASR-10 rack panel by actual use:
+
+- Mode: Load, Command, Edit
+- Modul: Instrument, Seq/Song, System/MIDI, Effects
+- Tracks: 1-8
+- Transport: Record, Stop/Continue, Play
+- Markör: upp, vänster, ner, höger
+- Bekräfta: Cancel/No, Enter/Yes
+- Parameter: vänster 3-kolumnsblock med siffror 0-9
+
+The current keyboard bindings (`Down`, `Up`, `Left`, `Right`) are a test pilot
+only. All 64 `BTN_00`...`BTN_3F` inputs are clickable in the ASR-10 panel
+layout. Keep the stable MAME field names as `BTN_XX`; assign physical labels
+only after the button is verified through actual use, not just by sweep
+position.
+
+[Verified] Vid Master Tune uppdateras displayen ett steg efter värde: ett tryck
+på pil-ner visar föregående värde. Observerat manuellt i GUI.
+
+[OPEN] Om det är vår panelväg som renderar en uppdatering för sent, eller
+maskinens eget beteende.
+
 ## Verified: current harness path
 
 The existing harness injects panel ACK/status bytes through SCN2681 channel B, not
@@ -56,10 +89,18 @@ Supporting code/documentation:
 ## Verified: 68681-compatible register layout at `$FC4801`
 
 Static ROM/OS evidence fits a 68681-compatible register file at odd byte addresses,
-base `$FC4801`, stride 2. No direct even-address accesses in `$FC4800-$FC481F` were
-identified in `asr10.bin`, `V161.img`, or `V350.img`; no `$00FC48xx` long-address form
-was identified either. The observed long-address form is `$FFFC48xx`, which is ordinary
-24-bit peripheral addressing, not low-RAM mirroring.
+base `$FC4801`, stride 2. No direct even-address long-address instructions in
+`$FC4800-$FC481F` were identified in `asr10.bin`, `V161.img`, or `V350.img`; no
+`$00FC48xx` long-address form was identified either. The observed long-address
+form is `$FFFC48xx`, which is ordinary 24-bit peripheral addressing, not low-RAM
+mirroring.
+
+CS3 runtime taps can report the even word base for a low-byte access: the failed
+Disk Ready cleanup run listed `$FC4808`, `$FC4812`, and `$FC4816`, which
+correspond to IPCR `$FC4809`, SRB `$FC4813`, and RHRB `$FC4817` when
+`ACCESSING_BITS_0_7` selects the low/odd byte. That corrects the wording of the
+earlier "no even accesses" conclusion: ROM's logical register map remains odd
+and stride-2, but the diagnostic surface may show the even word address.
 
 Register-relative coverage matters here: ROM loads `$FFFC4801` into `A0` at `$F88450`
 and uses offsets from that base in the init path. Those accesses would be missed by an
@@ -628,7 +669,8 @@ tabellen är `docs/asr10/static/panel-button-sweep-v350.csv`.
 [Verified] `$03C8` är inhibit-flagga för `$F97662`, som gör host-port
 write/read mot `$FFFC3001` med retry.
 
-[OPEN] `$FC3001` saknas i `hardware-map.md`. Vilken chip select?
+[Likely] `$FC3001` är ES5510 host latch/register offset `$00` i CS2
+(`$FC2000-$FC3FFF`), i samma hostfönster som `$FC3101/$FC3141/$FC3181`.
 
 [OPEN] Humanlästa ASR-10-knappnamn för dessa nummer. Effekterna är verkliga,
 men passet namnger inte `$05`, `$06` osv. som specifika frontpanelsknappar.

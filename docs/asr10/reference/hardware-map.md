@@ -268,11 +268,12 @@ VFX/TS/SD MAME code is likely valuable reference for:
 ASR-specific unknowns:
 
 ```text id="c0q1pt"
-- actual ES5506 address window
-- actual ES5510 address window
-- [OPEN] `$FC3001`: `$F97662` gör host-port write/read mot `$FFFC3001`
-  med retry. Adressen saknar egen hardware-map-post; vilken chip select
-  den tillhör utreds inte i detta pass.
+- complete ES5506 audio routing beyond the host register window
+- complete ES5510/ESP audio execution and routing beyond the host register window
+- [Likely] `$FC3001`: ES5510 host latch/register offset `$00`.
+  `$F97662` gör host-port write/read mot `$FFFC3001` med retry.
+  Adressen ligger i CS2 (`$FC2000-$FC3FFF`) och i samma verifierade
+  hostfönster som `$FC3101/$FC3141/$FC3181`.
 - sample RAM mapping
 - glue/chipselect behavior
 - external delay/work RAM for ESP if applicable

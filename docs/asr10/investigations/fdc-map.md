@@ -30,12 +30,12 @@ Alla fyra kärnoperationerna går redan genom den riktiga enheten:
 | 0xFC4001 (skriv) | Aux command | `m_fdc->auxcmd_w(...)` | 4565 |
 | 0xFC4003 (skriv) | FIFO | `m_fdc->fifo_w(...)` | 4678 |
 | (internt, CMD46-läge) | Terminal count | `m_fdc->tc_w(false); m_fdc->tc_w(true);` | 4403-4404 |
-| (internt, CMD88) | Data rate | `m_fdc->set_rate(500000)` | 4568 |
+| (internt, CMD88) | Data rate workaround | `m_fdc->set_rate(500000)` | current `ASR10_MISSING_FDC_RATE_SOURCE` block |
 
-Det som faktiskt är handskrivet runt dessa anrop, i turordning av
-allvarlighetsgrad:
+Historical pre-cleanup inventory: det som då var handskrivet runt dessa anrop,
+i turordning av allvarlighetsgrad:
 
-1. **`ASR10_EXPERIMENT_CMD88_RATE_500K = true`** (rad 103) — en
+1. **`ASR10_MISSING_FDC_RATE_SOURCE = true`** — en
    `constexpr bool`, INTE miljövariabelstyrd, alltid på. Vid aux-kommando
    `0x88` tvingas `m_fdc->set_rate(500000)` oavsett vilken hastighet
    ROM:ets egen databit i samma kommandobyte faktiskt bad om (rad
@@ -44,13 +44,12 @@ allvarlighetsgrad:
    skuggvariabel som bara loggar vad koden *tror* att hastigheten är —
    den styr aldrig den riktiga enheten, den är ren bokföring parallellt
    med `set_rate()`.
-2. **Syntetisk TC-puls** (rad 4395-4409), gated bakom
-   `ASR10_EXPERIMENT_FDC_SYNTH_TC` (miljövariabel, default av — rad
-   1854). När på: härleder en förväntad sektorstorlek ur CMD46:s egna
-   kommandobytes (`m_fdc_cmd46_write_bytes[5]`) och triggar `tc_w()`
-   själv när precis så många FIFO-byte lästs. Detta ersätter vad som på
-   riktig hårdvara vore en räknare/DMA-signal — default av, så
-   standardkörningen berörs inte.
+2. **Syntetisk TC-puls** (rad 4395-4409 i dåvarande träd), gated bakom
+   `ASR10_EXPERIMENT_FDC_SYNTH_TC` (miljövariabel, default av). När på:
+   härledde den en förväntad sektorstorlek ur CMD46:s egna kommandobytes
+   (`m_fdc_cmd46_write_bytes[5]`) och triggade `tc_w()` själv när precis så
+   många FIFO-byte lästs. Detta ersatte vad som på riktig hårdvara vore en
+   räknare/DMA-signal.
 3. **`ASR10_EXPERIMENT_STUB_CMD1E_RESULTS`/`ASR10_EXPERIMENT_STUB_CMD0E_RESULT`**
    (rad 120, 123) — båda `constexpr bool ... = false`, dvs död kod som
    inte går att slå på ens med miljövariabel (måste ändra källkoden).
@@ -76,12 +75,12 @@ sidoeffekt — värdena skrivs helt av ROM:et, vi injicerar inget.
 
 **Slutsats:** FDC-registerprotokollet är redan `upd72069_device`, inte
 en handmodell. Den enda på-som-standard avvikelsen är den tvingade
-500 kbps-hastigheten för CMD88. `PLAN.md`s "riv ut FDC-approximationen"
+500 kbps-hastigheten för CMD88, nu namngiven
+`ASR10_MISSING_FDC_RATE_SOURCE`. `PLAN.md`s "riv ut FDC-approximationen"
 (avsnitt 5) är alltså till större delen redan gjort för
-registerprotokollet — vad som återstår är att ta bort CMD88-tvånget
-(kräver mätning av vad ROM:et faktiskt bad om, inte gjort här eftersom
-uppgiften förbjuder kodändringar) och att städa bort de två döda
-`ASR10_EXPERIMENT_STUB_CMD*`-flaggorna.
+registerprotokollet. Efter Category A/B/C-cleanupen återstår i aktuell driver
+att identifiera och modellera den riktiga ASR-10-källan för 500 kbit/s och
+därefter ta bort `ASR10_MISSING_FDC_RATE_SOURCE`.
 
 ## 2. Monteras någon diskavbild i `asr10booth`? Är "PLEASE INSERT DISK" fel?
 

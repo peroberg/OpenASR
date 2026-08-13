@@ -6,10 +6,10 @@ Evidence distribution in this document:
 
 | evidence | count |
 |---|---:|
-| `[Verified dynamic]` | 10 |
-| `[Verified static]` | 3 |
-| `[Likely]` | 1 |
-| `[OPEN]` | 4 |
+| `[Verified dynamic]` | 14 |
+| `[Verified static]` | 1 |
+| `[Likely]` | 2 |
+| `[OPEN]` | 6 |
 
 ## Timeline
 
@@ -28,6 +28,53 @@ Evidence distribution in this document:
 | 16.171631250-16.173213750 s | high RAM receive path | Runtime receive path performs 12 SRB/RHRB pairs at `$FFB0BC/$FFB0D4`, consuming 12 `$FF` ACK/status bytes. | Channel-B FIFO bytes from the existing ACK/status harness. | `[Verified dynamic]` |
 | 16.171608-36.171608 s | ROM scheduler loop | FILE 1 profile is scheduler dominated: 28,315 samples, 385 distinct PCs, 0 `stop` samples, top-3 share 33.9043 %, 0 FDC accesses. | Scheduler scans slots at `$F87F92-$F87FD0`; idle path opens interrupts and loops. | `[Verified dynamic]` |
 | runtime provenance | high RAM view of OS image | `$FFB0B0` bytes probably come from V3.50 OS image at disk offset `0x00D6B0`, mapping to RAM `$00B0B0` under segment 1. | Full 64-byte sequence matches V350 once and not interleaved ROM. | `[Likely]`, `[OPEN]` direct load vs patch/relocation |
+
+## Synthetic Boot Dependencies
+
+[Verified dynamic] Isolated V3.50 trials showed different dependency levels:
+the old `$FC4809` base-value stub was not required for boot-to-FILE1, while the
+old PC-specific `$FC4809` bit-4 stub, FDC `$88` rate override, and PAR fixed
+value were required in that pre-cleanup boot path.
+
+[OPEN] The `$FC4809` PC-specific stub has now been removed and DUART IP0 is
+driven from the uPD72069 index output (`idx_wr_callback()`), in parallel with
+the FDC's own internal index handling. V3.50 reaches `FILE 1  TUTORIAL BNK`
+without the old PC-dependent `$FC4809` bit-4 stub. The ESQ/VFX-family
+`loaded && motor_active` Disk Ready precedent was tested and disproven for
+ASR-10 IP0: it stayed in repeated `PLEASE INSERT DISK` with `$049D=$05`.
+Negative control without mounted disk also fails with `$049D=$05`, confirming
+that the observed IP0 signal is disk rotation/index, not mere media presence.
+
+[OPEN] `ASR10_MISSING_FDC_RATE_SOURCE`: where ASR-10 supplies the FDC data-rate
+source that makes aux command `$88` work at 500 kbit/s. [Verified dynamic]
+ES5506 PAR now reads via the ASR-10 panel analog route instead of a fixed
+constant; V3.50 still reaches FILE1 and observed PAR reads return raw `$0200`
+from channel 6. Panel results remain separate: they were verified through real
+serial traffic downstream of these boot dependencies.
+The FDC rate workaround was retested after the IP0/index fix and remains needed:
+with `ASR10_MISSING_FDC_RATE_SOURCE` disabled, V3.50 stays in
+`PLEASE INSERT DISK` with repeated `$049D=$0D`. The failing path is the
+`$FB8AA2-$FB8AE0` data-transfer loop after aux `$88`, aux `$F3`, and Read Data
+command `$46 ...`; this is distinct from the `$FB8D40` status-wait timeout.
+MAME's 72069 rate table is not independently calibrated by another locally
+inspectable firmware in this checkout: Akai `mpc2000`, `mpc3000`, and `s3000`
+instantiate `UPD72069`, but their ROMs are absent locally, so no non-ASR aux
+stream was shown to select `$98`/`$C8` for 500 kbit/s.
+
+[Verified dynamic] Under instrumentinläsning slutar maskinen skicka på panelen
+(`thrb_w +0`) och slutar polla FDC:n (`fc4001 +0`), men tar emot knapptryck
+(`RHRB 8a/00` och `0a/00`) och kör schedulern normalt. Uppgiften är suspenderad,
+inte fastnad i en loop.
+
+[Likely] Disktasken väntar på FDC:ns avslutningsavbrott, som aldrig kommer.
+Static code reading found no driver-side FDC `intrq`/`drq` path to the CPU, but
+the firmware vector/producer was not identified by the direct static method.
+
+[OPEN] FDC-/instrumentinläsningsspåret är avslutat i nuvarande omfattning;
+se `../investigations/instrument-load-v350.md`. Blockerare:
+Instrumentinläsningen väljer FDC DMA-/avbrottsvägen, men ASR-10-modellen har
+ingen kopplad FDC intrq/drq-väg och ingen implementerad MC68302-intern
+interruptcontroller som kan leverera fullbordanssignalen.
 
 ## IRQ6 dispatcher
 

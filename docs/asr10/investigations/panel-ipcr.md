@@ -1,5 +1,13 @@
 # $FC4809 = IPCR, and what's missing is an external DUART input pin, not a register model
 
+Current note, 2026-08-12: the PC-specific `$FC4809` bit-4 stub and the
+`ASR10_DUART_INPUT_CHANGE_STUB` base-value override have been removed from
+`asr10_boot.cpp`. The failed Disk Ready trial drove DUART IP0 from floppy
+loaded + motor-active state and did not boot V3.50 past repeated
+`PLEASE INSERT DISK`. Current code drives DUART IP0 from the uPD72069 index
+callback instead. The historical notes below describe why the old PC-specific
+stub existed and why it was not a hardware model.
+
 2026-07-30. Rent diagnostiskt. Läst: `PLAN.md` fas 3, `CLAUDE.md`,
 `fdc-dumpreg.md`, `duart.md`, `panel-protocol.md`,
 `panel-input-display.md`. Ingen kod ändrad, inga stubbar byggda.
@@ -214,6 +222,20 @@ och sina respektive billigaste-först-testa-ordning är noterade ovan.
 3. **`floppy_image_device::dskchg_r()`** (periodisk poll, 1 kHz, in i
    `ip0_w()` varje tick — inget push-callback finns för DSKCHG).
    **Återigen identisk regression.**
+
+## 2026-08-12: korrigering — IP0 är floppy INDEX
+
+`[Verified]`. De tre ovanstående varianterna falsifierar bara sina egna
+predikat, inte diskettspåret som helhet. En senare felkodstapp utan
+PC-beroende IPCR-stubb visade att den blockerande skrivningen var
+`$049D=$05`, inte `$049D=$0D`: IP0-change uteblev, medan FDC-timeouten vid
+`$FB8D5E` inte var blockeraren i den körningen.
+
+Koppling testad: uPD72069 behåller sin interna
+`floppy_image_device::setup_index_pulse_cb()` och publicerar samma indexnivå via
+`idx_wr_callback()`, kopplad parallellt till `scn2681_device::ip0_w()`.
+Resultat: V3.50 bootar till `FILE 1  TUTORIAL BNK` utan den gamla
+PC-beroende `$FC4809` bit-4-stubben.
 
 **Det verkliga IPCR-värdet ROM:en fick, mätt direkt (stubben borta, de
 befintliga `ASR10_DUART_INPUT`-loggraderna), var `0x00` vid **båda**

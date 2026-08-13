@@ -250,14 +250,14 @@ timing är förbikopplade. Korrekt i verkan, inte elektriskt modellerad.
 
 ## Genomgående: analogporten
 
-`es5506_host_read_par_diag()` (`asr10_boot.cpp:2528`) returnerar
-`PAR_DIAGNOSTIC_VALUE = 0x200` **för samtliga kanaler** — den läser inte
-PBDAT och skiljer inte på kanal. Bunden på rad 8895 via
-`read_port_cb()`. Ingen användarinmatning kan åsidosätta den; det är en
-kompileringstidskonstant.
+`analog_r()` returnerar den kanal som senast valts via ASR-10-panelens
+analoga latch. Callbacken är bunden via ES5506 `read_port_cb()`, och
+paneldevice kan uppdatera Data Entry, Input Level och Volume via
+`write_analog()`.
 
-Det är alltså **en syntetisk analog vilonivå**, inte en
-board-defaulttabell. Den finns för att OS:ets kalibrering ska kunna
+Defaultvärdena är fortfarande board-defaults för omappade kanaler, men inte
+längre en enda fast PAR-konstant för alla läsningar. De finns för att OS:ets
+kalibrering ska kunna
 slutföras: kanal 7 mäts åtta gånger, summan blir D2, D2 är divisor i
 kalibreringsfaktorn, och endast noll orsakar undantag. Övriga kanaler
 primar filter, centrum och trösklar.

@@ -159,6 +159,13 @@ Do not attempt exact 80C52/panel-MCU emulation initially unless required.
 
 ## Input/event gate
 
+Current note, 2026-08-12: the PC-specific
+`ASR10_EXPERIMENT_STUB_DUART_INPUT_CHANGE_BIT4_AT_FB7C84` no longer exists in
+`asr10_boot.cpp`. A first ASR-10 Disk Ready attempt drove DUART IP0 from
+floppy loaded + motor-active state, but that model did not carry V3.50 past
+`PLEASE INSERT DISK`. Current code drives DUART IP0 from the uPD72069 index
+callback instead.
+
 Known input/status check:
 
 ```asm
