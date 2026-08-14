@@ -14,6 +14,8 @@ Evidence levels:
 
 - `[Verified silicon spec]` local Ensoniq chip specification.
 - `[Verified firmware]` V3.50/ROM static firmware evidence.
+- `[Verified static]` targeted static disassembly/call-graph evidence from the
+  current V3.50/ROM analysis.
 - `[Verified runtime]` reproduced current MAME runtime result.
 - `[Architectural precedent]` related Ensoniq architecture, not ASR-10 proof.
 - `[Likely]` inference supported by multiple local facts, but not directly
@@ -32,6 +34,175 @@ Evidence levels:
 | Runtime voice record | ROM voice manager | `$F8CCF6/$F8CD22` init, `$F8CAFA` allocation, list roots `$0D32-$0D52` | `$F8C2xx-$F8D9xx`, `$F8DD94-$F8E4xx`, PB9 handler `$F8D072` | `$F8C994/$F8C9AA/$F8C9CC` list return/reset paths | [Verified firmware] |
 | ES5506/OTTO | ES5506 silicon, programmed by firmware voice manager | hardware has 32 voices | firmware selects PAGE and writes host registers through `$FC2001` | autonomous playback and IRQV events | [Verified silicon spec]/[Verified firmware] |
 | ES5510/ESP | effects DSP subsystem | host window `$FC3000-$FC31FF` | not used by the identified voice-to-OTTO chain | [OPEN] | [Verified firmware]/[OPEN] |
+
+## Storage request and payload boundary
+
+[Verified static/runtime] The current instrument-load request is a generic
+service-node request delivered to storage target `$14DA`, not a direct
+instrument-object call.
+
+Observed request chain:
+
+```text
+producer $FFA882-$FFA8AA
+  -> trap #3 service-node allocation
+  -> node +2/+3 = $03/$02
+  -> node +4 = $0002B600
+  -> A1 = $14DA
+  -> trap #12 immediate path
+  -> target callback (14DA) = $00B08C
+  -> storage entry
+```
+
+[Verified runtime] The `$14DA` service queue at `$14E0/$14E2` stayed empty in
+the observed `LOADING JM DIGI SYN` run. The path used trap `#12` immediate
+dispatch, with `$14EA: 0000 -> 0001`.
+
+[Verified static/runtime] Storage entry preserves payload identity:
+
+```text
+A2 = $02B600
+  -> node +4
+  -> $046A = $02B600
+
+$0466 = request node $1504
+```
+
+Observed stall state:
+
+```text
+$0466 = $1504
+$046A = $0002B600
+$043E = $00000000
+```
+
+[Verified runtime] The payload accepted into `$046A` has not been promoted to
+`$043E` in the observed stalled run.
+
+### Request class and subtype
+
+[Verified static/runtime] The request stores two bytes, not one fully decoded
+storage opcode:
+
+```text
+node +2 = $03
+node +3 = $02
+```
+
+Storage copies the word into the `$049A/$049B` byte pair. Later code uses the
+bytes separately:
+
+```text
+$049A.b = $03  high-level request class / dispatch byte
+$049B.b = $02  subtype/tag byte
+```
+
+[DISPROVEN] `$0302` should not be described as a single simple storage opcode.
+
+### `$043E` model
+
+Best current classification:
+
+```text
+$043E = current storage payload/runtime descriptor pointer
+```
+
+[DISPROVEN] `$043E` is not verified as an instrument object.
+
+[Verified static] Known `$043E` writers in the current OS image:
+
+```text
+$00B33C  $043E <- $046A   class $0D path
+$00B8FE  $043E <- $046A   class $06 path
+```
+
+The observed instrument-load request is class `$03`, so it does not directly
+enter either promotion path. Promotion to `$043E` is a later operation
+hierarchy boundary.
+
+[Verified static] Current `$043E` object/descriptor users touch fields around:
+
+```text
++0, +4, +8, +C, +E, +10, +14, +18, +1C, +20, +22
+```
+
+[Verified static] In the class `$0D` promotion path, `+$22` receives the
+subtype/tag byte from `$049B`.
+
+[Likely] `$043E` points at a variant-tagged storage/runtime descriptor-like
+object.
+
+[OPEN] Exact object type, common-header-vs-union layout, sample/instrument
+ownership and downstream runtime owner.
+
+### Storage operation hierarchy
+
+[Verified static/runtime] The firmware model is better described as a hierarchy
+than as one contiguous struct:
+
+```text
+generic service/request node
+  +-- +2/+3 class/subtype
+  +-- +4 payload
+  v
+storage manager
+  +-- high-level request state
+  +-- transfer state
+  +-- device command state
+  +-- async completion/continuation
+  v
+payload/current descriptor processing
+  v
+[OPEN] sample/instrument runtime
+```
+
+[DISPROVEN] `$0402/$049A/$04B0/$046A/$043E` should not be documented as one
+contiguous `StorageOperation` structure. The current evidence supports a
+coherent operation hierarchy represented by service nodes, global phase/state
+fields, payload/descriptor objects and continuation pointers.
+
+### Current class `$03` continuation boundary
+
+[Verified static] The class `$03` request dispatches through:
+
+```text
+$049A.b == $03
+  -> dispatch table $BA76[$03]
+  -> $B64C
+  -> $FB7F9E
+  -> $FBA5A2
+  -> $FB9C5E
+  -> common callback/state machinery
+```
+
+[OPEN] The full continuation from class `$03` through later callbacks or
+request-class transitions into class `$06/$0D` and `$043E` activation.
+
+### Load boundaries
+
+| boundary | current status |
+|---|---|
+| A. request constructed | [Verified runtime/static] producer `$FFA882-$FFA8AA`, node `$1504` |
+| B. request accepted by storage | [Verified runtime] `$0466=$1504`, `$046A=$02B600` |
+| C. device initialization / RECALIBRATE starts | [Verified runtime] command `07 00` sent |
+| D. RECALIBRATE completion | [OPEN] not delivered in current emulator path |
+| E. first actual READ/data transfer | [OPEN] not reached in observed load |
+| F. payload/runtime descriptor activation via `$043E` | [Verified static mechanism], not reached at runtime |
+| G. sample/instrument attachment | [OPEN] |
+| H. UI/runtime-visible loaded | [OPEN] |
+| I. voice-consumable state | [OPEN] |
+
+### Boundaries kept separate
+
+The following worlds are not yet connected by verified pointer/dataflow for the
+current instrument-load request:
+
+| world | representative evidence | bridge status |
+|---|---|---|
+| storage descriptor | `$046A/$043E` | current request reaches `$046A`; `$043E` remains zero at stall |
+| sample manager | `$F8E6BE-$F8EA56`, `A2+$F0/$F8/$100/$108/...` | [OPEN] no verified pointer bridge from `$046A/$043E` |
+| instrument selector | `$14AC`, `$0D10/$0D18/$0D1A/$0D1C`, `$F8C492/$F8C412` | [OPEN] no verified pointer bridge from `$046A/$043E` |
+| voice manager | `$8000` table, stride `$D8`, `A4+$1E`, `A4+$22`, `A4+$26` | [OPEN] no verified load-time attachment bridge |
 
 ## Voice manager subsystem
 
@@ -104,8 +275,8 @@ when the code proves access but not meaning.
 | `+0x15` | byte voice/PAGE number | `$F8CD30` initializes low byte of word at `+0x14` | all ES5506 PAGE select routines | ES5506 programming | [Verified firmware] voice index / PAGE low byte |
 | `+0x16` | word owner pointer/reference | [OPEN] | `$F8C2D8` compares with `A5` | owner matching | [Likely] owner/control object reference |
 | `+0x18` | word pointer to control object | `$F8DE2C`, `$F8DF88` | `$F8D3CA`, `$F8E0CA`, `$F8E160` | control/runtime object binding | [Verified firmware] |
-| `+0x1E` | long instrument/sample object pointer | [OPEN] | `$F8CA38`, `$F8D3C6` | instrument/sample consumption | [Verified firmware] consumer, producer [OPEN] |
-| `+0x22` | long sample-address base/offset | `$F8DFAA`; other producer [OPEN] | `$F8CA82`, `$F8D656`, `$F8D8xx`, `$F8E160` | sample address conversion | [Verified firmware] |
+| `+0x1E` | long instrument/sample object pointer | direct writer not located statically | `$F8CA38`, `$F8D3C6` | instrument/sample consumption | [Verified static] consumer, producer [OPEN] |
+| `+0x22` | long sample-address base/offset | `$F8DFAA` in fixed-control path; normal instrument/sample producer [OPEN] | `$F8CA82`, `$F8D656`, `$F8D8xx`, `$F8E160` | sample address conversion | [Verified static] consumer and one producer path |
 | `+0x26` | long callback pointer | `$F8D638`, `$F8D738`, `$F8DE36`, `$F8DF94`, `$F8E2D2+` | PB9/IRQV handler `$F8D0B4`, callback chaining | IRQ/event service | [Verified firmware] |
 | `+0x2A` | long helper/output buffer pointer | `$F8CD40` initializes from `$00FF7F00` | `$F8CC1E`, `$F8DE5C`, `$F8E270`, `$F8E338+` | address/page helper data | [Verified firmware] |
 | `+0x2E` | long ring next | `$F8CD96`, `$F8C92C-$F8C95C`, `$F8E2xx` helpers indirectly use buffer not record | ring operations | active/current ordering | [Verified firmware] |
@@ -192,15 +363,21 @@ descriptions of the observed transition roles.
 
 Current positive evidence:
 
-- `$F8C492` indexes a table at `$14AC` by `D5`, follows pointers, derives
+- [Verified static] `$F8CA38` consumes `A4+$1E` as `A3`, copies
+  instrument/sample substructures into the voice record, and is called by V3.50
+  `$F13F5E`.
+- [Verified static] `$F8C492` indexes a table at `$14AC` by `D5`, follows
+  pointers, derives
   key-like and layer-like runtime state in `$0D10/$0D18/$0D1A/$0D1C`, and
   uses object fields such as `+$24`, `+$36`, `+$40`, `+$42`.
-- `$F8C412` tests bitmasks in `$0D18`, iterates layer-like candidates, and
+- [Verified static] `$F8C412` tests bitmasks in `$0D18`, iterates
+  layer-like candidates, and
   calls binding slots `$8DFE` and `$8EFA` depending on candidate fields.
-- `$F8CA38` consumes a pointer already installed in voice record `A4+$1E`.
-- `$F8D626` consumes a caller-provided `A3` sample/instrument object and fields
+- [Verified static] `$F8D626` consumes a caller-provided `A3`
+  sample/instrument object and fields
   `A3+$F8`, `+$100`, `+$108`, `+$118`, `+$11A`.
-- `$F8E862-$F8E990` reads/writes sample-object address fields at `A2+$F0`,
+- [Verified static] `$F8E862-$F8E990` reads/writes sample-object address
+  fields at `A2+$F0`,
   `+$F8`, `+$100`, `+$108`, and maps them against `$0C4E/$0C52`.
 
 Current boundary:
@@ -215,6 +392,34 @@ instrument/layer/sample object exists
 The producer of `A4+$1E`, the loaded instrument slot table, and the top-level
 runtime instrument list remain `[OPEN]`.
 
+### Producer-side negative evidence for `A4+$1E`
+
+[Verified static] Targeted static searching did not locate a direct
+voice-record write to `($1e,A4)`. This is negative evidence for the current
+static search, not proof that the field is never written.
+
+The following nearby `+$1E` hits are not the voice-record producer:
+
+| address | operation | why it is not the voice `A4+$1E` producer |
+|---|---|---|
+| `$F90232/$F90236` | copies and updates `($1e,A1)` through `A3/A5` | operates on another linked/scheduler-style structure, not `$8000 + voice*$D8` with base `A4` |
+| `$F902D2` | `lea ($1e,A4),A2`, then word-list traversal | uses `+$1E` as a word-list head in a different object family |
+| `$F96510` | `clr.l ($1e,A1)` | clears another object record rooted through `A1`, not a voice record based at `A4` |
+
+### Analysis method / open search space
+
+[OPEN] `A4+$1E` can still be produced by code patterns that a narrow
+`move.l ...,($1e,A4)` search would miss. Future analysis should check for:
+
+- whole-record copies
+- block-copy loops
+- MOVEM/copy loops
+- temporary object construction followed by insertion
+- register-indirect pointer assignment after address arithmetic
+- voice records built under another base register before list insertion
+
+These are search-method constraints, not verified firmware behavior.
+
 ## Sample ownership and sample RAM
 
 [Verified firmware] Voice code consumes sample-address-like fields:
@@ -226,10 +431,44 @@ runtime instrument list remain `[OPEN]`.
 - Voice base `A4+$22`, added before ES5506 writes.
 - Global address constants `$0D6A/$0D6E/$0D72/$0D76`, derived from `$0C52`.
 
-[Likely] `$F8E6BE-$F8EA56` is a sample/object address manager. It uses globals
+### Sample object field producers
+
+[Verified static] The current binding table maps sample-object field writer
+slots as follows:
+
+| binding slot | target | verified write |
+|---|---|---|
+| `$8FE4` | `$F8E93C` | normalizes `D0`, then writes `A2+$F0` |
+| `$8FF0` | `$F8E948` | normalizes `D0`, then writes `A2+$F8` |
+| `$8FFC` | `$F8E954` | normalizes `D0`, then writes `A2+$100` |
+| `$9008` | `$F8E960` | normalizes `D0`, then writes `A2+$108` |
+| `$9014` | `$F8E96A` | packs bits into `A2+$108` |
+
+[Verified static] `$F8E984/$F8E98C` are address-normalization helpers used by
+that writer family:
+
+```text
+D0 = D0 - A2 - $120
+clear bit 0
+```
+
+No stronger semantic names are assigned to `A2+$F0`, `+$F8`, `+$100` or
+`+$108` here.
+
+[Likely] `$F8E6BE-$F8EA56` is a sample/object address-manager family. It uses globals
 `$0BF0/$0BF4/$0BF8/$0BFC/$0C04/$0C08/$0C0C/$0C10/$0C14/$0C18`, bounds
 `$0C4E/$0C52`, and helpers `$8F72/$8FA8/$903E` to translate, scan or validate
-object/sample addresses.
+object/sample addresses. This is not yet enough to call it a verified sample
+RAM allocator.
+
+[OPEN] The following remain unverified for `$F8E6BE-$F8EA56` and the adjacent
+sample/object helper family:
+
+- allocator semantics
+- free-list semantics
+- ownership semantics
+- physical sample RAM writer
+- sample byte destination
 
 [OPEN] The exact owner that writes sample bytes into sample RAM is not
 identified. The path:
@@ -247,6 +486,59 @@ disk
 is only verified from the `sample object address fields` step downstream.
 Everything upstream of those fields remains `[OPEN]` for the current observed
 instrument-load path.
+
+### `A4+$22` producer status
+
+[Verified static] `$F8DF5C/$F8DFAA` contains an actual voice-record write:
+
+```text
+$F8DFAA  move.l D3,($22,A4)
+```
+
+This path maps the fixed control objects `$12D8/$1320` to fixed voice records
+`$80D8/$81B0`, installs callback `$F8E160`, and derives `A4+$22` from the
+control object pointer. It is a verified fixed-control producer, not proof that
+all normal instrument/sample voices get `+$22` from the same routine.
+
+[OPEN] The normal instrument/sample voice producer for `A4+$22` remains
+unlocalized.
+
+## Producer-side lifecycle
+
+Current producer-side boundary model:
+
+```text
+sample/object arena/state
+  | [Likely] $F8E6BE-$F8EA56 address-manager family
+  v
+sample object address fields produced
+  | [Verified static] $8FE4/$8FF0/$8FFC/$9008/$9014 writer slots
+  v
+instrument/layer candidate selection
+  | [Verified static] $F8C492 uses $14AC[D5]; $F8C412 consumes $0D18
+  v
+voice allocated
+  | [Verified firmware] ROM voice manager at $8000
+  v
+instrument/sample object attached to voice +$1E
+  | [OPEN] direct/indirect producer not located statically
+  v
+sample base/address state becomes available at +$22
+  | [Verified static] fixed-control producer $F8DFAA
+  | [OPEN] normal instrument/sample producer
+  v
+voice preparation/programming
+  | [Verified firmware] $F8CA38/$F8CAB4/$F8D626/$F8E160
+  v
+ES5506 runtime
+  | [Verified firmware] PAGE/MOVEP host writes through $FC2001
+  v
+IRQ/event service
+  | [Verified firmware] PB9/IRQV handler dispatches A4+$26
+  v
+release/reuse
+  | [Verified firmware] $F8C994/$F8C9AA/$F8C9CC
+```
 
 ## ES5506 role
 
@@ -282,15 +574,23 @@ Storage subsystem
   | [Verified firmware] $0402, vector $4B, vector $51
   v
 Sample bytes / loader buffer
-  | [OPEN] current observed instrument-load path stops before async READ DATA
+  | [OPEN] current observed instrument-load path stalls after RECALIBRATE start,
+  |        before RECALIBRATE completion, SEEK, async READ DATA and IDMA start
   v
-Sample memory owner / address manager
-  | [Likely] $F8E6BE-$F8EA56 address-manager family
+Sample byte destination / RAM writer
   | [OPEN] exact sample RAM writer/destination
   v
-Instrument / sample runtime object
-  | [Verified firmware] consumers use A3+$F0/$F8/$100/$108/$118/$11A
-  | [OPEN] top-level loaded instrument root and producer
+Sample/object address manager
+  | [Likely] $F8E6BE-$F8EA56 address-manager family
+  v
+Sample object fields
+  | [Verified static] A2+$F0/$F8/$100/$108 writer slots
+  v
+Instrument/layer selector near $14AC
+  | [Likely/OPEN] selector/root/cache role not established
+  v
+Voice +$1E installation
+  | [OPEN] direct/indirect producer not located statically
   v
 Voice manager
   | [Verified firmware] ROM-owned $8000 table, 32 x $D8
@@ -317,22 +617,28 @@ Voice manager
   allocation, preparation, ES5506 programming, IRQ/event callback and release.
 - [Verified firmware] `+$26` is a per-voice callback pointer, not just an
   incidental function pointer.
-- [Verified firmware] `+$22` is consumed as a sample-address base before ES5506
-  address writes.
-- [Likely] Instrument load creates sample/instrument objects that are later
-  consumed by the runtime voice manager; direct load-time voice programming
-  remains unverified.
+- [Verified static] `+$22` is consumed as a sample-address base before ES5506
+  address writes, and `$F8DFAA` is one verified fixed-control producer.
+- [Verified static] Sample-object address fields at `A2+$F0/$F8/$100/$108`
+  have binding-slot writer routines.
+- [OPEN] The current instrument-load request has not yet been bridged to the
+  sample manager, instrument selector or voice manager. Direct load-time voice
+  programming remains unverified.
 
 ## Remaining open questions
 
 - [OPEN] Top-level loaded instrument table/root and slot ownership.
-- [OPEN] Producer of voice field `A4+$1E`.
+- [OPEN] Direct or indirect producer of voice field `A4+$1E`.
+- [OPEN] Ownership and meaning of `$14AC`.
+- [OPEN] Normal instrument/sample producer of voice field `A4+$22`.
 - [OPEN] Full key/MIDI/note event -> instrument -> layer -> voice allocation
   chain.
 - [OPEN] Exact semantic names for many voice fields, especially control and
   envelope substructures.
-- [OPEN] Sample RAM writer and physical sample RAM mapping.
-- [OPEN] Sample allocator/free-list/reference-counting, if any.
+- [OPEN] Storage bytes -> sample RAM path.
+- [OPEN] Sample RAM destination/write path and physical sample RAM mapping.
+- [OPEN] Sample allocator/free-list/reference-counting/ownership semantics, if
+  any.
 - [OPEN] Whether any ES5506 global state is programmed during load.
 - [OPEN] Runtime proof that PB9/IRQV fires during normal audible playback.
 - [OPEN] ES5510/effect participation in loaded instrument runtime behavior.

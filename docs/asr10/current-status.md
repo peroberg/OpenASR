@@ -91,12 +91,25 @@ Panel receive terminology:
   board-level line clearing remain open.
 - [OPEN] FDC-/instrumentinläsningsspåret är avslutat i nuvarande omfattning;
   se `investigations/instrument-load-v350.md`. Blockerare:
-  Den observerade `LOADING JM DIGI SYN`-vägen når RECALIBRATE och stannar före
-  den statiskt identifierade async IDMA READ DATA-vägen. Detta är inte längre
-  formulerat som att uPD72069 saknar RECALIBRATE-completion: device-sidan
-  producerar INTRQ-completion. Det saknade emulerade kontraktet ligger mellan
-  storage completion och firmware-ingången `$51`, utan att anta vilken fysisk
-  board-source som driver MC68302 external IRQ1.
+  Den observerade `LOADING JM DIGI SYN`-vägen konstruerar en konkret
+  service-node-request vid `$FFA882-$FFA8AA`, använder trap `#12` immediate
+  path till storage-target `$14DA`, och accepterar payloaden:
+  node `+2/+3=$03/$02`, node `+4=$0002B600`, `$0466=$1504`,
+  `$046A=$0002B600`. `$14E0/$14E2` förblir noll i detta runtimefall; det är
+  inte en vanlig trap `#9` enqueue till den kö som `$F8822C` dränerar.
+  `$043E` förblir `$00000000`, och class `$06/$0D` promotion-mekanismerna
+  som kan skriva `$043E <- $046A` är endast statiskt identifierade. Runtime
+  når RECALIBRATE `07 00` men inte RECALIBRATE-completion, SEEK, READ DATA
+  eller IDMA-start. Detta är inte längre formulerat som att uPD72069 saknar
+  RECALIBRATE-completion: device-sidan producerar INTRQ-completion. Det
+  saknade emulerade kontraktet ligger mellan storage completion och
+  firmware-ingången `$51`, utan att anta vilken fysisk board-source som driver
+  MC68302 external IRQ1.
+- [Verified runtime/static] Instrument-load-requestens class/subtype är
+  `$049A.b=$03` och `$049B.b=$02` efter storage entry. `$0302` ska inte
+  beskrivas som ett enda enkelt storage-opcode; `$049A` används som
+  high-level dispatch byte och `$049B` som separat subtype/tag byte.
+  -> `reference/runtime-service-model.md`, `reference/runtime-object-model.md`
 - [Verified dynamic] ES5506 PAR now reads through the ASR-10 panel analog path
   rather than a fixed `$0200` constant. V3.50 still boots to
   `FILE 1  TUTORIAL BNK`; observed PAR reads returned raw `$0200` from channel 6

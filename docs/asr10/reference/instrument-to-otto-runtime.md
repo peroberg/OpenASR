@@ -77,8 +77,8 @@ helpers that also access ES5506 registers:
 |---|---|---|
 | `A4+$14/$15` | voice state and low-byte PAGE/voice number; copied to ES5506 PAGE, often plus `$20` | [Verified firmware] |
 | `A4+$18` | runtime/control object pointer used by `$F8D3C6`, `$F8DE2C`, `$F8E0CA`, `$F8E160` | [Verified firmware] |
-| `A4+$1E` | instrument/layer/sample object pointer; `$F8CA38` loads `A3=($1E,A4)` | [Verified firmware] |
-| `A4+$22` | sample-address base/offset added to object sample addresses before ES5506 writes | [Verified firmware] |
+| `A4+$1E` | instrument/layer/sample object pointer; `$F8CA38` loads `A3=($1E,A4)`; direct producer not located statically | [Verified static] consumer, producer [OPEN] |
+| `A4+$22` | sample-address base/offset added to object sample addresses before ES5506 writes; `$F8DFAA` is one verified fixed-control producer | [Verified static] consumer and one producer path |
 | `A4+$26` | per-voice event callback; PB9/IRQV handler calls through this field | [Verified firmware] |
 | `A4+$2A` | per-voice helper/output buffer pointer used by segment/event code | [Verified firmware] |
 | `A4+$A4` | pointer used by `$F8D626` while deriving pitch/address state | [Verified firmware] |
@@ -88,6 +88,11 @@ helpers that also access ES5506 registers:
 [OPEN] The top-level loaded instrument root is not localized. Current evidence
 starts at a runtime voice record (`A4`) that already points to instrument or
 sample-related objects.
+
+[OPEN] The direct or indirect producer that installs `A4+$1E` into a normal
+voice record is not localized. Targeted static search did not find a direct
+`($1e,A4)` voice-record write; that is negative evidence for the current search,
+not proof that the field is never written.
 
 ## ES5506 firmware helper map
 
@@ -154,7 +159,7 @@ Current evidence supports this model:
 
 | model | status | rationale |
 |---|---|---|
-| Instrument-load directly programs ES5506 voices | [OPEN] | No verified load-time path reaches OTTO voice programming; current observed instrument load stalls before sample READ data. |
+| Instrument-load directly programs ES5506 voices | [OPEN] | No verified load-time path reaches OTTO voice programming; current observed instrument load stalls after RECALIBRATE start and before RECALIBRATE completion, SEEK, async READ DATA and IDMA start. |
 | Instrument-load creates metadata/sample state, ES5506 is programmed by runtime/note voice path | [Likely] | ROM voice helpers consume runtime voice records and instrument/sample pointers, then program OTTO. Exact loaded instrument root and note event chain are still open. |
 | Mixed model: load/global setup plus note-on voice-specific programming | [Likely] | Static firmware clearly has voice-specific OTTO programming; load-side sample-memory and metadata production remain open. |
 
@@ -251,10 +256,10 @@ not prove that ES5510 is irrelevant to all instrument runtime behavior.
 
 | boundary | current status |
 |---|---|
-| storage -> instrument/sample bytes | [OPEN] current observed instrument load stops before async READ DATA. |
+| storage -> instrument/sample bytes | [OPEN] current observed instrument load stalls after RECALIBRATE start and before RECALIBRATE completion, SEEK, async READ DATA and IDMA start. |
 | sample bytes -> sample memory | [OPEN] exact destination and write path not localized. |
 | sample memory -> runtime metadata references | [OPEN] producer not localized. |
-| runtime voice record -> instrument/sample object pointer | [Verified firmware] consumers use `A4+$1E`, `A4+$18`, `A4+$22`; producer remains [OPEN]. |
+| runtime voice record -> instrument/sample object pointer | [Verified static] consumers use `A4+$1E`, `A4+$18`, `A4+$22`; direct/indirect `A4+$1E` producer remains [OPEN]. |
 | runtime voice record -> ES5506 PAGE/register writes | [Verified firmware] ROM helpers select PAGE and write page-dependent OTTO registers. |
 | ES5506 programmed voice -> autonomous playback | [Verified silicon spec]; firmware writes are verified, audible/runtime playback is not verified here. |
 | ES5506 event -> PB9/IRQV voice callback | [Verified firmware] handler reads IRQV and dispatches per-voice callback; physical wiring remains [OPEN]. |

@@ -4,10 +4,248 @@ Dispatcher-kön, servicefälten och MC68302:ans avbrottslivscykel som de observe
 körning. Utbrutet ur `memory-map.md` 2026-08-04; adress- och avkodningsfakta ligger kvar
 där.
 
-**Alla runtimeobservationer i det här dokumentet kommer från en V1.61-körning** och hör
-till en historisk harness-utredning. Nuvarande flagglösa HEAD med V3.50 når
-`KEYBOARD TUNED` och `FILE 1  TUTORIAL BNK`. Samma kod ligger i V3.50 på
-RAM `$00E49A`-`$00E4D4`, inte på `$00BEF2`-`$00BF26`.
+De äldre dispatcherobservationerna längre ned kommer från en V1.61-körning och hör
+till en historisk harness-utredning. Avsnitten om service-node-systemet och
+storage-target `$14DA` nedan beskriver den nu verifierade V3.50-modellen.
+Nuvarande flagglösa HEAD med V3.50 når `KEYBOARD TUNED` och
+`FILE 1  TUTORIAL BNK`.
+
+---
+
+## V3.50 service-node model
+
+Evidence levels used in this section:
+
+- [Verified static] direct disassembly/callgraph evidence.
+- [Verified runtime] reproduced runtime observation from the current V3.50 run.
+- [Likely] best current interpretation, still not proven as complete.
+- [OPEN] not established.
+- [DISPROVEN] contradicted by current evidence.
+
+### Trap entries
+
+| trap | entry | verified behavior | status |
+|---|---:|---|---|
+| `trap #3` | `$F8807C` | allocates a service node from free-list `$0B6C`; returns the node in `A5`; node `+0` is free-list next; allocated count `$0B7F` is updated | [Verified static] |
+| `trap #4` | `$F880A2` | returns a node to free-list `$0B6C` | [Verified static] |
+| `trap #9` | `$F88138` | posts/marks work against target record `A1`, using target `+$10/+12` pending/deferred state | [Verified static] |
+| `trap #12` | `$F88174` | has at least an immediate path and a queue path; the verified immediate path stores current node at target `+4`, sets target `+10`, then calls the target callback through `jsr (A1)` | [Verified static/runtime] |
+| `trap #13` | `$F881F6` | shares the service-queue/immediate-service family; exact mode split remains less complete than trap `#12` | [Verified static], details [OPEN] |
+| `$F8822C` | helper | dequeues from a target service queue at `+6/+8`; this is separate from trap `#9`'s `+10/+12` pending/deferred chain | [Verified static] |
+
+[DISPROVEN] `trap #4` is not a dispatcher. It returns service nodes to the
+free-list.
+
+[DISPROVEN] `trap #9` should not be described generically as the queue that
+`$F8822C` drains. `trap #9` uses the target `+10/+12`
+pending/deferred chain; `$F8822C` drains the target service queue at `+6/+8`.
+
+### Target/service-record layout
+
+The current target-record model is:
+
+| offset | field role | status |
+|---:|---|---|
+| `+0` | callback/entry | [Verified static] |
+| `+2` | pending/state bits | [Verified static], exact semantics [OPEN] |
+| `+4` | immediate/current node or scheduler-linked field | [Verified static] |
+| `+6` | service queue head | [Verified static] |
+| `+8` | service queue tail | [Verified static] |
+| `+A` | queue threshold | [Verified static], exact semantics [OPEN] |
+| `+C` | queue count/current dispatch state | [Verified static], exact semantics [OPEN] |
+| `+E` | wait/scheduler-linked list | [Verified static], exact semantics [OPEN] |
+| `+10` | pending/deferred/immediate state | [Verified static] |
+| `+12` | pending/deferred tail/bit state | [Verified static], exact semantics [OPEN] |
+
+For storage-related target `$14DA`:
+
+| address | offset | role |
+|---:|---:|---|
+| `$14DA` | `+0` | callback/entry |
+| `$14DC` | `+2` | pending/state bits |
+| `$14DE` | `+4` | immediate/current node |
+| `$14E0` | `+6` | service queue head |
+| `$14E2` | `+8` | service queue tail |
+| `$14E4` | `+A` | queue threshold |
+| `$14E6` | `+C` | queue count/current dispatch state |
+| `$14E8` | `+E` | wait/scheduler-linked list |
+| `$14EA` | `+10` | pending/deferred/immediate state |
+| `$14EC` | `+12` | pending/deferred tail/bit state |
+
+[Verified static] `$14EE/$14F0` are adjacent storage/runtime state, not
+target-record queue fields.
+
+### Storage target `$14DA` in the observed instrument-load request
+
+[Verified runtime/static] The observed `LOADING JM DIGI SYN` instrument-load
+request does not use the simple model:
+
+```text
+producer -> trap #9 -> $14DA queue -> dequeue -> storage
+```
+
+Instead it uses trap `#12`'s immediate path:
+
+```text
+producer $FFA882-$FFA8AA
+  -> trap #3
+  -> service node fields
+  -> A1 = $14DA
+  -> trap #12
+  -> immediate service callback
+  -> (14DA) = $00B08C
+  -> storage entry
+```
+
+[Verified runtime] During this observed load attempt, `$14E0/$14E2`
+service-queue head/tail remained zero. No enqueue into the `$F8822C` queue was
+observed. The observed target-record mutation was:
+
+```text
+$14EA: 0000 -> 0001
+```
+
+through trap `#12` immediate service state.
+
+### Concrete instrument-load request producer
+
+[Verified runtime/static] The localized producer is:
+
+```asm
+FFA882  cmpi.w  #$2438,$0B6A.w
+FFA888  bne     ...
+FFA88A  bset    #7,D2
+FFA88E  move.b  #1,$031A.w
+FFA894  trap    #3
+FFA896  move.w  A5,$035E.w
+FFA89A  movea.w A5,A4
+FFA89C  addq.w  #2,A4
+FFA89E  move.b  D2,(A4)+
+FFA8A0  move.b  D3,(A4)+
+FFA8A2  move.l  A2,(A4)
+FFA8A4  movea.w #$14DA,A1
+FFA8A8  trap    #$C
+FFA8AA  rts
+```
+
+Observed node:
+
+```text
+A5          = $1504
+node +2/+3 = 03 02
+node +4    = $0002B600
+```
+
+[Verified static/runtime] Register sources for this request:
+
+```text
+D2 = $03
+  constant via $FFAAA2
+
+D3 = $02
+  produced via $FFA306 -> ROM $F8947E
+  index-like value: (record_word - $0544) / $1A
+
+A2 = $02B600
+  comes from D1
+  $FF9F2A -> $012068 -> ROM $F95382
+  D1 is produced as $8386 + $838A when the capacity test passes
+```
+
+[OPEN] Exact semantic identity of payload `$02B600`.
+
+### Request class/subtype bytes
+
+[Verified static/runtime] The node stores two bytes:
+
+```text
+node +2 = $03
+node +3 = $02
+```
+
+Storage entry copies the word into the `$049A/$049B` area, but later firmware
+uses the bytes separately:
+
+```text
+$049A.b = $03  high-level request class / dispatch byte
+$049B.b = $02  subtype/tag byte
+```
+
+[DISPROVEN] `$0302` should not be described as one simple storage opcode.
+
+### Pointer identity and current stall state
+
+[Verified runtime/static] The accepted request preserves payload identity:
+
+```text
+A2 = $02B600
+  -> node +4
+  -> storage entry
+  -> $046A = $02B600
+```
+
+Storage also saves:
+
+```text
+$0466 = request node $1504
+```
+
+Observed stall state after the current load attempt:
+
+```text
+$0466 = $1504
+$046A = $0002B600
+$043E = $00000000
+```
+
+[Verified runtime] Payload accepted by storage is not the same event as
+payload promotion to `$043E`; the observed class `$03` path has not promoted
+`$046A` to `$043E`.
+
+---
+
+## Architectural interpretation
+
+This section is explanatory. It is not additional firmware evidence.
+
+[Architectural interpretation] The verified mechanisms are consistent with an
+event-driven message-passing firmware built around service nodes, target/service
+records, asynchronous state machines, cooperative scheduling, subsystem-owned
+state and explicit continuations.
+
+Useful analogies:
+
+- [Architectural analogy] Event-driven service kernel: work is triggered by
+  traps, interrupts, queued nodes and continuations.
+- [Architectural analogy] Message passing: a service node acts roughly like a
+  small message containing `next`, request class/subtype and payload pointer.
+- [Architectural analogy] Deferred execution: work can start, return, and be
+  resumed by a later completion event.
+- [Architectural analogy] Active Object-like design: a service target has
+  callback, queue/state and consumes messages.
+- [Architectural analogy] Actor-like design: subsystems communicate indirectly
+  through messages/state. There is no evidence for modern actor guarantees or
+  one thread per actor.
+- [Architectural analogy] Amiga Exec `MsgPort`/message terminology can be used
+  pedagogically, but it is not evidence for common origin, implementation or
+  API.
+- [Architectural analogy] Modern ISR-to-deferred-work, work-queue,
+  future/continuation and event-loop comparisons are pedagogical only.
+
+These are modern architectural ideas expressed with the low-level mechanisms
+available and appropriate for an early-1990s embedded 68000 system: untyped
+payload pointers, low-memory globals, numeric request classes, manually managed
+node pools and explicit continuation pointers.
+
+[Likely] Bootstrapping and runtime are not separate systems. Boot installs or
+initializes vectors, bindings, service state, scheduler state and hardware;
+runtime reuses the same traps, target records, callbacks, interrupts and state
+machines.
+
+[OPEN] Scheduler slot context semantics are not fully classified. A later pass
+must determine whether scheduler slots preserve full `D0-D7/A0-A7` context,
+partial `PC/SR` context, or mostly scheduling metadata while service state is
+reconstructed from messages, payloads and globals.
 
 ---
 

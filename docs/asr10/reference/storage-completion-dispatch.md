@@ -610,8 +610,50 @@ programs MC68302 IDMA and uses the `$4B` completion dispatcher before storage
 command completion proceeds through `$51`.
 
 [Verified runtime] The currently observed `LOADING JM DIGI SYN` instrument-load
-run has not reached that async IDMA READ path; it stops earlier, around the
-RECALIBRATE completion dependency.
+run has not reached that async IDMA READ path; it stalls after RECALIBRATE
+start and before RECALIBRATE completion is delivered to the vector `$51`
+firmware entry.
+
+## Relationship To Current Instrument-Load Request
+
+[Verified runtime/static] The current observed instrument-load request reaches
+storage through the service-node path documented in
+`runtime-service-model.md`:
+
+```text
+producer $FFA882-$FFA8AA
+  -> trap #3
+  -> node +2/+3 = $03/$02
+  -> node +4 = $0002B600
+  -> A1 = $14DA
+  -> trap #12 immediate path
+  -> storage callback $00B08C
+  -> $0466 = $1504
+  -> $046A = $0002B600
+```
+
+[Verified runtime] In that run, `$043E` remains zero. The accepted payload
+`$046A=$02B600` has not been promoted to the current payload/runtime
+descriptor pointer.
+
+[Verified static] Class `$03` dispatch begins:
+
+```text
+$049A.b == $03
+  -> dispatch table $BA76[$03]
+  -> $B64C
+  -> $FB7F9E
+  -> $FBA5A2
+  -> $FB9C5E
+```
+
+[OPEN] The full class `$03` continuation through later callback/request-class
+transitions to class `$06/$0D` and `$043E` activation.
+
+[Verified runtime] The current runtime still stalls before RECALIBRATE
+completion is delivered to the vector `$51` firmware entry. It has not reached
+SEEK, async READ DATA, IDMA programming, vector `$4B` completion, or `$043E`
+activation.
 
 ## Dispatcher Matrix
 
