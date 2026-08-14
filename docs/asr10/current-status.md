@@ -64,12 +64,24 @@ Panel receive terminology:
   vector `$4B` -> `$FFFF87E8` -> `$87E8.w` -> `$F01B1A` for MC68302
   IDMA/SIB completion, and vector `$51` -> `$FFFF87CE` -> `$87CE.w` ->
   `$F114B6` for shared storage/device completion. The `$51` dispatcher has
-  FDC and SCSI branches before `jmp [$0402]`. → `reference/storage-completion-dispatch.md`
-- [OPEN] Physical FDC completion interrupt path. Static code reading found no
-  `m_fdc->intrq_wr_callback()` and no `m_fdc->drq_wr_callback()` in
-  `asr10_boot.cpp`; the only FDC signal currently wired out is index into
-  DUART IP0. The firmware-side vector `$51` completion entry is identified,
-  but the board source/routing that causes vector `$51` remains open.
+  verified FDC and SCSI status/acknowledge branches before `jmp [$0402]`.
+  → `reference/storage-completion-dispatch.md`,
+  `reference/scsi-operation-example.md`
+- [Verified static] The FDC completion state machine uses vector `$51` after
+  RECALIBRATE: `$0402 <- $BA5E`, command `07 00`, vector `$51`,
+  `$F114B6`, FDC status/SENSE path `$FB7E8E`, `jmp [$0402]`, then `$BA5E`
+  installs `$B1A4` and starts SEEK `0F 00 01`.
+- [Verified static] One SCSI completion state machine uses the same vector
+  `$51` dispatcher: `$0402 <- $B1A4`, `$FC5001 <- $18`,
+  `$FC5003 <- $00`, return, vector `$51`, `$F114B6`, SCSI status branch
+  `$FBB370`, SCSI status register `$17` read, then `jmp [$0402]`.
+- [OPEN] Physical storage completion interrupt path. Static code reading
+  found no `m_fdc->intrq_wr_callback()` and no `m_fdc->drq_wr_callback()`
+  in `asr10_boot.cpp`; the only FDC signal currently wired out is index
+  into DUART IP0. The firmware-side vector `$51` completion entry is
+  identified for both FDC and SCSI, but physical IRQ routing, PAL/GAL glue,
+  electrical interrupt sharing, interrupt polarity, acknowledge timing, and
+  board-level line clearing remain open.
 - [OPEN] FDC-/instrumentinläsningsspåret är avslutat i nuvarande omfattning;
   se `investigations/instrument-load-v350.md`. Blockerare:
   Instrumentinläsningen väljer FDC DMA-/avbrottsvägen, men ASR-10-modellen har

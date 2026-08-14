@@ -130,6 +130,14 @@ manual table and need an external vector source or autovector.
 | `$56` | `$158` | DUART IRQ6 | DUART `irq_cb` asserts board IRQ6; MC68302 IACK returns `$56` | `$F88300` | counter-ready tick production is verified here; DUART RxRDYB dispatch is verified through `$F884BE`, but branch ordering from `$F88300` to `$F884BE` is not fully documented | [V] | `../investigations/duart.md`, `boot-sequence.md`, `../../mc68302/vector-origin-map.md` |
 | `$57` | `$15C` | external IRQ7 | MC68302 external IACK if enabled for vector generation | not identified | not documented | [V] chip, [H] ASR use | `../../mc68302/vector-origin-map.md` |
 
+Vector `$4B` and vector `$51` both use the async continuation pointer
+`$0402`, but they are not the same dispatcher. `$4B` is the MC68302
+IDMA/SIB completion path through `$F01B1A/$F01B4E`; it reads IDMA CSR
+`$FC680E`, updates `$049D`, masks/clears the IDMA interrupt bit through
+`$FC6816/$FC6818`, then `jmp [$0402]`. `$51` is the firmware-side shared
+storage/device completion entry through `$F114B6/$F114E2`; it selects an
+FDC or SCSI status/acknowledge prelude before `jmp [$0402]`.
+
 DUART subpaths currently documented:
 
 - Counter-ready path: SCN2681 counter/timer reaches ready state, DUART

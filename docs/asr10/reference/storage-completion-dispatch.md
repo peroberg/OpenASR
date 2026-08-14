@@ -272,6 +272,38 @@ before returning to the shared dispatcher.
 [Verified runtime/doc] `docs/asr10/reference/hardware-map.md` identifies
 `$FC5001/$FC5003` as the ASR-10 SCSI controller register window in CS3.
 
+[Verified static] The SCSI branch is selected when `$04B0 != 0`. It is
+also selected when `$04B0 == 0` and `$FBA626` reports operation state
+`$049A == $0B` or `$0C`. Therefore `$04B0` is not a generic completion
+flag; in this dispatcher it is part of the firmware-side FDC/SCSI branch
+selection state.
+
+[Verified static] The SCSI-side status routine uses these RAM fields:
+
+```text
+$0402  async continuation pointer
+$049A  storage/device operation state
+$04B0  storage branch selector/state byte
+$04B5  SCSI auxiliary/LUN/result scratch byte depending on phase
+$04B6  SCSI command-phase/status byte
+$04B7  SCSI status byte
+```
+
+[Verified static] `$FBB370` reads WD33C93-style status by selecting
+register `$17` through `$FC5001` and reading `$FC5003`:
+
+```asm
+FBB38C  move.b  #$17,(A4)
+FBB390  move.b  (A3),$04B7.w
+```
+
+[Likely] With the MAME `wd33c93_device` register model, `$17` is
+`SCSI_STATUS`, `$18` is `COMMAND`, `$FC5001` is the indirect register
+select/address port, and `$FC5003` is the indirect register/data port.
+Reading `SCSI_STATUS` is the device-side completion acknowledge in that
+model. This is separate from MC68302 interrupt acknowledge/vector
+delivery.
+
 ### Continuation Dispatch
 
 [Verified static] Both FDC and SCSI/status branches converge at:
@@ -365,6 +397,110 @@ continuation.
 [OPEN] The physical source or routing that causes vector `$51` is not
 established.
 
+## SCSI RESET Example
+
+This is one verified firmware example, not a complete model of the ASR-10
+SCSI subsystem.
+
+[Verified static] One bounded SCSI async start path installs `$B1A4`,
+selects the controller command register, sends command `$00`, and returns:
+
+```asm
+F10B44  move.l  #$0000B1A4,$0402.w
+F10B4C  move.b  #$18,$FFFC5001.l
+F10B54  move.b  #$00,$FFFC5003.l
+F10B5C  rts
+```
+
+[Likely] Under the WD33C93-compatible register model documented for the
+ASR-10 SCSI window:
+
+```text
+$FC5001 <- $18  select COMMAND register
+$FC5003 <- $00  issue RESET command
+```
+
+[Verified static] A clean SCSI branch into this start exists when
+`$FBA626` identifies operation state `$049A == $0B` or `$0C`; the caller
+sets `$04B0 = 4` before jumping to `$F10B44`:
+
+```asm
+F10ABA  jsr     $FFFBA626
+...
+F10AD8  move.b  #$04,$04B0.w
+F10ADE  bra     $F10B44
+```
+
+[Verified static] The corresponding firmware-side completion chain is:
+
+```text
+$0402 <- $B1A4
+write $18 -> $FC5001
+write $00 -> $FC5003
+return
+...
+vector $51
+  -> $FFFF87CE
+  -> $87CE.w
+  -> $F114B6
+  -> SCSI branch because $04B0 != 0
+  -> $FBB370
+  -> select/read WD33C93 status register $17
+  -> jmp [$0402]
+  -> $B1A4 / high-view $F10BA4
+  -> dispatch by $049A
+  -> possible next SCSI command
+```
+
+[Verified static] `$B1A4` is a storage state-machine continuation. For
+operation states `$0B/$0C`, it dispatches through the table at `$BA76` and
+reaches `$BA0E` / high-view `$F1140E`:
+
+```asm
+F10BA4  jsr     $FFFBA626
+F10BAA  beq     $F10C02
+...
+F10C02  moveq   #$00,D1
+F10C04  move.b  $049A.w,D1
+F10C08  movea.l #$0000BA76,A0
+F10C0E  asl.w   #2,D1
+F10C10  movea.l (A0,D1.w),A0
+F10C14  jmp     (A0)
+```
+
+[Verified static] The `$0B/$0C` table entry reaches code that may start a
+later SCSI command, for example command `$0C`:
+
+```asm
+FBA728  move.b  #$18,$FFFC5001.l
+FBA730  move.b  #$0C,$FFFC5003.l
+```
+
+[Likely] In the WD33C93-compatible command set, command `$0C` is
+`WAIT_SELECT_RECEIVE_DATA`. The exact higher-level ASR-10 SCSI operation
+semantics remain outside this example.
+
+## FDC And SCSI Comparison
+
+| field | FDC | SCSI |
+|---|---|---|
+| async start | FDC command builder, e.g. `$FB7D70` | SCSI register write at `$F10B44` |
+| continuation installation | `$0402 <- $BA5E`, later `$0402 <- $B1A4` | `$0402 <- $B1A4` |
+| start MMIO | uPD72069 command bytes, e.g. `07 00` RECALIBRATE | `$FC5001 <- $18`, `$FC5003 <- $00` RESET |
+| outstanding state | `$04AD`, `$049A`, FDC command/result state | `$04B0`, `$049A`, `$04B5-$04B7` |
+| completion vector | `$51` firmware-side entry | `$51` firmware-side entry |
+| dispatcher | `$F114B6/$F114E2` | `$F114B6/$F114E2` |
+| status routine | `$FB7E8E` | `$FBB370` |
+| device acknowledge | SENSE INTERRUPT STATUS path when `$04AD == 0` | select/read WD33C93 status register `$17` |
+| callback | `jmp [$0402]` to `$BA5E`, then `$B1A4` | `jmp [$0402]` to `$B1A4` |
+| state-machine continuation | FDC RECALIBRATE -> SEEK | SCSI reset/status -> dispatch by `$049A` |
+
+[Verified static] Both storage paths use the same vector `$51` dispatcher
+and the same `$0402` continuation mechanism, but they run different
+device-specific status/acknowledge preludes first.
+
+[DISPROVEN] `$F114B6` should not be described as an FDC-only dispatcher.
+
 ## Relationship To IDMA
 
 [Verified static] Vectors `$4B` and `$51` are separate completion paths:
@@ -402,6 +538,10 @@ IDMA completion path, but it is not the proven FDC data-transfer mechanism.
 - [Verified static] The FDC RECALIBRATE example installs `$BA5E`, sends
   `07 00`, later enters the vector `$51` dispatcher, runs the FDC status
   prelude, jumps to `$BA5E`, installs `$B1A4`, and sends `0F 00 01`.
+- [Verified static] The SCSI RESET example installs `$B1A4`, writes
+  `$18/$00` to `$FC5001/$FC5003`, later enters the vector `$51` dispatcher,
+  runs the SCSI status prelude at `$FBB370`, reads SCSI status register
+  `$17`, and jumps to `$B1A4`.
 - [Verified runtime/doc] `$FC5001/$FC5003` are the documented ASR-10 SCSI
   register window.
 
