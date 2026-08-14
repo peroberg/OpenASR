@@ -67,9 +67,16 @@ Panel receive terminology:
   verified FDC and SCSI status/acknowledge branches before `jmp [$0402]`.
   → `reference/storage-completion-dispatch.md`,
   `reference/scsi-operation-example.md`
-- [Verified static] The FDC completion state machine uses vector `$51` after
-  RECALIBRATE: `$0402 <- $BA5E`, command `07 00`, vector `$51`,
-  `$F114B6`, FDC status/SENSE path `$FB7E8E`, `jmp [$0402]`, then `$BA5E`
+- [Verified device] MAME's `upd72069_device`/`upd765_family_device`
+  completes `RECALIBRATE 07 00` by asserting its `intrq_wr_callback()`:
+  track-0 completion runs `command_end(..., false)`, sets `irq` and
+  `st0_filled`, and a later `SENSE INTERRUPT STATUS 08` returns `ST0=$20`,
+  `PCN=$00` for successful drive-0 recalibrate. This is INTRQ, not DRQ;
+  SIS/result reads clear the device-side IRQ/result state.
+- [Verified firmware] The FDC completion state machine uses vector `$51` after
+  RECALIBRATE: `$0402 <- $BA5E`, `$04AD <- 0`, command `07 00`, vector
+  `$51`, `$F114B6`, FDC status/SENSE path `$FB7E8E`, SIS `08`, accepts
+  `ST0 & $E0 == $20`, sets `$049D <- 0`, `jmp [$0402]`, then `$BA5E`
   installs `$B1A4` and starts SEEK `0F 00 01`.
 - [Verified static] One SCSI completion state machine uses the same vector
   `$51` dispatcher: `$0402 <- $B1A4`, `$FC5001 <- $18`,
@@ -85,9 +92,11 @@ Panel receive terminology:
 - [OPEN] FDC-/instrumentinläsningsspåret är avslutat i nuvarande omfattning;
   se `investigations/instrument-load-v350.md`. Blockerare:
   Den observerade `LOADING JM DIGI SYN`-vägen når RECALIBRATE och stannar före
-  den statiskt identifierade async IDMA READ DATA-vägen. Firmwaremodellen har
-  verifierade `$4B`/IDMA- och `$51`/storage-completion-dispatchers, men ASR-10-
-  modellen saknar fortfarande verifierad fysisk FDC/SCSI completion-routing.
+  den statiskt identifierade async IDMA READ DATA-vägen. Detta är inte längre
+  formulerat som att uPD72069 saknar RECALIBRATE-completion: device-sidan
+  producerar INTRQ-completion. Det saknade emulerade kontraktet ligger mellan
+  storage completion och firmware-ingången `$51`, utan att anta vilken fysisk
+  board-source som driver MC68302 external IRQ1.
 - [Verified dynamic] ES5506 PAR now reads through the ASR-10 panel analog path
   rather than a fixed `$0200` constant. V3.50 still boots to
   `FILE 1  TUTORIAL BNK`; observed PAR reads returned raw `$0200` from channel 6
@@ -110,7 +119,13 @@ Panel receive terminology:
   ROM voice-manager object, not an ES5506-owned data structure. The manager has
   verified init, allocation/list, preparation, callback and release/reset paths
   through `$F8C2xx-$F8E4xx` and binding slots `$8E38/$8E3E/$8E44/$8E50/$8E6E`.
-  Instrument root, sample allocator and sample RAM writer remain [OPEN].
+  Producer-side refinement: `$F8CA38` consumes `A4+$1E`, `$F8C492` uses
+  `$14AC[D5]`, `$F8C412` consumes `$0D18`, sample-object writer slots
+  `$8FE4/$8FF0/$8FFC/$9008/$9014` produce `A2+$F0/$F8/$100/$108`, and
+  `$F8DFAA` is one verified fixed-control producer for `A4+$22`. Direct or
+  indirect producer of normal voice `A4+$1E`, `$14AC` ownership, normal
+  `A4+$22` producer, sample allocator semantics and sample RAM writer remain
+  [OPEN].
   -> `reference/runtime-object-model.md`
 - Category A/B/C cleanup status: `src/mame/ensoniq/asr10_boot.cpp` was reduced
   from 3580 to 952 lines by the structural cleanup. No runtime experiment,

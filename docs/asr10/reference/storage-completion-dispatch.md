@@ -16,6 +16,10 @@ physically wired to MC68302 external IRQ1.
   binding table, or documented register maps.
 - [Verified runtime/doc] Confirmed by existing runtime documentation in
   this repository.
+- [Verified device] Confirmed by the current MAME device implementation.
+- [Verified chip] Confirmed by chip documentation captured in `docs/mc68302`.
+- [Verified firmware] Confirmed by V3.50 firmware/static control flow.
+- [Verified board] Confirmed by ASR-10 board evidence.
 - [Likely] Best current interpretation, but not independently proven.
 - [OPEN] Not established by current evidence.
 - [DISPROVEN] Contradicted by current evidence.
@@ -250,6 +254,40 @@ FB7C74  bsr     $FB8D78
 
 This is the SENSE INTERRUPT STATUS path when `$04AD == 0`.
 
+[Verified firmware] For the RECALIBRATE path, `$FB7E8E` then tests the
+SIS result byte:
+
+```asm
+FB7E98  move.b  $04C6.w,D0
+FB7E9C  andi.b  #$E0,D0
+FB7EA0  cmpi.b  #$20,D0
+FB7EAA  moveq   #$08,D0     ; error if not $20
+FB7EAE  clr.b   D0          ; success
+FB7F04  move.b  D0,$049D.w
+```
+
+For `$04AD == 0`, the condition for the later `jmp [$0402]` to reach
+`$BA5E` as the successful RECALIBRATE continuation is therefore:
+
+```text
+SENSE INTERRUPT STATUS result ST0 & $E0 == $20
+```
+
+[Verified device] MAME's `upd72069_device` inherits the
+`upd765_family_device` RECALIBRATE implementation. On successful track-0
+completion for drive 0, `command_end(..., false)` sets `irq`, sets
+`st0_filled`, and drives `intrq_wr_callback()` through `check_irq()`. This
+is INTRQ, not DRQ. A later `SENSE INTERRUPT STATUS 08` returns:
+
+```text
+ST0 = $20
+PCN = $00
+```
+
+The SIS/result read path clears the device-side `irq`/INTRQ state,
+clears the filled ST0 condition, and clears drive-busy state according to
+the current device model.
+
 ### SCSI Branch
 
 [Verified static] The SCSI/status branch is:
@@ -390,6 +428,56 @@ F11474  rte
 0F 00 01 = SEEK
 ```
 
+## Storage IRQ1 Boundary
+
+[Verified firmware] For the specific outstanding state:
+
+```text
+$0402 = $BA5E
+$04AD = 0
+FDC RECALIBRATE 07 00 outstanding
+```
+
+vector `$51` is the only identified firmware entry that performs the
+needed FDC status prelude and reaches `$BA5E`:
+
+```text
+vector $51
+  -> $FFFF87CE
+  -> binding $87CE.w
+  -> $00BAB6 / high-view $F114B6
+  -> FDC branch $FB7E8E
+  -> $FB7C5A sends SIS 08
+  -> accepts ST0 & $E0 == $20
+  -> $049D <- 0
+  -> jmp [$0402]
+  -> $BA5E / high-view $F1145E
+```
+
+[DISPROVEN] The matching entry is not vector `$4B`: `$4B` is the
+MC68302 IDMA/SIB completion dispatcher and does not run the FDC
+SENSE INTERRUPT STATUS prelude. The matching entry is also not the
+PB9/PB10/PB11 handlers, IRQ6/DUART, SCC1/SCC2, or normal 68000
+autovectors.
+
+[Verified chip] MC68302 external IRQ1 is an EXRQ source. With the
+ASR-10-observed `GIMR=$8040`, `IV1=0` and the vector prefix is `$40`;
+external IRQ1's low vector bits are `$11`, so the MC68302-supplied IACK
+vector is:
+
+```text
+$40 | $11 = $51
+```
+
+External IRQ1 asserts CPU interrupt level 1. It is not one of the
+internal level-4 INRQ sources represented by the normal IPR/IMR/ISR bit
+table. The external source must be cleared by device or board logic
+outside that internal interrupt-controller pending/in-service model.
+
+[OPEN] The board source remains unidentified. Current evidence does not
+prove that uPD72069 `INTRQ`, SCSI interrupt output, a shared storage line,
+or PAL/GAL glue physically drives MC68302 IRQ1.
+
 [Verified firmware semantics] Vector `$51` is the completion entry used by
 the active FDC state machine after RECALIBRATE and before the SEEK
 continuation.
@@ -499,6 +587,10 @@ semantics remain outside this example.
 and the same `$0402` continuation mechanism, but they run different
 device-specific status/acknowledge preludes first.
 
+[Verified firmware] This is structural evidence that vector `$51` is a
+shared storage/device completion ingress in the firmware. It is not
+electrical evidence for how FDC or SCSI reach MC68302 external IRQ1.
+
 [DISPROVEN] `$F114B6` should not be described as an FDC-only dispatcher.
 
 ## Relationship To IDMA
@@ -541,6 +633,10 @@ RECALIBRATE completion dependency.
 - [Verified static] The FDC RECALIBRATE example installs `$BA5E`, sends
   `07 00`, later enters the vector `$51` dispatcher, runs the FDC status
   prelude, jumps to `$BA5E`, installs `$B1A4`, and sends `0F 00 01`.
+- [Verified device] MAME's uPD72069/uPD765 RECALIBRATE completion produces
+  INTRQ and SIS `ST0=$20, PCN=$00` for successful drive-0 completion.
+- [Verified chip] MC68302 external IRQ1 can deliver vector `$51` at
+  `GIMR=$8040`; this is EXRQ level 1, not an internal IPR/IMR/ISR source.
 - [Verified static] The SCSI RESET example installs `$B1A4`, writes
   `$18/$00` to `$FC5001/$FC5003`, later enters the vector `$51` dispatcher,
   runs the SCSI status prelude at `$FBB370`, reads SCSI status register
@@ -557,6 +653,8 @@ RECALIBRATE completion dependency.
 - [OPEN] Whether multiple storage sources electrically share IRQ1.
 - [OPEN] Exact board-level acknowledge, polarity, and clearing behavior for
   the shared storage/device completion path.
+- [OPEN] Whether future board policy should connect FDC INTRQ, SCSI IRQ,
+  or a separate storage-glue source to MC68302 external IRQ1.
 - [OPEN] Full callback semantics for `$A878`, `$A924`, `$A9BE`, and `$AA48`;
   they are storage/device continuations by context, but should not be
   overclassified from the callback address alone.

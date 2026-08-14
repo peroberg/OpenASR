@@ -138,6 +138,29 @@ IDMA/SIB completion path through `$F01B1A/$F01B4E`; it reads IDMA CSR
 storage/device completion entry through `$F114B6/$F114E2`; it selects an
 FDC or SCSI status/acknowledge prelude before `jmp [$0402]`.
 
+For the specific FDC RECALIBRATE state:
+
+```text
+$0402 = $BA5E
+$04AD = 0
+RECALIBRATE 07 00 outstanding
+```
+
+[Verified firmware] vector `$51` is the only identified firmware entry
+that runs the required FDC status prelude:
+
+```text
+$F114B6 -> $FB7E8E -> $FB7C5A SENSE INTERRUPT STATUS 08
+         -> accept ST0 & $E0 == $20
+         -> $049D <- 0
+         -> jmp [$0402] -> $BA5E
+```
+
+[DISPROVEN] This RECALIBRATE continuation is not the `$4B` IDMA
+dispatcher, PB9/PB10/PB11, IRQ6/DUART, SCC1/SCC2, or a normal 68000
+autovector path. Those paths do not perform the FDC SIS prelude and do
+not match the `$BA5E` continuation state.
+
 DUART subpaths currently documented:
 
 - Counter-ready path: SCN2681 counter/timer reaches ready state, DUART
@@ -159,7 +182,9 @@ DUART subpaths currently documented:
 - TRAP handlers other than #7 and #8 are mostly investigation-level.
 - The indirect targets behind DUART dispatcher pointers `($00DE)`,
   `($00E2)`, `($00E6)` and `($8638)` are not identified.
-- No current ASR-10 source is identified for external IRQ1/IRQ7.
+- No current ASR-10 board source is identified for external IRQ1/IRQ7.
+  For IRQ1, firmware-side storage completion through vector `$51` is
+  verified, but physical routing from FDC/SCSI/PAL/GAL glue is [OPEN].
 - SCC1-SCC3, SMC1-SMC2, SCP, SDMA, watchdog and PB8-PB11 have documented
   MC68302 vector identities but incomplete current ASR-10 handler/use mapping.
   IDMA is different: vector `$4B` has a verified firmware dispatcher, and the

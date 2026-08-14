@@ -73,6 +73,39 @@ läses en gång i V3.50 och aldrig i V1.61 — exakt vad Timer 2-utredningen red
 * IMR = 0 vid boot betyder **inte** att källorna är avstängda — bara att de inte når kärnan.
 * **`$2400` = bit 13 + bit 10 = SCC1 + SCC2.**
 
+### External IRQ1 / vector `$51`
+
+[Verified chip] MC68302 external IRQ1 is an EXRQ source. In dedicated
+external interrupt mode it asserts CPU interrupt level 1. With the
+ASR-10-observed `GIMR=$8040`, `IV1=0` and the vector prefix is `$40`;
+external IRQ1's documented low vector bits are `$11`, so the IACK vector is:
+
+```text
+$40 | $11 = $51
+```
+
+External IRQ1 is not a normal internal level-4 INRQ source and is not
+masked by the same IPR/IMR/ISR bit table shown above. The physical source
+must be cleared outside the MC68302 internal interrupt-controller
+pending/in-service mechanism, by device or board logic.
+
+[Verified firmware] ASR-10 V3.50 uses vector `$51` as the shared
+storage/device completion entry:
+
+```text
+$51 -> $FFFF87CE -> $87CE.w -> $00BAB6 / high-view $F114B6
+```
+
+For FDC RECALIBRATE with `$0402=$BA5E` and `$04AD=0`, that handler runs
+the FDC SENSE INTERRUPT STATUS prelude and reaches `$BA5E`. For SCSI, the
+same dispatcher runs `$FBB370` and reads WD33C93-style status before
+`jmp [$0402]`.
+
+[OPEN] Which ASR-10 board signal drives MC68302 external IRQ1 remains
+unverified. `FDC INTRQ -> IRQ1`, `SCSI IRQ -> IRQ1`, shared storage IRQ,
+PAL/GAL glue, polarity, acknowledge timing, and line-clearing topology
+are all board-boundary questions, not chip facts.
+
 ### Vad `ori.w #$2400,($FC6816)` faktiskt gör
 
 Runtime-rutinen på `00BF1A`:
@@ -510,6 +543,11 @@ absoluta referenser och kan skrivas registerrelativt, eller inte alls.
    0x0850-0x085a  Timer 2                    known_unimplemented
    0x0880-0x08b5  SCC1-3 / SMC / SCP         known_unimplemented
    ```
+   Current ASR-10 machine code also only has a narrow IRQ6 IACK path. It
+   does not yet model external IRQ1 input/state, CPU level-1 assertion,
+   level-1 IACK vectoring, GIMR/IV1-derived vector `$51`, or the external
+   source-clear contract. This is a model gap, not evidence for any
+   particular board wiring.
 3. **PB9, PB10 och PB11 — vad de är anslutna till.** `IMR |= $C080` på `$F87F0A` gör
    dem till de **enda interna 68302-källor ROM självt avmaskar**, och det sker före
    hela SCC-vägen. Ingen av de tre är identifierad. Detta är inte en restfråga.
