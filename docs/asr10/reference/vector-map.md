@@ -104,7 +104,7 @@ undefined and `ISR` bit 0 is always zero. `IMR=1` enables a source;
 | `$48` | `$120` | SCC3 | 8 | internal INRQ from SCC3 event register/mask | not identified | none documented | [V] chip, [H] ASR use | `../../mc68302/communications-block-map.md` |
 | `$49` | `$124` | Timer1 | 9 | internal INRQ from Timer1 event | not identified | none documented | [V] chip, [H] ASR use | `../../mc68302/interrupt-source-map.md` |
 | `$4A` | `$128` | SCC2 | 10 | internal INRQ from SCC2 event register/mask | not identified | none documented | [V] chip, [H] ASR use | `../../mc68302/communications-block-map.md` |
-| `$4B` | `$12C` | IDMA | 11 | internal INRQ from IDMA CSR normal/error event | not identified | FDC path is verified programmed I/O, not IDMA | [V] chip/FDC non-use, [H] ASR handler | `../../mc68302/idma-spec.md`, `subroutine-index.md` |
+| `$4B` | `$12C` | IDMA | 11 | internal INRQ from IDMA CSR normal/error event | `$FFFF87E8` -> `$87E8.w` -> `$251A` / high-view `$F01B1A` | MC68302/SIB/IDMA completion dispatcher; reads `$FC680E`, masks/clears IDMA bit, then `jmp [$0402]` | [V] chip, [V] ASR handler | `../../mc68302/idma-spec.md`, `storage-completion-dispatch.md` |
 | `$4C` | `$130` | SDMA bus error | 12 | internal INRQ from SDMA bus error | not identified | none documented | [V] chip, [H] ASR use | `../../mc68302/communications-block-map.md` |
 | `$4D` | `$134` | SCC1 | 13 | internal INRQ from SCC1 event register/mask | not identified | none documented | [V] chip, [H] ASR use | `../../mc68302/communications-block-map.md` |
 | `$4E` | `$138` | PB10 | 14 | internal INRQ from Port B interrupt input 2 | older note: `$F88F06` | not current baseline evidence | [V] chip, [H] stale ASR handler | `hardware-map.md`, `../../mc68302/interrupt-source-map.md` |
@@ -126,7 +126,7 @@ manual table and need an external vector source or autovector.
 
 | Vector | Offset | Source | Delivery | Handler | Further dispatch | Status | Source |
 |---:|---:|---|---|---|---|---|---|
-| `$51` | `$144` | external IRQ1 | MC68302 external IACK if enabled for vector generation | not identified | not documented | [V] chip, [H] ASR use | `../../mc68302/vector-origin-map.md` |
+| `$51` | `$144` | external IRQ1 | MC68302 external IACK if enabled for vector generation | `$FFFF87CE` -> `$87CE.w` -> `$00BAB6` / high-view `$F114B6` | shared storage/device completion dispatcher; FDC and SCSI branches before `jmp [$0402]`; physical source/routing [OPEN] | [V] chip, [V] ASR handler, [OPEN] board source | `../../mc68302/vector-origin-map.md`, `storage-completion-dispatch.md` |
 | `$56` | `$158` | DUART IRQ6 | DUART `irq_cb` asserts board IRQ6; MC68302 IACK returns `$56` | `$F88300` | counter-ready tick production is verified here; DUART RxRDYB dispatch is verified through `$F884BE`, but branch ordering from `$F88300` to `$F884BE` is not fully documented | [V] | `../investigations/duart.md`, `boot-sequence.md`, `../../mc68302/vector-origin-map.md` |
 | `$57` | `$15C` | external IRQ7 | MC68302 external IACK if enabled for vector generation | not identified | not documented | [V] chip, [H] ASR use | `../../mc68302/vector-origin-map.md` |
 

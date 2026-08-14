@@ -59,13 +59,17 @@ Panel receive terminology:
   firmware in this checkout was shown to exercise that 72069 rate table:
   `mpc2000`, `mpc3000`, and `s3000` instantiate `UPD72069`, but their ROMs are
   not present under local `roms/`.
-- [OPEN] FDC completion interrupt path. Static code reading found no
+- [Verified static] V3.50 uses `$0402` as a general async device/storage-I/O
+  continuation pointer. Two completion dispatchers are identified:
+  vector `$4B` -> `$FFFF87E8` -> `$87E8.w` -> `$F01B1A` for MC68302
+  IDMA/SIB completion, and vector `$51` -> `$FFFF87CE` -> `$87CE.w` ->
+  `$F114B6` for shared storage/device completion. The `$51` dispatcher has
+  FDC and SCSI branches before `jmp [$0402]`. → `reference/storage-completion-dispatch.md`
+- [OPEN] Physical FDC completion interrupt path. Static code reading found no
   `m_fdc->intrq_wr_callback()` and no `m_fdc->drq_wr_callback()` in
   `asr10_boot.cpp`; the only FDC signal currently wired out is index into
-  DUART IP0. No firmware vector handler that both touches `$FC4000-$FC4003`
-  and posts scheduler work was identified by the direct-vector/short-absolute
-  method. [Likely] The suspended instrument-load task is waiting for an FDC
-  completion signal that the driver does not yet deliver.
+  DUART IP0. The firmware-side vector `$51` completion entry is identified,
+  but the board source/routing that causes vector `$51` remains open.
 - [OPEN] FDC-/instrumentinläsningsspåret är avslutat i nuvarande omfattning;
   se `investigations/instrument-load-v350.md`. Blockerare:
   Instrumentinläsningen väljer FDC DMA-/avbrottsvägen, men ASR-10-modellen har
@@ -223,6 +227,8 @@ Previous entries stand. Added by the static analysis:
 - `reference/mc68302-status.md` — MC68302 per block, with evidence levels.
 - `reference/os-image-layout.md` — disk format and the segment rules.
 - `reference/vector-map.md` — the five vector categories kept apart.
+- `reference/storage-completion-dispatch.md` — `$0402`, vector `$4B`,
+  vector `$51`, and the FDC/SCSI async completion dispatchers.
 - `reference/runtime-service-model.md` — dispatcher queue and service fields, historical
   V1.61 observations.
 - `reference/boot-runtime-timeline.md` — dynamic reset-to-runtime timeline, IRQ6 source
