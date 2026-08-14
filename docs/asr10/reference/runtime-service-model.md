@@ -202,6 +202,52 @@ $043E = $00000000
 payload promotion to `$043E`; the observed class `$03` path has not promoted
 `$046A` to `$043E`.
 
+### Scheduler slots and storage return contexts
+
+[Verified static] The primary scheduler slot table is `$23F6..$2464` with
+stride `$16`. The concrete slot fields established so far are:
+
+| offset | role | status |
+|---:|---|---|
+| `+2/+3` | scheduler state bytes | [Verified static] |
+| `+6` | saved PC | [Verified static] |
+| `+A` | saved SR | [Verified static] |
+| `+C` | node mailbox loaded into `A5` on resume | [Verified static] |
+| `+E` | saved USP | [Verified static] |
+| `+10/+12` | pending/deferred node chain | [Verified static] |
+| `+14` | timer/state | [Verified static], exact semantics [OPEN] |
+
+[Verified static] Scheduler dispatch restores a concrete task/event context by
+using saved PC/SR/USP and loading the mailbox node into `A5`. Full
+`D0-D7/A0-A7` task context preservation remains [OPEN]/partial; the current
+evidence is explicit for PC/SR/USP and A5.
+
+[Verified static] Storage common exit uses the saved request node at `$0466`
+and selects one of two scheduler return contexts from the sign of `node +2`:
+
+```asm
+B2E6  A5 <- $0466
+B304  tst.w  ($2,A5)
+B30A  positive -> A1=$23F6 ; trap #9
+B312  negative -> A1=$2438 ; trap #9
+```
+
+[Verified runtime/static] The observed class `$03/$02` request has
+`node +2=$0302`, a positive word. Its expected static return target is
+therefore `$23F6`, not `$2438`.
+
+[Verified static] `$23F6` is scheduler slot 0 and `$2438` is scheduler slot 3.
+Both use the same scheduler-slot layout.
+
+[OPEN] `$23F6` is a scheduler resume context, not a verified instrument owner.
+The concrete consumer after class `$03` completion remains unknown because
+current runtime does not reach RECALIBRATE completion.
+
+[Verified static] For scheduler slots, `trap #9` can place the returned node in
+the slot mailbox or pending/deferred chain depending on current slot state. The
+exact branch used by the observed `$23F6` return will need runtime validation
+after vector `$51` delivery is implemented.
+
 ---
 
 ## Architectural interpretation

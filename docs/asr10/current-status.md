@@ -20,6 +20,14 @@ Panel receive terminology:
 | ROM receive path | `$F89CCA` (SRB) -> `$F89CEA` (RHRB) -> `$F82484` lookup |
 | runtime receive path | `$FFB0BC` (SRB) -> `$FFB0D4` (RHRB) -> `jmp` via `$0003C0` |
 
+## Current handoff
+
+The current ASR-10 architecture checkpoint is summarized in
+`reference/architecture-handoff.md`. It is the starting point for the next
+implementation session: service-kernel model, observed instrument-load request,
+storage completion boundary, implementation readiness, and the critical OPEN
+items are consolidated there.
+
 ## Works
 
 - Current `asr10booth` boots `floppies/asr10booth/V350.img` with no `ASR10_*`
@@ -110,6 +118,19 @@ Panel receive terminology:
   beskrivas som ett enda enkelt storage-opcode; `$049A` används som
   high-level dispatch byte och `$049B` som separat subtype/tag byte.
   -> `reference/runtime-service-model.md`, `reference/runtime-object-model.md`
+- [Verified static/runtime] Om class `$03/$02` senare når common storage exit
+  returneras samma node från `$0466`. Den observerade noden har
+  `node +2=$0302`, alltså positivt word. Statiskt väljer common exit då
+  target `$23F6`; den tidigare `$2438`-returmodellen gäller endast negativ
+  node. `$23F6` är scheduler slot 0, inte verifierad instrument-owner.
+  Concrete post-completion consumer är [OPEN] eftersom runtime ännu inte når
+  RECALIBRATE completion.
+- [Verified static] Class `$03` har en verifierad statisk väg mot verklig
+  dataöverföring: `$B64C -> $FB7F9E -> $FBA5A2 -> $FB9C5E -> $FB9FE2 ->
+  $FB84DA -> $FB85C0 -> IDMA setup -> $FB8672 -> FDC READ DATA $46`.
+  IDMA använder source `$FFFC5803`, destination `$040E`, count från
+  transfer/sector-state, och MC68302 IDMA-register `$FC6802`, `$FC6804`,
+  `$FC6808`, `$FC680C` och `$FC6810`. Runtime har ännu inte nått detta.
 - [Verified dynamic] ES5506 PAR now reads through the ASR-10 panel analog path
   rather than a fixed `$0200` constant. V3.50 still boots to
   `FILE 1  TUTORIAL BNK`; observed PAR reads returned raw `$0200` from channel 6
@@ -215,35 +236,39 @@ architectural model that did not exist before. Summary only — details in `refe
 - ES5506 PAR has a real panel-analog route, but the wider ADC channel identity
   and audio-side effects are not fully verified.
 
-## Next phase: dynamic verification
+## Next implementation target
 
-The static phase has produced what it usefully can. Further static work should be
-targeted at a known runtime PC, vector, hot binding slot or observed register access —
-not broad pattern search. Prompts for E1-E4 are in `static/prompts-E1-E4.md`.
+Implement the smallest generic MC68302 external IRQ1/vector-`$51` path needed
+to let the already verified firmware completion chain execute.
 
-1. **E4 — first real CS1 write.** Write-tap `$FF6000-$FF7FFF` logging address, width,
-   value, PC and run phase, across boot, file browsing, instrument load, sampling,
-   effect load, hardware test and option detection.
-2. **E1 — the ROM→OS handover and vector installation.** ROM contains no `jsr`/`jmp`
-   with a 32-bit absolute RAM target, so the transfer is a binding slot, a
-   register-indirect jump, or an `rts` to a stacked address.
-3. **E2 — `$FFxxxx ↔ $00xxxx` mirror.** [OPEN] The V3.50 read tap observed 566229 data
-   reads in `$FF8000-$FFFFFF` and a sampled mismatch (`$FF8D44 = $F9`, `$008D44 = $00`),
-   but it did not answer the hardware mirror question: opcode fetches were not visible
-   to Lua, the original V1.61 `$00BF0E` test case was not run, and the high window's
-   decode/open-bus status in current `mem_map` was not established. The 1404 generated
-   `mapping_basis=mirror-hypothesis` edges remain unchanged.
-4. **Deterministic file-browse test.** One `DOWN` from `FILE 1  TUTORIAL BNK`, logging
-   panel byte → DUART handler → dispatcher → binding slot → OS routine → file index →
-   panel output. This is blocked at HEAD without implementation changes: the ASR-10
-   driver has no input ports, and the existing panel harness only injects panel ACK/status
-   bytes, not user key events.
-5. **Minimal truthful SCSI model.** AM33C93A at `$FC5001`/`$FC5003`: reset accepted,
-   stable status, option detection passes, no targets, commands terminate correctly.
-   No fabricated disks.
+Generic MC68302 requirements:
+
+- external IRQ1 input/state
+- CPU level-1 assertion
+- level-1 IACK
+- `GIMR`/`IV1`-derived vector `$51`
+- clean source assertion/deassertion contract
+
+ASR-10 board-side policy:
+
+- connect storage completion policy to MC68302 external IRQ1
+- keep physical storage IRQ wiring [OPEN] / explicit board policy
+- do not encode FDC-specific firmware knowledge into the generic MC68302 model
+
+After implementation, repeat the `LOADING JM DIGI SYN` experiment and observe:
+RECALIBRATE completion, vector `$51`, SIS, SEEK, the next vector `$51`,
+class `$03`, READ DATA `$46`, IDMA register programming, vector `$4B`, later
+vector `$51`, common exit, actual `$23F6` resume state/consumer, next request
+class, and whether payload `$02B600` survives to `$043E`.
 
 ## Open questions
 
+- **Critical next:** physical/board policy for storage IRQ1, runtime validation
+  through first vector `$51`, and the concrete `$23F6` post-completion consumer.
+- **Next architecture:** next request class after `$03`, `$043E` activation,
+  storage -> sample/instrument bridge.
+- **Later:** exact scheduler full-context semantics, semantic names of descriptor
+  fields, UI-visible/voice-ready load boundary, physical IRQ glue/wiring.
 - **CS1** `$FF6000-$FF7FFF`: enabled, write-selected, external DTACK, no function-code
   comparison, function unknown. No identified direct or immediate-base references.
 - **What SCC1/SCC2 carry.** The firmware chain is documented end to end. The physical
@@ -278,6 +303,9 @@ Previous entries stand. Added by the static analysis:
 - **`$FC6816` is a service/in-service latch.** It is IMR. `$2400` = SCC1 + SCC2.
   Clearing it masks the interrupt; it acknowledges nothing. EOI goes to ISR
   (`$FC6818`), which the OS handlers already do correctly.
+- **Observed class `$03/$02` returns to `$2438`.** [DISPROVEN runtime/static]
+  The observed node has positive `node +2=$0302`; common exit therefore selects
+  `$23F6`. `$2438` is the negative-node return target.
 
 ## Current documents
 
@@ -298,6 +326,8 @@ Previous entries stand. Added by the static analysis:
   sample/instrument objects, the ROM voice manager, OTTO and remaining gaps.
 - `reference/runtime-service-model.md` — dispatcher queue and service fields, historical
   V1.61 observations.
+- `reference/architecture-handoff.md` — current architecture checkpoint and next
+  implementation target.
 - `reference/boot-runtime-timeline.md` — dynamic reset-to-runtime timeline, IRQ6 source
   distribution and ROM/RAM execution responsibility.
 - `reference/methods-static-analysis.md` — how the results were produced, and the

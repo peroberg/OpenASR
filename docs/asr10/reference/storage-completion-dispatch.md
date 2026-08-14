@@ -645,10 +645,26 @@ $049A.b == $03
   -> $FB7F9E
   -> $FBA5A2
   -> $FB9C5E
+  -> $FB9FE2
+  -> $FB84DA
+  -> $FB85C0
+  -> MC68302 IDMA setup
+  -> $FB8672
+  -> FDC READ DATA $46
 ```
 
-[OPEN] The full class `$03` continuation through later callback/request-class
-transitions to class `$06/$0D` and `$043E` activation.
+[Verified static] The IDMA setup uses source `$FFFC5803`, destination `$040E`,
+count derived from transfer/sector state, and MC68302 IDMA registers
+`$FC6802/$FC6804/$FC6808/$FC680C/$FC6810`.
+
+[Verified static/runtime] If this request reaches common storage exit, the same
+saved node from `$0466` is returned. The observed node has positive
+`node +2=$0302`, so common exit statically selects scheduler slot `$23F6`;
+`$2438` is the negative-node return target. The `$23F6` post-completion
+consumer is still [OPEN] because runtime does not yet reach completion.
+
+[OPEN] The full class `$03` continuation through `$23F6`, later
+callback/request-class transitions to class `$06/$0D`, and `$043E` activation.
 
 [Verified runtime] The current runtime still stalls before RECALIBRATE
 completion is delivered to the vector `$51` firmware entry. It has not reached

@@ -106,6 +106,13 @@ unverified. `FDC INTRQ -> IRQ1`, `SCSI IRQ -> IRQ1`, shared storage IRQ,
 PAL/GAL glue, polarity, acknowledge timing, and line-clearing topology
 are all board-boundary questions, not chip facts.
 
+Implementation handoff: the next ASR-10 implementation target is the smallest
+generic MC68302 external IRQ1/vector-`$51` path: input/state, CPU level-1
+assertion, level-1 IACK, `GIMR`/`IV1`-derived vector `$51`, and a clean
+source assertion/deassertion contract. The ASR-10 storage source that drives
+that input remains board policy / [OPEN] wiring. See
+`architecture-handoff.md`.
+
 ### Vad `ori.w #$2400,($FC6816)` faktiskt gör
 
 Runtime-rutinen på `00BF1A`:

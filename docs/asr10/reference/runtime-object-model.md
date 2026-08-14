@@ -163,7 +163,8 @@ fields, payload/descriptor objects and continuation pointers.
 
 ### Current class `$03` continuation boundary
 
-[Verified static] The class `$03` request dispatches through:
+[Verified static] The class `$03` request dispatches through the verified
+static READ/IDMA path:
 
 ```text
 $049A.b == $03
@@ -172,11 +173,26 @@ $049A.b == $03
   -> $FB7F9E
   -> $FBA5A2
   -> $FB9C5E
-  -> common callback/state machinery
+  -> $FB9FE2
+  -> $FB84DA
+  -> $FB85C0
+  -> MC68302 IDMA setup
+  -> $FB8672
+  -> FDC READ DATA $46
 ```
 
-[OPEN] The full continuation from class `$03` through later callbacks or
-request-class transitions into class `$06/$0D` and `$043E` activation.
+[Verified static] The IDMA transfer uses source `$FFFC5803`, destination
+`$040E`, count derived from transfer/sector state, and MC68302 IDMA registers
+`$FC6802/$FC6804/$FC6808/$FC680C/$FC6810`.
+
+[Verified static] After device/IDMA completion, storage common exit returns the
+same saved request node from `$0466`. The observed node has positive
+`node +2=$0302`, so the expected static return context is scheduler slot
+`$23F6`, not `$2438`.
+
+[OPEN] The full continuation from class `$03` common exit through `$23F6`
+consumer, later request-class transitions into class `$06/$0D`, and `$043E`
+activation.
 
 ### Load boundaries
 
