@@ -84,13 +84,34 @@ Panel receive terminology:
   board-level line clearing remain open.
 - [OPEN] FDC-/instrumentinläsningsspåret är avslutat i nuvarande omfattning;
   se `investigations/instrument-load-v350.md`. Blockerare:
-  Instrumentinläsningen väljer FDC DMA-/avbrottsvägen, men ASR-10-modellen har
-  ingen kopplad FDC intrq/drq-väg och ingen implementerad MC68302-intern
-  interruptcontroller som kan leverera fullbordanssignalen.
+  Den observerade `LOADING JM DIGI SYN`-vägen når RECALIBRATE och stannar före
+  den statiskt identifierade async IDMA READ DATA-vägen. Firmwaremodellen har
+  verifierade `$4B`/IDMA- och `$51`/storage-completion-dispatchers, men ASR-10-
+  modellen saknar fortfarande verifierad fysisk FDC/SCSI completion-routing.
 - [Verified dynamic] ES5506 PAR now reads through the ASR-10 panel analog path
   rather than a fixed `$0200` constant. V3.50 still boots to
   `FILE 1  TUTORIAL BNK`; observed PAR reads returned raw `$0200` from channel 6
   (`left_aligned=$8000`), a centered 10-bit value.
+- [Verified silicon spec] The Ensoniq audio specs are now separated from ASR-10
+  board wiring in `reference/audio-storage-architecture.md`: ES5701/Super-GLU is
+  audio/sound-memory glue, ES5506/OTTO is the voice/sample engine, and
+  ES5510/ESP is the effects DSP host/execution device. Storage completion still
+  remains separate: vector `$4B` = IDMA/SIB completion, vector `$51` = shared
+  FDC/SCSI completion, and vector `$47`/PB9 is only a likely audio-event
+  candidate until physical ES5506 `IRQB` routing is verified.
+- [Verified static] The first localized audio-runtime boundary is the ROM
+  voice table at `$8000`: 32 entries with stride `$D8`, per-voice callback at
+  `+$26`, instrument/sample object pointer at `+$1E`, sample-address base at
+  `+$22`, and ES5506 PAGE/register programming through `$FC2001`. PB9/vector
+  `$47` reads ES5506-like `IRQV`, maps the voice number to `$8000+voice*$D8`,
+  and calls the per-voice callback. The loaded instrument root and sample RAM
+  producer remain [OPEN]. -> `reference/instrument-to-otto-runtime.md`
+- [Verified static] The `$8000` table is now classified as a firmware-owned
+  ROM voice-manager object, not an ES5506-owned data structure. The manager has
+  verified init, allocation/list, preparation, callback and release/reset paths
+  through `$F8C2xx-$F8E4xx` and binding slots `$8E38/$8E3E/$8E44/$8E50/$8E6E`.
+  Instrument root, sample allocator and sample RAM writer remain [OPEN].
+  -> `reference/runtime-object-model.md`
 - Category A/B/C cleanup status: `src/mame/ensoniq/asr10_boot.cpp` was reduced
   from 3580 to 952 lines by the structural cleanup. No runtime experiment,
   trace, profile, summary or getenv-controlled instrumentation remains in the
@@ -241,6 +262,12 @@ Previous entries stand. Added by the static analysis:
 - `reference/vector-map.md` — the five vector categories kept apart.
 - `reference/storage-completion-dispatch.md` — `$0402`, vector `$4B`,
   vector `$51`, and the FDC/SCSI async completion dispatchers.
+- `reference/audio-storage-architecture.md` — Ensoniq ES5701/ES5506/ES5510
+  chip-spec boundaries and how they meet the ASR-10 storage/load model.
+- `reference/instrument-to-otto-runtime.md` — localized runtime voice table,
+  ES5506 helper map, PB9/IRQV service and remaining instrument-root gaps.
+- `reference/runtime-object-model.md` — firmware object ownership for storage,
+  sample/instrument objects, the ROM voice manager, OTTO and remaining gaps.
 - `reference/runtime-service-model.md` — dispatcher queue and service fields, historical
   V1.61 observations.
 - `reference/boot-runtime-timeline.md` — dynamic reset-to-runtime timeline, IRQ6 source

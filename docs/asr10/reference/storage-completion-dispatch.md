@@ -513,10 +513,13 @@ $51  MC68302 external IRQ1 source -> $F114B6/$F114E2
 Both paths use `$0402`, but they perform different status/prelude work
 before dispatch.
 
-[DISPROVEN] The FDC byte-transfer path documented in
-`docs/asr10/investigations/instrument-load-v350.md` is not programmed
-through MC68302 IDMA. The `$4B` dispatcher may still be a valid firmware
-IDMA completion path, but it is not the proven FDC data-transfer mechanism.
+[Verified static] The firmware contains an async FDC READ DATA path that
+programs MC68302 IDMA and uses the `$4B` completion dispatcher before storage
+command completion proceeds through `$51`.
+
+[Verified runtime] The currently observed `LOADING JM DIGI SYN` instrument-load
+run has not reached that async IDMA READ path; it stops earlier, around the
+RECALIBRATE completion dependency.
 
 ## Dispatcher Matrix
 

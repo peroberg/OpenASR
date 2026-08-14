@@ -160,9 +160,11 @@ DUART subpaths currently documented:
 - The indirect targets behind DUART dispatcher pointers `($00DE)`,
   `($00E2)`, `($00E6)` and `($8638)` are not identified.
 - No current ASR-10 source is identified for external IRQ1/IRQ7.
-- SCC1-SCC3, SMC1-SMC2, SCP, SDMA, IDMA, watchdog and PB8-PB11 have
-  documented MC68302 vector identities but no verified current ASR-10
-  handler/use, except that the FDC path is verified not to use IDMA.
+- SCC1-SCC3, SMC1-SMC2, SCP, SDMA, watchdog and PB8-PB11 have documented
+  MC68302 vector identities but incomplete current ASR-10 handler/use mapping.
+  IDMA is different: vector `$4B` has a verified firmware dispatcher, and the
+  static async FDC READ DATA path programs IDMA, although the observed current
+  instrument-load run has not reached that path.
 - The later path that may unmask `IMR` to `$E480` is not localized here.
 
 ## Stale or retired vector notes

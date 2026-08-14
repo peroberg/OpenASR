@@ -249,6 +249,10 @@ Open questions:
 
 ### Audio
 
+See `audio-storage-architecture.md` for the current evidence-separated
+checkpoint tying the Ensoniq ES5701/ES5506/ES5510 chip specs to the ASR-10
+storage/load boundary model.
+
 Likely family audio path:
 
 ```text id="19puuo"
@@ -354,7 +358,10 @@ Do not try to emulate as a complete chip immediately. Model effects as discovere
 Possible relation to current blocker:
 
 ```text id="l393bq"
-If FC6884/FC6894 or the 0x2400 service source are not pure MC68302 internals, they may be board-glue or Super-GLU-adjacent completion/timer/status behavior.
+[DISPROVEN] `$FC6884`/`$FC6894` and `$2400` are not generic
+Super-GLU-adjacent completion/timer/status behavior in the current model:
+`$FC6884`/`$FC6894` are MC68302 SCM1/SCM2 and `$2400` is IMR bits SCC1+SCC2.
+Storage completion routing remains separate from ES5701/Super-GLU audio glue.
 ```
 
 ## Current control-plane model
