@@ -93,6 +93,16 @@ public:
 	// stays future work (mc68302int.cpp).
 	uint8_t irq6_ack_vector() const { return 0x40 | 0x16; } // GIMR.V7_V5=010 | external level 6 low bits
 
+	// Same formula, external IRQ1 (docs/mc68302/vector-origin-map.md
+	// External Vectors table: IRQ1/level 1 EXRQ low bits 0x11, IV1=0).
+	// External EXRQ levels 1/6/7 bypass the internal INRQ pending/mask/
+	// priority machinery entirely -- they assert a CPU IPL line directly,
+	// exactly like level 6 already does here, and only need this
+	// hardcoded vector-supply formula plus a CPU-space IACK handler.
+	// Board-side source assertion/deassertion is therefore a plain
+	// devcb_write_line into set_inputline(), not a new register model.
+	uint8_t irq1_ack_vector() const { return 0x40 | 0x11; } // GIMR.V7_V5=010 | external level 1 low bits
+
 protected:
 	class mc68302_sim;
 

@@ -408,6 +408,8 @@ u8 asr10_boot_state::maincpu_iack_r(u8 level)
 {
 	if (level == 6)
 		return m_maincpu->irq6_ack_vector();
+	if (level == 1)
+		return m_maincpu->irq1_ack_vector();
 
 	return m68000_base_device::autovector(level);
 }
@@ -737,6 +739,44 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 
 	UPD72069(config, m_fdc, XTAL(16'000'000)); // clock unknown; placeholder for boot tracing
 	m_fdc->idx_wr_callback().set(m_duart, FUNC(scn2681_device::ip0_w));
+	// docs/asr10/investigations/ready-line-artifact-probe.md,
+	// irq1-handler-chain-probe.md, irq1-storage-completion-probe.md: this
+	// pair is meaningful only together, landed together after negative
+	// control, positive control, and four clean vector-$51 IACKs.
+	//
+	// upd765_family_device::run_drive_ready_polling() (upd765.cpp) polls
+	// floppy_image_device::ready_r() every 1.024ms against a stored flag
+	// and, on a transition, synthesizes an INTRQ + ST0 "ready line changed"
+	// result -- real uPD765-family behavior (this is genuine edge-triggered
+	// polling, not a MAME-only shortcut). On real hardware, if RDY is
+	// physically tied active on this board, that polling loop never sees an
+	// edge and no such interrupt is ever generated. set_ready_line_connected
+	// (false) models exactly that board policy -- not a workaround for a
+	// MAME quirk, a stand-in for a specific, plausible physical wiring
+	// choice. [Likely, coverage: 5 regression tests, no in-session disk
+	// swap exercised] Empirically safe: 5/5 alone, including nodisk (whose
+	// no-disk detection runs through DUART IP0/INDEX, not FDC ready) --
+	// multi-disk INSERT DISK prompts during a running session are untested.
+	// get_ready() with ready_connected=false falls back to
+	// `!external_ready`; nothing in this driver ever calls ready_w(), so
+	// external_ready stays false and get_ready() returns permanently true
+	// (always-ready), not always-not-ready.
+	//
+	// Without this, the same INTRQ wiring alone breaks boot itself
+	// (ERROR 129 -- a genuine 68000 Address Error, not a firmware-level
+	// detection; see the retroactive correction in
+	// irq1-storage-completion-probe.md) by delivering a phantom completion
+	// into the generic vector-$51 dispatcher outside any context that
+	// installed its $0402 continuation. With both lines here, boot survives
+	// to FILE 1 and the instrument-load path's real completion chain runs
+	// correctly through RECALIBRATE, SEEK 0F 00 01, and READ DATA $46 --
+	// each a genuine vector-$51 delivery with $0402 correctly populated by
+	// the instrument-load's own RECALIBRATE issuer -- then stops at a
+	// legitimate `DISK ERROR - LOST DATA` (uPD765 ST1 overrun) because
+	// MC68302 IDMA is not implemented. That is the real next blocker.
+	m_fdc->set_ready_line_connected(false);
+	m_fdc->intrq_wr_callback().set_inputline(m_maincpu, 1);
+
 
 	// The uPD72069 sees this child connector as drive 0 via the conventional "fdc:0" tag.
 	// Mounted HFE media changes Recalibrate/Sense from 68,00 (not ready) to 20,00.
