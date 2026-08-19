@@ -4,6 +4,25 @@ Current truth for the ASR-10 MAME bring-up. This file is deliberately short:
 verified reference facts belong in `reference/`, reproducible analysis output belongs in
 `static/`, and experiment history belongs in `investigations/` or `archive/`.
 
+**Instrument warning, general form:** two *independent* ways for a Lua tap
+to die silently (no error, just no further callbacks) are now on record:
+`mc68302_device::install_internal_window()`
+(`src/devices/machine/mc68302.cpp`) re-issues `install_readwrite_handler()`
+for `$FC6000-$FC6FFF` on every BAR write, dropping any tap installed on
+that range beforehand (`reference/methods-static-analysis.md` §8.5); and an
+`install_read_tap()`/`install_write_tap()` return value that isn't kept in
+a persisted variable can be silently reclaimed by the Lua garbage collector
+almost immediately, regardless of address (§8.6). Two independent failure
+modes in the same investigation is a pattern, not a coincidence — treat
+**every** prior zero-result measurement from a Lua tap in this tree as
+unmeasured, not confirmed, until it has a witness proving the tap was alive
+for the *whole* measurement window, not just at install time. This applies
+to any address, not only `$FC6000-$FC6FFF`. See
+`reference/methods-static-analysis.md` §8.7 for the general rule, and
+`investigations/irq1-imr-unmask-probe.md` /
+`investigations/irq1-vector-and-sr-probe.md` for both worked examples and
+their fixes.
+
 Repo boundary: the separate MC68302 project is not part of this MAME implementation.
 Its classes, architecture and monitor infrastructure (`TraceRecorder`, `Mc68302Bus`,
 `Mc68302SystemIntegration`, Execution Monitor, Kotlin/Moira-specific design) are not
@@ -97,6 +116,56 @@ items are consolidated there.
   identified for both FDC and SCSI, but physical IRQ routing, PAL/GAL glue,
   electrical interrupt sharing, interrupt polarity, acknowledge timing, and
   board-level line clearing remain open.
+- [DISPROVEN] Unconditional `FDC INTRQ -> MC68302 external IRQ1` board
+  policy, as originally implemented (no ready-line fix). Implemented and
+  regression-tested; it broke plain boot-to-FILE1 itself (`ERROR 129 -
+  REBOOT`, a genuine 68000 Address Error — **corrected**: earlier entries
+  in this project described `129` as firmware detecting/protesting
+  something; it is a CPU-level exception, see
+  `investigations/ready-line-artifact-probe.md`) during the OS's own
+  polled boot-time disk load. Reverted. The chip-level vector fact
+  (`mc68302_device::irq1_ack_vector()`, formula `0x40 | 0x11`) and the
+  level-1 IACK dispatch branch are kept as inert, verified infrastructure.
+  → `investigations/irq1-storage-completion-probe.md`
+- [DISPROVEN] "MC68302 IMR gates external IRQ1" (the natural follow-up
+  hypothesis after the wiring above broke boot). Measured zero writes to
+  GIMR/IMR/ISR (`$FC6812/$FC6816/$FC6818`) between FILE 1 and the
+  instrument-load stall, on a tap now witnessed live for the entire window
+  (BAR, which governs whether the SIB window's handler gets silently
+  reinstalled, was last written at t≈5.4s — over ten seconds before FILE 1
+  and over twenty before the tap installed; see the instrument warning
+  above). Supported, not independently proven, by
+  `docs/mc68302/interrupt-source-map.md`'s narrow claim that the specific
+  `IRQ1`/`EXRQ` mechanism has no IMR bit — PB8-11 show that "external" does
+  not generally imply "no IMR bit". No interrupt-controller work is
+  motivated by this hypothesis.
+  → `investigations/irq1-imr-unmask-probe.md`
+- [Verified dynamic] **Root cause of the naive wiring's `ERROR 129 -
+  REBOOT` failure, measured to completion.** Neither a wrong vector nor a
+  timing/masking problem, and not a missing-IDMA problem — the interrupt is
+  delivered correctly (vector `$51`, target `$FFFF87CE`) and the handler
+  runs correctly through `SENSE INTERRUPT STATUS`
+  (`ST0=$C8`: a spontaneous drive-ready-line-change status, not tied to any
+  RECALIBRATE/SEEK/READ-DATA completion). It then crashes with a genuine
+  68000 **Address Error exception** (vector 3, confirmed by tapping the
+  CPU's own internal exception-vector-table reads): the dispatcher's final
+  `movea.l $0402.w,A0 / jmp (A0)` reads `$0402=$00000000`, because the
+  boot's own polled FDC code path never installs a `$0402` continuation —
+  only the instrument-load path's FDC RECALIBRATE issuer does. `jmp` to
+  `$000000` executes the reset vector's data as code and odd-address-faults
+  within microseconds, exactly matching `archive/troubleshoot.md`'s
+  documented meaning of error `129` ("odd address error"). Of the
+  documented six-step completion chain, only steps 1-2 are reached in
+  *this* crashed run; SEEK, READ DATA, IDMA programming, and vector `$4B`
+  are never reached here. **Update:** this made "IDMA is the real blocker"
+  look superseded rather than merely out of reach — that reading did not
+  survive `investigations/ready-line-artifact-probe.md`, which found the
+  interrupt itself was a ready-line artifact (see below), and that fixing
+  it lets the chain run correctly all the way to a real IDMA-shaped
+  blocker. → `investigations/irq1-handler-chain-probe.md`
+  (supersedes the SR-mask framing in `irq1-vector-and-sr-probe.md`, which
+  remains useful for the vector-delivery and tap-lifetime findings but not
+  for the crash's actual cause)
 - [OPEN] FDC-/instrumentinläsningsspåret är avslutat i nuvarande omfattning;
   se `investigations/instrument-load-v350.md`. Blockerare:
   Den observerade `LOADING JM DIGI SYN`-vägen konstruerar en konkret
@@ -238,33 +307,53 @@ architectural model that did not exist before. Summary only — details in `refe
 
 ## Next implementation target
 
-Implement the smallest generic MC68302 external IRQ1/vector-`$51` path needed
-to let the already verified firmware completion chain execute.
+**Update:** the IRQ1/vector-`$51` path this section originally called for
+has now been built and tested experimentally (not landed —
+`investigations/ready-line-artifact-probe.md`) and confirmed to work: the
+generic chip-level vector plumbing (`mc68302_device::irq1_ack_vector()`)
+stays in the tree already; the two remaining pieces —
+`m_fdc->intrq_wr_callback().set_inputline(m_maincpu, 1)` and
+`m_fdc->set_ready_line_connected(false)` (the latter needed only because
+MAME's `upd765_family_device` otherwise synthesizes a spurious ready-line-
+change interrupt on ordinary motor-off commands, empirically safe: 5/5
+regression alone, including `nodisk`) — are both reverted, not landed, but
+together they let the full documented completion chain run correctly
+through RECALIBRATE, SIS, SEEK, and READ DATA. The real next blocker is
+IDMA, not a missing gate.
 
-Generic MC68302 requirements:
+MC68302 IDMA requirements (new target):
 
-- external IRQ1 input/state
-- CPU level-1 assertion
-- level-1 IACK
-- `GIMR`/`IV1`-derived vector `$51`
-- clean source assertion/deassertion contract
+- IDMA register model for `$FC6802/$FC6804/$FC6808/$FC680C/$FC6810`
+  (currently `known_unimplemented` shadow storage in `mc68302.cpp`)
+- actual data movement for FDC READ DATA transfers (currently: the FDC
+  asserts a data request that nothing services, producing a genuine
+  uPD765 overrun — `DISK ERROR - LOST DATA`)
+- vector `$4B` completion delivery (IDMA-side, separate from IRQ1/vector
+  `$51`; `storage-completion-dispatch.md`'s dispatcher A)
 
-ASR-10 board-side policy:
-
-- connect storage completion policy to MC68302 external IRQ1
-- keep physical storage IRQ wiring [OPEN] / explicit board policy
-- do not encode FDC-specific firmware knowledge into the generic MC68302 model
+Land the IRQ1 wiring and ready-line fix together with IDMA work, not
+separately — landing the IRQ1 wiring alone (without IDMA) only replaces
+one dead end (`ERROR 129`) with another (`DISK ERROR - LOST DATA`), which
+is not an improvement in isolation.
 
 After implementation, repeat the `LOADING JM DIGI SYN` experiment and observe:
-RECALIBRATE completion, vector `$51`, SIS, SEEK, the next vector `$51`,
-class `$03`, READ DATA `$46`, IDMA register programming, vector `$4B`, later
-vector `$51`, common exit, actual `$23F6` resume state/consumer, next request
-class, and whether payload `$02B600` survives to `$043E`.
+IDMA register programming, vector `$4B`, later vector `$51`, common exit,
+actual `$23F6` resume state/consumer, next request class, and whether
+payload `$02B600` survives to `$043E`. RECALIBRATE completion, vector `$51`,
+SIS, SEEK, and READ DATA `$46` are no longer open questions — see
+`investigations/ready-line-artifact-probe.md`.
 
 ## Open questions
 
-- **Critical next:** physical/board policy for storage IRQ1, runtime validation
-  through first vector `$51`, and the concrete `$23F6` post-completion consumer.
+- **Critical next:** IDMA implementation (register model, data movement,
+  vector `$4B`). Runtime validation through vector `$51`/SIS/SEEK/READ DATA
+  is done (`investigations/ready-line-artifact-probe.md`); the concrete
+  `$23F6` post-completion consumer remains open, reachable only once IDMA
+  lets the chain proceed past READ DATA's current overrun.
+- **Physical board policy for storage IRQ1** remains formally `[OPEN]`
+  (what physically drives IRQ1 on real hardware is still unverified), but
+  is no longer blocking progress: the board-policy wiring plus a
+  ready-line fix is tested and known to work up to IDMA.
 - **Next architecture:** next request class after `$03`, `$043E` activation,
   storage -> sample/instrument bridge.
 - **Later:** exact scheduler full-context semantics, semantic names of descriptor
@@ -332,6 +421,27 @@ Previous entries stand. Added by the static analysis:
   distribution and ROM/RAM execution responsibility.
 - `reference/methods-static-analysis.md` — how the results were produced, and the
   method's blind spots.
+- `investigations/irq1-storage-completion-probe.md` — first IRQ1 wiring
+  attempt: chip-level vector fact kept, unconditional board policy
+  disproven and reverted.
+- `investigations/irq1-imr-unmask-probe.md` — "IMR gates IRQ1" disproven by
+  measurement and by chip architecture; also documents a Lua tap-timing trap
+  on the MC68302 internal window.
+- `investigations/irq1-vector-and-sr-probe.md` — confirms the ERROR-129
+  failure fetches the correct vector `$51`; documents a second, distinct
+  Lua tap-lifetime trap. Its SR-mask/timing framing for *why* the failure
+  happens is superseded by `irq1-handler-chain-probe.md`'s direct
+  root-cause measurement.
+- `investigations/irq1-handler-chain-probe.md` — the naive wiring's
+  `ERROR 129` is a genuine 68000 Address Error from an uninitialized
+  `$0402` continuation pointer, not a timing or masking problem.
+- `investigations/ready-line-artifact-probe.md` — current authoritative
+  account: the interrupt that crashed the chain above was never a storage
+  completion, but a MAME FDC-model ready-line artifact. With that fixed
+  (not landed — reverted after measurement) alongside the IRQ1 wiring, the
+  full completion chain runs correctly through RECALIBRATE/SEEK/READ DATA
+  and stops at IDMA, confirming IDMA (not a missing gate) is the next real
+  blocker.
 - `reference/boot-sequence.md`, `reference/subroutine-index.md`,
   `reference/os-code-extraction.md`, `reference/hardware-map.md` — as before, updated.
 - `static/README.md` — what the raw material is, how it was generated, what it does not

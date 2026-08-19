@@ -423,7 +423,28 @@ Ready / sufficiently modeled:
 
 Ready with explicit board-policy assumption:
 
-- storage completion -> MC68302 external IRQ1
+- storage completion -> MC68302 external IRQ1: chip-level vector supply
+  (`mc68302_device::irq1_ack_vector()`) and CPU-space IACK dispatch are
+  implemented and verified. The naive unconditional policy — FDC INTRQ
+  wired directly to CPU IPL1 at all times — was implemented, regression
+  tested, and disproven: it breaks plain boot-to-FILE1 with `ERROR 129 -
+  REBOOT`, a genuine 68000 Address Error exception (**corrected**: not a
+  firmware-level detection as earlier documents in this project described
+  it). Root cause fully measured in
+  `../investigations/irq1-handler-chain-probe.md` and
+  `../investigations/ready-line-artifact-probe.md`: the interrupt
+  delivered was a ready-line-change artifact of MAME's FDC model, not a
+  storage completion, crashing a dispatcher that dereferences an
+  uninitialized continuation pointer. With the ready-line artifact fixed
+  (`set_ready_line_connected(false)`, empirically safe — 5/5 regression
+  including `nodisk`) alongside the same IRQ1 wiring, boot survives and the
+  instrument-load completion chain runs correctly through RECALIBRATE,
+  SEEK, and READ DATA, stopping at a legitimate `DISK ERROR - LOST DATA`
+  (uPD765 overrun) because MC68302 IDMA is not implemented. Neither change
+  is landed; both were reverted after measurement. See
+  `../investigations/irq1-storage-completion-probe.md` for the original
+  attempt (interpretation corrected there) and
+  `../investigations/ready-line-artifact-probe.md` for the resolution.
 
 Not ready / still OPEN:
 

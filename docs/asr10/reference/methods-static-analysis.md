@@ -217,6 +217,69 @@ den andra är grunden för den öppna hög-RAM-speglingshypotesen. Se
 
 ---
 
+## 8.5 En dynamiskt ominstallerad handler river Lua-taps
+
+**Vad:** `prog:install_write_tap()` på ett adressintervall som ett device
+senare ominstallerar via `install_readwrite_handler()` för samma intervall
+tappar tap:en tyst. Ingen Lua-felkod, ingen varning — bara noll träffar
+därefter.
+
+**Belagt:** `mc68302_device::install_internal_window()` river och
+återinstallerar `$FC6000-$FC6FFF` vid varje BAR-skrivning
+(`src/devices/machine/mc68302.cpp`). En tap installerad vid skriptstart (före
+boot) gav noll skrivningar i hela `$FC6800-$FC68FF`-fönstret genom en hel
+körning, trots dokumenterad PBCNT/PBDDR/PADAT/PBDAT-trafik i ROM. Samma tap,
+installerad efter `t=15,5s` i stället för vid skriptstart, fångade
+`$FC6829`-trafik inom en millisekund. → `investigations/irq1-imr-unmask-probe.md`
+
+**Konsekvens:** en tap på ett MC68302-internfönsteradress måste installeras
+efter den sista relevanta BAR-skrivningen, inte vid skriptstart. Ett
+nollresultat mot ett sådant fönster är otolkbart utan en positiv kontroll
+installerad vid exakt samma tidpunkt i körningen (jfr §8 ovan) — annars är
+det inte skilt från detta fel.
+
+## 8.6 En osparad tap-referens kan GC:as bort tyst
+
+**Vad:** `space:install_read_tap()`/`install_write_tap()` returnerar ett
+handtag. Sparas det inte i en variabel som lever tappens tänkta livstid ut
+kan Lua:s skräpsamlare ta bort det nästan omedelbart — tyst, inget fel,
+tappen eldar bara aldrig.
+
+**Belagt:** en första version av en IRQ1-IACK-tap
+(`docs/asr10/lua/archive/irq1_sr_mask_probe.lua`) skrev
+`cpu_space:install_read_tap(...)` utan att spara returvärdet. Tappen gav noll
+träffar genom en hel körning, trots att en oberoende mätning i samma bygge
+och samma körpunkt (`irq1_vector_probe.lua`) bevisade att händelsen den
+skulle fånga faktiskt inträffade. Fixen var `local irq1_tap =
+cpu_space:install_read_tap(...)` — en sparad referens i skriptets
+toppnivåscope. → `investigations/irq1-vector-and-sr-probe.md`
+
+**Konsekvens:** samma regel som §8.5, men en annan mekanism. Två separata
+sätt att tyst tappa en tap är nu belagda i det här projektet: en
+ominstallerad handler (§8.5) och en osparad referens (den här). Ett
+nollresultat från vilken tap som helst kräver en levande-genom-hela-fönstret
+kontroll innan det tolkas, oavsett vilken av de två fällorna som är
+misstänkt.
+
+## 8.7 Generell regel: en Lua-tap som ger noll är ogiltig utan vittne
+
+§8.5 och §8.6 är två *oberoende* sätt för en Lua-tap att dö tyst — en
+ominstallerad handler (§8.5, specifikt `$FC6000-$FC6FFF`) och en osparad
+referens som Lua:s skräpsamlare tar bort (§8.6, gäller *vilken adress eller
+vilket adressrymd som helst*, inte bara SIB-fönstret). Två oberoende
+mekanismer i samma session är ett mönster, inte en slump.
+
+**Regeln i sin allmänna form:** ett nollresultat från en Lua-tap är ogiltigt
+tills tappen har ett levande vittne genom *hela* mätfönstret — inte bara vid
+installationstillfället. En positiv kontroll som bara bevisar att tappen
+levde i sin första instant är inte samma sak som täckning för fönstret den
+faktiskt behöver täcka.
+
+Det gäller alla adresser i det här projektet, inte bara
+`$FC6000-$FC6FFF`. Varje tidigare nollresultat från en Lua-tap i det här
+trädet ska betraktas som omätt — inte nödvändigtvis fel, men inte heller
+bekräftat — tills det har fått ett sådant vittne.
+
 ## 9. Statik före stimulans
 
 Identifiera först, stimulera sedan. Inte för att statisk analys är finare, utan för att
