@@ -6,6 +6,8 @@
 # button:  BTN_0A through the panel ioport moves FILE 1 -> FILE 2.
 # button_upper: BTN_23 through the upper panel ioport reaches firmware as two RHRB bytes.
 # nodisk:  no mounted disk produces PLEASE INSERT DISK.
+# file_loaded: BTN_0A/23/02 loads JM DIGI SYN -- FILE LOADED *and* the IDMA
+#              channel moves the full measured 172544-byte payload.
 
 set -u
 
@@ -47,6 +49,7 @@ run_test display docs/asr10/lua/display.lua "$IMAGE" || failures=$((failures + 1
 run_test button docs/asr10/lua/button.lua "$IMAGE" || failures=$((failures + 1))
 run_test button_upper docs/asr10/lua/button_upper.lua "$IMAGE" || failures=$((failures + 1))
 run_test nodisk docs/asr10/lua/nodisk.lua "" || failures=$((failures + 1))
+run_test file_loaded docs/asr10/lua/file_loaded.lua "$IMAGE" || failures=$((failures + 1))
 
 if [ "$failures" -ne 0 ]; then
 	echo "FAIL regression failures=${failures}"

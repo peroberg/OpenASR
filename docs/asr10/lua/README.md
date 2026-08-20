@@ -16,6 +16,7 @@ Körs av `docs/asr10/regression-test.sh` och ska underhållas.
 | `button.lua` | `BTN_0A` via panel-ioport flyttar `FILE 1` till `FILE 2`. |
 | `button_upper.lua` | Övre knappporten kan drivas från Lua; `BTN_23` ger två RHRB-byte. |
 | `nodisk.lua` | Negativ kontroll för disk/index: utan disk visas `PLEASE INSERT DISK`. |
+| `file_loaded.lua` | `BTN_0A/23/02` laddar `JM DIGI SYN`: `FILE LOADED` *och* IDMA-kanalen flyttar hela det uppmätta 172544-byte-lasset (21 arms). Skyddar mot att inläsningen stannar tyst tidigt bakom en oförändrad displaytext. |
 
 ## Verktyg
 
@@ -60,3 +61,5 @@ Engångsscript vars fråga redan är besvarad eller journalförd. De ligger i
 | `archive/load_timeline.lua` | Instrumentinläsningens avslutande tidslinjeprobe. |
 | `archive/tick_stall.lua` | DUART tick-/IMR-/counterprobe under stall. |
 | `archive/vector_table_compare.lua` | Jämför levande låg-RAM-vektorer mot ROM-kopian `$F82000`. |
+| `archive/file-loaded-verification-probe.lua` | Verifierade `FILE LOADED` oberoende av displaytexten: 21 IDMA-arm, 172544 byte, 19/21 sektorer byte-för-byte identiska mot `.img`-filen (2 "missmatch" är samma återanvända skrapbuffert `$944`, skriven tre gånger, jämförd mot slutfacit). Källan till `file_loaded.lua`. Se `investigations/file-loaded-verification-probe.md`. |
+| `archive/post-file-loaded-probe.lua` | Del 3-observation efter `FILE LOADED`: ES5506/ES5510-registren är redan i kontinuerlig, varierad trafik utan knapptryckning (12634/8390 händelser på 5s tomgång, från `t≈0` i bootet, inte utlöst av inläsningen). Se samma journal. |

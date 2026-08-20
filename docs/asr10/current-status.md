@@ -365,6 +365,35 @@ exactly where they were. Result: `DISK NOT RESPONDING` is gone, 32 clean
 vector-`$51` IACKs observed across multiple distinct sectors, and the
 instrument-load sequence now reaches **`FILE LOADED`**.
 
+**Update, `FILE LOADED` independently verified:**
+`investigations/file-loaded-verification-probe.md` measured the load
+directly rather than trusting the display string. The 32 vector-`$51`
+deliveries above cover RECALIBRATE/SEEK/SIS/READ DATA together across the
+*whole* dialogue, not 32 sectors — the real transfer is **21 IDMA arms,
+337 sectors, 172,544 bytes**, measured from `DAPR`/`BCR` SIB register taps
+directly (16 of the 21 arms move a full 20-sector track per single
+interrupt). Destination range `$000944`-`$0552FF`, entirely low RAM, none
+of it sample RAM. 19/21 transfers verified byte-for-byte against the
+source `.img`; the other 2 are a reused scratch buffer overwritten before
+end-of-run comparison, not corruption. This is now locked behind a 6th
+regression test (`docs/asr10/lua/file_loaded.lua`) that checks the exact
+byte count, not just the display text — suite is 6/6.
+
+**Update, post-`FILE LOADED` observation (no code, Lua only):**
+`asr10panel_device` has no piano-keyboard ioport at all — only panel
+buttons and analog wheels; a literal key-press stimulus cannot be produced
+without new input modeling, which was out of scope. What *is* measured:
+ES5506 (`$FC2000-$FC207F`) and ES5510 (`$FC3000-$FC303F`) register traffic
+is continuous and richly varied from `t≈0` (essentially at reset) onward,
+independent of the instrument load and of any button press — 12,634 +
+8,390 events in 5 idle seconds post-load alone. This disproves, by
+measurement, the standing concern that firmware might never reach the
+voice/effects registers, or that ES5510 Host Control is stuck returning a
+hardcoded zero (`$FC3025` is polled in tight busy-wait bursts, written
+values vary richly). ES5506's missing `SPEAKER`/`add_route` and guessed
+clock remain the likely next blockers for *audible* output specifically,
+not for firmware reaching the register interface.
+
 RECALIBRATE completion, vector `$51`, SIS, SEEK, READ DATA `$46` issuance,
 the READ DATA transfer/terminal-count byte-counting, and READ DATA's own
 completion interrupt are no longer open questions — see
@@ -493,6 +522,16 @@ Previous entries stand. Added by the static analysis:
   `tc_w()` alone deferred to a zero-delay timer. Result: `DISK NOT
   RESPONDING` gone, instrument-load reaches `FILE LOADED`. Argues for
   (but does not land) moving the whole per-DRQ transfer to timer context.
+- `investigations/file-loaded-verification-probe.md` — independently
+  verifies `FILE LOADED`: 21 IDMA arms / 337 sectors / 172,544 bytes,
+  measured from SIB register taps, destination entirely in low RAM,
+  19/21 transfers byte-identical to the source disk image (2 explained as
+  a reused scratch buffer, not corruption). Adds a 6th regression test
+  that checks the exact byte count, not just display text. Also documents
+  post-load observation: ES5506/ES5510 register traffic is continuous and
+  richly varied from near-reset onward, independent of the load and of any
+  button press — disproves the "never reaches voice registers" and
+  "ES5510 stuck at zero" concerns by measurement.
 - `reference/boot-sequence.md`, `reference/subroutine-index.md`,
   `reference/os-code-extraction.md`, `reference/hardware-map.md` — as before, updated.
 - `static/README.md` — what the raw material is, how it was generated, what it does not
