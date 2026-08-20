@@ -490,6 +490,50 @@ safe and removed (not just journaled); save-state incompleteness noted
 as a candidate; BAR relocation given the specified status text verbatim.
 7th regression test now runs five guards, fault-injection tested. 7/7.
 
+## Keyboard (docs/asr10/investigations/keyboard-and-sample-bridge.md)
+
+`asr10panel_device` now has a playable keyboard: 61 keys (`$00-$3F`),
+one computer-keyboard octave (`Z`..`,`) plus octave shift (`-`/`=`),
+wired to the already-existing `key_down()`/`key_up()` base-class
+protocol. Fixed velocity (100), explicitly a simplification. Mid-hold
+octave-shift handled correctly (tracks which absolute key was actually
+sent, so release always matches). Measured, not assumed: `xmit_char()`'s
+`XMIT_RING_SIZE=16` really does overflow under fast/chorded play (32 of
+52 bytes lost in a 13-key stress test) — fixed with a proper full-ring
+check, made loud with `osd_printf_error()` (not `logerror()` alone,
+which needs `-log` to go anywhere observable — checked directly against
+`machine.cpp`, not assumed). The overflow counter matches the measured
+byte deficit exactly.
+
+**What a key press actually does, measured**: firmware receives the
+bytes (4 RHRB reads, matching key_down+key_up exactly) but zero ES5506
+register writes on any of the 32 voices, zero `$100000-$1FFFFF` writes,
+zero writes to the ROM voice-management table at `$8000` — firmware's
+own note-processing logic never runs at all, not merely "runs but can't
+reach the chip." Root cause identified, not guessed: the inherited
+`key_down()` encoding (`0x80|(key&0x3f)`) uses the *same byte range*
+`set_button()` already uses for panel buttons. A direct `BTN_18` press
+(an undefined button number) produces the identical signature (4 RHRB
+bytes, zero reaction) as the equivalent-numbered key press — the
+keyboard is wire-protocol-indistinguishable from an unmapped button.
+The real ASR-10 note-event protocol remains `[OPEN]`, genuinely unknown
+(checked the local user manual PDF; it's not a service manual and has no
+protocol detail) — needs firmware dispatch-table tracing to resolve, out
+of scope this round. No 8th regression test added (no reproducible
+positive behavior to lock in yet, per instruction); the five
+consolidation guards confirmed green with a key press exercised in the
+same run. Bank 1 still `[OPEN]`, untouched — no voice was ever
+programmed, so nothing to report about it yet.
+
+Also this task: closed two more `mc68302-consolidation-2.md` loose ends.
+Vectors 4/11 (previously `[OPEN]`, ambiguous) are now resolved by PC
+correlation — neither has a real installed handler; both table slots
+have been overwritten by ordinary firmware low-RAM reuse, proven (not
+inferred) by watching the CPU's own PC at each tap hit. And the previous
+task's "~680KB untouched" catch-all-RAM figure was an arithmetic error
+in the summary (not the measurement) — corrected to ~196KB, arithmetic
+shown explicitly.
+
 ## Open questions
 
 - **Critical next:** what happens after `FILE LOADED` — the concrete

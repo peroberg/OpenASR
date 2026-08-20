@@ -636,7 +636,32 @@ void esqpanel_device::xmit_char(uint8_t data)
 	}
 	else
 	{
-		// tx is busy, it'll pick this up next time
+		// tx is busy, it'll pick this up next time -- unless the ring is
+		// already full, in which case the byte about to be pushed would
+		// silently overwrite one tra_complete() hasn't drained yet.
+		// Measured actually happening under fast play, not just
+		// theoretically possible: docs/asr10/investigations/
+		// keyboard-and-sample-bridge.md's 13-key stress test lost 32 of
+		// 52 expected bytes with no prior check at all. Dropped and
+		// counted loudly here instead.
+		int next_write = m_xmit_write + 1;
+		if (next_write >= XMIT_RING_SIZE)
+			next_write = 0;
+		if (next_write == m_xmit_read)
+		{
+			// logerror() alone is not loud enough for this project's own
+			// headless testing constraints: its callback is only
+			// registered when -log is passed (src/emu/machine.cpp:289,
+			// checked directly), and -log is forbidden here. osd_printf_
+			// error() always prints, -log or not -- confirmed against
+			// this project's own captured run output already showing
+			// unconditional osd-level messages (e.g. MAME's own
+			// install_read_tap range errors) with no -log in play.
+			m_xmit_overflow_count++;
+			logerror("esqpanel: XMIT_RING_SIZE overflow (count=%u), dropping byte %02x\n", m_xmit_overflow_count, data);
+			osd_printf_error("esqpanel: XMIT_RING_SIZE overflow (count=%u), dropping byte %02x\n", m_xmit_overflow_count, data);
+			return;
+		}
 		m_xmitring[m_xmit_write++] = data;
 		if (m_xmit_write >= XMIT_RING_SIZE)
 		{
@@ -933,6 +958,33 @@ static INPUT_PORTS_START(asr10panel_device)
 
 #undef ASR10_PANEL_BUTTON
 
+	// 61-key keyboard stimulus, computer-keyboard-driven (esqpanel.h's
+	// own comment). One octave, common "music typing" QWERTY layout
+	// (Z=C .. M=B, comma=C of the next octave), plus octave shift on
+	// minus/equals. Key numbers are computed in key_change() from
+	// (m_octave*12 + offset), not hardcoded here -- offset (param) is
+	// 0-12 within the octave.
+#define ASR10_PANEL_KEY(mask, name, keycode, note_offset) \
+	PORT_BIT(mask, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME(name) PORT_CODE(keycode) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::key_change), note_offset)
+
+	PORT_START("keys_0")
+	ASR10_PANEL_KEY(0x00000001, "KEY_C",  KEYCODE_Z,      0)
+	ASR10_PANEL_KEY(0x00000002, "KEY_Cs", KEYCODE_S,      1)
+	ASR10_PANEL_KEY(0x00000004, "KEY_D",  KEYCODE_X,      2)
+	ASR10_PANEL_KEY(0x00000008, "KEY_Ds", KEYCODE_D,      3)
+	ASR10_PANEL_KEY(0x00000010, "KEY_E",  KEYCODE_C,      4)
+	ASR10_PANEL_KEY(0x00000020, "KEY_F",  KEYCODE_V,      5)
+	ASR10_PANEL_KEY(0x00000040, "KEY_Fs", KEYCODE_G,      6)
+	ASR10_PANEL_KEY(0x00000080, "KEY_G",  KEYCODE_B,      7)
+	ASR10_PANEL_KEY(0x00000100, "KEY_Gs", KEYCODE_H,      8)
+	ASR10_PANEL_KEY(0x00000200, "KEY_A",  KEYCODE_N,      9)
+	ASR10_PANEL_KEY(0x00000400, "KEY_As", KEYCODE_J,     10)
+	ASR10_PANEL_KEY(0x00000800, "KEY_B",  KEYCODE_M,     11)
+	ASR10_PANEL_KEY(0x00001000, "KEY_C2", KEYCODE_COMMA, 12)
+	PORT_BIT(0x00002000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("OCTAVE_DOWN") PORT_CODE(KEYCODE_MINUS) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::octave_change), 0)
+	PORT_BIT(0x00004000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("OCTAVE_UP") PORT_CODE(KEYCODE_EQUALS) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::octave_change), 1)
+#undef ASR10_PANEL_KEY
+
 	PORT_START("analog_data_entry")
 	configurer.field_alloc(IPT_ADJUSTER, 0x200, 0x3ff, "Data Entry");
 	configurer.field_set_min_max(0, 0x3ff);
@@ -964,6 +1016,35 @@ INPUT_CHANGED_MEMBER(asr10panel_device::analog_value_change)
 	const int channel = param;
 	const int clamped = std::clamp(int(newval), 0, 1023);
 	set_analog_value(channel, u16(clamped << 6));
+}
+
+INPUT_CHANGED_MEMBER(asr10panel_device::key_change)
+{
+	// Fixed velocity: a plain computer keyboard has no velocity/pressure
+	// input at all -- explicitly a simplification (esqpanel.h's own
+	// comment), not a modeled MIDI velocity curve.
+	static constexpr u8 KEY_VELOCITY = 100;
+	const u8 note_offset = u8(param) & 0x0f;
+	if (newval)
+	{
+		const u8 key = std::min<u8>(u8(m_octave * 12 + note_offset), 60);
+		m_key_number_for_offset[note_offset] = key;
+		key_down(key, KEY_VELOCITY);
+	}
+	else
+	{
+		key_up(m_key_number_for_offset[note_offset]);
+	}
+}
+
+INPUT_CHANGED_MEMBER(asr10panel_device::octave_change)
+{
+	if (!newval) // act on press only, not release
+		return;
+	if (param)
+		m_octave = std::min(m_octave + 1, 4);
+	else
+		m_octave = std::max(m_octave - 1, 0);
 }
 
 asr10panel_device::asr10panel_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :
