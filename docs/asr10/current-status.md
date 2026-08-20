@@ -534,6 +534,49 @@ task's "~680KB untouched" catch-all-RAM figure was an arithmetic error
 in the summary (not the measurement) — corrected to ~196KB, arithmetic
 shown explicitly.
 
+## Note protocol search (docs/asr10/investigations/keyboard-and-sample-bridge-2.md)
+
+**Correction to the previous task**: "byte-for-byte identical to a
+button press" was wrong — `KEY_VELOCITY=100` is already nonzero, so
+key and button frames genuinely differ on the second byte, and a live
+disassembly (RAM code, not ROM — dumped via Lua, disassembled offline
+with Capstone in an isolated venv) confirms `$FFB20A` branches on
+exactly that: a nonzero second byte takes a distinct path
+(`$FFB258`→`$FFB2DC`→`$FFB43E`) from the button path (`$FFB1E0`). A real
+key press was measured reaching `$FFB43E` (`PC==$FFB43E`, genuine
+execution) and calling **`TRAP #3`/`TRAP #4`** — which disassemble to
+**generic ring-buffer enqueue/dequeue primitives** (`$B6C`/`$B7F`/`$B80`
+head pointer, count, cap), not note-specific logic. The event is
+correctly classified and correctly queued (`trap3_hits=8`,
+`trap4_hits=16`) — still zero ES5506 writes; the queue's consumer is
+unidentified.
+
+Also found: `$C0-$FF` (the previous task's `[HYPOTHESIS]` for where
+notes might live, being the only byte range that doesn't collide with
+button/key-up/pressure encoding) is **refuted** — `$FFB392`'s own
+disassembly routes `$C0-$FF` to the control-command branch (`$FFB3C0`,
+shared with `$FF`/`$FC`/`$F7`), not a note path.
+
+**A prior, previously-unconnected investigation
+(`panel-completion-consumer-v350.md`) already swept `$00-$BF`
+comprehensively** (192 frames) and found zero ES5506 writes for any of
+them — combined with this task's `$C0-$FF` finding, the entire
+first-byte space is effectively exhausted. No further byte-sweep was
+run; it would only reconfirm what the disassembly already proves for a
+branch-target reason a black-box sweep can't see. The open question
+isn't "which byte plays a note" — it's what drains the TRAP-#3 queue and
+why a correctly-classified, correctly-queued event still doesn't program
+a voice. Flagged, not chased further: the real ASR-10 keybed may not
+share this serial channel with the front panel at all (no separate
+keyboard-scan device exists anywhere in `asr10_boot.cpp`'s machine
+config).
+
+**Method point, journaled** (`methods-static-analysis.md` §8.9):
+`logerror()` is confirmed dead under this project's own run conditions
+(`-log` forbidden, and its callback is only registered when `-log` is
+passed) — every loud mechanism must use `osd_printf_error()` or Lua
+`print()` instead.
+
 ## Open questions
 
 - **Critical next:** what happens after `FILE LOADED` — the concrete

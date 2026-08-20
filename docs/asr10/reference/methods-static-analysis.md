@@ -313,6 +313,30 @@ syntes. Ett återanrop som råkar flytta rätt byte vid rätt tillfälle är
 inte samma sak som en bussmästare, lika lite som ett värde som råkar
 matcha en observerad körning är samma sak som en avkodad registerbit.
 
+## 8.9 `logerror()` går ingenstans utan `-log`
+
+`logerror()`-anrop är verkningslösa i det här projektets egna
+körvillkor: callbacken som skulle skriva ut dem registreras bara när
+`-log` är satt (`src/emu/machine.cpp:289`, läst direkt, inte antaget),
+och `-log` är förbjuden i det här trädet. En vakt som ropar `logerror()`
+vid ett fel ropar tyst — precis den typ av tyst misslyckande hela
+konsolideringsarbetet finns till för att eliminera.
+
+**Belagt:** `esqpanel_device::xmit_char()`s ringbuffer-överfyllnad
+(`docs/asr10/investigations/keyboard-and-sample-bridge-2.md`) loggades
+först enbart via `logerror()` och syntes inte alls i den fångade
+körutdatan, trots att överfyllnaden mätbart inträffade (32 av 52 byte
+förlorade). Fixen krävde `osd_printf_error()` vid sidan av — den skriver
+ovillkorligt, `-log` eller ej, vilket redan bekräftats av projektets
+egna tidigare körningar (t.ex. MAME:s egna `install_read_tap`
+adressmask-fel, som alltid synts utan `-log`).
+
+**Regeln:** varje högljudd mekanism den här sessionen bygger, eller
+kommer att bygga, ska gå via `osd_printf_error()` (C++) eller ett
+Lua-tryck (`print()`, alltid synligt i den fångade körutdatan) — aldrig
+`logerror()` ensamt. Gäller alla vakter i `asr10_guards.lua` och alla
+framtida.
+
 ## 9. Statik före stimulans
 
 Identifiera först, stimulera sedan. Inte för att statisk analys är finare, utan för att
