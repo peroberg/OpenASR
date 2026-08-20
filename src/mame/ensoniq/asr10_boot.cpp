@@ -103,6 +103,7 @@ private:
 
 	emu_timer *m_lrclk_timer = nullptr;
 	bool m_lrclk_level = false;
+	emu_timer *m_idma_tc_timer = nullptr;
 
 	std::unique_ptr<u16[]> m_lowmem_shadow;
 	u16 m_probe_or_alias_region_shadow[PROBE_OR_ALIAS_REGION_COUNT][2]{};
@@ -136,6 +137,7 @@ private:
 	TIMER_CALLBACK_MEMBER(lrclk_toggle);
 	u8 maincpu_iack_r(u8 level);
 	void idma_drq_w(int state);
+	TIMER_CALLBACK_MEMBER(idma_tc_deliver);
 
 	bool probe_or_alias_region_index(u32 address, u32 &index, u32 &word_index) const;
 	u16 probe_or_alias_region_r_at(u32 base, offs_t offset, u16 mem_mask);
@@ -254,6 +256,7 @@ private:
 void asr10_boot_state::machine_start()
 {
 	m_lrclk_timer = timer_alloc(FUNC(asr10_boot_state::lrclk_toggle), this);
+	m_idma_tc_timer = timer_alloc(FUNC(asr10_boot_state::idma_tc_deliver), this);
 	m_lowmem_shadow = make_unique_clear<u16[]>(LOWMEM_WORDS);
 
 	save_pointer(NAME(m_lowmem_shadow), LOWMEM_WORDS);
@@ -441,6 +444,24 @@ u8 asr10_boot_state::maincpu_iack_r(u8 level)
 // desyncing the CPU's own fifo_r() reads of the same data. Caught by the
 // regression suite, reverted, root-caused against upd765.cpp before
 // retrying -- not guessed around.
+//
+// tc_w() is NOT called synchronously here -- docs/asr10/investigations/
+// tc-reentrancy-probe.md. enable_transfer() (which asserts DRQ, reaching
+// this handler) is called from fifo_push(), itself called from the live
+// MFM-decode path inside upd765_family_device::live_run()'s own for(;;)
+// loop. Calling tc_w() from here would call live_sync(), which can call
+// rollback()+live_run() again -- reentrant, while the outer live_run()
+// invocation that led to this exact call chain is still on the stack,
+// mid-iteration, with cur_live partially updated for the byte just
+// delivered. Measured effect: main_phase got stuck at PHASE_EXEC forever
+// (MSR read $10 continuously, never $D0/PHASE_RESULT) -- command_end()
+// (which sets irq=true and calls check_irq()) never ran, so INTRQ was
+// never asserted at all, not just undelivered; firmware's own ~5s
+// timeout then fired. dma_r() stays synchronous, unchanged, per
+// instruction -- one variable at a time. Only tc_w() moves to a
+// zero-delay timer, so it runs on its own call stack outside live_run()
+// entirely, the way a real DMA controller's independent TC bus line
+// would reach the FDC rather than as a nested function call.
 void asr10_boot_state::idma_drq_w(int state)
 {
 	if (!state || !m_maincpu->idma_channel_active())
@@ -448,10 +469,14 @@ void asr10_boot_state::idma_drq_w(int state)
 
 	const u8 data = m_fdc->dma_r();
 	if (m_maincpu->idma_transfer_in(data))
-	{
-		m_fdc->tc_w(true);
-		m_fdc->tc_w(false);
-	}
+		m_idma_tc_timer->adjust(attotime::zero);
+}
+
+
+TIMER_CALLBACK_MEMBER(asr10_boot_state::idma_tc_deliver)
+{
+	m_fdc->tc_w(true);
+	m_fdc->tc_w(false);
 }
 
 
