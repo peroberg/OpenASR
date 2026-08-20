@@ -312,7 +312,12 @@ architectural model that did not exist before. Summary only — details in `refe
 ## Does not work
 
 - Audio output, sampling, sequencer behaviour, and complete ES5506/ES5510 sound
-  integration are not working end-to-end.
+  integration are not working end-to-end. **Update:** the structural gap
+  (ES5506 bank 0 disconnected from CPU RAM, no output routing) is closed
+  (`investigations/sample-topology-closure.md`) but unverified audibly —
+  no keyboard model exists yet to trigger a voice, so a post-load
+  `-wavwrite` capture is silence by construction, not evidence the wiring
+  works or doesn't.
 - DUART channel A RX is not wired to a real external source.
 - ES5506 PAR has a real panel-analog route, but the wider ADC channel identity
   and audio-side effects are not fully verified.
@@ -557,6 +562,25 @@ Previous entries stand. Added by the static analysis:
   richly varied from near-reset onward, independent of the load and of any
   button press — disproves the "never reaches voice registers" and
   "ES5510 stuck at zero" concerns by measurement.
+- `investigations/sample-topology-closure.md` — closes the shared-RAM
+  question numerically: voice 0's own `START`/`END`/`ACCUM` convert to
+  word addresses inside `$00000-$7FFFF`, the exact range corresponding to
+  `$100000-$1FFFFF`, confirming the hypothesis with a measured value, not
+  just architectural reasoning. Searched the tree for the real
+  CPU-RAM-to-ES5506 sharing idiom (`esq5505.cpp`, `esqkt.cpp`, and
+  upstream's own `esqasr.cpp` ASR-10 skeleton) and found **none exists
+  anywhere** — `esqasr.cpp` itself uses a static `ROM_REGION(...,
+  ROMREGION_ERASE00)` placeholder, not shared RAM. Landed the fix anyway,
+  as a deliberate new construction verified against MAME's own
+  `memory_share` size/width/endianness validation before writing it:
+  `mem_map`'s `$100000-$1FFFFF` and `es5506_wavetable_map`'s bank-0
+  `$000000-$07FFFF` now share one allocation via a root-relative
+  `.share(":asr10_sample_ram")` tag (the narrow, named `mem_map`
+  exception the standing rule allows), plus `SPEAKER`/`add_route` output
+  wiring (channels/clock/bank untouched). Regression 6/6 before and after.
+  `-wavwrite` capture post-load: complete silence (`peak=0`, every
+  sample) — expected, not a failure, since no keyboard model exists yet
+  to trigger a note; the wiring is unverified audibly until that exists.
 - `investigations/sample-ram-and-voice-registers.md` — maps the sound
   path: `$100000-$1FFFFF` gets writes only from a one-time pre-`FILE 1`
   boot sweep, never during/after the load (witnessed, not a dead tap).

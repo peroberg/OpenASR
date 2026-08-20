@@ -50,6 +50,7 @@
 #include "sound/es5506.h"
 #include "cpu/es5510/es5510.h"
 #include "formats/hxchfe_dsk.h"
+#include "speaker.h"
 
 #include "asr10_boot.lh"
 
@@ -305,7 +306,19 @@ void asr10_boot_state::mem_map(address_map &map)
 
 	// Reference-based candidate windows that are not device implementations
 	// yet stay passive unless a real device is mapped below.
-	map(0x100000, 0x1fffff).ram(); // sample RAM candidate, directly tested by the boot ROM at 0x100000
+	//
+	// sample-ram-and-voice-registers.md / its numeric follow-up: 524,290
+	// writes land here once, entirely before FILE 1 (a boot-time clear of
+	// the whole megabyte -- firmware does not clear memory it has no use
+	// for), then zero for the rest of the run; voice 0's own END/ACCUM
+	// (word address $20000, i.e. bank 0's own $000000-$1FFFFF space)
+	// converts to CPU byte address $140000 -- inside this exact range.
+	// .share() here is the narrow, single-purpose exception to "no
+	// mem_map change before E2 is settled": it adds and removes no
+	// decoding, only names this existing allocation so
+	// es5506_wavetable_map's own bank-0 window can reference the same
+	// backing store instead of its own separate, disconnected one.
+	map(0x100000, 0x1fffff).ram().share(":asr10_sample_ram"); // sample RAM candidate, directly tested by the boot ROM at 0x100000 -- shared with ES5506 bank 0, see es5506_wavetable_map
 
 	map(0xf00000, 0xf7ffff).ram();
 	map(0xf80000, 0xfbffff).rw(FUNC(asr10_boot_state::high_alias_r), FUNC(asr10_boot_state::high_alias_w));
@@ -399,7 +412,23 @@ void asr10_boot_state::cpu_space_map(address_map &map)
 
 void asr10_boot_state::es5506_wavetable_map(address_map &map)
 {
-	map(0x000000, 0x1fffff).ram();
+	// Bank 0's first $80000 words ($000000-$07FFFF, word-addressed --
+	// es5506_device's own m_bank0_config is (ENDIANNESS_BIG, 16, 21, -1))
+	// is exactly 0x100000 bytes: the same size, width and endianness as
+	// mem_map's $100000-$1FFFFF, verified against MAME's own share-size
+	// check (emumem_aspace.cpp: prepare_map_generic()'s share->compare()
+	// fatalerrors on any mismatch) before writing this. Shared via a
+	// root-relative tag (":asr10_sample_ram", matching the cross-device
+	// .share() pattern in fd1089.cpp -- a plain tag would resolve
+	// per-device via device_t::subtag() and silently create two
+	// disconnected allocations instead of one shared block) so this is
+	// the *same* backing store as mem_map's own $100000-$1FFFFF, not a
+	// private copy. sample-ram-and-voice-registers.md's numeric
+	// follow-up: voice 0's own END/ACCUM already resolves into this exact
+	// range. The remaining $080000-$1FFFFF stays private/unshared,
+	// unchanged from before.
+	map(0x000000, 0x07ffff).ram().share(":asr10_sample_ram");
+	map(0x080000, 0x1fffff).ram();
 }
 
 void asr10_boot_state::es5506_unpopulated_wavetable_map(address_map &map)
@@ -905,6 +934,20 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	es5506_host.set_addrmap(3, &asr10_boot_state::es5506_unpopulated_wavetable_map);
 
 	es5506_host.read_port_cb().set(FUNC(asr10_boot_state::analog_r));
+
+	// Output routing: previously absent entirely (zero SPEAKER/add_route
+	// calls anywhere in this driver, confirmed by grep before writing
+	// this -- the device's own stream had nowhere to go regardless of
+	// what its bank RAM held). set_channels() is left at its default
+	// (falls back to 1 in es5506_device::device_start(), producing one
+	// L/R pair) -- the minimal two-route wiring below is enough to find
+	// out whether anything but silence comes out; a real channel count
+	// is a later refinement, not required to answer that. Same idiom as
+	// esqkt.cpp/esq5505.cpp (same chip family), minus their optional
+	// "pump" analog-filter stage.
+	SPEAKER(config, "speaker", 2).front();
+	es5506_host.add_route(0, "speaker", 1.0, 0);
+	es5506_host.add_route(1, "speaker", 1.0, 1);
 
 	// ES5510 host window (filesystem-browser-map.md 4.24):
 	// instantiate a stock es5510_device purely as a host-interface
