@@ -14,6 +14,99 @@
 local M = {}
 
 -- ===================================================================
+-- Del 1 follow-up (mc68302-consolidation-2.md): synchronous exception
+-- handler guard.
+--
+-- exceptionpoint_set is still not Lua-reachable, and a tap on the vector
+-- table itself still drowns in data traffic. But the HANDLERS are
+-- reachable: an instruction fetch is a program-space read, so a read tap
+-- on a handler's own first word fires exactly when that handler actually
+-- executes. Calibrated against a known case: sync-exception-handler-
+-- calibration.lua, run against the naive IRQ1 wiring (ready-line fix
+-- temporarily reverted, ERROR 129/vector-3 Address Error reproduced),
+-- confirmed the tap fires (1 hit, t=15.032688s) -- and confirmed the
+-- vector-table read must be masked to the CPU's real 24-bit address bus
+-- (an unmasked read carries a nonzero top byte; MAME's own error named
+-- the fix: "did you mean f882ae?").
+--
+-- Only vectors 2 (bus error), 3 (address error), 8 (privilege violation)
+-- are guarded here, not the full set sync-exception-handler-probe.lua
+-- measured. That calibration run found vectors 4 (illegal instruction)
+-- and 11 (line 1111 emulator) resolve to handler addresses INSIDE the
+-- SIB window ($FC6000/$FC6014) -- not ROM/RAM code space, and a region
+-- sib-coverage-inventory.lua independently proved carries heavy ordinary
+-- DPRAM data traffic. Their tap hits (32 and 64, both starting exactly
+-- at FILE LOADED) are far more likely to be coincidental data reads than
+-- genuine exception dispatch -- guarding on them would alarm on noise.
+-- Vector 10 (line A emulator) resolves to a real ROM handler and fires
+-- thousands of times as an apparently-legitimate, frequently-used OS
+-- syscall mechanism (matching mc68302-consolidation.md's own earlier
+-- observation of similar-magnitude vector-10 activity) -- expected
+-- traffic, not worth an aggregated first-occurrence alarm designed for
+-- rare events. All three exclusions are documented choices, not
+-- oversights.
+local SYNC_EXCEPTION_VECTORS = { [2] = "bus_error", [3] = "address_error", [8] = "privilege_violation" }
+
+function M.install_sync_exception_guard(prog, on_alarm)
+  local seen = {}
+  local taps = {}
+  for vecnum, name in pairs(SYNC_EXCEPTION_VECTORS) do
+    -- Masked to the CPU's real 24-bit address bus -- see comment above.
+    local handler_addr = prog:read_u32(vecnum * 4) & 0x00ffffff
+    taps[#taps + 1] = prog:install_read_tap(handler_addr, handler_addr + 1, string.format("guard_sync_exc_%d", vecnum), function(offset, data, mask)
+      if not seen[vecnum] then
+        seen[vecnum] = true
+        on_alarm(string.format("unexpected_sync_exception vector=%d(%s) handler=%06X", vecnum, name, handler_addr))
+      end
+      return nil
+    end)
+  end
+  return taps
+end
+
+-- ===================================================================
+-- Del 2 follow-up: GIMR vector-basis guard.
+--
+-- irq1_ack_vector()/irq6_ack_vector() (mc68302.h:94/104) hardcode the
+-- "(GIMR.V7_V5 << 5)" contribution as the constant 0x40, per their own
+-- comment citing "GIMR bits 7-5". gimr-origin-probe.lua measured GIMR
+-- directly (polling read_u16(), immune to the SIB-window tap-drop trap
+-- since a plain read always goes through whatever mapping is currently
+-- live): firmware writes GIMR=$8040 once, at t~0.002s, and it never
+-- changes for the rest of a normal boot+load. Bits 7-5 of $8040 = 0b010,
+-- and (0b010<<5)=0x40 -- matching the hardcoded constant exactly. This
+-- is not the formula correctly reading modeled state (GIMR is not
+-- modeled at all -- $0812 classifies known_unimplemented); it is the
+-- hardcoded constant coincidentally matching the one value firmware
+-- happens to write and never change. Hand-check: if firmware had left
+-- GIMR at its own reset default ($0000, bits 7-5 = 000), the formula
+-- would give vector $11 for IRQ1, not $51 -- the hardcoded
+-- implementation would still silently deliver $51 regardless. The
+-- interrupt controller is not built in response (task instruction); this
+-- guard instead makes the coincidence protest the moment it would stop
+-- holding: alarm if GIMR bits 7-5 are ever anything other than 0b010.
+--
+-- Polling-based, not tap-based (GIMR sits in the SIB window, so a write
+-- tap would need the same after-BAR-settle installation the other SIB
+-- guards use, and the polling technique below sidesteps that dependency
+-- entirely) -- the caller must invoke this explicitly at whatever
+-- checkpoints its own test loop already visits, unlike the tap-based
+-- guards above which install once and run passively.
+local EXPECTED_GIMR_V7_V5 = 0x02
+local gimr_alarmed = false -- module-level: this check is polled from
+                            -- multiple checkpoints by design (see above),
+                            -- so dedup lives here, not in the caller.
+
+function M.check_gimr_vector_basis(prog, on_alarm)
+  local gimr = prog:read_u16(0x00fc6812) & 0xffff
+  local v7_v5 = (gimr >> 5) & 0x07
+  if v7_v5 ~= EXPECTED_GIMR_V7_V5 and not gimr_alarmed then
+    gimr_alarmed = true
+    on_alarm(string.format("gimr_vector_basis_mismatch gimr=%04X v7_v5=%X expected=%X", gimr, v7_v5, EXPECTED_GIMR_V7_V5))
+  end
+end
+
+-- ===================================================================
 -- Del 1: exception vector guard.
 --
 -- Calibrated by exception-vector-inventory.lua over a full clean boot +
@@ -101,7 +194,15 @@ for _, o in ipairs({
   0x0520, 0x0522, 0x0524, 0x0526, 0x0528, 0x052A, 0x052C, 0x052E,
   0x0530, 0x0532, 0x0534, 0x0536, 0x0538, 0x053A, 0x053C, 0x053E,
   0x0580, 0x0582, 0x0586, 0x05AC, 0x05AE,
-  0x0814, 0x0816, 0x0818, 0x0820, 0x0822,
+  -- 0x0812 (GIMR) added by mc68302-consolidation-2.md's Del 2: not seen
+  -- by the original sib-coverage-inventory.lua calibration run at all
+  -- (that tap installs at t=7s; gimr-origin-probe.lua's polling-based
+  -- measurement -- immune to the install-timing constraint -- proved
+  -- firmware writes GIMR=$8040 once, at t~0.002s, well before t=7s).
+  -- This is the documented t=0-7s coverage gap actually manifesting, not
+  -- a new access: GIMR is real, legitimate, calibrated firmware
+  -- behavior that the first pass simply couldn't see.
+  0x0812, 0x0814, 0x0816, 0x0818, 0x0820, 0x0822,
   0x0882, 0x0884, 0x0888, 0x088A, 0x0892, 0x0894, 0x0898, 0x089A, 0x08B4,
 }) do
   KNOWN_UNIMPLEMENTED_CALIBRATED[o] = true

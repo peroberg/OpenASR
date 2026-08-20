@@ -1,13 +1,17 @@
 -- Seventh regression test: a clean boot + instrument load must produce
--- zero unexpected exception vectors, zero hits on SIB registers outside
--- the calibrated inventory, and zero IDMA (SAPR/CMR/BCR) anomalies.
--- docs/asr10/investigations/mc68302-consolidation.md. Guards live in
+-- zero unexpected (level,vector) IACK pairs, zero synchronous-exception
+-- handler hits (vectors 2/3/8), zero hits on SIB registers outside the
+-- calibrated inventory, zero IDMA (SAPR/CMR/BCR) anomalies, and GIMR's
+-- vector-basis bits must stay at the one value the hardcoded formula
+-- assumes. docs/asr10/investigations/mc68302-consolidation.md and its
+-- mc68302-consolidation-2.md follow-up. Guards live in
 -- docs/asr10/lua/lib/asr10_guards.lua so any future test can reuse them.
 --
 -- A regression that silently starts hitting a new SIB register, a new
--- interrupt vector, or a new IDMA register value will now fail this test
--- by name instead of only showing up as a garbled display string (or not
--- showing up as a display symptom at all).
+-- interrupt vector, a real address/bus-error exception, or reprograms
+-- GIMR to a value the hardcoded vector formula doesn't actually account
+-- for will now fail this test by name instead of only showing up as a
+-- garbled display string (or not showing up as a display symptom at all).
 
 local reg = dofile("docs/asr10/lua/lib/asr10_regression.lua")
 local guards = dofile("docs/asr10/lua/lib/asr10_guards.lua")
@@ -50,6 +54,14 @@ local file_loaded = "FILE L0ADED           "
 emu.wait(emu.attotime.from_seconds(7))
 for _, t in ipairs(guards.install_sib_coverage_guard(prog, on_alarm)) do taps[#taps + 1] = t end
 for _, t in ipairs(guards.install_idma_guard(prog, on_alarm)) do taps[#taps + 1] = t end
+-- Synchronous-exception guard also installed here, not at t=0: it reads
+-- the vector table at install time (calibration confirmed the table
+-- already holds real ROM handler addresses well before this point --
+-- sync-exception-handler-calibration.lua read it successfully at
+-- t=0.5s), and installing alongside the other post-BAR-settle guards
+-- keeps this test to a single install checkpoint instead of two.
+for _, t in ipairs(guards.install_sync_exception_guard(prog, on_alarm)) do taps[#taps + 1] = t end
+guards.check_gimr_vector_basis(prog, on_alarm)
 print(string.format("MC68302_GUARDS_INSTALLED t=%.6f", emu.time()))
 
 local ok, text = reg.wait_for_text(file1, 45)
@@ -57,6 +69,7 @@ if not ok then
   reg.fail("mc68302_guards", string.format("boot_timeout final_display=\"%s\" alarms=%u", text, #alarms))
   return
 end
+guards.check_gimr_vector_basis(prog, on_alarm)
 
 press_button(0x0a)
 press_button(0x23)
@@ -67,6 +80,7 @@ if not ok then
   reg.fail("mc68302_guards", string.format("no_file_loaded final_display=\"%s\" alarms=%u", text, #alarms))
   return
 end
+guards.check_gimr_vector_basis(prog, on_alarm)
 
 emu.wait(emu.attotime.from_msec(500))
 

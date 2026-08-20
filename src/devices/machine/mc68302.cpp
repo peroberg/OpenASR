@@ -69,12 +69,24 @@ mc68302_device::mc68302_device(const machine_config &mconfig, const char *tag, d
 	m_uprogram_config.m_internal_map = bmap;
 	m_uopcodes_config.m_internal_map = bmap;
 
-	// Allocated here, not in device_start(): the driver's own
-	// machine_start() can query cs0_covers() (via read_loaded_word())
-	// before this device's device_start() runs, since the driver device
-	// starts before its child devices in MAME's start order.
-	// FIXME: review the start-order requirement and the second allocation
-	// in device_start(); the lifecycle is intentionally provisional.
+	// Allocated here, not only in device_start(): guarantees m_sim is
+	// never null from construction onward, for any caller that might run
+	// before this device's own device_start() completes, per MAME's
+	// device start-order (owner devices start before their children).
+	// The originally-cited scenario -- asr10_boot_state::machine_start()
+	// calling cs0_covers() via a read_loaded_word() -- is stale:
+	// read_loaded_word() does not exist anywhere in asr10_boot.cpp
+	// (removed in an earlier cleanup), and machine_start() (checked
+	// directly) does not call cs0_covers() or reference m_sim at all.
+	// mc68302-consolidation-2.md, Del 3 item 3: confirmed the second
+	// allocation this comment used to justify (device_start() below,
+	// removed) was dead code, not a real reset -- m_cs[0] (cs0_covers()'s
+	// only state) is never mutated between construction and
+	// device_start(), since nothing writes BR0/OR0 before the SIB window
+	// exists, which itself postdates device_start(). Kept as a single
+	// allocation, not zero, since the early-availability guarantee this
+	// comment describes may still matter for a future caller even though
+	// no current one needs it before device_start().
 	m_sim = std::make_unique<mc68302_sim>();
 }
 
@@ -90,8 +102,6 @@ void mc68302_device::bootstrap_map(address_map &map)
 void mc68302_device::device_start()
 {
 	m68000_device::device_start();
-
-	m_sim = std::make_unique<mc68302_sim>();
 
 	save_item(NAME(m_bar));
 	save_item(NAME(m_scr_high));
@@ -217,8 +227,21 @@ void mc68302_device::install_internal_window()
 		m_window_base, m_window_base + 0x0fff,
 		read16s_delegate(*this, FUNC(mc68302_device::internal_r)),
 		write16s_delegate(*this, FUNC(mc68302_device::internal_w)));
-	// TODO: verify partial BAR writes and whether unmap_readwrite()
-	// correctly restores any underlying handlers exposed by relocation.
+	// Status (mc68302-consolidation-2.md, Del 3 item 5): BAR relocation
+	// works for observed boot usage, but underlying-map restoration
+	// semantics remain unverified. Partial (byte-masked) BAR writes are
+	// resolved, not just assumed: sib-coverage-inventory.lua measured
+	// this driver's own boot sequence writing BAR via two separate byte
+	// writes (high byte then low byte, both at t~5.395s), correctly
+	// combining via COMBINE_DATA to the same final value a single word
+	// write had already produced -- window_base ended up correct both
+	// times, confirmed by the resulting SIB coverage table. What remains
+	// genuinely untested: whether unmap_readwrite() correctly restores
+	// whatever the STATIC mem_map declared underneath a window_base the
+	// SIB window relocates AWAY from. This driver's own BAR sequence
+	// only ever relocates to $FC6000 (never elsewhere, never away from
+	// it) across its whole exercised path, so that restoration path has
+	// never actually run here -- untested, not proven safe.
 	m_window_installed = true;
 }
 

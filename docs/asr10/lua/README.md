@@ -17,7 +17,7 @@ Körs av `docs/asr10/regression-test.sh` och ska underhållas.
 | `button_upper.lua` | Övre knappporten kan drivas från Lua; `BTN_23` ger två RHRB-byte. |
 | `nodisk.lua` | Negativ kontroll för disk/index: utan disk visas `PLEASE INSERT DISK`. |
 | `file_loaded.lua` | `BTN_0A/23/02` laddar `JM DIGI SYN`: `FILE LOADED` *och* IDMA-kanalen flyttar hela det uppmätta 172544-byte-lasset (21 arms). Skyddar mot att inläsningen stannar tyst tidigt bakom en oförändrad displaytext. |
-| `mc68302_guards.lua` | En ren boot plus inläsning ska ge noll oväntade undantagsvektorer, noll träffar på SIB-register utanför den kalibrerade uppsättningen, och noll IDMA-larm (`lib/asr10_guards.lua`). Se `investigations/mc68302-consolidation.md`. |
+| `mc68302_guards.lua` | En ren boot plus inläsning ska ge noll oväntade IACK-par, noll synkrona undantagsträffar (vektor 2/3/8), noll träffar på SIB-register utanför den kalibrerade uppsättningen, noll IDMA-larm, och GIMR:s vektorbasbitar ska stå kvar på det enda värde den hårdkodade formeln antar. Fem vakter (`lib/asr10_guards.lua`), felinjektionstestade var för sig. Se `investigations/mc68302-consolidation.md` och `mc68302-consolidation-2.md`. |
 
 ## Verktyg
 
@@ -27,7 +27,7 @@ Körs av `docs/asr10/regression-test.sh` och ska underhållas.
 |---|---|
 | `lib/asr10_display.lua` | Läser VFD-output och översätter segmentmönster till rå text. |
 | `lib/asr10_regression.lua` | Gemensam testhjälpare för PASS/FAIL, displayväntan och maskinavslut. |
-| `lib/asr10_guards.lua` | MC68302-vakter: undantagsvektor (kalibrerad allowlist), SIB-täckning (klassificering portad från `mc68302_device`), IDMA SAPR/CMR/BCR. Aggregerade larm, första förekomst per villkor. Se `investigations/mc68302-consolidation.md`. |
+| `lib/asr10_guards.lua` | MC68302-vakter: IACK-undantagsvektor, synkron undantagshanterare (vektor 2/3/8, kalibrerad mot en känd krasch), SIB-täckning (klassificering portad från `mc68302_device`, allowlist inkluderar nu $0812/GIMR), IDMA SAPR/CMR/BCR, GIMR-vektorbas (pollningsbaserad). Aggregerade larm, första förekomst per villkor. Se `investigations/mc68302-consolidation.md` och `mc68302-consolidation-2.md`. |
 
 ## Experiment
 
@@ -71,3 +71,7 @@ Engångsscript vars fråga redan är besvarad eller journalförd. De ligger i
 | `archive/wavwrite-capture.lua` | Del 4: bootar, laddar JM DIGI SYN, låter maskinen gå i viloläge 8s (ingen knapptryckning -- ingen klaviaturmodell finns) under `-wavwrite`-inspelning. Resultat: exakt tystnad hela vägen, förväntat given att ingen not någonsin triggas. Se samma journal. |
 | `archive/exception-vector-inventory.lua` | Del 1 av MC68302-konsolideringen: en första variant (tap över hela vektortabellen $000000-$0000FF) gav uppenbart nonsens (en vektor "avfyrad" 1,16 miljoner gånger) -- bevis på att firmware återanvänder delar av det utrymmet för vanlig data. Omskriven till `cpu_space`-IACK-tappar (samma etablerade teknik som `$51`/IRQ1/IRQ6 hela projektet bygger på): exakt två (nivå,vektor)-par avfyras någonsin, nivå1→$51 och nivå6→$56. Se `investigations/mc68302-consolidation.md`. |
 | `archive/sib-coverage-inventory.lua` | Del 2: fullständig täckningstabell för $FC6000-$FC6FFF, klassificerad mot `mc68302_device`s egen `classify_offset()`/`classify_full()`. Noll `unknown`-träffar, 88 distinkta `known_unimplemented`-offsets (legitim, omodellerad firmware-trafik). Fångar också alla observerade CMR/SAPR/BCR-värden åt Del 3. Se samma journal. |
+| `archive/sync-exception-handler-calibration.lua` | Kalibrering: naiv IRQ1-koppling återinförd tillfälligt (ready-line-fixen bortkommenterad, byggd, körd, reverterad), bekräftade att en läs-tap på undantagshanterarens första ord fyrar vid en äkta vektor-3-krasch (t=15.032688s). Hittade också att vektortabellsadresser måste maskas till 24 bitar. Se `investigations/mc68302-consolidation-2.md`. |
+| `archive/sync-exception-handler-probe.lua` | Del 1 (fortsättning): tappar handlaradresser för vektor 2/3/4/8/10/11. Vektor 2/3/8 stänger rent (ROM-handlare, noll träffar); vektor 10 är en äkta, frekvent A-line-trap-baserad OS-mekanism; vektor 4/11 pekar in i SIB-fönstret (inte kodutrymme) och förblir `[OPEN]`. Se samma journal. |
+| `archive/gimr-origin-probe.lua` | Del 2: pollar GIMR direkt (immun mot BAR-återinstallationsfällan). Firmware skriver GIMR=$8040 en gång vid t≈0,002s och ändrar den aldrig igen. Bekräftar att den hårdkodade vektorformeln råkar stämma med detta enda observerade värde, inte att den härleder det. Se samma journal. |
+| `archive/catchall-ram-inventory.lua` | Del 3 post 1: av 57 möjliga 4KB-hinkar i $FC5020-$FFFFFF (minus SIB-fönstret) träffas bara 9, alla i toppen ($FF7000-$FFFFFF) — stack/systemvariabler. Resten av de ~716 KB är helt orörd under normal boot+inläsning. Se samma journal. |

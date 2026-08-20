@@ -466,6 +466,30 @@ C++, zero new environment flags, per the standing Lua-first rule.
   fault-injection tested (a deliberately-broken allowlist produced one
   aggregated alarm, not thousands, and correctly failed). Suite: 7/7.
 
+**Update, `investigations/mc68302-consolidation-2.md`:** closed most of
+the exception-guard `[OPEN]` by tapping handler addresses (not the
+vector table) — calibrated against the naive-IRQ1-wiring's known vector-3
+Address Error (technique confirmed: tap fired once, matching that
+crash's already-established timing). Vectors 2/3/8 close cleanly (ROM
+handlers, zero hits); vector 10 is a real, frequently-used A-line OS
+syscall mechanism; vectors 4/11 stay `[OPEN]` because their vector-table
+slots resolve into the SIB window itself, not code space — ambiguous
+signal, not guarded. Traced `$51`/`$56`'s actual origin: the hardcoded
+formula never reads a modeled GIMR (unimplemented); firmware writes
+GIMR=`$8040` once at `t≈0.002s` and never changes it, and that value's
+bits 7-5 happen to equal what the formula assumes — coincidence backed by
+stability, not a real implementation. Hand-check: a different GIMR (even
+its own reset default) would give a different real vector while the
+hardcoded code kept delivering `$51`. Not built — guarded instead
+(alarm if GIMR bits 7-5 ever change). Five investigated items: catch-all
+RAM's active portion is only the top ~36KB (stack/variables), the rest
+(~680KB) untouched; LRCLK edge/period ambiguity stays `[OPEN]` (PBDAT
+read rate doesn't match either candidate, ruling out tight polling but
+not resolving it); `m_sim`'s redundant double-construction was proven
+safe and removed (not just journaled); save-state incompleteness noted
+as a candidate; BAR relocation given the specified status text verbatim.
+7th regression test now runs five guards, fault-injection tested. 7/7.
+
 ## Open questions
 
 - **Critical next:** what happens after `FILE LOADED` — the concrete
