@@ -88,6 +88,7 @@ public:
 private:
 	void es5506_wavetable_map(address_map &map) ATTR_COLD;
 	void es5506_unpopulated_wavetable_map(address_map &map) ATTR_COLD;
+	void es5506_wavetable_bank1_map(address_map &map) ATTR_COLD;
 	static constexpr u32 ROM_MASK = 0x0003ffff;
 	static constexpr u32 LOWMEM_WORDS = 0x00100000 / 2;
 	static constexpr u32 PROBE_OR_ALIAS_REGION_COUNT = 4;
@@ -437,6 +438,24 @@ void asr10_boot_state::es5506_wavetable_map(address_map &map)
 void asr10_boot_state::es5506_unpopulated_wavetable_map(address_map &map)
 {
 	map(0x000000, 0x1fffff).noprw();
+}
+
+void asr10_boot_state::es5506_wavetable_bank1_map(address_map &map)
+{
+	// keyboard-and-sample-bridge-6.md: voice 1/2's own programmed
+	// START/END, read back after a real note-on with the instrument
+	// selected, decode (bank field bits 14-15 of CR = 1, per
+	// es5506.h/.cpp's own get_bank()) to a bank-relative word range that
+	// lands entirely inside $000944-$0552FF -- the exact CPU lowmem
+	// range the loaded 172,544-byte instrument payload is already known
+	// to occupy (file-loaded-verification-probe.md). Bank 1 is CPU
+	// lowmem, not a second sample-RAM pool. Reuses mem_map's own
+	// low_rom_or_lowmem_r/lowmem_w handlers directly -- same backing
+	// store (m_lowmem_shadow), not a private copy -- word range
+	// $000000-$07FFFF matches mem_map's $000000-$0FFFFF (1MB) exactly,
+	// same technique already validated for bank 0's $100000-$1FFFFF
+	// share. mem_map() itself is untouched.
+	map(0x000000, 0x07ffff).rw(FUNC(asr10_boot_state::low_rom_or_lowmem_r), FUNC(asr10_boot_state::lowmem_w));
 }
 
 
@@ -943,7 +962,7 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	// simply to construct the device.
 	es5506_device &es5506_host(ES5506(config, m_es5506_host, XTAL(16'000'000)));
 	es5506_host.set_addrmap(0, &asr10_boot_state::es5506_wavetable_map);
-	es5506_host.set_addrmap(1, &asr10_boot_state::es5506_unpopulated_wavetable_map);
+	es5506_host.set_addrmap(1, &asr10_boot_state::es5506_wavetable_bank1_map);
 	es5506_host.set_addrmap(2, &asr10_boot_state::es5506_unpopulated_wavetable_map);
 	es5506_host.set_addrmap(3, &asr10_boot_state::es5506_unpopulated_wavetable_map);
 

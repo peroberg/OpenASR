@@ -686,6 +686,40 @@ voice 0/bank 0 is firmware-reserved and this driver's bank wiring
 doesn't match real hardware's split (fix is on the `es5506_wavetable_map`
 side). Not measured yet.
 
+## Bank 1 is CPU lowmem — real audio confirmed (docs/asr10/investigations/keyboard-and-sample-bridge-6.md)
+
+Corrected an earlier wrong premise: `$100000-$1FFFFF` staying zero
+does not mean no bank mapping helps — bank 1 need not alias bank 0's
+physical RAM at all. Decoded voice 1/2's live `CR`/`START`/`END`
+(identical for both): bank field `(CR>>14)&3=1`; the bank-relative
+byte range (`START>>11`, `END>>11`, doubled) is `$3FA2A-$54FFE` —
+**inside `$000944-$0552FF`**, the already-proven real loaded-instrument
+range, when read as a direct `$000000`-based CPU offset. Confirmed via
+`es5506.h`/`.cpp` (read only): `es5506_device::get_bank() =
+(control>>14)&3` (4 banks); `es5505_device` differs, `(control>>2)&1`
+(2 banks) — genuinely different fields, not a naming variant.
+
+Checked `$100000-$1FFFFF` content after select+play with a live
+witness through the whole window (§8.7): zero new writes (still
+exactly the 524,290-write boot sweep), and the content itself is a
+`word=address>>10` RAM self-test pattern, not zero-fill — a correction
+to prior "clear sweep" phrasing. **Hypothesis 1 (bank 1 = same RAM as
+bank 0, not yet moved) refuted numerically. Hypothesis 2 (bank 1 =
+other CPU-visible memory, where the instrument already lives)
+confirmed.**
+
+Minimal fix: new `es5506_wavetable_bank1_map()` reusing `mem_map`'s
+own `low_rom_or_lowmem_r`/`lowmem_w` (same backing store, `mem_map()`
+itself untouched), wired to ES5506 bank 1 instead of `.noprw()`.
+**Real, sustained, ~720Hz periodic audio now comes out of
+`-wavwrite`** — peak ~12% of full scale, starting 0.475ms after the
+voice program completes. Regression 7/7 before and after.
+
+Also extended `docs/asr10/reference/subroutine-index.md` (an existing
+file matching what a new "routine-index.md" would have been) with 15
+newly-established addresses from this series, rather than creating a
+duplicate catalog.
+
 ## Open questions
 
 - **Critical next:** what happens after `FILE LOADED` — the concrete

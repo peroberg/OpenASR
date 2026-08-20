@@ -24,20 +24,27 @@ Adressen är identiteten; namnet får ändras när förståelsen förbättras.
 00683A  analog_calibrate_ch0
 006864  analog_sample_8x
 0068C8  analog_calibrate_ch7_alt
+00740C  jumptable_dispatch_15entry
 0077C2  sched_slot5_poller
 F8000C  reset_entry
 F87F40  sched_trap_entry
 F87F80  sched_context_save
 F87F92  sched_dispatch_scan
 F87FCC  sched_idle_loop
+F88078  trap3_enqueue
+F880A2  trap4_dequeue
+F880D6  trap6_rearm
 F88108  trap7_handler
 F8812C  trap8_handler_sleep
+F88138  trap9_slot_install
 F88280  exception_tail
 F882AA  exception_stub_table
 F88300  irq6_tick_producer
 F8845A  duart_chan_a_break_recover
 F884BE  duart_irq_dispatch
 F884F8  raise_error_145
+F884FC  duart_chan_a_continuation_stash
+F88AA2  midi_panel_data_byte_handler
 F89AA2  panel_display_driver
 F89D46  error_message_formatter
 F8DAFE  par_read_raw
@@ -48,12 +55,20 @@ F8DB6E  par_threshold_dispatch
 F8E1DA  duart_opr_table_writer
 F97BC6  duart_init_table
 FB7BEE  ipcr_change_detect
+FB8AA2  fdc_msr_data_poll
 FB8D1E  fdc_wait_cb
 FB8D40  fdc_wait_rqm_dio
 FB8D6C  fdc_delay_loop
 FB8D78  fdc_wait_variant3
 FB8E7E  interrupt_timer_init
 FC60B0  movep_par_read
+FFB20A  panel_frame_second_byte_bit7
+FFB392  panel_frame_classify
+FFB43E  panel_midi_completion_consumer
+FFB488  panel_midi_completion_consumer_b73c
+FFB4CC  panel_midi_completion_consumer_b770
+FFB56E  completion_post_dispatch
+FFB6C4  key_range_check
 ```
 
 ## Konventioner som måste läsas först
@@ -223,12 +238,73 @@ Inputs: DUART counter/timer IRQ6, primär och sekundär tabell.
 
 Outputs: slotarnas pending-byte och `($0B82).w`.
 
+### `$F88078` trap3_enqueue
+
+**[Verified]** TRAP #3 (vektor 35). Generisk kö-enqueue-primitiv, inte
+notspecifik logik. Allokerar en nod ur en liten pool
+(`$14F4`-`$150C`), skild från de sex schemaläggarslotsen. Källa:
+`investigations/keyboard-and-sample-bridge-3.md` (disassemblering av
+handlaren), `investigations/keyboard-and-sample-bridge-2.md` (första
+identifieringen som generisk kö, inte notspecifik).
+
+Outputs: A5 = ny könod.
+
+### `$F880A2` trap4_dequeue
+
+**[Verified]** TRAP #4 (vektor 36). Generisk kö-dequeue-primitiv,
+motparten till `trap3_enqueue`. Källa: samma som ovan.
+
+### `$F880D6` trap6_rearm
+
+**[Verified]** TRAP #6 (vektor 38). Allmän "växla målets
+pending-bit och återladda från en arbetsobjekt-pekare"-primitiv,
+strukturellt lik `trap9_slot_install` men verkar på `($0B6A).w`s
+aktuella slot istället för en extern `A1`. Anropas som resident
+uppgifts första åtgärd vid avsändning, konsekvent med "denna uppgift
+parkerar om sig själv". Källa: `investigations/
+keyboard-and-sample-bridge-3.md`.
+
+### `$F88138` trap9_slot_install
+
+**[Verified]** TRAP #9 (vektor 41). Bryggan mellan
+`trap3_enqueue`s kö och de sex schemaläggarslotsen -- **tidigare
+oidentifierad**, hittad genom att korrelera en riktig knapptryckning
+mot alla sex slots. `A1` = målslotens adress, `A5` = en
+`trap3_enqueue`-allokerad könod. `bclr.b #7,$2(a1)` växlar sloten
+idle (`$80/$80`) -> pending (`$00/$80`) -- matchar den uppmätta
+skrivningen exakt. Källa: `investigations/
+keyboard-and-sample-bridge-3.md`.
+
+Inputs: `A1` = målslot, `A5` = könod.
+
+Side effects: `$2(a1)` bit 7 rensas; sloten blir redo för avsändning.
+
+### `$00740C` jumptable_dispatch_15entry
+
+**[Verified]** Äkta, gränskontrollerad hopptabell. Läser ett index ur
+`$2(a5)` (könoden), gränskontrollerar mot `$E` (15 poster), tabellbas
+`$67AC`, anropar `trap #4` igen, `jsr`:ar sedan till det uppslagna
+målet. Index utanför intervallet faller igenom till `trap #0`. Källa:
+`investigations/keyboard-and-sample-bridge-3.md`.
+
+### `$FF9650` shared_absolute_jmp_vector_table
+
+**[Verified]** En delad vektortabell av absoluta `jmp`-instruktioner;
+andra anropsställen indexerar troligen in på andra offset. Det
+anropsställe som identifierats går in på offset 0, landar på
+`jmp $FFF90890`. Källa: `investigations/
+keyboard-and-sample-bridge-3.md`.
+
 ## DUART och panel
 
 DUART-register: bas `$FFFC4801`, stride 2, alltså register *n* på
 `$FFFC4801 + 2n`. Kanal B = panel är **[Verified]** genom faktisk
 paneltrafik på THRB/RHRB och genom RX-FIFO-fixen. Kanal A = MIDI är
-**[Likely]**; `esq5505.cpp` stödjer slutsatsen men är inte ASR-10-bevis.
+**[Verified]** sedan `keyboard-and-sample-bridge-4.md`: DUART-kanal A
+kopplad in, en riktig note-on injicerad headless via en Standard MIDI
+File, och firmwarets egen statusbyte-/databyte-klassificerare
+(`midi_panel_data_byte_handler`) live-disassemblerad och
+live-uppmätt -- inte längre bara `esq5505.cpp`-stöd.
 
 ### Panel-RX-kedja
 
@@ -301,6 +377,117 @@ och accepterar "ingen förändring".
 ### `$FB7CA8`
 
 **[Verified]** `btst #2,($FFFC481B).l` på DUART Input Port.
+
+### Panel-/MIDI-notdispatch
+
+Denna klunga tillkom efter att `$FFB43E` identifierats **två gånger**,
+i två separata utredningar, för att det första fyndet
+(`panel-completion-consumer-v350.md`, statisk) inte stod med här och
+låg begravt tills `keyboard-and-sample-bridge-4.md` (live) hittade det
+på nytt. Adressen är identiteten -- håll den här klungan uppdaterad
+när en ny rutin i notvägen fastställs.
+
+### `$F88AA2` midi_panel_data_byte_handler
+
+**[Verified]** Databytehanterare, delad mellan MIDI och panel. Lagrar
+notnummer i `$FF87C4`, anropar `$F8892A`, återladdar `$FF87BC` till
+sig själv (stödjer MIDI running status), och hoppar vid ett nollskilt
+notvärde till `$8788.w` -> `$FFB43E`. **Inte samma adress som
+`fdc_msr_data_poll` (`$FB8AA2`)** -- de ligger nära i hex men är
+orelaterade rutiner i helt olika delsystem; se den rutinens egen post.
+Källa: `investigations/keyboard-and-sample-bridge-4.md`.
+
+Calls: `$F8892A`; hoppar till `panel_frame_classify`-familjens
+måladress `$FFB43E` för nollskilda notvärden.
+
+### `$FFB392` panel_frame_classify
+
+**[Verified]** Första bytets tillståndslogik i panelens seriella
+protokoll. Testar D1, lagrar till `$03C4`, väljer nästa tillstånd.
+Källa: `investigations/panel-protocol-state-machine.md`.
+
+### `$FFB20A` panel_frame_second_byte_bit7
+
+**[Verified]** Andra bytets tillstånd för första byte med bit 7 satt.
+Återställer `$03C0` till `$FFB392`, rensar bit 7 först -- motsvarigheten
+till `$FFB0E0` för fallet bit 7 rensad. Källa: `investigations/
+panel-protocol-state-machine.md`.
+
+### `$FFB43E` panel_midi_completion_consumer
+
+**[Verified]** Den delade avslutningskonsumenten för både panel- och
+MIDI-data -- bekräftat genom direkt adressmatchning (inte slutledning):
+`midi_panel_data_byte_handler`s `jmp $8788.w` landar exakt här.
+`move.b $303.w,$302.w`, `trap #3`, lagrar D1/D3 i `($4,A5)`/`($6,A5)`,
+`jsr $F87FD2`, `trap #4`, `jsr key_range_check` (`$B6C4`), grenar
+sedan genom `completion_post_dispatch` (`$B56E`) eller returnerar tyst
+vid `$FFB486`: `rts` sker om och endast om `lowmem[$171]==1` OCH
+(`key_range_check`s D3-resultat `& lowmem[$CDE]`)`==0`. Källa:
+`investigations/panel-completion-consumer-v350.md` (första, statiska
+fyndet) och `investigations/keyboard-and-sample-bridge-4.md` (live
+disassemblerad avslagsgren, andra fyndet -- se rubriken ovan).
+
+Calls: `trap #3`, `$F87FD2`, `trap #4`, `key_range_check` (`$FFB6C4`),
+`completion_post_dispatch` (`$FFB56E`).
+
+### `$FFB488` panel_midi_completion_consumer_b73c
+
+**[Verified static]** Samma trap-/tjänsteform som `$FFB43E`, men
+anropar `$B73C` och kan sätta `A1=#2` innan gren genom
+`$B56A`/`completion_post_dispatch`. Returnerar direkt vid `$FFB4CA`
+när efterservice-villkoret säger att inget ska postas. Källa:
+`investigations/panel-completion-consumer-v350.md`.
+
+### `$FFB4CC` panel_midi_completion_consumer_b770
+
+**[Verified static]** Anropar `$B770`, beräknar/väljer en bit i D3, och
+kan: anropa `trap #2`; anropa `$B55A` (skriver en sex-byte-post
+relativt `A5+2`: `A1`-ord, en rensad byte, D2-byte, D1-byte, D3-byte);
+anropa `trap #9` med `A1=#2438`; anropa `$B7A0`; grena genom
+`completion_post_dispatch`; eller returnera direkt vid `$FFB558`.
+Källa: `investigations/panel-completion-consumer-v350.md`.
+
+### `$FFB56E` completion_post_dispatch
+
+**[Verified]** `panel_midi_completion_consumer`s "proceed"-mål.
+`trap #2`; tidig retur vid `$FFB594` om carry sätts. Annars: `bclr.b
+#$f,D1`; testar `lowmem[$171]`/`lowmem[$3BD]`; leder antingen direkt
+till `trap #4` eller (via `$B596`) till `$B55A`s postningsväg +
+`trap #d`. Källa: `investigations/keyboard-and-sample-bridge-4.md`.
+
+### `$FFB6C4` key_range_check
+
+**[Verified]** Tonartsintervallkontroll, inte en residens-/pekar-/
+längdkontroll. Om `lowmem[$31C]!=0`: läser `lowmem[$330]` som pekare
+till en instrument-/keygroup-deskriptor, jämför notnumret (D2) mot ett
+lågt/högt delningspunktspar på `(pekaren)+$3C`/`+$3E`. Utanför
+intervallet -> D3 förblir 0. Innanför -> D3 = `lowmem[$332]`.
+`lowmem[$330]`/`$332` skrivs (för instrumentval) av `BTN_02` i
+idle-kontext -- se `find-instrument-select.lua`,
+`investigations/keyboard-and-sample-bridge-5.md`. Numerisk stängning
+samma dokument: röst 1/2:s levande `START`/`END` konverterar till ett
+bankrelativt ordintervall som landar helt innanför
+`$000944-$0552FF` -- den bevisat riktiga instrumentnyttolasten,
+inte en andra sampel-RAM-pool. Källa: `investigations/
+keyboard-and-sample-bridge-4.md` (grenstruktur) och `investigations/
+keyboard-and-sample-bridge-5.md`/`-6.md` (levande värden, numerisk
+stängning).
+
+Inputs: `lowmem[$31C]`, `lowmem[$330]`, D2 (notnummer).
+
+Outputs: D3.
+
+### `$F884FC` duart_chan_a_continuation_stash
+
+**[Verified]** Nås via TRAP #d (vektor 45, en tidigare oidentifierad
+"uppskjutet arbete"-kö-primitiv: om målpostens `+$10`-flagga är 0,
+länkas objektet in och funktionspekaren i postens egen `+0`-fält
+anropas synkront; annars länkas det bara in för senare tömning).
+Skriver `$04` till DUART:s Channel-A Command Register (`$FFFC4805`,
+registerindex 2), sparar A5 och en fortsättningspekare (`$FFF8857A`) i
+`$FF86F8`/`$FF86FC`. Generisk DUART-kanalskötsel/fortsättningsmekanik,
+inte röst- eller sampelkod. Källa: `investigations/
+keyboard-and-sample-bridge-4.md`.
 
 ## Analoga ingångar och ES5506 PAR
 
@@ -456,6 +643,16 @@ Timeout -> `$04AE=$21`.
 
 **[Verified]** Fördröjningsloop med push/pop av D3.
 
+### `$FB8AA2` fdc_msr_data_poll
+
+**[Verified]** FDC-dataöverförings-/MSR-pollningsloop: `move.b
+($FFFC4001).l,D1`, `bne $FB8AA2`. Del av CMD46/READ DATA-transaktionen.
+1 674 022 träffar uppmätta i en full körning. **Inte samma adress som
+`midi_panel_data_byte_handler` (`$F88AA2`)** -- ligger nära i hex men
+är orelaterade rutiner i helt olika delsystem. Källa:
+`investigations/driver-instrumentation-audit.md`,
+`investigations/runtime-cycle.md`, `investigations/evidence-tree.md`.
+
 Alla tre verifierade FDC-väntningar uppfyller villkoret på första
 pollningen i den verifierade V350-körningen; timeoutvägen tas inte och
 `$049D` blir aldrig `$0D`. Detta stänger FDC-spåret i referensen.
@@ -603,10 +800,14 @@ Formulering per post: känd anropad adress; syfte ännu inte identifierat.
 
 ## Coverage
 
-Detta index täcker 35 namngivna adresser i den sorterade översikten:
-27 ROM-adresser, 7 diskresidenta V350-adresser och 1 DPRAM-thunk.
+Detta index täcker 51 namngivna adresser i den sorterade översikten:
+42 ROM-adresser (varav 15 tillagda från
+`keyboard-and-sample-bridge-3.md`-`-6.md`s panel-/MIDI-/schemaläggar-
+brygg-spår -- se "Panel-/MIDI-notdispatch" och de nya TRAP-postarna
+under "Schemaläggare"), 7 diskresidenta V350-adresser och 1
+DPRAM-thunk.
 
-Identifierade: 27. Delvis identifierade: 8. Kända okända: 23 poster.
+Identifierade: 42. Delvis identifierade: 8. Kända okända: 23 poster.
 Listan är avsiktligt ofullständig; den markerar vad som är stabilt nog
 att bära vidare till kod och vad som fortfarande kräver mätning.
 
