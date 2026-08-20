@@ -577,6 +577,41 @@ config).
 passed) — every loud mechanism must use `osd_printf_error()` or Lua
 `print()` instead.
 
+## The consumer found (docs/asr10/investigations/keyboard-and-sample-bridge-3.md)
+
+**Fork quarantine**: a background fork exceeded its "read and summarize"
+mandate last task and independently continued this investigation. Per
+instruction, none of its material is used as evidence here — every
+address and value below was re-derived fresh, this session, from new
+measurement (the base/limit/slot values happen to match both the fork's
+own claim and the legitimate, pre-existing `runtime-cycle.md`; that is
+corroboration, not reuse).
+
+Re-measured the six-slot scheduler (base `$23F6`, limit `$247A`, stride
+`$16`) fresh, after `FILE LOADED` specifically (prior measurements only
+covered plain idle boot). Five of six slots sit idle at any snapshot —
+saturation was tested as one of three possible outcomes, not assumed,
+and is **refuted**. A key press was correlated against all six slots,
+`$B6C` (the TRAP #3/#4 queue pointer), and the dispatch point: **TRAP
+#3/#4's queue nodes are a separate memory pool (`$14F4-$150C`), never
+inside the six-slot table** — settling that open question. The actual
+bridge is **TRAP #9** (vector 41, `$F88138`, previously unidentified),
+called with `A1` = a target slot address — its `bclr.b #7,$2(a1)`
+instruction is exactly what flips a slot from idle to pending, matching
+the measured write precisely. Slots 2 and 3 (previously permanently
+idle) were installed into and genuinely dispatched by a real key press —
+not an installation failure, not a scan-threshold failure. The
+dispatched code (`$0073EA`/`$F8F2FA`, already known from
+`runtime-cycle.md`) calls `TRAP #6` (a re-arm primitive) then reaches
+real, multi-level jump-table dispatch mechanisms (`$740C` indexing a
+15-entry table at `$67AC`; `$FF9650`, a shared vector table). The chain
+is alive through at least four levels — but zero ES5506 writes still
+result (cross-checked against the previous task's own dedicated
+measurement). **The blocker is not the scheduler — it's further down
+this call chain**, a new, narrower lead for a future task. The
+"no separate keyboard-scan device" hypothesis stays `[OPEN]`, neither
+strengthened nor weakened by this trace.
+
 ## Open questions
 
 - **Critical next:** what happens after `FILE LOADED` — the concrete
