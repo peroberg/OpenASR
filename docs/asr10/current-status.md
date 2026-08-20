@@ -394,6 +394,31 @@ values vary richly). ES5506's missing `SPEAKER`/`add_route` and guessed
 clock remain the likely next blockers for *audible* output specifically,
 not for firmware reaching the register interface.
 
+**Update, sound path mapped (no code, Lua + source reading only):**
+`investigations/sample-ram-and-voice-registers.md` resolves which of three
+explanations fits the `$100000-$1FFFFF`-stays-empty finding. Measured with
+a 10s-post-load window and a witness tap proving liveness throughout:
+`$100000-$1FFFFF` gets 524,290 writes total, but every one of them lands
+*before* `FILE 1` (a one-time boot-time RAM-clear sweep, 0x100000 bytes /
+2 ≈ one write per word) and zero occur during or after the load. Source
+reading (`es5506.h`/`.cpp`, not modified) settles the third explanation:
+the ES5506 reads samples exclusively through its own private, per-device
+address space (`m_cache[bank].read_word()`), never through the CPU's own
+memory — `asr10_boot.cpp`'s `es5506_wavetable_map` (bank 0, populated
+`.ram()`) is a *separate* allocation from the CPU's `$100000-$1FFFFF`
+(different `address_map` functions, no `.share()` tag, and different
+addressing units — word- vs byte-addressed). Voice-register decoding
+(all 32 voices' CR/START/END/ACCUM, via a corrected accumulator that
+mirrors `es5506_device::write()`'s real shared-latch semantics) shows
+voice 0 alone uses bank 0; **all 31 other voices point at bank 1, which is
+`.noprw()` — completely unmapped** in this driver's machine config. Also
+confirmed by source: no `SPEAKER`/`add_route`/`set_channels` anywhere in
+`asr10_boot.cpp` (zero matches); family precedent (`esqkt.cpp`, the same
+ES5506 chip) uses the identical `16MHz` clock this driver guesses,
+upgrading that guess to family-precedent-supported. Remediation order
+sketched (real sample-memory topology first — shared RAM vs. real DMA —
+then bank/output wiring, then keyboard input modeling), not built.
+
 RECALIBRATE completion, vector `$51`, SIS, SEEK, READ DATA `$46` issuance,
 the READ DATA transfer/terminal-count byte-counting, and READ DATA's own
 completion interrupt are no longer open questions — see
@@ -532,6 +557,18 @@ Previous entries stand. Added by the static analysis:
   richly varied from near-reset onward, independent of the load and of any
   button press — disproves the "never reaches voice registers" and
   "ES5510 stuck at zero" concerns by measurement.
+- `investigations/sample-ram-and-voice-registers.md` — maps the sound
+  path: `$100000-$1FFFFF` gets writes only from a one-time pre-`FILE 1`
+  boot sweep, never during/after the load (witnessed, not a dead tap).
+  Source reading settles why: the ES5506 reads samples through its own
+  private per-device address space, never the CPU's — `mem_map`'s
+  `$100000-$1FFFFF` and the device's own bank-0 `.ram()` are two
+  unconnected allocations in different units. Voice-register decoding
+  (all 32 voices) finds voice 0 uses the one populated bank (0); all 31
+  others point at bank 1, which is entirely unmapped (`.noprw()`). No
+  `SPEAKER`/`add_route`/`set_channels` exist in the driver at all; family
+  precedent (`esqkt.cpp`, same chip) uses the same 16MHz clock this driver
+  guesses. Remediation order sketched, not built.
 - `reference/boot-sequence.md`, `reference/subroutine-index.md`,
   `reference/os-code-extraction.md`, `reference/hardware-map.md` — as before, updated.
 - `static/README.md` — what the raw material is, how it was generated, what it does not
