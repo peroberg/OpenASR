@@ -39,6 +39,7 @@
 #include "emu.h"
 #include "main.h"
 
+#include "bus/midi/midi.h"
 #include "cpu/m68000/m68000.h"
 #include "imagedev/floppy.h"
 #include "machine/mc68302.h"
@@ -75,6 +76,7 @@ public:
 		, m_floppy_connector(*this, "fdc:0")
 		, m_duart(*this, "duart")
 		, m_panel(*this, "panel")
+		, m_mdout(*this, "mdout")
 		, m_rom(*this, "maincpu")
 		, m_es5506_host(*this, "es5506_host")
 		, m_es5510_host(*this, "es5510_host")
@@ -97,6 +99,7 @@ private:
 	required_device<floppy_connector> m_floppy_connector;
 	required_device<scn2681_device> m_duart;
 	required_device<asr10panel_device> m_panel;
+	required_device<midi_port_device> m_mdout;
 	required_memory_region m_rom;
 
 	optional_device<es5506_device> m_es5506_host;
@@ -916,6 +919,17 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	// set_clocks() maps to IP3/IP4/IP5/IP6. With CSRA/CSRB selector $E,
 	// mc68681.cpp uses IP3/16 for channel A and IP5/16 for channel B.
 	m_duart->set_clocks(500'000, 500'000, 1'000'000, 1'000'000);
+
+	// Channel A is MIDI, 31250 baud -- unconnected until this task. Wired
+	// per the esq5505.cpp precedent (same SCN2681 family, same channel
+	// assignment): a_tx_cb feeds a MIDI Out port, and a MIDI In port's
+	// rxd_handler feeds rx_a_w. This is the one machine-config change
+	// this task is scoped to.
+	m_duart->a_tx_cb().set(m_mdout, FUNC(midi_port_device::write_txd));
+	auto &mdin(MIDI_PORT(config, "mdin"));
+	midiin_slot(mdin);
+	mdin.rxd_handler().set(m_duart, FUNC(scn2681_device::rx_a_w));
+	midiout_slot(MIDI_PORT(config, "mdout"));
 
 	ASR10PANEL(config, m_panel);
 	m_panel->write_tx().set(m_duart, FUNC(scn2681_device::rx_b_w));

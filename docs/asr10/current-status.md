@@ -612,6 +612,49 @@ this call chain**, a new, narrower lead for a future task. The
 "no separate keyboard-scan device" hypothesis stays `[OPEN]`, neither
 strengthened nor weakened by this trace.
 
+## The MIDI gate, and where the note stops (docs/asr10/investigations/keyboard-and-sample-bridge-4.md)
+
+Wired DUART channel A for MIDI (the `esq5505.cpp` idiom:
+`MIDI_PORT`/`midiin_slot`/`rxd_handler().set(m_duart,
+FUNC(scn2681_device::rx_a_w))`) — the one machine-config change this
+task made. Injected a real note-on (`$90 $3C $64`) headless, via a
+30-byte Standard MIDI File loaded into the wired `MIDIIN` image
+device's Lua `image:load()` binding (no OS MIDI hardware needed).
+
+**Result: silent, same signature as the panel path** — 3 RHRA reads
+(exactly the message), zero ES5506 voice writes, zero
+`$100000-$1FFFFF` writes. **This exonerates the panel dispatch chain**:
+the three-turn scheduler/TRAP-#9/jump-table descent
+(`keyboard-and-sample-bridge-3.md`) was correct tracing of a path that
+turned out not to be panel-specific.
+
+Followed the MIDI byte parser (not the scheduler) forward instead:
+`$F889A2`'s status/data byte classifier resolves Note On's data-byte
+vector via a table at `$FF871E`, which for a nonzero note number
+reaches **`$FFB43E` — the exact address `panel-completion-consumer-
+v350.md` already identified as the panel protocol's own completion
+consumer.** MIDI and panel data provably funnel into the same
+function. Live-disassembled `$FFB43E`'s previously-undocumented
+decline branch: `rts` at `$FFB486` iff `lowmem[$171]==1` AND
+(`$FFB6C4`'s result `& lowmem[$CDE]`)`==0`; `$FFB6C4` performs a
+**key-range check** (note number against `(lowmem[$330])+$3C`/`+$3E`,
+a low/high split-point pair in an instrument/keygroup descriptor) —
+not a residency flag. For the actual test note, `lowmem[$171]==0`, so
+this decline was **not** taken — the message instead proceeded through
+`$FFB56E` into `TRAP #4`/a new primitive **TRAP #D** (a deferred-work
+queue that can synchronously invoke a stored function pointer), landing
+in `$F884FC` — generic DUART-channel continuation plumbing, not
+voice/sample code. The trace ran past where note-specific logic would
+plausibly live without ever finding a residency check or reaching
+ES5506.
+
+**Sample-residency hypothesis: not confirmed as framed.** The real
+gate found is a key-range check, not a residency/pointer/length read,
+and in the live run it wasn't even the branch taken.
+`lowmem[$330]==0` before the note arrived is `[HYPOTHESIS]`-level
+suggestive of "no voice/keygroup set up yet" rather than "sample not
+resident" — not measured this task.
+
 ## Open questions
 
 - **Critical next:** what happens after `FILE LOADED` — the concrete
