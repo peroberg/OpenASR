@@ -341,24 +341,40 @@ instead, so nothing in this flow needs `$4B`.
 Result, measured: the `DISK ERROR - LOST DATA` overrun is gone. The
 instrument-load sequence now proceeds from `t=18.3s` (previous stop) to
 `t=23.4s` before hitting a **different** firmware error, `DISK NOT
-RESPONDING`. Not diagnosed — new, later-stage work.
+RESPONDING`. **Diagnosed** (`investigations/disk-not-responding-probe.md`):
+READ DATA's own completion never produces a vector-`$51` IACK — 4.994
+seconds of total silence (no FDC access, no IDMA register write, no IACK
+of any kind) follow the transfer, then a generic firmware timeout/recovery
+(software reset from an unfamiliar PC) lands on the error display. Not a
+data-rate problem: the standing `upd72069` aux-`$88`-decodes-as-250kbit/s
+question was checked and is moot here — `asr10_boot.cpp` already forces
+`set_rate(500000)` right after that exact aux write
+(`ASR10_MISSING_FDC_RATE_SOURCE`, already active) — and even a genuinely
+halved rate could only account for ~8ms on a 512-byte transfer, not a
+~5000ms gap. `[Likely]`, not fixed: `idma_drq_w()` calls `tc_w()`
+synchronously/reentrantly from inside `upd765_family_device`'s own live
+per-bit engine (which is what invokes the DRQ callback in the first
+place), unlike a real DMA controller's independent TC line — plausibly
+preventing the state machine from ever reaching `command_end()`.
 
 After implementation, repeat the `LOADING JM DIGI SYN` experiment and
-observe what specifically produces `DISK NOT RESPONDING`. RECALIBRATE
-completion, vector `$51`, SIS, SEEK, READ DATA `$46` issuance, and the
-READ DATA transfer/terminal-count itself are no longer open questions —
-see `investigations/ready-line-artifact-probe.md` and
-`investigations/idma-implementation-plan.md`.
+observe whether deferring `tc_w()` off the DRQ callback's own call stack
+(e.g. a zero-delay timer) lets READ DATA's completion interrupt fire.
+RECALIBRATE completion, vector `$51`, SIS, SEEK, READ DATA `$46` issuance,
+and the READ DATA transfer/terminal-count byte-counting itself are no
+longer open questions — see `investigations/ready-line-artifact-probe.md`
+and `investigations/idma-implementation-plan.md`.
 
 ## Open questions
 
-- **Critical next:** IDMA implementation (register model, data movement,
-  `DISK NOT RESPONDING`, the failure that follows minimal IDMA). Runtime
-  validation through vector `$51`/SIS/SEEK/READ DATA/terminal-count is done
+- **Critical next:** why READ DATA's completion interrupt never fires
+  (`investigations/disk-not-responding-probe.md`) — likely a reentrant
+  `tc_w()` call, not yet fixed. Runtime validation through vector `$51`/
+  SIS/SEEK/READ DATA/terminal-count byte-counting is done
   (`investigations/ready-line-artifact-probe.md`,
   `investigations/idma-implementation-plan.md`); the concrete `$23F6`
   post-completion consumer remains open, reachable only once
-  `DISK NOT RESPONDING` is diagnosed.
+  `DISK NOT RESPONDING` is resolved.
 - **Physical board policy for storage IRQ1** remains formally `[OPEN]`
   (what physically drives IRQ1 on real hardware is still unverified), but
   is no longer blocking progress: the board-policy wiring plus a
@@ -457,7 +473,14 @@ Previous entries stand. Added by the static analysis:
   implemented and landed: register storage, per-DRQ transfer, terminal
   count; corrects an IMR bit-11 arithmetic error that would have wrongly
   concluded vector `$4B` was needed; measured result: `DISK ERROR - LOST
-  DATA` gone, replaced by a later, undiagnosed `DISK NOT RESPONDING`.
+  DATA` gone; four known limitations of this slice journaled (direction-
+  locked FDC→memory only, `BCR-1` unverified beyond one sector, `$FC5803`
+  a `mem_map` gap not an implementation gap, `DAPR` confirmed honored).
+- `investigations/disk-not-responding-probe.md` — diagnoses the failure
+  that follows minimal IDMA: READ DATA's own completion interrupt never
+  fires (likely a reentrant `tc_w()` call, not fixed here); refutes the
+  standing FDC-rate hypothesis by source (already forced to 500kbit/s) and
+  by magnitude (a rate difference is ~8ms, the observed gap is ~5000ms).
 - `reference/boot-sequence.md`, `reference/subroutine-index.md`,
   `reference/os-code-extraction.md`, `reference/hardware-map.md` — as before, updated.
 - `static/README.md` — what the raw material is, how it was generated, what it does not

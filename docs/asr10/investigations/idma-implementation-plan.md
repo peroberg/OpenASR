@@ -1,5 +1,37 @@
 # MC68302 IDMA Implementation Plan
 
+## Known Limitations — Not The Model, The Current Slice
+
+Follow-up (`disk-not-responding-probe.md`) found the `DISK ERROR - LOST
+DATA` fix real but incomplete in ways worth stating plainly before anyone
+mistakes this slice for a general IDMA implementation:
+
+1. **Direction-locked, FDC→memory only.** `SAPR` is stored and reads back
+   correctly, but is never dereferenced through the CPU address space —
+   the board-side caller always supplies the transferred byte directly
+   from `m_fdc->dma_r()` and always writes to the `DAPR`-derived
+   destination. ASR-10 writes to disk as well as reading it; a WRITE
+   DATA-shaped transfer (memory→FDC) is not implemented and will fail the
+   first time firmware attempts to save, not just underperform.
+2. **`BCR-1` has no known register semantics behind it** — a choice that
+   produces the correct byte count for this one single-sector (`N=2`)
+   request, not a decoded hardware convention. Must be re-examined the
+   first time a multi-sector transfer or a different `N` is observed; it
+   may not generalize.
+3. **`$FC5803` (SAPR's measured value) is inside CS3
+   (`$FC4000-$FC5FFF`, confirmed in `hardware-map.md`/`memory-map.md`),
+   but `mem_map` decodes `$FC5020` and above as a generic `.ram()`
+   catch-all**, not as a distinct register within that chip-select. A
+   defect in the memory map, not in this implementation — which
+   deliberately routes around it (limitation 1's flip side) rather than
+   depending on it. `mem_map` intentionally not touched; revisit when the
+   CS3 E2 question is otherwise addressed.
+4. **`DAPR` *is* honored, not hardcoded** — confirmed by re-reading
+   `internal_w()`'s `OFFSET_IDMA_CMR` case: `m_idma_dest = m_idma_dapr;`
+   at arm time seeds the working pointer from the actual programmed value,
+   which then increments per byte. No hardcoded-destination limitation
+   applies.
+
 ## Status
 
 Implemented (minimal slice) and measured. Builds on

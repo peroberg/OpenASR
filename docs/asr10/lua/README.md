@@ -48,6 +48,10 @@ Engångsscript vars fråga redan är besvarad eller journalförd. De ligger i
 | `archive/fdc_ready_dialogue_probe.lua` | Loggade AUX- och FIFO-dialogen genom hela boot. Hittade motor-off (`aux $0E`) 300µs efter sista READ DATA, 23ms före den enda IACK:en. Se `investigations/ready-line-artifact-probe.md`. |
 | `archive/sds_st3_probe.lua` | Försökte spåra om firmware konsulterar SENSE DRIVE STATUS/ST3:s ready-bit. Inte avgörande inom rimlig ansträngning; se samma journal för varför den empiriska regressionstestet blev den avgörande metoden i stället. |
 | `archive/ready_disconnect_chain_probe.lua` | Positivt test: `set_ready_line_connected(false)` + naiv IRQ1-koppling tillsammans. Boot kraschar inte längre; instrumentinläsningens kedja når RECALIBRATE, SEEK och READ DATA korrekt och stannar vid en äkta `DISK ERROR - LOST DATA` (IDMA saknas). Se samma journal. |
+| `archive/idma_register_probe.lua` | Första IDMA-registerkarteringen. Hittade eget mätfel: enbyte-rekonstruktionen korrumperade 32-bitars SAPR/DAPR-ordskrivningar. Se `investigations/idma-register-map-probe.md`. |
+| `archive/idma_register_probe2.lua` | Rättad registerkartering, rått offset/data/mask utan rekonstruktion. Källan till den slutgiltiga registerkartan. |
+| `archive/idma_result_check.lua` | Kontrollerade utfallet av den landade IDMA-implementationen: `DISK ERROR - LOST DATA` borta, ersatt av `DISK NOT RESPONDING` vid t≈23,4s. |
+| `archive/disk-not-responding-probe.lua` | Diagnostiserade `DISK NOT RESPONDING`: READ DATA:s eget avslutningsavbrott uteblir helt, 4,994s tystnad, sedan generisk firmware-timeout. Motbevisade datarat-hypotesen. Se `investigations/disk-not-responding-probe.md`. |
 | `archive/load_departure.lua` | PC-/schedulerprobe när FDC-pollningen upphör. |
 | `archive/load_destination.lua` | A1-destinationsprobe; den första globala A1-kartan är `[RETRACTED]`. |
 | `archive/load_dma_probe.lua` | DMA-fönsterprobe för instrumentinläsningen. |
