@@ -244,16 +244,23 @@ runtime blocker.
 
 ## IDMA And READ DATA
 
-[Verified static] The class `$03` READ path programs MC68302 IDMA before issuing
-FDC READ DATA `$46`.
+[Verified dynamic] The class `$03` READ path programs MC68302 IDMA before
+issuing FDC READ DATA `$46` — now runtime-measured, not just statically
+predicted; full register-by-register trace and derivation in
+`../investigations/idma-register-map-probe.md`.
 
 Known IDMA dataflow:
 
 ```text
-source      $FFFC5803
-destination $040E
-count       derived from transfer/sector state
-registers   $FC6802 $FC6804 $FC6808 $FC680C $FC6810
+CMR (`$FC6802`)  prelude value $0002 (every vector $51 IACK), then $0D51
+                 immediately before READ DATA (the actual channel start)
+SAPR (`$FC6804`) $FFFC5803 -- matches the earlier static prediction exactly
+DAPR (`$FC6808`) $00000944 -- [Verified dynamic] corrects the earlier
+                 static prediction of $040E; measurement wins per project
+                 rule, see idma-register-map-probe.md
+BCR (`$FC680C`)  $0201 (513) -- interpretation open, not resolved
+FCR (`$FC6810`)  $99 -- bit-field decode open, not resolved
+CSR (`$FC680E`)  reads $00 every time; no IDMA event has ever occurred
 ```
 
 `$4B` is the MC68302 IDMA completion path. `$51` is the shared storage-device

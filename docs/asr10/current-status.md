@@ -182,6 +182,13 @@ items are consolidated there.
   saknade emulerade kontraktet ligger mellan storage completion och
   firmware-ingången `$51`, utan att anta vilken fysisk board-source som driver
   MC68302 external IRQ1.
+  **Uppdaterat:** kontraktet ar nu implementerat och landat
+  (`m_fdc->set_ready_line_connected(false)` + IRQ1-koppling,
+  `investigations/ready-line-artifact-probe.md`). Runtime nar nu
+  RECALIBRATE-completion, SEEK och READ DATA-utfardande korrekt genom
+  vektor `$51`. Blockeraren ar IDMA
+  (`investigations/idma-implementation-plan.md`), inte langre en
+  saknad grind till `$51`.
 - [Verified runtime/static] Instrument-load-requestens class/subtype är
   `$049A.b=$03` och `$049B.b=$02` efter storage entry. `$0302` ska inte
   beskrivas som ett enda enkelt storage-opcode; `$049A` används som
@@ -191,9 +198,14 @@ items are consolidated there.
   returneras samma node från `$0466`. Den observerade noden har
   `node +2=$0302`, alltså positivt word. Statiskt väljer common exit då
   target `$23F6`; den tidigare `$2438`-returmodellen gäller endast negativ
-  node. `$23F6` är scheduler slot 0, inte verifierad instrument-owner.
-  Concrete post-completion consumer är [OPEN] eftersom runtime ännu inte når
-  RECALIBRATE completion.
+  node. `$23F6` ar scheduler slot 0, inte verifierad instrument-owner.
+  Concrete post-completion consumer var [OPEN] har eftersom runtime da
+  annu inte nadde RECALIBRATE completion. **Uppdaterat:** runtime nar nu
+  RECALIBRATE-completion, SEEK och READ DATA-utfardande
+  (`investigations/ready-line-artifact-probe.md`), men stannar vid en
+  IDMA-overrun fore common storage exit -- konsumenten ar fortfarande
+  [OPEN], nu av en annan anledning (IDMA saknas, inte att completion
+  aldrig levereras).
 - [Verified static] Class `$03` har en verifierad statisk väg mot verklig
   dataöverföring: `$B64C -> $FB7F9E -> $FBA5A2 -> $FB9C5E -> $FB9FE2 ->
   $FB84DA -> $FB85C0 -> IDMA setup -> $FB8672 -> FDC READ DATA $46`.
@@ -308,48 +320,45 @@ architectural model that did not exist before. Summary only — details in `refe
 ## Next implementation target
 
 **Update:** the IRQ1/vector-`$51` path this section originally called for
-has now been built and tested experimentally (not landed —
-`investigations/ready-line-artifact-probe.md`) and confirmed to work: the
-generic chip-level vector plumbing (`mc68302_device::irq1_ack_vector()`)
-stays in the tree already; the two remaining pieces —
-`m_fdc->intrq_wr_callback().set_inputline(m_maincpu, 1)` and
-`m_fdc->set_ready_line_connected(false)` (the latter needed only because
-MAME's `upd765_family_device` otherwise synthesizes a spurious ready-line-
-change interrupt on ordinary motor-off commands, empirically safe: 5/5
-regression alone, including `nodisk`) — are both reverted, not landed, but
-together they let the full documented completion chain run correctly
-through RECALIBRATE, SIS, SEEK, and READ DATA. The real next blocker is
-IDMA, not a missing gate.
+is landed (not experimental anymore):
+`mc68302_device::irq1_ack_vector()`, the level-1 IACK dispatch branch,
+`m_fdc->set_ready_line_connected(false)`, and
+`m_fdc->intrq_wr_callback().set_inputline(m_maincpu, 1)` are all in
+`asr10_boot.cpp`/`mc68302.h` as of this commit. The full documented
+completion chain runs correctly through RECALIBRATE, SIS, SEEK, and READ
+DATA. **Update: minimal IDMA is now implemented and landed**
+(`investigations/idma-implementation-plan.md`, built on the measured
+register map in `investigations/idma-register-map-probe.md`). Real
+register storage for `CMR`/`SAPR`/`DAPR`/`BCR`/`CSR`/`FCR` on
+`mc68302_device`, per-DRQ transfer + terminal-count in `asr10_boot.cpp`'s
+`idma_drq_w()`. Does **not** implement vector `$4B` delivery: measured
+`IMR=$E480` at every observed vector-`$51` IACK has bit 11 (IDMA's INRQ
+source) clear, not set — an earlier draft of the plan mis-read this as set
+and is corrected in place — and all four completions observed for this
+request arrived via the already-working external-IRQ1/vector-`$51` path
+instead, so nothing in this flow needs `$4B`.
 
-MC68302 IDMA requirements (new target):
+Result, measured: the `DISK ERROR - LOST DATA` overrun is gone. The
+instrument-load sequence now proceeds from `t=18.3s` (previous stop) to
+`t=23.4s` before hitting a **different** firmware error, `DISK NOT
+RESPONDING`. Not diagnosed — new, later-stage work.
 
-- IDMA register model for `$FC6802/$FC6804/$FC6808/$FC680C/$FC6810`
-  (currently `known_unimplemented` shadow storage in `mc68302.cpp`)
-- actual data movement for FDC READ DATA transfers (currently: the FDC
-  asserts a data request that nothing services, producing a genuine
-  uPD765 overrun — `DISK ERROR - LOST DATA`)
-- vector `$4B` completion delivery (IDMA-side, separate from IRQ1/vector
-  `$51`; `storage-completion-dispatch.md`'s dispatcher A)
-
-Land the IRQ1 wiring and ready-line fix together with IDMA work, not
-separately — landing the IRQ1 wiring alone (without IDMA) only replaces
-one dead end (`ERROR 129`) with another (`DISK ERROR - LOST DATA`), which
-is not an improvement in isolation.
-
-After implementation, repeat the `LOADING JM DIGI SYN` experiment and observe:
-IDMA register programming, vector `$4B`, later vector `$51`, common exit,
-actual `$23F6` resume state/consumer, next request class, and whether
-payload `$02B600` survives to `$043E`. RECALIBRATE completion, vector `$51`,
-SIS, SEEK, and READ DATA `$46` are no longer open questions — see
-`investigations/ready-line-artifact-probe.md`.
+After implementation, repeat the `LOADING JM DIGI SYN` experiment and
+observe what specifically produces `DISK NOT RESPONDING`. RECALIBRATE
+completion, vector `$51`, SIS, SEEK, READ DATA `$46` issuance, and the
+READ DATA transfer/terminal-count itself are no longer open questions —
+see `investigations/ready-line-artifact-probe.md` and
+`investigations/idma-implementation-plan.md`.
 
 ## Open questions
 
 - **Critical next:** IDMA implementation (register model, data movement,
-  vector `$4B`). Runtime validation through vector `$51`/SIS/SEEK/READ DATA
-  is done (`investigations/ready-line-artifact-probe.md`); the concrete
-  `$23F6` post-completion consumer remains open, reachable only once IDMA
-  lets the chain proceed past READ DATA's current overrun.
+  `DISK NOT RESPONDING`, the failure that follows minimal IDMA). Runtime
+  validation through vector `$51`/SIS/SEEK/READ DATA/terminal-count is done
+  (`investigations/ready-line-artifact-probe.md`,
+  `investigations/idma-implementation-plan.md`); the concrete `$23F6`
+  post-completion consumer remains open, reachable only once
+  `DISK NOT RESPONDING` is diagnosed.
 - **Physical board policy for storage IRQ1** remains formally `[OPEN]`
   (what physically drives IRQ1 on real hardware is still unverified), but
   is no longer blocking progress: the board-policy wiring plus a
@@ -437,11 +446,18 @@ Previous entries stand. Added by the static analysis:
   `$0402` continuation pointer, not a timing or masking problem.
 - `investigations/ready-line-artifact-probe.md` — current authoritative
   account: the interrupt that crashed the chain above was never a storage
-  completion, but a MAME FDC-model ready-line artifact. With that fixed
-  (not landed — reverted after measurement) alongside the IRQ1 wiring, the
-  full completion chain runs correctly through RECALIBRATE/SEEK/READ DATA
-  and stops at IDMA, confirming IDMA (not a missing gate) is the next real
-  blocker.
+  completion, but a MAME FDC-model ready-line artifact. Fix landed
+  alongside the IRQ1 wiring; the full completion chain runs correctly
+  through RECALIBRATE/SEEK/READ DATA and stops at a genuine IDMA overrun.
+- `investigations/idma-register-map-probe.md` — measured IDMA register map
+  (CMR/SAPR/DAPR/BCR/CSR/FCR) for one concrete READ DATA request, derived
+  from real writes, not a datasheet guess; corrects an earlier static DAPR
+  prediction.
+- `investigations/idma-implementation-plan.md` — minimal MC68302 IDMA,
+  implemented and landed: register storage, per-DRQ transfer, terminal
+  count; corrects an IMR bit-11 arithmetic error that would have wrongly
+  concluded vector `$4B` was needed; measured result: `DISK ERROR - LOST
+  DATA` gone, replaced by a later, undiagnosed `DISK NOT RESPONDING`.
 - `reference/boot-sequence.md`, `reference/subroutine-index.md`,
   `reference/os-code-extraction.md`, `reference/hardware-map.md` — as before, updated.
 - `static/README.md` — what the raw material is, how it was generated, what it does not
