@@ -103,6 +103,50 @@ public:
 	// devcb_write_line into set_inputline(), not a new register model.
 	uint8_t irq1_ack_vector() const { return 0x40 | 0x11; } // GIMR.V7_V5=010 | external level 1 low bits
 
+	// Minimal IDMA channel, docs/asr10/investigations/idma-implementation-
+	// plan.md and idma-register-map-probe.md: real storage for CMR/SAPR/
+	// DAPR/BCR/CSR/FCR ($FC6802-$FC6811, previously known_unimplemented
+	// shadow) plus the per-byte transfer/terminal-count bookkeeping a DMA
+	// channel needs. Deliberately not a bus-mastering engine
+	// (docs/mc68302/idma-spec.md's own caveat against raw register
+	// shadowing that "silently appears to work" applies) -- this only
+	// implements exactly what the one measured READ DATA request needs to
+	// complete: single-channel, one direction (source device -> memory
+	// destination), no chaining, no source dereference through the CPU
+	// address space (SAPR's measured value, $FC5803, is not the FDC's
+	// CPU-visible FIFO port and is not mapped to anything in the current
+	// mem_map -- see idma-register-map-probe.md item 4; this deliberately
+	// does not read through SAPR's address at all, the board-level DRQ
+	// handler supplies the byte directly).
+	//
+	// idma_channel_active(): true once CMR bit 0 (STR, measured: clear in
+	// the $0002 shared-prelude write that recurs at every vector $51 IACK,
+	// set in the $0D51 write immediately before READ DATA -- the only
+	// measured bit in CMR with a clean, repeatable on/off correlation to
+	// "is this the transfer-starting write") has armed the channel and the
+	// byte count has not yet been exhausted. The board-side DRQ handler
+	// MUST check this before calling the source device's own DMA-pop
+	// accessor (e.g. upd765_family_device::dma_r()) -- upd765_family_
+	// device::enable_transfer() asserts DRQ unconditionally on every
+	// transfer, PIO included (no else between its PIO-internal_drq branch
+	// and its DRQ-assert branch), so an unguarded handler would silently
+	// steal FIFO bytes during the boot's own unrelated polled transfers.
+	//
+	// idma_transfer_in(data): board-side DRQ handler calls this once per
+	// byte pulled from the source device (e.g. via upd765_family_device::
+	// dma_r()). Writes to the current DAPR address in program space,
+	// increments DAPR, decrements the working count. Returns true when the
+	// channel has just completed (this was the last byte) -- the caller
+	// must then call the source device's tc_w(true)/tc_w(false) itself;
+	// this device has no FDC-specific knowledge and does not call tc_w on
+	// its own. Undocumented/unverified byte-count convention: BCR's raw
+	// measured value was 513 for a 512-byte sector; this implements
+	// "transfer (BCR-1) bytes" as the least speculative reading that still
+	// produces the correct 512, not a scaling/unit reinterpretation of
+	// BCR's bytes -- flagged as unverified beyond this one measurement.
+	bool idma_channel_active() const { return m_idma_active && m_idma_remaining != 0; }
+	bool idma_transfer_in(uint8_t data);
+
 protected:
 	class mc68302_sim;
 
@@ -151,6 +195,21 @@ private:
 	uint32_t m_internal_ram_count;
 	uint32_t m_known_unimplemented_count;
 	uint32_t m_unknown_count;
+
+	// IDMA channel state. Register storage mirrors what firmware writes;
+	// m_idma_dest/m_idma_remaining are working copies advanced per byte,
+	// separate from the raw DAPR/BCR shadow so the raw programmed values
+	// stay readable back unchanged (matches the manual: "registers ...
+	// may be read but must not be modified" while a channel is running).
+	uint16_t m_idma_cmr;
+	uint32_t m_idma_sapr;
+	uint32_t m_idma_dapr;
+	uint16_t m_idma_bcr;
+	uint8_t m_idma_csr;
+	uint8_t m_idma_fcr;
+	bool m_idma_active;
+	uint32_t m_idma_dest;
+	uint32_t m_idma_remaining;
 };
 
 DECLARE_DEVICE_TYPE(MC68302, mc68302_device)

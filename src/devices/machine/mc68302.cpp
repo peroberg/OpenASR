@@ -28,6 +28,19 @@ static constexpr uint16_t OFFSET_OR2 = 0x083a;
 static constexpr uint16_t OFFSET_BR3 = 0x083c;
 static constexpr uint16_t OFFSET_OR3 = 0x083e;
 
+// IDMA, docs/mc68302/idma-spec.md + docs/asr10/investigations/
+// idma-register-map-probe.md (measured offsets and one concrete request's
+// values). SAPR/DAPR are 32-bit, stored/accessed as two 16-bit halves at
+// consecutive offsets, matching the measured word-wide write pattern.
+static constexpr uint16_t OFFSET_IDMA_CMR     = 0x0802;
+static constexpr uint16_t OFFSET_IDMA_SAPR_HI = 0x0804;
+static constexpr uint16_t OFFSET_IDMA_SAPR_LO = 0x0806;
+static constexpr uint16_t OFFSET_IDMA_DAPR_HI = 0x0808;
+static constexpr uint16_t OFFSET_IDMA_DAPR_LO = 0x080a;
+static constexpr uint16_t OFFSET_IDMA_BCR     = 0x080c;
+static constexpr uint16_t OFFSET_IDMA_CSR     = 0x080e;
+static constexpr uint16_t OFFSET_IDMA_FCR     = 0x0810;
+
 
 mc68302_device::mc68302_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :
 	m68000_device(mconfig, MC68302, tag, owner, clock),
@@ -39,7 +52,16 @@ mc68302_device::mc68302_device(const machine_config &mconfig, const char *tag, d
 	m_known_count(0),
 	m_internal_ram_count(0),
 	m_known_unimplemented_count(0),
-	m_unknown_count(0)
+	m_unknown_count(0),
+	m_idma_cmr(0),
+	m_idma_sapr(0),
+	m_idma_dapr(0),
+	m_idma_bcr(0),
+	m_idma_csr(0),
+	m_idma_fcr(0),
+	m_idma_active(false),
+	m_idma_dest(0),
+	m_idma_remaining(0)
 {
 	auto bmap = address_map_constructor(FUNC(mc68302_device::bootstrap_map), this);
 	m_program_config.m_internal_map = bmap;
@@ -82,6 +104,16 @@ void mc68302_device::device_start()
 	save_item(NAME(m_internal_ram_count));
 	save_item(NAME(m_known_unimplemented_count));
 	save_item(NAME(m_unknown_count));
+
+	save_item(NAME(m_idma_cmr));
+	save_item(NAME(m_idma_sapr));
+	save_item(NAME(m_idma_dapr));
+	save_item(NAME(m_idma_bcr));
+	save_item(NAME(m_idma_csr));
+	save_item(NAME(m_idma_fcr));
+	save_item(NAME(m_idma_active));
+	save_item(NAME(m_idma_dest));
+	save_item(NAME(m_idma_remaining));
 }
 
 
@@ -115,6 +147,16 @@ void mc68302_device::device_reset()
 	m_internal_ram_count = 0;
 	m_known_unimplemented_count = 0;
 	m_unknown_count = 0;
+
+	m_idma_cmr = 0;
+	m_idma_sapr = 0;
+	m_idma_dapr = 0;
+	m_idma_bcr = 0;
+	m_idma_csr = 0;
+	m_idma_fcr = 0;
+	m_idma_active = false;
+	m_idma_dest = 0;
+	m_idma_remaining = 0;
 }
 
 
@@ -201,7 +243,7 @@ mc68302_device::sib_access_class mc68302_device::classify_offset(uint16_t byte_o
 {
 	if (byte_offset <= 0x03ff) return sib_access_class::internal_ram; // dual-port RAM proper -- plain memory, not a register
 	if (byte_offset <= 0x07ff) return sib_access_class::known_unimplemented; // SCC/SMC parameter RAM
-	if (byte_offset <= 0x0811) return sib_access_class::known_unimplemented; // IDMA: CMR/SAPR/DAPR/BCR/CSR/FCR
+	if (byte_offset <= 0x0811) return sib_access_class::known_unimplemented; // IDMA reserved bytes only (0x0800-01, 0x080f, 0x0811); CMR/SAPR/DAPR/BCR/CSR/FCR are `known`, intercepted in classify_full()/internal_r()/internal_w() before this fallback is consulted
 	if (byte_offset <= 0x0819) return sib_access_class::known_unimplemented; // interrupt controller: GIMR/IPR/IMR/ISR
 	if (byte_offset >= 0x081e && byte_offset <= 0x0823) return sib_access_class::known_unimplemented; // Port A
 	if (byte_offset >= 0x0840 && byte_offset <= 0x084d) return sib_access_class::known_unimplemented; // Timer 1 + watchdog
@@ -221,6 +263,9 @@ mc68302_device::sib_access_class mc68302_device::classify_full(uint16_t byte_off
 	case OFFSET_PBCNT: case OFFSET_PBDDR: case OFFSET_PBDAT: case OFFSET_FC6860:
 	case OFFSET_BR0: case OFFSET_OR0: case OFFSET_BR1: case OFFSET_OR1:
 	case OFFSET_BR2: case OFFSET_OR2: case OFFSET_BR3: case OFFSET_OR3:
+	case OFFSET_IDMA_CMR: case OFFSET_IDMA_SAPR_HI: case OFFSET_IDMA_SAPR_LO:
+	case OFFSET_IDMA_DAPR_HI: case OFFSET_IDMA_DAPR_LO: case OFFSET_IDMA_BCR:
+	case OFFSET_IDMA_CSR: case OFFSET_IDMA_FCR:
 		return sib_access_class::known;
 	default:
 		return classify_offset(byte_offset);
@@ -273,6 +318,34 @@ void mc68302_device::set_pb_input(unsigned bit, bool level)
 }
 
 
+bool mc68302_device::idma_transfer_in(uint8_t data)
+{
+	if (!m_idma_active || !m_idma_remaining)
+		return false;
+
+	// Destination increments (RAM buffer); source does not (this is a
+	// fixed peripheral register on the real board -- see
+	// docs/asr10/investigations/idma-implementation-plan.md item 4 on
+	// $FC5803/SAPR). This device does not dereference SAPR at all: the
+	// caller already pulled `data` from the source device directly (e.g.
+	// upd765_family_device::dma_r()), matching this step's deliberate
+	// choice not to implement bus-mastering/arbitration
+	// (docs/mc68302/idma-spec.md's own caveat against a transfer engine
+	// that "silently appears to work" without it).
+	m_s_program->write_byte(m_idma_dest, data);
+	m_idma_dest++;
+	m_idma_remaining--;
+
+	if (!m_idma_remaining)
+	{
+		m_idma_active = false;
+		m_idma_csr |= 0x01; // DONE/success, docs/mc68302/idma-spec.md CSR bit 0
+		return true;
+	}
+	return false;
+}
+
+
 uint16_t mc68302_device::internal_r(offs_t offset, uint16_t mem_mask)
 {
 	const uint16_t byte_offset = uint16_t(offset << 1);
@@ -302,6 +375,32 @@ uint16_t mc68302_device::internal_r(offs_t offset, uint16_t mem_mask)
 	case OFFSET_OR0: case OFFSET_OR1: case OFFSET_OR2: case OFFSET_OR3:
 		m_known_count++;
 		return m_sim->read_or((byte_offset - OFFSET_OR0) / 4) & mem_mask;
+	case OFFSET_IDMA_CMR:
+		m_known_count++;
+		return m_idma_cmr & mem_mask;
+	case OFFSET_IDMA_SAPR_HI:
+		m_known_count++;
+		return uint16_t(m_idma_sapr >> 16) & mem_mask;
+	case OFFSET_IDMA_SAPR_LO:
+		m_known_count++;
+		return uint16_t(m_idma_sapr) & mem_mask;
+	case OFFSET_IDMA_DAPR_HI:
+		m_known_count++;
+		return uint16_t(m_idma_dapr >> 16) & mem_mask;
+	case OFFSET_IDMA_DAPR_LO:
+		m_known_count++;
+		return uint16_t(m_idma_dapr) & mem_mask;
+	case OFFSET_IDMA_BCR:
+		m_known_count++;
+		return m_idma_bcr & mem_mask;
+	case OFFSET_IDMA_CSR:
+		m_known_count++;
+		// CSR is documented 8-bit at the even byte of this word
+		// (docs/mc68302/idma-spec.md); measured reads used mask=$FF00.
+		return (mem_mask & 0xff00) ? (uint16_t(m_idma_csr) << 8) : 0x0000;
+	case OFFSET_IDMA_FCR:
+		m_known_count++;
+		return (mem_mask & 0xff00) ? (uint16_t(m_idma_fcr) << 8) : 0x0000;
 	default:
 		break;
 	}
@@ -354,6 +453,68 @@ void mc68302_device::internal_w(offs_t offset, uint16_t data, uint16_t mem_mask)
 	case OFFSET_OR0: case OFFSET_OR1: case OFFSET_OR2: case OFFSET_OR3:
 		m_known_count++;
 		m_sim->write_or((byte_offset - OFFSET_OR0) / 4, data, mem_mask);
+		return;
+	case OFFSET_IDMA_CMR:
+	{
+		m_known_count++;
+		COMBINE_DATA(&m_idma_cmr);
+		// STR, measured: clear ($0002) in the shared vector-$51 prelude
+		// write that recurs at every IACK regardless of transfer state,
+		// set ($0D51, bit 0) only in the write immediately before READ
+		// DATA -- the one bit in CMR with a clean, repeatable on/off
+		// correlation to "this write starts a transfer"
+		// (docs/asr10/investigations/idma-implementation-plan.md item 6).
+		// Source/destination increment direction is not decoded from CMR
+		// at all -- hardwired by idma_transfer_in() instead, since the
+		// source is necessarily a fixed peripheral register and the
+		// destination is necessarily incrementing memory; guessing the
+		// wrong CMR bits for that would be worse than not decoding them.
+		if (BIT(m_idma_cmr, 0) && m_idma_bcr > 0)
+		{
+			m_idma_dest = m_idma_dapr;
+			// Measured BCR was 513 for a 512-byte sector transfer; this
+			// implements "transfer (BCR-1) bytes" as the least speculative
+			// reading that still produces 512, not a unit/scaling
+			// reinterpretation of BCR's bytes. Unverified beyond this one
+			// measurement -- see idma-register-map-probe.md item 5 and
+			// idma-implementation-plan.md.
+			m_idma_remaining = uint32_t(m_idma_bcr) - 1;
+			m_idma_active = true;
+			m_idma_csr = 0;
+		}
+		return;
+	}
+	case OFFSET_IDMA_SAPR_HI:
+		m_known_count++;
+		m_idma_sapr = (m_idma_sapr & 0x0000ffff) | (uint32_t(data & mem_mask) << 16);
+		return;
+	case OFFSET_IDMA_SAPR_LO:
+		m_known_count++;
+		m_idma_sapr = (m_idma_sapr & 0xffff0000) | uint32_t(data & mem_mask);
+		return;
+	case OFFSET_IDMA_DAPR_HI:
+		m_known_count++;
+		m_idma_dapr = (m_idma_dapr & 0x0000ffff) | (uint32_t(data & mem_mask) << 16);
+		return;
+	case OFFSET_IDMA_DAPR_LO:
+		m_known_count++;
+		m_idma_dapr = (m_idma_dapr & 0xffff0000) | uint32_t(data & mem_mask);
+		return;
+	case OFFSET_IDMA_BCR:
+		m_known_count++;
+		COMBINE_DATA(&m_idma_bcr);
+		return;
+	case OFFSET_IDMA_CSR:
+		m_known_count++;
+		// CSR is an event register, write-one-to-clear per the manual's
+		// general event-register rule (docs/mc68302/idma-spec.md).
+		if (mem_mask & 0xff00)
+			m_idma_csr &= ~uint8_t(data >> 8);
+		return;
+	case OFFSET_IDMA_FCR:
+		m_known_count++;
+		if (mem_mask & 0xff00)
+			m_idma_fcr = uint8_t(data >> 8);
 		return;
 	default:
 		break;

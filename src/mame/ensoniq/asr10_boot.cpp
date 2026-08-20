@@ -135,6 +135,7 @@ private:
 
 	TIMER_CALLBACK_MEMBER(lrclk_toggle);
 	u8 maincpu_iack_r(u8 level);
+	void idma_drq_w(int state);
 
 	bool probe_or_alias_region_index(u32 address, u32 &index, u32 &word_index) const;
 	u16 probe_or_alias_region_r_at(u32 base, offs_t offset, u16 mem_mask);
@@ -412,6 +413,45 @@ u8 asr10_boot_state::maincpu_iack_r(u8 level)
 		return m_maincpu->irq1_ack_vector();
 
 	return m68000_base_device::autovector(level);
+}
+
+
+// Minimal IDMA board policy (docs/asr10/investigations/
+// idma-implementation-plan.md): board-side glue only. The generic
+// register/transfer/count bookkeeping lives on mc68302_device
+// (idma_transfer_in()); this driver just supplies FDC-specific knowledge
+// -- pull a byte via dma_r() (not the CPU-visible FIFO port) and assert
+// terminal count once the channel reports the transfer complete, so the
+// FDC's own live transfer state machine ends the command and moves to
+// result phase (upd765_family_device::tc_w()). Without the tc_w() call,
+// upd765.cpp's own sector-boundary check (command[4]==command[6], i.e.
+// R==EOT, guarded by `if(!tc_done)`) reports abnormal termination/
+// end-of-cylinder even after every byte has been correctly transferred --
+// exactly the "overrun again, later" failure mode this was written to
+// avoid; see docs/asr10/investigations/idma-implementation-plan.md.
+//
+// MUST check idma_channel_active() before touching the FDC at all:
+// upd765_family_device::enable_transfer() asserts DRQ on every transfer,
+// PIO included -- there is no `else` between its PIO/internal_drq branch
+// and its unconditional `if(!drq) set_drq(true)`. An earlier version of
+// this handler called dma_r() unconditionally on every DRQ assertion and
+// broke plain boot-to-FILE1 (regression fell to 1/5, "PLEASE INSERT DISK"
+// even with media mounted): it was silently popping bytes out of the
+// FDC's FIFO during the boot's own unrelated polled READ DATA transfers,
+// desyncing the CPU's own fifo_r() reads of the same data. Caught by the
+// regression suite, reverted, root-caused against upd765.cpp before
+// retrying -- not guessed around.
+void asr10_boot_state::idma_drq_w(int state)
+{
+	if (!state || !m_maincpu->idma_channel_active())
+		return;
+
+	const u8 data = m_fdc->dma_r();
+	if (m_maincpu->idma_transfer_in(data))
+	{
+		m_fdc->tc_w(true);
+		m_fdc->tc_w(false);
+	}
 }
 
 
@@ -772,10 +812,25 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	// correctly through RECALIBRATE, SEEK 0F 00 01, and READ DATA $46 --
 	// each a genuine vector-$51 delivery with $0402 correctly populated by
 	// the instrument-load's own RECALIBRATE issuer -- then stops at a
-	// legitimate `DISK ERROR - LOST DATA` (uPD765 ST1 overrun) because
-	// MC68302 IDMA is not implemented. That is the real next blocker.
+	// legitimate `DISK ERROR - LOST DATA` (uPD765 ST1 overrun) -- MC68302
+	// IDMA was not implemented at that point.
+	//
+	// Now wired to the minimal IDMA in mc68302_device (idma_drq_w() above,
+	// docs/asr10/investigations/idma-implementation-plan.md): does not
+	// deliver vector $4B (IDMA's own internal-INRQ completion path).
+	// Measured: at every observed vector-$51 IACK, IMR is $E480, and bit
+	// 11 (IDMA's INRQ source, docs/mc68302/interrupt-source-map.md) is
+	// clear -- $E480 = $C080 (ROM's PB9/10/11 unmask) | $2400 (OS's SCC1+
+	// SCC2 unmask); bit 10, not bit 11, is what's set in that nibble.
+	// IDMA's completion is masked throughout the observed window, and all
+	// four completions actually observed for this request (RECALIBRATE,
+	// two SEEKs, READ DATA's own result) arrived via the FDC's own INTRQ
+	// through this same external-IRQ1/vector-$51 path, not vector $4B --
+	// so this driver does not implement the internal IPR/IMR/ISR path or
+	// vector $4B delivery, only the transfer itself.
 	m_fdc->set_ready_line_connected(false);
 	m_fdc->intrq_wr_callback().set_inputline(m_maincpu, 1);
+	m_fdc->drq_wr_callback().set(FUNC(asr10_boot_state::idma_drq_w));
 
 
 	// The uPD72069 sees this child connector as drive 0 via the conventional "fdc:0" tag.
