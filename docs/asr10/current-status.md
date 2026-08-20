@@ -720,6 +720,54 @@ file matching what a new "routine-index.md" would have been) with 15
 newly-established addresses from this series, rather than creating a
 duplicate catalog.
 
+## Is the sound right, not just present? Locked. (docs/asr10/investigations/keyboard-and-sample-bridge-7.md)
+
+Scope note for all of this: ES5510 stays `set_disable()`'d — every
+judgment below is the dry ES5506 path only.
+
+**Pitch**: FC (frequency control) is vibrato-modulated (~±3-4%,
+~11-12ms period), not static — the first post-onset write is the base
+pitch. Octave test (`$3C` vs `$48`): FC ratio 2.0011, and re-measured
+audio pitch via autocorrelation (the prior turn's zero-crossing
+~720Hz figure was wrong — overcounted harmonics) gives a *stable*
+~136.8-141Hz for `$3C`, doubling to ~272.7-274.3Hz for `$48` — the
+firmware's internal pitch math is confirmed correct end to end.
+Absolute pitch (measured ~137Hz vs. MIDI-nominal 261.6Hz for note 60)
+stays `[OPEN]`: the octave test is clock-invariant by construction, so
+it cannot distinguish "sample's own recorded pitch isn't tuned to
+261.6Hz" from "uniform clock error" — searched lowmem for a
+wavesample-header template explaining it and found none (register
+values are computed at note-on, not copied verbatim). Clock left
+unchanged, per instruction; a for-reference-only "what clock would
+match" figure (~30.6MHz, not a clean crystal value) is reported but
+not applied.
+
+**Voice behavior**: note-off measurably accelerates silencing via
+`LVRAMP`/`RVRAMP` going negative ~46ms after note-off (not a `CR`
+`STOP`-bit change) — confirmed audibly, ~17x quieter at a matched
+timestamp vs. held-without-note-off. Looping: audio persists well past
+the single-pass loop duration (3.15s) when held without note-off,
+consistent with `CR`'s `LOOPMASK` bits both being set. Polyphony: 3
+simultaneous notes → 3 distinct voices, 3 correctly-scaled FC values.
+10 sequential notes → 10 distinct voices, no premature stealing (full
+32-voice exhaustion not tested, `[OPEN]`, explicitly bounded).
+
+**8th regression test landed**: `note_audio.lua` (structural) +
+`check_note_audio.py` (the real audio-level gate: peak amplitude and
+autocorrelation-measured frequency against a band built from the
+above measurements, not an external assumption) wired into
+`regression-test.sh`'s new `run_test_audio()`. Both halves
+fault-injection-tested. Suite is now 8/8.
+
+**Journaled**: `es5506_wavetable_bank1_map()` reusing
+`low_rom_or_lowmem_r`/`lowmem_w` gives ES5506 bank 1 visibility into
+the boot-time ROM overlay real hardware's sample bus (DRAM-only) never
+has — harmless in practice (notes only trigger post-boot) but written
+down as a known simplification. Also restated the `keyboard-and-
+sample-bridge-6.md` correction: `$100000-$1FFFFF` holds a
+`word=address>>10` RAM-test pattern, not zero-fill — prior "clear
+sweep" phrasing was imprecise about content, not write count.
+
 ## Open questions
 
 - **Critical next:** what happens after `FILE LOADED` — the concrete

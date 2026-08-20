@@ -455,6 +455,16 @@ void asr10_boot_state::es5506_wavetable_bank1_map(address_map &map)
 	// $000000-$07FFFF matches mem_map's $000000-$0FFFFF (1MB) exactly,
 	// same technique already validated for bank 0's $100000-$1FFFFF
 	// share. mem_map() itself is untouched.
+	//
+	// Known simplification (keyboard-and-sample-bridge-7.md): reusing
+	// low_rom_or_lowmem_r gives ES5506 bank 1 the same ROM overlay
+	// mem_map's CPU side sees during boot (cs0_covers(0)). Real
+	// hardware's ES5506 sample bus faces DRAM only, never the ROM
+	// overlay -- this driver's bank 1 is momentarily wider than the
+	// real chip's view. Harmless for playback (notes only trigger
+	// post-boot, once the overlay is long gone and cs0_covers(0) is
+	// false), but written down per project policy on known
+	// simplifications.
 	map(0x000000, 0x07ffff).rw(FUNC(asr10_boot_state::low_rom_or_lowmem_r), FUNC(asr10_boot_state::lowmem_w));
 }
 
