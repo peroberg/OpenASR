@@ -31,6 +31,48 @@ Offsets are from the MC68302 internal base.
 | `0x0810` | `FCR` | 8 | undefined | function code register for IDMA bus cycles |
 | `0x0811` | reserved | 8 | reserved | not implemented |
 
+### CMR Bit Layout
+
+Added 2026-08-20 (ASR-10 tree), sourced from the manual's own OCR full
+text (archive.org, `bitsavers_motorola68dMultiProtocolProcessorUsersManualRev2Ju_21005972`,
+section 3.1.2.1) via a web fetch, not from a direct read of the original
+scanned table — extraction provenance, not a scan/transcription of the
+table itself. Treat as [Likely], not [Verified], until visually
+cross-checked against the actual scanned page.
+
+| Bit(s) | Field | Meaning |
+|---:|---|---|
+| 15 | reserved | — |
+| 14 | `ECO` | External control option: whether external control signals apply to source or destination transfers |
+| 13 | `INTN` | Interrupt-on-normal-completion enable |
+| 12 | `INTE` | Interrupt-on-error enable |
+| 11-10 | `REQG` | Request generation: `00`=limited rate, `01`=maximum rate, `10`=burst, `11`=cycle steal |
+| 9 | `SAPI` | Source address pointer increment enable |
+| 8 | `DAPI` | Destination address pointer increment enable |
+| 7-6 | `SSIZE` | Source size: `01`=byte, `10`=word |
+| 5-4 | `DSIZE` | Destination size: `01`=byte, `10`=word |
+| 3-2 | `BT` | Burst transfer bus-bandwidth cap: `00`=75%, `01`=50%, `10`=25%, `11`=12.5% |
+| 1 | `RST` | Software reset |
+| 0 | `STR` | Start |
+
+**The one value this driver has ever observed, `$0D51`, decoded against
+this table:** `STR=1`, `RST=0`, `BT=00`, `DSIZE=01`(byte), `SSIZE=01`(byte),
+`DAPI=1`, `SAPI=0`, `REQG=11`(cycle steal), `INTE=0`, `INTN=0`, `ECO=0`.
+
+**Cross-validation, not derivation** — two independent facts already
+established by measurement, not by this table, both match it exactly:
+`SAPI=0`/`DAPI=1` (source fixed, destination increments) is precisely
+what `asr10_boot.cpp`'s `idma_transfer_in()` already hardcodes and what
+dozens of successful transfers this session have exercised;
+`INTN=INTE=0` explains *why* vector `$4B` never fires as a second,
+independent mechanism alongside the already-measured `IMR` bit-11 mask
+(`idma-implementation-plan.md`) — the channel does not even request that
+interrupt, not just get blocked from delivering it. This strengthens
+confidence in the table without proving it generalizes:
+`sample-topology-closure.md`'s own caution applies here too — **one
+observed value does not validate a field decode** for `REQG`/`SSIZE`/
+`DSIZE`/`BT`/`ECO`, which have no independent behavioral check.
+
 `CSR` is an event register. Event bits are write-one-to-clear according
 to the manual's general event-register rule.
 

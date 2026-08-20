@@ -17,6 +17,7 @@ Körs av `docs/asr10/regression-test.sh` och ska underhållas.
 | `button_upper.lua` | Övre knappporten kan drivas från Lua; `BTN_23` ger två RHRB-byte. |
 | `nodisk.lua` | Negativ kontroll för disk/index: utan disk visas `PLEASE INSERT DISK`. |
 | `file_loaded.lua` | `BTN_0A/23/02` laddar `JM DIGI SYN`: `FILE LOADED` *och* IDMA-kanalen flyttar hela det uppmätta 172544-byte-lasset (21 arms). Skyddar mot att inläsningen stannar tyst tidigt bakom en oförändrad displaytext. |
+| `mc68302_guards.lua` | En ren boot plus inläsning ska ge noll oväntade undantagsvektorer, noll träffar på SIB-register utanför den kalibrerade uppsättningen, och noll IDMA-larm (`lib/asr10_guards.lua`). Se `investigations/mc68302-consolidation.md`. |
 
 ## Verktyg
 
@@ -26,6 +27,7 @@ Körs av `docs/asr10/regression-test.sh` och ska underhållas.
 |---|---|
 | `lib/asr10_display.lua` | Läser VFD-output och översätter segmentmönster till rå text. |
 | `lib/asr10_regression.lua` | Gemensam testhjälpare för PASS/FAIL, displayväntan och maskinavslut. |
+| `lib/asr10_guards.lua` | MC68302-vakter: undantagsvektor (kalibrerad allowlist), SIB-täckning (klassificering portad från `mc68302_device`), IDMA SAPR/CMR/BCR. Aggregerade larm, första förekomst per villkor. Se `investigations/mc68302-consolidation.md`. |
 
 ## Experiment
 
@@ -67,3 +69,5 @@ Engångsscript vars fråga redan är besvarad eller journalförd. De ligger i
 | `archive/sample-ram-and-voice-registers-probe.lua` | Del 1+2 av ljudvägskartläggningen: `$100000-$1FFFFF` får 524290 skrivningar, samtliga före `FILE 1`, noll under och efter inläsningen (vittnat mot en syskon-tap). Avkodar alla 32 rösters CR/START/END/ACCUM: röst 0 använder bank 0, röst 1-31 delar identiskt värde i bank 1 -- som är helt okopplad (`.noprw()`) i den här maskinkonfigurationen. Se `investigations/sample-ram-and-voice-registers.md`. |
 | `archive/sample-topology-and-payload-probe.lua` | Stänger sampeltopologin numeriskt: röst 0:s START/END/ACCUM omvandlade till ordadress landar innanför `$00000-$7FFFF` -- samma intervall som `$100000-$1FFFFF`. Karakteriserar även det inlästa 172544-byte-lasset (låg nollandel, hela bytevärdesspannet använt). Hittade och fixade samma BAR-återinstallationsfälla (methods-static-analysis.md #8.5) igen -- IDMA-tappen måste installeras efter FILE 1. Se `investigations/sample-topology-closure.md`. |
 | `archive/wavwrite-capture.lua` | Del 4: bootar, laddar JM DIGI SYN, låter maskinen gå i viloläge 8s (ingen knapptryckning -- ingen klaviaturmodell finns) under `-wavwrite`-inspelning. Resultat: exakt tystnad hela vägen, förväntat given att ingen not någonsin triggas. Se samma journal. |
+| `archive/exception-vector-inventory.lua` | Del 1 av MC68302-konsolideringen: en första variant (tap över hela vektortabellen $000000-$0000FF) gav uppenbart nonsens (en vektor "avfyrad" 1,16 miljoner gånger) -- bevis på att firmware återanvänder delar av det utrymmet för vanlig data. Omskriven till `cpu_space`-IACK-tappar (samma etablerade teknik som `$51`/IRQ1/IRQ6 hela projektet bygger på): exakt två (nivå,vektor)-par avfyras någonsin, nivå1→$51 och nivå6→$56. Se `investigations/mc68302-consolidation.md`. |
+| `archive/sib-coverage-inventory.lua` | Del 2: fullständig täckningstabell för $FC6000-$FC6FFF, klassificerad mot `mc68302_device`s egen `classify_offset()`/`classify_full()`. Noll `unknown`-träffar, 88 distinkta `known_unimplemented`-offsets (legitim, omodellerad firmware-trafik). Fångar också alla observerade CMR/SAPR/BCR-värden åt Del 3. Se samma journal. |

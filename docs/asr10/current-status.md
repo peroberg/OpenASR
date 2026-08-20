@@ -431,6 +431,41 @@ completion interrupt are no longer open questions — see
 `investigations/idma-implementation-plan.md`, and
 `investigations/tc-reentrancy-probe.md`.
 
+## MC68302 consolidation (silent assumptions made loud)
+
+`investigations/mc68302-consolidation.md`: before any keyboard/new
+functionality work, every place the MC68302 model guesses, is missing, or
+stays silent was inventoried and, where possible, turned into an
+aggregated Lua guard (`docs/asr10/lua/lib/asr10_guards.lua`) — zero new
+C++, zero new environment flags, per the standing Lua-first rule.
+- **Exceptions:** a blanket vector-table read tap produces obvious false
+  positives (one vector "fired" 1.16 million times in ~22s) — proof
+  firmware reuses that address range for ordinary data, not exception
+  activity. No Lua-exposed API exists for MAME's own exception-point
+  mechanism either. TRAP/internal-CPU-exception inventory is therefore
+  `[OPEN]`. What *is* reliable and now guarded: `cpu_space` IACK taps show
+  exactly two `(level, vector)` pairs ever fire during a clean boot+load
+  — level 1→`$51`, level 6→`$56`.
+- **SIB coverage:** every `$FC6000-$FC6FFF` offset firmware touches,
+  classified via the device's own `classify_offset()`/`classify_full()`.
+  Zero `unknown` accesses; 88 distinct `known_unimplemented` offsets
+  (SCC parameter RAM, GIMR/IPR/IMR/ISR, Port A, SCC1-3 command/mode —
+  legitimate, unmodeled, not bugs). Guarded: alarm on anything outside
+  this calibrated set.
+- **IDMA's three debts:** SAPR not payable now (needs a `mem_map` change,
+  blocked on E2) but guarded (alarm if ever ≠ `$FFFC5803`, the only value
+  ever observed). CMR bit layout added to `docs/mc68302/idma-spec.md`
+  (sourced from the manual's OCR text, `[Likely]` not `[Verified]`) and
+  cross-validated — decoding the one known value, `SAPI=0`/`DAPI=1`
+  matches the already-hardcoded transfer direction exactly, and
+  `INTN=INTE=0` independently explains why vector `$4B` never fires.
+  Not reimplemented in C++ (one, now two, data points don't validate a
+  general field decoder) — guarded instead: alarm on any CMR value
+  outside `{$0002, $0D51}`, any BCR outside `{$0201, $0E01, $2801}`.
+- **Gate:** `docs/asr10/lua/mc68302_guards.lua`, 7th regression test,
+  fault-injection tested (a deliberately-broken allowlist produced one
+  aggregated alarm, not thousands, and correctly failed). Suite: 7/7.
+
 ## Open questions
 
 - **Critical next:** what happens after `FILE LOADED` — the concrete

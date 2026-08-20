@@ -8,6 +8,9 @@
 # nodisk:  no mounted disk produces PLEASE INSERT DISK.
 # file_loaded: BTN_0A/23/02 loads JM DIGI SYN -- FILE LOADED *and* the IDMA
 #              channel moves the full measured 172544-byte payload.
+# mc68302_guards: a clean boot + load produces zero unexpected exception
+#                 vectors, zero uninventoried SIB-register hits, zero
+#                 IDMA (SAPR/CMR/BCR) anomalies.
 
 set -u
 
@@ -50,6 +53,7 @@ run_test button docs/asr10/lua/button.lua "$IMAGE" || failures=$((failures + 1))
 run_test button_upper docs/asr10/lua/button_upper.lua "$IMAGE" || failures=$((failures + 1))
 run_test nodisk docs/asr10/lua/nodisk.lua "" || failures=$((failures + 1))
 run_test file_loaded docs/asr10/lua/file_loaded.lua "$IMAGE" || failures=$((failures + 1))
+run_test mc68302_guards docs/asr10/lua/mc68302_guards.lua "$IMAGE" || failures=$((failures + 1))
 
 if [ "$failures" -ne 0 ]; then
 	echo "FAIL regression failures=${failures}"
