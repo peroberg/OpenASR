@@ -51,7 +51,8 @@ Engångsscript vars fråga redan är besvarad eller journalförd. De ligger i
 | `archive/idma_register_probe.lua` | Första IDMA-registerkarteringen. Hittade eget mätfel: enbyte-rekonstruktionen korrumperade 32-bitars SAPR/DAPR-ordskrivningar. Se `investigations/idma-register-map-probe.md`. |
 | `archive/idma_register_probe2.lua` | Rättad registerkartering, rått offset/data/mask utan rekonstruktion. Källan till den slutgiltiga registerkartan. |
 | `archive/idma_result_check.lua` | Kontrollerade utfallet av den landade IDMA-implementationen: `DISK ERROR - LOST DATA` borta, ersatt av `DISK NOT RESPONDING` vid t≈23,4s. |
-| `archive/disk-not-responding-probe.lua` | Diagnostiserade `DISK NOT RESPONDING`: READ DATA:s eget avslutningsavbrott uteblir helt, 4,994s tystnad, sedan generisk firmware-timeout. Motbevisade datarat-hypotesen. Se `investigations/disk-not-responding-probe.md`. |
+| `archive/disk-not-responding-probe.lua` | Diagnostiserade `DISK NOT RESPONDING`: READ DATA:s eget avslutningsavbrott uteblir helt, 4,994s tystnad, sedan generisk firmware-timeout. Motbevisade datarat-hypotesen. Återanvänd efter fixen (`investigations/tc-reentrancy-probe.md`) för att bekräfta 32 rena `$51`-leveranser fram till `FILE LOADED`. |
+| `archive/intrq-assertion-probe.lua` | Skiljde "INTRQ hävdes aldrig" från "hävdes men levererades inte": passiv MSR-polling visade `main_phase` fast i `PHASE_EXEC` hela tystnaden, aldrig `PHASE_RESULT`; SR-masken öppnade 576 gånger utan ett enda avbrott. Se `investigations/tc-reentrancy-probe.md`. |
 | `archive/load_departure.lua` | PC-/schedulerprobe när FDC-pollningen upphör. |
 | `archive/load_destination.lua` | A1-destinationsprobe; den första globala A1-kartan är `[RETRACTED]`. |
 | `archive/load_dma_probe.lua` | DMA-fönsterprobe för instrumentinläsningen. |

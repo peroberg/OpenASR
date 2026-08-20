@@ -1,5 +1,11 @@
 # DISK NOT RESPONDING Probe
 
+**Resolved:** `tc-reentrancy-probe.md` confirmed this document's reentrancy
+hypothesis by direct measurement (INTRQ genuinely never asserted, not just
+undelivered) and fixed it (`tc_w()` deferred to a zero-delay timer). `DISK
+NOT RESPONDING` is gone; the instrument-load sequence now reaches `FILE
+LOADED`. This document's diagnosis stands as written below.
+
 ## Scope
 
 `idma-implementation-plan.md` resolved the `DISK ERROR - LOST DATA`

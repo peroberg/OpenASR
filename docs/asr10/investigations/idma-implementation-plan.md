@@ -15,9 +15,13 @@ mistakes this slice for a general IDMA implementation:
    first time firmware attempts to save, not just underperform.
 2. **`BCR-1` has no known register semantics behind it** — a choice that
    produces the correct byte count for this one single-sector (`N=2`)
-   request, not a decoded hardware convention. Must be re-examined the
-   first time a multi-sector transfer or a different `N` is observed; it
-   may not generalize.
+   request, not a decoded hardware convention. **Update**
+   (`tc-reentrancy-probe.md`): now confirmed working across many separate
+   single-sector transfers in one instrument-load run (`R=$0B` through at
+   least `$0D`, each its own CMR-arm/`BCR` cycle) — strengthened, not the
+   single untested data point it was. Still not tested against one `BCR`
+   value spanning a multi-sector transfer in a single armed channel; may
+   not generalize to that case.
 3. **`$FC5803` (SAPR's measured value) is inside CS3
    (`$FC4000-$FC5FFF`, confirmed in `hardware-map.md`/`memory-map.md`),
    but `mem_map` decodes `$FC5020` and above as a generic `.ram()`
@@ -214,9 +218,18 @@ recur — the transfer completes and terminal count is delivered correctly.
 The instrument-load sequence proceeds substantially further (from
 `t=18.3s`, where it previously stopped, to `t=23.4s`) before hitting a
 **different** firmware error, `DISK NOT RESPONDING`. Reported exactly as
-observed, not diagnosed: what specifically times out or fails between
-`t=18.4s` and `t=23.4s` is not investigated here — new, later-stage work,
-out of scope for this task.
+observed, not diagnosed at the time: what specifically times out or fails
+between `t=18.4s` and `t=23.4s` was new, later-stage work, out of scope
+for this task.
+
+**Update:** diagnosed and fixed, `tc-reentrancy-probe.md`. `DISK NOT
+RESPONDING` was itself caused by a reentrancy bug in this implementation's
+`tc_w()` call, not a downstream/unrelated failure — `idma_drq_w()` called
+`tc_w()` synchronously from inside `upd765_family_device`'s own live
+per-bit engine, which could never let the FDC's state machine reach
+`command_end()`. Fixed by deferring only `tc_w()` to a zero-delay timer.
+`DISK NOT RESPONDING` is gone; the instrument-load sequence now reaches
+`FILE LOADED`.
 
 ## Relation To The Working `$51` Path
 

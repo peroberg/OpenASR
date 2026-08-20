@@ -280,6 +280,39 @@ Det gäller alla adresser i det här projektet, inte bara
 trädet ska betraktas som omätt — inte nödvändigtvis fel, men inte heller
 bekräftat — tills det har fått ett sådant vittne.
 
+## 8.8 En DMA-kontroller är en självständig bussmästare
+
+En riktig DMA-kontroller svarar på en förfrågningslinje och kör sina egna
+busscykler på sitt eget schema, oberoende av den periferikrets som
+begärde överföringen. Modellerar man den i stället som ett återanrop
+inifrån periferikretsens egen tillståndsmaskin — samma anropsstack, samma
+funktionsanrop, ingen egen kontext — har man inte byggt en kontroller. Man
+har byggt en callback som råkar heta DMA.
+
+**Belagt:** en minimal IDMA-kanal anropade `tc_w()` synkront inifrån
+`upd765_family_device`s `drq_wr_callback()`, som i sin tur hävs inifrån
+enhetens egen `live_run()`-loop (`fifo_push() -> enable_transfer() ->
+drq_cb`). `tc_w()` anropar `live_sync()`, som kan återinträda
+`live_run()` — reentrant, medan den yttre `live_run()`-invokeringen som
+ledde hit fortfarande låg på stacken, mitt i sin egen iteration, med delat
+föränderligt tillstånd (`cur_live`) bara delvis uppdaterat. Effekten var
+mätbar och entydig: enhetens `main_phase` fastnade permanent i
+`PHASE_EXEC`, `command_end()` kördes aldrig, och INTRQ hävdes aldrig —
+inte "levererades inte", utan "hävdes aldrig". Fem sekunders tystnad,
+576 tillfällen då CPU:ns mask var öppen, noll avbrott. Lösningen var att
+flytta enbart `tc_w()`-anropet till en timer med noll fördröjning, så att
+det kör på sitt eget anrop utanför periferikretsens stack — precis den
+separation en riktig oberoende TC-bussledning skulle ge.
+→ `docs/asr10/investigations/tc-reentrancy-probe.md`
+
+**Regeln, i samma familj som "en PC-beroende stub är ingen
+hårdvarumodell":** båda namnger en genväg som ser ut som den riktiga
+mekanismen utifrån men är något strukturellt annat inifrån, och båda
+kostade projektet en specifik, uppmätt kraschsignatur innan skillnaden
+syntes. Ett återanrop som råkar flytta rätt byte vid rätt tillfälle är
+inte samma sak som en bussmästare, lika lite som ett värde som råkar
+matcha en observerad körning är samma sak som en avkodad registerbit.
+
 ## 9. Statik före stimulans
 
 Identifiera först, stimulera sedan. Inte för att statisk analys är finare, utan för att

@@ -339,42 +339,47 @@ request arrived via the already-working external-IRQ1/vector-`$51` path
 instead, so nothing in this flow needs `$4B`.
 
 Result, measured: the `DISK ERROR - LOST DATA` overrun is gone. The
-instrument-load sequence now proceeds from `t=18.3s` (previous stop) to
-`t=23.4s` before hitting a **different** firmware error, `DISK NOT
-RESPONDING`. **Diagnosed** (`investigations/disk-not-responding-probe.md`):
-READ DATA's own completion never produces a vector-`$51` IACK — 4.994
-seconds of total silence (no FDC access, no IDMA register write, no IACK
-of any kind) follow the transfer, then a generic firmware timeout/recovery
-(software reset from an unfamiliar PC) lands on the error display. Not a
-data-rate problem: the standing `upd72069` aux-`$88`-decodes-as-250kbit/s
-question was checked and is moot here — `asr10_boot.cpp` already forces
-`set_rate(500000)` right after that exact aux write
-(`ASR10_MISSING_FDC_RATE_SOURCE`, already active) — and even a genuinely
-halved rate could only account for ~8ms on a 512-byte transfer, not a
-~5000ms gap. `[Likely]`, not fixed: `idma_drq_w()` calls `tc_w()`
-synchronously/reentrantly from inside `upd765_family_device`'s own live
-per-bit engine (which is what invokes the DRQ callback in the first
-place), unlike a real DMA controller's independent TC line — plausibly
-preventing the state machine from ever reaching `command_end()`.
+instrument-load sequence then hit a different firmware error, `DISK NOT
+RESPONDING`, diagnosed and **now fixed**
+(`investigations/tc-reentrancy-probe.md`): `idma_drq_w()`'s `tc_w()` call
+was invoked synchronously/reentrantly from inside `upd765_family_device`'s
+own live per-bit engine (`fifo_push() -> enable_transfer() -> drq_cb`,
+itself inside `live_run()`'s own loop); `tc_w() -> live_sync()` could
+re-enter `live_run()` while the outer invocation was still on the stack,
+mid-iteration, with shared mutable state (`cur_live`) only partially
+updated. Measured effect: `main_phase` stuck permanently in `PHASE_EXEC`
+(confirmed by passively polling `$FC4001`/MSR, which stayed `$10` for the
+whole 4.994s silence and never showed `$D0`/`PHASE_RESULT`), so
+`command_end()` never ran and INTRQ was never asserted at all — not
+merely undelivered. Not a data-rate problem: the standing `upd72069`
+aux-`$88`-decodes-as-250kbit/s question was checked and is moot here —
+`asr10_boot.cpp` already forces `set_rate(500000)` right after that exact
+aux write (`ASR10_MISSING_FDC_RATE_SOURCE`, already active) — and even a
+genuinely halved rate could only account for ~8ms on a 512-byte transfer,
+not a ~5000ms gap.
 
-After implementation, repeat the `LOADING JM DIGI SYN` experiment and
-observe whether deferring `tc_w()` off the DRQ callback's own call stack
-(e.g. a zero-delay timer) lets READ DATA's completion interrupt fire.
+**Fix, one variable:** only `tc_w()` moved to a zero-delay `emu_timer`
+(`asr10_boot_state::idma_tc_deliver`), so it runs on its own call stack
+outside `live_run()` entirely; `dma_r()`/`idma_transfer_in()` stayed
+exactly where they were. Result: `DISK NOT RESPONDING` is gone, 32 clean
+vector-`$51` IACKs observed across multiple distinct sectors, and the
+instrument-load sequence now reaches **`FILE LOADED`**.
+
 RECALIBRATE completion, vector `$51`, SIS, SEEK, READ DATA `$46` issuance,
-and the READ DATA transfer/terminal-count byte-counting itself are no
-longer open questions — see `investigations/ready-line-artifact-probe.md`
-and `investigations/idma-implementation-plan.md`.
+the READ DATA transfer/terminal-count byte-counting, and READ DATA's own
+completion interrupt are no longer open questions — see
+`investigations/ready-line-artifact-probe.md`,
+`investigations/idma-implementation-plan.md`, and
+`investigations/tc-reentrancy-probe.md`.
 
 ## Open questions
 
-- **Critical next:** why READ DATA's completion interrupt never fires
-  (`investigations/disk-not-responding-probe.md`) — likely a reentrant
-  `tc_w()` call, not yet fixed. Runtime validation through vector `$51`/
-  SIS/SEEK/READ DATA/terminal-count byte-counting is done
-  (`investigations/ready-line-artifact-probe.md`,
-  `investigations/idma-implementation-plan.md`); the concrete `$23F6`
-  post-completion consumer remains open, reachable only once
-  `DISK NOT RESPONDING` is resolved.
+- **Critical next:** what happens after `FILE LOADED` — the concrete
+  `$23F6` post-completion consumer, next request class, and whether
+  payload `$02B600` survives to `$043E` (`architecture-handoff.md`'s
+  original open questions, now finally reachable). The completion-chain
+  side of this investigation (vector `$51`, IDMA transfer, terminal count,
+  READ DATA's own completion) is done.
 - **Physical board policy for storage IRQ1** remains formally `[OPEN]`
   (what physically drives IRQ1 on real hardware is still unverified), but
   is no longer blocking progress: the board-policy wiring plus a
@@ -477,10 +482,17 @@ Previous entries stand. Added by the static analysis:
   locked FDC→memory only, `BCR-1` unverified beyond one sector, `$FC5803`
   a `mem_map` gap not an implementation gap, `DAPR` confirmed honored).
 - `investigations/disk-not-responding-probe.md` — diagnoses the failure
-  that follows minimal IDMA: READ DATA's own completion interrupt never
-  fires (likely a reentrant `tc_w()` call, not fixed here); refutes the
-  standing FDC-rate hypothesis by source (already forced to 500kbit/s) and
-  by magnitude (a rate difference is ~8ms, the observed gap is ~5000ms).
+  that followed minimal IDMA: READ DATA's own completion interrupt never
+  fired (reentrant `tc_w()` call, hypothesized here); refutes the standing
+  FDC-rate hypothesis by source (already forced to 500kbit/s) and by
+  magnitude (a rate difference is ~8ms, the observed gap was ~5000ms).
+- `investigations/tc-reentrancy-probe.md` — confirms the reentrancy
+  diagnosis by measurement (INTRQ genuinely never asserted, not just
+  undelivered — `main_phase` stuck in `PHASE_EXEC`, 576 open mask windows
+  with zero IACKs), grounds it in `upd765.cpp` source, and fixes it:
+  `tc_w()` alone deferred to a zero-delay timer. Result: `DISK NOT
+  RESPONDING` gone, instrument-load reaches `FILE LOADED`. Argues for
+  (but does not land) moving the whole per-DRQ transfer to timer context.
 - `reference/boot-sequence.md`, `reference/subroutine-index.md`,
   `reference/os-code-extraction.md`, `reference/hardware-map.md` — as before, updated.
 - `static/README.md` — what the raw material is, how it was generated, what it does not
