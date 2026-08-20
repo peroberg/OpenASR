@@ -768,6 +768,35 @@ sample-bridge-6.md` correction: `$100000-$1FFFFF` holds a
 `word=address>>10` RAM-test pattern, not zero-fill — prior "clear
 sweep" phrasing was imprecise about content, not write count.
 
+## Does ES5506 read where we think it reads? Yes -- addressing hypothesis refuted (docs/asr10/investigations/keyboard-and-sample-bridge-8.md)
+
+Tested directly (not recomputed) whether `es5506_wavetable_bank1_map()`
+reusing `low_rom_or_lowmem_r` (a byte-addressed-CPU-space handler)
+against ES5506's word-addressed sample bus caused a word-vs-byte
+addressing bug that would halve playback rate/pitch. Tapped
+`es5506_host.spaces["bank1"]` directly (a real, Lua-addressable
+`addr_space`) instead of inferring from CPU-side register math.
+Calibrated the tap's units against a known transient placeholder
+`ACCUM` value (`0xDC4BC000>>11` matched the first observed fetch
+address exactly), isolated our note's voice from one other, unrelated,
+statically-parked background voice that dominates raw bank-1 traffic,
+and tracked its fetch position across three time windows: measured
+position matched predicted position (`start_word + rate*t`) within
+~0.05%, and measured advance rate matched the predicted 13,870
+words/sec within bucket-quantization noise. Closing proof: 20
+consecutive (address, fetched-value) pairs compared bit-exact against
+the CPU's own view of the same backing store — **20/20 exact
+matches**. **The addressing hypothesis is refuted with direct,
+bit-exact evidence**, not just recalculation. `ACTV=0x1F` (31,
+constant, never changes) confirmed; `m_sample_rate=31,250Hz` fixed;
+neither 29.76kHz nor 44.1kHz reachable from 16MHz at any `ACTV`, and
+moot regardless since `ACTV` never varies between measurements. No
+code changes follow (Del 3/4 were conditioned on confirming the bug).
+The ~1.91x absolute-pitch gap stays `[OPEN]`, now with the entire
+signal path (register → live fetch → output) verified bit-exact,
+narrowing the remaining candidate to the sample's own data/tuning
+rather than any addressing-layer cause.
+
 ## Open questions
 
 - **Critical next:** what happens after `FILE LOADED` — the concrete
