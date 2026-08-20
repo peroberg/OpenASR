@@ -655,6 +655,37 @@ and in the live run it wasn't even the branch taken.
 suggestive of "no voice/keygroup set up yet" rather than "sample not
 resident" — not measured this task.
 
+## Instrument selection was the missing step (docs/asr10/investigations/keyboard-and-sample-bridge-5.md)
+
+The ASR-10 manual states loading and *selecting* an instrument are two
+separate operations (eight Instrument•Sequence Track buttons, yellow
+LED = selected; unselected = no sound regardless of what's loaded).
+This project's entire prior series never pressed a select button.
+Swept all 64 panel buttons after `FILE LOADED`, watching lowmem
+`$330`/`$332` (the exact instrument-slot state `$FFB6C4` was already
+found reading): `BTN_02`, pressed from the idle screen (same button
+code used mid-load-dialog for a different, context-sensitive purpose),
+selects Instrument slot 1 — `$330` `$0000->$1098`, `$332` bit 0 set,
+display becomes the instrument name/volume screen.
+
+**With the instrument selected, both a panel key press and a MIDI
+note-on now produce real ES5506 voice allocation** — voice 1 and voice
+2 respectively, each with a full, correctly-shaped `CR`/`START`/`END`/
+`ACCUM` program. The three-turn "declining condition" descent
+(`-3.md`, `-4.md`) was tracing correctly-behaving firmware that
+legitimately does nothing without a selected instrument — not a bug.
+
+Still silent on `-wavwrite` (`peak=0`) despite the real voice writes:
+both voices land in **bank 1**, and `es5506_wavetable_map` only maps
+bank 0 (shared with CPU RAM) — banks 1-3 are `.noprw()`
+(`sample-ram-and-voice-registers.md`'s finding, now connected to a
+live play event for the first time). **Next lead**: why voice
+allocation picks bank 1 over bank 0 — either the instrument data
+itself specifies bank 1 (real hardware too, fix is mapping bank 1) or
+voice 0/bank 0 is firmware-reserved and this driver's bank wiring
+doesn't match real hardware's split (fix is on the `es5506_wavetable_map`
+side). Not measured yet.
+
 ## Open questions
 
 - **Critical next:** what happens after `FILE LOADED` — the concrete
