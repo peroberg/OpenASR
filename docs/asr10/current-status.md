@@ -797,6 +797,39 @@ signal path (register → live fetch → output) verified bit-exact,
 narrowing the remaining candidate to the sample's own data/tuning
 rather than any addressing-layer cause.
 
+## The clock was wrong, not the chip -- ES5506 moved to Y2 (docs/asr10/investigations/keyboard-and-sample-bridge-9.md)
+
+Changed the ES5506 clock from `XTAL(16'000'000)` (Y1, the MPU crystal,
+borrowed from `esq5505.cpp` precedent only because it shared a number)
+to `XTAL(30'476'180)` (Y2, the board's own documented ES5506/ES5510
+crystal). Two independent lines converged on this value within 0.4%: a
+backwards calculation from measured `$3C` pitch
+(`keyboard-and-sample-bridge-7.md`, ~30.6MHz) and the board's
+documented crystal complement (Y1=16MHz/MPU, Y2=30.47618MHz,
+Y3=33.8688MHz/ES5506+ES5510+AD-DA).
+
+Measured with autocorrelation (never zero-crossing): `$3C` now lands
+at ~260-262Hz against MIDI-nominal 261.6Hz (~0.3-0.6% low, not growing
+with note number across a fifth-plus range); semitone/whole-tone/
+fifth/octave interval ratios all hold within 0.3% of equal
+temperament. **The sound is now right, not just present.**
+
+Investigated (not blocking) why the raw numbers look doubled against
+ASR-10's documented 29.76kHz/44.1kHz modes: `es5506.cpp` uses an
+**identical** `16*(voices+1)` divisor for both `es5505_device` and
+`es5506_device` -- no code-visible bug to point to either way.
+`esq5505.cpp`'s own precedent (`30.47618_MHz_XTAL / 2` fed to ES5505)
+supports a crystal-network `/2` as the better-explained candidate,
+left `[OPEN]`. Checked ES5506's `MODE` (`$0D`, Single/Master/Normal)
+and `ACT` (`$1F`, 31 voices) registers: both written once at boot,
+never touched again in any measurement this series has taken -- no
+runtime 29.76/44.1kHz mode switch observed, and no PB pin/register
+bit/Port A output identified as a mode selector in existing docs.
+
+8th regression test's pass band moved `100-180Hz` -> `230-290Hz`, with
+the reason (clock correction, not loosened tolerance) stated in the
+test's own comment and the commit message. Suite is 8/8.
+
 ## Open questions
 
 - **Critical next:** what happens after `FILE LOADED` — the concrete

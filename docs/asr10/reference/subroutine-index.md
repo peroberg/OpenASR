@@ -47,6 +47,7 @@ F884FC  duart_chan_a_continuation_stash
 F88AA2  midi_panel_data_byte_handler
 F89AA2  panel_display_driver
 F89D46  error_message_formatter
+F8CF06  es5506_boot_init
 F8DAFE  par_read_raw
 F8DB1E  par_read_scaled
 F8DB30  par_filter_half
@@ -489,7 +490,44 @@ registerindex 2), sparar A5 och en fortsättningspekare (`$FFF8857A`) i
 inte röst- eller sampelkod. Källa: `investigations/
 keyboard-and-sample-bridge-4.md`.
 
-## Analoga ingångar och ES5506 PAR
+## ES5506-initiering och klockprovenens
+
+### `$F8CF06`-`$F8D00E` es5506_boot_init
+
+**[Verified]** Sekvensen som skriver `ACT=$1F` (31, alla röster) och
+`MODE=$0D` (`MODE1:MODE0="01"` = Single, Master, Normal address mode)
+vid boot -- båda registren skrivna en gång, aldrig igen i någon
+mätning i den här seriens historia (`keyboard-and-sample-bridge-9.md`,
+Del 3). Adressintervallet täcker de spårade skrivningarna `$FC2000`-
+`$FC207E` under `t<0,0001s`; exakt vilken enskild instruktion som
+skriver respektive register är inte separerad ut instruktion för
+instruktion.
+
+Outputs: ES5506 `ACT`, `MODE`, samt röst-CR/START/END/ACCUM-nollning
+för samtliga 32 röster.
+
+### ES5506-klockan: Y1 -> Y2
+
+**[Verified]** `asr10_boot.cpp`s `ES5506(config, m_es5506_host, ...)`
+stod tidigare på `XTAL(16'000'000)` (Y1, MPU-kristallen, lånad från
+`esq5505.cpp`-precedens enbart för att den råkade heta samma tal).
+Flyttad till `XTAL(30'476'180)` (Y2, kortets egna dokumenterade
+ES5506/ES5510-kristall). Två oberoende linjer konvergerar: en
+bakåträkning från uppmätt `$3C`-tonhöjd (~30,6MHz,
+`keyboard-and-sample-bridge-7.md`) och kortets kristallista
+(30,47618MHz, `PLAN.md` avsnitt 3 / `es5506-hostport.md`), inom 0,4%.
+Kortets kristallbestyckning i sin helhet: Y1=16MHz (MPU), Y2=30,47618MHz
+och Y3=33,8688MHz (ES5506/ES5510/AD-DA-sidan).
+
+**[Likely, inte bekräftat]** `30 476 180/(16*32)=59 524,6Hz` är nästan
+exakt dubbelt mot ASR-10:s dokumenterade 29,76kHz-läge. `es5506.cpp`s
+egen kod visar **identisk** divisorformel (`16*(röster+1)`) för
+`es5505_device` och `es5506_device` -- ingen kodsynlig skillnad
+stödjer att MAME:s ES5506 råkat ärva ES5505:s divisor. `esq5505.cpp`
+delar samma namngivna kristall på två (`30.47618_MHz_XTAL / 2`) innan
+den når OTIS/pumpen -- reellt, committat syskonbelägg för att
+kristallnätet halverar takten innan den når kretsen, vilket lutar mot
+det som den bättre stödda förklaringen utan att vara stängt.
 
 ### Board-default för PAR
 

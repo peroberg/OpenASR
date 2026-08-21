@@ -966,11 +966,28 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 
 	// Phase 1 host-port fingerprint mapping. Not board-proven: see
 	// docs/asr10/es5506-chain-verification.md.
-	// Provisional/uncalibrated: no ASR-10-specific clock citation exists
-	// for this chip in any driver; es550x_device::device_start() divides
-	// by clock() to compute m_sample_rate, so a nonzero clock is required
-	// simply to construct the device.
-	es5506_device &es5506_host(ES5506(config, m_es5506_host, XTAL(16'000'000)));
+	// keyboard-and-sample-bridge-9.md: XTAL(16'000'000) was Y1, the MPU
+	// crystal, borrowed from esq5505.cpp precedent only because it
+	// shared a number, not because it's ES5506's own board crystal.
+	// The board's crystal complement is Y1=16MHz (MPU), Y2=30.47618MHz
+	// and Y3=33.8688MHz (ES5506/ES5510/AD-DA side, per PLAN.md section 3
+	// and es5506-hostport.md's own crystal table). Two independent
+	// lines converge on Y2: a backwards calculation from measured $3C
+	// pitch (keyboard-and-sample-bridge-7.md, ~30.6MHz) and the board's
+	// documented crystal (30.47618MHz), within 0.4%. Measured after
+	// this change (autocorrelation, not zero-crossing): $3C lands at
+	// ~259-261Hz against a MIDI-nominal 261.6Hz (~0.4-0.6% low,
+	// consistent with the sample's own tuning); semitone/whole-tone/
+	// fifth/octave interval ratios hold within 0.3% of equal
+	// temperament at this clock -- see the investigation doc for the
+	// full measurement. Open: MAME's sample_rate divisor
+	// (16*(ACT+1)) is identical for es5505_device and es5506_device
+	// (es5506.cpp), so no MAME-code-visible divisor bug explains why
+	// this clock divided by (16*32) comes out at exactly double the
+	// board's documented 29.76kHz mode; esq5505.cpp's own precedent
+	// (30.47618MHz_XTAL / 2 fed to ES5505) supports a crystal-network
+	// /2 as the more likely explanation, not confirmed further here.
+	es5506_device &es5506_host(ES5506(config, m_es5506_host, XTAL(30'476'180)));
 	es5506_host.set_addrmap(0, &asr10_boot_state::es5506_wavetable_map);
 	es5506_host.set_addrmap(1, &asr10_boot_state::es5506_wavetable_bank1_map);
 	es5506_host.set_addrmap(2, &asr10_boot_state::es5506_unpopulated_wavetable_map);
