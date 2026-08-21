@@ -297,8 +297,13 @@ as such per item, not resolved by this document.
    `scc-hardware-gap.md` Del 5 for the full scope/risk breakdown.
    **Update, follow-up round:** both of `scc_rx_common`'s branches are
    now traced to their targets — a ring-full condition raises a real
-   firmware error (`trap #0`, codes `$5`/`$6` → error `$2D`/`$2E`, 45/46
-   decimal, undocumented elsewhere), and a second event condition
+   firmware error (`trap #0`, codes `$5`/`$6`, consumed directly at the
+   trap call, not ORed with `$28` as first read — **corrected against
+   the real Ensoniq service manual's own error-code list**
+   (`scc-board-source-question.md` Del 3): codes 5/6 both match
+   "could not synchronize audio input" verbatim, not any 45/46 code,
+   which does not exist in the manual's list at all), and a second event
+   condition
    (`SCCE` bit 2) silently disables **both** SCC channels via
    `$F8C0E6` (receiver off, both IMR/IPR bits cleared) with no error
    and no display message — a real, named, silent-abort path, not a

@@ -939,6 +939,37 @@ board drives that activity remains `[OPEN]`, and no board-level
 documentation exists in this tree to answer it (`scc-board-source-
 question.md` Del 0/3 — a question list for Per, not a guess).
 
+**Update, board-source recalculation round.** The byte source is named,
+`[External]` evidence: the real ENSONIQ ASR Service Manual (downloaded,
+`docs/asr10/sources/ASR10_service_manual.pdf`) states plainly that "the
+digital board communicates with the keyboard over a two-line
+asynchronous interface carried by the 20-pin keyboard ribbon cable" —
+and separately describes a *second*, 3-line **synchronous** link
+between the keyboard and the keypad/display board, pass-through wired
+over the same cable. A downloaded keyboard coil-board schematic
+(`ASR10_upper_coil_board_schematic.pdf`, R. Grieb/Tauntek reconstruction)
+shows the physical device on the other end: an 80C52 MCU with its own
+hardware UART, `SERIN`/`SEROUT` wired straight to the 20-pin connector.
+This project's own dynamic measurement cannot yet tell SCC1 and SCC2
+apart (both configured identically, armed in lockstep) — which channel
+is the async keyboard link versus the sync keypad/display link is
+`[Likely]`, motivated by the manual's two-link description, not proven
+by a measured difference. Mode-field recalculation: cross-validated the
+existing `ENR`/`ENT`/`DIAG`/`MODE` bit positions against an indexed copy
+of the real MC68302 manual, and learned Transparent mode is restricted
+to SCC2/SCC3 only — undermining the old "MODE=3 = BISYNC/Transparent"
+label for SCC1 specifically — but the exact numeric MODE value meaning
+UART was not found despite a genuine search; baud rate remains
+uncomputed. **A real correction, caught this round**: `scc_rx_common`'s
+`trap #0` error codes are **5 and 6, not 45/46** (the `ori.b #$28,D0`
+instruction runs *after* the trap, not before — misread previously);
+checked against the manual's own error list, codes 005/006 both read
+"could not synchronize audio input" verbatim — a real match, where
+45/46 do not appear in the manual at all. `ERROR 032` ("bad download")
+and `145` ("unknown DUART interrupt error") both independently confirmed
+against the same list. See `scc-board-source-question.md`'s
+"Recalculation" section for the full detail and all source citations.
+
 ## ES5510: what firmware asks for, before anything is turned on (docs/asr10/investigations/keyboard-and-sample-bridge-11.md)
 
 **Factor of two, parked verbatim, per instruction — not investigated

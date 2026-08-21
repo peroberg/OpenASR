@@ -460,15 +460,24 @@ after `bset #$7,(A0)` tests-and-sets the active descriptor's top status
 bit, `beq` skips the following block **only if the bit was already
 clear**. If the bit was **already set** — the ring position firmware
 needs is still marked owned/ready from a prior cycle nobody drained —
-it falls through to `trap #0` with `D0=$5` (then `ori.b #$28,D0` →
-`$2D`, 45 decimal) or `D0=$6` (→ `$2E`, 46). `trap #0` is this
-project's already-documented generic error-raise primitive
-(`raise_error_145`'s own `moveq #$91,D0 / trap #0` pattern,
-`subroutine-index.md`). **This is firmware complaining about SCC data
-— but about a full ring, not a missing byte**: a descriptor-reuse
-conflict, not a "no data arrived" timeout. No prior documentation
-mentions error codes 45/46; not yet cross-referenced against a service-
-manual error list.
+it falls through to `trap #0` with `D0=$5` or `D0=$6`. **Correction,
+board-source round** (`scc-board-source-question.md` Del 3): the
+original reading of this passage treated the following `ori.b #$28,D0`
+as constructing the error code (giving `$2D`/`$2E`, 45/46 decimal) —
+wrong. `ori.b #$28,D0` executes *after* `trap #0` in the disassembly
+above, so it cannot be part of the value `trap #0` consumes; `D0` is
+`$5`/`$6` (5/6 decimal) at the trap itself, matching this project's
+already-documented convention that `trap #0` consumes `D0` directly
+(`raise_error_145`'s own `moveq #$91,D0 / trap #0` — no OR step at
+all). Checked against Ensoniq's real service manual, downloaded this
+round: codes **005 and 006 both read, verbatim, "could not synchronize
+audio input"** — no code 45 or 46 exists anywhere in the manual's
+software or digital-board error lists. **This is firmware complaining
+about SCC data — but about a full ring, not a missing byte**: a
+descriptor-reuse conflict, not a "no data arrived" timeout. Whether the
+two codes distinguish SCC1 from SCC2, or two different sub-conditions
+within one channel's handling, is not resolved by the manual (both
+entries carry the identical description) — `[OPEN]`.
 
 **Event bit 2 branch, traced further this round**: after acknowledging
 the bit, `jsr $FFF8C0E6.l` is a **channel shutdown**, not a data
@@ -544,7 +553,9 @@ fabricated-looking precision this project's rules warn against. Left
 **Timeout / "does firmware complain": answered, precisely.** Yes, on
 two separate conditions, both traced this round (Del 2 above): a
 buffer-descriptor-ring conflict raises a firmware error (`trap #0`,
-codes `$5`/`$6` → `$2D`/`$2E`); a different event condition (bit 2)
+codes `$5`/`$6`, matching the manual's own "could not synchronize
+audio input" — see the board-source round's correction above); a
+different event condition (bit 2)
 silently disables both channels with no visible error at all. **The
 silent path is the one the task's own hypothesis named** — "en tyst
 timeout skulle förklara varför inget märks" is now a traced, named

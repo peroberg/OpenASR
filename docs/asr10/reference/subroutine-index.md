@@ -1073,9 +1073,13 @@ dynamisk registermatning konvergerar oberoende pa samma struktur.
 
 **Bada grenarnas mal spårade** (`scc-hardware-gap.md`, uppföljningsrundan):
 bit-0-grenen faller, vid en redan-satt ready-bit (ringen full), igenom
-till `trap #0` med `D0=$5`/`$6` (efter `ori.b #$28,D0` → felkod `$2D`/
-`$2E` = 45/46 decimalt) — ett riktigt firmwarefel, men om en full ring,
-inte om utebliven data. Bit-2-grenen anropar `$FFF8C0E6`
+till `trap #0` med `D0=$5`/`$6` **direkt vid trap-anropet** — `ori.b
+#$28,D0` körs efter `trap #0`, inte före, och hör alltså inte till
+felkodskonstruktionen (rättat mot servicemanualens egen felkodslista,
+`scc-board-source-question.md` Del 3: koderna är **5 och 6, inte
+45/46**, och matchar där ordagrant **"could not synchronize audio
+input"**, samma beskrivning för båda). Ett riktigt firmwarefel, men om
+en full ring, inte om utebliven data. Bit-2-grenen anropar `$FFF8C0E6`
 (`scc_disable_both`, se nedan) — en **tyst** avstängning, ingen
 felkod, ingen displaytext. Ingen av de två grenarna nar en
 "data mottagen, har ar den"-rutin; den huvudsakliga mottagningsvagen ar
