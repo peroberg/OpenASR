@@ -544,6 +544,60 @@ maskinkonfigurationen, klassade mätt/härledd/familjeprecedens/
 gissning): `current-status.md` och `keyboard-and-sample-bridge-10.md`
 Del 2.
 
+### ES5510: Host Control-semantik och ett riktigt programnedladdning -- `keyboard-and-sample-bridge-11.md`
+
+**[Verified]** `$FC3024`/`$FC3025` (host offset `$12`, Host Control)
+pollas 6 705 gånger över en hel boot->ladda->välj->spela-körning, från
+tre anropsställen (`$F9779A`, `$F97684`, `$F9770A`), med ~12ms
+kadens (samma bakgrundsschemaläggartakt som resten av projektet redan
+etablerat) -- inte en engångskontroll vid boot. Varje läsning ger 0,
+matchande `es5510.cpp`s hårdkodade stubb. Det verkliga ES5510-databladet
+(`docs/ensoniq/ES5510.pdf`, Ensoniq ESP Spec Rev 2.4, §5.1.2) anger att
+"Host Access OK/" är aktiv-låg: **0 betyder redo, inte upptagen.**
+MAME:s stubb rapporterar alltså "alltid redo" -- den ofarliga
+riktningen att misslyckas i, vilket förklarar exakt varför firmware
+aldrig hänger på den.
+
+**[Verified]** En äkta, sekventiell skrivning via "Write Select:
+GPR+INSTR" (`$FC31C1`) täcker **160 distinkta index**, över hela
+boot-till-laddat-fönstret (`t=0,0014s` till `t=21,78s`, inte en enda
+snabb rafal). Databladets §6.1 Host Interface Memory Map anger INSTR:s
+adressintervall som **exakt** `$00-$9F` (160 adresser); §1 anger
+programlängder "from about 64 to 160 microinstructions at typical
+sample rates" -- 160 är alltså **både** hela adressrymden och den
+dokumenterade maxlängden. En riktig, komplett DSP-programnedladdning
+sker, trots att devicen är avstängd och aldrig kör det.
+
+Klockan `XTAL(10'000'000)`: **[Delvis belagd, familjeprecedens +
+datablad]**. Databladets egen VDD-spec anger uttryckligen "< 100mA @
+10MHz clock"; §7:s timingtabell täcker 8/10/12MHz som tre officiella
+hastighetsgrader för `ESPR7`-revisionen. `esq5505.cpp` visade sig
+innehålla **två** olika klockningsmönster för olika kortvarianter --
+ett som halverar en namngiven 30,47618MHz-kristall för OTIS, och ett
+separat (rad ~762-834) som kör M68000/ES5510/ES5505/DMAC alla på en
+**odelad, flat** `10_MHz_XTAL` med ES5510 `set_disable()`:d -- exakt
+den här förarens egna mönster, inte bara ett lånat runt tal. Fortfarande
+`[OPEN]` vilken hastighetsgrad eller kristall det verkliga kortet
+faktiskt använder.
+
+**Scratch-experiment (inte committat, återställt via `git checkout`)**:
+aktiverade devicen (kommenterade bort `set_disable()`), byggde, mätte,
+återställde. **Ingen hängning.** `button.lua`s laddningssekvens
+misslyckas med det redan dokumenterade och redan förstådda
+`EFFECT DOWNLOAD FAILED`/`ERROR 032`-spåret
+(`filesystem-browser-map.md` §4.20-4.24) -- ett graciöst
+firmware-fel, inte en låsning. `note_audio.lua`s kortare sekvens
+passerade oförändrad (tonhöjd/amplitud).
+
+**[Verified, avgörande]** `es5510_device` (`es5510.h`) är en
+`cpu_device`, **inte** en `device_sound_interface` -- ingen
+`sound_stream`, ingen `add_route()`, ingen koppling till MAME:s
+ljudmixer alls, varken i devicen eller i den här föraren. Att aktivera
+den kan strukturellt inte förändra vad som hörs på de noter det här
+projektet testar idag, oavsett programinnehåll -- det finns ingen väg
+för dess utdata till högtalaren än. Ett konkret argument för att
+prioritera annat arbete, inte ett antagande.
+
 ### Board-default för PAR
 
 I nuvarande källa används `asr10_boot_state::analog_r()` via

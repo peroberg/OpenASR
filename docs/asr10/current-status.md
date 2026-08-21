@@ -877,6 +877,57 @@ Nothing cyclic found in either watched range.
 `TUNING KEYBOARD` strings and the `MODE=$0D`/`ACT=$1F` mode switch
 remain `[OPEN]`, unchanged.
 
+## ES5510: what firmware asks for, before anything is turned on (docs/asr10/investigations/keyboard-and-sample-bridge-11.md)
+
+**Factor of two, parked verbatim, per instruction — not investigated
+further this task**:
+
+> Vid verkliga hårdvaruvärden — CLKIN 15,238 MHz, utgångstakt
+> 29 762 Hz — producerar MAME:s ES5506 halva tonhöjden mot vad riktig
+> hårdvara producerar för samma FC. FC- och ACCUM-bredderna matchar
+> databladet. Vår dubblade klocka kompenserar exakt. Orsaken är
+> okänd.
+
+Measured ES5510's host-register traffic (device still
+`set_disable()`'d) across a full boot->load->select->play run: Host
+Control (offset `0x12`) is polled 6,705 times from three call sites,
+every single read returning `0`. The real ES5510 datasheet
+(`docs/ensoniq/ES5510.pdf`) confirms this is the *correct* direction
+for a stub to fail in -- "Host Access OK/" is active-low, so `0` means
+ready, not busy. Firmware's real handshake degenerates to "always
+immediately ready," which is exactly why nothing ever hangs waiting
+on it. Separately, a genuine 160-position sequential write-select
+sweep was measured on the combined GPR+INSTR select register --
+matching the datasheet's own documented INSTR address range
+(`$00-$9F`, 160 addresses) and maximum program length ("64 to 160
+microinstructions") exactly. **A real, complete DSP program is being
+downloaded**, even with the device disabled and never executing it.
+
+Clock: `XTAL(10'000'000)` gained real (if partial) support --
+the datasheet's own VDD spec cites "< 100mA @ 10MHz clock" and its
+timing tables cover 8/10/12MHz grades; `esq5505.cpp` turns out to
+contain *two* different clocking patterns, and the second (flat,
+undivided `10_MHz_XTAL` shared by M68000/ES5510/ES5505/DMAC, ES5510
+disabled) matches this driver's own choices more closely than the
+crystal-halving pattern cited previously. Still `[OPEN]` which grade
+or crystal the real board uses.
+
+Scratch-enabled ES5510 (built, measured, reverted via `git checkout`,
+never committed): does **not** hang MAME -- `button.lua`'s load
+sequence fails with the already-documented, already-understood
+`EFFECT DOWNLOAD FAILED`/`ERROR 032` path (`filesystem-browser-map.md`
+§4.20-4.24), a graceful firmware error, not a lockup. `note_audio`'s
+shorter sequence still passed with unchanged pitch/amplitude.
+
+**Decisive structural finding**: `es5510_device` is a `cpu_device`,
+**not** a `device_sound_interface` -- no `sound_stream`, no
+`add_route()`, nothing wiring it into MAME's audio mixer at all, in
+this driver or the device class itself. Enabling it cannot change what
+is heard on the notes this project currently tests, regardless of
+program content -- there is no path for its output to reach the
+speaker yet. This is a real argument for prioritizing other work over
+extending ES5510 wiring further, not just an assumption.
+
 ## Open questions
 
 - **Critical next:** what happens after `FILE LOADED` — the concrete

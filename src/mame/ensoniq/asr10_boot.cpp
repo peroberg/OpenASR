@@ -1045,10 +1045,20 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	// use XTAL(10'000'000) / 10_MHz_XTAL for this exact chip); not
 	// derived from ASR-10 schematics this round, and irrelevant to
 	// host_r()/host_w() correctness since the device never executes.
-	// Klockprovenens (keyboard-and-sample-bridge-10.md): FAMILJEPRECEDENS,
-	// with no measurement possible while set_disable()'d -- the device
-	// has never actually run at this or any clock. Whether real ASR-10
-	// hardware feeds ES5510 from Y2 or Y3 is [OPEN], not established.
+	// Klockprovenens (keyboard-and-sample-bridge-10.md/-11.md):
+	// FAMILJEPRECEDENS + DATABLAD (delvis). docs/ensoniq/ES5510.pdf's
+	// own VDD spec cites "< 100mA @ 10MHz clock" and its ESPR7 timing
+	// table covers 8/10/12MHz as three real speed grades -- 10MHz is
+	// datasheet-real for this part, not just a borrowed round number.
+	// esq5505.cpp also has a second board variant (distinct from the
+	// crystal-halving one) that clocks M68000/ES5510/ES5505/DMAC all
+	// from a flat, undivided 10_MHz_XTAL with ES5510 disabled -- closer
+	// to this driver's own pattern than the halved-crystal precedent.
+	// Still no measurement possible while set_disable()'d (scratch-
+	// enabling it this task did not hang MAME, but hit the already-
+	// documented EFFECT DOWNLOAD FAILED path and was reverted, not
+	// landed). Whether real ASR-10 hardware feeds ES5510 from Y2, Y3,
+	// or a flat 10MHz stays [OPEN], not established.
 	es5510_device &es5510_host(ES5510(config, m_es5510_host, XTAL(10'000'000)));
 	es5510_host.set_disable();
 
