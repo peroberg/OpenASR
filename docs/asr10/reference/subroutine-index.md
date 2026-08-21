@@ -1006,6 +1006,27 @@ reset (utfardas av OS:et).
 **Identisk adress i bade V1.61 och V3.50.** Anropar gemensam mottagningsrutin
 `$00643C`, gor EOI till ISR `$FC6818` med `$2000` (SCC1) respektive `$0400` (SCC2).
 
+**Live-adress vid korning: `$FF8D56` / `$FF8D92`** — samma rutin, OS-flyttad
+kopia; ROM-adressen ovan ar filens statiska lage, `$FF8D56`/`$FF8D92` ar var
+vektortabellen (vektor `$4D`/`$4A`, GIMR=`$8040`-formeln: bas `$40` + SCC1-bit
+13 / SCC2-bit 10) pekar vid korning, bekraftat via samma kontrollblock/
+registerbas/EOI-varden. Bada bitarna ar avmaskade i IMR (`$E480`), och bada
+handlarna ar stabila fran reset genom instrumentval. Se
+`reference/interrupt-topology-gaps.md`: **noll nivå-4 IACK:er under hela den
+matta korningen** — SCC1/SCC2 ar den storsta enskilda luckan i MC68302-modellen.
+
+### `$F8D072` pb9_isr `[V]` / `$F88F06` pb10_isr `[V]` / `$F88F22` pb11_isr `[V]`
+
+Vektor `$47`/`$4E`/`$4F` (GIMR=`$8040`-bas `$40` + PB9-bit 7 / PB10-bit 14 /
+PB11-bit 15), alla tre avmaskade i IMR (`$E480`) och stabila fran reset genom
+instrumentval. `$F8D072` = redan katalogfort IRQV/rost-service i
+`instrument-to-otto-runtime.md`. `$F88F06`/`$F88F22` testar respektive
+`tst.b $0C3A.w`/`tst.b $0C3B.w` (`mc68302-status.md`), men ingen
+dekrementerare/settare av dessa flaggor ar identifierad. Se
+`reference/interrupt-topology-gaps.md`: samma noll-IACK-fynd som SCC1/SCC2 —
+verkliga handlare, avmaskade, men kan aldrig hävda avbrott i denna modell.
+Fysisk kalla pa kortet **[OPEN]**.
+
 ### `$00643C` scc_rx_common `[start-V]`
 
 Gemensam mottagningsrutin for bada SCC-kanalerna. Vad den producerar ar **oppet** och

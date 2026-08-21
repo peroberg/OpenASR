@@ -998,15 +998,28 @@ representative, going forward.
   comparison, function unknown. No identified direct or immediate-base references.
 - **What SCC1/SCC2 carry.** The firmware chain is documented end to end. The physical
   sender, the data semantics, and what `$00643C` produces are open. LRCLK phasing makes
-  the audio path likely but unproven.
+  the audio path likely but unproven. The interrupt-topology reconstruction
+  (`reference/interrupt-topology-gaps.md`) confirms this is not just a static-analysis
+  curiosity: SCC1/SCC2 are unmasked in the live IMR, their handlers are stable from
+  reset through instrument select, and zero level-4 IACKs occur in the whole measured
+  run — this is the best-evidenced gap in the MC68302 model, ranked above PB9/10/11.
 - **The exact ROM→OS edge**, and when the vector table is installed at `$000000`.
 - **The segment boundary** and what the ~0x6400-byte gap in the OS file represents.
 - **DPRAM contents**: SCC descriptors, buffer pointers, CP state, dynamically installed
   jump-table targets. One structured dump at chosen points would settle much of this.
-- **Timer 2's consumer**: which V3.50 routine reads TCN2 and why.
+- **Timer 2's consumer**: which V3.50 routine reads TCN2 and why. Handler address now
+  located (`$F88F3E`, vector `$46`) via the interrupt-topology reconstruction — the
+  routine itself is not yet traced, and Timer 2's INRQ bit is currently masked in IMR
+  (`$E480`), so this handler cannot fire in the measured run either way.
 - **PB9, PB10, PB11 consumers and physical sources.** ROM unmasks PB11/PB10/PB9 and the
   PB10/PB11 handlers are decoded, but the static absolute-search pass found no
   dekrementerare for `$0C3A/$0C3B` and no consumer for `$0C36/$0C37` within that method.
+  Vector-level wiring is now fully confirmed real (see
+  `reference/interrupt-topology-gaps.md`): all three are unmasked in IMR with distinct,
+  content-verified, stable handlers — and level-4 IACKs never occur once in the whole
+  measured run (boot through instrument select). This is the same category of gap as
+  SCC1/SCC2 below: firmware genuinely wants these three sources; nothing in the current
+  model can ever drive them. Physical source on real hardware remains **[OPEN]**.
 - **`$F95EAA`** — 1 call in V1.61, 33 in V3.50, unidentified. `$F97662` is no
   longer in this group: it is a `$03C8`-gated low-level host-port verified
   write/read service; see `investigations/panel-button-sweep-v350.md`.
