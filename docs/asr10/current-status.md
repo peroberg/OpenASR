@@ -928,6 +928,56 @@ program content -- there is no path for its output to reach the
 speaker yet. This is a real argument for prioritizing other work over
 extending ES5510 wiring further, not just an assumption.
 
+## The pump: a real missing block, but it doesn't explain factor two (docs/asr10/investigations/keyboard-and-sample-bridge-12.md)
+
+Confirmed directly from `esqpump.cpp`/`.h`: `esq_5505_5510_pump_device`
+**is** a `device_sound_interface` (its own `sound_stream`), owns a
+`required_device<es5510_device>`, and calls `m_esp->run_once()` once
+per output sample when not halted -- the pump, not ES5510 itself, is
+what would own the audio stream and drive the ESP. Our own driver
+routes ES5506 straight to `SPEAKER`, skipping this block entirely;
+`esq5505.cpp` (both of its board patterns) always inserts the pump.
+
+Mapped **both** `esq5505.cpp` clock patterns this time (a
+self-corrected method gap -- see below): pattern A (VFX family) runs
+M68000/ES5510/ES5505 all at a flat `10_MHz_XTAL`, pump at
+`10MHz/(16*21)`; pattern B (SD-1/32-bit family) halves a named
+`30.47618_MHz_XTAL` for M68000/ES5505 but keeps ES5510 on a
+*separate*, undivided `10_MHz_XTAL`, pump at
+`30.47618MHz/(2*16*32)`. **Both patterns' pump lands on the identical
+29,761.9Hz** -- matching ASR-10's documented mode -- via completely
+different crystal paths. ES5510 is `set_disable()`'d in *both*
+patterns in upstream MAME's own driver, matching this project's own
+choice.
+
+**Does the pump explain factor two? Reasoned answer: no.** The pump's
+own `clock()` sets only its *own* output stream rate
+(`device_clock_changed()`); MAME's sound core resamples between
+differently-rated connected streams by design (`sound.h`'s own
+documented behavior, backed by a real `audio_resampler` class) --
+resampling preserves pitch, it doesn't correct it. Pitch is set
+entirely by the oscillator's *own* clock via the same
+`clock/(16*(voices+1))` formula used throughout this project. A halved
+ES5506 clock (matching the datasheet-compliant/real-hardware
+hypothesis) would still produce audio an octave low internally,
+regardless of any pump resampling it afterward to 29,762Hz. **The
+factor-of-two statement stands exactly as parked, unresolved.**
+
+Del 4 corrected an over-precise carryover: the specific hypothesized
+`EFFECT DOWNLOAD FAILED` mechanism (`ffc896: cmpi.l
+#$fff9bca0,$e8e.w`) was measured directly (scratch-enabled ES5510,
+`button.lua`'s exact failing stimulus) and **that compare never
+executes** in the failing run; `$e8e.w` actually *does* reach the
+expected sentinel value there. The real trigger for the failure
+remains genuinely `[OPEN]` -- not resolved, corrected rather than
+confirmed.
+
+**Method note**: this is the third time an `esq5505.cpp` clock pattern
+was cited as *the* pattern when the file contains several -- a partial
+reading of a reference file is the same failure class as a tap without
+a live witness. Grep for all machine configs before citing one as
+representative, going forward.
+
 ## Open questions
 
 - **Critical next:** what happens after `FILE LOADED` — the concrete

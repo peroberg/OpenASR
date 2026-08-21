@@ -598,6 +598,33 @@ projektet testar idag, oavsett programinnehåll -- det finns ingen väg
 för dess utdata till högtalaren än. Ett konkret argument för att
 prioritera annat arbete, inte ett antagande.
 
+**Fortsättning, `keyboard-and-sample-bridge-12.md`**: den saknade vägen
+har ett namn -- `esq_5505_5510_pump_device`
+(`src/devices/sound/esqpump.cpp`/`.h`), som **är** en
+`device_sound_interface`, äger sin egen `sound_stream` (8 in/4 ut,
+hårdkodat i `device_start()`, inte konfigurerbart -- matchar ES5505:s
+4 kanalpar, inte ES5506:s 6), och anropar `m_esp->run_once()` en gång
+per utsampel när `m_esp_halted==false`. Vår drivrutin kopplar ES5506
+rakt till `SPEAKER` och saknar detta block helt; båda mönstren i
+`esq5505.cpp` sätter alltid in pumpen, och pumpens egen klockformel
+(`10MHz/(16*21)` respektive `30,47618MHz/(2*16*32)`) ger **exakt**
+29 761,9Hz i båda fallen. **Löser pumpen faktor två? Nej** (resonerat,
+inte ommätt med en riktig pump): pumpens `clock()` sätter bara dess
+egen utströmstakt (`device_clock_changed()`); MAME:s ljudkärna
+omsamplar mellan olika-taktade strömmar (`sound.h`s egen
+dokumentation, en riktig `audio_resampler`-klass) -- omsampling
+bevarar tonhöjd, korrigerar den inte. Tonhöjden sätts helt av
+oscillatorns egen klocka via samma `clock/(16*(röster+1))`-formel som
+resten av projektet. Faktor två-posten står oförändrad.
+
+**Rättelse, Del 4 (`ERROR 032`)**: den tidigare hypotesen (`ffc896:
+cmpi.l #$fff9bca0,$e8e.w` fäller nedladdningen) motbevisades genom
+direkt mätning -- den jämförelseinstruktionen körs **aldrig** i den
+faktiska felkörningen (`button.lua`s exakta stimulus, ES5510
+scratch-aktiverad), och `$e8e.w` når faktiskt det förväntade
+sentinel-värdet där. Den verkliga mekanismen bakom `EFFECT DOWNLOAD
+FAILED` förblir `[OPEN]`, rättad snarare än bekräftad.
+
 ### Board-default för PAR
 
 I nuvarande källa används `asr10_boot_state::analog_r()` via
