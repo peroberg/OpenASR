@@ -1039,10 +1039,40 @@ dekrementerare/settare av dessa flaggor ar identifierad. Se
 verkliga handlare, avmaskade, men kan aldrig hävda avbrott i denna modell.
 Fysisk kalla pa kortet **[OPEN]**.
 
-### `$00643C` scc_rx_common `[start-V]`
+### `$00643C` scc_rx_common `[V]`
 
-Gemensam mottagningsrutin for bada SCC-kanalerna. Vad den producerar ar **oppet** och
-en av projektets tre hogst prioriterade oidentifierade rutiner.
+Gemensam mottagningsrutin for bada SCC-kanalerna. Disassemblerad
+(`scc-hardware-gap.md` Del 3, `unidasm -arch m68000`, V3.50-avbild,
+segment-1-regeln: RAM `$00643C` = diskoffset `0x8A3C`):
+
+```
+move.b  ($8,A1), D1        ; las SCCE/SCCM-byten pa registerbas+8
+btst    #$2, D1            ; testa handelsebit 2
+beq     $6466              ; hoppa over om ren
+move.b  #$4, ($8,A1)        ; write-1-to-clear bit 2 (SCCE-konvention)
+jsr     $fff8c0e6.l         ; ROM-anrop, ej spårat
+...trap #$3 / trap #$9      ; kanda OS-primitiver, samma tva som redan katalogforda
+btst    #$0, D1            ; testa handelsebit 0
+move.b  #$1, ($8,A1)        ; write-1-to-clear bit 0
+move.w  ($c,A2), D2         ; raknare fran kontrollblocket (+$C)
+lsl.w   #3, D2              ; D2 *= 8 -- index i en 8-byte-per-post tabell
+lea     (A0,D2.w), A0       ; A0 = BD-ringens bas + index*8 = aktiv deskriptor
+bset    #$7, (A0)           ; satter deskriptorns egen statusbit
+...
+andi.w  #$ff00, (A0)        ; rensar deskriptorns laga statusbyte
+```
+
+**Genuin, standardformad MC68302-buffertdeskriptorhantering**, inte en
+generisk handelsekö: individuella SCCE-bitar testas och kvitteras var
+for sig (write-1-to-clear), och raknaren fran kontrollblocket (+$C)
+multipliceras med 8 for att indexera **exakt samma 8-byte-per-post
+buffertdeskriptorring** som mats dynamiskt i `scc-hardware-gap.md` Del
+2 (`$FC6400`/`$FC6500`, 8 poster, `STATUS/RESERVED/ADDR`-format, sista
+posten markt med wrap-biten `$F000`). Statisk disassemblering och
+dynamisk registermatning konvergerar oberoende pa samma struktur. Vad
+`$FFF8C0E6` och de tva `trap #0`-koderna (`$5`/`$6`) konsumerar nedströms
+ar fortfarande **oppet** — inte spårat i denna omgang, men
+`scc_rx_common` sjalv ar inte langre oidentifierad.
 
 ### `$00BEE2` scc_receiver_enable (V1.61) `[V]`
 

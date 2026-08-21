@@ -66,7 +66,7 @@ konsolidering är återkallad. CSV-filerna ska inte flyttas till `reference/`.
 | path | kategori | typ | rader | SHA-256 (16) |
 |---|---|---|---|---|
 | `README.md` | generated-static-data | handkurerad | — | addendum infällt 2026-08-04 |
-| `call-graph-edges.csv` | generated-static-data | **genererad** | 5 243 | `b8bfb32053274a66` |
+| `call-graph-edges.csv` | generated-static-data | **genererad** | 5 243 | `472373eea0fac895` (rättat, `scc-hardware-gap.md` Del 1.1 — tidigare `b8bfb32053274a66` var en stale referens till en äldre 5240-kantersgeneration, aldrig matchad mot `static/README.md`s egen, alltid korrekta rad) |
 | `os-binding-table.csv` | generated-static-data | **genererad** | 723 | `600f646943d5a3a7` |
 | `rom-abi-entrypoints.csv` | generated-static-data | **genererad** | 1 054 | `6293e5c9cffeb4f4` |
 | `routines.csv` | generated-static-data | **handkurerad** | 25 | `8aba2712c91a6a04` |

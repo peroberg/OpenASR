@@ -321,9 +321,13 @@ avkodat, om värdet var open bus, eller om opcode-fetcher speglar. Det ursprungl
 V1.61-testfallet `$00BF0E -> FFFF8ECA -> $00BF14` är inte kört i denna runda.
 
 `static/call-graph-edges.csv` har fortfarande exakt 1404 rader med
-`mapping_basis=mirror-hypothesis`. SHA-256 börjar `b8bfb32053274a66`, samma prefix som
-i konsolideringsmanifestet och `static/README.md`; full hash i rättelsepasset:
-`b8bfb32053274a66e504dd6d929e08d25b0efad68973b91a0f5606cdf0078c20`. Kanterna får inte
+`mapping_basis=mirror-hypothesis`, verifierat direkt mot filen (`scc-hardware-gap.md`
+Del 1.1), inte mot denna sammanfattning. **Rättelse:** den tidigare hashen här,
+`b8bfb32053274a66...`, matchade inte den aktuella filen och matchade aldrig
+`static/README.md` (som alltid hade `472373eea0fac895...`) — en stale referens till en
+äldre, 5240-kantersgeneration, ospårad tills `scc-hardware-gap.md` Del 1.1 räknade om
+den direkt. Korrekt, aktuell hash:
+`472373eea0fac895f07d115c8168cc4551957a9a2b1c6f3a1e6909541c5715de`. Kanterna får inte
 se verifierade ut och ska inte ändras manuellt i den genererade CSV:n.
 
 **RAM-adress och filoffset är separata kolumner.** För OS-kod utanför segment 1 är
@@ -392,6 +396,12 @@ boundary_evidence, confidence, source_document, comment
 `canonical_status`: 20 `resolved`, 2 `partially_resolved`,
 **3 `unresolved_high_priority`** — `$F97662` (203 anropsställen), `$F95EAA`
 (1 → 33 anrop mellan versionerna) och `$00643C` (vad SCC-mottagningen producerar).
+**`$00643C` är disassemblerad och strukturellt förstådd sedan `scc-hardware-gap.md`
+Del 3** — `routines.csv`s egen `canonical_status`-kolumn är oförändrad här (regeln mot
+handredigering av `static/*.csv` gäller), så fältet säger fortfarande
+`unresolved_high_priority` trots att rutinen inte längre är oidentifierad; antalet är
+därför 2 i sak, 3 i den ouppdaterade CSV:n. Nästa CSV-regenerering bör sätta
+`partially_resolved` eller `resolved` här.
 
 Statusen bärs av `canonical_status`, inte av ett tomt `name`. Tomma fält är dålig
 signalering.

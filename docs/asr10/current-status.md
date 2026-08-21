@@ -886,7 +886,23 @@ discovery (that framing was stale; the region is already attributed).
 Nothing cyclic found in either watched range.
 
 `TUNING KEYBOARD` strings and the `MODE=$0D`/`ACT=$1F` mode switch
-remain `[OPEN]`, unchanged.
+remain `[OPEN]`. **Update, `scc-hardware-gap.md`:** both OS images and
+the analyzed ROM were searched byte-for-byte (positive-controlled: the
+reconstructed ROM's SHA-256 matches this manifest's own recorded
+`asr10.bin` hash) for `TUNING KEYBOARD`/`KEYBOARD TUNED` — zero hits,
+any form. The one partial match (`HANDS OFF`, ROM `$F81196`) sits in
+an unrelated factory diagnostic-menu string pool, not a boot-time
+message, and has no found reference to it anywhere in ROM. The
+`ACT=$1F` connection is independently corroborated from an unrelated
+angle: the `$FF7F00-$FF7FF6` stride-8 structure flagged in
+`interrupt-topology-gaps.md` has exactly 31 entries, matching
+`ACT=$1F` numerically — `[Likely]` a per-voice/per-event table sized
+to it, `[OPEN]` whether it is specifically a voice-assignment table
+(see `scc-hardware-gap.md` Del 1.2). Keyboard-hypothesis status stays
+`[Hypothesis]`: SCC1/SCC2 are now confirmed to run genuine, real,
+event-driven serial reception this project doesn't model
+(`scc-hardware-gap.md` Del 2/3) — capability evidence for a keyboard-
+scanner link, not identity evidence for this specific message.
 
 ## ES5510: what firmware asks for, before anything is turned on (docs/asr10/investigations/keyboard-and-sample-bridge-11.md)
 

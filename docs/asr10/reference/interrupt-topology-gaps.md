@@ -272,21 +272,33 @@ covered by Del 2/3/4, none omitted). Each gap's *physical* explanation
 as such per item, not resolved by this document.
 
 1. **SCC1 (`$FF8D56`, vector `$4D`) and SCC2 (`$FF8D92`, vector `$4A`)
-   — best evidenced.** Firmware unmasks both, and both handlers are
+   — best evidenced, and now confirmed in depth (`scc-hardware-gap.md`,
+   follow-up task).** Firmware unmasks both, and both handlers are
    full, content-verified routines (not stubs): correct per-channel
    control-block pointer, correct per-channel register base, a shared
    `$643C` receive routine, correct per-channel EOI value written back
-   to ISR. This is firmware actively expecting two working serial
-   communication channels this project's MC68302 model does not
-   implement at all. **What modeling this would need**: an SCC
-   implementation (even a minimal one — channel registers, an event
-   register, IMR-gated INRQ delivery) wired into the existing
-   `mc68302_device`. **Observable effect if modeled**: level-4 IACKs
-   would begin occurring (currently exactly zero); `$643C`
-   (`scc_rx_common`, already flagged as one of this project's three
-   highest-priority unidentified routines) would finally execute and
-   become traceable, potentially resolving what SCC1/SCC2 actually
-   carry — a question open since the earliest static-analysis rounds.
+   to ISR. **Confirmed dynamically**: both channels have real,
+   standards-shaped 8-entry buffer-descriptor rings in parameter RAM
+   (`$FC6400`/`$FC6500`, wrap bit on the eighth descriptor, `MRBLR=
+   $0320` matching every buffer's stride exactly) and real register
+   configuration (`SCON`/`SCM` with `ENR=1`). **`$643C`
+   (`scc_rx_common`) is disassembled**: it tests individual `SCCE`
+   event bits, acknowledges each write-1-to-clear, and indexes into
+   the exact same buffer-descriptor ring by `counter*8` — genuine
+   character/frame-level serial reception, not a generic queue. This
+   is firmware actively expecting two working serial communication
+   channels this project's MC68302 model does not implement at all.
+   **What modeling this would need**: an SCC implementation (channel
+   registers, buffer-descriptor traversal honoring the ready/wrap bits
+   exactly as measured, IMR-gated INRQ delivery) wired into the
+   existing `mc68302_device` — **and, unresolved by any measurement so
+   far, a real byte source on the ASR-10 board**, since MIDI and panel
+   serial are already independently covered by the DUART. See
+   `scc-hardware-gap.md` Del 5 for the full scope/risk breakdown.
+   **Observable effect if modeled**: level-4 IACKs would begin
+   occurring (currently exactly zero); what SCC1/SCC2 actually carry
+   remains open pending identification of that byte source, not pending
+   further disassembly of the firmware side, which is now done.
 2. **PB9 (`$F8D072`), PB10 (`$F88F06`), PB11 (`$F88F22`), vectors
    `$47`/`$4E`/`$4F` — well evidenced, smaller scope.** All three
    unmasked, all three have distinct, real (not generic-stub)
