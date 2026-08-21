@@ -791,6 +791,18 @@ Alla tre verifierade FDC-väntningar uppfyller villkoret på första
 pollningen i den verifierade V350-körningen; timeoutvägen tas inte och
 `$049D` blir aldrig `$0D`. Detta stänger FDC-spåret i referensen.
 
+**Oberoende cross-validerad, E2-uppgiften.** En fristående mätning (fem
+adresser, oberoende av denna katalogpost) räknade **1 676 445** träffar
+på `$FC4001` över en full boot->load->select->spela ton-körning --
+i samma storleksordning som de här dokumenterade 1 674 022, uppmätt av
+en helt annan sond vid ett annat tillfälle. `$FC4001`/`$FC4003` (FDC)
+och `$FC4813`/`$FC4817` (DUART) bekräftas nu överens mellan körning,
+`mem_map` och den återanvända BR/OR-chip-select-analysen; `$FC5803`
+(IDMA:s SAPR-värde) fick **noll** träffar i samma körning -- katalogen
+avkodar den som RAM, men inget i den nuvarande IDMA-implementationen
+dereferenserar SAPR, så det är overksamt idag, inte fel. Se
+`reference/e2-address-model.md`.
+
 ## ROM-tabeller och dataformat
 
 | Adress | Innehåll |

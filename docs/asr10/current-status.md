@@ -452,9 +452,20 @@ C++, zero new environment flags, per the standing Lua-first rule.
   (SCC parameter RAM, GIMR/IPR/IMR/ISR, Port A, SCC1-3 command/mode —
   legitimate, unmodeled, not bugs). Guarded: alarm on anything outside
   this calibrated set.
-- **IDMA's three debts:** SAPR not payable now (needs a `mem_map` change,
-  blocked on E2) but guarded (alarm if ever ≠ `$FFFC5803`, the only value
-  ever observed). CMR bit layout added to `docs/mc68302/idma-spec.md`
+- **IDMA's three debts:** SAPR not payable now (needs a `mem_map` change)
+  but guarded (alarm if ever ≠ `$FFFC5803`, the only value ever
+  observed). **Update, `reference/e2-address-model.md`:** the address-
+  model consistency question (the current meaning of "E2") is settled
+  for this address, not open — `mem_map`, runtime, and the reused BR/OR
+  static analysis all agree the catch-all is what decodes `$FC5803`
+  today, and a dedicated dynamic measurement confirms **zero** bus
+  accesses ever reach `$FC5803` in this build (SAPR is never
+  dereferenced, per `idma-implementation-plan.md`'s own design). The
+  catch-all masks a real hardware target, but that target is currently
+  inert, not silently wrong. The short-address mirror hypothesis
+  (`$FF8000-$FFFFFF`, the *other* thing "E2" has meant) remains
+  genuinely `[OPEN]` and is untouched. CMR bit layout added to
+  `docs/mc68302/idma-spec.md`
   (sourced from the manual's OCR text, `[Likely]` not `[Verified]`) and
   cross-validated — decoding the one known value, `SAPI=0`/`DAPI=1`
   matches the already-hardcoded transfer direction exactly, and
