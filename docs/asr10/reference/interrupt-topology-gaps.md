@@ -295,6 +295,19 @@ as such per item, not resolved by this document.
    far, a real byte source on the ASR-10 board**, since MIDI and panel
    serial are already independently covered by the DUART. See
    `scc-hardware-gap.md` Del 5 for the full scope/risk breakdown.
+   **Update, follow-up round:** both of `scc_rx_common`'s branches are
+   now traced to their targets — a ring-full condition raises a real
+   firmware error (`trap #0`, codes `$5`/`$6` → error `$2D`/`$2E`, 45/46
+   decimal, undocumented elsewhere), and a second event condition
+   (`SCCE` bit 2) silently disables **both** SCC channels via
+   `$F8C0E6` (receiver off, both IMR/IPR bits cleared) with no error
+   and no display message — a real, named, silent-abort path, not a
+   guess. Neither branch reaches an actual "data arrived, here it is"
+   consumer; that path is still `[OPEN]`. Buffers themselves
+   (`$00F76600`+/`$00F74B00`+, a third RAM pool distinct from low RAM
+   and DPRAM) stay zero-initialized and never fill at any checkpoint,
+   confirming from the data side what the zero-IACK count already
+   showed from the interrupt side: no real reception ever completes.
    **Observable effect if modeled**: level-4 IACKs would begin
    occurring (currently exactly zero); what SCC1/SCC2 actually carry
    remains open pending identification of that byte source, not pending

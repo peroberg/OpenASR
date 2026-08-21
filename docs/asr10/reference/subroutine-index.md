@@ -1069,10 +1069,45 @@ multipliceras med 8 for att indexera **exakt samma 8-byte-per-post
 buffertdeskriptorring** som mats dynamiskt i `scc-hardware-gap.md` Del
 2 (`$FC6400`/`$FC6500`, 8 poster, `STATUS/RESERVED/ADDR`-format, sista
 posten markt med wrap-biten `$F000`). Statisk disassemblering och
-dynamisk registermatning konvergerar oberoende pa samma struktur. Vad
-`$FFF8C0E6` och de tva `trap #0`-koderna (`$5`/`$6`) konsumerar nedströms
-ar fortfarande **oppet** — inte spårat i denna omgang, men
-`scc_rx_common` sjalv ar inte langre oidentifierad.
+dynamisk registermatning konvergerar oberoende pa samma struktur.
+
+**Bada grenarnas mal spårade** (`scc-hardware-gap.md`, uppföljningsrundan):
+bit-0-grenen faller, vid en redan-satt ready-bit (ringen full), igenom
+till `trap #0` med `D0=$5`/`$6` (efter `ori.b #$28,D0` → felkod `$2D`/
+`$2E` = 45/46 decimalt) — ett riktigt firmwarefel, men om en full ring,
+inte om utebliven data. Bit-2-grenen anropar `$FFF8C0E6`
+(`scc_disable_both`, se nedan) — en **tyst** avstängning, ingen
+felkod, ingen displaytext. Ingen av de två grenarna nar en
+"data mottagen, har ar den"-rutin; den huvudsakliga mottagningsvagen ar
+fortfarande **oppet**.
+
+### `$F8C0E6` scc_disable_both `[V]`
+
+**[Verified]** Disassemblerad (`unidasm -arch m68000`, ROM-avbild,
+filoffset `$C0E6`). Anropas av `scc_rx_common` vid SCCE-bit 2:
+
+```
+f8c0e6: jsr     $fff976ec.l          ; kritisk sektion (se sr_save_disable_irq)
+f8c0ec: move.w  #$7033, $fc6884.l    ; SCM1 <- ROM-default, ENR=0 (mottagare AV)
+f8c0f4: move.w  #$7033, $fc6894.l    ; SCM2 <- samma
+f8c0fc: andi.w  #$dbff, $fc6816.l    ; IMR: rensar SCC1 (bit13) OCH SCC2 (bit10)
+f8c104: andi.w  #$dbff, $fc6814.l    ; IPR: samma tva bitar
+f8c10c: clr.b   $d06.w
+```
+
+Stanger **bada** SCC-kanalerna ovillkorligt — mottagare av, bada
+avbrotten maskerade — utan felkod och utan displaytext nagonstans i
+vagen. Detta ar den tysta avstangningsvag hypotesen om "tyst timeout"
+efterfragade; nu namngiven och spårad, inte gissad.
+
+### `$F976EC`/`$F976FA` sr_save_disable_irq / sr_restore `[V]`
+
+**[Verified]** `$F976EC`: `move SR,D0` / spara till `$0E82.w` / `or.w
+#$700,D0` (hoja IPL till 7) / Line-A-anrop. `$F976FA`: laser tillbaka
+`$0E82.w` och gor motsvarande Line-A-anrop for att aterstalla SR. Ett
+spara/aterstall-par for kritiska sektioner via den redan kanda Line-A-
+syscallmekanismen (vektor 10), inte applikationslogik. Samma monster
+som redan observerats vid `$00BF14` (`D0 ← ($0E82).w` / `set_sr(D0)`).
 
 ### `$00BEE2` scc_receiver_enable (V1.61) `[V]`
 

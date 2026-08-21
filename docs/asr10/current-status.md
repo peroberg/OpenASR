@@ -898,11 +898,24 @@ angle: the `$FF7F00-$FF7FF6` stride-8 structure flagged in
 `interrupt-topology-gaps.md` has exactly 31 entries, matching
 `ACT=$1F` numerically — `[Likely]` a per-voice/per-event table sized
 to it, `[OPEN]` whether it is specifically a voice-assignment table
-(see `scc-hardware-gap.md` Del 1.2). Keyboard-hypothesis status stays
-`[Hypothesis]`: SCC1/SCC2 are now confirmed to run genuine, real,
-event-driven serial reception this project doesn't model
-(`scc-hardware-gap.md` Del 2/3) — capability evidence for a keyboard-
-scanner link, not identity evidence for this specific message.
+(see `scc-hardware-gap.md` Del 1.2). Keyboard-hypothesis status:
+**upgraded, not confirmed** (`scc-hardware-gap.md`, follow-up round):
+both SCC1/SCC2 buffer-descriptor rings are real, standards-shaped,
+block-oriented (`MRBLR`-sized, wrap-marked) — built for a continuous
+stream, not an occasional poll, which is what a keyboard-scanner link
+would look like and a status query would not. A silent shutdown path
+was traced and named (`$F8C0E6`, disables both channels with no error
+and no display text on one specific SCC event) — matching the exact
+"a silent timeout would explain why nothing is noticed" shape the
+hypothesis needed, though not proof of it. Still `[Hypothesis]`: no
+byte source is identified, and the string search (below) found
+nothing. Asked directly where the message "`TUNING KEYBOARD - HANDS
+OFF`" came from: it entered this project via a task instruction, not
+from any source this assistant can independently verify or cite — see
+`scc-hardware-gap.md`'s follow-up Del 4 for the full disclosure and the
+three real candidates (different OS version, coded/fragment-assembled
+text, real hardware running different firmware) still open, pending
+whoever can answer which applies.
 
 ## ES5510: what firmware asks for, before anything is turned on (docs/asr10/investigations/keyboard-and-sample-bridge-11.md)
 

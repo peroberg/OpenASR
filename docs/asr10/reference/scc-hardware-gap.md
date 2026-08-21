@@ -7,6 +7,14 @@ SCCs at all. This document measures what firmware actually does with
 them — not whether the topology finding was right (it was), but what
 it would take to close the gap. No implementation this round.
 
+**Follow-up round, below the original Del 1-5**: traces the buffers
+themselves — where they live, who reads them, what the channels are
+configured for, and the keyboard hypothesis re-tested against a wider
+net than a literal string search. See "Follow-up: The Buffer
+Destination" below; it supersedes this document's own original Del 4
+verdict on the keyboard hypothesis (upgraded, not just re-tested) and
+extends, not replaces, Del 2/3 above.
+
 ## Del 1 — Two Closures From The Prior Task
 
 ### 1.1 Where do the 1404 edges actually live?
@@ -372,6 +380,250 @@ writing an SCC device, not after.
 - `current-status.md`: SCC open question updated; keyboard hypothesis
   status and the 1404/hash bookkeeping closure recorded.
 
+## Follow-up: The Buffer Destination
+
+**A correction acknowledged first.** The prior round's Del 1.1 restated
+"`call-graph-edges.csv` has zero rows for the five E2 samples" as if it
+meant the 1404 mirror-hypothesis count wasn't in that file — a bounded
+absence promoted to a general claim. Both figures were independently
+re-verified directly against the file this round (`awk -F',' 'NR>1{print
+$10}' | sort | uniq -c` → `3839 direct`, `1404 mirror-hypothesis`,
+summing to the documented 5243); the correction stands as recorded.
+
+### Del 1 — Descriptor And Buffer Map
+
+All 16 descriptors read at four checkpoints (`file1`, `file_loaded`,
+`selected`, `note_played`) — **byte-identical at every checkpoint**,
+same live witness pattern as the interrupt topology's own vector-table
+stability check:
+
+| Ch | Idx | Status | Length | Buffer address |
+|---|---:|---|---|---|
+| SCC1 | 0 | `$D000` | `$0000` | `$00F76600` |
+| SCC1 | 1 | `$D000` | `$0000` | `$00F76920` |
+| SCC1 | 2 | `$D000` | `$0000` | `$00F76C40` |
+| SCC1 | 3 | `$D000` | `$0000` | `$00F76F60` |
+| SCC1 | 4 | `$D000` | `$0000` | `$00F77280` |
+| SCC1 | 5 | `$D000` | `$0000` | `$00F775A0` |
+| SCC1 | 6 | `$D000` | `$0000` | `$00F778C0` |
+| SCC1 | 7 | `$F000` | `$0000` | `$00F77BE0` |
+| SCC2 | 0-6 | `$D000` | `$0000` | `$00F74B00 .. $00F75DC0` (`+$320` each) |
+| SCC2 | 7 | `$F000` | `$0000` | `$00F760E0` |
+
+**Buffers live in neither low RAM nor dual-port RAM — a third pool.**
+`$00F7xxxx` falls in `mem_map`'s `map(0xf00000, 0xf7ffff).ram();`, a
+512 KB block distinct from both the vector-table/OS-code low RAM
+(`$000000-$01FFFF`-ish) and the MC68302's own 4 KB internal window
+(`$FC6000-$FC67FF`). This block has no other established purpose in
+this project's canon beyond "generic RAM" — the SCC buffers are the
+first specific attribution any investigation has given it.
+
+**Content: zero-initialized, never filled, at every checkpoint.** The
+first 16 bytes of all 16 buffers read `00` throughout — boot, load,
+instrument select, and after a played note. Combined with the status
+words never changing (`$D000`/`$F000`, the "owned by hardware, ready to
+receive" pattern, never flipping to a "data ready" state), this
+confirms directly what the interrupt topology already inferred from
+zero level-4 IACKs: **no real reception ever completes in this
+measured run.** `LENGTH=$0000` at all 16 descriptors, unchanged,
+matches — a receive descriptor's length field is filled in by hardware
+on completion; it staying zero is the same fact stated a third way.
+
+### Del 2 — Who Reads The Buffers? A Dead End, Correctly Identified As One
+
+**The direct approach failed, and the failure is itself informative.**
+Read taps across all 16 buffer regions (no `#8.5` concern — this pool
+is not the dynamically-reinstalled SIB window) show **exactly**
+2,263,356 reads and exactly 326 distinct PCs on **every single one** of
+the 16 regions, byte-for-byte identical counts. That uniformity is the
+tell: this is not 16 independent consumers converging on the same
+number by chance, it is one undifferentiated sweep that happens to
+pass through all 16 regions equally because they sit inside a much
+larger block it treats uniformly. The top PCs by hit count
+(`$FFF87FCA` 1,488,201; `$FFF87F96` 251,141; `$FFF88FBC` 190,880; ...)
+mixed with very-low-address PCs (`$00000E`, `$000012`, `$0000A0`, each
+count=1) are consistent with a boot-time whole-block clear/verify pass
+(the same style of finding as the already-documented 524,290-write
+clear of `$100000-$1FFFFF`), not a targeted reader of received SCC
+data. **No real consumer can be found this way, because nothing is
+ever produced for one to consume** — Del 1's zero-content finding
+already explains why: a live tap on empty buffers can only ever catch
+background noise.
+
+**The static path succeeds where the dynamic one could not.**
+Continuing `scc_rx_common`'s own disassembly (`e2-address-model.md`'s
+`unidasm` method) past where the prior round stopped, both of
+`scc_rx_common`'s two branches were traced to their actual targets:
+
+**Event bit 0 branch** (BD-ring indexing, previously disassembled):
+after `bset #$7,(A0)` tests-and-sets the active descriptor's top status
+bit, `beq` skips the following block **only if the bit was already
+clear**. If the bit was **already set** — the ring position firmware
+needs is still marked owned/ready from a prior cycle nobody drained —
+it falls through to `trap #0` with `D0=$5` (then `ori.b #$28,D0` →
+`$2D`, 45 decimal) or `D0=$6` (→ `$2E`, 46). `trap #0` is this
+project's already-documented generic error-raise primitive
+(`raise_error_145`'s own `moveq #$91,D0 / trap #0` pattern,
+`subroutine-index.md`). **This is firmware complaining about SCC data
+— but about a full ring, not a missing byte**: a descriptor-reuse
+conflict, not a "no data arrived" timeout. No prior documentation
+mentions error codes 45/46; not yet cross-referenced against a service-
+manual error list.
+
+**Event bit 2 branch, traced further this round**: after acknowledging
+the bit, `jsr $FFF8C0E6.l` is a **channel shutdown**, not a data
+handler:
+
+```
+f8c0e6: jsr     $fff976ec.l          ; enter critical section (disable interrupts)
+f8c0ec: move.w  #$7033, $fc6884.l    ; SCM1 <- ROM default: ENR=0, receiver OFF
+f8c0f4: move.w  #$7033, $fc6894.l    ; SCM2 <- same, receiver OFF
+f8c0fc: andi.w  #$dbff, $fc6816.l    ; IMR: clear SCC1 (bit13) AND SCC2 (bit10)
+f8c104: andi.w  #$dbff, $fc6814.l    ; IPR: same two bits
+f8c10c: clr.b   $d06.w
+```
+
+(`$FFF976EC`/`$FFF976FA` are a save/restore-SR pair via the already-
+known Line-A syscall mechanism — disable-interrupts/restore-interrupts,
+not application logic.) **This unconditionally disables both SCC1 and
+SCC2 — receiver off, both interrupts masked — the moment event bit 2
+fires, with no error trap and no display message anywhere in this
+path.** After the shutdown, `scc_rx_common` still runs `trap #3`
+(enqueue) / `trap #9` (slot install) with parameters `$8D4A`/`$23F6` —
+a silent OS-level notification, not a user-visible one. **This is a
+silent timeout/abort path, exactly the shape the task asked whether
+firmware would show**: no error appears on the panel from this branch;
+the channel is simply, quietly turned off.
+
+**Downstream destination, stated precisely**: neither traced branch
+leads to a data-interpretation routine (a display update, a keyboard-
+event table, a note-scheduling call). One raises a numeric firmware
+error (ring-full); the other silently disables both channels and
+posts a generic OS notification. **Whatever routine actually consumes
+a successfully-received byte was not reached by either branch found
+this round** — both are edge/error paths, not the main-line "here is
+your data" path, which would require bit 2 or bit 0 to fire under a
+*different* precondition than either traced case, or a third event bit
+not yet examined. Flagged `[OPEN]`, named precisely rather than
+guessed at.
+
+**Cross-reference against known paths, as asked**: no intersection
+found with the storage-completion/note path (`$F114B6`/`$F114E2`), the
+`$0402` mechanism, the scheduler (`sched_*` entries), or the
+`$FF7F00` 31-entry structure — none of `scc_rx_common`'s targets
+(`$FFF8C0E6`, `$FFF976EC`, the enqueue/slot-install parameters
+`$8D4A`/`$23F6`) match any address in those already-documented systems.
+**This does not confirm the keyboard hypothesis on structure**, contra
+what a positive crossing would have shown — but it does not disconfirm
+it either, since the main-line reception path (as opposed to the two
+error/abort edges found here) was never reached, in either direction.
+
+### Del 3 — Channel Configuration
+
+**Mode**: `SCM1=SCM2=$703B` throughout (`ENR=1`, both receivers
+enabled; `MODE=$3`, `DIAG=$3`). Per the bit map already in
+`runtime-service-model.md` (`MODE` = bits 1-0), `MODE=3` is labeled
+there "BISYNC/Transparent" — this task did not resolve which of the
+two, no local bit-level manual table exists for the exact 4-value
+`MODE` field in this project's `docs/mc68302/`. **`DSR1=DSR2=$0000`**,
+measured directly — this differs from `communications-block-map.md`'s
+cited generic reset highlight (`DSR=0x7E7E`); DSR is never written
+anywhere in this build (confirmed: no DSR traffic in either SCC
+traffic pass), so this is this **model's** unimplemented-storage
+default reading as zero, not a claim about real hardware's reset
+value — stated explicitly so it is not mistaken for the latter.
+
+**Baud rate: not computed, honestly.** `docs/mc68302/` has no local
+bit-level table for the MC68302's clock-source-select fields
+(`TCS`/`RCS`, normally in `SCON`) or its baud-rate-generator registers
+— `SCON1=SCON2=$7000` is measured but not decoded bit-by-bit here, and
+guessing a clock source without that table risks exactly the kind of
+fabricated-looking precision this project's rules warn against. Left
+`[OPEN]`, not computed from a guessed formula.
+
+**Timeout / "does firmware complain": answered, precisely.** Yes, on
+two separate conditions, both traced this round (Del 2 above): a
+buffer-descriptor-ring conflict raises a firmware error (`trap #0`,
+codes `$5`/`$6` → `$2D`/`$2E`); a different event condition (bit 2)
+silently disables both channels with no visible error at all. **The
+silent path is the one the task's own hypothesis named** — "en tyst
+timeout skulle förklara varför inget märks" is now a traced, named
+code path (`$FFF8C0E6`), not a guess.
+
+### Del 4 — The Keyboard Hypothesis, Re-Tested
+
+**Honesty first, since it was asked directly: where did "`TUNING
+KEYBOARD - HANDS OFF`" come from?** Not from anything this assistant
+independently witnessed — this assistant has no experiential memory of
+real hardware, only whatever appears in this conversation and in
+training data. The phrase entered this investigation via the task
+instructions themselves (the interrupt-topology round's own `[Hypothesis]`
+framing), not from a citation this assistant can verify or trace to a
+specific manual page or observed unit. Any prior-training familiarity
+with Ensoniq keyboards using a "hands off the keys during calibration"
+message is a low-confidence pattern-match, not a checkable source, and
+is not treated as evidence here. The three candidates the task listed
+(different OS version present at power-on; fragment-assembled text
+using the two undecoded display codes `$74`/`$76`; observed on real
+hardware running different firmware than V1.61/V3.50) are exactly the
+right frame — this document cannot adjudicate between them without
+either the specific version/hardware detail (which only the person who
+saw it can supply) or a full decode of the annunciator/fragment
+protocol (out of this task's scope; named as follow-up work below).
+
+**Fragment/annunciator search, attempted**: `TUNING`, `KEYBOARD`, and
+`TUNED` were each searched independently (not just the full phrase) in
+both OS images and the reconstructed ROM — zero hits for any of the
+three, in any position, plain or glyph-substituted. This rules out the
+simplest version of "assembled from these exact word fragments stored
+as literal ASCII substrings" — it does not rule out assembly from
+*coded* fragments (the `$74`/`$76` annunciator codes), which this task
+did not decode. **Comparison against known-stored display strings**:
+`FILE LOADED`/`DISK NOT RESPONDING`/similar messages already documented
+elsewhere in this project are stored as literal ASCII (matching the
+`"- HANDS OFF"` fragment's own storage form found in ROM) — **all
+comparably-documented display strings in this project are stored raw,
+none are known to be compressed**, so a literal-ASCII absence is a
+meaningful negative result for THIS specific phrase, not evidence the
+search method is blind to some other, encoded class of string.
+
+**Verdict: upgraded on structure, not on text.** The buffer-descriptor
+findings (Del 1/2 this round) add real weight the original hypothesis
+did not have: MRBLR-sized, wrap-marked, block-oriented receive rings
+are built for continuous streams, not one-off polls — consistent with
+a keyboard-scanner link, not consistent with an occasional status
+query. The silent-shutdown-on-idle path (Del 2/3) is exactly the
+mechanism that would make a disconnected or unused link invisible in
+this project's own measurements. **Status: `[Hypothesis]`, upgraded
+from "plausible, no supporting structure" to "plausible, with real
+supporting structure, still no textual or byte-source confirmation."**
+Not promoted to `[Likely]` — that would need either the real byte
+source identified or the specific message located, neither of which
+happened this round.
+
+### Del 5 — What Modeling Would Require, Now Sharper
+
+The scope from the original Del 5 stands (register storage,
+buffer-descriptor traversal, IMR-gated delivery). This round sharpens
+the one item flagged as the real risk:
+
+**"Where do the bytes come from?" — still the open question, and now
+it is clear *why* it cannot be answered from this side of the
+firmware.** Both branches this round traced are firmware's *reactions*
+to SCC events (ring-full error, idle-shutdown) — neither is the
+main-line "byte arrived, here is what we do with it" path, and neither
+told us anything about what physically drives the SCC's receive pin.
+That fact can only come from board-level evidence (schematic, a
+documented connector, or a real-hardware observation) this project
+does not have. **Modeling SCC1/SCC2 without that fact would mean
+guessing a byte source to exercise the buffer-descriptor logic
+synthetically** — provable to work against whatever is guessed, not
+provable to be correct, exactly the caution `idma-implementation-
+plan.md` already applied to CMR's undecoded bits. Recommendation
+unchanged: this is the last major uninstrumented MC68302 surface, and
+it should stay unimplemented until the byte source is identified from
+outside this codebase, not guessed from inside it.
+
 ## Verification
 
 - No implementation. No SCC code, no interrupt controller.
@@ -386,3 +638,8 @@ writing an SCC device, not after.
 - `docs/asr10/regression-test.sh`: 8 tests, 9 PASS lines, run before and
   after this task's edits — unaffected, Lua/documentation-only.
 - `git diff --check`: clean.
+- Follow-up round: the buffer-read tap dead end (Del 2) is reported as
+  a finding, not discarded quietly — an instrument that returns
+  identical counts across 16 independent regions is itself informative
+  about what it measured, and is recorded as such rather than deleted
+  and replaced with only the static trace that followed it.
