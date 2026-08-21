@@ -580,6 +580,142 @@ are now answered by the service manual and schematics — yes, the
 keybed has its own 80C52-based scanner board, and the connection is
 the 20-pin keyboard ribbon cable at connector J7. Revised list below.
 
+## Second Recalculation: Testing "SCC1/SCC2 = Stereo Audio Input"
+
+The prior round's own error-code correction (`trap #0` codes are 5/6,
+matching the manual's "could not synchronize audio input" verbatim,
+not 45/46) reopened the question this section tests directly: is the
+SCC pair the audio input path rather than the keyboard link? Used the
+machine's own sampling function as stimulus, per instruction — the
+same kind of missing-stimulus fix that made note playback work
+earlier in this investigation.
+
+### Del 1 — Entering Sample Mode, Measured
+
+**Procedure, from `ASR10_manual.pdf`'s own "Easy Sampling" section**:
+press `Sample-Source Select` (display → `REC SRC=INPUTDRY LEFT`), then
+press an unloaded `Instrument-Sequence Track` button (the manual's own
+recommended path, versus `Enter-Yes` + a picker screen). Button codes:
+`Sample-Source Select` = `BTN_20` (already established,
+`panel-button-sweep-v350.md`: this exact button produces
+`REC SRC=INPUTDRY LEFT`); `Instrument 1` = `BTN_02`
+(`keyboard-and-sample-bridge-5.md`), left deliberately unloaded this
+run by skipping the boot-time file-load sequence entirely, so it
+qualifies as "unloaded" per the manual's own instruction.
+
+**Witnessed, `#8.5`-safe**: SCM1/SCM2/IMR/BD taps installed only after
+`FILE 1` (well past BAR settle at ~5.4s); level-4 IACK tap installed
+from script start (`cpu_space`, not the SIB window, no `#8.5` concern).
+
+**Result: the channels do arm — and this is specific to this button,
+not a generic side effect.** Pressing `Sample-Source Select` triggers
+the exact same `SCM1`/`SCM2` (`$7033`↔`$703B`) / `IMR` (`$C080`↔
+`$E480`) arm/disarm cycle, and a full rewrite of both descriptor rings,
+within ~100ms of the button press. **Control test, run separately**:
+pressing an unrelated button (`Up Arrow`, `BTN_0B`) after `FILE 1`
+produces **zero** `SCM`/`IMR` writes at all, despite the display
+changing (`FILE 14 BLUES ORGAN`) — proving this is not "any button
+press" or "any display update" triggering the pattern. Sample-mode
+entry specifically re-arms SCC1/SCC2; ordinary file-browser navigation
+does not.
+
+**But the content of what arms is the decisive fact, and it cuts
+against the strong reading of the new hypothesis**: every descriptor
+rewritten during sample-mode entry points to **the identical buffer
+addresses already used during boot-time keyboard calibration**
+(`$00F76600`... for SCC1, `$00F74B00`... for SCC2 — byte-for-byte the
+same as `scc-hardware-gap.md`'s original measurement). **Not** the
+sample-RAM pool (`map(0x100000,0x1fffff).ram().share(":asr10_sample_
+ram")`, this driver's own actual audio-sample destination) — not a
+larger allocation, not a different `MRBLR`, not a different ring size.
+The same 6,400-byte scratch ring gets torn down and rebuilt identically
+regardless of which of the two triggers (calibration or sample-mode
+entry) fires it. **Zero level-4 IACKs, throughout** — matching every
+prior measurement.
+
+**Where the sequence gets to, and where it stops**: the display reaches
+"?" after the instrument-slot press rather than a readable Level-Detect
+VU meter — almost certainly this project's ASCII display decoder
+failing to render the VU meter's bar-graph glyphs (a `?` fallback is
+this decoder's own established behavior for undecodable characters,
+not evidence the mode failed to start) rather than a real failure to
+enter the mode; not confirmed further this round.
+
+### Del 2 — What This Does And Doesn't Tell Us
+
+**The test criterion as literally stated ("do the channels arm") is
+met.** But Del 1's own content finding — identical tiny buffers, no
+scale-up, no real transfer, zero IACKs — does not look like what a
+bulk digitized-audio DMA path would look like. A real stereo audio
+input, even at the lower-fidelity 29.76 kHz mode, needs continuous
+throughput orders of magnitude larger than an 800-byte-per-descriptor,
+8-descriptor ring can usefully carry for more than a few milliseconds;
+it would need to target the sample-RAM pool, not this fixed 6,400-byte
+scratch area reused unchanged from calibration. **This experiment does
+not confirm the strong form of the audio-input hypothesis** — SCC1/
+SCC2, as configured and exercised here, are not shown feeding bulk
+sample data anywhere. Format/rate/relationship to Y3 = 33.8688 MHz:
+moot given the above — there is no observed block matching an audio
+transfer to characterize.
+
+**What "could not synchronize audio input" might mean instead,
+consistent with everything measured**: a small, generic status/
+handshake exchange — common to several UI transitions, not unique to
+sampling — that could plausibly *check whether an external device
+(the keyboard's own scanner, or an audio-input-adjacent status line)
+is present and answering*, using the same tiny ring both times because
+the message itself is small, not because the underlying payload is
+audio. This reading is consistent with the manual's own error text
+without requiring SCC1/SCC2 to carry bulk PCM data.
+
+### Del 3 — The Keyboard Link Is Real; Which Wire On The Digital Board Is Now Its Own Open Question
+
+**Not disproven, not confirmed — downgraded to `[OPEN]`, precisely
+because Del 1/2's result is genuinely mixed.** The new audio-input
+hypothesis is not confirmed either (same section). Both hypotheses
+now have real evidence and real friction:
+
+- *For* SCC1/SCC2 = keyboard: real buffer-descriptor rings, `scc_rx_
+  common`'s genuine event-driven character reception logic, the silent-
+  shutdown path, and now a specific (non-generic) re-arm triggered by
+  entering a mode (`Sample-Source Select` → Level-Detect) that the
+  manual itself says explicitly supports playing the keyboard during.
+- *Against*: the error text says "audio," and the same ring never
+  scales to anything audio-sized, in either the calibration or the
+  sample-mode context.
+- *Against the audio reading specifically*: no observed transfer looks
+  like bulk audio DMA; the buffers stay small, fixed, and empty.
+
+**SCC3 as a keyboard-link candidate**: weak. Zero traffic, IMR bit
+clear, in every measured run including this one — inconsistent with
+"the keyboard is calibrated every single boot" (the manual's own
+claim), which would need *some* channel firing every time. Not
+promoted.
+
+**A fourth serial path — checked against the manual, not measured
+directly**: the service manual's own communications-path description
+(quoted above) names a **three-line synchronous** link between the
+keyboard and the keypad/display board, distinct from the two-line
+async keyboard link. This project already has an established, verified
+fact that sits in tension with treating that sync link as one of
+SCC1/SCC2: **DUART channel B is the panel/keypad-display link,
+`[Verified]`** (`subroutine-index.md`: *"kanal B panel [Verified]"*).
+The SCN2681/MC68681 DUART family is **asynchronous only** — it has no
+native synchronous serial mode. Either the manual's "synchronous"
+description does not survive to the digital board in that form (some
+bridging happens inside the keyboard assembly before the signal
+reaches DUART channel B), or the manual's word choice is looser than a
+strict USART distinction, or the two facts describe genuinely
+different signals. **Not resolved this round** — flagged as a specific,
+well-defined open question rather than left implicit: *what carries
+the keypad/display board's own synchronous protocol, given that DUART
+channel B is both established as the panel link and incapable of
+synchronous framing?* SMC1/SMC2 (`docs/mc68302/communications-block-
+map.md`: parameter RAM `$0660-067F`, their own register block) were
+not measured for traffic this round — a real, named gap, not
+overlooked in the write-up even though it was in the practical
+measurement.
+
 ## Updates
 
 - `subroutine-index.md`: not touched this round — no new named ROM/OS
@@ -599,7 +735,14 @@ the 20-pin keyboard ribbon cable at connector J7. Revised list below.
 - No clock change, no bank-1 change, no ES5510 activation. Factor two
   untouched.
 - No `-log`. All observation via Lua `print()`, `pdftotext`, and raw
-  byte search.
+  byte search. `-wavwrite` was available this round per instruction but
+  not used — the sample-mode measurement stopped at register/descriptor
+  level, which already gave a decisive (negative, for the strong
+  audio-DMA reading) answer before any audio-capture step was needed.
+- Sample-mode SCM/IMR/BD taps installed only after `FILE 1` (`#8.5`);
+  a clean negative control (unrelated button press, zero SCC writes)
+  satisfies `#8.7`'s live-witness requirement for the "not generic"
+  claim.
 - No board component list, schematic, or wiring diagram was invented.
   The digital board's own component layout remains `[OPEN] — no
   source`; the keyboard assembly's is now documented, from real,

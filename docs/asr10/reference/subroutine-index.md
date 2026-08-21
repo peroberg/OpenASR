@@ -1104,6 +1104,15 @@ avbrotten maskerade — utan felkod och utan displaytext nagonstans i
 vagen. Detta ar den tysta avstangningsvag hypotesen om "tyst timeout"
 efterfragade; nu namngiven och spårad, inte gissad.
 
+**Samma armering utlost av Sample-Source-Select** (`scc-board-source-
+question.md`, andra omrakningen): att gå in i samplingslage via panelen
+armerar SCC1/SCC2 med **identiskt samma** deskriptorer/buffertar som
+tangentbordskalibreringen ($00F766xx/$00F74Bxx, aldrig sampel-RAM-
+poolen) — en verklig, riktad reaktion (en obesläktad knapp ger noll
+SCC-skrivningar, kontrollerat), men fel skala for att vara massiv
+ljud-DMA. Se `interrupt-topology-gaps.md` for klaviaturhypotesens
+status, nedgraderad till `[OPEN]`.
+
 ### `$F976EC`/`$F976FA` sr_save_disable_irq / sr_restore `[V]`
 
 **[Verified]** `$F976EC`: `move SR,D0` / spara till `$0E82.w` / `or.w

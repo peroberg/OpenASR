@@ -326,6 +326,26 @@ as such per item, not resolved by this document.
    interrupt. This is a direct, repeated, dynamic timing correlation
    between the keyboard-calibration UI and real SCC activity, not
    circumstantial.
+   **Update, sample-mode recalculation round:** a self-caught
+   correction (`trap #0`'s codes are 5/6, not 45/46 — the `ori.b
+   #$28,D0` runs after the trap, not before) matched the real Ensoniq
+   service manual's own error text, "could not synchronize audio
+   input," reopening whether SCC1/SCC2 are the audio input rather than
+   the keyboard. Tested directly: entering the machine's own
+   `Sample-Source Select` mode (`ASR10_manual.pdf`'s documented button
+   sequence) does re-arm SCC1/SCC2 — specifically, not as a generic
+   button-press artifact (a clean control, an unrelated button press,
+   produces zero SCC writes) — but the descriptors rewritten point to
+   the *identical* small buffers already used during boot calibration,
+   never to the sample-RAM pool, never resized, never filled with real
+   content, zero IACKs throughout. This does not look like bulk audio
+   DMA. **Keyboard-link status downgraded from "confirmed on structure
+   and timing" to `[OPEN]`** — not disproven (the arm/timing evidence
+   is real and unchanged) and not superseded by the audio hypothesis
+   either (the buffer-scale evidence argues against bulk audio
+   specifically). Both readings now have real evidence and real
+   friction; see `scc-board-source-question.md`'s second recalculation
+   for the full detail.
    **Observable effect if modeled**: level-4 IACKs would begin
    occurring (currently exactly zero); what SCC1/SCC2 actually carry
    remains open pending identification of that byte source, not pending

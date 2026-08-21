@@ -970,6 +970,29 @@ and `145` ("unknown DUART interrupt error") both independently confirmed
 against the same list. See `scc-board-source-question.md`'s
 "Recalculation" section for the full detail and all source citations.
 
+**Update, sample-mode test round.** The error-code correction above
+("could not synchronize audio input") reopened whether SCC1/SCC2 are
+the stereo audio input rather than the keyboard link. Tested directly
+using the machine's own `Sample-Source Select` procedure
+(`ASR10_manual.pdf`'s own button sequence): SCC1/SCC2 do re-arm on
+entering that mode, specifically — not a generic button-press effect
+(a clean control, an unrelated button, produces zero SCC writes) — but
+every rewritten descriptor points to the *same* small buffers already
+used at boot calibration, never the sample-RAM pool, never resized,
+zero content, zero IACKs. **This does not look like bulk audio DMA.**
+**Keyboard-hypothesis status downgraded from "confirmed on structure
+and timing" to `[OPEN]`** — neither hypothesis is now cleanly
+supported: the arm/timing evidence for "keyboard" is real and
+unchanged, but so is the buffer-scale evidence against "bulk audio."
+The keyboard link itself remains real (80C52 UART, 20-pin cable,
+service-manual-documented) — which digital-board wire terminates it is
+what's unresolved, not whether it exists. A related, newly-named open
+question: the service manual's own "three-line synchronous"
+keypad/display link sits in tension with this project's own
+`[Verified]` fact that DUART channel B (async-only hardware) is the
+panel link — not resolved this round. See `scc-board-source-
+question.md`'s second recalculation for the full detail.
+
 ## ES5510: what firmware asks for, before anything is turned on (docs/asr10/investigations/keyboard-and-sample-bridge-11.md)
 
 **Factor of two, parked verbatim, per instruction — not investigated
