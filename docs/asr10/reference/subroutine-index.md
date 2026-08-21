@@ -519,15 +519,30 @@ bakåträkning från uppmätt `$3C`-tonhöjd (~30,6MHz,
 Kortets kristallbestyckning i sin helhet: Y1=16MHz (MPU), Y2=30,47618MHz
 och Y3=33,8688MHz (ES5506/ES5510/AD-DA-sidan).
 
-**[Likely, inte bekräftat]** `30 476 180/(16*32)=59 524,6Hz` är nästan
-exakt dubbelt mot ASR-10:s dokumenterade 29,76kHz-läge. `es5506.cpp`s
-egen kod visar **identisk** divisorformel (`16*(röster+1)`) för
-`es5505_device` och `es5506_device` -- ingen kodsynlig skillnad
-stödjer att MAME:s ES5506 råkat ärva ES5505:s divisor. `esq5505.cpp`
-delar samma namngivna kristall på två (`30.47618_MHz_XTAL / 2`) innan
-den når OTIS/pumpen -- reellt, committat syskonbelägg för att
-kristallnätet halverar takten innan den når kretsen, vilket lutar mot
-det som den bättre stödda förklaringen utan att vara stängt.
+**[Verified, faktor-2 kartlagd men INTE förklarad --
+`keyboard-and-sample-bridge-10.md`]** `30 476 180/(16*32)=59 524,6Hz`
+är nästan exakt dubbelt mot ASR-10:s dokumenterade 29,76kHz-läge. Det
+verkliga databladet (`docs/ensoniq/ES5506.pdf`, Ensoniq OTTO Spec Rev
+2.3) bekräftar att MAME:s FC- (17 bitar, 6+11) och ACCUM-format
+(32 bitar, 21+11) är **bitexakta** mot chippets eget dokumenterade
+registerformat -- den tidigare hypotesen "MAME:s FC/ACCUM-tolkning är
+en bitposition fel" har alltså positivt stöd **emot** sig, inte bara
+avsaknad av stöd. Samma datablad anger OTTO som specad för **"UP TO
+16MHZ OPERATION"** -- att mata den odelad Y2 (30,476MHz) överskrider
+den specade maxtakten med ~2x, och `esq5505.cpp` delar samma namngivna
+kristall på två (`30.47618_MHz_XTAL / 2`) innan den når OTIS/pumpen --
+reellt, committat syskonbelägg för en klockdelning på kortet. Men
+uppmätt tonhöjd stämmer bara vid **odelad** Y2 i MAME; en halvering
+skulle ge en oktav för lågt, och den färska hämtningstakts-
+mätningen (25 600-27 840 ord/s) matchar den odelade takten, inte den
+halverade. **De två observationerna går inte ihop via någon
+fastställd mekanism.** Stående, namngiven skuld, `[OPEN]`, ingen
+mekanism utpekad -- se journaldokumentet för kandidattabellen.
+
+Klockornas härkomst i sin helhet (samtliga fyra klockor i
+maskinkonfigurationen, klassade mätt/härledd/familjeprecedens/
+gissning): `current-status.md` och `keyboard-and-sample-bridge-10.md`
+Del 2.
 
 ### Board-default för PAR
 

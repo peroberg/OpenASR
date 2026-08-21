@@ -830,6 +830,53 @@ bit/Port A output identified as a mode selector in existing docs.
 the reason (clock correction, not loosened tolerance) stated in the
 test's own comment and the commit message. Suite is 8/8.
 
+## Factor of two: mapped, not explained. Clock provenance cleaned up. (docs/asr10/investigations/keyboard-and-sample-bridge-10.md)
+
+Self-correction carried forward: the prior turn's "MAME's FC/ACCUM
+fractional bits are probably a bit position off" was a plausible
+mechanism promoted to an explanation before being tested. Retracted.
+The real ES5506 datasheet (`docs/ensoniq/ES5506.pdf`, Ensoniq OTTO
+Spec Rev 2.3 -- a primary source now in the tree) confirms MAME's FC
+(17-bit, 6+11) and ACCUM (32-bit, 21+11) formats are **bit-exact**
+matches to the real chip. That candidate has positive evidence
+against it, not just an absence of support.
+
+The same datasheet states OTTO is rated **"UP TO 16MHZ OPERATION."**
+Feeding it the undivided Y2 (30.476MHz, this project's own corrected
+clock) exceeds that rating ~2x. `esq5505.cpp`'s own precedent halves
+the identically-named crystal before it reaches the same chip family.
+Both facts genuinely support a divided real-hardware clock. But
+measured pitch is only correct (`keyboard-and-sample-bridge-9.md`)
+at the *undivided* Y2 in MAME -- halving it would put audio an octave
+low. Freshly re-measured live fetch rate at the current clock
+(25,600-27,840 words/sec) matches the full-rate prediction, not the
+half-rate one, confirming MAME's own execution is self-consistent
+with itself at every layer measured (no separate compensating bug
+inside MAME). **These two facts do not reconcile via any mechanism
+confirmed this task.** Recorded as a named, standing debt, `[OPEN]`,
+no mechanism named -- not resolved, not buried.
+
+**Clock provenance table** (now in `subroutine-index.md` and the
+driver's own comments): `MC68302`=Y1 (measured/derived); `UPD72069`
+and `ES5510`=guesses, both unchanged, `ES5510` unmeasurable while
+`set_disable()`'d; `SCN2681`=derived and empirically confirmed (IP3/16
+= 31,250 baud matches the byte-exact-verified MIDI protocol, IP5/16 =
+62,500 baud matches the panel channel); `ES5506`=Y2, doubly-converged
+(backwards calculation + board crystal list), carrying the open
+factor-of-two question.
+
+**Address inventory**: re-swept the full boot->load->select->play
+timeline (not just idle boot) -- still exactly 9 touched catch-all
+buckets, nothing new. `$FC5000-$FC501F` is touched once
+(`t≈2.95s`, early ROM boot) in a write/write/read-back burst matching
+`memory-map.md`'s already-documented WD33C93 SCSI reset sequence at
+the address level -- a confirmation, not a new "SCSI candidate"
+discovery (that framing was stale; the region is already attributed).
+Nothing cyclic found in either watched range.
+
+`TUNING KEYBOARD` strings and the `MODE=$0D`/`ACT=$1F` mode switch
+remain `[OPEN]`, unchanged.
+
 ## Open questions
 
 - **Critical next:** what happens after `FILE LOADED` — the concrete

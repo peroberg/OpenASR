@@ -863,6 +863,9 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	m_maincpu->set_addrmap(AS_PROGRAM, &asr10_boot_state::mem_map);
 	m_maincpu->set_addrmap(m68000_base_device::AS_CPU_SPACE, &asr10_boot_state::cpu_space_map);
 
+	// Klockprovenens (keyboard-and-sample-bridge-10.md): GISSNING.
+	// Borrows Y1's own value only as a placeholder; not measured or
+	// derived, no board citation exists for the FDC's actual clock.
 	UPD72069(config, m_fdc, XTAL(16'000'000)); // clock unknown; placeholder for boot tracing
 	m_fdc->idx_wr_callback().set(m_duart, FUNC(scn2681_device::ip0_w));
 	// docs/asr10/investigations/ready-line-artifact-probe.md,
@@ -941,6 +944,13 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	// with mc68302_device::irq6_ack_vector() (docs/asr10/PLAN.md fas 3
 	// steg 2, minimal slice) -- see docs/asr10/duart-irq6-wiring.md for
 	// why the irq_cb wiring alone regresses the boot without it.
+	// Klockprovenens (keyboard-and-sample-bridge-10.md): HÄRLEDD,
+	// empiriskt bekräftad. Master-klockan (16MHz/4) sätter devicens
+	// interna timing; kanal A/B:s egna baud-genererande IP3/IP5-klockor
+	// sätts separat via set_clocks() nedan och är de som faktiskt
+	// verifierats: IP3=500kHz/16=31250 baud matchar den byte-för-byte
+	// korrekt mottagna MIDI-trafiken; IP5=1MHz/16=62500 baud matchar
+	// panelkanalens dokumenterade takt.
 	SCN2681(config, m_duart, XTAL(16'000'000) / 4);
 	m_duart->irq_cb().set_inputline(m_maincpu, 6);
 	m_duart->b_tx_cb().set(m_panel, FUNC(asr10panel_device::rx_w));
@@ -966,6 +976,12 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 
 	// Phase 1 host-port fingerprint mapping. Not board-proven: see
 	// docs/asr10/es5506-chain-verification.md.
+	// Klockprovenens (keyboard-and-sample-bridge-10.md): HÄRLEDD
+	// (bakåträkning från uppmätt tonhöjd) + FAMILJEPRECEDENS (kortets
+	// egen kristallista). En faktor-2-spänning mot databladets "up to
+	// 16MHz"-specifikation och esq5505.cpp:s /2-delning av samma
+	// namngivna kristall står kvar som en namngiven, oöppnad skuld --
+	// se journaldokumentet, ingen mekanism är fastställd.
 	// keyboard-and-sample-bridge-9.md: XTAL(16'000'000) was Y1, the MPU
 	// crystal, borrowed from esq5505.cpp precedent only because it
 	// shared a number, not because it's ES5506's own board crystal.
@@ -1029,6 +1045,10 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	// use XTAL(10'000'000) / 10_MHz_XTAL for this exact chip); not
 	// derived from ASR-10 schematics this round, and irrelevant to
 	// host_r()/host_w() correctness since the device never executes.
+	// Klockprovenens (keyboard-and-sample-bridge-10.md): FAMILJEPRECEDENS,
+	// with no measurement possible while set_disable()'d -- the device
+	// has never actually run at this or any clock. Whether real ASR-10
+	// hardware feeds ES5510 from Y2 or Y3 is [OPEN], not established.
 	es5510_device &es5510_host(ES5510(config, m_es5510_host, XTAL(10'000'000)));
 	es5510_host.set_disable();
 
