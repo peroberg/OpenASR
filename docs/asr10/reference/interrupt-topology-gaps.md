@@ -308,6 +308,19 @@ as such per item, not resolved by this document.
    and DPRAM) stay zero-initialized and never fill at any checkpoint,
    confirming from the data side what the zero-IACK count already
    showed from the interrupt side: no real reception ever completes.
+   **Update, board-source round (`scc-board-source-question.md`):**
+   a fine-grained (20ms) display poll across boot — never done before
+   at this resolution — shows this project's own model already
+   displays "TUNING KBD - HANDS OFF" then "KEYBOARD TUNED" at
+   `t≈15.06-15.2s`, and each of three display-phase transitions in that
+   window (including the transition to `FILE 1` itself) is preceded,
+   within single-digit-to-low-double-digit milliseconds, by an SCC1/
+   SCC2 arm/disarm cycle (`SCM1`/`SCM2` toggling `$7033`↔`$703B`, `IMR`
+   toggling to `$E480`) — zero level-4 IACKs throughout, confirming the
+   sequence completes by timing out on each arm cycle, never by a real
+   interrupt. This is a direct, repeated, dynamic timing correlation
+   between the keyboard-calibration UI and real SCC activity, not
+   circumstantial.
    **Observable effect if modeled**: level-4 IACKs would begin
    occurring (currently exactly zero); what SCC1/SCC2 actually carry
    remains open pending identification of that byte source, not pending

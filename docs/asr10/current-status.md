@@ -907,15 +907,37 @@ would look like and a status query would not. A silent shutdown path
 was traced and named (`$F8C0E6`, disables both channels with no error
 and no display text on one specific SCC event) — matching the exact
 "a silent timeout would explain why nothing is noticed" shape the
-hypothesis needed, though not proof of it. Still `[Hypothesis]`: no
-byte source is identified, and the string search (below) found
-nothing. Asked directly where the message "`TUNING KEYBOARD - HANDS
-OFF`" came from: it entered this project via a task instruction, not
-from any source this assistant can independently verify or cite — see
-`scc-hardware-gap.md`'s follow-up Del 4 for the full disclosure and the
-three real candidates (different OS version, coded/fragment-assembled
-text, real hardware running different firmware) still open, pending
-whoever can answer which applies.
+hypothesis needed, though not proof of it.
+
+**Update, `scc-board-source-question.md`:** the source of "`TUNING
+KEYBOARD - HANDS OFF`" is **owner testimony from Per**, not a project
+artifact — a real, distinct, and stronger evidence category than
+anything in the analyzed disk images, correctly identified as such
+this round rather than left as an unattributed assistant claim.
+Cross-checked against `ASR10_manual.pdf` (present in the tree): the
+manual documents the exact behavior, using the abbreviation `KBD`
+(`"TUNING KBD - HANDS OFF"`, `"KBD FAILED - RETRY?"`), which the
+literal-ASCII search had never tried (`TUNING KEYBOARD` was the wrong
+string). Re-searched with the correct wording: still absent as literal
+ASCII in either OS image or the analyzed ROM — every matching fragment
+(`TUNING`, `HANDS`, `FAILED`, `RETRY`, `KBD`) belongs to a different,
+identifiable, unrelated string pool. **But a fine-grained (20ms)
+display poll across boot — a resolution no prior probe used, since all
+of them jumped straight to waiting for `FILE 1` — shows this project's
+own model already displays both halves of the exact message,
+"TUNING KBD - HANDS OFF" then "KEYBOARD TUNED", at `t≈15.06-15.2s`
+every boot.** Correlated against `SCM1`/`SCM2`/`IMR` writes in the same
+run: all three display-phase transitions in that window (including the
+transition to `FILE 1`) are preceded, within single-digit-to-low-
+double-digit milliseconds, by a real SCC1/SCC2 arm/disarm cycle, with
+zero level-4 IACKs throughout — the sequence completes by timing out
+on each cycle, never by a real interrupt. **Keyboard hypothesis status:
+confirmed on structure and timing, still open on physical byte
+source** — the message is real, present, and precisely timed to real
+SCC activity in this project's own model; what component on the real
+board drives that activity remains `[OPEN]`, and no board-level
+documentation exists in this tree to answer it (`scc-board-source-
+question.md` Del 0/3 — a question list for Per, not a guess).
 
 ## ES5510: what firmware asks for, before anything is turned on (docs/asr10/investigations/keyboard-and-sample-bridge-11.md)
 
