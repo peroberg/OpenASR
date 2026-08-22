@@ -491,7 +491,7 @@ OS-filen i respektive avbild: block 24, diskoffset `0x3000`. V1.61 173 block
 | `panel-raw-byte-sweep-v350.csv` | 256 + rubrik | **genererad** | `8a575265c39f66fa` |
 | `panel-reply-substitution-v350.csv` | 11 + rubrik | **genererad, partiell** | `17bfe2306e3f2ba4` |
 | `rom-abi-entrypoints.csv` | 1 054 + rubrik | **genererad** | `6293e5c9cffeb4f4` |
-| `routines.csv` | 25 + rubrik | **handkurerad** | `57f59f0f042b6c` |
+| `routines.csv` | 25 + rubrik | **handkurerad** | `3aee116585356b06` |
 
 Genererade filer far **inte** redigeras for hand - de skrivs over vid nasta korning.
 Runtime-observationer hor hemma i en separat fil som slas ihop vid generering.

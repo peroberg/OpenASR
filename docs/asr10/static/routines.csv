@@ -19,7 +19,7 @@ rom_f97662,host_port_verified_write_read,host_port_verified_write_read,resolved,
 rom_f95eaa,,,unresolved_high_priority,$F95EAA,,ROM,ROM,"1 anrop i V1.61, 33 i V3.50",start-verified,static-analysis,"storsta versionsskillnaden i materialet"
 os_008d56,scc1_isr,scc1_isr,resolved,$008D56,$008D91,OS-RAM,V161;V350,"RTE pa $008D90; adressen verifierat IDENTISK i bada versionerna",verified,mc68302-status.md,"EOI ISR <- $2000"
 os_008d92,scc2_isr,scc2_isr,resolved,$008D92,$008DCF,OS-RAM,V161;V350,"RTE pa $008DCE; adressen verifierat IDENTISK i bada versionerna",verified,mc68302-status.md,"EOI ISR <- $0400"
-os_00643c,scc_rx_common,,unresolved_high_priority,$00643C,,OS-RAM,V161;V350,"anropad av bada SCC-ISR",start-verified,static-analysis,"vad den producerar ar oppet"
+os_00643c,scc_rx_common,,partially_resolved,$00643C,,OS-RAM,V161;V350,"anropad av bada SCC-ISR; SCCE- och BD-ringhantering disassemblerad",verified,scc-hardware-gap.md,"eventkvittens och descriptorhantering verifierad; lyckad mottagningsvags datakonsument oppen"
 os_v350_006864,par_sample_accumulate,par_sample_accumulate,resolved,$006864,$006891,OS-RAM,V350,"RTS pa $006890",verified,subroutine-index.md,"8 sampel, trap #8 / trap #7, jsr $FFFC60B0"
 os_v350_0067ec,par_calibrate,par_calibrate,resolved,$0067EC,,OS-RAM,V350,"kalibreringens borjan, kanalvalssekvens",start-verified,subroutine-index.md,"divu pa $006800 -> ERROR 130 nar D2=0"
 os_v161_00bee2,scc_receiver_enable,scc_receiver_enable,resolved,$00BEE2,$00BF27,OS-RAM,V161,"RTS pa $00BF26",verified,mc68302-status.md,"LRCLK-poll, ENR, IMR-avmaskering; runtime-observerad"

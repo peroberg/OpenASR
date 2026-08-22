@@ -1,5 +1,12 @@
 # ASR-10 Audio and Storage Boundary Architecture
 
+> **Runtime status update 2026-08-22.** The original storage-boundary pass
+> predated working IRQ1, IDMA and note playback. Later verified runtime reaches
+> `FILE LOADED`; instrument selection plus panel/MIDI note stimulus allocates
+> voices and produces pitch-checked dry ES5506 audio. ES5510/pump/effects and
+> actual sampling/RECORD remain open. Historical boundary reasoning below is
+> retained, but old "not reached" statements are corrected in the table.
+
 ## Scope
 
 This document records the current boundary model between ASR-10 storage
@@ -190,12 +197,12 @@ Evidence by boundary:
 | vector `$51` completion path | [Verified firmware] shared FDC/SCSI storage completion dispatcher using `$0402`. |
 | FDC RECALIBRATE -> status -> continuation | [Verified firmware] `$0402 <- $BA5E`, command `07 00`, vector `$51`, FDC status/SENSE path, then continuation. |
 | SCSI RESET -> status -> continuation | [Verified firmware] `$0402 <- $B1A4`, writes `$18/$00` to `$FC5001/$FC5003`, vector `$51`, SCSI status path, then continuation. |
-| async FDC READ with IDMA | [Verified firmware] static firmware contains an IDMA-programmed READ DATA path; [Verified runtime] the observed current `LOADING JM DIGI SYN` run has not reached it. |
-| current instrument-load stall point | [Verified runtime] observed path stops before IDMA start, at/after RECALIBRATE completion dependency, not while waiting on vector `$4B`. |
-| sample-data destination | [OPEN] not verified. |
+| async FDC READ with IDMA | [Verified runtime] completed: 21 IDMA arms, 337 sectors and 172,544 bytes reach low RAM; storage completion uses vector `$51`, while IDMA's internal vector `$4B` remains masked for this path. |
+| historical instrument-load stall point | [Historical, passed] the earlier run stopped before IDMA. Current runtime passes RECALIBRATE, SEEK, READ DATA and terminal count and reaches `FILE LOADED`. |
+| sample-data destination | [Verified runtime] the tested instrument payload reaches low RAM and is consumed through the ES5506 bank-1 low-memory mapping; exact general sample-object ownership and physical sound-memory topology remain [OPEN]. |
 | instrument metadata/root structure | [OPEN] top-level loaded instrument root is not localized; ROM runtime voice records consume instrument/sample object pointers. |
-| "loaded instrument becomes playable" boundary | [Verified firmware] runtime voice records at `$8000` drive ES5506 programming; upstream loaded-instrument producer remains [OPEN]. See `instrument-to-otto-runtime.md`. |
-| ES5506 programming at load vs note-on | [Likely] voice-specific programming is runtime/note-side; direct load-time ES5506 programming is not verified. |
+| "loaded instrument becomes playable" boundary | [Verified runtime] after `FILE LOADED`, `BTN_02` selects instrument slot 1; panel/MIDI note stimulus allocates and programs ES5506 voices and produces dry audio. The general top-level instrument root remains [OPEN]. |
+| ES5506 programming at load vs note-on | [Verified runtime] for the tested instrument, voice-specific CR/START/END/ACCUM programming occurs after instrument selection and note stimulus. |
 
 ## Storage vs audio interrupts
 
@@ -220,12 +227,15 @@ acknowledged, and whether PAL/GAL glue participates are not verified.
 - [OPEN] PAL/GAL glue for storage completion.
 - [OPEN] Electrical interrupt sharing, polarity, acknowledge timing and line
   clearing for FDC/SCSI completion.
-- [OPEN] Exact sample RAM destination and mapping for instrument load.
+- [Verified runtime] Tested load reaches low RAM and the ES5506 bank-1 mapping;
+  exact general sample-object ownership and real-board sound-memory topology
+  remain [OPEN].
 - [OPEN] Top-level loaded instrument metadata root and producer.
 - [Verified firmware] Runtime voice record to ES5506 programming path; see
   `instrument-to-otto-runtime.md` and the object ownership model in
   `runtime-object-model.md`.
-- [OPEN] Complete note/key event to voice allocation path.
+- [Verified runtime] Tested panel/MIDI note paths reach voice allocation after
+  instrument selection; the real external keybed protocol remains [OPEN].
 - [OPEN] Physical ES5506 `IRQB` to PB9 connection.
 - [OPEN] ES5510 execution, external RAM and audio routing.
 - [OPEN] Exact Super-GLU/ES5701 variant and wiring on the ASR-10 board.

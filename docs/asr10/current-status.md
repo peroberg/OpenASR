@@ -41,11 +41,10 @@ Panel receive terminology:
 
 ## Current handoff
 
-The current ASR-10 architecture checkpoint is summarized in
-`reference/architecture-handoff.md`. It is the starting point for the next
-implementation session: service-kernel model, observed instrument-load request,
-storage completion boundary, implementation readiness, and the critical OPEN
-items are consolidated there.
+This document is the current runtime handoff. `reference/architecture-handoff.md`
+preserves the earlier pre-IDMA architecture checkpoint and remains useful for the
+service-kernel model, but its runtime stall and implementation target are historical
+and passed.
 
 ## Works
 
@@ -311,18 +310,27 @@ architectural model that did not exist before. Summary only — details in `refe
 
 ## Does not work
 
-- Audio output, sampling, sequencer behaviour, and complete ES5506/ES5510 sound
-  integration are not working end-to-end. **Update:** the structural gap
-  (ES5506 bank 0 disconnected from CPU RAM, no output routing) is closed
-  (`investigations/sample-topology-closure.md`) but unverified audibly —
-  no keyboard model exists yet to trigger a voice, so a post-load
-  `-wavwrite` capture is silence by construction, not evidence the wiring
-  works or doesn't.
+- Full sampling/RECORD, sequencer behaviour, ES5510 execution and the complete
+  ES5506 -> pump -> ES5510 effects path are not working end-to-end. Dry ES5506
+  playback is verified audibly and pitch-checked; see the later
+  `keyboard-and-sample-bridge-6.md` through `-9.md` updates below.
 - DUART channel A RX is not wired to a real external source.
 - ES5506 PAR has a real panel-analog route, but the wider ADC channel identity
   and audio-side effects are not fully verified.
 
-## Next implementation target
+## Current experiment target
+
+Drive the documented sampling workflow through actual RECORD/start, not only
+Sample Source Select. Observe SCC1/SCC2 arm/disarm, descriptor state and data,
+level-4 IACK, sample-RAM traffic, exact display text and the exact firmware stop.
+This is an observation task, not authorization to implement SCC or another
+interrupt-controller block. `SCC <-> keyboard` and `SCC <-> audio input` remain
+separate `[OPEN]` hypotheses.
+
+## Completed storage implementation sequence
+
+The section below preserves the implementation progression that removed the old
+RECALIBRATE/READ/IDMA blockers. It is historical context, not the current target.
 
 **Update:** the IRQ1/vector-`$51` path this section originally called for
 is landed (not experimental anymore):
@@ -993,6 +1001,12 @@ keypad/display link sits in tension with this project's own
 panel link — not resolved this round. See `scc-board-source-
 question.md`'s second recalculation for the full detail.
 
+The known `scc_rx_common` path raises 005/006 when a descriptor ready bit is
+already set, i.e. a full or undrained ring. It is not verified as a no-input
+timeout. RECORD producing 005/006 would strengthen an SCC/audio relationship,
+but would not by itself prove SCC carries PCM; absence of 005/006 would not by
+itself disprove that relationship.
+
 ## ES5510: what firmware asks for, before anything is turned on (docs/asr10/investigations/keyboard-and-sample-bridge-11.md)
 
 **Factor of two, parked verbatim, per instruction — not investigated
@@ -1096,12 +1110,13 @@ representative, going forward.
 
 ## Open questions
 
-- **Critical next:** what happens after `FILE LOADED` — the concrete
-  `$23F6` post-completion consumer, next request class, and whether
-  payload `$02B600` survives to `$043E` (`architecture-handoff.md`'s
-  original open questions, now finally reachable). The completion-chain
-  side of this investigation (vector `$51`, IDMA transfer, terminal count,
-  READ DATA's own completion) is done.
+- **Critical next:** drive sampling through actual RECORD/start and measure the
+  complete SCC/descriptor/IACK/sample-RAM/display observation vector. Sample
+  Source Select alone is not the discriminating experiment.
+- **Still open after FILE LOADED:** the concrete `$23F6` post-completion
+  consumer, next request class, and whether payload `$02B600` survives to
+  `$043E`. The completion-chain side (vector `$51`, IDMA transfer, terminal
+  count and READ DATA completion) is done.
 - **Physical board policy for storage IRQ1** remains formally `[OPEN]`
   (what physically drives IRQ1 on real hardware is still unverified), but
   is no longer blocking progress: the board-policy wiring plus a
@@ -1113,7 +1128,8 @@ representative, going forward.
 - **CS1** `$FF6000-$FF7FFF`: enabled, write-selected, external DTACK, no function-code
   comparison, function unknown. No identified direct or immediate-base references.
 - **What SCC1/SCC2 carry.** The firmware chain is documented end to end. The physical
-  sender, the data semantics, and what `$00643C` produces are open. LRCLK phasing makes
+  sender, data semantics and successful-reception consumer after `$00643C` are open.
+  LRCLK phasing makes
   the audio path likely but unproven. The interrupt-topology reconstruction
   (`reference/interrupt-topology-gaps.md`) confirms this is not just a static-analysis
   curiosity: SCC1/SCC2 are unmasked in the live IMR, their handlers are stable from
@@ -1186,6 +1202,8 @@ Previous entries stand. Added by the static analysis:
   distribution and ROM/RAM execution responsibility.
 - `reference/methods-static-analysis.md` — how the results were produced, and the
   method's blind spots.
+- `reference/methods-hypothesis-management.md` — normative hypothesis requirements,
+  evidence status, falsification criteria, and revision trail.
 - `investigations/irq1-storage-completion-probe.md` — first IRQ1 wiring
   attempt: chip-level vector fact kept, unconditional board policy
   disproven and reverted.

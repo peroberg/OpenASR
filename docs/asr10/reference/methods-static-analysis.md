@@ -351,15 +351,18 @@ segmentreglerna. Alla blev enkla först när statiken hade begränsat sökrymden
 
 ## 10. Rapportdisciplin
 
-Fyra nivåer, plus täckning:
+Den normerande modellen för hypoteskrav, statusändringar, evidensdomäner och
+revisionsspår finns i `methods-hypothesis-management.md`. Den korta formen är fyra
+nivåer, plus täckning:
 
 ```
-[Verified]    reproducerbart belägg anges, inklusive metod
-[Likely]      stark indikation, alternativ förklaring finns kvar
-[OPEN]        ställd fråga utan svar
-[DISPROVEN]   testad hypotes som föll — behåll den och skriv hur den föll
+[Verified]    direkt och reproducerbart belägg inom angiven evidensdomän
+[Likely]      enklaste överlevande förklaring; avgörande test saknas
+[OPEN]        flera förklaringar överlever eller giltig mätning saknas
+[DISPROVEN]   verifierad observation motsäger hypotesens förutsägelse
 Coverage:     vilket adressintervall / hur många oberoende ankare
 ```
 
-En väl dokumenterad öppen fråga är mer värd än en halvbevisad lösning. Motbevisade
-hypoteser ska stå kvar — de hindrar att samma väg utforskas igen.
+En väl dokumenterad öppen fråga är mer värd än en halvbevisad lösning. Varje hypotes
+ska ange vilken observation som skulle få den att överges. Motbevisade hypoteser ska
+stå kvar — de hindrar att samma väg utforskas igen.

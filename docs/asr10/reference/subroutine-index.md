@@ -82,15 +82,15 @@ låga celler positivt (`$0CE3`), höga negativt (`$FFD0B0`).
 **Diskresident kod.** För verifierade adresser i den observerade
 V350-överlagringen har `file_offset = RAM + 0x2600` stämt. Kontrollera
 alltid bytes mot live-RAM innan närliggande adresser disassembleras.
-Metod i `investigations/os-code-extraction.md`.
+Metod i `os-code-extraction.md`.
 
 **ROM-avbilden.** `asr10.bin`, 256 KB, mappad `$F80000`-`$FBFFFF`, rak
 big-endian ordläsning. Offset 0-7 är SSP och PC; kod börjar på offset
 `$0C`.
 
-**Generella dataaccesspår.** Kör `docs/asr10/lua/asr10_trace.lua` med
-`ASR10_TRACE=<duart|es5506|...>`; två körningar diffas radvis och första
-skillnaden är svaret.
+**Generella dataaccesspår.** Den äldre generella tracet ligger arkiverad som
+`../lua/archive/asr10_trace.lua`. Ny observation ska göras med en fokuserad
+Lua-probe under `../lua/`, med levande vittne för varje nollresultat.
 
 **Känd blind fläck.** Sökning efter absoluta adresser i ROM hittar
 **inte** registerrelativa accesser (`($2,A0)` med basen i ett register).
@@ -515,7 +515,8 @@ Flyttad till `XTAL(30'476'180)` (Y2, kortets egna dokumenterade
 ES5506/ES5510-kristall). Två oberoende linjer konvergerar: en
 bakåträkning från uppmätt `$3C`-tonhöjd (~30,6MHz,
 `keyboard-and-sample-bridge-7.md`) och kortets kristallista
-(30,47618MHz, `PLAN.md` avsnitt 3 / `es5506-hostport.md`), inom 0,4%.
+(30,47618MHz, `../investigations/es5506-hostport.md` och
+`../investigations/keyboard-and-sample-bridge-9.md`), inom 0,4%.
 Kortets kristallbestyckning i sin helhet: Y1=16MHz (MPU), Y2=30,47618MHz
 och Y3=33,8688MHz (ES5506/ES5510/AD-DA-sidan).
 
@@ -885,7 +886,9 @@ latch, så de två första MOVEP-byten är alltid `$00`. Data finns bara på
 
 ## Diskformat
 
-Katalogen börjar på filoffset **`0x41E`**, 26 byte per post:
+Katalogen börjar på filoffset **`0x600`**, 26 byte per post. V3.50:s
+`0x41E` är en avklippt, byte-identisk delkopia och får inte användas som
+katalogstart; V1.61 saknar den. Se `os-image-layout.md`.
 
 ```
 +0  typ (word)   +2  namn (12 tecken)   +14 storlek i block (word)
@@ -896,7 +899,8 @@ Typkoder: `$03` INSTRUMENT, `$1C` SEQUENCE, `$1D` SONG, `$1E` BANK,
 `$20` OS, `$21` EFFECT.
 
 Kedjan validerar sig själv: `startblock[n] = startblock[n-1] +
-storlek[n-1]`, 17 av 17 i V350. Geometri:
+storlek[n-1]`. V3.50 innehåller 28 poster från den verifierade starten.
+Geometri:
 `byte_offset = (track_index*20 + (R-1)) * 512`, `track_index = C*2 + H`.
 
 ## Kända okända
@@ -1134,10 +1138,11 @@ harledd via segment 2-regeln och inte runtime-observerad.
 | adress | varfor | status |
 |---|---|---|
 | `$F95EAA` | 1 anrop i V1.61, **33 i V3.50** - storsta versionsskillnaden i materialet | oidentifierad |
-| `$00643C` | vad SCC-mottagningen producerar | oidentifierad |
 
 Sparas maskinellt i `../static/routines.csv` med `canonical_status =
-unresolved_high_priority`.
+unresolved_high_priority`. `$00643C` ar borttagen ur listan: rutinens SCCE-
+och descriptorhantering ar verifierad; endast den lyckade mottagningsvagens
+datakonsument och semantik ar `[OPEN]`.
 
 ### `$F97662` host_port_verified_write_read `[V]`
 

@@ -1,5 +1,14 @@
 # ASR-10 Architecture Handoff
 
+> **Historical runtime checkpoint, retained for provenance.** This document
+> captured the architecture before storage IRQ1 and IDMA were completed. Later
+> verified runtime passed RECALIBRATE, SEEK, READ DATA and IDMA, reached
+> `FILE LOADED`, selected an instrument and produced pitch-checked dry ES5506
+> audio. Use `../current-status.md` for current runtime state and the next
+> experiment. Statements below about a "current stall", missing IRQ1/IDMA or the
+> next implementation target describe the earlier checkpoint unless explicitly
+> marked as a later update.
+
 ## Scope
 
 This document is a compact handoff for the current ASR-10 architecture phase.
@@ -21,7 +30,7 @@ Evidence labels used here:
 - [Architectural interpretation] a model/analogy used to explain the verified
   mechanisms, not Ensoniq terminology or origin evidence.
 
-## Where We Are
+## Historical Checkpoint: Where Runtime Was
 
 [Verified runtime/static] The observed `LOADING JM DIGI SYN` path reaches:
 
@@ -51,6 +60,10 @@ $043E       = $00000000
 [Verified runtime] Runtime has not reached RECALIBRATE completion, SEEK, READ
 DATA, IDMA programming, common storage exit, scheduler resume, or `$043E`
 activation.
+
+**[Historical, passed]** This was true for the bounded run documented here. Later
+runtime completed the FDC/IRQ1/IDMA chain and reached `FILE LOADED`; it must not
+be cited as current machine behavior.
 
 Not reached at runtime:
 
@@ -228,7 +241,7 @@ storage device completion
 Do not record "FDC INTRQ is physically wired directly to IRQ1" as verified
 fact.
 
-## Known Runtime Blind Spot
+## Historical Runtime Blind Spot
 
 [Verified device] The uPD72069 device-side RECALIBRATE completion exists.
 
@@ -241,6 +254,10 @@ exists.
 delivery contract connecting a storage completion source to MC68302 external
 IRQ1. Physical board wiring remains [OPEN]. This is the primary current
 runtime blocker.
+
+**[Historical, implementation passed]** The board-policy model and generic IRQ1
+delivery are now implemented and runtime-verified. Physical real-board routing
+remains `[OPEN]`; that open hardware question is no longer a runtime blocker.
 
 ## IDMA And READ DATA
 
@@ -416,7 +433,11 @@ slots, bindings, interrupts, continuations, and device state machines.
 [OPEN] Full autonomous `D0-D7/A0-A7` task-context semantics across all scheduler
 slot paths remain unverified. Do not document a general full context switch yet.
 
-## Implementation Readiness
+## Historical Implementation Readiness
+
+This section records the decision basis before IRQ1 and minimal IDMA landed. It
+is retained to explain the implementation sequence, not to prescribe current
+work.
 
 Ready / sufficiently modeled:
 
@@ -463,7 +484,11 @@ Not ready / still OPEN:
 - full scheduler context semantics
 - physical board IRQ wiring
 
-## Next Implementation Target
+## Historical Next Implementation Target (Completed)
+
+The generic IRQ1/vector-`$51` path and the ASR-10 storage policy proposed below
+were subsequently implemented. Minimal IDMA and deferred terminal count were
+also implemented and verified through `FILE LOADED`.
 
 Implement the smallest generic MC68302 external IRQ1/vector-`$51` path needed
 to allow the already verified firmware completion chain to execute.
@@ -482,7 +507,7 @@ ASR-10 board-side policy:
 - keep physical wiring documented as [OPEN] / explicit board policy
 - do not encode FDC-specific firmware knowledge into the generic MC68302 model
 
-## Recommended Implementation Order
+## Historical Recommended Implementation Order
 
 1. Generic MC68302 external IRQ1.
 2. ASR-10 storage IRQ board policy.
@@ -497,7 +522,7 @@ Scheduler/service primitives are already modeled well enough architecturally for
 the IRQ1 experiment; this is not a requirement to reimplement the whole service
 kernel before IRQ1.
 
-## Post-Implementation Validation Plan
+## Historical Post-Implementation Validation Plan
 
 After IRQ1 implementation, repeat the `LOADING JM DIGI SYN` experiment and
 verify in order:
@@ -523,16 +548,18 @@ verify in order:
 
 This is a validation plan, not an implementation design.
 
-## Critical OPEN
+## Current OPEN After The Historical Checkpoint
 
-Critical next:
+Current discriminating experiment:
 
-- physical/board policy for storage IRQ1
-- runtime validation through first vector `$51`
+- full sampling sequence through actual RECORD/start, with SCC/descriptor/IACK/
+  sample-RAM/display observation
+- exact RECORD stop or firmware error path
+
+Still open architecture:
+
+- physical real-board policy for storage IRQ1
 - concrete `$23F6` post-completion consumer
-
-Next architecture:
-
 - next request class after `$03`
 - `$043E` activation
 - storage -> sample/instrument bridge
