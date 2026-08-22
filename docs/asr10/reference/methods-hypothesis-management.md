@@ -161,8 +161,10 @@ Nästa diskriminerande experiment:
 - **SCC = keyboard:** förblir `[OPEN]` när fysisk keyboardevidens och
   sample-lägets firmwarebeteende ännu inte identifierar samma bytekälla.
 - **SCC = audio:** förblir `[OPEN]` tills full RECORD-sekvens ger diskriminerande
-  evidens, exempelvis RX-trafik, descriptorfyllning, level-4-IACK eller verifierat
-  ERROR 005/006 vid den saknade synkroniseringen.
+  evidens. Full RECORD/start nådde 2026-08-22 `WAITING` men gav ingen RX-trafik,
+  descriptorfyllning, level-4-IACK, sample-RAM-trafik eller 005/006. Den smala
+  förutsägelsen "omedelbart 005/006" är `[DISPROVEN]`; den breda identiteten
+  förblir `[OPEN]` eftersom ingen insignal passerade tröskeln.
 
 Exemplen är metodhistorik, inte genvägar till nya slutsatser. Varje framtida
 statusändring kräver sitt eget reproducerbara revisionsspår.

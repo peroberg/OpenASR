@@ -69,15 +69,10 @@ M.NORMALIZED_TEXT = {
 }
 
 local function read_output(index)
-  local output = manager.machine.output
-  local ok, value = pcall(function()
-    return output:get_indexed_value("vfd", index)
-  end)
-  if ok then
-    return value
-  end
-
-  return manager.machine.devices[":"]:output(string.format("digit%u", index)):get()
+  local root = manager.machine.devices[":"]
+  local vfd = root:output(string.format("vfd%u", index))
+  if vfd:exists() then return vfd:get() end
+  return root:output(string.format("digit%u", index)):get()
 end
 
 function M.read_raw()

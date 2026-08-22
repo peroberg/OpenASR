@@ -318,14 +318,15 @@ architectural model that did not exist before. Summary only — details in `refe
 - ES5506 PAR has a real panel-analog route, but the wider ADC channel identity
   and audio-side effects are not fully verified.
 
-## Current experiment target
+## Most recent discriminating experiment
 
-Drive the documented sampling workflow through actual RECORD/start, not only
-Sample Source Select. Observe SCC1/SCC2 arm/disarm, descriptor state and data,
-level-4 IACK, sample-RAM traffic, exact display text and the exact firmware stop.
-This is an observation task, not authorization to implement SCC or another
-interrupt-controller block. `SCC <-> keyboard` and `SCC <-> audio input` remain
-separate `[OPEN]` hypotheses.
+The documented sampling workflow has now been driven through `Enter-Yes` at
+RECORD/start. It stops at `WAITING...272 SEC LEFT`, before `RECORDING`; the full
+observation vector is recorded in `investigations/full-record-start-probe.md`.
+`SCC <-> keyboard` and `SCC <-> audio input` remain separate `[OPEN]`
+hypotheses. The SCC identity track is parked until a real RX source or a verified
+threshold-crossing stimulus can distinguish them; it is not an implementation
+target on the current evidence.
 
 ## Completed storage implementation sequence
 
@@ -1007,6 +1008,20 @@ timeout. RECORD producing 005/006 would strengthen an SCC/audio relationship,
 but would not by itself prove SCC carries PCM; absence of 005/006 would not by
 itself disprove that relationship.
 
+**Update, full RECORD/start 2026-08-22.** The manual sequence was driven through
+unused Instrument 1, Level-Detect, minimum threshold and `Enter-Yes`. Firmware
+accepted the start command and remained at `WAITING...272 SEC LEFT` for 12 s;
+it never reached `RECORDING` and showed no ERROR 005/006. All SCC descriptor
+rewrites and `$7033`/`$703B` arm cycles occurred while Level-Detect was being
+built, ending at 17.143 s. `Enter-Yes` produced no further SCC/IMR writes. Across
+start +12 s: all lengths stayed zero, all 12 800 buffer bytes stayed zero and
+unchanged, level-4 IACK=0, SCC-buffer writes=0 and sample-RAM writes=0, each with
+a live positive witness. The narrow claim "RECORD/start immediately produces
+005/006 in the current model" is `[DISPROVEN]`; `SCC <-> audio input` and
+`SCC <-> keyboard` both remain `[OPEN]` because no signal crossed the threshold
+and no RX data identified either channel. See
+`investigations/full-record-start-probe.md`.
+
 ## ES5510: what firmware asks for, before anything is turned on (docs/asr10/investigations/keyboard-and-sample-bridge-11.md)
 
 **Factor of two, parked verbatim, per instruction — not investigated
@@ -1110,9 +1125,10 @@ representative, going forward.
 
 ## Open questions
 
-- **Critical next:** drive sampling through actual RECORD/start and measure the
-  complete SCC/descriptor/IACK/sample-RAM/display observation vector. Sample
-  Source Select alone is not the discriminating experiment.
+- **Completed discriminating experiment:** full RECORD/start reached `WAITING`
+  with the complete SCC/descriptor/IACK/sample-RAM/display vector measured.
+  No identity-changing evidence appeared; the SCC source question is parked
+  pending a verified threshold-crossing or a real RX byte source.
 - **Still open after FILE LOADED:** the concrete `$23F6` post-completion
   consumer, next request class, and whether payload `$02B600` survives to
   `$043E`. The completion-chain side (vector `$51`, IDMA transfer, terminal

@@ -718,6 +718,26 @@ measurement.
 
 ## Updates
 
+### Full RECORD/start follow-up, 2026-08-22
+
+The next manual step has now been measured, not inferred. From Level-Detect,
+24 Down-Arrow presses drove the threshold to its observed limit and `Enter-Yes`
+was accepted. The display remained `WAITING...272 SEC LEFT` for 12 seconds;
+`RECORDING` and ERROR 005/006 did not occur.
+
+All three full SCC descriptor rewrites and every arm/disarm transition occurred
+while the unused instrument slot was entering Level-Detect. After the last
+`SCM1/2=$703B`, `IMR=$E480` write at 17.143116 s, the threshold controls and
+RECORD/start produced no further relevant register writes. Descriptor lengths,
+status and all 12 800 buffer bytes remained unchanged; level-4 IACK,
+descriptorbuffer writes and sample-RAM writes were zero with live witnesses.
+
+Status: the immediate "RECORD -> 005/006" prediction is `[DISPROVEN]` for this
+runtime sequence. The broader `SCC <-> audio input` and `SCC <-> keyboard`
+hypotheses remain `[OPEN]`; no RX data or threshold crossing discriminated them.
+The rings remain SCC descriptor buffers with no verified payload identity. Full
+raw vector and revision trail: `../investigations/full-record-start-probe.md`.
+
 - `subroutine-index.md`: not touched this round — no new named ROM/OS
   routine was identified (the SCM/IMR write PCs were not individually
   disassembled this pass; the finding is about *timing*, not a new

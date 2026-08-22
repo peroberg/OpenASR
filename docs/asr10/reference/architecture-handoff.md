@@ -550,11 +550,15 @@ This is a validation plan, not an implementation design.
 
 ## Current OPEN After The Historical Checkpoint
 
-Current discriminating experiment:
+Historical next experiment, completed 2026-08-22:
 
 - full sampling sequence through actual RECORD/start, with SCC/descriptor/IACK/
   sample-RAM/display observation
 - exact RECORD stop or firmware error path
+
+Result: `Enter-Yes` reached stable `WAITING...272 SEC LEFT`, not `RECORDING` or
+ERROR 005/006. See `../investigations/full-record-start-probe.md`; current status
+and next priorities remain owned by `../current-status.md`.
 
 Still open architecture:
 

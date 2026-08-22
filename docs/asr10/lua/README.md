@@ -26,7 +26,7 @@ Körs av `docs/asr10/regression-test.sh` och ska underhållas.
 
 | script | användning |
 |---|---|
-| `lib/asr10_display.lua` | Läser VFD-output och översätter segmentmönster till rå text. |
+| `lib/asr10_display.lua` | Läser VFD-output via aktuella output-proxy-API:t och översätter segmentmönster till rå text. |
 | `lib/asr10_regression.lua` | Gemensam testhjälpare för PASS/FAIL, displayväntan och maskinavslut. |
 | `lib/asr10_guards.lua` | MC68302-vakter: IACK-undantagsvektor, synkron undantagshanterare (vektor 2/3/8, kalibrerad mot en känd krasch), SIB-täckning (klassificering portad från `mc68302_device`, allowlist inkluderar nu $0812/GIMR), IDMA SAPR/CMR/BCR, GIMR-vektorbas (pollningsbaserad). Aggregerade larm, första förekomst per villkor. Se `investigations/mc68302-consolidation.md` och `mc68302-consolidation-2.md`. |
 
@@ -37,6 +37,7 @@ Engångsscript vars fråga redan är besvarad eller journalförd. De ligger i
 
 | script | status |
 |---|---|
+| `archive/full-record-start-probe.lua` | Driver manualsekvensen Sample-Source Select -> oladdad Instrument 1 -> Level-Detect -> minimumtröskel -> Enter-Yes. Snapshots SCC/SIB, alla descriptorer och bufferinnehåll; tappar level-4-IACK, sample-RAM och kända 005/006-vägar med levande vittnen. Resultat: 12 s stabilt `WAITING...272 SEC LEFT`, ingen RX/fyllning/IACK4/sample-RAM/005/006. Se `investigations/full-record-start-probe.md`. |
 | `archive/asr10_display_probe.lua` | Display-/glyphprobe; ersatt av gemensam displayhjälpare. |
 | `archive/asr10_e2_mirror_probe.lua` | E2-speglingsprobe; E2 står fortsatt `[OPEN]`. |
 | `archive/asr10_trace.lua` | Tidig generell trace. |

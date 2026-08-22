@@ -350,6 +350,15 @@ as such per item, not resolved by this document.
    occurring (currently exactly zero); what SCC1/SCC2 actually carry
    remains open pending identification of that byte source, not pending
    further disassembly of the firmware side, which is now done.
+   **Update, full RECORD/start (`full-record-start-probe.md`):** the
+   manual sequence reached `Enter-Yes` and stayed in `WAITING...272 SEC
+   LEFT` for 12 s. Level-4 IACK remained zero while the identical CPU-
+   space tap observed 18,411 level-6/vector-$56 accepts. All SCC setup
+   happened while Level-Detect was built; RECORD/start itself produced
+   no SCC/IMR write, descriptor fill, buffer write or sample-RAM write.
+   Immediate ERROR 005/006 is disproven for this sequence; SCC/audio and
+   SCC/keyboard remain `[OPEN]` because no RX source crossed the next
+   boundary.
 2. **PB9 (`$F8D072`), PB10 (`$F88F06`), PB11 (`$F88F22`), vectors
    `$47`/`$4E`/`$4F` — well evidenced, smaller scope.** All three
    unmasked, all three have distinct, real (not generic-stub)
