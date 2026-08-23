@@ -80,6 +80,7 @@ public:
 		, m_rom(*this, "maincpu")
 		, m_es5506_host(*this, "es5506_host")
 		, m_es5510_host(*this, "es5510_host")
+		, m_sample_ram(*this, ":asr10_sample_ram")
 	{
 	}
 
@@ -91,7 +92,17 @@ private:
 	void es5506_wavetable_bank1_map(address_map &map) ATTR_COLD;
 	static constexpr u32 ROM_MASK = 0x0003ffff;
 	static constexpr u32 LOWMEM_WORDS = 0x00100000 / 2;
-	static constexpr u32 PROBE_OR_ALIAS_REGION_COUNT = 4;
+	// docs/asr10/investigations/memory-size-belief-analysis.md +
+	// base-relocation follow-up: ROM's own alias probe ($F8A166-$F8A244,
+	// disassembled) computes its allocator base as reported_base+$10000.
+	// For the 2 MB branch reported_base is $600000, not $000000 -- so the
+	// wraparound below must cover the *whole* $200000-$EFFFFF window, not
+	// just the four probe bytes, or firmware's own subsequent allocator
+	// use of $610000+ lands on nothing. $600000 mod SYSTEM_RAM_BYTES == 0
+	// for a power-of-two size, so a uniform wrap folds it back into the
+	// same already-backed image. Stage A hardcodes the stock 2 MB size;
+	// Stage B replaces this with the configured ram_device size.
+	static constexpr u32 SYSTEM_RAM_BYTES = 0x00200000;
 
 	static constexpr bool ASR10_MISSING_FDC_RATE_SOURCE = true;
 
@@ -105,13 +116,15 @@ private:
 
 	optional_device<es5506_device> m_es5506_host;
 	optional_device<es5510_device> m_es5510_host;
+	// Same backing store as mem_map's own $100000-$1FFFFF (".share()"),
+	// bound here so system_ram_alias_r/w can dispatch into it directly.
+	required_shared_ptr<u16> m_sample_ram;
 
 	emu_timer *m_lrclk_timer = nullptr;
 	bool m_lrclk_level = false;
 	emu_timer *m_idma_tc_timer = nullptr;
 
 	std::unique_ptr<u16[]> m_lowmem_shadow;
-	u16 m_probe_or_alias_region_shadow[PROBE_OR_ALIAS_REGION_COUNT][2]{};
 	u16 m_m68302_internal_shadow[0x80]{};
 	u8 m_duart_io = 0;
 	std::array<u16, 8> m_analog_values{};
@@ -124,12 +137,8 @@ private:
 
 	u16 low_rom_or_lowmem_r(offs_t offset, u16 mem_mask = ~0);
 	void lowmem_w(offs_t offset, u16 data, u16 mem_mask = ~0);
-	u16 probe_or_alias_region_408000_r(offs_t offset, u16 mem_mask = ~0);
-	void probe_or_alias_region_408000_w(offs_t offset, u16 data, u16 mem_mask = ~0);
-	u16 probe_or_alias_region_808000_r(offs_t offset, u16 mem_mask = ~0);
-	void probe_or_alias_region_808000_w(offs_t offset, u16 data, u16 mem_mask = ~0);
-	u16 probe_or_alias_region_c08000_r(offs_t offset, u16 mem_mask = ~0);
-	void probe_or_alias_region_c08000_w(offs_t offset, u16 data, u16 mem_mask = ~0);
+	u16 system_ram_alias_r(offs_t offset, u16 mem_mask = ~0);
+	void system_ram_alias_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 	u16 high_alias_r(offs_t offset, u16 mem_mask = ~0);
 	void high_alias_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 	u16 upd72069_fdc_r(offs_t offset, u16 mem_mask = ~0);
@@ -144,9 +153,6 @@ private:
 	void idma_drq_w(int state);
 	TIMER_CALLBACK_MEMBER(idma_tc_deliver);
 
-	bool probe_or_alias_region_index(u32 address, u32 &index, u32 &word_index) const;
-	u16 probe_or_alias_region_r_at(u32 base, offs_t offset, u16 mem_mask);
-	void probe_or_alias_region_w_at(u32 base, offs_t offset, u16 data, u16 mem_mask);
 
 
 
@@ -265,7 +271,6 @@ void asr10_boot_state::machine_start()
 	m_lowmem_shadow = make_unique_clear<u16[]>(LOWMEM_WORDS);
 
 	save_pointer(NAME(m_lowmem_shadow), LOWMEM_WORDS);
-	save_item(NAME(m_probe_or_alias_region_shadow));
 	save_item(NAME(m_m68302_internal_shadow));
 	save_item(NAME(m_lrclk_level));
 }
@@ -291,8 +296,6 @@ void asr10_boot_state::machine_reset()
 	m_lrclk_level = false;
 	m_lrclk_timer->adjust(attotime::from_hz(44100), 0, attotime::from_hz(44100));
 	std::fill_n(m_lowmem_shadow.get(), LOWMEM_WORDS, 0);
-	for (auto &entry : m_probe_or_alias_region_shadow)
-		std::fill(std::begin(entry), std::end(entry), 0);
 	std::fill(std::begin(m_m68302_internal_shadow), std::end(m_m68302_internal_shadow), 0);
 
 }
@@ -303,10 +306,16 @@ void asr10_boot_state::mem_map(address_map &map)
 	// the boot-time remap/low-memory behavior used by the ROM.
 	map(0x000000, 0x0fffff).rw(FUNC(asr10_boot_state::low_rom_or_lowmem_r), FUNC(asr10_boot_state::lowmem_w));
 
-	// Minimal RAM/MMIO map for boot/remap behavior.
-	map(0x408000, 0x408003).rw(FUNC(asr10_boot_state::probe_or_alias_region_408000_r), FUNC(asr10_boot_state::probe_or_alias_region_408000_w));
-	map(0x808000, 0x808003).rw(FUNC(asr10_boot_state::probe_or_alias_region_808000_r), FUNC(asr10_boot_state::probe_or_alias_region_808000_w));
-	map(0xc08000, 0xc08003).rw(FUNC(asr10_boot_state::probe_or_alias_region_c08000_r), FUNC(asr10_boot_state::probe_or_alias_region_c08000_w));
+	// ROM's own memory-size probe (docs/asr10/investigations/
+	// memory-size-belief-analysis.md, ROM $F8A166-$F8A244) reads
+	// $008000/$408000/$808000/$C08000 to detect real address-line
+	// aliasing. Its own subsequent allocator math ($C4E.l = reported_base
+	// + $10000) can also land anywhere up to $EFFFFF depending on which
+	// branch it takes (reported_base is $600000 for the 2 MB branch, not
+	// $000000) -- so the whole $200000-$EFFFFF window, not just the four
+	// probe bytes, must show the same wraparound. Folds into the same
+	// backing as $000000-$1FFFFF above; see system_ram_alias_r/w.
+	map(0x200000, 0xefffff).rw(FUNC(asr10_boot_state::system_ram_alias_r), FUNC(asr10_boot_state::system_ram_alias_w));
 
 	// Reference-based candidate windows that are not device implementations
 	// yet stay passive unless a real device is mapped below.
@@ -324,7 +333,6 @@ void asr10_boot_state::mem_map(address_map &map)
 	// backing store instead of its own separate, disconnected one.
 	map(0x100000, 0x1fffff).ram().share(":asr10_sample_ram"); // sample RAM candidate, directly tested by the boot ROM at 0x100000 -- shared with ES5506 bank 0, see es5506_wavetable_map
 
-	map(0xf00000, 0xf7ffff).ram();
 	map(0xf80000, 0xfbffff).rw(FUNC(asr10_boot_state::high_alias_r), FUNC(asr10_boot_state::high_alias_w));
 	{
 		// Phase 1 host-port fingerprint mapping: NOT board-proven -- see
@@ -543,15 +551,10 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::idma_tc_deliver)
 
 u16 asr10_boot_state::low_rom_or_lowmem_r(offs_t offset, u16 mem_mask)
 {
-	const u32 byte_address = offset << 1;
-	u32 probe_index = 0;
-	u32 probe_word = 0;
-	if (probe_or_alias_region_index(byte_address, probe_index, probe_word))
-		return m_probe_or_alias_region_shadow[probe_index][probe_word] & mem_mask;
-
 	if (!m_maincpu->cs0_covers(0))
 		return m_lowmem_shadow[offset] & mem_mask;
 
+	const u32 byte_address = offset << 1;
 	const u8 *rom = m_rom->base();
 	const u32 rom_offset = byte_address & ROM_MASK;
 	return (u16(rom[rom_offset]) << 8) | rom[(rom_offset + 1) & ROM_MASK];
@@ -645,52 +648,28 @@ void asr10_boot_state::es5510_host_write_select_gpr_instr_w(offs_t offset, u8 da
 
 void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 {
-	const u32 byte_address = offset << 1;
-	u32 probe_index = 0;
-	u32 probe_word = 0;
-	if (probe_or_alias_region_index(byte_address, probe_index, probe_word))
-	{
-		COMBINE_DATA(&m_probe_or_alias_region_shadow[probe_index][probe_word]);
-		return;
-	}
-
 	COMBINE_DATA(&m_lowmem_shadow[offset]);
 }
 
 
-u16 asr10_boot_state::probe_or_alias_region_408000_r(offs_t offset, u16 mem_mask)
+u16 asr10_boot_state::system_ram_alias_r(offs_t offset, u16 mem_mask)
 {
-	return probe_or_alias_region_r_at(0x00408000, offset, mem_mask);
+	const u32 address = 0x00200000 + (offset << 1);
+	const u32 wrapped = address % SYSTEM_RAM_BYTES;
+	if (wrapped < LOWMEM_WORDS * 2)
+		return m_lowmem_shadow[wrapped >> 1] & mem_mask;
+	return m_sample_ram[(wrapped - LOWMEM_WORDS * 2) >> 1] & mem_mask;
 }
 
 
-void asr10_boot_state::probe_or_alias_region_408000_w(offs_t offset, u16 data, u16 mem_mask)
+void asr10_boot_state::system_ram_alias_w(offs_t offset, u16 data, u16 mem_mask)
 {
-	probe_or_alias_region_w_at(0x00408000, offset, data, mem_mask);
-}
-
-
-u16 asr10_boot_state::probe_or_alias_region_808000_r(offs_t offset, u16 mem_mask)
-{
-	return probe_or_alias_region_r_at(0x00808000, offset, mem_mask);
-}
-
-
-void asr10_boot_state::probe_or_alias_region_808000_w(offs_t offset, u16 data, u16 mem_mask)
-{
-	probe_or_alias_region_w_at(0x00808000, offset, data, mem_mask);
-}
-
-
-u16 asr10_boot_state::probe_or_alias_region_c08000_r(offs_t offset, u16 mem_mask)
-{
-	return probe_or_alias_region_r_at(0x00c08000, offset, mem_mask);
-}
-
-
-void asr10_boot_state::probe_or_alias_region_c08000_w(offs_t offset, u16 data, u16 mem_mask)
-{
-	probe_or_alias_region_w_at(0x00c08000, offset, data, mem_mask);
+	const u32 address = 0x00200000 + (offset << 1);
+	const u32 wrapped = address % SYSTEM_RAM_BYTES;
+	if (wrapped < LOWMEM_WORDS * 2)
+		COMBINE_DATA(&m_lowmem_shadow[wrapped >> 1]);
+	else
+		COMBINE_DATA(&m_sample_ram[(wrapped - LOWMEM_WORDS * 2) >> 1]);
 }
 
 
@@ -794,43 +773,6 @@ void asr10_boot_state::scsi_asr_candidate_w(offs_t offset, u16 data, u16 mem_mas
 }
 
 
-bool asr10_boot_state::probe_or_alias_region_index(u32 address, u32 &index, u32 &word_index) const
-{
-	static constexpr u32 bases[PROBE_OR_ALIAS_REGION_COUNT] = { 0x00008000, 0x00408000, 0x00808000, 0x00c08000 };
-	for (u32 i = 0; i < PROBE_OR_ALIAS_REGION_COUNT; i++)
-	{
-		if (address >= bases[i] && address <= bases[i] + 3)
-		{
-			index = i;
-			word_index = (address - bases[i]) >> 1;
-			return true;
-		}
-	}
-
-	return false;
-}
-
-
-u16 asr10_boot_state::probe_or_alias_region_r_at(u32 base, offs_t offset, u16 mem_mask)
-{
-	u32 index = 0;
-	u32 word = 0;
-	const u32 address = base + ((offset << 1) & 0x00000002);
-	if (probe_or_alias_region_index(address, index, word))
-		return m_probe_or_alias_region_shadow[index][word] & mem_mask;
-
-	return 0;
-}
-
-
-void asr10_boot_state::probe_or_alias_region_w_at(u32 base, offs_t offset, u16 data, u16 mem_mask)
-{
-	u32 index = 0;
-	u32 word = 0;
-	const u32 address = base + ((offset << 1) & 0x00000002);
-	if (probe_or_alias_region_index(address, index, word))
-		COMBINE_DATA(&m_probe_or_alias_region_shadow[index][word]);
-}
 
 
 
