@@ -1,5 +1,11 @@
 # SCC's Byte Source: What The Tree Can Answer, And What Only Per Can
 
+> **Freeze note 2026-08-23:** no-input-passen och hypotesdiskussionen nedan är
+> provenance. Senare prober verifierar samplingens SCC-payload som big-endian
+> signed 16-bit PCM och dess IDMA/ES5506-konsument. Den fysiska ADC/SCC-routing
+> och en eventuell separat SCC/keybed-användning förblir `[OPEN]`; den externa
+> 80C52/tvåtrådslänken identifierar inte digital-board-termineringen.
+
 The firmware side is mapped: real buffer-descriptor rings, `scc_rx_common`
 disassembled, both its branches traced (a ring-full error, a silent
 channel shutdown). What remains is board-level: what physically drives
@@ -721,9 +727,11 @@ measurement.
 ### Full RECORD/start follow-up, 2026-08-22
 
 The next manual step has now been measured, not inferred. From Level-Detect,
-24 Down-Arrow presses drove the threshold to its observed limit and `Enter-Yes`
-was accepted. The display remained `WAITING...272 SEC LEFT` for 12 seconds;
-`RECORDING` and ERROR 005/006 did not occur.
+24 BTN_0A presses (host-labeled Down) drove the threshold to its observed limit
+and `Enter-Yes` was accepted. A later live tap corrected that limit to numeric
+maximum `$017C=20`, not minimum; see `../investigations/waiting-exit-condition.md`.
+The display remained `WAITING...272 SEC LEFT` for 12 seconds; `RECORDING` and
+ERROR 005/006 did not occur.
 
 All three full SCC descriptor rewrites and every arm/disarm transition occurred
 while the unused instrument slot was entering Level-Detect. After the last
@@ -737,6 +745,34 @@ runtime sequence. The broader `SCC <-> audio input` and `SCC <-> keyboard`
 hypotheses remain `[OPEN]`; no RX data or threshold crossing discriminated them.
 The rings remain SCC descriptor buffers with no verified payload identity. Full
 raw vector and revision trail: `../investigations/full-record-start-probe.md`.
+
+### WAITING exit follow-up, 2026-08-23
+
+The older analysis above correctly left the successful receive consumer open at
+that time. It is now traced: after `$00643C` returns, both SCC ISR stubs can gate
+into `$0064BA`. That continuation sets sampling state 3 when a received descriptor
+range crosses `$FFD15C`, then uniquely posts scheduler tag `$90E8`; the WAITING
+loop accepts that tag and enters recording setup. This is a verified firmware
+control path, not proof that the descriptor payload is bulk PCM. Full code and
+runtime evidence: `../investigations/waiting-exit-condition.md`.
+
+### RX consumer follow-up, 2026-08-23
+
+The final sentence above is now historical. `$006608/$00660A` makes the
+completed SCC buffer range relative to the sampling object; the type `$0E`
+service path through target `$14DA` then programs MC68302 IDMA with that range
+as SAPR and object `+$20` as DAPR. Completion `$00AA48` advances the recording
+destination. Runtime also closes the address relationship:
+`$12D8->$F76400`, whose first range `+$0200` is `$F76600`, and
+`$1320->$F74900`, whose first range `+$0200` is `$F74B00`.
+
+Combined with analog-board A/D, LRCLK-to-68302 and microphone-threshold evidence
+from the service manual, the simplest surviving sampling source is now
+`analog-board A/D serial stream -> SCC RX` `[Likely]`. Direct board pin/glue
+wiring is still `[OPEN]`, so this is not `[Verified]`. The sampling-payload
+variant of `SCC = keyboard` is `[DISPROVEN]`; a separate SCC/keyboard use
+outside this transfer remains `[OPEN]`. Full chain and falsifier:
+`../investigations/scc-rx-source-and-consumer.md`.
 
 - `subroutine-index.md`: not touched this round — no new named ROM/OS
   routine was identified (the SCM/IMR write PCs were not individually
@@ -776,3 +812,12 @@ raw vector and revision trail: `../investigations/full-record-start-probe.md`.
 - `docs/asr10/regression-test.sh`: 8 tests, 9 PASS lines, run before
   and after this task's edits — unaffected, Lua/documentation-only.
 - `git diff --check`: clean.
+
+## Latest consumer-follow-up verification
+
+The verification list immediately above belongs to the older source-question
+round. The later consumer pass made no implementation, clock, bank, ES5510 or
+`mem_map` change. Its narrow read-only probe passed twice and static disassembly
+identified `$00B478` and `$00AA48`; no full regression run was required because
+only documentation and an archived observation probe changed. See
+`../investigations/scc-rx-source-and-consumer.md` for the current result.

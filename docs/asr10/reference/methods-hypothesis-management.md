@@ -89,6 +89,14 @@ igen utan ny evidens.
 svagare hypoteser. Om endast en del faller ska påståendet delas och delarnas status
 bedömas var för sig.
 
+### `[External]`
+
+Påståendet återger en identifierad extern källa, till exempel manual, schema,
+datablad eller fotografi. Märkningen verifierar vad källan visar eller säger inom
+sin egen domän; den uppgraderar inte automatiskt firmwarebeteende, runtime eller
+fysisk kontinuitet i det exemplar som modelleras. Källan och dess revision ska
+anges när de är kända.
+
 ## 4. Evidens och mätbar frånvaro
 
 Rådata inventeras före dokumentclaims. Ett resultat ska kunna spåras till den ROM,
@@ -158,13 +166,15 @@ Nästa diskriminerande experiment:
   är ERROR 005/006, "could not synchronize audio input" enligt manualen.
 - **"Keyboard buffers":** nedgraderades när etiketten saknade kodbevis. Ringarnas
   adresser och storlek kan vara verifierade utan att deras funktion är det.
-- **SCC = keyboard:** förblir `[OPEN]` när fysisk keyboardevidens och
-  sample-lägets firmwarebeteende ännu inte identifierar samma bytekälla.
-- **SCC = audio:** förblir `[OPEN]` tills full RECORD-sekvens ger diskriminerande
-  evidens. Full RECORD/start nådde 2026-08-22 `WAITING` men gav ingen RX-trafik,
-  descriptorfyllning, level-4-IACK, sample-RAM-trafik eller 005/006. Den smala
-  förutsägelsen "omedelbart 005/006" är `[DISPROVEN]`; den breda identiteten
-  förblir `[OPEN]` eftersom ingen insignal passerade tröskeln.
+- **SCC = keyboard:** samplingstransferns payloadvariant är `[DISPROVEN]` efter
+  direkt PCM-konsumtion. En separat SCC-användning för keybed och den externa
+  80C52-länkens digital-board-terminering förblir `[OPEN]`.
+- **SCC = samplingdata:** firmware-, descriptor-, IDMA- och PCM-kedjan är senare
+  `[Verified]` inom sina respektive firmware/current-model-domäner. Fysisk
+  ADC-till-SCC-routing är fortfarande `[OPEN]`. Full RECORD/start 2026-08-22 var
+  ett historiskt no-input-pass; dess nollresultat får inte överrida de senare
+  bytefeed-, descriptor- och destinationsmätningarna. Den smala förutsägelsen
+  "omedelbart 005/006" är fortsatt `[DISPROVEN]`.
 
 Exemplen är metodhistorik, inte genvägar till nya slutsatser. Varje framtida
 statusändring kräver sitt eget reproducerbara revisionsspår.

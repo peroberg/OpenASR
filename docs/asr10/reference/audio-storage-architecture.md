@@ -7,6 +7,12 @@
 > actual sampling/RECORD remain open. Historical boundary reasoning below is
 > retained, but old "not reached" statements are corrected in the table.
 
+> **Sampling-path update 2026-08-23.** Full RECORD reaches `WAITING`. Static
+> firmware now verifies a separate recording path: completed SCC RX ranges are
+> copied by MC68302 IDMA into an advancing recording destination. The current
+> LEFT run prepares destination `$02C110`, whose physical sound-memory decode is
+> still `[OPEN]`; no RX transfer has occurred in the model.
+
 ## Scope
 
 This document records the current boundary model between ASR-10 storage
@@ -198,6 +204,7 @@ Evidence by boundary:
 | FDC RECALIBRATE -> status -> continuation | [Verified firmware] `$0402 <- $BA5E`, command `07 00`, vector `$51`, FDC status/SENSE path, then continuation. |
 | SCSI RESET -> status -> continuation | [Verified firmware] `$0402 <- $B1A4`, writes `$18/$00` to `$FC5001/$FC5003`, vector `$51`, SCSI status path, then continuation. |
 | async FDC READ with IDMA | [Verified runtime] completed: 21 IDMA arms, 337 sectors and 172,544 bytes reach low RAM; storage completion uses vector `$51`, while IDMA's internal vector `$4B` remains masked for this path. |
+| sampling SCC RX -> recording destination | [Verified firmware] type `$0E` through `$14DA/$00B478` programs IDMA from the completed SCC object range to object `+$20`; completion `$00AA48` advances the destination. [Verified runtime] LEFT mode prepares `$02C110`; physical decode and actual transfer remain [OPEN]. |
 | historical instrument-load stall point | [Historical, passed] the earlier run stopped before IDMA. Current runtime passes RECALIBRATE, SEEK, READ DATA and terminal count and reaches `FILE LOADED`. |
 | sample-data destination | [Verified runtime] the tested instrument payload reaches low RAM and is consumed through the ES5506 bank-1 low-memory mapping; exact general sample-object ownership and physical sound-memory topology remain [OPEN]. |
 | instrument metadata/root structure | [OPEN] top-level loaded instrument root is not localized; ROM runtime voice records consume instrument/sample object pointers. |

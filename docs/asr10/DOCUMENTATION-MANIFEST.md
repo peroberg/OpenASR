@@ -10,7 +10,7 @@ implicit sanningskälla.
 **Konsoliderad 2026-08-04** från statiskt analysmaterial. Mergen är genomförd i
 arbetskopian; commit anges här efter att den har granskats och committats.
 
-**Reviderad 2026-08-22.** Manifestet är en levande förteckning. Antal och
+**Reviderad 2026-08-23.** Manifestet är en levande förteckning. Antal och
 referenstabell nedan inventerades mot arbetskopian; äldre konsolideringssiffror
 får inte läsas som aktuell täckning.
 
@@ -38,7 +38,7 @@ runtime-tool            instrumentering
 
 | path | kategori | status | källa | typ | beskriver | ersätter | härleds ur |
 |---|---|---|---|---|---|---|---|
-| `current-status.md` | current-status | **aktuell** | löpande handoff, reviderad 2026-08-22 | handkurerad | aktuellt läge, nästa experiment | tidigare kumulativ status | reference/ + investigations/ |
+| `current-status.md` | current-status | **aktuell** | löpande handoff, reviderad 2026-08-23 | handkurerad | aktuellt läge, nästa experiment | tidigare kumulativ status | reference/ + investigations/ |
 | `DOCUMENTATION-MANIFEST.md` | current-status | **aktuell** | detta dokument | handkurerad | vilka dokument som ingår | — | — |
 | `regression-test.sh` | runtime-tool | **aktuell** | i trädet | handkurerad | boot, panel, load, guards och torrt note-audio | äldre FILE 1-only-baseline | lua/ |
 
@@ -46,6 +46,7 @@ runtime-tool            instrumentering
 
 | path | status | källa | beskriver | ersätter / härleds ur |
 |---|---|---|---|---|
+| `handoff-2026-08-23.md` | **aktuell freeze/startpunkt** | repo- och evidensaudit 2026-08-23 | femminutersläge, falsifierade hypoteser, öppna frågor och arbetskopiegräns | läses före äldre handoffs och investigations |
 | `architecture-handoff.md` | **historiskt checkpoint** | pre-IDMA-arkitektur, märkt 2026-08-22 | servicekärna och den passerade storage-blockeraren | runtime-status ersatt av `current-status.md`; arkitekturdelar fortsatt relevanta |
 | `audio-storage-architecture.md` | **aktuell** | uppdaterad 2026-08-22 | gränsen storage / ES5701 / ES5506 / ES5510 | senare load- och note-audio-evidens införd |
 | `boot-sequence.md` | **aktuell** | uppdaterad 2026-08-04 | reset → FILE 1 | steg 1b DPRAM-bryggan tillagt; chip-select-luckan i steg 2 stängd; steg 7 utbyggt med M1–M3 |
@@ -55,8 +56,8 @@ runtime-tool            instrumentering
 | `es5701-wiring.md` | oförändrad | i trädet | ES5701-koppling | — |
 | `hardware-map.md` | **aktuell** | uppdaterad 2026-08-04 | fysiska komponenter | chip-select-tabellen tillagd; två rättelserutor markerar föråldrade `$FC6816`- och SCSI-avsnitt som historik |
 | `instrument-to-otto-runtime.md` | **aktuell** | runtime-/firmwareanalys | voice table till ES5506 | runtime voice boundary |
-| `interrupt-topology-gaps.md` | **aktuell** | dynamisk vektor/IACK-inventering | SCC/PB/IDMA/Timer2-källor och modellluckor | rangordnad level-4-topologi |
-| `mc68302-status.md` | **aktuell** | ny 2026-08-04 | SIB/CP/PIO/timers per block | ur SIB-censusen |
+| `interrupt-topology-gaps.md` | **aktuell med historisk runtime-tabell** | dynamisk vektor/IACK-inventering | SCC/PB/IDMA/Timer2-källor och modellluckor | pre-engine SCC/IDMA-rader kvalificeras av freeze-noten; PB-fynden består |
+| `mc68302-status.md` | **aktuell med historiska modellgränser** | ny 2026-08-04, freeze-not 2026-08-23 | SIB/CP/PIO/timers per block | statisk census består; äldre `[OPEN]` för SCC/IDMA ersätts av smal current-model-verifiering |
 | `memory-map.md` | **aktuell** | ersatt 2026-08-04 | adresser och avkodning | runtime-delen **flyttad** till `runtime-service-model.md` |
 | `methods-hypothesis-management.md` | **aktuell** | ny 2026-08-22 | normerande hypoteshantering, evidensstatus och revisionsspår | formaliserar projektets etablerade mät- och rapportdisciplin |
 | `methods-static-analysis.md` | **aktuell** | ny 2026-08-04 | metoder och felkällor | — |
@@ -67,11 +68,11 @@ runtime-tool            instrumentering
 | `rom-os-abi.md` | **aktuell** | ny 2026-08-04 | arkitektur, bindningstabellen | ur `os-binding-table.csv` |
 | `runtime-object-model.md` | **aktuell med historiska gränser** | firmwareobjektanalys | storage-, sample-, instrument- och voice-ägarskap | vissa pre-IDMA runtimegränser läses via `current-status.md` |
 | `runtime-service-model.md` | **aktuell** | utbruten 2026-08-04 | dispatcher-kö, servicefält, V1.61-observationer | programmatisk split av gamla `memory-map.md`, historiken oförändrad |
-| `scc-board-source-question.md` | **aktuell** | servicehandbok, schema och sample-mode-test | fysisk keyboardlänk och konkurrerande SCC-hypoteser | senaste omräkningen styr; båda identiteter `[OPEN]` |
-| `scc-hardware-gap.md` | **aktuell** | statisk + dynamisk SCC-analys | descriptorer, register, handlers och modellomfång | firmware-/descriptorvägen |
+| `scc-board-source-question.md` | **aktuell med historiska no-input-pass** | servicehandbok, schema och sample-mode-test | fysisk keyboardlänk och konkurrerande SCC-hypoteser | samplingens PCM-konsument är verifierad; direkt pin/glue och separat keyboardanvändning `[OPEN]` |
+| `scc-hardware-gap.md` | **aktuell med historisk pre-engine-gräns** | statisk + dynamisk SCC-analys, addendum 2026-08-23 | descriptorer, register, handlers, IDMA-konsument och modellomfång | firmware-/descriptorvägen består; current-model-engine i senare investigations |
 | `scsi-operation-example.md` | **aktuell** | firmwareanalys | konkret SCSI-operation och `$0402` | — |
 | `storage-completion-dispatch.md` | **aktuell med historiska runtimegränser** | firmwareanalys | vektor `$4B`/`$51` och `$0402` | aktuell implementation i `current-status.md` |
-| `subroutine-index.md` | **aktuell** | uppdaterad 2026-08-04 | namngivna rutiner | bindningsslots + 6 nya rutiner tillagda |
+| `subroutine-index.md` | **aktuell** | uppdaterad 2026-08-23 | namngivna rutiner | bindningsslots samt SCC WAITING-fortsättningen `$0064BA` |
 | `vector-map.md` | **aktuell** | uppdaterad 2026-08-04 | vektormodellen | sammanslagning genomförd; femkategorimodellen tillagd, allt befintligt bevarat |
 
 ## `static/` — generated-static-data + static-worklog
@@ -104,11 +105,18 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 55 Markdown-filer vid audit 2026-08-22
+## `investigations/` — 67 Markdown-filer vid audit 2026-08-23
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
+Senaste tillägget är `stereo-ram-decode-analysis.md`. Det verifierar att
+modellens oberoende ROM-probe-shadows annonserar base 0/size `$F80000` utan
+sammanhängande RAM-backing vid `$7CE510`, och att LEFT/L+R använder samma
+WaveSample-layout före stoppet. Föregående
+`record-stereo-allocator-analysis.md` klassar adressen som en beräknad
+free-remainder-header i instrumentets nästlade firmwareheap. Den exakta
+fysiska RAM-dekodningen förblir öppen.
 
 ## `archive/` — 28 filer
 

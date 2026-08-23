@@ -1,5 +1,12 @@
 # ASR-10 Storage Completion Dispatch
 
+> **Freeze note 2026-08-23:** formuleringar nedan om att runtime ännu inte når
+> completion eller att IDMA-konsumenten är `[OPEN]` är historiska checkpoints.
+> V3.50-instrumentladdningen är senare verifierad till 21 IDMA-armeringar,
+> 337 sektorer och 172,544 byte; se
+> `../investigations/file-loaded-verification-probe.md` och
+> `handoff-2026-08-23.md`.
+
 ## Scope
 
 This note documents the V3.50 firmware-side async storage/device

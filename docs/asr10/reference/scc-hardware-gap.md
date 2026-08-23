@@ -1,5 +1,14 @@
 # SCC: What Is Firmware Actually Wired To?
 
+> **Freeze note 2026-08-23:** dokumentets ursprungliga "ingen SCC-modell"-gräns
+> är historisk. Arbetskopian har nu en minimal post-framing SCC receive-engine,
+> descriptor completion, SCC-event och level-4-leverans för den observerade
+> ASR-10-vägen. Samplingpayloaden och recording-IDMA är verifierade i senare
+> investigations; fysisk RX-källa, framing och generell SCC-funktion är fortsatt
+> `[OPEN]`. Se `../investigations/scc-cp-rx-minimal-engine.md`,
+> `../investigations/scc-idma-transfer.md` och
+> `../investigations/scc-rx-payload-format.md`.
+
 The interrupt topology ranked SCC1/SCC2 as the strongest-evidenced gap
 in the MC68302 model: firmware unmasks them in `IMR=$E480`, real
 handlers exist at their computed vectors, and this project models no
@@ -515,6 +524,22 @@ your data" path, which would require bit 2 or bit 0 to fire under a
 *different* precondition than either traced case, or a third event bit
 not yet examined. Flagged `[OPEN]`, named precisely rather than
 guessed at.
+
+**Later update, 2026-08-23:** the successful adjacent continuation at `$0064BA`
+is now traced. The SCC ISR stubs invoke it after `$00643C` when their channel gate
+and `$0D04` are active. A received range crossing `$FFD15C` sets `$0D04=3` and
+causes the unique `$90E8` sampling event post. This supersedes only the old
+"successful consumer open" statement; payload identity and bulk-PCM transport
+remain `[OPEN]`. See `../investigations/waiting-exit-condition.md`.
+
+**Later consumer update, 2026-08-23:** the final sentence above is now
+historical. The type `$0E` node produced at `$0066D0` reaches target `$14DA`'s
+`$00B478` branch, which consumes object range fields `+$34/+$38` and starts
+MC68302 IDMA with the corresponding SCC payload as source and object `+$20` as
+the advancing recording destination. The sampling payload is therefore a real
+bulk data path. Physical SCC pin/glue wiring remains `[OPEN]`; analog-board A/D
+serial input is `[Likely]`. See
+`../investigations/scc-rx-source-and-consumer.md`.
 
 **Cross-reference against known paths, as asked**: no intersection
 found with the storage-completion/note path (`$F114B6`/`$F114E2`), the

@@ -1,5 +1,12 @@
 # Interrupt Topology: Firmware Support Without A Possible Source
 
+> **Freeze note 2026-08-23:** SCC1/SCC2- och IDMA-raderna nedan beskriver den
+> uppmätta pre-receive-engine-modellen. Senare prober verifierar den smala
+> current-model-kedjan SCC RX -> descriptor -> vector `$4D`/`$4A` -> IDMA ->
+> vector `$4B`; se `../investigations/scc-cp-rx-minimal-engine.md` och
+> `../investigations/scc-idma-transfer.md`. PB9/PB10/PB11-resultaten och de
+> fysiska källornas `[OPEN]`-status är inte ändrade.
+
 Method, stated up front: this document does not fill in the interrupt
 model register by register. It looks for handlers firmware has
 installed for sources this project's model can never actually drive —

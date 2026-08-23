@@ -1,8 +1,11 @@
 # ASR-10 current status
 
-Current truth for the ASR-10 MAME bring-up. This file is deliberately short:
-verified reference facts belong in `reference/`, reproducible analysis output belongs in
-`static/`, and experiment history belongs in `investigations/` or `archive/`.
+Current truth and cumulative revision journal for the ASR-10 MAME bring-up.
+Start with `reference/handoff-2026-08-23.md` for the five-minute freeze snapshot.
+Verified reference facts belong in `reference/`, reproducible analysis output belongs
+in `static/`, and experiment history belongs in `investigations/` or `archive/`.
+Older paragraphs below preserve provenance; an explicit later update or the freeze
+handoff takes precedence over a historical runtime boundary.
 
 **Instrument warning, general form:** two *independent* ways for a Lua tap
 to die silently (no error, just no further callbacks) are now on record:
@@ -41,10 +44,11 @@ Panel receive terminology:
 
 ## Current handoff
 
-This document is the current runtime handoff. `reference/architecture-handoff.md`
-preserves the earlier pre-IDMA architecture checkpoint and remains useful for the
-service-kernel model, but its runtime stall and implementation target are historical
-and passed.
+The current session handoff is `reference/handoff-2026-08-23.md`. This document
+retains the detailed status journal. `reference/architecture-handoff.md` preserves
+the earlier pre-IDMA architecture checkpoint and remains useful for the service-
+kernel model, but its runtime stall and implementation target are historical and
+passed.
 
 ## Works
 
@@ -165,7 +169,8 @@ and passed.
   (supersedes the SR-mask framing in `irq1-vector-and-sr-probe.md`, which
   remains useful for the vector-delivery and tap-lifetime findings but not
   for the crash's actual cause)
-- [OPEN] FDC-/instrumentinläsningsspåret är avslutat i nuvarande omfattning;
+- [Historical boundary, superseded] FDC-/instrumentinläsningsspåret var vid denna
+  checkpoint avslutat i dåvarande omfattning;
   se `investigations/instrument-load-v350.md`. Blockerare:
   Den observerade `LOADING JM DIGI SYN`-vägen konstruerar en konkret
   service-node-request vid `$FFA882-$FFA8AA`, använder trap `#12` immediate
@@ -187,7 +192,8 @@ and passed.
   RECALIBRATE-completion, SEEK och READ DATA-utfardande korrekt genom
   vektor `$51`. Blockeraren ar IDMA
   (`investigations/idma-implementation-plan.md`), inte langre en
-  saknad grind till `$51`.
+  saknad grind till `$51`. **Freeze-status:** även IDMA-gränsen är passerad:
+  instrumentinläsningen omfattar 21 armeringar, 337 sektorer och 172,544 byte.
 - [Verified runtime/static] Instrument-load-requestens class/subtype är
   `$049A.b=$03` och `$049B.b=$02` efter storage entry. `$0302` ska inte
   beskrivas som ett enda enkelt storage-opcode; `$049A` används som
@@ -204,13 +210,15 @@ and passed.
   (`investigations/ready-line-artifact-probe.md`), men stannar vid en
   IDMA-overrun fore common storage exit -- konsumenten ar fortfarande
   [OPEN], nu av en annan anledning (IDMA saknas, inte att completion
-  aldrig levereras).
+  aldrig levereras). **Freeze-status:** denna runtimegräns är historisk;
+  instrumentet blir valt och når note-to-voice samt ES5506-fetch.
 - [Verified static] Class `$03` har en verifierad statisk väg mot verklig
   dataöverföring: `$B64C -> $FB7F9E -> $FBA5A2 -> $FB9C5E -> $FB9FE2 ->
   $FB84DA -> $FB85C0 -> IDMA setup -> $FB8672 -> FDC READ DATA $46`.
   IDMA använder source `$FFFC5803`, destination `$040E`, count från
   transfer/sector-state, och MC68302 IDMA-register `$FC6802`, `$FC6804`,
-  `$FC6808`, `$FC680C` och `$FC6810`. Runtime har ännu inte nått detta.
+  `$FC6808`, `$FC680C` och `$FC6810`. Påståendet att runtime ännu inte nått
+  vägen är historiskt; den senare 172,544-byte-mätningen verifierar den.
 - [Verified dynamic] ES5506 PAR now reads through the ASR-10 panel analog path
   rather than a fixed `$0200` constant. V3.50 still boots to
   `FILE 1  TUTORIAL BNK`; observed PAR reads returned raw `$0200` from channel 6
@@ -227,8 +235,9 @@ and passed.
   `+$26`, instrument/sample object pointer at `+$1E`, sample-address base at
   `+$22`, and ES5506 PAGE/register programming through `$FC2001`. PB9/vector
   `$47` reads ES5506-like `IRQV`, maps the voice number to `$8000+voice*$D8`,
-  and calls the per-voice callback. The loaded instrument root and sample RAM
-  producer remain [OPEN]. -> `reference/instrument-to-otto-runtime.md`
+  and calls the per-voice callback. Den ursprungliga gränsen där loaded root och
+  sample-RAM-producer var `[OPEN]` är historisk; senare load/note-prober verifierar
+  bank-1-backing och live sample-fetch. -> `reference/instrument-to-otto-runtime.md`
 - [Verified static] The `$8000` table is now classified as a firmware-owned
   ROM voice-manager object, not an ES5506-owned data structure. The manager has
   verified init, allocation/list, preparation, callback and release/reset paths
@@ -282,12 +291,12 @@ architectural model that did not exist before. Summary only — details in `refe
   PIO, Timer 2 configuration and its version difference, CP reset, ENTER HUNT MODE for
   SCC1/SCC2, SIMODE, SCON/SCM, LRCLK-phased receiver start, complete SCC1/SCC2 interrupt
   handlers with correct EOI. → `reference/mc68302-status.md`
-- **Current MC68302 implementation has no internal interrupt-source model.**
-  [Verified] IPR/IMR/ISR, SCC/SMC parameter RAM, IDMA, Port A, timers, watchdog and
-  SCC/SMC/SCP are `known_unimplemented` shadow storage in `mc68302.cpp`.
-  [Verified] The only working interrupt path at HEAD `47318563942` is external IRQ6 via
-  `irq6_ack_vector()`. [OPEN] W1C semantics for IPR/ISR remain a hardware-model question
-  until the interruptcontroller block is implemented. → `reference/mc68302-status.md`
+- **Historical MC68302 implementation boundary.** At HEAD `47318563942`, the
+  internal source model was shadow storage and external IRQ6 was the only working
+  interrupt path. The current working tree now has the narrow SCC1/SCC2 receive and
+  recording-IDMA `$37A1` behavior required by the measured ASR-10 path. This is not
+  a general interrupt controller, SCC or IDMA implementation; unobserved modes and
+  physical signal producers remain `[OPEN]`. → `reference/mc68302-status.md`
 - **DUART panel path matches ROM hardware access.** [Verified] ROM-accesser till
   `$FC4813` (SRB, RxRDY-poll) och `$FC4817` (RHRB) bekräftar att den nuvarande
   DUART-panelmodellen motsvarar den hårdvaruväg firmwaren faktiskt använder.
@@ -308,25 +317,32 @@ architectural model that did not exist before. Summary only — details in `refe
   evidence level and execution status. → `static/call-graph-edges.csv`,
   `reference/call-graph.md`
 
-## Does not work
+## Current incomplete areas
 
-- Full sampling/RECORD, sequencer behaviour, ES5510 execution and the complete
-  ES5506 -> pump -> ES5510 effects path are not working end-to-end. Dry ES5506
-  playback is verified audibly and pitch-checked; see the later
-  `keyboard-and-sample-bridge-6.md` through `-9.md` updates below.
-- DUART channel A RX is not wired to a real external source.
-- ES5506 PAR has a real panel-analog route, but the wider ADC channel identity
-  and audio-side effects are not fully verified.
+- Mono LEFT RECORD, sample-object creation and direct ES5506 playback are
+  `[Verified runtime/current model]`. L+R remains `[OPEN runtime]` because the
+  current model does not back the firmware-heap address `$7CE510`.
+- The sampling firmware/data path is verified. Physical ADC-to-SCC routing and
+  digital-board connector pinout remain `[OPEN]`.
+- Factor two remains `[OPEN]`; no mechanism is assumed.
+- ES5510 execution/effects integration is not started.
+- PB9/PB10/PB11 physical sources and the keybed's digital-board termination are
+  `[OPEN hardware]`, but do not block the verified mono recording path.
 
-## Most recent discriminating experiment
+## Latest verified recording boundary
 
-The documented sampling workflow has now been driven through `Enter-Yes` at
-RECORD/start. It stops at `WAITING...272 SEC LEFT`, before `RECORDING`; the full
-observation vector is recorded in `investigations/full-record-start-probe.md`.
-`SCC <-> keyboard` and `SCC <-> audio input` remain separate `[OPEN]`
-hypotheses. The SCC identity track is parked until a real RX source or a verified
-threshold-crossing stimulus can distinguish them; it is not an implementation
-target on the current evidence.
+The current working-tree model accepts post-framing SCC RX bytes, completes the
+descriptor, delivers vector `$4D`/`$4A`, copies big-endian signed 16-bit PCM by
+IDMA into recording RAM and lets ES5506 consume that backing directly. Mono LEFT
+continues through stop, root-key assignment and a complete WaveSample object.
+
+L+R stops earlier in allocator `$F8A44E`: the free-remainder header is computed
+at `$7CE510`, written, and read back as zero because the current model does not
+map that firmware-accessible heap address. `$7CE510` is `[Verified firmware
+heap]`; its exact physical ASR-10 decode remains `[OPEN hardware]`. See
+`investigations/record-completion-analysis.md`,
+`investigations/record-stereo-allocator-analysis.md` and
+`investigations/stereo-ram-decode-analysis.md`.
 
 ## Completed storage implementation sequence
 
@@ -1009,7 +1025,7 @@ but would not by itself prove SCC carries PCM; absence of 005/006 would not by
 itself disprove that relationship.
 
 **Update, full RECORD/start 2026-08-22.** The manual sequence was driven through
-unused Instrument 1, Level-Detect, minimum threshold and `Enter-Yes`. Firmware
+unused Instrument 1, Level-Detect, a BTN_0A endpoint and `Enter-Yes`. Firmware
 accepted the start command and remained at `WAITING...272 SEC LEFT` for 12 s;
 it never reached `RECORDING` and showed no ERROR 005/006. All SCC descriptor
 rewrites and `$7033`/`$703B` arm cycles occurred while Level-Detect was being
@@ -1021,6 +1037,207 @@ a live positive witness. The narrow claim "RECORD/start immediately produces
 `SCC <-> keyboard` both remain `[OPEN]` because no signal crossed the threshold
 and no RX data identified either channel. See
 `investigations/full-record-start-probe.md`.
+
+**Correction and WAITING decode, 2026-08-23.** BTN_0A did not select minimum
+threshold: a live tap showed `$017C` increasing `2 -> 20`, the numeric maximum.
+The active loop is `$005BD0-$005C48`, state `$0D04=2`; it dequeues scheduler
+events and accepts tag `$90E8`. V3.50 has exactly one literal producer, in the
+SCC receive continuation (`$00643C -> $0064BA -> $00665C`), which changes the
+state and posts `$90E8`; `$005C50` then branches to setup at `$005C6C` because
+the state is no longer 2. Before that post, `$0064BA` must process a received
+descriptor range past `$FFD15C`; this boundary measured 58 and stayed unchanged
+while the panel threshold index rose `2 -> 20`, so the two values are not a
+direct identity. During the measured WAITING window, SCC event accesses
+and sample-RAM writes remained zero with live witnesses. PBDAT low byte was
+active (4,560 reads/2,280 writes) solely through the verified PB2-PB0 analog-mux
+selector at `$0069A2/$0069AA`, paired with 4,560 ES5506 PAR reads. This does not
+touch PB9/PB10/PB11. At the time of that bounded trace the bulk consumer and
+bus master remained `[OPEN]`. This is now superseded by the SCC RX
+source/consumer pass below; see `investigations/waiting-exit-condition.md` for
+the original boundary.
+
+**SCC RX source/consumer closure, 2026-08-23.** `$006608/$00660A` converts a
+completed descriptor's absolute payload range into offsets relative to the
+sampling object. `$0066C6/$0066CA` stores that range, and the type `$0E` service
+node sent to `$14DA` reaches `$00B478-$00B4E4`. That callback programs MC68302
+IDMA with `SAPR=object+range_start`, `DAPR=object+$20`, `BCR=end-start`, and
+`CMR=$37A1`; completion `$00AA48` advances both the range index and object
+destination. The first payload consumer and intended recording bus master are
+therefore `[Verified firmware]` IDMA, not `[OPEN]`. A narrow runtime snapshot
+resolved `$12D8->$F76400` and `$1320->$F74900`; their first relative range
+`+$0200` equals the known first SCC buffers `$F76600/$F74B00`. At `WAITING` in
+`INPUTDRY LEFT`, `$016F=0`, SCC1's continuation is selected, destination
+`+$20=$02C110`, and remaining count `+$24=$00F44710`. `$02C110` is outside the
+current model's `$100000-$1FFFFF` sample-RAM candidate, so physical sound-memory
+decode/banking remains `[OPEN]` and no `mem_map` change follows.
+
+The service manual independently says the analog board digitizes analog audio,
+that microphone threshold crossing changes WAITING to RECORDING, and that LRCLK
+to the 68302 originates on the analog board. Together with the verified
+SCC-payload-to-recording-IDMA chain, `analog-board A/D serial stream -> SCC RX`
+is now `[Likely]`, while direct SCC pin/glue wiring remains `[OPEN]`. The
+narrower sampling-source claim `SCC RX payload = keyboard protocol` is
+`[DISPROVEN]`; a separate SCC/keyboard use outside this sampling transfer is
+still `[OPEN]`. See `investigations/scc-rx-source-and-consumer.md`.
+
+**Physical SCC audio-input boundary, 2026-08-23.** The service manual narrows
+the analog/digital boundary to a 34-pin ribbon from analog-board `J1` to
+digital-board `J6`; an installed SP-3 board is explicitly interposed between
+those connectors. Independent keyboard and rack analog-board photographs show
+an `ANALOG DEVICES AD1879JD` stereo ADC. They do not provide a pinout, and the
+digital board is four-layer, so the exact J1/J6 pins for serial data, clocks,
+PB3/LRCLK and MC68302 RXD1/RXD2 remain `[OPEN]`. The photographed revisions do
+not use CS5336. No located source puts ES5701 or an ES5506 serial pin on the
+ADC-to-SCC route. See `investigations/physical-scc-audio-input-boundary.md` for
+the source audit and power-off continuity matrix required to close the wiring.
+
+**Virtual SCC RX chain, 2026-08-23.** A temporary opt-in bridge supplied one
+CP-shaped SCC1 receive completion while a separate Lua probe observed the real
+firmware. The 800-byte descriptor contained an explicit `$7FFF` threshold
+sample at offset 64. Firmware acknowledged level-4 vector `$4D`, returned the
+descriptor to SCC ownership, passed `$0064BA/$0065CC`, displayed `RECORDING`,
+selected pretrigger range `$F76606..$F76920`, and programmed IDMA
+`SAPR=$F76606`, `DAPR=$02C110`, `BCR=$031A`, `CMR=$37A1`. The existing IDMA
+byte-input path wrote 793 bytes, all exact matches, delivered vector `$4B`, ran
+`$00AA48`, and advanced destination to `$02C42A`. This upgrades the live
+firmware path from a virtual SCC completion through recording IDMA to
+`[Verified runtime]`; SCC/CP descriptor production itself remains
+unimplemented, and the physical ADC source/wiring status is unchanged.
+
+The sole data mismatch was the final byte: the current FDC-derived IDMA model
+uses `BCR-1`, so BCR 794 produced 793 writes while firmware advanced by 794.
+Exact BCR-length transfer for the SCC memory-source mode is therefore
+`[DISPROVEN]` in the current model, with the first stop precisely identified.
+The 95-line temporary C++ bridge was removed after measurement; the Lua
+observer remains archived as provenance. See
+`investigations/virtual-scc-rx-chain.md`.
+
+**SCC/CP RX boundary audit, 2026-08-23.** The Phase 1 bridge cannot be moved to
+an existing SCC RX input because the current `mc68302_device` has none. It
+inherits only `m68000_device`, exposes no serial RX pin/byte callback, allocates
+no CP/SCC scheduler, and has no level-4 SCC producer. Parameter RAM
+`$0400-$07FF` and SCC registers `$0880-$08B5` are `known_unimplemented`
+`m_shadow` storage; only CPU-visible writes can change them. No code consumes
+MRBLR/E/descriptor pointers, writes RX payload or length, advances the receive
+BD, generates SCCE, or arbitrates SCC1 through IPR/IMR/ISR to vector `$4D`.
+
+Therefore current-model SCC/CP descriptor production is `[OPEN capability]`,
+while its absence is `[Verified source/model]` (outcome C). No runtime stream
+was fabricated because writing buffer/descriptor/SCCE would merely recreate
+Phase 1 and could not test CP ownership. The minimum future boundary is a
+receive-only byte entry followed by CP-owned buffer write, length/E/wrap/pointer
+update, SCCE/SCCM semantics and level-4 delivery. Physical ADC source and wiring
+statuses are unchanged. This historical Phase 2 boundary is superseded by the
+Phase 3B result below. See `investigations/scc-cp-rx-chain.md`.
+
+**Minimal CP receive engine, 2026-08-23.** `mc68302_device` now exposes a
+post-framing SCC RX-byte ingress and owns the minimum measured receive effects:
+buffer writes through the current BD, MRBLR count, E clear, producer advance/W
+wrap, SCCE bit 0, SCCM/IPR/IMR/ISR gating and SCC1/SCC2 level-4 vectors. A Lua
+source supplied only 800 deterministic SCC1 bytes. Before firmware resumed,
+the model had produced 800/800 exact bytes, BD0 `$D000/$0000 -> $5000/$0320`,
+`SCCE1=$0100` and `IPR=$2000`. Firmware then acknowledged vector `$4D`, reached
+`$00643C/$0064BA`, entered state 3/`RECORDING`, and programmed IDMA with
+`SAPR=$F76606`, `DAPR=$02C110`, `BCR=$031A`, `CMR=$37A1`.
+
+Single-full-descriptor SCC1 CP completion is therefore `[Verified runtime]` at
+the post-framing boundary. SCC2 and eight-descriptor/W-wrap behavior are
+implemented but remain `[OPEN runtime]`. Normal execution has no connected RX
+producer; physical serial framing, ADC source and wiring remain `[OPEN]`.
+Phase 3B intentionally did not restore Phase 1's separate IDMA byte helper:
+vector `$4B` and recording-destination writes remained zero while a 660,747
+low-RAM-write witness stayed live. The separate IDMA memory-source transfer is
+still `[OPEN implementation]` at this historical boundary; firmware IDMA setup
+itself is verified. This is superseded by Phase 4A below. See
+`investigations/scc-cp-rx-minimal-engine.md`.
+
+**SCC-to-IDMA transfer, 2026-08-23.** The exact observed CMR `$37A1` mode now
+performs an internal incrementing word copy from SAPR to DAPR and produces IDMA
+normal completion. Starting from the Phase 3B 800-byte SCC1 feed, firmware
+selected `$F76606-$F7691F`; the model performed exactly 794 source reads and
+794 destination writes to `$02C110-$02C429`, with 794/794 byte matches. At
+level-4 IACK, `CMR=$37A0`, advanced `SAPR=$F76920`, advanced `DAPR=$02C42A`,
+`BCR=0`, `CSR=$0100`, `IPR=$0800`, `IMR=$EC80`, `ISR=$0800`, and vector `$4B`
+was delivered. Firmware reached `$00AA48` and advanced object `+$20` to
+`$02C42A`.
+
+The complete current-model `SCC1 RX -> descriptor -> $4D -> IDMA -> recording
+RAM -> $4B` chain is `[Verified runtime]` for this full-descriptor case. The
+destination lies in low-memory backing shared with the ES5506 bank-1 wavetable
+view, so it is `[Verified current model]` sample-accessible RAM. The physical
+ASR-10 RAM decode/bank remains `[OPEN hardware]`. CMR `$0D51` retains its
+separate external/FDC byte path and `BCR-1` convention; Phase 4A does not
+generalize `$37A1` behavior to other IDMA modes. See
+`investigations/scc-idma-transfer.md`.
+
+**SCC RX payload format, 2026-08-23.** Three SCC1 descriptors copied 2,394
+bytes with 2,394/2,394 exact source/destination matches, including alternating
+`AA 55` and `0000/8000/FFFF` word vectors. Live `$FFD54A` reads big-endian
+16-bit words, takes signed magnitude and checks one word per 16 bytes against
+the threshold. After recording stopped, the CPU read the resulting
+`$02C110-$02CA69` range zero times while ES5506 bank 1 fetched it 2,403 times;
+256 retained fetches matched the CPU-visible words 256/256. The measured
+digital contract is therefore `[Verified current model]` big-endian signed
+16-bit PCM with no CPU conversion between SCC/IDMA and ES5506 playback.
+
+Mode 0/LEFT is SCC1/vector `$4D`; mode 1/RIGHT is now independently verified
+through SCC2/vector `$4A` with 794/794 exact bytes and one `$4B`. Mode 2/L+R
+enables both firmware continuations, and ROM `$F95EB2` allocates two separate
+destination halves, not an interleaved buffer. Runtime stereo remains `[OPEN]`:
+the current L+R run reaches System Error 57 on destination-instrument
+selection before Level-Detect and before any SCC/IACK event. See
+`investigations/scc-rx-payload-format.md`.
+
+**RECORD completion and System Error 57, 2026-08-23.** The prior reading of
+raw `ERR0R ?57 - REB00T` as Error 157 is `[DISPROVEN]`: live `trap #0` had
+`D0=$0039`, `$00C0=$0039`, from ROM `$F8A55E move.b #$39,D0 / $F8A562 trap
+#0`. It is System Error 57. The L+R failure is before Level Detect: allocator
+`$F8A44E` splits a valid block at `$02C0D0`, attempts remainder-header writes
+to `$7CE510/$7CE512`, then reads back zero because the current CPU map has no
+RAM there. LEFT reaches Level Detect under the same control. The model's
+missing CPU-visible RAM at this split is `[Verified current model]`; physical
+ASR-10 RAM decode remains `[OPEN hardware]`.
+
+Mono RECORD completion is independently `[Verified runtime/firmware]`.
+`BTN_22` caused no state/display/metadata change; `BTN_23` changed `$0D04`
+from 3 to 0 through `$FFC04C/$FFC06C`. `$FFC230` finalized object `$02BFF0`
+with start/loop-start 0 and end/loop-end `$095A`, exactly the 2,394 recorded
+bytes. Root-key C set object `+$AA=$3C` through `$FFBF10/$FFC118`. Firmware
+then completed the parent/keymap structures and ES5506 fetched the exact range
+2,395 times while CPU reads remained zero (256/256 retained value matches).
+See `investigations/record-completion-analysis.md`.
+
+**Stereo allocator classification, 2026-08-23.** `$7CE510` is now
+`[Verified firmware heap]`, specifically the free-remainder header calculated
+inside instrument `$02B600`'s nested heap `$02B890-$F70A00`. ROM's packed
+allocator resizes first WaveSample `$02C0D0`: planned per-channel extent
+`$0BD6=$7A2310`, plus `$120`, rounds to `$7A2440`; therefore
+`$02C0D0+$7A2440=$7CE510`, with expected free remainder `$7A22C0`. Neighbor
+blocks contain `2 HALL REVERB`, two `UNNAMEDLAYER` records, and `UNNAMED WS`,
+showing that this is the ordinary instrument/object heap rather than a stereo
+register or separate pool.
+
+The service manual verifies 2/4/8/16 MB hardware configurations and ROM
+`$F8A166-$F8A244` verifies a real alias-based RAM sizing algorithm. In the
+current model it selects the maximum branch, but exact board decode at
+`$7CE510` lacks schematic/bus proof: `[Likely hardware RAM in 8/16 MB
+configurations]`, not unconditional `[Verified hardware RAM]`. Stereo object
+creation remains `[OPEN runtime]`: the two companion layer records and first
+WaveSample exist, but the first extent split fails before companion continuation
+`$0174F4`. See `investigations/record-stereo-allocator-analysis.md`.
+
+**RAM-decode closure for the stereo stop, 2026-08-23.** The current model's
+ROM probe locations `$008000/$408000/$808000/$C08000` are four independent
+two-word shadows. ROM therefore observes `D4=0`, `D5=$2222` and selects base
+`$000000`, size `$F80000`, but the CPU map does not back that interval
+coherently. `$7CE510` lies inside the resulting firmware heap and outside all
+mapped RAM windows: both allocator writes are discarded and the immediate
+read returns zero. This model-level RAM decode/backing mismatch is `[Verified
+current model]`; the exact physical board decode remains `[OPEN hardware]`.
+LEFT and L+R use the same `$120` WaveSample metadata layout, and the L+R path
+never reaches continuation `$0174F4`, so an alternate stereo-object path does
+not explain the failure. See
+`investigations/stereo-ram-decode-analysis.md`.
 
 ## ES5510: what firmware asks for, before anything is turned on (docs/asr10/investigations/keyboard-and-sample-bridge-11.md)
 
@@ -1125,54 +1342,19 @@ representative, going forward.
 
 ## Open questions
 
-- **Completed discriminating experiment:** full RECORD/start reached `WAITING`
-  with the complete SCC/descriptor/IACK/sample-RAM/display vector measured.
-  No identity-changing evidence appeared; the SCC source question is parked
-  pending a verified threshold-crossing or a real RX byte source.
-- **Still open after FILE LOADED:** the concrete `$23F6` post-completion
-  consumer, next request class, and whether payload `$02B600` survives to
-  `$043E`. The completion-chain side (vector `$51`, IDMA transfer, terminal
-  count and READ DATA completion) is done.
-- **Physical board policy for storage IRQ1** remains formally `[OPEN]`
-  (what physically drives IRQ1 on real hardware is still unverified), but
-  is no longer blocking progress: the board-policy wiring plus a
-  ready-line fix is tested and known to work up to IDMA.
-- **Next architecture:** next request class after `$03`, `$043E` activation,
-  storage -> sample/instrument bridge.
-- **Later:** exact scheduler full-context semantics, semantic names of descriptor
-  fields, UI-visible/voice-ready load boundary, physical IRQ glue/wiring.
-- **CS1** `$FF6000-$FF7FFF`: enabled, write-selected, external DTACK, no function-code
-  comparison, function unknown. No identified direct or immediate-base references.
-- **What SCC1/SCC2 carry.** The firmware chain is documented end to end. The physical
-  sender, data semantics and successful-reception consumer after `$00643C` are open.
-  LRCLK phasing makes
-  the audio path likely but unproven. The interrupt-topology reconstruction
-  (`reference/interrupt-topology-gaps.md`) confirms this is not just a static-analysis
-  curiosity: SCC1/SCC2 are unmasked in the live IMR, their handlers are stable from
-  reset through instrument select, and zero level-4 IACKs occur in the whole measured
-  run — this is the best-evidenced gap in the MC68302 model, ranked above PB9/10/11.
-- **The exact ROM→OS edge**, and when the vector table is installed at `$000000`.
-- **The segment boundary** and what the ~0x6400-byte gap in the OS file represents.
-- **DPRAM contents**: SCC descriptors, buffer pointers, CP state, dynamically installed
-  jump-table targets. One structured dump at chosen points would settle much of this.
-- **Timer 2's consumer**: which V3.50 routine reads TCN2 and why. Handler address now
-  located (`$F88F3E`, vector `$46`) via the interrupt-topology reconstruction — the
-  routine itself is not yet traced, and Timer 2's INRQ bit is currently masked in IMR
-  (`$E480`), so this handler cannot fire in the measured run either way.
-- **PB9, PB10, PB11 consumers and physical sources.** ROM unmasks PB11/PB10/PB9 and the
-  PB10/PB11 handlers are decoded, but the static absolute-search pass found no
-  dekrementerare for `$0C3A/$0C3B` and no consumer for `$0C36/$0C37` within that method.
-  Vector-level wiring is now fully confirmed real (see
-  `reference/interrupt-topology-gaps.md`): all three are unmasked in IMR with distinct,
-  content-verified, stable handlers — and level-4 IACKs never occur once in the whole
-  measured run (boot through instrument select). This is the same category of gap as
-  SCC1/SCC2 below: firmware genuinely wants these three sources; nothing in the current
-  model can ever drive them. Physical source on real hardware remains **[OPEN]**.
-- **`$F95EAA`** — 1 call in V1.61, 33 in V3.50, unidentified. `$F97662` is no
-  longer in this group: it is a `$03C8`-gated low-level host-port verified
-  write/read service; see `investigations/panel-button-sweep-v350.md`.
-- PAR value, ADC channel identity, PB3 LRCLK board frequency, channel A wiring
-  (unchanged from previous status).
+Prioriteringen och evidensdomänerna är normerande i
+`reference/handoff-2026-08-23.md` sektion C:
+
+1. Stereo recording: mono `[Verified]`, L+R `[OPEN runtime]`; klassificera
+   modellens RAM backing/decode runt firmwareheap `$7CE510`.
+2. Physical ADC routing: firmwarekedjan `[Verified]`, board routing `[OPEN]`.
+3. Keybed link: extern 80C52/tvåtrådsevidens finns, digital terminering `[OPEN]`.
+4. Factor two: `[OPEN]`; pumpen är falsifierad som lösning.
+5. E2/address model: stickprov `[Verified]`, generell mirrorhypotes `[OPEN]`.
+6. PB9/PB10/PB11: `[OPEN hardware]`, ej blockerande.
+7. ES5510: separat framtida implementationsgren, ej påbörjad.
+8. Övriga avgränsade frågor: fysisk bank-1-dekod, generell CMR-tabell,
+   three-line synchronous-länken, CS1, Timer 2 och `$F95EAA`.
 
 ## Disproved hypotheses
 

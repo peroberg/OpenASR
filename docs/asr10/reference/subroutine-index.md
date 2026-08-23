@@ -1028,8 +1028,10 @@ vektortabellen (vektor `$4D`/`$4A`, GIMR=`$8040`-formeln: bas `$40` + SCC1-bit
 13 / SCC2-bit 10) pekar vid korning, bekraftat via samma kontrollblock/
 registerbas/EOI-varden. Bada bitarna ar avmaskade i IMR (`$E480`), och bada
 handlarna ar stabila fran reset genom instrumentval. Se
-`reference/interrupt-topology-gaps.md`: **noll nivå-4 IACK:er under hela den
-matta korningen** — SCC1/SCC2 ar den storsta enskilda luckan i MC68302-modellen.
+`reference/interrupt-topology-gaps.md`: den historiska no-input-körningen gav
+**noll nivå-4 IACK:er**. Senare current-model-prober levererar `$4D`/`$4A` från
+den minimala receive-engine-vägen; fysisk RX-producer och generell SCC-modell
+förblir `[OPEN]`.
 
 ### `$F8D072` pb9_isr `[V]` / `$F88F06` pb10_isr `[V]` / `$F88F22` pb11_isr `[V]`
 
@@ -1089,6 +1091,132 @@ felkod, ingen displaytext. Ingen av de två grenarna nar en
 "data mottagen, har ar den"-rutin; den huvudsakliga mottagningsvagen ar
 fortfarande **oppet**.
 
+**Senare uppdatering 2026-08-23:** sista meningen ovan är historisk. Den separata
+fortsättningen `$0064BA` är nu spårad enligt posten nedan. SCC-payloadens identitet
+verifierades därefter som big-endian signed 16-bit PCM i samplingstransfern;
+fysisk SCC-pin/glue är fortfarande öppen.
+
+### `$0064BA` scc_received_range_continue `[V]`
+
+**[Verified firmware]** SCC1-ISR `$008D56` och SCC2-ISR `$008D92` anropar först
+`$00643C`, kvitterar sin ISR-bit och hoppar därefter till `$0064BA` när respektive
+`$016F`-grind och `$0D04 != 0` tillåter det. Rutinen går igenom mottagna
+descriptorlängder. När den mottagna räckvidden passerar långgränsen på effective
+`$FFD15C` går den via `$0065CC` (`$0D04 <- 3`) och `$00665C` postar den unika
+samplingseventtaggen `$90E8` till `$23F6`; `$006698` nollställer sedan staten.
+
+**[Verified runtime]** I den uppmätta WAITING-sekvensen var `$FFD15C=$3A` och
+SCC-vägen exekverades noll gånger. Gränsen förblev 58 medan panelens `$017C`
+ändrades 2 till 20, så de är inte direkt samma thresholdvärde.
+
+**Historisk status:** payloadidentitet, fysisk SCC-källa och bulkrollen var
+`[OPEN]` efter WAITING-passet. Den senare konsumentspårningen visar att rutinen
+gör intervallen objektrelativa vid `$006608/$00660A`, skriver dem till
+`+$34/+$38`, och postar typ `$0E` till `$14DA`. `$00B478` använder intervallet
+som IDMA-källa och objekt `+$20` som inspelningsdestination. Fysisk SCC-pin/glue
+är fortsatt `[OPEN]`; analogkortets A/D-serieflöde är `[Likely]`. Se
+`../investigations/scc-rx-source-and-consumer.md`.
+
+### `$00B478` scc_range_to_idma `[V]`
+
+**[Verified firmware]** Typ `$0E`, subtype 0, från target `$14DA` läser
+samplingobjektets 20-byte-stride range-entry, beräknar `end-start`, och skriver
+IDMA SAPR=`object+start`, DAPR=`object+$20`, BCR=`length`, FCR=`$99` och
+CMR=`$37A1`. IMR bit `$0800` avmaskas och `$0402` sätts till continuation
+`$00AA48`.
+
+### `$00AA48` scc_record_idma_complete `[V]`
+
+**[Verified firmware]** IDMA-continuation som avancerar/wrappar range-index,
+adderar avslutad bytecount till samplingobjektets destination `+$20`, minskar
+pending-räknaren `+$EA` och återgår till servicekedjan.
+
+### `$FFD54A` sampling_threshold_scan `[V]`
+
+**[Verified live/static]** V3.50-rutinen läser ett 16-bitars ord från `(A0)+`,
+tar absolutbeloppet med `bpl/neg.w`, jämför magnituden med `$D160`, och adderar
+sedan 14 till A0. Den testar alltså ett big-endian signed 16-bitars payloadord
+var 16:e byte. Ett färskt live-dump visar att låg `$00D54A` innehåller annan
+kod; den tidigare lågadressetiketten var fel. Se
+`../investigations/scc-rx-payload-format.md`.
+
+### `$F8A44E`/`$F8A55E` packed_block_allocator / raise_error_57 `[V]`
+
+**[Verified static/runtime]** `$F8A44E-$F8A55D` validerar, delar och länkar
+block med nibble-/swap-kodade storleksfält. Alla underkända invariants går till
+`$F8A55E move.b #$39,D0 / $F8A562 trap #0`, alltså System Error 57.
+
+I L+R-körningen accepterades block `$02C0D0`, en split beräknade `$7CE510`,
+och `$F8A554` försökte skriva två headerord där. Nuvarande CPU-karta tappade
+skrivningen och återläsningen blev noll. Se
+`../investigations/record-completion-analysis.md`.
+
+### `$F8A166-$F8A244` ram_alias_size_probe `[V]`
+
+**[Verified static/runtime]** Skriver signaturer till `$008000/$408000/$808000/
+$C08000`, läser tillbaka `$008000` och `$808000`, och väljer RAM-bas/storlek
+från aliasresultatet. Nuvarande modell tog `D4=0`, `D5=$2222` och valde
+base 0/size `$F80000`, varefter ROM reserverade `$10000+$8000+$400` innan
+heapen byggdes. Se `../investigations/record-stereo-allocator-analysis.md`.
+
+### `$F8A11C-$F8A160` nested_heap_context_select `[V]`
+
+**[Verified static/runtime]** Sparar globala heaprötter, väljer objektlokal heap
+med `$0C5E=A0+$290` och `$0C66=A0+decode_header([A0])`, och anropar packed
+allocatorn i den kontexten. För instrument `$02B600` blev intervallet
+`$02B890-$F70A00`.
+
+### `$F8B188` selected_block_size `[V]`
+
+**[Verified static]** Slår upp vald post via `$8C0C.w`, läser dess packade
+blockheader och returnerar avkodad storlek i D2. `$FFBF00` använder värdet för
+att beräkna reclaimbar inspelningskapacitet.
+
+### `$FFBED4-$FFBEFC` record_capacity_planner `[V]`
+
+**[Verified static/runtime]** Börjar med free-total `$0C6A`, adderar vald
+blockkapacitet minus WaveSample-prefix `$120` via `$FFBF00/$F8B188`, gör samma
+för companion-lagret i L+R, halverar summan per kanal och skriver `$0BD6`.
+Observerat LEFT `$F44710`, L+R `$7A2310`. Se
+`../investigations/record-stereo-allocator-analysis.md`.
+
+### `$F8B1F0` sample_record_extent_allocator `[V]`
+
+**[Verified static/runtime]** Tar instrument/samplebas i `A1` och ett
+record-/lagerindex i `D2`, följer den valda postens offset, skannar upp till
+`$7F` relaterade poster efter största MOVEP-extent, lägger till `$120` och
+anropar packed-block-allocatorn via `$FFFF8972`. L+R-anropet från `$0174EC`
+är den verifierade caller som når System Error 57 i nuvarande modell.
+
+### `$FFBF10` sampling_root_key_wait `[V]`
+
+**[Verified static/runtime]** Visar root-key-prompten och väntar i
+schedulerloopen. Ett keyboardevent lagrar notnumret i `$D489`; testets C-key
+gav `$3C`. Panel-/scheduleralternativen i samma loop är inte fullständigt
+semantiskt namngivna.
+
+### `$FFBF6C`-`$FFC0CC` recording_state_and_finalize `[V]`
+
+**[Verified static/runtime]** Förbereder SCC1/SCC2-objekt, sätter `$0D04=2`
+och driver WAITING/RECORDING-loopen. Panelkod `$23/$25` och eventtagg `$90E8`
+går till `$FFC04C`; vid aktiv RECORDING nollställer `$FFC06C` staten och
+anropar `$FFC230` per aktiv kanal. Testad BTN_23 tog denna väg; BTN_22 gav
+ingen ändring.
+
+### `$FFC118` sampling_object_root_finalize `[V]`
+
+**[Verified static/runtime]** Hämtar aktuellt sampleobjekt, skriver root key
+från `$D489` till objekt `+$AA`, initierar format-/rangefält och fortsätter
+genom objekt-/keymap-hjälparna. Mono-körningen skrev `$3C` och nådde direkt
+ES5506-konsumtion.
+
+### `$FFC230` recording_range_finalize `[V]`
+
+**[Verified static/runtime]** Beräknar `endpoint - object - $120`, skriver
+sample start/end och loop start/end via MOVEP vid `+$F0/+$F8/+$100/+$108`,
+och nollställer `+$22`. För 2,394 inspelade byte blev startfälten noll och
+båda endfälten `$095A`.
+
 ### `$F8C0E6` scc_disable_both `[V]`
 
 **[Verified]** Disassemblerad (`unidasm -arch m68000`, ROM-avbild,
@@ -1141,8 +1269,9 @@ harledd via segment 2-regeln och inte runtime-observerad.
 
 Sparas maskinellt i `../static/routines.csv` med `canonical_status =
 unresolved_high_priority`. `$00643C` ar borttagen ur listan: rutinens SCCE-
-och descriptorhantering ar verifierad; endast den lyckade mottagningsvagens
-datakonsument och semantik ar `[OPEN]`.
+och descriptorhantering är verifierad. Den lyckade samplingvägens konsument,
+recording-IDMA och PCM-semantik är också verifierade; fysisk byteproducent och
+eventuell separat SCC-användning är `[OPEN]`.
 
 ### `$F97662` host_port_verified_write_read `[V]`
 

@@ -25,6 +25,12 @@ identitetshypoteserna `SCC <-> audio input` och `SCC <-> keyboard` förblir
 `[OPEN]`: inget RX-event eller tröskelöverskridande inträffade, så försöket nådde
 inte ett tillstånd där deras förutsägelser skiljer sig.
 
+**Senare rättelse, 2026-08-23:** detta dokument kallade först BTN_0A-ändläget
+"minimum threshold" utifrån MAME:s hostetikett `Down`. En efterföljande live-tap
+visade att BTN_0A i stället ökade `$017C` från 2 till det verifierade maxvärdet
+20. Fasnamnet `threshold_min` nedan bevaras endast som råprovens historiska
+etikett. Se `waiting-exit-condition.md`.
+
 ## Reproduktion
 
 Probe: `docs/asr10/lua/archive/full-record-start-probe.lua`.
@@ -59,7 +65,7 @@ Sekvensen följer `ASR10_manual.pdf`, "Easy Sampling", sidorna 144-147:
 |---:|---|---|
 | 16.300 s | `BTN_20`, Sample-Source Select | `REC SRC=INPUTDRY LEFT` |
 | 16.880 s | `BTN_02`, oladdad Instrument 1 | blank -> `SHUFFLING DATA` -> Level-Detect-glyfer |
-| 17.960-20.840 s | `BTN_0A` x24, Down Arrow | tröskeln drivs till ändläget; inga nya glyphändringar efter tryck 10 |
+| 17.960-20.840 s | `BTN_0A` x24, hostetikett Down | `$017C` drivs till maxändläget 20; inga nya glyphändringar efter tryck 10 |
 | 20.840 s | `BTN_23`, Enter-Yes | `WAITING...272 SEC LEFT` vid 20.860 s |
 | 32.920 s | 12 s efter start | samma `WAITING...272 SEC LEFT` |
 
@@ -84,7 +90,8 @@ uppgraderar därför inte orsaken till `[Verified]`.
 ## SCC1/SCC2 och descriptorer
 
 Vid alla stabila snapshots (`baseline`, `sample_source`, `level_detect`,
-`threshold_min`, start +200 ms, +1 s, +5 s och +12 s):
+`threshold_min` [historiskt felmärkt fasnamn; faktiskt maxläge], start +200 ms,
++1 s, +5 s och +12 s):
 
 ```text
 SCC1/SCC2: SCON=7000 SCM=703B DSR=0000 SCCE=FF00 SCCM=0500

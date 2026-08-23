@@ -29,6 +29,7 @@ Körs av `docs/asr10/regression-test.sh` och ska underhållas.
 | `lib/asr10_display.lua` | Läser VFD-output via aktuella output-proxy-API:t och översätter segmentmönster till rå text. |
 | `lib/asr10_regression.lua` | Gemensam testhjälpare för PASS/FAIL, displayväntan och maskinavslut. |
 | `lib/asr10_guards.lua` | MC68302-vakter: IACK-undantagsvektor, synkron undantagshanterare (vektor 2/3/8, kalibrerad mot en känd krasch), SIB-täckning (klassificering portad från `mc68302_device`, allowlist inkluderar nu $0812/GIMR), IDMA SAPR/CMR/BCR, GIMR-vektorbas (pollningsbaserad). Aggregerade larm, första förekomst per villkor. Se `investigations/mc68302-consolidation.md` och `mc68302-consolidation-2.md`. |
+| `lib/scc_rx_record_probe.lua` | Delad Fas 4B-runner för post-framing SCC-byte, firmwareägd descriptor/IDMA och destinations-/ES5506-observation. Fas 5A:s opt-in mäter dessutom RECORD-stop och metadata utan att ändra källan. Endast wrappers under `archive/` laddar den. |
 
 ## Experiment
 
@@ -37,7 +38,20 @@ Engångsscript vars fråga redan är besvarad eller journalförd. De ligger i
 
 | script | status |
 |---|---|
-| `archive/full-record-start-probe.lua` | Driver manualsekvensen Sample-Source Select -> oladdad Instrument 1 -> Level-Detect -> minimumtröskel -> Enter-Yes. Snapshots SCC/SIB, alla descriptorer och bufferinnehåll; tappar level-4-IACK, sample-RAM och kända 005/006-vägar med levande vittnen. Resultat: 12 s stabilt `WAITING...272 SEC LEFT`, ingen RX/fyllning/IACK4/sample-RAM/005/006. Se `investigations/full-record-start-probe.md`. |
+| `archive/scc-idma-transfer-probe.lua` | Fas 4A. Matar samma 800 SCC1-byte som Fas 3B men skriver ingen descriptor- eller IDMA-state. Verifierar exakt 794 source-read-byte, 794 destinationsbyte med 794/794 mönstermatchningar, `$4D`, `$4B`, `$00AA48` och objektmål `$02C42A`. Se `investigations/scc-idma-transfer.md`. |
+| `archive/scc-rx-payload-format-probe.lua` | Fas 4B LEFT/SCC1: tre descriptorer, 2,394/2,394 byteidentiska kopior, signed-word-råvektor och direkt ES5506-konsumtion (2,403 fetches, 256/256 värdematchningar, noll CPU-läsningar). Se `investigations/scc-rx-payload-format.md`. |
+| `archive/scc2-rx-payload-format-probe.lua` | Fas 4B RIGHT/SCC2-kontroll: vector `$4A`, 794/794 exakta destinationsbyte, vector `$4B`; SCC1 förblir orörd. Se samma journal. |
+| `archive/scc-rx-stereo-layout-probe.lua` | Fas 4B L+R-negativtest: `$016F=2`, men raw `ERR0R ?57 - REB00T` före Level-Detect och noll `$4A/$4D/$4B`; Fas 5A verifierade att koden är System Error 57. Se `investigations/record-completion-analysis.md`. |
+| `archive/record-completion-mono-probe.lua` | Fas 5A LEFT: tre descriptorer följda av BTN_22/BTN_23/root-key. Verifierar state 3->0, `$095A`-endpoints, root `$3C`, objektwrites och direkt ES5506-konsumtion. |
+| `archive/record-completion-error57-probe.lua` | Fas 5A L+R: lokaliserar `D0=$39`/`trap #0` till `$F8A55E/$F8A562` och verifierar write/drop/readback-gränsen vid omappade `$7CE510`. |
+| `archive/record-completion-left-allocation-control.lua` | Fas 5A kontroll: samma allocatorprobe i LEFT når Level Detect utan trap. |
+| `archive/record-stereo-allocator-probe.lua` | Fas 5B L+R: inventerar ROM:s RAM-sizeval, heaprötter, `$0BD6`-plan, nästlad blockkedja och den exakta `$02C0D0+$7A2440=$7CE510`-splitten med levande vittne. |
+| `archive/record-stereo-allocator-left-control.lua` | Fas 5B LEFT-kontroll: samma read-only heapinventarium når Level Detect och visar mono-plan `$0BD6=$F44710`. |
+| `archive/scc-cp-rx-minimal-engine-probe.lua` | Fas 3B-källa och observatör. Matar endast 800 post-framing-byte via `SCC1RX`; modellen producerar buffer, `$5000/$0320`, SCCE/IPR och vector `$4D`. Verifierar 800/800 källbyte, firmware `RECORDING` och IDMA-start. Noll `$4B`/destinationsskrivningar har ett levande 660747-write-vittne och avgränsar den separata IDMA-luckan. Se `investigations/scc-cp-rx-minimal-engine.md`. |
+| `archive/virtual-scc-rx-chain-probe.lua` | Observatör för den tillfälliga, nu borttagna `ASR10_EXPERIMENT_VIRTUAL_SCC_RX`-bryggan. Verifierade `$4D -> SCC RX -> threshold/pretrigger -> RECORDING -> IDMA -> $4B/$00AA48` och 793 exakt matchande destinationsbyte av firmware-BCR 794. Kräver bryggan beskriven i `investigations/virtual-scc-rx-chain.md`; är provenance, inte ett fristående test mot aktuell maskin. |
+| `archive/full-record-start-probe.lua` | Driver Sample-Source Select -> oladdad Instrument 1 -> Level-Detect -> BTN_0A-ändläge -> Enter-Yes. Fasnamnet `threshold_min` är historiskt felmärkt; senare live-tap verifierade `$017C=20`, maxläget. Snapshots SCC/SIB, descriptorer och bufferinnehåll; tappar level-4-IACK, sample-RAM och 005/006-vägar med levande vittnen. Resultat: 12 s stabilt `WAITING...272 SEC LEFT`, ingen RX/fyllning/IACK4/sample-RAM/005/006. Se `investigations/full-record-start-probe.md`. |
+| `archive/waiting-state-locator.lua` | Lokaliserar den aktiva V3.50-WAITING-loopen, `$0D04`, `$0CE8`, thresholdindex, SCC-eventregistren, PBDAT/PAR, ES5510 och sample-RAM. SIB-tappar installeras efter `FILE 1`. Se `investigations/waiting-exit-condition.md`. |
+| `archive/scc-rx-owner-probe.lua` | Smal read-only snapshot av `$016F` och samplingobjekten bakom `$12D8/$1320` genom FILE 1 -> WAITING. Verifierar objekt/buffer-offsetidentitet samt att RECORD sätter destination `+$20=$02C110` och remaining `+$24=$00F44710` i LEFT-läge. Se `investigations/scc-rx-source-and-consumer.md`. |
 | `archive/asr10_display_probe.lua` | Display-/glyphprobe; ersatt av gemensam displayhjälpare. |
 | `archive/asr10_e2_mirror_probe.lua` | E2-speglingsprobe; E2 står fortsatt `[OPEN]`. |
 | `archive/asr10_trace.lua` | Tidig generell trace. |

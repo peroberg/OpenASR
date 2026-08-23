@@ -503,6 +503,20 @@ is only verified from the `sample object address fields` step downstream.
 Everything upstream of those fields remains `[OPEN]` for the current observed
 instrument-load path.
 
+### Recording path is separate
+
+The `[OPEN]` load-path statements above do not apply to the newly traced
+recording writer. For sampling, `$12D8/$1320` point to objects
+`$F76400/$F74900`; completed SCC descriptor ranges are stored relative to those
+objects and submitted as type `$0E` to target `$14DA`. `$00B478` programs
+MC68302 IDMA from `object+range_start` to the destination at object `+$20`, and
+completion `$00AA48` advances `+$20` by the byte count.
+
+This recording bus master is `[Verified firmware]`. The current LEFT runtime
+prepares `+$20=$02C110`, but no RX completion occurred and the physical
+sound-memory decode for that address remains `[OPEN]`. See
+`../investigations/scc-rx-source-and-consumer.md`.
+
 ### `A4+$22` producer status
 
 [Verified static] `$F8DF5C/$F8DFAA` contains an actual voice-record write:

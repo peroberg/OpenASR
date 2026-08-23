@@ -1,5 +1,12 @@
 # MC68302 — statusöversikt per funktionsblock
 
+> **Freeze note 2026-08-23:** den statiska registercensusen i detta dokument
+> består, men flera modellstatusar är historiska. Arbetskopian har nu en smal
+> post-framing SCC1/SCC2 receive-engine och observerat IDMA-läge `$37A1` som
+> verifierats mot ASR-10-firmware. Det är inte en generell CP/SCC/IDMA- eller
+> interruptcontrollerimplementation. Se `../investigations/scc-cp-rx-minimal-engine.md`,
+> `../investigations/scc-idma-transfer.md` och `handoff-2026-08-23.md`.
+
 Underlag: ROM:s och båda OS-versionernas **identifierade absoluta referenser** till
 `$FC6000-$FC6FFF`, korsvaliderade mot MC68302 User's Manual (Table 2-9, §3.2.5, §4.5.3).
 
@@ -483,14 +490,14 @@ registerrelativt via en laddad bas.
 
 | block | register | identifierade absoluta ref. | status |
 |---|---|---|---|
-| IDMA | CMR/SAPR/DAPR/BCR/CSR/FCR | 0 | [OPEN] |
+| IDMA | CMR/SAPR/DAPR/BCR/CSR/FCR | 0 | `[Verified current model]` för `$0D51` och `$37A1`; generell modetabell `[OPEN]` |
 | SCP | SPMODE `$FC68B0` | 0 | [OPEN] |
 | SMC1/SMC2 | — | 0 | [OPEN] |
 | SDMA | — | 0 | [OPEN] |
 | SIMASK | `$FC68B2` | 0 | [OPEN] |
 | SIMODE | `$FC68B4` | 1 i vardera, värde `$4189` | delvis känt |
 | **Parameter-RAM** | `$FC6400` SCC1, `$FC6500` SCC2 | **ROM 1+1, V161 1+1, V350 1+1** | **belagd i mottagningsvägen** |
-| Buffer descriptors | i DPRAM | — | [OPEN], innehållet kan inte läsas statiskt |
+| Buffer descriptors | i DPRAM | — | statiskt blinda; SCC1 BD0-completion `[Verified runtime]`, full ring `[OPEN]` |
 
 **Parameter-RAM är inte längre utan belägg.** ROM (`$F8C174`, `$F8C190`) och båda
 OS-versionerna (`OS+0x08362`, `OS+0x0839E`) laddar `$00FC6400` respektive `$00FC6500`
@@ -507,6 +514,10 @@ absoluta referenser och kan skrivas registerrelativt, eller inte alls.
 ---
 
 ## 6. Prioriterad ordning härifrån
+
+**Historisk prioriteringslista.** Den skrevs före den minimala receive-engine-
+och recording-IDMA-verifieringen. Freeze-prioriteten är stereo RAM/decode enligt
+`handoff-2026-08-23.md`; punkterna nedan bevaras som revisionsspår.
 
 1. **Ta reda på vad SCC1/SCC2 är kopplade till.** LRCLK-fasningen ger riktningen; det
    som saknas är fysisk verifiering och en identifierad sändare.
