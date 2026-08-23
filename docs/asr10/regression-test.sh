@@ -17,6 +17,13 @@
 #              in the -wavwrite capture (not just register writes --
 #              keyboard-and-sample-bridge-6.md found register writes
 #              alone insufficient evidence of sound).
+# interrupt_controller: drives the recording chain (Sample-Source Select ->
+#              Level Detect -> threshold -> RECORD start -> WAITING -> SCC1
+#              RX -> IDMA) and asserts the priority-arbitrated level-4
+#              interrupt controller's three load-bearing facts: vector $4D
+#              for SCC1, vector $4B for IDMA completion via a real IACK (not
+#              polling), and the genuine firmware IMR transient
+#              $E480 -> $EC80 -> $E480 around the transfer.
 
 set -u
 
@@ -95,6 +102,7 @@ run_test nodisk docs/asr10/lua/nodisk.lua "" || failures=$((failures + 1))
 run_test file_loaded docs/asr10/lua/file_loaded.lua "$IMAGE" || failures=$((failures + 1))
 run_test mc68302_guards docs/asr10/lua/mc68302_guards.lua "$IMAGE" || failures=$((failures + 1))
 run_test_audio note_audio docs/asr10/lua/note_audio.lua "$IMAGE" || failures=$((failures + 1))
+run_test interrupt_controller docs/asr10/lua/interrupt_controller.lua "$IMAGE" || failures=$((failures + 1))
 
 if [ "$failures" -ne 0 ]; then
 	echo "FAIL regression failures=${failures}"
