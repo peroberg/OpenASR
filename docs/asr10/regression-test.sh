@@ -24,6 +24,10 @@
 #              for SCC1, vector $4B for IDMA completion via a real IACK (not
 #              polling), and the genuine firmware IMR transient
 #              $E480 -> $EC80 -> $E480 around the transfer.
+# memory_size: locks in that ROM's own memory-size alias probe
+#              ($F8A166-$F8A244) concludes base=$600000/size=$200000 (the
+#              stock 2 MB machine) instead of the previous always-maximum
+#              ~15.5 MB belief -- memory-size-belief-analysis.md.
 
 set -u
 
@@ -103,6 +107,7 @@ run_test file_loaded docs/asr10/lua/file_loaded.lua "$IMAGE" || failures=$((fail
 run_test mc68302_guards docs/asr10/lua/mc68302_guards.lua "$IMAGE" || failures=$((failures + 1))
 run_test_audio note_audio docs/asr10/lua/note_audio.lua "$IMAGE" || failures=$((failures + 1))
 run_test interrupt_controller docs/asr10/lua/interrupt_controller.lua "$IMAGE" || failures=$((failures + 1))
+run_test memory_size docs/asr10/lua/memory_size.lua "$IMAGE" || failures=$((failures + 1))
 
 if [ "$failures" -ne 0 ]; then
 	echo "FAIL regression failures=${failures}"
