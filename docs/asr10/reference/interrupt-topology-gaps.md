@@ -6,6 +6,15 @@
 > vector `$4B`; se `../investigations/scc-cp-rx-minimal-engine.md` och
 > `../investigations/scc-idma-transfer.md`. PB9/PB10/PB11-resultaten och de
 > fysiska källornas `[OPEN]`-status är inte ändrade.
+>
+> **Uppföljning, samma dag, avbrottskontroller landad:** Del 2/Del 3/Del 5s
+> slutsats att IDMA:s vektor `$4B` "aldrig avfyras"/"masked, not a gap this
+> model is responsible for" var korrekt för den då körda
+> boot->load->select->play-vägen men gäller inte längre generellt. I
+> inspelningskedjan avmaskerar firmware IMR bit 11 självmant
+> (`$E480 -> $EC80 -> $E480`) och tar emot `$4B` via en riktig level-4 IACK.
+> Se de inline "Superseded, 2026-08-23"-noterna nedan för respektive
+> ursprungspåstående; ingen text är tyst borttagen.
 
 Method, stated up front: this document does not fill in the interrupt
 model register by register. It looks for handlers firmware has
@@ -187,6 +196,44 @@ column gives, independently: **PB11 (15), PB10 (14), SCC1 (13), SCC2
 turn's carried-forward claim, now derived from the bit table itself
 rather than trusted from a note.
 
+### Superseded, 2026-08-23 (interrupt controller landed): bit 11 is confirmed, not just predicted
+
+**The row above for IDMA ("source not unmasked", bit 11 clear in IMR) was
+correct for the run it was measured in and is no longer generally true.**
+The recording chain (Sample-Source Select -> Level Detect -> RECORD start ->
+WAITING -> SCC1 RX -> internal `$37A1` IDMA copy) did not exist as a modeled
+path when this task ran. Once it does
+(`../investigations/scc-idma-transfer.md`, reconfirmed live with a fresh
+witness and locked in by `../lua/interrupt_controller.lua`, the 9th
+regression test), firmware genuinely writes IMR itself, transiently:
+`$E480 -> $EC80 -> $E480` around the transfer. `$EC80 = $E480 | $0800`,
+and bit 11 (`$0800`) is exactly the IDMA bit this table's own formula
+already named. Firmware unmasks the source it wants the interrupt from,
+takes vector `$4B` via a genuine level-4 IACK, and re-masks it after
+`$00AA48` finishes — not a modeled artifact; the writes are visible on a
+live IMR register tap.
+
+**Method note, belongs here specifically:** a falsified hypothesis holds
+for the source it was tested on, not for the mechanism in general.
+"The mask is the gate" was proposed and correctly disproven, after four
+rounds, as the explanation for external IRQ1 and the FDC path (see
+`current-status.md`'s "IMR as a general blocker" entry and
+`../investigations/irq1-imr-unmask-probe.md`) — no relevant GIMR/IMR/ISR
+writes were ever observed for that source. That disproof was correct and
+stands. It does not mean the mask-as-gate mechanism is unreal: it is
+exactly what happens for IDMA. Firmware unmasks precisely when it wants
+the interrupt and masks again afterward — the same mechanism the earlier
+hypothesis described, just pointed at the wrong source. The four-round
+disproof retired one candidate, not the mechanism.
+
+**GIMR-formula validation status, updated:** Del 2's predicted-vector
+formula (`vector = (GIMR bits 7:5 << 5) | source_low_5`, base `$40` from
+`GIMR=$8040`) is now validated in runtime for **two** independent sources,
+not one: SCC1 (source 13, predicted and delivered `$4D`, established
+earlier) and IDMA (source 11, predicted and delivered `$4B`, this
+follow-up). Both predictions held against a real, executed firmware path
+before either was retroactively confirmed as correct.
+
 ### Reconciling the address discrepancy (SCC1/SCC2)
 
 The pre-existing `subroutine-index.md` entries for `scc1_isr`/`scc2_isr`
@@ -235,6 +282,22 @@ task's entire measurement, across boot, load, and instrument
 selection.** IDMA and Timer2 also have real dedicated handlers but are
 currently masked *by firmware itself*, not by this model — a different
 category, not a gap this model is responsible for.
+
+**Superseded for IDMA specifically, 2026-08-23.** This paragraph and the
+`$4B` row above described a boot->load->select->play run that never
+entered the recording chain. That run's own measurement was correct; the
+generalization "masked, not a gap this model owns" was not future-proof
+against a chain that firmware actually uses. In the recording chain
+(landed the same day, see the section above), firmware does unmask IDMA
+and vector `$4B` does fire, via a genuine level-4 IACK — level-4 IACKs are
+no longer zero in every measured run, only in the specific one this
+document originally measured. The interrupt controller
+(`mc68302_device::update_internal_irq()`/`irq4_ack_vector()`) that
+delivers it is a real, shared, priority-arbitrated mechanism across
+SCC1/IDMA/SCC2, not a special case, and is now covered by
+`../lua/interrupt_controller.lua` (9th regression test). Timer2's own
+masked status is untouched by this correction — no path in this project
+has been observed to unmask it.
 
 **PB9/PB10/PB11 wiring on real ASR-10 hardware**: not established this
 task. `mc68302-status.md`'s own prior work already flags PB9 as
@@ -389,6 +452,18 @@ as such per item, not resolved by this document.
    it directly answers the long-standing `[OPEN]` "Timer 2's
    consumer" question at the address level (not yet traced further).
 
+   **Superseded for IDMA, 2026-08-23.** This item's own framing
+   ("masked by firmware's own IMR, not by anything this project fails
+   to model") turned out to describe one run, not a standing property
+   of firmware. In the recording chain, firmware itself transiently
+   clears IMR bit 11 (`$E480 -> $EC80 -> $E480`) around the `$37A1`
+   transfer and takes vector `$4B` via a real level-4 IACK — measured
+   live, reproduced, and now locked in by `../lua/interrupt_controller.lua`
+   (9th regression test). The interrupt controller that delivers it
+   (`mc68302_device::update_internal_irq()`/`irq4_ack_vector()`) is
+   real, shared across SCC1/IDMA/SCC2, and already landed. Timer2's
+   half of this item is untouched — no measured path unmasks it.
+
 ## Evidence Levels, Stated Separately
 
 - **[Verified]**: stability across four checkpoints for every vector
@@ -398,9 +473,12 @@ as such per item, not resolved by this document.
   data outside that range (see Del 1); the GIMR
   vector formula and its match to all installed handlers; IMR's five
   unmasked bits, independently re-derived from the source table; zero
-  level-4 IACKs across the entire measured run; all seven autovector
-  slots generic; vectors 4/11 re-confirmed as SIB-window data reuse;
-  SCC1/SCC2/PB9/PB10/PB11 handler content cross-referencing prior
+  level-4 IACKs across the entire measured run — **scope-limited, see
+  superseded notes above: true for the boot->load->select->play run this
+  document measured, false for the recording chain landed 2026-08-23,
+  where IDMA's vector `$4B` fires exactly once per transfer**; all seven
+  autovector slots generic; vectors 4/11 re-confirmed as SIB-window data
+  reuse; SCC1/SCC2/PB9/PB10/PB11 handler content cross-referencing prior
   independently-established facts (control blocks, register bases,
   EOI values, the shared receive routine).
 - **[Likely]**: TRAP #10/#11/#14/#15's addresses are genuinely TRAP
@@ -410,7 +488,9 @@ as such per item, not resolved by this document.
 - **[OPEN]**: what SCC1/SCC2 physically carry on real hardware (the
   gap this ranked list exists to name, not resolve); which physical
   ASR-10 signals drive PB9/PB10/PB11; whether IDMA/Timer2 would ever
-  be unmasked later in a longer run than this task measured; the ISR
+  be unmasked later in a longer run than this task measured —
+  **resolved for IDMA, 2026-08-23: yes, in the recording chain; still
+  `[OPEN]` for Timer2, no measured path unmasks it**; the ISR
   register's live value (`$0080`, PB9's bit set) despite zero observed
   level-4 IACKs — noted, not chased, plausibly an MC68302 model detail
   unrelated to this task's scope.
