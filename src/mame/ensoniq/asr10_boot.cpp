@@ -407,7 +407,7 @@ void asr10_boot_state::cpu_space_map(address_map &map)
 	map(0xfffff3, 0xfffff3).lr8(NAME([this]() { return maincpu_iack_r(1); }));
 	map(0xfffff5, 0xfffff5).lr8(NAME([this]() { return maincpu_iack_r(2); }));
 	map(0xfffff7, 0xfffff7).lr8(NAME([this]() { return maincpu_iack_r(3); }));
-	map(0xfffff9, 0xfffff9).lr8(NAME([this]() { return maincpu_iack_r(4); }));
+	map(0xfffff9, 0xfffff9).lr8(NAME([this]() { return m_maincpu->irq4_ack_vector(); }));
 	map(0xfffffb, 0xfffffb).lr8(NAME([this]() { return maincpu_iack_r(5); }));
 	map(0xfffffd, 0xfffffd).lr8(NAME([this]() { return maincpu_iack_r(6); }));
 	map(0xffffff, 0xffffff).lr8(NAME([this]() { return maincpu_iack_r(7); }));

@@ -1,6 +1,6 @@
 // license:BSD-3-Clause
 // copyright-holders:
-/* MC68302 -- fas 3 steg 1 (plumbing). See mc68302.h. */
+/* MC68302 minimal ASR-10-observed integration. See mc68302.h. */
 
 #include "emu.h"
 #include "mc68302.h"
@@ -41,6 +41,27 @@ static constexpr uint16_t OFFSET_IDMA_BCR     = 0x080c;
 static constexpr uint16_t OFFSET_IDMA_CSR     = 0x080e;
 static constexpr uint16_t OFFSET_IDMA_FCR     = 0x0810;
 
+static constexpr uint16_t OFFSET_GIMR = 0x0812;
+static constexpr uint16_t OFFSET_IPR  = 0x0814;
+static constexpr uint16_t OFFSET_IMR  = 0x0816;
+static constexpr uint16_t OFFSET_ISR  = 0x0818;
+
+static constexpr uint16_t SCC_RX_BD_BASE[2] = { 0x0400, 0x0500 };
+static constexpr uint16_t SCC_MRBLR[2]       = { 0x0482, 0x0582 };
+static constexpr uint16_t SCC_SCM[2]         = { 0x0884, 0x0894 };
+static constexpr uint16_t SCC_SCCE[2]        = { 0x0888, 0x0898 };
+static constexpr uint16_t SCC_SCCM[2]        = { 0x088a, 0x089a };
+static constexpr uint16_t SCC_IRQ_BIT[2]     = { 0x2000, 0x0400 };
+static constexpr uint8_t SCC_VECTOR_LOW[2]   = { 0x0d, 0x0a };
+static constexpr uint16_t SCC_IRQ_BITS       = SCC_IRQ_BIT[0] | SCC_IRQ_BIT[1];
+static constexpr uint16_t IDMA_IRQ_BIT       = 0x0800;
+static constexpr uint8_t IDMA_VECTOR_LOW     = 0x0b;
+static constexpr uint16_t MODELED_IRQ_BITS   = SCC_IRQ_BITS | IDMA_IRQ_BIT;
+static constexpr uint16_t IDMA_CMR_INTN      = 0x2000;
+static constexpr uint16_t IDMA_CMR_RST       = 0x0002;
+static constexpr uint16_t IDMA_CMR_STR       = 0x0001;
+static constexpr uint16_t IDMA_INTERNAL_WORD = 0x37a1;
+
 
 mc68302_device::mc68302_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :
 	m68000_device(mconfig, MC68302, tag, owner, clock),
@@ -60,6 +81,7 @@ mc68302_device::mc68302_device(const machine_config &mconfig, const char *tag, d
 	m_idma_csr(0),
 	m_idma_fcr(0),
 	m_idma_active(false),
+	m_idma_source(0),
 	m_idma_dest(0),
 	m_idma_remaining(0)
 {
@@ -114,6 +136,8 @@ void mc68302_device::device_start()
 	save_item(NAME(m_internal_ram_count));
 	save_item(NAME(m_known_unimplemented_count));
 	save_item(NAME(m_unknown_count));
+	save_item(NAME(m_scc_rx_ingress));
+	save_item(NAME(m_scc_rx_descriptor));
 
 	save_item(NAME(m_idma_cmr));
 	save_item(NAME(m_idma_sapr));
@@ -122,8 +146,13 @@ void mc68302_device::device_start()
 	save_item(NAME(m_idma_csr));
 	save_item(NAME(m_idma_fcr));
 	save_item(NAME(m_idma_active));
+	save_item(NAME(m_idma_source));
 	save_item(NAME(m_idma_dest));
 	save_item(NAME(m_idma_remaining));
+	m_idma_timer = timer_alloc(FUNC(mc68302_device::idma_internal_transfer), this);
+
+	state_add(SCC1_RX_STATE, "SCC1RX", m_scc_rx_ingress[0]).callimport().noshow();
+	state_add(SCC2_RX_STATE, "SCC2RX", m_scc_rx_ingress[1]).callimport().noshow();
 }
 
 
@@ -157,6 +186,9 @@ void mc68302_device::device_reset()
 	m_internal_ram_count = 0;
 	m_known_unimplemented_count = 0;
 	m_unknown_count = 0;
+	m_scc_rx_ingress.fill(0);
+	m_scc_rx_descriptor = { SCC_RX_BD_BASE[0], SCC_RX_BD_BASE[1] };
+	set_input_line(INPUT_LINE_IRQ4, CLEAR_LINE);
 
 	m_idma_cmr = 0;
 	m_idma_sapr = 0;
@@ -165,8 +197,22 @@ void mc68302_device::device_reset()
 	m_idma_csr = 0;
 	m_idma_fcr = 0;
 	m_idma_active = false;
+	m_idma_source = 0;
 	m_idma_dest = 0;
 	m_idma_remaining = 0;
+	m_idma_timer->adjust(attotime::never);
+}
+
+void mc68302_device::state_import(const device_state_entry &entry)
+{
+	if (entry.index() == SCC1_RX_STATE || entry.index() == SCC2_RX_STATE)
+	{
+		const unsigned channel = entry.index() - SCC1_RX_STATE;
+		scc_rx_byte(channel, m_scc_rx_ingress[channel]);
+		return;
+	}
+
+	m68000_device::state_import(entry);
 }
 
 
@@ -284,6 +330,9 @@ mc68302_device::sib_access_class mc68302_device::classify_full(uint16_t byte_off
 	switch (byte_offset)
 	{
 	case OFFSET_PBCNT: case OFFSET_PBDDR: case OFFSET_PBDAT: case OFFSET_FC6860:
+	case OFFSET_GIMR: case OFFSET_IPR: case OFFSET_IMR: case OFFSET_ISR:
+	case SCC_SCM[0]: case SCC_SCCE[0]: case SCC_SCCM[0]:
+	case SCC_SCM[1]: case SCC_SCCE[1]: case SCC_SCCM[1]:
 	case OFFSET_BR0: case OFFSET_OR0: case OFFSET_BR1: case OFFSET_OR1:
 	case OFFSET_BR2: case OFFSET_OR2: case OFFSET_BR3: case OFFSET_OR3:
 	case OFFSET_IDMA_CMR: case OFFSET_IDMA_SAPR_HI: case OFFSET_IDMA_SAPR_LO:
@@ -340,6 +389,114 @@ void mc68302_device::set_pb_input(unsigned bit, bool level)
 	m_sim->set_external_input(bit, level);
 }
 
+void mc68302_device::handle_cp_command(uint8_t command)
+{
+	if (command == 0x81)
+		m_scc_rx_descriptor = { SCC_RX_BD_BASE[0], SCC_RX_BD_BASE[1] };
+	else if (command == 0x21)
+		m_scc_rx_descriptor[0] = SCC_RX_BD_BASE[0];
+	else if (command == 0x23)
+		m_scc_rx_descriptor[1] = SCC_RX_BD_BASE[1];
+}
+
+void mc68302_device::update_internal_irq()
+{
+	uint16_t pending = m_shadow[OFFSET_IPR >> 1] & ~MODELED_IRQ_BITS;
+	for (unsigned channel = 0; channel < 2; channel++)
+	{
+		const uint16_t events = m_shadow[SCC_SCCE[channel] >> 1];
+		const uint16_t mask = m_shadow[SCC_SCCM[channel] >> 1];
+		if (events & mask & 0x0100)
+			pending |= SCC_IRQ_BIT[channel];
+	}
+	if ((m_idma_csr & 0x01) && (m_idma_cmr & IDMA_CMR_INTN))
+		pending |= IDMA_IRQ_BIT;
+	m_shadow[OFFSET_IPR >> 1] = pending;
+
+	const uint16_t eligible = pending & m_shadow[OFFSET_IMR >> 1]
+		& ~m_shadow[OFFSET_ISR >> 1] & MODELED_IRQ_BITS;
+	set_input_line(INPUT_LINE_IRQ4, eligible ? ASSERT_LINE : CLEAR_LINE);
+}
+
+bool mc68302_device::scc_rx_byte(unsigned channel, uint8_t data)
+{
+	if (channel >= 2 || !m_window_installed || !BIT(m_shadow[SCC_SCM[channel] >> 1], 3))
+		return false;
+
+	const uint16_t descriptor = m_scc_rx_descriptor[channel];
+	const uint16_t status = m_shadow[descriptor >> 1];
+	const uint16_t length = m_shadow[(descriptor + 2) >> 1];
+	const uint16_t mrblr = m_shadow[SCC_MRBLR[channel] >> 1];
+	if (!(status & 0x8000) || !mrblr || length >= mrblr)
+		return false;
+
+	const uint32_t buffer = ((uint32_t(m_shadow[(descriptor + 4) >> 1]) << 16)
+		| m_shadow[(descriptor + 6) >> 1]) & 0x00ffffff;
+	m_s_program->write_byte(buffer + length, data);
+	m_s_program->write_word(m_window_base + descriptor + 2, length + 1);
+
+	if (length + 1 == mrblr)
+	{
+		m_s_program->write_word(m_window_base + descriptor, status & ~0x8000);
+		m_scc_rx_descriptor[channel] = (status & 0x2000)
+			? SCC_RX_BD_BASE[channel]
+			: descriptor + 8;
+		m_shadow[SCC_SCCE[channel] >> 1] |= 0x0100;
+		update_internal_irq();
+	}
+
+	return true;
+}
+
+uint8_t mc68302_device::irq4_ack_vector()
+{
+	const uint16_t eligible = m_shadow[OFFSET_IPR >> 1] & m_shadow[OFFSET_IMR >> 1]
+		& ~m_shadow[OFFSET_ISR >> 1] & MODELED_IRQ_BITS;
+	static constexpr uint16_t priority[] = { SCC_IRQ_BIT[0], IDMA_IRQ_BIT, SCC_IRQ_BIT[1] };
+	static constexpr uint8_t vector[] = { SCC_VECTOR_LOW[0], IDMA_VECTOR_LOW, SCC_VECTOR_LOW[1] };
+	for (unsigned source = 0; source < std::size(priority); source++)
+	{
+		if (eligible & priority[source])
+		{
+			m_shadow[OFFSET_ISR >> 1] |= priority[source];
+			update_internal_irq();
+			return uint8_t((m_shadow[OFFSET_GIMR >> 1] & 0x00e0) | vector[source]);
+		}
+	}
+
+	return 0x1c; // level-4 autovector when no modeled SCC source is eligible
+}
+
+TIMER_CALLBACK_MEMBER(mc68302_device::idma_internal_transfer)
+{
+	if (!m_idma_active || m_idma_cmr != IDMA_INTERNAL_WORD)
+		return;
+
+	while (m_idma_remaining >= 2)
+	{
+		const uint16_t data = m_s_program->read_word(m_idma_source);
+		m_s_program->write_word(m_idma_dest, data);
+		m_idma_source = (m_idma_source + 2) & 0x00ffffff;
+		m_idma_dest = (m_idma_dest + 2) & 0x00ffffff;
+		m_idma_remaining -= 2;
+	}
+	if (m_idma_remaining)
+	{
+		m_s_program->write_byte(m_idma_dest, m_s_program->read_byte(m_idma_source));
+		m_idma_source = (m_idma_source + 1) & 0x00ffffff;
+		m_idma_dest = (m_idma_dest + 1) & 0x00ffffff;
+		m_idma_remaining = 0;
+	}
+
+	m_idma_sapr = m_idma_source;
+	m_idma_dapr = m_idma_dest;
+	m_idma_bcr = 0;
+	m_idma_cmr &= ~IDMA_CMR_STR;
+	m_idma_active = false;
+	m_idma_csr |= 0x01;
+	update_internal_irq();
+}
+
 
 bool mc68302_device::idma_transfer_in(uint8_t data)
 {
@@ -387,6 +544,11 @@ uint16_t mc68302_device::internal_r(offs_t offset, uint16_t mem_mask)
 	case OFFSET_PBDAT:
 		m_known_count++;
 		return m_sim->read_pbdat(mem_mask);
+	case OFFSET_GIMR: case OFFSET_IPR: case OFFSET_IMR: case OFFSET_ISR:
+	case SCC_SCM[0]: case SCC_SCCE[0]: case SCC_SCCM[0]:
+	case SCC_SCM[1]: case SCC_SCCE[1]: case SCC_SCCM[1]:
+		m_known_count++;
+		return m_shadow[offset & 0x7ff] & mem_mask;
 	case OFFSET_FC6860:
 		m_known_count++;
 		// NOTE: busy-bit timing is ASR-10-observed and experimental, not
@@ -467,7 +629,44 @@ void mc68302_device::internal_w(offs_t offset, uint16_t data, uint16_t mem_mask)
 	case OFFSET_FC6860:
 		m_known_count++;
 		if (mem_mask & 0xff00)
-			m_sim->write_fc6860(uint8_t(data >> 8));
+		{
+			const uint8_t command = uint8_t(data >> 8);
+			m_sim->write_fc6860(command);
+			handle_cp_command(command);
+		}
+		return;
+	case OFFSET_GIMR:
+		m_known_count++;
+		COMBINE_DATA(&m_shadow[offset & 0x7ff]);
+		return;
+	case OFFSET_IPR:
+		m_known_count++;
+		m_shadow[offset & 0x7ff] &= ~(data & mem_mask);
+		update_internal_irq();
+		return;
+	case OFFSET_IMR:
+		m_known_count++;
+		COMBINE_DATA(&m_shadow[offset & 0x7ff]);
+		update_internal_irq();
+		return;
+	case OFFSET_ISR:
+		m_known_count++;
+		m_shadow[offset & 0x7ff] &= ~(data & mem_mask);
+		update_internal_irq();
+		return;
+	case SCC_SCCE[0]: case SCC_SCCE[1]:
+		m_known_count++;
+		m_shadow[offset & 0x7ff] &= ~(data & mem_mask & 0xff00);
+		update_internal_irq();
+		return;
+	case SCC_SCCM[0]: case SCC_SCCM[1]:
+		m_known_count++;
+		COMBINE_DATA(&m_shadow[offset & 0x7ff]);
+		update_internal_irq();
+		return;
+	case SCC_SCM[0]: case SCC_SCM[1]:
+		m_known_count++;
+		COMBINE_DATA(&m_shadow[offset & 0x7ff]);
 		return;
 	case OFFSET_BR0: case OFFSET_BR1: case OFFSET_BR2: case OFFSET_BR3:
 		m_known_count++;
@@ -481,29 +680,37 @@ void mc68302_device::internal_w(offs_t offset, uint16_t data, uint16_t mem_mask)
 	{
 		m_known_count++;
 		COMBINE_DATA(&m_idma_cmr);
+		if (m_idma_cmr & IDMA_CMR_RST)
+		{
+			m_idma_timer->adjust(attotime::never);
+			m_idma_active = false;
+			m_idma_remaining = 0;
+			m_idma_csr = 0;
+			update_internal_irq();
+			return;
+		}
 		// STR, measured: clear ($0002) in the shared vector-$51 prelude
 		// write that recurs at every IACK regardless of transfer state,
 		// set ($0D51, bit 0) only in the write immediately before READ
 		// DATA -- the one bit in CMR with a clean, repeatable on/off
 		// correlation to "this write starts a transfer"
 		// (docs/asr10/investigations/idma-implementation-plan.md item 6).
-		// Source/destination increment direction is not decoded from CMR
-		// at all -- hardwired by idma_transfer_in() instead, since the
-		// source is necessarily a fixed peripheral register and the
-		// destination is necessarily incrementing memory; guessing the
-		// wrong CMR bits for that would be worse than not decoding them.
-		if (BIT(m_idma_cmr, 0) && m_idma_bcr > 0)
+		// $0D51 keeps the established external fixed-source byte feed.
+		// Only the independently observed $37A1 sampling form gets an
+		// internal incrementing word transfer; no wider CMR decoder is
+		// inferred from these two values.
+		if ((m_idma_cmr & IDMA_CMR_STR) && m_idma_bcr > 0)
 		{
+			m_idma_source = m_idma_sapr;
 			m_idma_dest = m_idma_dapr;
-			// Measured BCR was 513 for a 512-byte sector transfer; this
-			// implements "transfer (BCR-1) bytes" as the least speculative
-			// reading that still produces 512, not a unit/scaling
-			// reinterpretation of BCR's bytes. Unverified beyond this one
-			// measurement -- see idma-register-map-probe.md item 5 and
-			// idma-implementation-plan.md.
-			m_idma_remaining = uint32_t(m_idma_bcr) - 1;
+			m_idma_remaining = (m_idma_cmr == IDMA_INTERNAL_WORD)
+				? uint32_t(m_idma_bcr)
+				: uint32_t(m_idma_bcr) - 1;
 			m_idma_active = true;
 			m_idma_csr = 0;
+			update_internal_irq();
+			if (m_idma_cmr == IDMA_INTERNAL_WORD)
+				m_idma_timer->adjust(attotime::zero);
 		}
 		return;
 	}
@@ -533,6 +740,7 @@ void mc68302_device::internal_w(offs_t offset, uint16_t data, uint16_t mem_mask)
 		// general event-register rule (docs/mc68302/idma-spec.md).
 		if (mem_mask & 0xff00)
 			m_idma_csr &= ~uint8_t(data >> 8);
+		update_internal_irq();
 		return;
 	case OFFSET_IDMA_FCR:
 		m_known_count++;
