@@ -1718,3 +1718,47 @@ a full memory diff, and (this round) forward disassembly from that
 diff through two real subsystems to a named byte that was never
 observed to move. Record/Stop•Continue/Play remain `[OPEN]`; the
 service menu's entry condition remains `[OPEN]`.
+
+## The tempo chain closed two levels deeper; a real crash found and isolated (docs/asr10/investigations/tempo-clock-consumer-chain.md)
+
+**[Verified runtime, independent method]** Tick rate is exactly
+`1000.0000 Hz` (wrap-counting `$000B6E` over a precise window: 2000
+ticks / 2.000000s), and the default pulse rate is exactly `144.0000 Hz`
+(`1000×90/625`) — both measured, not just derived from the DUART-timer
+math. `$000B70` is not independently settable: a correctly-persisted
+write-tap shows it reasserted from `$00828E` roughly once per pulse
+(`$F919D2: move.w $828e.w,$b70.w`) — explains, rather than refutes, why
+a direct-poke proportionality test didn't show the expected scaling.
+
+**[Verified runtime, disassembled]** The pulse (`$000F58`, set by
+`$F8C588`) has two real consumers: `$00E66E` (a second clock-division
+stage, dispatching into scheduler slot `$DA` at ~83Hz) and `$0073A8`
+(a mainline poll/consume loop that, when no pulse is pending, services a
+`$00D42` linked list via `$00E68E`, touching MC68302 PIO-region
+addresses — shaped like MIDI-clock transmission). Neither consumer
+touches sequence-event data; the real event-consumer for `TUTORIAL
+SEQ`'s own allocated object remains `[OPEN]`.
+
+**[Self-correction, recorded]** Several early taps this round returned
+silent zeros from a real methodology bug, not a hardware finding: tap
+handles whose return value wasn't saved to a persisted variable were
+garbage-collected almost immediately (SS8.6, already documented in this
+project's own methods reference) — caught mid-task via a direct
+before/after comparison, not left standing as a false result.
+
+**[Found, not fixed, out of scope]** A real, reproducible `SIGSEGV`:
+installing a tap on `$008E50` while a bank and a created sequence are
+both active crashes deterministically at `t≈0.72s` into a wait;
+isolated to the tap itself (the identical button sequence without the
+tap completes cleanly). Neither of the two documented voice-allocation
+addresses (`$008E50`, `$00F8CAFA`) could be validated with a working
+positive control even against a confirmed-real note (1140 ES5506
+writes) — the voice-allocation appendix question is `[inconclusive]`,
+not answered either way.
+
+**[OPEN, corroborated]** The GPR MONITOR/ESP TESTS diagnostic menu:
+Per's own recollection of its contents (reference DC level, ADC/DAC
+test, MIDI loopback, ~6-8 tests, one hanging the machine) independently
+matches the ROM string table found last round, but neither of his two
+best-recalled entry combinations (`$06`+`$0D`, `$05`+`$0D`, both
+pre-existing unverified layout labels) reproduces it in this emulation.

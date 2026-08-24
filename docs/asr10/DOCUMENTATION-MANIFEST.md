@@ -105,22 +105,24 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 69 Markdown-filer vid audit 2026-08-24
+## `investigations/` — 70 Markdown-filer vid audit 2026-08-24
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `sequencer-clock-and-service-menu.md`: spårar bakåt från
-`$17`s 211-byte-allokering till en verklig, disassemblerings­bekräftad kedja
-— en tempo/klockdelare (`$B6E`/`$B70`) som sätts igång, ett hopptabellsanrop
-(`$67AC`, index*2) till `$F8C588`, och en trevägs körflaggkandidat (`$17E`,
-aldrig observerad ändras). `$21` identifieras som Cancel•No (ersätter det
-tidigare `$22 [Likely]`). Servicemenyn (GPR MONITOR/ESP TESTS) bekräftas
-finnas i ROM men nås inte; ett tidigare läsnings-tapp-fynd om den korrigerades
-mitt i uppgiften (adressaliasering mot en orelaterad RAM-struktur). Föregående
-`bank-loading-and-transport-context.md` laddar `TUTORIAL SEQ` som
-sekvenserkontext och isolerar `$17`s exakta triggerkontext; transporten
-förblev `[OPEN]` där också. Den exakta fysiska RAM-dekodningen från
+Senaste tillägget är `tempo-clock-consumer-chain.md`: verifierar
+temposhärledningen oberoende (tickfrekvens exakt 1000,0 Hz, pulsfrekvens
+exakt 144,0 Hz), spårar pulskonsumenten två nivåer djupare (två verkliga,
+disassemblerade läsare av `$F58`, båda formade som MIDI-klockutmatning, ingen
+når sekvenshändelser), hittar och isolerar en verklig, reproducerbar krasch
+(tapp på `$8E50` i ett specifikt bank+sekvens-sammanhang), och rättar en egen
+SS8.6-relaps (osparade tapp-handtag) mitt i uppgiften innan den rapporterades
+som fynd. Diagnostikmenyn förblir `[OPEN]` trots direkt input från Per — hans
+minne av innehållet (referens-DC-nivå, ADC/DAC-test, MIDI-loopback) styrker
+att menyn är verklig utan att ge en reproducerbar ingång. Föregående
+`sequencer-clock-and-service-menu.md` spårar bakåt från `$17`s 211-byte-
+allokering till samma tempo/klockdelarkedja första gången, och identifierar
+`$21` som Cancel•No. Den exakta fysiska RAM-dekodningen från
 `stereo-ram-decode-analysis.md` förblir öppen.
 
 ## `archive/` — 28 filer
