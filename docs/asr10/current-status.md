@@ -1578,3 +1578,43 @@ annunciator bits have no confirmed meaning. `asr10_panel.lay` renders
 them dim/desaturated with an explicit "OPEN, UNKNOWN MEANING" label,
 distinct from the one confirmed lamp (instrument-1-select), so an
 unidentified lit bit doesn't read as confirmed information.
+
+## Left/Right Arrow and Up/Down confirmed; a real partial-update rendering bug found and fixed (docs/asr10/investigations/partial-update-position-probe.md)
+
+**[Verified runtime]** A real display bug, not just an open question:
+partial field updates (a value changing without a full-screen clear)
+had no cursor-position mechanism, so a changed value got appended after
+the old one instead of overwriting it (measured live: `"VOLUME=99"` ->
+appended garbage across repeated Up/Down presses). Root cause found by
+diffing full-redraw vs. partial-update byte streams: a standalone byte
+`$00`-`$1F` sets the write column directly (`$14`=column 20, an exact
+match to where `"VOLUME="`'s digits start; corroborated by a follow-up
+sweep observing values `$00`-`$0F`/`$15`, all within the valid 0-21
+column range). Implemented in `esq1x22_device::write_char()`; the same
+fix also resolved a second, previously-misread symptom (a field-switch
+redraw that silently wrote off-screen for lack of a cursor reset).
+Downgrades the prior task's full-redraw character-placement validation
+to `[Verified, coverage: full-redraw]` — it never covered this case.
+
+**[Verified runtime]** Left Arrow = raw `$10`, Right Arrow = raw `$11`
+— measured using the display's own underline output as ground truth
+(REC SRC Field 2 <-> Field 1, both directions), not guessed from the
+pre-existing ROM raw->mapped table alone (that table only supplied the
+candidate shortlist). Implemented as `KEYCODE_LEFT`/`KEYCODE_RIGHT` on
+`BTN_10`/`BTN_11`. Separately, `$0A`/`$0B` (Up/Down) turned out to have
+their keyboard shortcuts swapped relative to the measured effect (`$0A`
+is genuinely Up, `$0B` genuinely Down) — fixed; the wire-level codes
+and their effect were never wrong, only which computer key triggered
+which.
+
+**[OPEN]** Record/Stop•Continue/Play tried as a state machine (hold A,
+hold B while A held, release both) across the codes with no visible
+single-press effect from idle — no combined effect found. The
+sequencer-status state variable to trace was not localized. One useful
+side finding: raw `$15` reaches a genuine sequence file listing (`"FILE
+9  TUTORIAL SEQ"`), a strong Seq•Song category-button candidate.
+LOAD's blink was determined panel-local (zero display-channel traffic
+during a 3-second idle window), which puts the 40 annunciator bits'
+"simple on/off" reading specifically in question — no blink-mask
+encoding was identified, so no reinterpretation was implemented; they
+remain `[OPEN]`.

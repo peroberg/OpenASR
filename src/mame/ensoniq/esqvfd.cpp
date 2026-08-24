@@ -509,7 +509,34 @@ void esq1x22_device::write_char(uint8_t data)
 		return;
 	}
 
+	// $74/$75/$76 <nibble>: still-unidentified countdown-animation family
+	// (docs/asr10/investigations/display-protocol-inventory.md Del 1;
+	// still [OPEN], not decoded here). Consume the operand so it can't
+	// be misread as the cursor-position opcode below -- both live in
+	// the same low byte range.
+	if (m_lastchar == 0x74 || m_lastchar == 0x75 || m_lastchar == 0x76) {
+		m_lastchar = 0;
+		return;
+	}
+
 	m_lastchar = data;
+
+	// Cursor-position opcode: a standalone byte $00-$1F sets the write
+	// column directly. Measured live, not inferred
+	// (docs/asr10/investigations/partial-update-position-probe.md):
+	// $14 (=20 decimal) precedes the two value digits of "VOLUME=99"
+	// each time Up/Down changes it, an exact match to that field's
+	// column; $00 (=column 0) precedes REC SRC's own field-switch
+	// redraw. A full redraw (after a $66 clear) never needs this, since
+	// sequential placement from column 0 already lands correctly --
+	// this is specifically what a *partial* update (no clear) needs to
+	// avoid writing at whatever column a previous, unrelated write left
+	// the cursor at (previously the missing mechanism: a changed value
+	// was appended after the old one instead of overwriting it).
+	if (data <= 0x1f) {
+		m_cursx = data;
+		return;
+	}
 
 	if (data >= 0x60) {
 		switch (data) {

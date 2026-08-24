@@ -25,14 +25,14 @@ ioport-falt ar alternativ, inte kombinationer, och kunde darfor inte gora
 | `$07` | klick | `$27` | klick |
 | `$08` | klick | `$28` | klick |
 | `$09` | klick | `$29` | klick |
-| `$0A` | `Down`, klick | `$2A` | klick |
-| `$0B` | `Up`, klick | `$2B` | klick |
+| `$0A` | `Up`, klick | `$2A` | klick |
+| `$0B` | `Down`, klick | `$2B` | klick |
 | `$0C` | klick | `$2C` | klick |
 | `$0D` | klick | `$2D` | klick |
 | `$0E` | klick | `$2E` | klick |
 | `$0F` | klick | `$2F` | klick |
-| `$10` | klick | `$30` | klick |
-| `$11` | klick | `$31` | klick |
+| `$10` | `Left`, klick | `$30` | klick |
+| `$11` | `Right`, klick | `$31` | klick |
 | `$12` | klick | `$32` | klick |
 | `$13` | klick | `$33` | klick |
 | `$14` | klick | `$34` | klick |
@@ -70,5 +70,15 @@ hade tidigare `Left`/`Right` som tangentbordsgenvag. Matt direkt: fran
 (`COPY`/`ERASE`/`FILTER`/`SHIFT AUDIO TRACK` vid upprepade tryck), inte en
 markorflytt. Etiketten var fel, inte bara overifierad, sa
 tangentbordsbindningen togs bort helt (`src/mame/ensoniq/esqpanel.cpp`) --
-en felaktig genvag ar varre an ingen genvag. De verkliga Left/Right
-Arrow-koderna ar fortfarande `[OPEN]`.
+en felaktig genvag ar varre an ingen genvag.
+
+**Rattat igen, samma dag** (`partial-update-position-probe.md`): de
+verkliga Left/Right Arrow-koderna ar nu funna och verifierade --
+`$10`=Left, `$11`=Right, matt mot displayens egen understrykning som
+facit (REC SRC Falt 2 <-> Falt 1, badstal i badda riktningar). Samtidigt
+uppmattes att `$0A`/`$0B` (Up/Down) hade fel tangentbordsgenvag inbordes:
+effekten (VOLUME-skarmen, en nedrakning fran den knapp som kallades
+"Up") visade att `$0A` ar verkligt Up (tak vid 99, ingen synlig andring)
+och `$0B` ar verkligt Down (99->98). Bada rattade i
+`src/mame/ensoniq/esqpanel.cpp`; tabellen ovan speglar nu den uppmatta,
+inte den ursprungliga, tilldelningen.

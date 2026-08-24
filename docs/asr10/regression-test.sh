@@ -44,6 +44,11 @@
 #              merged/ghosted), and a confirmed navigation button
 #              (BTN_0A) genuinely changes REC SRC Field 2 --
 #              investigations/panel-button-and-transport-map.md.
+# panel_navigation: locks in the confirmed Left Arrow ($10) / Right
+#              Arrow ($11) identity -- Left moves the underlined field
+#              from REC SRC Field 2 to Field 1, Right moves it back --
+#              using the display's own underline output as ground
+#              truth. investigations/partial-update-position-probe.md.
 
 set -u
 
@@ -127,6 +132,7 @@ run_test memory_size docs/asr10/lua/memory_size.lua "$IMAGE" || failures=$((fail
 run_test stereo_round_trip docs/asr10/lua/stereo_round_trip.lua "$IMAGE" || failures=$((failures + 1))
 run_test display_protocol docs/asr10/lua/display_protocol.lua "$IMAGE" || failures=$((failures + 1))
 run_test panel_input docs/asr10/lua/panel_input.lua "$IMAGE" || failures=$((failures + 1))
+run_test panel_navigation docs/asr10/lua/panel_navigation.lua "$IMAGE" || failures=$((failures + 1))
 
 if [ "$failures" -ne 0 ]; then
 	echo "FAIL regression failures=${failures}"

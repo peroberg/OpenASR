@@ -966,12 +966,17 @@ static INPUT_PORTS_START(asr10panel_device)
 	ASR10_PANEL_BUTTON(0x00000080, "BTN_07", 0x07)
 	ASR10_PANEL_BUTTON(0x00000100, "BTN_08", 0x08)
 	ASR10_PANEL_BUTTON(0x00000200, "BTN_09", 0x09)
-	// BTN_0A/BTN_0B: KEYCODE_DOWN/UP kept -- verified to genuinely drive
-	// REC SRC Field 2 (LEFT/RIGHT/L+R) the way the manual's own Up/Down
-	// Arrow buttons are documented to, confirmed both directions
-	// (display_protocol.lua).
-	PORT_BIT(0x00000400, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_0A") PORT_CODE(KEYCODE_DOWN) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x0a)
-	PORT_BIT(0x00000800, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_0B") PORT_CODE(KEYCODE_UP) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x0b)
+	// BTN_0A/BTN_0B: KEYCODE_UP/DOWN, swapped 2026-08-24
+	// (partial-update-position-probe.md Del 5). The pilot keymap had
+	// $0A=KEYCODE_DOWN/$0B=KEYCODE_UP; measured against effect, not
+	// label, on the VOLUME=99 screen: $0A held the value at its ceiling
+	// (no visible change across two presses -- consistent with already
+	// being at the top, i.e. genuinely Up), and $0B moved it down by one
+	// digit (99->98, genuinely Down). REC SRC Field 2 cycling direction
+	// is unaffected by this swap (still $0A/$0B, just the keyboard
+	// shortcut now points at the code that actually behaves like Up).
+	PORT_BIT(0x00000400, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_0A") PORT_CODE(KEYCODE_UP) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x0a)
+	PORT_BIT(0x00000800, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_0B") PORT_CODE(KEYCODE_DOWN) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x0b)
 	// BTN_0C/BTN_0D: KEYCODE_LEFT/RIGHT removed, 2026-08-24
 	// (panel-button-and-transport-map.md Del 2). Measured directly: from
 	// the REC SRC screen these navigate to an unrelated top-level menu
@@ -985,8 +990,16 @@ static INPUT_PORTS_START(asr10panel_device)
 	ASR10_PANEL_BUTTON(0x00002000, "BTN_0D", 0x0d)
 	ASR10_PANEL_BUTTON(0x00004000, "BTN_0E", 0x0e)
 	ASR10_PANEL_BUTTON(0x00008000, "BTN_0F", 0x0f)
-	ASR10_PANEL_BUTTON(0x00010000, "BTN_10", 0x10)
-	ASR10_PANEL_BUTTON(0x00020000, "BTN_11", 0x11)
+	// BTN_10/BTN_11: KEYCODE_LEFT/RIGHT, measured 2026-08-24
+	// (partial-update-position-probe.md Del 5) using the display's own
+	// underline output as ground truth, not display text alone: from
+	// REC SRC with Field 2 underlined, $10 moves the underline to
+	// Field 1 ("INPUTDRY", columns 8-15); $11 from there moves it back
+	// to Field 2, staying on the same screen -- exactly the manual's
+	// "Left/Right Arrow moves to the next parameter" description, both
+	// directions confirmed round-trip.
+	PORT_BIT(0x00010000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_10") PORT_CODE(KEYCODE_LEFT) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x10)
+	PORT_BIT(0x00020000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_11") PORT_CODE(KEYCODE_RIGHT) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x11)
 	ASR10_PANEL_BUTTON(0x00040000, "BTN_12", 0x12)
 	ASR10_PANEL_BUTTON(0x00080000, "BTN_13", 0x13)
 	ASR10_PANEL_BUTTON(0x00100000, "BTN_14", 0x14)
