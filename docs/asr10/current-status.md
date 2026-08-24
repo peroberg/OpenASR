@@ -1661,3 +1661,60 @@ strongest available evidence for which of the three Del 5
 interpretations the real protocol likely follows, though it's evidence
 by analogy from a different device class, not a direct ASR-10
 measurement.
+
+## The sequencer's own clock, traced from allocation to dispatch; transport reframed as a consequence, not a code (docs/asr10/investigations/sequencer-clock-and-service-menu.md)
+
+**[Verified runtime + static]** Tracing backward from `$17`'s
+211-byte allocation (rather than sweeping more button codes) found a
+real, disassembly-confirmed chain: `$17` ("Create New Sequence") sets
+`$000B70` (a tempo/step value) from `0` to `$5A`, and `$000B6E` (a
+phase accumulator inside the already-documented `irq6_tick_producer`,
+`$F88300`) then actively accumulates it, wrapping at `$271` (625) to
+fire a type-`$E` event through the jump table at `$67AC`
+(`jumptable_dispatch_15entry`, `$00740C` — this task live-disassembled
+its indexing arithmetic for the first time: `index*2`, not `*4`, table
+base `+$67AC`) to handler `$F8C588`, which writes byte `$000F58`. This
+is the sequencer's own clock-divider mechanism, switched on by
+allocating a sequence — not the transport itself. **`$00017E`** gates
+which of two clock paths runs (three-way: negative/zero/positive) and
+is structurally shaped like a run-state selector, but was measured at
+`0` throughout this entire session and never observed to change from a
+button press — a strong candidate, not a confirmed flag.
+
+**[Verified runtime]** `$21` = Cancel•No, tested against a genuine
+confirmation-screen signature (Enter/Yes advances into a sub-step from
+`"CREATE NEW SEQUENCE"` to `"NEW NAME?SEQUENCE ??"`; Cancel/No backs
+back out of it). Supersedes the prior `$22 [Likely]` tag, which shows
+no effect on the same screen.
+
+**[Verified, corrected mid-task]** The ROM contains a real factory
+diagnostic string table (`GPR MONITOR`, `INSTRUCTION MONITOR`,
+`A/D TO D/A`, `ESP TESTS`, `RAM TEST1/2 FAILED`, etc.) at file offsets
+`$1000`-`$1700`/`$53E0`-`$7CB4`, distinct from the service manual's
+jumper-only keypad self-test mode (which isn't modeled at all — no
+keypad-board CPU device exists in this driver). Not reached by any
+single or paired button held at boot, nor by three rounds' worth of
+COMMAND-mode navigation sweeps. An initial read-tap finding ("the
+string is touched during normal boot") was traced to address-range
+aliasing between ROM (early boot) and unrelated RAM structures
+(`trap3_enqueue`'s queue pool, already documented) at the same
+addresses once `cs0_covers(0)` goes false — retracted before being
+reported as a real result, not left standing.
+
+**[Verified, no bug found]** `esqpanel_device::set_button()` sends a
+`$00` second byte unconditionally for every one of the 64 raw button
+codes; the documented `$FFB392`/`$FFB20A`/`$FFB0E0` second-byte
+classification (already how the ROM tells key events from button
+events) is correctly and uniformly exercised by every `$00`-`$3F`
+code. `$26`-`$3F`'s silence is a real property of those button IDs,
+not a framing/classification bug — no `asr10panel_device` change was
+warranted or made.
+
+**First byte is now exhausted for transport identification** across
+three rounds of investigation: single/paired-button sweeps from
+multiple contexts, a 650-pair and a 110-pair hold-combination sweep,
+prefix-isolated binary search, correlated PC/state-variable tracking,
+a full memory diff, and (this round) forward disassembly from that
+diff through two real subsystems to a named byte that was never
+observed to move. Record/Stop•Continue/Play remain `[OPEN]`; the
+service menu's entry condition remains `[OPEN]`.

@@ -15,7 +15,7 @@ enumerates every physical control by name:
 | 1 | Volume Slider | analog output, not swept this task |
 | 2 | Mode Buttons: Load, Command, Edit | unidentified `BTN_XX` |
 | 3 | 14 Page Buttons (10 numbered + Instrument/Seq-Song/System-MIDI/Effects) | unidentified `BTN_XX`, except `$02`=Instrument-1-select (established prior) |
-| 4 | Data Entry: Slider, Up/Down Arrow, **Left/Right Arrow**, Enter•Yes, Cancel•No | Slider = `analog_data_entry`; Up=`$0B`, Down=`$0A` (confirmed); Left/Right = **`[OPEN]`, not `$0C`/`$0D`** (this task); Enter•Yes=`$23` (established prior); Cancel•No = `$22`? (`[Likely]`, see Del 1) |
+| 4 | Data Entry: Slider, Up/Down Arrow, **Left/Right Arrow**, Enter•Yes, Cancel•No | Slider = `analog_data_entry`; Up=`$0B`, Down=`$0A` (confirmed); Left/Right = **`[OPEN]`, not `$0C`/`$0D`** (this task); Enter•Yes=`$23` (established prior); Cancel•No = `$22`? (`[Likely]`, see Del 1) — **superseded**: `sequencer-clock-and-service-menu.md` Del 5 tested a genuine confirmation-screen signature (Enter/Yes advances into a sub-step, Cancel/No backs out of it) and found `$21`, not `$22`, reproduces it; `$22` shows no effect on that same screen. Treat `$22` as unconfirmed again, not `[Likely]`. |
 | 5 | Display | fully modeled (prior task) |
 | 6 | Input Level LED Meters (L/R Signal+Peak) | not modeled |
 | 7 | Sample•Source Select | `$20` (established prior) |
