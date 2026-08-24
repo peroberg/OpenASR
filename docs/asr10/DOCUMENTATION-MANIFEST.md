@@ -105,25 +105,26 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 70 Markdown-filer vid audit 2026-08-24
+## `investigations/` — 71 Markdown-filer vid audit 2026-08-24
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `tempo-clock-consumer-chain.md`: verifierar
-temposhärledningen oberoende (tickfrekvens exakt 1000,0 Hz, pulsfrekvens
-exakt 144,0 Hz), spårar pulskonsumenten två nivåer djupare (två verkliga,
-disassemblerade läsare av `$F58`, båda formade som MIDI-klockutmatning, ingen
-når sekvenshändelser), hittar och isolerar en verklig, reproducerbar krasch
-(tapp på `$8E50` i ett specifikt bank+sekvens-sammanhang), och rättar en egen
-SS8.6-relaps (osparade tapp-handtag) mitt i uppgiften innan den rapporterades
-som fynd. Diagnostikmenyn förblir `[OPEN]` trots direkt input från Per — hans
-minne av innehållet (referens-DC-nivå, ADC/DAC-test, MIDI-loopback) styrker
-att menyn är verklig utan att ge en reproducerbar ingång. Föregående
-`sequencer-clock-and-service-menu.md` spårar bakåt från `$17`s 211-byte-
-allokering till samma tempo/klockdelarkedja första gången, och identifierar
-`$21` som Cancel•No. Den exakta fysiska RAM-dekodningen från
-`stereo-ram-decode-analysis.md` förblir öppen.
+Senaste tillägget är `command-pages-and-clock-verdict.md`: bekräftar `$06`=
+Command (Per: "$06 + $0C" gav "NO COMMANDS ON PAGE") och katalogiserar nio
+fullständiga kommandosidor ordagrant — GPR MONITOR/ESP TESTS finns i ingen av
+dem. Tre förutsagda tal prövades och höll inte: `$00828E` som mastertempo
+återkallas (matchar inte det uppmätta `$B70`-värdet), den förväntade 36 Hz
+MIDI-klockan uteblir (andra klockdelningssteget är permanent stängt i alla
+lägen sessionen kunde nå, verifierat två oberoende vägar), och `$D42`-listan
+bekräftas läst tom genomgående (utfall 2: en orelaterad servicelista, inte
+sekvenserns händelsedispatch). Bygger ett nytt Lua-bibliotek,
+`lua/lib/asr10_taps.lua`, som gör SS8.6-misstaget (osparade tapp-handtag,
+som bet till två gånger) strukturellt svårare att upprepa. Föregående
+`tempo-clock-consumer-chain.md` verifierar temposhärledningen oberoende
+(tickfrekvens exakt 1000,0 Hz, pulsfrekvens exakt 144,0 Hz) och spårar
+pulskonsumenten två nivåer djupt första gången. Den exakta fysiska
+RAM-dekodningen från `stereo-ram-decode-analysis.md` förblir öppen.
 
 ## `archive/` — 28 filer
 

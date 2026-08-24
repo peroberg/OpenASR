@@ -1,9 +1,11 @@
 -- Shared helpers for ASR-10 Lua regression tests.
 
 local display = dofile("docs/asr10/lua/lib/asr10_display.lua")
+local taps = dofile("docs/asr10/lua/lib/asr10_taps.lua")
 
 local M = {
   display = display,
+  taps = taps,
 }
 
 function M.pass(name, detail)

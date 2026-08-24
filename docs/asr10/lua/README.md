@@ -27,7 +27,8 @@ Körs av `docs/asr10/regression-test.sh` och ska underhållas.
 | script | användning |
 |---|---|
 | `lib/asr10_display.lua` | Läser VFD-output via aktuella output-proxy-API:t och översätter segmentmönster till rå text. |
-| `lib/asr10_regression.lua` | Gemensam testhjälpare för PASS/FAIL, displayväntan och maskinavslut. |
+| `lib/asr10_regression.lua` | Gemensam testhjälpare för PASS/FAIL, displayväntan och maskinavslut. Exponerar `M.taps` (se nedan). |
+| `lib/asr10_taps.lua` | SS8.6-säkra tapp-wrappers: `read_tap`/`write_tap` sparar varje handtag i en modulnivå-uppvärde automatiskt, så ett anropande skript kan inte glömma att spara det (tidigare orsak till flera tysta tapp-dödsfall). Nås via `reg.taps.read_tap(...)`/`reg.taps.write_tap(...)`. |
 | `lib/asr10_guards.lua` | MC68302-vakter: IACK-undantagsvektor, synkron undantagshanterare (vektor 2/3/8, kalibrerad mot en känd krasch), SIB-täckning (klassificering portad från `mc68302_device`, allowlist inkluderar nu $0812/GIMR), IDMA SAPR/CMR/BCR, GIMR-vektorbas (pollningsbaserad). Aggregerade larm, första förekomst per villkor. Se `investigations/mc68302-consolidation.md` och `mc68302-consolidation-2.md`. |
 | `lib/scc_rx_record_probe.lua` | Delad Fas 4B-runner för post-framing SCC-byte, firmwareägd descriptor/IDMA och destinations-/ES5506-observation. Fas 5A:s opt-in mäter dessutom RECORD-stop och metadata utan att ändra källan. Endast wrappers under `archive/` laddar den. |
 

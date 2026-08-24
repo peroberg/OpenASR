@@ -1762,3 +1762,56 @@ test, MIDI loopback, ~6-8 tests, one hanging the machine) independently
 matches the ROM string table found last round, but neither of his two
 best-recalled entry combinations (`$06`+`$0D`, `$05`+`$0D`, both
 pre-existing unverified layout labels) reproduces it in this emulation.
+
+## Command pages catalogued; three predicted numbers didn't hold (docs/asr10/investigations/command-pages-and-clock-verdict.md)
+
+**[Verified runtime]** `$06` = Command, confirmed exactly as Per
+described (`$06` then `$0C` → `"NO COMMANDS ON PAGE"`, meaning Command
+mode is reached, that page just has none). Pages browse cleanly with
+`$11` (Right) to a confirmed wrap. **Nine full category catalogs**
+walked and recorded verbatim (INSTRUMENT×8, SEQ*SONG×13,
+SYSTEM/GLOBAL×19, EFFECTS×2, TRACK/EVENT×9, PITCH TABLE×4, DISK/
+SYSTEM×15, WAVESAMPLE PROCESSING×7, DATA EDITING×7, WAVESAMPLE
+CREATION×15) — `GPR MONITOR`/`ESP TESTS` appear in **none** of them;
+the diagnostic menu's entry stays `[OPEN]`, narrowed rather than found.
+
+**[Retracted]** `$00828E` as the tempo master (prior round's
+disassembly-based claim): a persisted write-tap shows it last written
+at `t≈18.4s` (boot-time, value `$81B0`) and never again, while
+`$000B70` is independently confirmed rewritten to `$5A` from the same
+caller PC well after that — `$5A ≠ $81B0`. The true source is
+`[OPEN]` again; not renamed, per this task's own rule against naming
+an unmeasured variable.
+
+**[Verified runtime, two independent methods]** The predicted 36Hz
+MIDI-clock output was not measured — instead, `$000F58` was found
+**constant at `$00`** across 15,000 direct 200µs-resolution samples
+(3.000000s) even with the accumulator confirmed actively running
+(`$B70=$5A`, `$17E=0`), and a persisted write-tap on the decrement
+instruction (`$00E674`) recorded zero writes over repeated 5-second
+windows. The second clock-division stage is gated shut in every state
+this session reached — informative on its own (something not yet
+triggered arms it), not a refutation of the 144Hz measurement.
+
+**[Verified runtime]** The `$000D42` list (`$0073A8`'s consumer target)
+is **read-verified empty** at idle, after loading/creating
+`TUTORIAL SEQ`, and after a full `$00`-`$3F` sweep — Outcome 2 per the
+task's own framework: a real but unrelated service list (touched only
+by boot-time keyboard tuning, `$F8CD04`), not the sequencer's event
+dispatch. Ruled out, not confirmed by absence of counter-evidence.
+
+**[OPEN]** The sequence object's own field map and read/event pointer:
+24 candidate addresses from the original 211-byte diff were polled:
+several change continuously, but `$000C38` is already documented (this
+session) as part of `$F88F60`'s general 4kHz hardware-scan loop, and
+the rest show no monotonic, event-count-shaped pattern. No stepper
+found. A `SIGSEGV` interrupted this specific polling window at
+`t≈6.26s` — a second reproducible-looking crash context on record
+(after last round's `$8E50`-tap crash), neither investigated, both
+flagged for a dedicated future task.
+
+**[Tooling]** `docs/asr10/lua/lib/asr10_taps.lua`: wraps
+`install_read_tap`/`install_write_tap` so every handle is
+automatically persisted (the SS8.6 mistake bit this project's own
+scripts twice; this makes forgetting structurally harder, not just
+documented against). Wired into `asr10_regression.lua` as `M.taps`.
