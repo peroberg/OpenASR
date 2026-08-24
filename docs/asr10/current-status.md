@@ -1539,3 +1539,42 @@ modeled panel control — determined to be a panel-control mapping gap
 (the real Left/Right Arrow button code is not identified), not a
 display rendering gap, since the display now correctly renders whatever
 field/attribute structure it receives.
+
+## Panel controls: matrix survey and transport gap (docs/asr10/investigations/panel-button-and-transport-map.md)
+
+**[Verified runtime]** Every one of the 64 raw button codes (`$00`-`$3F`)
+produces real, distinct firmware dispatch and returns cleanly to the
+scheduler idle loop — the wire protocol (two-byte `(0x80|code, 0x00)`
+press frame, `(code, 0x00)` release, both sharing the display's own
+THRB/RHRB register slot) works correctly across the whole code space,
+not just the small set of previously-confirmed codes. Full sweep:
+`static/button-routine-sweep-v350.csv`.
+
+**[Verified runtime]** `BTN_0C`/`BTN_0D` are **not** Left/Right Arrow —
+they reach real, distinct, working handlers for an unrelated menu
+category (Audio Track utilities: COPY/ERASE/FILTER/SHIFT), not a cursor
+move. The pilot keymap's `KEYCODE_LEFT`/`KEYCODE_RIGHT` bindings on
+those codes were wrong, not just unverified, and have been removed
+(`esqpanel.cpp`). The real Left/Right Arrow codes, and the Sequencer
+Transport (Record/Stop•Continue/Play) codes, remain `[OPEN]` despite
+systematic sweeping across three contexts — not guessed at.
+
+**[Verified runtime]** Simultaneous button holds (needed for "hold
+Record, press Play") already work correctly at the infrastructure
+level: two buttons held together generate four distinct, correctly-
+ordered wire events, not a merged/ghosted pair. Nothing was broken here;
+verified and regression-locked (`docs/asr10/lua/panel_input.lua`, 13th
+test).
+
+**[OPEN]** The manual's sequence-recording procedure stops at "hold
+Record, press Play" — Record/Play codes are unidentified, so the
+procedure cannot proceed past selecting a loaded instrument. This is a
+more fundamental blocker than Left/Right Arrow's own (separately
+confirmed) failure, since the sequencer flow never reaches the step
+where Left/Right would matter.
+
+**[OPEN]**, marked visually now, not just in prose: 39 of the 40 wired
+annunciator bits have no confirmed meaning. `asr10_panel.lay` renders
+them dim/desaturated with an explicit "OPEN, UNKNOWN MEANING" label,
+distinct from the one confirmed lamp (instrument-1-select), so an
+unidentified lit bit doesn't read as confirmed information.

@@ -27,8 +27,8 @@ ioport-falt ar alternativ, inte kombinationer, och kunde darfor inte gora
 | `$09` | klick | `$29` | klick |
 | `$0A` | `Down`, klick | `$2A` | klick |
 | `$0B` | `Up`, klick | `$2B` | klick |
-| `$0C` | `Left`, klick | `$2C` | klick |
-| `$0D` | `Right`, klick | `$2D` | klick |
+| `$0C` | klick | `$2C` | klick |
+| `$0D` | klick | `$2D` | klick |
 | `$0E` | klick | `$2E` | klick |
 | `$0F` | klick | `$2F` | klick |
 | `$10` | klick | `$30` | klick |
@@ -61,5 +61,14 @@ Valda bort fran pilotmappningen:
 - `Scroll Lock`: anvands for keyboard capture/passthrough i MAME.
 - backtick/tilde: MAME on-screen display.
 
-Ovriga tangentbordskoder ar inte bundna i pilotmappningen. De 60 oidentifierade
+Ovriga tangentbordskoder ar inte bundna i pilotmappningen. De 62 oidentifierade
 knapparna ska anvandas via layoutklick tills funktionerna ar verifierade.
+
+**Rattat, 2026-08-24** (`panel-button-and-transport-map.md`): `$0C`/`$0D`
+hade tidigare `Left`/`Right` som tangentbordsgenvag. Matt direkt: fran
+`REC SRC`-skarmen navigerar dessa till en helt orelaterad meny
+(`COPY`/`ERASE`/`FILTER`/`SHIFT AUDIO TRACK` vid upprepade tryck), inte en
+markorflytt. Etiketten var fel, inte bara overifierad, sa
+tangentbordsbindningen togs bort helt (`src/mame/ensoniq/esqpanel.cpp`) --
+en felaktig genvag ar varre an ingen genvag. De verkliga Left/Right
+Arrow-koderna ar fortfarande `[OPEN]`.

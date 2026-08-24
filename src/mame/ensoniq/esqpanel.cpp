@@ -966,10 +966,23 @@ static INPUT_PORTS_START(asr10panel_device)
 	ASR10_PANEL_BUTTON(0x00000080, "BTN_07", 0x07)
 	ASR10_PANEL_BUTTON(0x00000100, "BTN_08", 0x08)
 	ASR10_PANEL_BUTTON(0x00000200, "BTN_09", 0x09)
+	// BTN_0A/BTN_0B: KEYCODE_DOWN/UP kept -- verified to genuinely drive
+	// REC SRC Field 2 (LEFT/RIGHT/L+R) the way the manual's own Up/Down
+	// Arrow buttons are documented to, confirmed both directions
+	// (display_protocol.lua).
 	PORT_BIT(0x00000400, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_0A") PORT_CODE(KEYCODE_DOWN) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x0a)
 	PORT_BIT(0x00000800, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_0B") PORT_CODE(KEYCODE_UP) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x0b)
-	PORT_BIT(0x00001000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_0C") PORT_CODE(KEYCODE_LEFT) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x0c)
-	PORT_BIT(0x00002000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_0D") PORT_CODE(KEYCODE_RIGHT) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x0d)
+	// BTN_0C/BTN_0D: KEYCODE_LEFT/RIGHT removed, 2026-08-24
+	// (panel-button-and-transport-map.md Del 2). Measured directly: from
+	// the REC SRC screen these navigate to an unrelated top-level menu
+	// (COPY/ERASE/FILTER/SHIFT AUDIO TRACK on repeated presses), not a
+	// cursor move -- the pilot keymap's Left/Right label was wrong, not
+	// just unverified. Real hardware's Left/Right Arrow raw codes remain
+	// unidentified; keeping the wrong keyboard shortcut bound here would
+	// actively mislead rather than just be unverified, so these two
+	// revert to click-only like the other 60 unidentified buttons.
+	ASR10_PANEL_BUTTON(0x00001000, "BTN_0C", 0x0c)
+	ASR10_PANEL_BUTTON(0x00002000, "BTN_0D", 0x0d)
 	ASR10_PANEL_BUTTON(0x00004000, "BTN_0E", 0x0e)
 	ASR10_PANEL_BUTTON(0x00008000, "BTN_0F", 0x0f)
 	ASR10_PANEL_BUTTON(0x00010000, "BTN_10", 0x10)

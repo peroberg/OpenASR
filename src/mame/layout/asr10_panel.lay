@@ -16,15 +16,25 @@ license:CC0-1.0
 		<rect state="1"><color red="0.45" green="1.00" blue="0.95" /></rect>
 	</element>
 
-	<!-- Del 4 (docs/asr10/investigations/annunciator-bit-probe.md): raw
-	     bit-level view of the 5 annunciator registers ($77 to $7b), 8
-	     bits each. Only asr10_instlamp0 (register $77 bit 0) has a
-	     confirmed meaning so far, and gets its own labeled, amber lamp
-	     below. The other 39 are unlabeled and dim amber: wired but not
-	     yet identified against a known-lit state. -->
+	<!-- Del 4 (docs/asr10/investigations/annunciator-bit-probe.md), Del 5
+	     (docs/asr10/investigations/panel-button-and-transport-map.md):
+	     raw bit-level view of the 5 annunciator registers ($77 to $7b),
+	     8 bits each. `[OPEN]`: only asr10_instlamp0 (register $77 bit 0)
+	     has a confirmed meaning, and gets its own labeled, bright-amber
+	     `instlamp` below. The other 39 bits are `annlamp`, deliberately
+	     dim, desaturated grey-amber even when lit, and explicitly
+	     labelled "OPEN" in the view, so an unidentified bit reads as
+	     unknown at a glance, not as confirmed information. A lit lamp
+	     without a known meaning is worse than no lamp at all; do not
+	     brighten this color or drop the label without first
+	     establishing what the bit means. -->
 	<element name="annlamp" defstate="0">
-		<rect state="0"><color red="0.10" green="0.08" blue="0.05" /></rect>
-		<rect state="1"><color red="0.95" green="0.65" blue="0.10" /></rect>
+		<rect state="0"><color red="0.10" green="0.09" blue="0.08" /></rect>
+		<rect state="1"><color red="0.45" green="0.38" blue="0.28" /></rect>
+	</element>
+
+	<element name="annlamp_open_label">
+		<text string="OPEN, UNKNOWN MEANING"><color red="0.50" green="0.42" blue="0.30" /></text>
 	</element>
 
 	<element name="instlamp" defstate="0">
@@ -339,11 +349,14 @@ license:CC0-1.0
 				<bounds x="~x~" y="18" width="1.3" height="3" />
 			</element>
 		</repeat>
+		<element ref="annlamp_open_label">
+			<bounds x="66" y="21" width="68" height="2.2" />
+		</element>
 		<element ref="instlamp_label">
-			<bounds x="66" y="22" width="16" height="3" />
+			<bounds x="66" y="23.5" width="16" height="2.5" />
 		</element>
 		<element name="asr10_instlamp0" ref="instlamp">
-			<bounds x="83" y="22" width="4" height="3" />
+			<bounds x="83" y="23.5" width="4" height="2.5" />
 		</element>
 		<element ref="button" inputtag="buttons_0" inputmask="0x00000001"><bounds x="5" y="30" width="14" height="7" /></element>
 		<element ref="button_label_00" inputtag="buttons_0" inputmask="0x00000001"><bounds x="5" y="30" width="14" height="7" /></element>

@@ -39,6 +39,11 @@
 #              REC SRC field, and the confirmed instrument-select lamp
 #              bit toggling 0->1->0 across select/deselect --
 #              investigations/display-protocol-inventory.md.
+# panel_input: locks in panel input mechanics -- two buttons held
+#              simultaneously generate four distinct wire events (not
+#              merged/ghosted), and a confirmed navigation button
+#              (BTN_0A) genuinely changes REC SRC Field 2 --
+#              investigations/panel-button-and-transport-map.md.
 
 set -u
 
@@ -121,6 +126,7 @@ run_test interrupt_controller docs/asr10/lua/interrupt_controller.lua "$IMAGE" |
 run_test memory_size docs/asr10/lua/memory_size.lua "$IMAGE" || failures=$((failures + 1))
 run_test stereo_round_trip docs/asr10/lua/stereo_round_trip.lua "$IMAGE" || failures=$((failures + 1))
 run_test display_protocol docs/asr10/lua/display_protocol.lua "$IMAGE" || failures=$((failures + 1))
+run_test panel_input docs/asr10/lua/panel_input.lua "$IMAGE" || failures=$((failures + 1))
 
 if [ "$failures" -ne 0 ]; then
 	echo "FAIL regression failures=${failures}"
