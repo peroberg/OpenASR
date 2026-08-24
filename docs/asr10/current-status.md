@@ -1815,3 +1815,45 @@ flagged for a dedicated future task.
 automatically persisted (the SS8.6 mistake bit this project's own
 scripts twice; this makes forgetting structurally harder, not just
 documented against). Wired into `asr10_regression.lua` as `M.taps`.
+
+## The `$000F58` contradiction resolved by execution trace; a real, independent sequencer stepper found (docs/asr10/investigations/execution-traced-clock-and-sequencer-stepper.md)
+
+**[Verified runtime, resolved]** `$F8C588` is **never executed**
+(0 hits over 3s, against a validated `$F88300` positive control at an
+exact 1000.0000Hz). The producer chain runs exactly as measured through
+`trap #9` (144Hz at every step), but installs into **Slot 3**
+(`$D6=$2438`), not Slot 2 — Slot 3's real resident task is `$F8F2FA`,
+confirmed executing at 144Hz. The `$67AC`/`jumptable_dispatch_15entry`/
+`$F8C588` path was an unverified inference carried over from an
+unrelated (keyboard) investigation and is retracted, not softened.
+`$F8F2FA`'s own per-type dispatch (table at `$8258`) was traced to a
+`jmp` that fires at 144Hz, landing near `$006014` — not fully resolved.
+
+**[Verified runtime, new lead]** A real, independent sequencer-stepper
+candidate: `$00F902D8` executes at exactly the 144Hz pulse rate,
+anchored on address `$001098` (register-captured, distinct from the
+six-record cluster it sits near), chaining to a second handler
+(`$00F91F00`) that receives that same address. Ends in a previously
+undocumented `trap #c`. The strongest event-consumption lead this
+investigation has produced across every round — named with real PCs
+and registers, not claimed as the fully-resolved sequence object.
+
+**[Verified runtime, narrow]** `$00E66E`'s gate (`$000F58`) is
+measured to be **MIDI-clock-only**: its only two readers anywhere are
+the already-characterized MIDI-clock consumers; Del 2's stepper chain
+never touches `$000F58` in the same window. Not unified with anything.
+
+**[Downgraded]** `$00017E`: both writer (`$FB8ABE`, boot-only) and
+reader (`$F88366`, `$F88300`'s own internal branch, 1000Hz, exclusive)
+are now identified — and both are boot-time/internal-only, with no
+connection to user input or either measured chain. Retired as a
+transport-flag candidate rather than promoted, per the user's own
+caution against a second "mask-is-the-gate" promotion.
+
+**[OPEN, structural]** The diagnostic menu's strings were tapped for
+reads from `t=0` through boot; the range is confounded by the same
+ROM→RAM overlay switch (`cs0_covers(0)`) already documented in the
+prior round's own retraction — an address-based read-tap after the
+switch cannot distinguish the ROM string from whatever RAM structure
+now shares its address. No new backward trace achieved; not chased
+further, the confound is structural.

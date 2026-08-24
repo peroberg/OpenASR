@@ -105,12 +105,23 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 71 Markdown-filer vid audit 2026-08-24
+## `investigations/` — 72 Markdown-filer vid audit 2026-08-24
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `command-pages-and-clock-verdict.md`: bekräftar `$06`=
+Senaste tillägget är `execution-traced-clock-and-sequencer-stepper.md`:
+löser `$000F58`-motsägelsen med exekveringstappar ($F8C588 nås aldrig,
+0 träffar mot en validerad 1000 Hz-kontroll; den verkliga kedjan
+installerar i Slot 3, `$F8F2FA`, inte Slot 2 som förra rundan antog),
+hittar en verklig, oberoende sekvenserarstegare (`$F902D8`, körs exakt
+vid pulstakten, ankrad på `$001098`, kedjar till `$F91F00`, avslutas i
+ett tidigare odokumenterat `trap #c`), mäter `$00E66E`s grind som
+enbart MIDI-klocka (ej kopplad till stegaren), och nedgraderar
+`$00017E` efter att både skrivare och läsare identifierats som enbart
+boot-interna. Diagnostikmenyns bakåtspårning blockeras av samma
+ROM/RAM-övergångsväxling som redan dokumenterats. Föregående
+`command-pages-and-clock-verdict.md`: bekräftar `$06`=
 Command (Per: "$06 + $0C" gav "NO COMMANDS ON PAGE") och katalogiserar nio
 fullständiga kommandosidor ordagrant — GPR MONITOR/ESP TESTS finns i ingen av
 dem. Tre förutsagda tal prövades och höll inte: `$00828E` som mastertempo
