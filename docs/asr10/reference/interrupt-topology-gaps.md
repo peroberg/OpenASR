@@ -299,6 +299,25 @@ SCC1/IDMA/SCC2, not a special case, and is now covered by
 masked status is untouched by this correction — no path in this project
 has been observed to unmask it.
 
+**Added, 2026-08-24: stereo's two channels are IDMA-coupled, not
+independent.** `../investigations/stereo-round-trip-verification.md`
+found, and this task's own PB probes independently re-confirmed, that
+completing SCC1's own receive descriptor (vector `$4D`) fires **two**
+`$37A1` IDMA start/complete events in the same firmware event, using
+whatever is currently in SCC2's buffer at that instant rather than
+waiting for SCC2's own independent descriptor completion. This is why
+every prior attempt to measure the two channels independently (feed
+one, wait, feed the other) could never actually observe two
+independent channels — the model's own SCC1-completion path always
+drags SCC2's IDMA along with it, matching a real synchronized stereo
+ADC that delivers L+R in lockstep and uses one channel's completion as
+the "pair ready" signal for both. Not a bug: the fix was feeding both
+channels interleaved so SCC2's buffer already held its own content by
+the time SCC1's completion fired. Belongs here because it is an IDMA/
+interrupt-delivery mechanism fact, not a stereo-content fact — it
+explains a structural coupling between two of this table's own SCC1/
+IDMA rows above, not just a stereo recording detail.
+
 **PB9/PB10/PB11 wiring on real ASR-10 hardware**: not established this
 task. `mc68302-status.md`'s own prior work already flags PB9 as
 "differs from PB10/PB11" (a real ISR clear at `$0080`) and both
@@ -307,6 +326,49 @@ PB10/PB11's handlers as merely testing local flag bytes (`$0C3A`/
 adds the *vector-level* confirmation that all three are genuinely
 wired to real, distinct, non-generic handlers, strengthening rather
 than resolving that prior `[OPEN]` status.
+
+**Added, 2026-08-24: two candidate hypotheses tested, both fell —
+`../investigations/pb9-10-11-and-scsi-probe.md`.** PB9/10/11 had
+surfaced as candidates for two unrelated mechanisms: a source selector
+for `REC SRC=MAIN-OUT` digital self-sampling, and SCSI-INTRQ. Neither
+survived contact with measurement, for three independent, stacked
+reasons — not just "no evidence found":
+
+1. **PBDAT (`$FC6828/$FC6829`) is never read or written by firmware
+   after the one-time ROM init**, across a corrected, redraw-forced
+   sweep of all 64 panel buttons, the full 0-$3FF range of the Data
+   Entry Slider, REC SRC Field 2 cycling (a known-working control, kept
+   as a positive baseline), and the entire boot->load sequence. This
+   holds even though Field 1 of REC SRC could not be driven to
+   `MAIN-OUT` at all through the currently modeled panel controls (see
+   investigation doc) — so the PB-as-source-selector hypothesis was
+   never actually put under its intended precondition, only under
+   everything else that could be driven, none of which touched PB.
+2. **`mc68302_device::update_internal_irq()` structurally excludes PB9/
+   10/11 from ever reaching the CPU regardless.** `MODELED_IRQ_BITS =
+   SCC_IRQ_BITS | IDMA_IRQ_BIT` (`mc68302.cpp:59`) does not include bits
+   7/14/15; `eligible` is masked with `& MODELED_IRQ_BITS` as the last
+   step of `update_internal_irq()` (`mc68302.cpp:414-417`), so even a
+   `set_pb_input()` call for one of these three bits could not assert
+   IRQ4. And nothing does call it: `asr10_boot.cpp` only ever calls
+   `set_pb_input()` for bit 3 (LRCLK, `asr10_boot.cpp:504`) — bits 7/14/
+   15 have no driver-side stimulus wired at all. This is the same
+   category as the four-round IRQ1 disproof above: not evidence against
+   real hardware, evidence that this specific model cannot currently
+   answer the question either way.
+3. **SCSI presence detection uses a third, unrelated mechanism, found
+   and measured this task**: a register write/readback pattern test on
+   the SCSI chip's own index/data register pair (`$FC5001`/`$FC5003`,
+   the same odd-address pair `memory-map.md` row H1 already identified
+   statically), at `$FB92C2-$FB92C6`, t~=2.95s during boot — no PB
+   involvement, no interrupt line, a pure data-bus behavior test. This
+   also closes `boot-sequence.md` step 4's "RUTIN EJ IDENTIFIERAD" for
+   the SCSI-scan step. See the investigation doc for the full trace.
+
+Net effect: PB9/10/11's real hardware identity is still `[OPEN]` —
+unchanged — but the two specific hypotheses that motivated re-opening
+them this round are retired, with the reason recorded rather than left
+to be re-guessed next time.
 
 ## Del 4 — Autovector Levels
 

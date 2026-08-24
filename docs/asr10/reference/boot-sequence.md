@@ -80,7 +80,18 @@ före allt annat, i steg 1b ovan. OR0/BR0 … OR3/BR3 skrivs som sex
 `SCSI INSTALLED` och `SEARCHING FOR SCSI DEV` finns i samma tabell.
 Visas på användarens maskin, inte i emuleringen.
 
-**RUTIN EJ IDENTIFIERAD.**
+**Rutin identifierad, 2026-08-24**
+(`../investigations/pb9-10-11-and-scsi-probe.md`). Detekteringen sker vid
+`$FB92C2-$FB92C6`, t≈2,95 s under boot (före `LOADING SYSTEM` vid
+t≈4,25 s): en register-skriv/återläs-testsekvens mot SCSI-kretsens egna
+index-/dataregister (`$FC5001`/`$FC5003`, samma udda adresspar som
+`memory-map.md` rad H1 redan identifierat statiskt) — skriv indexregister
+`$02`, skriv testmönster till dataregistret, återläs. Två mönster
+provas (`$00` och `$55`); den nuvarande stubben (`scsi_asr_candidate_r/w`)
+returnerar alltid `0`, så andra mönstret misslyckas vid återläsning och
+firmware drar (korrekt, utifrån denna modell) slutsatsen att ingen SCSI-
+krets finns — därav att emuleringen aldrig visar de två SCSI-stegen.
+Ingen PB-bit och ingen avbrottslinje är inblandad.
 
 ## 5. Diskdetektering `[V delvis]`
 

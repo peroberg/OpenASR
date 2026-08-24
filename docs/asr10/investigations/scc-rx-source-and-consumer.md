@@ -234,6 +234,28 @@ upgrade it to `[Verified]`.
 | recording writer is MC68302 IDMA | `[OPEN]` | explicit SAPR/DAPR/BCR/CMR setup; virtual RX produced 793 exact destination writes and `$4B/$00AA48` completion | `[Verified firmware/runtime]` for the current IDMA input path | exact BCR length is `[DISPROVEN]` because the FDC-derived model copied BCR-1 |
 | `$FFD15C` names a buffer/structure | `[OPEN]` | only one scalar reader and two scalar writers; value 58 | `[DISPROVEN]` | higher-level meaning of the byte-count boundary remains `[OPEN]` |
 
+## Addendum, 2026-08-24: SCC1/SCC2 are IDMA-coupled for stereo, not independent
+
+This document's model above is written from SCC1's own descriptor
+completion outward and is correct as far as it goes, but silently reads
+as if SCC1 and SCC2 each drive their own independent completion ->
+IDMA event. Measured directly
+(`../investigations/stereo-round-trip-verification.md`,
+`../reference/interrupt-topology-gaps.md`'s 2026-08-24 addendum):
+completing SCC1's own descriptor (vector `$4D`) fires **two** `$37A1`
+IDMA start/complete events in the same firmware event, consuming
+whatever is currently in SCC2's buffer at that instant rather than
+waiting for SCC2's own independent descriptor completion. A sequential
+per-channel feed (feed SCC1, wait for its completion, then feed SCC2)
+therefore cannot produce two independently-verified channels — SCC1's
+completion always drags SCC2's IDMA along with it, using
+whatever SCC2 already holds. This matches a real synchronized stereo
+ADC delivering L+R in lockstep and using one channel's completion as
+the "pair ready" signal for both; it is not a bug in this model. The
+working technique is an interleaved feed (one byte to SCC2, one byte
+to SCC1, repeating) so SCC2's buffer already holds its own distinct
+content by the time SCC1's completion fires the combined transfer.
+
 ## Next discriminating experiment
 
 Perform one physical continuity/schematic check from the analog-board digital
