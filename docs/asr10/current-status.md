@@ -1857,3 +1857,41 @@ prior round's own retraction — an address-based read-tap after the
 switch cannot distinguish the ROM string from whatever RAM structure
 now shares its address. No new backward trace achieved; not chased
 further, the confound is structural.
+
+## TRAP #C identified as Slot 3's own self-rearm; the real note path found elsewhere entirely (docs/asr10/investigations/trap-c-and-the-real-note-path.md)
+
+**[Verified runtime]** `TRAP #C` (`$F88174`, cross-validated against
+the live vector table alongside `#3`/`#4`/`#9`, which match this
+project's own prior addresses exactly) is a generic queue-append
+primitive, same shape as its siblings. Its own data during the tempo
+chain: `A1=$002438` (Slot 3's own header), node type `$0E` with a
+visibly decrementing countdown field — **Slot 3 re-arming itself**,
+not a handoff of sequence content to a new destination. Called at
+176.33Hz overall (higher than the 144Hz pulse), confirming multiple
+unrelated callers share this primitive.
+
+**[Verified runtime, new lead]** Tracing backward from confirmed-real
+ES5506 writes during an actual `KEY_C` press (matching
+`note_audio.lua`'s own proven pattern) finds the real caller at
+**`$007C7C`-`$007CEE`** — a direct voice-programming routine, reading
+a mode byte from `$11C(a3)`, conditionally transforming, and writing
+`$FC2001`-window registers from `$15(a4)`/`$2A(a4)`. **This PC region
+never once appears in any `TRAP #9`/`TRAP #C` register capture** — the
+tempo/clock chain and the real note-to-voice path are disjoint
+subsystems, not one pipeline with a gate in the middle. This revises
+prior tasks' framing: there is no single gate to find between the two;
+they were never connected.
+
+**[Corrected, not resolved]** `$001098` as memory content is static
+zero (4 boot-time writes only); the *register value* `$1098` used by
+`$F902D8`'s own `A4` was not traced to its load source this task —
+reported as an open, precisely-scoped gap rather than conflated with
+"the memory cell changes." Does not overlap any address from `$17`'s
+own allocation diff, so no link to the sequence object is claimed.
+
+**[Partial]** Type table: `$0E` (Slot 3 self-rearm) and `$02` (routed
+to Slot 2) execution-confirmed this task; the table's other ~10
+entries were not re-verified for actual firing.
+
+**[OPEN, unchanged]** Diagnostic menu backward trace — not
+re-attempted this task, same structural blocker as before.
