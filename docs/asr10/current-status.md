@@ -1505,3 +1505,37 @@ Previous entries stand. Added by the static analysis:
   `reference/os-code-extraction.md`, `reference/hardware-map.md` — as before, updated.
 - `static/README.md` — what the raw material is, how it was generated, what it does not
   prove.
+
+## Display protocol: cursor/underline and annunciators (docs/asr10/investigations/display-protocol-inventory.md)
+
+**[Verified runtime]** The panel display byte stream (DUART channel B
+THRB, `$FC480D`) was traced end to end and inventoried across boot,
+load, note-press and menu navigation. `esq1x22_device::write_char()`
+(`src/mame/ensoniq/esqvfd.cpp`) previously handled only clear (`$66`)
+and printable text (`$20-$5f`); every other byte hit an unconditional,
+un-aggregated `printf` (the "Unhandled control code NN" noise every Lua
+probe's output has carried all session). Implemented: a 2-byte
+field-attribute opcode (`$60 <attr>`, `attr&0x02` = underline) plus two
+field-boundary markers (`$62`, `$72`), driving the underline output
+(`"vfd22"-"vfd43"`) that already existed in the shared
+`esqvfd_device::update_display()` and was already read by
+`asr10_panel.lay` but never driven. Verified against the manual's own
+"cursor (underline) beneath the field" description and against two
+independent screens (REC SRC, FX Select); regression-locked
+(`docs/asr10/lua/display_protocol.lua`, 12th test).
+
+**[Verified narrow]** One annunciator bit (`$77` bit 0) confirmed
+reversible for Instrument-1 select/deselect in isolation; the other 39
+candidate bits are wired raw (`asr10_annbit0`-`39`) and rendered but
+`[OPEN]` semantically. An aggregated, first-occurrence-per-code alarm
+(`osd_printf_error`) now reports every unrecognized display control
+code instead of staying silent or flooding — see
+`reference/display-protocol.md` for the full code table and what
+remains `[OPEN]` (`$74`/`$75`/`$76`'s animation family, `$E7 $71` and
+neighbors, two more small clusters).
+
+**[OPEN]** REC SRC Field 1 remains unreachable through any currently
+modeled panel control — determined to be a panel-control mapping gap
+(the real Left/Right Arrow button code is not identified), not a
+display rendering gap, since the display now correctly renders whatever
+field/attribute structure it receives.

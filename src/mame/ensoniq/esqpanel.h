@@ -112,6 +112,7 @@ public:
 	asr10panel_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock = 0);
 	std::string current_text() const;
 	std::string annunciator_summary() const;
+	std::string unhandled_code_summary() const;
 
 	DECLARE_INPUT_CHANGED_MEMBER(button_change);
 	DECLARE_INPUT_CHANGED_MEMBER(analog_value_change);
@@ -135,6 +136,14 @@ protected:
 	required_device<esq1x22_device> m_vfd;
 	output_finder<5> m_annunciator_regs;
 	output_finder<8> m_instrument_lamps;
+	// Bit-level view of the 5 annunciator registers (5*8=40 candidate
+	// lamps -- "about thirty" per the project's own count of populated
+	// bits). Only bit 0 of $77 has a confirmed meaning so far (mirrored
+	// into m_instrument_lamps[0] below, verified against a known-lit
+	// state: BTN_02 from idle FILE LOADED); the rest are wired raw and
+	// unlabeled until correlated against more known states --
+	// docs/asr10/investigations/annunciator-bit-probe.md.
+	output_finder<40> m_annunciator_bits;
 
 private:
 	std::array<uint8_t, 5> m_annunciator_state{};
@@ -142,7 +151,24 @@ private:
 	std::array<uint8_t, 22> m_text_chars{};
 	uint8_t m_text_position = 0;
 	uint8_t m_pending_annunciator_command = 0;
+	// Del 3 (display-protocol-inventory.md): 0x60 <attr> sets the
+	// current-field text attribute for the next run of printable
+	// characters (attr bit 0x02 = underlined/currently-selected field,
+	// matching the manual's "cursor (underline) beneath the field"
+	// description) -- a two-byte ASR-10 opcode+operand pair, handled in
+	// esq1x22_device::write_char() (mirrors that class's own existing
+	// m_lastchar-based lookback for 0xfa/0xff on the 2x40 variant).
+	// This flag exists only so send_to_display() can tell an operand
+	// byte apart from a genuinely unhandled one for the alarm below --
+	// the actual attribute state lives in m_vfd, not here.
+	bool m_pending_field_attr = false;
 	bool m_disable_eps_echo = false;
+
+	// Del 2: an unrecognized display control code says so, once per
+	// distinct code, instead of staying silent or flooding output --
+	// docs/asr10/investigations/display-protocol-inventory.md Del 2.
+	std::array<uint8_t, 256> m_seen_unhandled_display_code{};
+	void report_unhandled_display_code(uint8_t data);
 
 	// Octave shift range 0-4 (5 positions) x one 13-semitone computer-
 	// keyboard octave (offsets 0-12, C..C) exactly spans key numbers

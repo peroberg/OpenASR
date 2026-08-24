@@ -789,6 +789,8 @@ void asr10panel_device::device_start()
 	save_item(NAME(m_text_chars));
 	save_item(NAME(m_text_position));
 	save_item(NAME(m_pending_annunciator_command));
+	save_item(NAME(m_pending_field_attr));
+	save_item(NAME(m_seen_unhandled_display_code));
 }
 
 void asr10panel_device::device_reset()
@@ -808,12 +810,16 @@ void asr10panel_device::device_reset()
 	m_text_chars.fill(' ');
 	m_text_position = 0;
 	m_pending_annunciator_command = 0;
+	m_pending_field_attr = false;
+	m_seen_unhandled_display_code.fill(0);
 	m_disable_eps_echo = std::getenv("ASR10_PANEL_DISABLE_ECHO") != nullptr;
 
 	for (u32 index = 0; index != m_annunciator_state.size(); index++)
 		m_annunciator_regs[index] = 0;
 	for (u32 index = 0; index != m_instrument_lamp_state.size(); index++)
 		m_instrument_lamps[index] = 0;
+	for (u32 index = 0; index != m_annunciator_bits.size(); index++)
+		m_annunciator_bits[index] = 0;
 }
 
 void asr10panel_device::rcv_complete()
@@ -837,13 +843,22 @@ void asr10panel_device::send_to_display(uint8_t data)
 {
 	if (m_pending_annunciator_command)
 	{
-		const u32 index = m_pending_annunciator_command - 0x77;
-		m_annunciator_state[index] = data;
-		m_annunciator_regs[index] = data;
+		const u32 reg_index = m_pending_annunciator_command - 0x77;
+		m_annunciator_state[reg_index] = data;
+		m_annunciator_regs[reg_index] = data;
 
-		// Current evidence only identifies raw $77-$7b registers. Keep the
-		// eight ASR-10 instrument lamps modeled as raw outputs until a bit map
-		// is observed.
+		// Bit-level fanout: only bit 0 of $77 has a confirmed meaning
+		// (docs/asr10/investigations/annunciator-bit-probe.md -- BTN_02
+		// from idle FILE LOADED sets it, pressing BTN_02 again on the
+		// already-selected instrument clears it, both directions
+		// verified), mirrored into the pre-existing instrument-lamp
+		// output. The other 39 bits are wired raw, unlabeled, until
+		// correlated against more known-lit states.
+		for (u32 bit = 0; bit != 8; bit++)
+			m_annunciator_bits[reg_index * 8 + bit] = (data >> bit) & 1;
+		if (reg_index == 0)
+			m_instrument_lamps[0] = data & 1;
+
 		m_pending_annunciator_command = 0;
 		return;
 	}
@@ -854,17 +869,69 @@ void asr10panel_device::send_to_display(uint8_t data)
 		return;
 	}
 
+	if (m_pending_field_attr)
+	{
+		// Operand of 0x60 (see below) -- understood, not alarm-worthy.
+		// The attribute itself is applied in esq1x22_device::write_char().
+		m_pending_field_attr = false;
+		m_vfd->write_char(data);
+		return;
+	}
+
 	if (data == 0x66)
 	{
 		m_text_chars.fill(' ');
 		m_text_position = 0;
 	}
-	else if (data >= 0x20 && data <= 0x5f && m_text_position < m_text_chars.size())
+	else if (data >= 0x20 && data <= 0x5f)
 	{
-		m_text_chars[m_text_position++] = data;
+		// Printable range is recognized regardless of our own 22-char
+		// mirror buffer's bounds -- a byte that overflows m_text_chars
+		// is still known text (esq1x22_device has its own, separate
+		// bounds check), not an unhandled control code.
+		if (m_text_position < m_text_chars.size())
+			m_text_chars[m_text_position++] = data;
+	}
+	else if (data == 0x60)
+	{
+		// Del 3: field-attribute opcode, expects one operand byte next
+		// (docs/asr10/investigations/display-protocol-inventory.md).
+		m_pending_field_attr = true;
+	}
+	else if (data != 0x62 && data != 0x72)
+	{
+		// Del 3: 0x62 ("next field") and 0x72 ("end of field") are
+		// understood structurally -- they reset the current text
+		// attribute in esq1x22_device::write_char() -- but carry no
+		// operand and need no state here. Anything else reaching this
+		// branch is genuinely unrecognized.
+		report_unhandled_display_code(data);
 	}
 
 	m_vfd->write_char(data);
+}
+
+void asr10panel_device::report_unhandled_display_code(uint8_t data)
+{
+	if (m_seen_unhandled_display_code[data])
+		return;
+	m_seen_unhandled_display_code[data] = 1;
+	osd_printf_error("asr10panel: unhandled display control code $%02X (first occurrence)\n", data);
+}
+
+std::string asr10panel_device::unhandled_code_summary() const
+{
+	std::string result;
+	for (u32 code = 0; code != m_seen_unhandled_display_code.size(); code++)
+	{
+		if (m_seen_unhandled_display_code[code])
+		{
+			if (!result.empty())
+				result += ' ';
+			result += util::string_format("%02x", code);
+		}
+	}
+	return result;
 }
 
 std::string asr10panel_device::current_text() const
@@ -1051,7 +1118,8 @@ asr10panel_device::asr10panel_device(const machine_config &mconfig, const char *
 	esqpanel_device(mconfig, ASR10PANEL, tag, owner, clock),
 	m_vfd(*this, "vfd"),
 	m_annunciator_regs(*this, "asr10_annreg%u", 0U),
-	m_instrument_lamps(*this, "asr10_instlamp%u", 0U)
+	m_instrument_lamps(*this, "asr10_instlamp%u", 0U),
+	m_annunciator_bits(*this, "asr10_annbit%u", 0U)
 {
 	m_eps_mode = true;
 }

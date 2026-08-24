@@ -495,6 +495,22 @@ void esq1x22_device::device_add_mconfig(machine_config &config)
 
 void esq1x22_device::write_char(uint8_t data)
 {
+	// ASR-10 field-attribute opcode: 0x60 <attr> sets the attribute for
+	// the next run of printable characters -- attr bit 0x02 marks the
+	// field as underlined (the manual's "cursor (underline) beneath the
+	// field", moved by the Left/Right Arrow buttons on most screens).
+	// Two-byte opcode+operand, same m_lastchar lookback technique
+	// esq2x40_device already uses for its own 0xfa/0xff pairs. Derived
+	// from the byte stream, not guessed --
+	// docs/asr10/investigations/display-protocol-inventory.md.
+	if (m_lastchar == 0x60) {
+		m_curattr = (data & 0x02) ? AT_UNDERLINE : AT_NORMAL;
+		m_lastchar = 0;
+		return;
+	}
+
+	m_lastchar = data;
+
 	if (data >= 0x60) {
 		switch (data) {
 			case 'f':   // clear screen
@@ -502,15 +518,34 @@ void esq1x22_device::write_char(uint8_t data)
 				memset(m_chars, 0, sizeof(m_chars));
 				memset(m_attrs, 0, sizeof(m_attrs));
 				memset(m_dirty, 1, sizeof(m_dirty));
+				m_curattr = AT_NORMAL;
+				break;
+
+			case 0x60:  // field-attribute opcode; operand handled above
+				break;
+
+			case 0x62:  // next field -- reset attribute to normal until
+				// the field's own 0x60 sets it again
+				m_curattr = AT_NORMAL;
+				break;
+
+			case 0x72:  // end of attributed field
+				m_curattr = AT_NORMAL;
 				break;
 
 			default:
-				printf("Unhandled control code %02x\n", data);
+				// docs/asr10/investigations/display-protocol-inventory.md
+				// Del 2: the aggregated, first-occurrence-per-code alarm
+				// for this lives in asr10panel_device::send_to_display(),
+				// which sees every byte before it reaches here -- no
+				// second, redundant alarm mechanism needed in this
+				// shared class.
 				break;
 		}
 	} else {
 		if ((data >= 0x20) && (data <= 0x5f)) {
 			m_chars[0][m_cursx] = data - ' ';
+			m_attrs[0][m_cursx] = m_curattr;
 			m_dirty[0][m_cursx] = 1;
 			m_cursx++;
 

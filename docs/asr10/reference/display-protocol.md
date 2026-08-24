@@ -1,0 +1,78 @@
+# ASR-10 panel display protocol
+
+Reference table for the byte stream the host (MC68302, DUART channel B,
+`asr10_boot.cpp`'s `duart_panel_asr_candidate_w`) sends to the front-panel
+VFD. Measured 2026-08-24 by tapping the DUART's channel-B THRB register
+directly (word offset 6 within the `$FC4800-$FC481F` CS window, i.e.
+CPU address `$FC480D`, low byte lane — found by tapping the *whole*
+16-register window and letting the histogram show which register
+dominates, not by assuming the standard SCN2681 register map's usual
+THRB slot). Investigation: `../investigations/display-protocol-inventory.md`.
+
+## Code path (Del 0)
+
+```
+firmware -> MC68302 SCC/SIB -> DUART channel B THRB ($FC480D)
+  -> scn2681_device -> b_tx_cb -> asr10panel_device::rx_w() (device_serial_interface)
+  -> asr10panel_device::rcv_complete() -> send_to_display(byte)
+  -> asr10panel_device::send_to_display() [src/mame/ensoniq/esqpanel.cpp]
+       - intercepts $77-$7b (2-byte annunciator opcode+value) -- does NOT forward to m_vfd
+       - intercepts nothing else; forwards everything else to:
+  -> esq1x22_device::write_char() [src/mame/ensoniq/esqvfd.cpp]
+       - interprets $66/$60+operand/$62/$72/$20-$5f
+       - unrecognized codes: silently ignored (no-op), no longer printf'd
+  -> esqvfd_device::update_display() [shared base class, esqvfd.cpp]
+       - pushes segment codes to output "vfd0".."vfd21"
+       - pushes underline state to output "vfd22".."vfd43"
+  -> src/mame/layout/asr10_panel.lay renders both
+```
+
+`asr10panel_device` also keeps its own parallel mirror
+(`m_text_chars`/`m_text_position`, used by `current_text()` and every
+Lua regression test's `display.read_raw()`), independent of
+`esq1x22_device`'s own internal `m_chars`/`m_attrs` state — the two
+copies are kept in step because both are driven from the same
+`send_to_display()` call for every printable byte, not because one
+reads the other.
+
+Unrecognized codes are not silently dropped: `send_to_display()` calls
+`report_unhandled_display_code()`, which fires `osd_printf_error()`
+once per distinct code value (aggregated, first occurrence only — Del
+2). `esq1x22_device`'s own former per-byte `printf("Unhandled control
+code...")` (the source of the "Unhandled control code NN" noise filtered
+out of every Lua probe's output all session) is removed; the one
+aggregated alarm in `asr10panel_device` is authoritative.
+
+## Code table
+
+Evidence levels: `[Verified]` = implemented and regression-tested against
+a live, known-correct rendering; `[Verified narrow]` = confirmed for the
+specific measured context only, not generalized; `[Derived]` = confidently
+reconstructed from stream structure and cross-checked against ground-truth
+display text, not directly stated by any source; `[OPEN]` = observed,
+not decoded — flagged by the Del 2 alarm, not guessed at.
+
+| Code | Bytes | Meaning | Evidence | Notes |
+|---|---|---|---|---|
+| `$20-$5F` | 1 | Printable ASCII character; write glyph at cursor, advance, clamp at column 23 | `[Verified]` | Pre-existing; reconfirmed by full-stream replay against 8 independent known screen texts, all exact matches |
+| `$66` (`'f'`) | 1 | Clear screen: reset cursor, chars, attributes, and current attribute to normal | `[Verified]` | Pre-existing |
+| `$60 <attr>` | 2 | Set current text attribute for the next run of printable characters. `attr & 0x02` != 0 selects underline | `[Verified]` | Implemented `esq1x22_device::write_char()`; regression-tested (`display_protocol.lua`) against the REC SRC screen's Field 2 value, both `LEFT ` and `RIGHT`, both correctly underlined at columns 17-21 |
+| `$62` | 1 | "Next field": resets current attribute to normal | `[Derived]`/`[Verified]` | Appears once between two attributed field runs on every multi-field screen observed (REC SRC, FX Select); no operand |
+| `$72` | 1 | "End of field": resets current attribute to normal | `[Derived]`/`[Verified]` | Appears after every attributed field run observed; no operand |
+| `$77`-`$7b <value>` | 2 | Select one of 5 annunciator registers, write `<value>` | `[Verified]` | Pre-existing. Intercepted in `asr10panel_device`, not forwarded to the VFD |
+| `$77` bit 0 | — | Set during the load->select->reselect sequence when Instrument 1 is selected (BTN_02 from idle FILE LOADED); clears on reselect (deselect) | `[Verified narrow]` | Also changes when entering Sample-Source Select / Level Detect — NOT confirmed to mean "instrument 1 selected" in general, only confirmed reversible in the specific isolated sequence tested. Mirrored to output `asr10_instlamp0` |
+| `$77`-`$7b`, other 39 bits | — | Unknown | `[OPEN]` | Wired raw to `asr10_annbit0`-`asr10_annbit39` (5 registers x 8 bits), rendered as unlabeled amber lamps in the layout |
+| `$74 <nibble>` | 2 | Repeating, wrapping 4-bit countdown (`$0F`->`$00`), ~8 ticks per burst, bursts recur every ~150-800ms across boot/load/note/menu-nav contexts | `[OPEN]` | Almost certainly an animated busy/activity indicator; exact visual meaning not established (no manual description, no real-hardware reference available). See Del 1 in the investigation doc for the full timing analysis |
+| `$75 <nibble>`, `$76 <nibble>` | 2 | Same countdown family as `$74`; used specifically for the terminal tick of some (not all) bursts | `[OPEN]` | Not distinguished further; may encode an outer pass/phase counter |
+| `$E7 $71` | 2 (fixed pair) | Always appears together, at boot start and before other full-screen redraws during the load/"shuffling" phase | `[OPEN]` | Candidate: a display-reset/init pair preceding a fresh full-line redraw |
+| `$7E`, `$FC`, `$FD`, `$FF`, `$D5`, `$15` | 1 each | Appear clustered with `$E7 $71` near screen transitions (boot greeting, "KEYBOARD TUNED") | `[OPEN]` | Not decoded |
+| `$E0 $00`, `$B0 <val>`, `$7F`, `$C0 $00`, `$40` | mixed | Appear clustered right after "KEYBOARD TUNED" text and around "FILE LOADED" | `[OPEN]` | Not decoded; candidate: a confirmation glyph or status marker distinct from the field-attribute family |
+| `$90`, `$80`, `$3C`, `$64` | 1 each | Appear during the "JM DIGI SYN  VOLUME=99" context | `[OPEN]` | Candidate: a volume/VU bar-graph sub-protocol, given the context; not decoded |
+| `$63`, `$67` | 1 each | Appear near "...CHOR+REV+DDL" (FX Select algorithm list) | `[OPEN]` | Not decoded |
+
+## What is NOT implemented
+
+No rendering was built for any `[OPEN]` code. Per instruction, unknown
+control codes are made loud (Del 2's aggregated alarm), not guessed at.
+Future work narrowing any `[OPEN]` row should update this table in
+place with the new evidence level, not create a duplicate table.

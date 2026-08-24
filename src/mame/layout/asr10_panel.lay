@@ -16,6 +16,26 @@ license:CC0-1.0
 		<rect state="1"><color red="0.45" green="1.00" blue="0.95" /></rect>
 	</element>
 
+	<!-- Del 4 (docs/asr10/investigations/annunciator-bit-probe.md): raw
+	     bit-level view of the 5 annunciator registers ($77 to $7b), 8
+	     bits each. Only asr10_instlamp0 (register $77 bit 0) has a
+	     confirmed meaning so far, and gets its own labeled, amber lamp
+	     below. The other 39 are unlabeled and dim amber: wired but not
+	     yet identified against a known-lit state. -->
+	<element name="annlamp" defstate="0">
+		<rect state="0"><color red="0.10" green="0.08" blue="0.05" /></rect>
+		<rect state="1"><color red="0.95" green="0.65" blue="0.10" /></rect>
+	</element>
+
+	<element name="instlamp" defstate="0">
+		<rect state="0"><color red="0.10" green="0.08" blue="0.05" /></rect>
+		<rect state="1"><color red="1.00" green="0.85" blue="0.20" /></rect>
+	</element>
+
+	<element name="instlamp_label">
+		<text string="INST 1"><color red="0.55" green="0.55" blue="0.45" /></text>
+	</element>
+
 	<element name="background">
 		<rect><color red="0.05" green="0.05" blue="0.06" /></rect>
 	</element>
@@ -286,7 +306,7 @@ license:CC0-1.0
 	</element>
 
 	<element name="annunciator_label">
-		<text string="ANNUNCIATORS OPEN"><color red="0.45" green="0.45" blue="0.45" /></text>
+		<text string="ANNUNCIATORS (raw bits)"><color red="0.45" green="0.45" blue="0.45" /></text>
 	</element>
 
 	<view name="ASR-10 Panel">
@@ -312,12 +332,19 @@ license:CC0-1.0
 		<element ref="annunciator_label">
 			<bounds x="8" y="18.5" width="56" height="4" />
 		</element>
-		<repeat count="5">
-			<param name="x" start="66" increment="13" />
-			<element ref="annunciator_placeholder">
-				<bounds x="~x~" y="19" width="10" height="4" />
+		<repeat count="40">
+			<param name="n" start="0" increment="1" />
+			<param name="x" start="66" increment="1.7" />
+			<element name="asr10_annbit~n~" ref="annlamp">
+				<bounds x="~x~" y="18" width="1.3" height="3" />
 			</element>
 		</repeat>
+		<element ref="instlamp_label">
+			<bounds x="66" y="22" width="16" height="3" />
+		</element>
+		<element name="asr10_instlamp0" ref="instlamp">
+			<bounds x="83" y="22" width="4" height="3" />
+		</element>
 		<element ref="button" inputtag="buttons_0" inputmask="0x00000001"><bounds x="5" y="30" width="14" height="7" /></element>
 		<element ref="button_label_00" inputtag="buttons_0" inputmask="0x00000001"><bounds x="5" y="30" width="14" height="7" /></element>
 		<element ref="button" inputtag="buttons_0" inputmask="0x00000002"><bounds x="21" y="30" width="14" height="7" /></element>
