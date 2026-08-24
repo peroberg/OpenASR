@@ -105,18 +105,21 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 67 Markdown-filer vid audit 2026-08-23
+## `investigations/` — 68 Markdown-filer vid audit 2026-08-24
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `stereo-ram-decode-analysis.md`. Det verifierar att
-modellens oberoende ROM-probe-shadows annonserar base 0/size `$F80000` utan
-sammanhängande RAM-backing vid `$7CE510`, och att LEFT/L+R använder samma
-WaveSample-layout före stoppet. Föregående
-`record-stereo-allocator-analysis.md` klassar adressen som en beräknad
-free-remainder-header i instrumentets nästlade firmwareheap. Den exakta
-fysiska RAM-dekodningen förblir öppen.
+Senaste tillägget är `bank-loading-and-transport-context.md`: laddar
+`TUTORIAL SEQ` som sekvenserkontext, isolerar exakt vilken knapp (`$17`, i en
+specifik 23-tryckningars föregående navigering) som sätter en
+"CREATE NEW SEQUENCE"-vaktstatus, och utökar sökandet efter Record/
+Stop•Continue/Play med prefix-isolering, en 650-parig hold-combo-svep och en
+minnesdiff — allt negativt; transporten förblir `[OPEN]`. Föregående
+`stereo-ram-decode-analysis.md` verifierar att modellens oberoende
+ROM-probe-shadows annonserar base 0/size `$F80000` utan sammanhängande
+RAM-backing vid `$7CE510`, och att LEFT/L+R använder samma WaveSample-layout
+före stoppet. Den exakta fysiska RAM-dekodningen förblir öppen.
 
 ## `archive/` — 28 filer
 

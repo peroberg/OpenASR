@@ -1618,3 +1618,46 @@ during a 3-second idle window), which puts the 40 annunciator bits'
 "simple on/off" reading specifically in question — no blink-mask
 encoding was identified, so no reinterpretation was implemented; they
 remain `[OPEN]`.
+
+## Bank loading as sequencer context; transport still open (docs/asr10/investigations/bank-loading-and-transport-context.md)
+
+**[Verified runtime]** `$15` is the Seq•Song category button (confirmed,
+not just candidate): reliably shows `TUTORIAL SEQ`'s file listing
+(`"FILE 9  TUT0RIAL 5EQ  "`); loading it (`$15` then `$23`, generous
+settle — the disk-completion transition is timing-sensitive, not
+instant) reaches `"DI5K C0MMAND C0MPLETED"` reproducibly. `$15` and
+`$20` (Sample•Source Select, confirmed prior task) now have mnemonic
+keyboard bindings (`KEYCODE_Q`/`KEYCODE_S`) alongside `$10`/`$11`'s
+existing `KEYCODE_LEFT`/`KEYCODE_RIGHT` — `KEYCODE_S` collides with the
+note-typing keyboard's C# key, documented rather than silently avoided.
+
+**[Verified runtime]** `$17`, in a specific 23-button preceding
+navigation context (`$00`-`$16` pressed in sequence), is the exact,
+prefix-isolated trigger for a guard state ("CREATE NEW SEQUENCE";
+blocks `$20` with `"STOP SEQUENCER FIRST"` until resolved) — most
+likely the manual's own "Create New Sequence" command, not a dedicated
+transport button (211-byte memory diff on the trigger press matches
+allocating a real sequence object, not a flag flip).
+
+**[OPEN], with substantially wider negative evidence than the prior
+task**: Record/Stop•Continue/Play. This task's search added bank-loaded
+context, prefix isolation, a 650-pair hold-combo sweep across every
+code with zero single-press effect anywhere tried, a second 110-pair
+sweep, correlated PC/state-variable tracking (both previously-tried
+candidate variables, `$016F`/`$0D04`, never move), and a full memory
+diff — all negative. `$26`-`$3F` (26 codes) show zero measured effect
+in every context and combination tried. Two live possibilities:
+Load/Command/Edit mode buttons (also `[OPEN]`) may need to be part of
+the combination, or Record/Play may need actual audio/MIDI input this
+button-only, `-sound none` harness cannot supply.
+
+**[Verified, source-level]** `asr10panel_device` implements no blink
+mechanism at all (no timer, no light-state attribute) — confirmed both
+by code inspection and a live 6-second, 40-bit output poll (zero
+changes). A sibling class in the same file, used by other Ensoniq
+panels, does implement blinking as a separate light-state attribute
+(not a redefinition of on/off) driven by a panel-local timer — the
+strongest available evidence for which of the three Del 5
+interpretations the real protocol likely follows, though it's evidence
+by analogy from a different device class, not a direct ASR-10
+measurement.

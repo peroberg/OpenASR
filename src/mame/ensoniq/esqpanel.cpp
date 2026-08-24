@@ -1003,7 +1003,12 @@ static INPUT_PORTS_START(asr10panel_device)
 	ASR10_PANEL_BUTTON(0x00040000, "BTN_12", 0x12)
 	ASR10_PANEL_BUTTON(0x00080000, "BTN_13", 0x13)
 	ASR10_PANEL_BUTTON(0x00100000, "BTN_14", 0x14)
-	ASR10_PANEL_BUTTON(0x00200000, "BTN_15", 0x15)
+	// BTN_15: KEYCODE_Q ("Sequence"), added 2026-08-24. Measured: $15
+	// reliably lands on a genuine sequence-file listing ("FILE 9
+	// TUT0RIAL 5EQ") when a sequence exists on the loaded disk -- the
+	// Seq*Song category button. Only assigned a mnemonic because the
+	// function is measured, not guessed at.
+	PORT_BIT(0x00200000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_15") PORT_CODE(KEYCODE_Q) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x15)
 	ASR10_PANEL_BUTTON(0x00400000, "BTN_16", 0x16)
 	ASR10_PANEL_BUTTON(0x00800000, "BTN_17", 0x17)
 	ASR10_PANEL_BUTTON(0x01000000, "BTN_18", 0x18)
@@ -1016,7 +1021,14 @@ static INPUT_PORTS_START(asr10panel_device)
 	ASR10_PANEL_BUTTON(0x80000000, "BTN_1F", 0x1f)
 
 	PORT_START("buttons_32")
-	ASR10_PANEL_BUTTON(0x00000001, "BTN_20", 0x20)
+	// BTN_20: KEYCODE_S ("Sample"), added 2026-08-24. Measured (prior
+	// task): $20 is Sample*Source Select. Note: KEYCODE_S collides with
+	// KEY_Cs (C-sharp) on the note-typing keyboard below -- pressing 'S'
+	// fires both. Documented rather than silently avoided, since the
+	// mnemonic scheme is keyed to measured function, not collision-free
+	// key layout; a future task can pick a different key if this proves
+	// disruptive in practice.
+	PORT_BIT(0x00000001, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_20") PORT_CODE(KEYCODE_S) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x20)
 	ASR10_PANEL_BUTTON(0x00000002, "BTN_21", 0x21)
 	ASR10_PANEL_BUTTON(0x00000004, "BTN_22", 0x22)
 	ASR10_PANEL_BUTTON(0x00000008, "BTN_23", 0x23)

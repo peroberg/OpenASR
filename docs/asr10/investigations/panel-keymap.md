@@ -15,7 +15,7 @@ ioport-falt ar alternativ, inte kombinationer, och kunde darfor inte gora
 
 | Kod | Tangent | Kod | Tangent |
 | --- | --- | --- | --- |
-| `$00` | klick | `$20` | klick |
+| `$00` | klick | `$20` | `S` (Sample*Source Select), klick |
 | `$01` | klick | `$21` | klick |
 | `$02` | klick | `$22` | klick |
 | `$03` | klick | `$23` | klick |
@@ -36,7 +36,7 @@ ioport-falt ar alternativ, inte kombinationer, och kunde darfor inte gora
 | `$12` | klick | `$32` | klick |
 | `$13` | klick | `$33` | klick |
 | `$14` | klick | `$34` | klick |
-| `$15` | klick | `$35` | klick |
+| `$15` | `Q` (Seq*Song), klick | `$35` | klick |
 | `$16` | klick | `$36` | klick |
 | `$17` | klick | `$37` | klick |
 | `$18` | klick | `$38` | klick |
