@@ -319,9 +319,15 @@ architectural model that did not exist before. Summary only — details in `refe
 
 ## Current incomplete areas
 
-- Mono LEFT RECORD, sample-object creation and direct ES5506 playback are
-  `[Verified runtime/current model]`. L+R remains `[OPEN runtime]` because the
-  current model does not back the firmware-heap address `$7CE510`.
+- Mono LEFT and L+R RECORD, sample-object creation and direct ES5506
+  playback are both `[Verified runtime/current model]`. **Superseded
+  2026-08-23/24**: the `$7CE510` blocker below is historical —
+  `investigations/memory-size-alias-fix.md` fixed the RAM/decode category
+  that caused it, and `investigations/stereo-round-trip-verification.md`
+  round-trip-verified stereo byte-for-byte (injection through IDMA copy)
+  and confirmed the two output channels are audibly distinct (mono
+  control: channels bit-identical, correlation 1.0; stereo: correlation
+  0.059, different peak/RMS) — not mono duplicated into two channels.
 - The sampling firmware/data path is verified. Physical ADC-to-SCC routing and
   digital-board connector pinout remain `[OPEN]`.
 - Factor two remains `[OPEN]`; no mechanism is assumed.
@@ -336,10 +342,20 @@ descriptor, delivers vector `$4D`/`$4A`, copies big-endian signed 16-bit PCM by
 IDMA into recording RAM and lets ES5506 consume that backing directly. Mono LEFT
 continues through stop, root-key assignment and a complete WaveSample object.
 
-L+R stops earlier in allocator `$F8A44E`: the free-remainder header is computed
-at `$7CE510`, written, and read back as zero because the current model does not
-map that firmware-accessible heap address. `$7CE510` is `[Verified firmware
-heap]`; its exact physical ASR-10 decode remains `[OPEN hardware]`. See
+**Superseded 2026-08-23/24.** L+R used to stop earlier in allocator
+`$F8A44E` (the free-remainder header computed at `$7CE510` read back as
+zero) because the model did not map that firmware-accessible heap
+address. `investigations/memory-size-alias-fix.md` fixed the underlying
+RAM/decode category (ROM's own memory-size probe now correctly concludes
+`base=$600000, size=$200000`, folding `$7CE510` into real backing), and
+L+R now reaches `WAITING` the same as mono and builds a real `UNNAMED WS`
+object. `investigations/stereo-round-trip-verification.md` closes the
+loop with data: byte-exact injection/readback for two genuinely
+different channel patterns (source==destination copy 794/794 both
+channels, own-pattern-fits/other-pattern-doesn't cross-check), and an
+audible-output comparison against a mono control (mono: L/R channels
+bit-identical in the WAV capture; stereo: L/R channels statistically
+uncorrelated, different peak/RMS/onset). Historical `$7CE510` context:
 `investigations/record-completion-analysis.md`,
 `investigations/record-stereo-allocator-analysis.md` and
 `investigations/stereo-ram-decode-analysis.md`.

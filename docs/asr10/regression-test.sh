@@ -28,6 +28,12 @@
 #              ($F8A166-$F8A244) concludes base=$600000/size=$200000 (the
 #              stock 2 MB machine) instead of the previous always-maximum
 #              ~15.5 MB belief -- memory-size-belief-analysis.md.
+# stereo_round_trip: injects two genuinely different byte patterns into
+#              SCC1(LEFT)/SCC2(RIGHT) interleaved, waits for both IDMA
+#              completions, then reads back each destination and checks
+#              it against both patterns -- exact copy, own pattern fits,
+#              other pattern does not (the channel-swap/merge check) --
+#              investigations/stereo-round-trip-verification.md.
 
 set -u
 
@@ -108,6 +114,7 @@ run_test mc68302_guards docs/asr10/lua/mc68302_guards.lua "$IMAGE" || failures=$
 run_test_audio note_audio docs/asr10/lua/note_audio.lua "$IMAGE" || failures=$((failures + 1))
 run_test interrupt_controller docs/asr10/lua/interrupt_controller.lua "$IMAGE" || failures=$((failures + 1))
 run_test memory_size docs/asr10/lua/memory_size.lua "$IMAGE" || failures=$((failures + 1))
+run_test stereo_round_trip docs/asr10/lua/stereo_round_trip.lua "$IMAGE" || failures=$((failures + 1))
 
 if [ "$failures" -ne 0 ]; then
 	echo "FAIL regression failures=${failures}"
