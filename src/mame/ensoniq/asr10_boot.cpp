@@ -310,12 +310,21 @@ void asr10_boot_state::mem_map(address_map &map)
 	// memory-size-belief-analysis.md, ROM $F8A166-$F8A244) reads
 	// $008000/$408000/$808000/$C08000 to detect real address-line
 	// aliasing. Its own subsequent allocator math ($C4E.l = reported_base
-	// + $10000) can also land anywhere up to $EFFFFF depending on which
+	// + $10000) can also land anywhere up to $F7FFFF depending on which
 	// branch it takes (reported_base is $600000 for the 2 MB branch, not
-	// $000000) -- so the whole $200000-$EFFFFF window, not just the four
+	// $000000) -- so the whole $200000-$F7FFFF window, not just the four
 	// probe bytes, must show the same wraparound. Folds into the same
 	// backing as $000000-$1FFFFF above; see system_ram_alias_r/w.
-	map(0x200000, 0xefffff).rw(FUNC(asr10_boot_state::system_ram_alias_r), FUNC(asr10_boot_state::system_ram_alias_w));
+	//
+	// Bugfix, docs/asr10/investigations/stereo-round-trip-verification.md:
+	// this line originally read $200000-$EFFFFF, one byte short of the
+	// $F00000-$F7FFFF range the prior $0xf00000,0xf7ffff .ram() line it
+	// replaced actually covered. $F00000-$F7FFFF is exactly where both
+	// SCC receive buffers live ($F76600 channel 1, $F74B00 channel 2), so
+	// the gap silently discarded both channels' recorded bytes -- caught
+	// only once a stereo round-trip test actually compared byte content,
+	// since no existing regression test read back what it recorded.
+	map(0x200000, 0xf7ffff).rw(FUNC(asr10_boot_state::system_ram_alias_r), FUNC(asr10_boot_state::system_ram_alias_w));
 
 	// Reference-based candidate windows that are not device implementations
 	// yet stay passive unless a real device is mapped below.
