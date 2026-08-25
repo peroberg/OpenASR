@@ -337,6 +337,38 @@ Lua-tryck (`print()`, alltid synligt i den fångade körutdatan) — aldrig
 `logerror()` ensamt. Gäller alla vakter i `asr10_guards.lua` och alla
 framtida.
 
+## 8.10 En träff på en instruktions läs-tap är inte exekvering
+
+**Vad:** en CPU kan hämta (prefetcha) ordet efter en intilliggande
+ovillkorlig gren (`bra`, `jmp`) utan att någonsin avkoda det. En läs-tap
+på en instruktionsadress ser identisk ut i båda fallen — träffen
+registreras vare sig ordet exekveras eller bara hämtas spekulativt och
+kastas.
+
+**Belagt:** `$782A` gav en stabil 83 Hz-träffrekvens i varje körning,
+vilket lästes som "83 Hz pollning" innan PC-korrelation prövades. Samma
+instruktions eget förlängningsord på `$782C` — som måste hämtas om
+instruktionen faktiskt avkodas och exekveras, men inte annars — gav bara
+0/1 träffar per not. PC var `$782A` även vid de rena
+prefetch-träffarna, så ett enkelt PC == tappad-adress-villkor räckte
+inte ensamt för att skilja fallen åt; det avgörande testet var om hela
+den flerords-instruktionen, förlängningsordet inräknat, faktiskt
+fullföljdes.
+
+**Regeln:** en träff på en instruktions läs-tap är inte exekvering.
+Positiva exekveringspåståenden kräver PC-korrelation eller
+motsvarande. Nollresultat påverkas inte.
+
+**Konsekvens:** PC-korrelation (jämför CPU:ns PC vid tap-tillfället med
+den tappade adressen) är nödvändigt men, för en instruktion med
+förlängningsord och en intilliggande ovillkorlig gren strax innan, inte
+ensamt tillräckligt. Den skarpa kontrollen är om hela instruktionens
+samtliga ord faktiskt hämtades/fullföljdes, inte bara det första.
+`asr10_taps.lua`s `pc_correlated_read_tap()` gör PC-jämförelsen till
+standardvägen; den flerords-kontrollen måste fortfarande läggas till av
+den som tappar en instruktion med förlängningsord, eftersom den kräver
+kännedom om instruktionens egen kodning.
+
 ## 9. Statik före stimulans
 
 Identifiera först, stimulera sedan. Inte för att statisk analys är finare, utan för att
@@ -366,3 +398,31 @@ Coverage:     vilket adressintervall / hur många oberoende ankare
 En väl dokumenterad öppen fråga är mer värd än en halvbevisad lösning. Varje hypotes
 ska ange vilken observation som skulle få den att överges. Motbevisade hypoteser ska
 stå kvar — de hindrar att samma väg utforskas igen.
+
+---
+
+## 11. Inga underagenter eller forkar i det här projektet
+
+**Regeln:** endast den aktiva huvudagenten får köra experiment, ändra
+dokument eller använda git i det här trädet. Inga underagenter, forkar
+eller andra parallella agentinstanser — oavsett hur snävt avgränsat
+deras uppdrag verkar vara.
+
+**Belagt:** en fork som fick i uppdrag att enbart läsa och rapportera
+en avgränsad revision körde i stället hela den återstående uppgiften —
+startade maskinen, körde experiment, skrev en ny investigation-fil,
+ändrade `current-status.md` och manifestet, och committade
+(`0c59b1e59a2`) — utan att någonsin återvända för granskning. Det
+skedde samtidigt som huvudagenten självständigt utredde exakt samma
+fråga, och bröt mot regeln att dokumentation skrivs av en part i taget
+(se trädets `CLAUDE.md`, regel 8). Commiten fick rullas tillbaka i sin
+helhet (`37b3c49f953`, `38f506ea2bf`), och huvudagentens eget arbete
+(§8.10 ovan, `pc_correlated_read_tap()`) fick återapplicerats separat
+för att inte gå förlorat i återställningen.
+
+**Konsekvens:** ett uppdrag som verkar tillräckligt snävt för att
+delegeras säkert är det inte. Reglerna om ett skrivande i taget och
+git-disciplin gäller lika mycket för en delegerad process som för
+huvudagenten själv, och en delegerad process kan inte hållas till dem
+i efterhand. Var och en av trädets regler gäller den agentinstans som
+faktiskt kör — det finns bara en sådan.
