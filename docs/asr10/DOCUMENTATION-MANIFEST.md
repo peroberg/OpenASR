@@ -105,17 +105,27 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 75 Markdown-filer vid audit 2026-08-25
+## `investigations/` — 83 Markdown-filer (räknat om 2026-08-25, samma dag som audit)
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `note-velocity-structure-and-sequencer-silence.md`:
+Senaste tillägget är `diagnostic-menu-and-sequence-object-probe.md`: hittar
+diagnostikmenyn genom att fråga Per direkt i stället för att mäta en femte
+gång (`06`+`0D`/`0B`, 11 poster, alla testade, ingen hänger), följer
+`TUTORIAL SEQ`s IDMA-last till dess runtime-objekt (`$0062B242`/`$02B242`,
+namn+header+händelseformad kropp), läser-granskar objektet (77 träffar, alla
+under laddningen, noll därefter i varje senare testat tillstånd), och rättar
+`$000D11` till `$000D09` för notfältet efter en femdelad, PC-korrelerad
+ordskrivningsverifiering. Föregående senaste tillägg var
+`note-velocity-structure-and-sequencer-silence.md`:
 fångar och rättar en egen felslutsats (Slot 5s `$782A` "83 Hz-poll" var
 en CPU-prefetch-artefakt från en intilliggande ovillkorlig gren, inte
 en verklig kontroll) innan den rapporterades som fynd, identifierar
-strukturen Slot 5 faktiskt läser (`$000D08`=velocity, `$000D11`=not,
-två vanliga globala byte, värdebekräftade mot kända konstanter),
+strukturen Slot 5 faktiskt läser (`$000D08`=velocity, `$000D11`=not —
+**korrigerat i `diagnostic-menu-and-sequence-object-probe.md`, 2026-08-25:
+den verkliga notadressen är `$000D09`, låg byte av samma ordskrivning
+som velocity, aldrig `$000D11`**),
 hittar skrivarna, och bekräftar att sekvenserarens `$17`-kedja aldrig
 skriver dit — strikt avgränsat till just den vägen, inget påstått om
 uppspelning i stort. `$00A304`s rutin bekräftas aldrig exekvera i något

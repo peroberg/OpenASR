@@ -337,6 +337,59 @@ Lua-tryck (`print()`, alltid synligt i den fångade körutdatan) — aldrig
 `logerror()` ensamt. Gäller alla vakter i `asr10_guards.lua` och alla
 framtida.
 
+## 8.10 En träff på en instruktions läs-tap är inte exekvering
+
+**Vad:** en CPU kan hämta (prefetcha) ordet efter en intilliggande
+ovillkorlig gren (`bra`, `jmp`) utan att någonsin avkoda det. En läs-tap
+på en instruktionsadress ser identisk ut i båda fallen — träffen
+registreras vare sig ordet exekveras eller bara hämtas spekulativt och
+kastas.
+
+**Belagt:** `$782A` gav en stabil 83 Hz-träffrekvens i varje körning,
+vilket lästes som "83 Hz pollning" innan PC-korrelation prövades. Samma
+instruktions eget förlängningsord på `$782C` — som måste hämtas om
+instruktionen faktiskt avkodas och exekveras, men inte annars — gav bara
+0/1 träffar per not. PC var `$782A` även vid de rena
+prefetch-träffarna, så ett enkelt PC == tappad-adress-villkor räckte
+inte ensamt för att skilja fallen åt; det avgörande testet var om hela
+den flerords-instruktionen, förlängningsordet inräknat, faktiskt
+fullföljdes.
+
+**Regeln:** en träff på en instruktions läs-tap är inte exekvering.
+Positiva exekveringspåståenden kräver PC-korrelation eller
+motsvarande. Nollresultat påverkas inte.
+
+**Konsekvens:** PC-korrelation (jämför CPU:ns PC vid tap-tillfället med
+den tappade adressen) är nödvändigt men, för en instruktion med
+förlängningsord och en intilliggande ovillkorlig gren strax innan, inte
+ensamt tillräckligt. Den skarpa kontrollen är om hela instruktionens
+samtliga ord faktiskt hämtades/fullföljdes, inte bara det första.
+`asr10_taps.lua`s `pc_correlated_read_tap()` gör PC-jämförelsen till
+standardvägen; den flerords-kontrollen måste fortfarande läggas till av
+den som tappar en instruktion med förlängningsord, eftersom den kräver
+kännedom om instruktionens egen kodning.
+
+**Vidare precisering (samma regel, andra evidensformer):** "PC-korrelation
+eller motsvarande" betyder någon av:
+- tapp-callbacken läser `cpu_space.state["PC"]`/`CURPC` vid träfftillfället
+  och jämför mot den förväntade adressen, för varje träff, genom hela
+  mätfönstret;
+- ett läs-tap på instruktionens **förlängningsord** (nästa ord i samma
+  instruktion) ger samma resultat som opcode-ordet — om de skiljer sig är
+  opcode-träffen prefetch, inte exekvering (`$782A`-fallet);
+- en **differentiell** signatur kopplad till en verklig stimulans (t.ex.
+  0 träffar i vila mot exakt 1 träff per verklig tangenttryckning) —
+  prefetch-artefakter ger en konstant bakgrundstakt oavsett tillstånd, så en
+  ren stimulans-korrelerad differential är inte samma felkälla;
+- exekvering bekräftad via en mekanism som per konstruktion kräver verklig
+  avkodning (t.ex. en `TRAP`-vektorhämtning eller registerinnehåll som bara
+  kan komma från att rutinen faktiskt kördes).
+
+Ett dataadress-tap (ett tap på en operand, inte på en instruktions eget
+opcode-ord) har inte samma sårbarhet — 68000-familjens prefetch spekulerar
+instruktionsord, inte operandläsningar — men avslöjar bara *att* något läste
+adressen, inte *vilken* av flera möjliga läsare, om inte PC-brytning görs.
+
 ## 9. Statik före stimulans
 
 Identifiera först, stimulera sedan. Inte för att statisk analys är finare, utan för att

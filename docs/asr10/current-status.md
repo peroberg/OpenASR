@@ -1737,6 +1737,23 @@ stage, dispatching into scheduler slot `$DA` at ~83Hz) and `$0073A8`
 `$00D42` linked list via `$00E68E`, touching MC68302 PIO-region
 addresses — shaped like MIDI-clock transmission). Neither consumer
 touches sequence-event data; the real event-consumer for `TUTORIAL
+
+**[OPEN, prefetch-osäkert — SS8.10 audit]** The `~83Hz` figure for
+`$00E66E` and the positive-execution claim for `$0073A8` above rest on
+`tempo-clock-consumer-chain.md`'s own read-taps with no PC-correlation
+documented in that file (checked directly: zero `PC`/`CURPC` references
+in the source). `$00E66E` is a `jsr` target (called from `$007822`),
+not reached by falling through past an unconditional branch the way
+`$782A` was, so it is structurally less exposed to the specific
+adjacent-branch prefetch pattern than `$782A` — but that is a plausibility
+argument, not a measurement, and SS8.10's own criterion is documented
+PC-correlation or equivalent, which this finding does not have. Both
+addresses stay `[Verified runtime, disassembled]` for the disassembly
+itself (the routines' existence and shape are static-read facts, not at
+risk) but the live-execution/frequency claim is downgraded to `[OPEN,
+prefetch-osäkert]` until re-measured with `asr10_taps.lua`'s
+`pc_correlated_read_tap()` and, since both are multi-word instructions,
+an extension-word or full-instruction-completion check per SS8.10.
 SEQ`'s own allocated object remains `[OPEN]`.
 
 **[Self-correction, recorded]** Several early taps this round returned
@@ -1918,6 +1935,17 @@ twelve entries' target-address decoding is ambiguous (word
 zero-extend vs. paired-longword) and untested for actual firing —
 kept explicitly separate from confirmed findings.
 
+**[OPEN, prefetch-osäkert — SS8.10 audit]** Type `$0E`'s "execution-confirmed
+144Hz" has two separate legs with different evidence strength. `$F8F2FA`
+(Slot 3) executing at 144Hz stays `[Verified]` — that leg is trap-based
+(`TRAP #9`/`#C` register capture, `A1` matching Slot 3's own header), which
+is inherently execution-confirmed and not exposed to instruction-prefetch
+false positives. The second leg — "its `jmp (a0)` fires at 144Hz, landing
+near `$006014`" (`execution-traced-clock-and-sequencer-stepper.md`,
+already self-flagged there as "not fully resolved") — has no documented
+PC-correlation for the `$006014` landing site itself and is downgraded to
+`[OPEN, prefetch-osäkert]` pending a `pc_correlated_read_tap()` remeasurement.
+
 **[OPEN, new lead]** A static ROM search (not live tapping — sidesteps
 the overlay confound) found a genuine 32-bit reference to `GPR
 MONITOR`'s own address at `$00A304`: a bounds check against exactly
@@ -1953,7 +1981,83 @@ per the task's own instruction: this rules out only "the sequencer's
 whether the sequencer uses another path, or whether playback starts at
 all by any mechanism.
 
+**[DISPROVEN, correction — see `diagnostic-menu-and-sequence-object-probe.md`]**
+The address above is wrong. A word-granular write-tap over the whole
+`$D00`-`$D1E` region, PC-correlated, across five distinct note/octave
+combinations (`KEY_C`/`KEY_C2`/`KEY_A` at three octave settings) shows
+`$0171B4` writes velocity and note as a **single 16-bit word to
+`$000D08`**: high byte = velocity (`$64`=100, `KEY_VELOCITY`, confirmed
+unchanged across all five points), low byte = note number, landing at
+**`$000D09`, not `$000D11`**. `$000D11` is never written by any key
+press in this session — the original claim is a transcription/read
+error, not a hardware fact. A second, independent copy of the same
+note value is written immediately after by `$0171BE` (not `$017276`,
+also wrong) to its own word at `$000D0C`. Formula confirmed exactly
+across all five points: `note = min(m_octave*12+note_offset, 60) + 36`
+(`m_octave` defaults to `2`, `esqpanel.h:177`; the `+36` and the
+`min(...,60)` pre-clamp are both esqpanel.cpp's own arithmetic, not
+guessed). Velocity could not be varied through panel-key input at all
+— `esqpanel.cpp`'s `key_change()` hardcodes `KEY_VELOCITY=100`
+unconditionally for every press, a documented simplification (a plain
+computer keyboard has no pressure sensor), not a modeled MIDI velocity
+path. Testing real multiple velocities would need MIDI input injected
+through the driver's own `mdin`/DUART-channel-A path
+(`asr10_boot.cpp`), not attempted this task (no C++ change was in
+scope). Every downstream claim citing `$000D11` as the note field
+should be read as `$000D09`.
+
 **[OPEN, narrowed]** `$00A304`'s containing routine (`$00A2FA`) never
 executes across idle or ten steps of Command-mode navigation; its
 target on success (`$8C72`) reads as repeating table data, not code.
 Real ROM content, confirmed unreached in every state found so far.
+
+## Diagnostic menu found by testimony; the runtime sequence object found and read-audited; a note-field address correction (docs/asr10/investigations/diagnostic-menu-and-sequence-object-probe.md)
+
+**[Verified runtime]** The diagnostic menu, sought across four
+measurement-only rounds, found by asking Per directly: `$06` then `$0D`
+(or `$0B`, a second entry point into the same category) reveals an
+11-entry category — `CALIBRATE KEYBOARD`, `SOFTWARE INFORMATION`,
+`EXAMINE DOS STATUS`, `EXAMINE ANALOG INPUTS`, `GPR MONITOR`,
+`INSTRUCTION MONITOR`, `ESP TESTS`, `A/D TO D/A`, `DC OFFSET`,
+`MIDI LOOP`, matching the ROM string table exactly. All 11 entered
+(hang-guarded); none hang. `MIDI LOOP` runs a live, still-counting
+pass/fail loop.
+
+**[Verified]** `$00A304` is a genuine instruction (`sub.l #$101c,d0`
+inside a coherent bounds-check routine, `$00A2FA`-`$00A31E`), not a
+data record — corrects this task's own premise. Live-witnessed
+negative: nobody reads `$00A304` or its `jsr` target `$8C72` as data
+either, across boot, a Command-mode sweep, and `GPR MONITOR` entry.
+
+**[Verified]** The runtime sequence object for `TUTORIAL SEQ`:
+IDMA lands it directly at `$0062B242` (aliasing to `$02B242` in this
+model's RAM decode; a second, small IDMA arm to `$000944` carries only
+a reused scratch pattern, not payload). Contains the name
+`"TUTORIAL SEQ"`, header fields including a byte matching the tempo
+constant `$5A`, and a long structured event-shaped body (≥2048 bytes,
+repeated 4-byte records in sections each ending with a distinctive
+terminator) — exact per-field semantics (delta-time/status/note/
+velocity assignment) `[OPEN]`.
+
+**[Verified, negative, scoped]** The object is read 77 times by 13
+PCs, all during the load itself (dominated by `$F92464`, 40 hits) —
+loader/parser activity, not ongoing consumption. Zero further reads
+across idle, a 40-step Command-mode sweep, `GPR MONITOR` entry,
+Seq•Song category paging, and three untested transport-candidate
+button presses (`$22`/`$24`/`$25`), live-witnessed throughout. Does
+not rule out a state not reached.
+
+**[DISPROVEN → corrected]** The note field is `$000D09`, not
+`$000D11` — see the correction block above
+(`note-velocity-structure-and-sequencer-silence.md`'s section).
+Verified exactly across 5 note/octave points via a word-granular,
+PC-correlated write-tap: `$0171B4` writes velocity (`$D08`, always
+100) and note (`$D09`) as one 16-bit word; `$0171BE` writes a redundant
+copy to `$D0C`. `note = min(m_octave*12+note_offset, 60) + 36`, exact
+at all 5 points.
+
+**[OPEN, prefetch-osäkert — new this task]** `$00E66E`/`$0073A8`'s
+positive-execution claims (`tempo-clock-consumer-chain.md`) and type
+`$0E`'s `$006014`-landing leg — see the SS8.10 markers above. §8.10
+itself, and `asr10_taps.lua`'s `pc_correlated_read_tap()`, are now the
+project's standing defense against this class of false positive.
