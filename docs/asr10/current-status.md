@@ -44,11 +44,42 @@ Panel receive terminology:
 
 ## Current handoff
 
-The current session handoff is `reference/handoff-2026-08-23.md`. This document
-retains the detailed status journal. `reference/architecture-handoff.md` preserves
-the earlier pre-IDMA architecture checkpoint and remains useful for the service-
-kernel model, but its runtime stall and implementation target are historical and
-passed.
+The current resume point is this document together with
+`investigations/transport-ab-test-play-stop-continue.md` and
+`investigations/slot5-pc-correlation-and-atrk-slot-table.md`.
+`reference/handoff-2026-08-23.md` is the five-minute freeze snapshot and now
+contains an explicit post-freeze correction; its dated resumption notes are
+provenance, not the current work priority. `reference/architecture-handoff.md`
+preserves the earlier pre-IDMA architecture checkpoint and remains useful for
+the service-kernel model, but its runtime stall and implementation target are
+historical and passed.
+
+## Current transport and sequencer boundary
+
+- **[Verified runtime] Transport and sequencer execution work.** With a sequence
+  loaded, raw panel code `$1D` starts Play. During active playback `$17` stops
+  the observed ES5506 register activity and a second `$17` continues it with
+  freshly programmed voices. `$17` is genuinely context-dependent: the earlier
+  `CREATE NEW SEQUENCE` observation belongs to a different, deep Command
+  context, while bare `$17` is inert without an active sequence. Playback
+  produces audible sound.
+- **[OPEN, highest-priority functional problem] Musical/audio-correct sequencer
+  playback is not verified.** `LOAD/INST -> TUTORIAL BNK`, then `LOAD/SEQ ->
+  TUTORIAL SEQ`, then Play produces audible playback that works substantially
+  better, but has not been shown to reproduce the original music correctly.
+  Fresh boot -> `LOAD/INST -> ATRK TUT BNK` also starts sequencer activity but
+  produces mainly clicks or otherwise clearly incorrect audio. The open boundary
+  is the sequencer -> track/instrument -> voice -> ES5506 result, not transport
+  start/stop/continue.
+- **[DISPROVEN as an execution entry]** `$007C7C` was a 68000 prefetch/read-tap
+  false positive. The underlying measured note-to-voice connection remains:
+  `$007830` and `$007CA8` are PC-correlated executing addresses in the measured
+  MIDI-note case. `$007E24` executes frequently, but its semantics remain
+  `[OPEN]`.
+- **[DISPROVEN as a loader-bug indicator]** ATRK's `$001098` population shape
+  matches the bank file's three instruments plus bundled Song and the fixed
+  eight-track control group. Its cycling pattern is not evidence of a loader
+  defect.
 
 ## Works
 
@@ -319,21 +350,28 @@ architectural model that did not exist before. Summary only — details in `refe
 
 ## Current incomplete areas
 
-- Mono LEFT and L+R RECORD, sample-object creation and direct ES5506
-  playback are both `[Verified runtime/current model]`. **Superseded
-  2026-08-23/24**: the `$7CE510` blocker below is historical —
-  `investigations/memory-size-alias-fix.md` fixed the RAM/decode category
-  that caused it, and `investigations/stereo-round-trip-verification.md`
-  round-trip-verified stereo byte-for-byte (injection through IDMA copy)
-  and confirmed the two output channels are audibly distinct (mono
-  control: channels bit-identical, correlation 1.0; stereo: correlation
-  0.059, different peak/RMS) — not mono duplicated into two channels.
-- The sampling firmware/data path is verified. Physical ADC-to-SCC routing and
-  digital-board connector pinout remain `[OPEN]`.
-- Factor two remains `[OPEN]`; no mechanism is assumed.
-- ES5510 execution/effects integration is not started.
-- PB9/PB10/PB11 physical sources and the keybed's digital-board termination are
-  `[OPEN hardware]`, but do not block the verified mono recording path.
+Priorities are deliberately ordered by present functional value:
+
+1. **Functional:** the reproducible incorrect/clicking sequencer playback
+   described above. Transport is no longer the blocker; musical/audio-correct
+   playback across the sequencer-to-ES5506 chain is.
+2. **UI/front panel:** the DUART/display path, text, cursor-column protocol,
+   underline/field attributes and measured partial-update cases work, but the
+   complete functional UI model is `[OPEN]`. Normal cursor movement,
+   parameter-field selection and value editing must be validated through real
+   workflows before the display/front panel can be called complete.
+3. **Tooling:** regenerate the 68000 static graph with BSR, BRA/Bcc,
+   PC-relative effective addresses, register-indirect JMP/JSR and
+   TRAP/callback dispatch, with call/control/data edges kept separate. This is
+   a separate tooling task, not a blocker ahead of the playback defect.
+4. **Later/parked hardware:** ES5510 execution/effects, the ES5506 factor-two
+   question, SCSI, PB9/PB10/PB11, physical keybed/controller and ADC routing,
+   and expanded RAM configurations.
+
+Mono and stereo sampling, sample-object creation and direct ES5506 playback
+remain `[Verified runtime/current model]`. Physical ADC-to-SCC routing and the
+digital-board connector pinout remain `[OPEN hardware]`, but are parked below
+the functional and UI work above.
 
 ## Latest verified recording boundary
 
@@ -1534,11 +1572,12 @@ code instead of staying silent or flooding — see
 remains `[OPEN]` (`$74`/`$75`/`$76`'s animation family, `$E7 $71` and
 neighbors, two more small clusters).
 
-**[OPEN]** REC SRC Field 1 remains unreachable through any currently
-modeled panel control — determined to be a panel-control mapping gap
-(the real Left/Right Arrow button code is not identified), not a
-display rendering gap, since the display now correctly renders whatever
-field/attribute structure it receives.
+**[Superseded 2026-08-24]** REC SRC Field 1 was unreachable at this
+checkpoint because Left/Right had not yet been identified. The later
+partial-update investigation verifies `$10`=Left and `$11`=Right and
+round-trips between Field 1 and Field 2. This closes that particular
+navigation gap; it does not make the complete cursor/parameter/value-editing
+UI model verified.
 
 ## Panel controls: matrix survey and transport gap (docs/asr10/investigations/panel-button-and-transport-map.md)
 
@@ -1555,9 +1594,10 @@ they reach real, distinct, working handlers for an unrelated menu
 category (Audio Track utilities: COPY/ERASE/FILTER/SHIFT), not a cursor
 move. The pilot keymap's `KEYCODE_LEFT`/`KEYCODE_RIGHT` bindings on
 those codes were wrong, not just unverified, and have been removed
-(`esqpanel.cpp`). The real Left/Right Arrow codes, and the Sequencer
-Transport (Record/Stop•Continue/Play) codes, remain `[OPEN]` despite
-systematic sweeping across three contexts — not guessed at.
+(`esqpanel.cpp`). **[Superseded at this historical boundary]** The real
+Left/Right and transport codes were still `[OPEN]` in this round; later
+runtime work verifies `$10`/`$11` as Left/Right, `$1D` as Play in the
+loaded-sequence context, and `$17` as Stop/Continue during playback.
 
 **[Verified runtime]** Simultaneous button holds (needed for "hold
 Record, press Play") already work correctly at the infrastructure
@@ -1607,7 +1647,7 @@ is genuinely Up, `$0B` genuinely Down) — fixed; the wire-level codes
 and their effect were never wrong, only which computer key triggered
 which.
 
-**[OPEN]** Record/Stop•Continue/Play tried as a state machine (hold A,
+**[Superseded transport search]** Record/Stop•Continue/Play were tried as a state machine (hold A,
 hold B while A held, release both) across the codes with no visible
 single-press effect from idle — no combined effect found. The
 sequencer-status state variable to trace was not localized. One useful
@@ -1617,9 +1657,11 @@ LOAD's blink was determined panel-local (zero display-channel traffic
 during a 3-second idle window), which puts the 40 annunciator bits'
 "simple on/off" reading specifically in question — no blink-mask
 encoding was identified, so no reinterpretation was implemented; they
-remain `[OPEN]`.
+remain `[OPEN]`. The negative transport result was scoped to states with no
+loaded, playable sequence; later context-correct runtime measurement verifies
+`$1D` Play and `$17` Stop/Continue.
 
-## Bank loading as sequencer context; transport still open (docs/asr10/investigations/bank-loading-and-transport-context.md)
+## Bank loading as sequencer context; transport still open at this historical boundary (docs/asr10/investigations/bank-loading-and-transport-context.md)
 
 **[Verified runtime]** `$15` is the Seq•Song category button (confirmed,
 not just candidate): reliably shows `TUTORIAL SEQ`'s file listing
@@ -1639,17 +1681,20 @@ likely the manual's own "Create New Sequence" command, not a dedicated
 transport button (211-byte memory diff on the trigger press matches
 allocating a real sequence object, not a flag flip).
 
-**[OPEN], with substantially wider negative evidence than the prior
-task**: Record/Stop•Continue/Play. This task's search added bank-loaded
+**[Superseded, bounded negative], with substantially wider negative evidence than the prior
+task**: Record/Stop•Continue/Play were not found in the states this task
+could create. This task's search added bank-loaded
 context, prefix isolation, a 650-pair hold-combo sweep across every
 code with zero single-press effect anywhere tried, a second 110-pair
 sweep, correlated PC/state-variable tracking (both previously-tried
 candidate variables, `$016F`/`$0D04`, never move), and a full memory
 diff — all negative. `$26`-`$3F` (26 codes) show zero measured effect
 in every context and combination tried. Two live possibilities:
-Load/Command/Edit mode buttons (also `[OPEN]`) may need to be part of
-the combination, or Record/Play may need actual audio/MIDI input this
-button-only, `-sound none` harness cannot supply.
+Load/Command/Edit mode buttons may need to be part of the combination,
+or the missing condition may be a loaded playable sequence. The later
+transport investigation demonstrates the latter: `$1D` and `$17` become
+functional in the correct sequence state. The negative result here never
+established that transport was absent.
 
 **[Verified, source-level]** `asr10panel_device` implements no blink
 mechanism at all (no timer, no light-state attribute) — confirmed both
@@ -1710,14 +1755,16 @@ code. `$26`-`$3F`'s silence is a real property of those button IDs,
 not a framing/classification bug — no `asr10panel_device` change was
 warranted or made.
 
-**First byte is now exhausted for transport identification** across
+**[Historical negative, superseded by context-correct transport
+measurement]** First-byte transport search appeared exhausted across
 three rounds of investigation: single/paired-button sweeps from
 multiple contexts, a 650-pair and a 110-pair hold-combination sweep,
 prefix-isolated binary search, correlated PC/state-variable tracking,
 a full memory diff, and (this round) forward disassembly from that
 diff through two real subsystems to a named byte that was never
-observed to move. Record/Stop•Continue/Play remain `[OPEN]`; the
-service menu's entry condition remains `[OPEN]`.
+observed to move. Those contexts still lacked a loaded playable sequence;
+later work verifies `$1D` Play and `$17` Stop/Continue in that state.
+Record and the service menu's entry condition remain `[OPEN]`.
 
 ## The tempo chain closed two levels deeper; a real crash found and isolated (docs/asr10/investigations/tempo-clock-consumer-chain.md)
 
@@ -1897,12 +1944,12 @@ not a handoff of sequence content to a new destination. Called at
 176.33Hz overall (higher than the 144Hz pulse), confirming multiple
 unrelated callers share this primitive.
 
-**[Verified runtime, new lead]** Tracing backward from confirmed-real
-ES5506 writes during an actual `KEY_C` press (matching
-`note_audio.lua`'s own proven pattern) finds the real caller at
-**`$007C7C`-`$007CEE`** — a direct voice-programming routine, reading
-a mode byte from `$11C(a3)`, conditionally transforming, and writing
-`$FC2001`-window registers from `$15(a4)`/`$2A(a4)`. **This PC region
+**[Verified runtime, address later corrected]** Tracing backward from
+confirmed-real ES5506 writes during an actual `KEY_C` press (matching
+`note_audio.lua`'s own proven pattern) localized a code block at
+**`$007C7C`-`$007CEE`** that reads a mode byte from `$11C(a3)`,
+conditionally transforms data, and writes `$FC2001`-window registers
+from `$15(a4)`/`$2A(a4)`. **This PC region
 never once appears in any `TRAP #9`/`TRAP #C` register capture** — the
 tempo/clock chain and the real note-to-voice path are disjoint
 subsystems, not one pipeline with a gate in the middle. This revises
@@ -1930,12 +1977,13 @@ entries were not re-verified for actual firing.
 **[OPEN, unchanged]** Diagnostic menu backward trace — not
 re-attempted this task, same structural blocker as before.
 
-## Slot 5 is the note-to-voice connector; six slots identified (docs/asr10/investigations/slot5-connects-notes-to-voice-programming.md)
+## Slot 5 note-to-voice connection; six slots identified, execution claims corrected (docs/asr10/investigations/slot5-connects-notes-to-voice-programming.md)
 
-**[Verified]** `$007C7C` (the voice-programming routine) is never
-reached by the `$17` sequence-creation chain across a full `$00`-`$17`
-sweep (0 calls) — the sequencer path stays confirmed silent. Its panel-
-note caller is identified via the scheduler slots, not stack tracing.
+**[Historical negative, narrowly scoped]** A bare read-tap at `$007C7C`
+gave zero hits during the specific `$17` sequence-creation chain. It did
+not test active playback and cannot support “the sequencer path is silent”.
+Later work verifies that sequencer execution and transport run by a different
+measured route and produce audible sound.
 
 **[Corrected]** This section's own tap was a bare read-tap on `$007C7C`'s
 entry, no PC-correlation recorded — at risk under §8.10, and now
@@ -1946,14 +1994,16 @@ is independently reconfirmed below, but attributed to the wrong
 address — see "Slot 5, PC-correlated" below for the corrected entry
 point (`$007CA8`) and full accounting.
 
-**[Verified, key finding]** All six scheduler slots read (base `$23F6`,
+**[Verified, corrected key finding]** All six scheduler slots read (base `$23F6`,
 stride `$16`, task at `+6`): Slot 2=`$0073EA` (MIDI-clock poll,
 known), Slot 3=`$F8F2FA` (tempo producer, known), **Slot 5=`$00780C`
-is the note-to-voice connector** — its own task runs a continuous
-~83Hz check (`$00782A`) that conditionally calls the real voice-
-programming routine (`$007CA8`) exactly once per note (measured: 0
-calls idle, 1 call per panel note press). Slots 0 (`$002B4C`), 1
-(`$FFC8B0`), 4 (`$0069CC`) read but not characterized — `[OPEN]`.
+participates in the measured note-to-voice connection**. The old
+“continuous ~83Hz check at `$00782A`” is `[DISPROVEN]`: `$00782A` was
+prefetch after an adjacent branch. In the later MIDI-note run, `$007830`
+and its target `$007CA8` are PC-correlated executing addresses. This
+supports the measured connection without claiming that Slot 5 is the
+universal sequencer note path. Slots 0 (`$002B4C`), 1 (`$FFC8B0`), 4
+(`$0069CC`) read but not characterized — `[OPEN]`.
 
 **[Partial]** The `$8258` type-dispatch table re-read, stable; only
 type `$0E` remains execution-confirmed (144Hz, prior round). The other
@@ -2054,12 +2104,22 @@ established for `$10`/`$11`. Bare `$17` from idle or with only a bank
 loaded has zero effect in either display or guard state, confirmed this
 task.
 
-**[Verified, resolved — see "Slot 5, PC-correlated" below]** `$007C7C`'s
-execution during Play is not PC-confirmed: a PC-correlated tap shows 374
-reads, zero with `PC==$007C7C`. The real, repeated reader is `$007E24`
-(373/374 hits). Follow-up: the Slot 5 → voice-programming connection
-itself holds — its own address was simply wrong. The real, PC-confirmed
-call target is `$007CA8`, 44 bytes into the same block.
+**[OPEN, highest-priority functional problem]** These measurements verify
+transport, sequencer execution and audible output, not musical/audio-correct
+playback. Case A (`TUTORIAL BNK` -> `TUTORIAL SEQ` -> Play) sounds
+substantially better but is not verified against original musical behavior.
+Case B (fresh boot -> `ATRK TUT BNK`) runs but produces mainly clicks or
+otherwise clearly incorrect audio. The sequencer -> track/instrument -> voice
+-> ES5506 result is therefore still open.
+
+**[DISPROVEN as the claimed execution entry; corrected below]** A
+PC-correlated tap at `$007C7C` during Play shows 374 reads and zero with
+`PC==$007C7C`; the earlier positive read-tap was a prefetch/data-read false
+positive. The real, repeated reader is `$007E24` (373/374 hits). Follow-up:
+the measured note-to-voice connection itself holds. `$007830` and the call
+target `$007CA8`, 44 bytes into the same block, are PC-correlated during the
+measured MIDI-note case. `$007E24` executes, but its exact semantics are
+`[OPEN]`.
 
 **[Verified]** A per-slot association table at `$001098` (~72-byte
 stride, ≥8 slots): case A (`TUTORIAL BNK`) shows 5-6 distinct

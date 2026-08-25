@@ -9,6 +9,19 @@ CPU address `$FC480D`, low byte lane — found by tapping the *whole*
 dominates, not by assuming the standard SCN2681 register map's usual
 THRB slot). Investigation: `../investigations/display-protocol-inventory.md`.
 
+## Current functional boundary
+
+**[Verified, bounded]** The DUART-to-display path, printable text,
+cursor-column opcodes, underline/field attributes and the partial-update cases
+named in the table below work in the current model.
+
+**[OPEN]** This is not a claim that the display or front-panel UI is complete
+or fully correct. Cursor behavior, parameter-field selection and value editing
+still need validation through normal user workflows, and the undecoded control
+codes and annunciator meanings below remain open. Protocol mechanisms verified
+in isolated screens must not be generalized to complete application-level UI
+behavior without corresponding runtime coverage.
+
 ## Code path (Del 0)
 
 ```
@@ -19,7 +32,8 @@ firmware -> MC68302 SCC/SIB -> DUART channel B THRB ($FC480D)
        - intercepts $77-$7b (2-byte annunciator opcode+value) -- does NOT forward to m_vfd
        - intercepts nothing else; forwards everything else to:
   -> esq1x22_device::write_char() [src/mame/ensoniq/esqvfd.cpp]
-       - interprets $66/$60+operand/$62/$72/$20-$5f
+       - interprets cursor $00-$1f (with operand lookback),
+         $66/$60+operand/$62/$72/$20-$5f
        - unrecognized codes: silently ignored (no-op), no longer printf'd
   -> esqvfd_device::update_display() [shared base class, esqvfd.cpp]
        - pushes segment codes to output "vfd0".."vfd21"
@@ -62,7 +76,7 @@ not decoded — flagged by the Del 2 alarm, not guessed at.
 | `$72` | 1 | "End of field": resets current attribute to normal | `[Derived]`/`[Verified]` | Appears after every attributed field run observed; no operand |
 | `$77`-`$7b <value>` | 2 | Select one of 5 annunciator registers, write `<value>` | `[Verified]` | Pre-existing. Intercepted in `asr10panel_device`, not forwarded to the VFD |
 | `$77` bit 0 | — | Set during the load->select->reselect sequence when Instrument 1 is selected (BTN_02 from idle FILE LOADED); clears on reselect (deselect) | `[Verified narrow]` | Also changes when entering Sample-Source Select / Level Detect — NOT confirmed to mean "instrument 1 selected" in general, only confirmed reversible in the specific isolated sequence tested. Mirrored to output `asr10_instlamp0` |
-| `$77`-`$7b`, other 39 bits | — | Unknown | `[OPEN]` | Wired raw to `asr10_annbit0`-`asr10_annbit39` (5 registers x 8 bits), rendered as unlabeled amber lamps in the layout |
+| `$77`-`$7b`, other 39 bits | — | Unknown | `[OPEN]` | Wired raw to `asr10_annbit0`-`asr10_annbit39` (5 registers x 8 bits). The layout marks their meaning as open; rendering is not evidence for a semantic assignment |
 | `$74 <nibble>` | 2 | Repeating, wrapping 4-bit countdown (`$0F`->`$00`), ~8 ticks per burst, bursts recur every ~150-800ms across boot/load/note/menu-nav contexts | `[OPEN]` | Almost certainly an animated busy/activity indicator; exact visual meaning not established (no manual description, no real-hardware reference available). See Del 1 in the investigation doc for the full timing analysis. Its operand is disambiguated from the cursor-position opcode above by lookback, same technique as `$60`'s operand |
 | `$75 <nibble>`, `$76 <nibble>` | 2 | Same countdown family as `$74`; used specifically for the terminal tick of some (not all) bursts | `[OPEN]` | Not distinguished further; may encode an outer pass/phase counter |
 | `$E7 $71` | 2 (fixed pair) | Always appears together, at boot start and before other full-screen redraws during the load/"shuffling" phase | `[OPEN]` | Candidate: a display-reset/init pair preceding a fresh full-line redraw |

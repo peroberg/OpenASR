@@ -145,6 +145,28 @@ SCC-skrivningarna via A3.
 "inga *absoluta* referenser hittade". Det är inte samma sak som "används inte".
 CS1-analysen är för närvarande helt beroende av den distinktionen.
 
+### Den genererade callgraphens täckning
+
+`static/call-graph-edges.csv` är inte en komplett firmware-callgraph. Den
+nuvarande extractionen bygger huvudsakligen på absoluta JSR/JMP-operander och
+missar bland annat:
+
+- BSR samt BRA/Bcc-kontrollflöde,
+- PC-relativa effective addresses och datareferenser,
+- registerindirekta `jmp (An)`/`jsr (An)`,
+- TRAP-, callback- och tabellbaserad dispatch.
+
+Det tidigare tomma snittet mellan panel-forward-reachability och backward-
+reachability till sequencerns Slot 3-task är ett kalibreringsfall: panelklustret
+använder BSR/BRA/JMP(An), medan Slot 3 nås via TRAP #9, så extractionen ser
+varken sökningens början eller slut. Nollsnittet betyder därför coveragefel,
+inte att firmwarevägen saknas.
+
+En framtida generator ska skilja `call`, `control` och `data` med ett explicit
+`edge_kind`. För MC68302:s 68000-kärna har BRA/BSR/Bcc 8- eller 16-bitars
+displacement; en 68020-lik 32-bitars branchform får inte införas. Detta är ett
+separat verktygsarbete. Handredigera aldrig den genererade CSV-filen.
+
 ### Frånvaro av implementation är inte hårdvaruevidens
 
 Frånvaro av implementation är inte ett svar på en fråga om hårdvaran.
@@ -368,6 +390,13 @@ samtliga ord faktiskt hämtades/fullföljdes, inte bara det första.
 standardvägen; den flerords-kontrollen måste fortfarande läggas till av
 den som tappar en instruktion med förlängningsord, eftersom den kräver
 kännedom om instruktionens egen kodning.
+
+Detta är en avgränsad tvetydighet, inte en generell nedgradering av alla
+PC-korrelerade fynd. Där instruction boundary och control flow är entydiga är
+PC-korrelation fortsatt stark execution-evidens. I det tvetydiga fallet ska den
+kompletteras med extension-word-, instruction-boundary- eller annan
+control-flow-witness. Prefetch kan skapa falska positiva lästräffar; den gör
+inte ett korrekt live-witnessed nollresultat falskt negativt.
 
 ## 9. Statik före stimulans
 

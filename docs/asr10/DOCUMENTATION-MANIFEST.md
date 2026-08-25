@@ -14,6 +14,17 @@ arbetskopian; commit anges här efter att den har granskats och committats.
 referenstabell nedan inventerades mot arbetskopian; äldre konsolideringssiffror
 får inte läsas som aktuell täckning.
 
+**Statusstädat 2026-08-25 efter transport/A-B-rundan.** Transport och
+sequencer execution är `[Verified]` (`$1D` Play, `$17` Stop/Continue i aktiv
+playback, hörbart ljud), men musikalisk/audio-korrekt sequencer-playback är
+`[OPEN]` och projektets högst prioriterade funktionella problem: TUTORIAL-
+flödet fungerar betydligt bättre utan att vara originalvaliderat, medan en
+fresh-boot `ATRK TUT BNK`-laddning främst ger klickigt/felaktigt ljud.
+`$001098`-populationen motsvarar bankinnehållet och är inte i sig en loaderbugg.
+UI-modellen är inte komplett trots verifierad displaymekanik. Den
+PC-relativa 68000-static-analysis-uppgraderingen är ett separat verktygsarbete
+under playback- och UI-prioriteterna.
+
 Utgångsläge: branch `asr10-architecture-cleanup`, HEAD
 `1dfaf31b9f3942996f448c67e56463c1301115e5` ("Document ASR10 vector map").
 Konsolideringscommit: se git-historiken för den här filen.
@@ -38,7 +49,7 @@ runtime-tool            instrumentering
 
 | path | kategori | status | källa | typ | beskriver | ersätter | härleds ur |
 |---|---|---|---|---|---|---|---|
-| `current-status.md` | current-status | **aktuell** | löpande handoff, reviderad 2026-08-23 | handkurerad | aktuellt läge, nästa experiment | tidigare kumulativ status | reference/ + investigations/ |
+| `current-status.md` | current-status | **aktuell** | löpande handoff, statusstädad 2026-08-25 | handkurerad | aktuellt läge, nästa experiment | tidigare kumulativ status | reference/ + investigations/ |
 | `DOCUMENTATION-MANIFEST.md` | current-status | **aktuell** | detta dokument | handkurerad | vilka dokument som ingår | — | — |
 | `regression-test.sh` | runtime-tool | **aktuell** | i trädet | handkurerad | boot, panel, load, guards och torrt note-audio | äldre FILE 1-only-baseline | lua/ |
 
@@ -46,12 +57,13 @@ runtime-tool            instrumentering
 
 | path | status | källa | beskriver | ersätter / härleds ur |
 |---|---|---|---|---|
-| `handoff-2026-08-23.md` | **aktuell freeze/startpunkt** | repo- och evidensaudit 2026-08-23 | femminutersläge, falsifierade hypoteser, öppna frågor och arbetskopiegräns | läses före äldre handoffs och investigations |
+| `handoff-2026-08-23.md` | **historisk freeze med aktuell post-freeze-rättelse** | repo- och evidensaudit 2026-08-23, statusnot 2026-08-25 | femminutersläge, falsifierade hypoteser, öppna frågor och arbetskopiegräns | läses för freeze-provenance; aktuell runtime och prioritet i `current-status.md` |
 | `architecture-handoff.md` | **historiskt checkpoint** | pre-IDMA-arkitektur, märkt 2026-08-22 | servicekärna och den passerade storage-blockeraren | runtime-status ersatt av `current-status.md`; arkitekturdelar fortsatt relevanta |
 | `audio-storage-architecture.md` | **aktuell** | uppdaterad 2026-08-22 | gränsen storage / ES5701 / ES5506 / ES5510 | senare load- och note-audio-evidens införd |
 | `boot-sequence.md` | **aktuell** | uppdaterad 2026-08-04 | reset → FILE 1 | steg 1b DPRAM-bryggan tillagt; chip-select-luckan i steg 2 stängd; steg 7 utbyggt med M1–M3 |
 | `boot-runtime-timeline.md` | **aktuell** | ny 2026-08-11 | reset → runtime, ansvarsfördelning ROM/RAM | dynamisk PC-profil, IRQ6-källor, regionklassade övergångar |
-| `call-graph.md` | **aktuell** | ny 2026-08-04 | kontrollflödesmodell, CSV-schema | ur `call-graph-edges.csv`, `routines.csv` |
+| `call-graph.md` | **aktuell, coverage-kvalificerad** | ny 2026-08-04, rättelse 2026-08-25 | kontrollflödesmodell och CSV-schema; inte komplett firmware-callgraph | ur `call-graph-edges.csv`, `routines.csv`; BSR/BRA/Bcc/PC-relative/indirekt/TRAP saknas i extractionen |
+| `display-protocol.md` | **aktuell, funktionellt avgränsad** | runtimeinventering 2026-08-24, statusnot 2026-08-25 | DUART/displaybyteprotokoll, cursor, attribut och öppna UI-gränser | verifierade mekanismer är inte en komplett UI-modell |
 | `e2-address-model.md` | **aktuell** | riktad adressrevision | `$FFxxxx`-mekanismer och `$FC5803` | skiljer verifierad decode från speglingshypotes |
 | `es5701-wiring.md` | oförändrad | i trädet | ES5701-koppling | — |
 | `hardware-map.md` | **aktuell** | uppdaterad 2026-08-04 | fysiska komponenter | chip-select-tabellen tillagd; två rättelserutor markerar föråldrade `$FC6816`- och SCSI-avsnitt som historik |
@@ -60,7 +72,7 @@ runtime-tool            instrumentering
 | `mc68302-status.md` | **aktuell med historiska modellgränser** | ny 2026-08-04, freeze-not 2026-08-23 | SIB/CP/PIO/timers per block | statisk census består; äldre `[OPEN]` för SCC/IDMA ersätts av smal current-model-verifiering |
 | `memory-map.md` | **aktuell** | ersatt 2026-08-04 | adresser och avkodning | runtime-delen **flyttad** till `runtime-service-model.md` |
 | `methods-hypothesis-management.md` | **aktuell** | ny 2026-08-22 | normerande hypoteshantering, evidensstatus och revisionsspår | formaliserar projektets etablerade mät- och rapportdisciplin |
-| `methods-static-analysis.md` | **aktuell** | ny 2026-08-04 | metoder och felkällor | — |
+| `methods-static-analysis.md` | **aktuell** | ny 2026-08-04, uppdaterad 2026-08-25 | metoder, 68000-prefetch och callgraph-coverage | PC-korrelation är stark evidens men tvetydiga flerords-/branchfall kräver extra witness |
 | `movep-library.md` | oförändrad | i trädet | MOVEP-thunkar i DPRAM | — |
 | `os-code-extraction.md` | **aktuell** | uppdaterad 2026-08-04 | RAM-adress → disk | segmentreglerna tillagda |
 | `os-image-layout.md` | **aktuell** | ny 2026-08-04 | diskformat, segmentregler | — |
@@ -72,7 +84,7 @@ runtime-tool            instrumentering
 | `scc-hardware-gap.md` | **aktuell med historisk pre-engine-gräns** | statisk + dynamisk SCC-analys, addendum 2026-08-23 | descriptorer, register, handlers, IDMA-konsument och modellomfång | firmware-/descriptorvägen består; current-model-engine i senare investigations |
 | `scsi-operation-example.md` | **aktuell** | firmwareanalys | konkret SCSI-operation och `$0402` | — |
 | `storage-completion-dispatch.md` | **aktuell med historiska runtimegränser** | firmwareanalys | vektor `$4B`/`$51` och `$0402` | aktuell implementation i `current-status.md` |
-| `subroutine-index.md` | **aktuell** | uppdaterad 2026-08-23 | namngivna rutiner | bindningsslots samt SCC WAITING-fortsättningen `$0064BA` |
+| `subroutine-index.md` | **aktuell** | uppdaterad 2026-08-25 | namngivna rutiner och försiktigt statusmärkta runtimeadresser | `$007830`/`$007CA8` PC-korrelerade; `$007E24` execution verifierad men semantik öppen; `$007C7C` inte entry |
 | `vector-map.md` | **aktuell** | uppdaterad 2026-08-04 | vektormodellen | sammanslagning genomförd; femkategorimodellen tillagd, allt befintligt bevarat |
 
 ## `static/` — generated-static-data + static-worklog
@@ -128,7 +140,10 @@ Föregående tillägg var `transport-ab-test-play-stop-continue.md`: `$1D`=Play,
 `$17`=Stop/Continue bekräftade dynamiskt via ES5506-registeraktivitet
 (stopp till noll, återupptagning med nyprogrammerade röster); `$17`s
 "CREATE NEW SEQUENCE" står kvar som ett eget, giltigt sammanhang —
-kontextberoende, inte en felaktig attribution. `$007C7C` visar sig inte
+kontextberoende, inte en felaktig attribution. Detta verifierar transport,
+sequencer execution och hörbart ljud, **inte** musikalisk/audio-korrekt
+playback; ATRK-fallets klickiga/felaktiga ljud är projektets högst
+prioriterade funktionella `[OPEN]`. `$007C7C` visar sig inte
 PC-bekräftat exekvera under uppspelning (374 träffar, noll `matched`);
 den verkliga upprepade läsaren är `$007E24`. En platstabell vid `$001098`
 skiljer fallen exakt: A har en distinkt referens per plats och tomma
@@ -167,11 +182,12 @@ skriver dit — strikt avgränsat till just den vägen, inget påstått om
 uppspelning i stort. `$00A304`s rutin bekräftas aldrig exekvera i något
 nått tillstånd. Föregående `slot5-connects-notes-to-voice-programming.md`:
 läser alla sex schemaläggarslottars identitet (inte bara beläggning) —
-Slot 5 (`$00780C`, den kända pollaren) visar sig köra en kontinuerlig
-~83 Hz notkontroll som villkorligt anropar röstprogrammeringsrutinen
-exakt en gång per not, uppmätt direkt (0 vid idle, 1 vid ett
-tangenttryck). Bekräftar att sekvenserarkedjan aldrig når
-röstprogrammeringen (0 anrop genom hela `$17`-kedjan). Hittar för
+Slot 5 (`$00780C`) kopplades till ett once-per-note-förlopp. Två senare
+rättelser gäller när fyndet bärs vidare: `$00782A`s ~83 Hz-läsning var
+prefetch, inte execution, och det verifierade PC-korrelerade anropet är
+`$007830` -> `$007CA8`, inte `$007C7C`. Nollresultatet gällde bara den
+specifika `$17` sequence-creation-kedjan och säger inte att aktiv
+sequencer-playback är tyst. Journalen hittar dessutom för
 första gången på tre försök en verklig ROM-referens till
 diagnostiksträngarnas adress (`$00A304`, en gränskontroll mot exakt
 `$101C`-`$103C`) via statisk ROM-sökning i stället för live-tappar —
@@ -180,11 +196,13 @@ vidare från. Föregående `trap-c-and-the-real-note-path.md`: disassemblerar
 TRAP #C ($F88174) och visar att dess egen data i tempokedjan är Slot 3s
 självupparmning (typ $0E, nedräknande fält), inte sekvensinnehåll.
 Spårar sedan bakåt från bekräftade ES5506-skrivningar under en verklig
-tangenttryckning och hittar den riktiga röstprogrammeringsrutinen på
-`$007C7C`-`$007CEE` — en helt fristående kodregion som aldrig
+tangenttryckning och lokaliserar blocket `$007C7C`-`$007CEE` — en
+fristående kodregion som aldrig
 förekommer i någon TRAP #9/#C-registerfångst. Slutsats: tempokedjan och
 den verkliga notvägen är två orelaterade delsystem, inte en pipeline
-med en grind någonstans i mitten. Föregående
+med en grind någonstans i mitten. Senare PC-korrelation korrigerar
+entryn till `$007CA8`; `$007C7C` är `[DISPROVEN]` som exekverande entry
+och läses som data av `$007E24`. Föregående
 `execution-traced-clock-and-sequencer-stepper.md`:
 löser `$000F58`-motsägelsen med exekveringstappar ($F8C588 nås aldrig,
 0 träffar mot en validerad 1000 Hz-kontroll; den verkliga kedjan

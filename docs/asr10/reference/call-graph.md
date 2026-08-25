@@ -3,6 +3,15 @@
 Detta dokument beskriver **modellen**, inte en fullständig graf. Grafen byggs ut
 successivt; modellen ska etableras nu så att framtida fynd har någonstans att hamna.
 
+**Coverage correction, 2026-08-25:** `static/call-graph-edges.csv` är inte en
+komplett firmware-callgraph. Den nuvarande extractionen ser huvudsakligen
+absoluta JSR/JMP-operander och missar BSR, BRA/Bcc, PC-relativa effective
+addresses, registerindirekta JMP/JSR samt TRAP/callback-dispatch. Det uppmätta
+nollsnittet mellan panel-forward och sequencer-backward är därför ett
+coverage-/instrumentproblem, inte evidens för att ingen väg finns. Se
+`methods-static-analysis.md` och
+`../investigations/call-graph-intersection-and-rom-string-search.md`.
+
 Notation: `[V]` verifierat, `[L]` sannolikt, `[?]` okänt.
 
 ---
@@ -290,7 +299,7 @@ filer och genereras om vid behov.
 ett register över möjliga och observerade kanter. Det är ännu inte en semantisk
 funktionsgraf. `routines.csv` är början på nivå 2.
 
-### `call-graph.csv`
+### `call-graph-edges.csv`
 
 ```
 edge_id

@@ -26,6 +26,9 @@ Adressen är identiteten; namnet får ändras när förståelsen förbättras.
 0068C8  analog_calibrate_ch7_alt
 00740C  jumptable_dispatch_15entry
 0077C2  sched_slot5_poller
+007830  slot5_callsite_007ca8
+007CA8  slot5_call_target
+007E24  runtime_routine_semantics_open
 F8000C  reset_entry
 F87F40  sched_trap_entry
 F87F80  sched_context_save
@@ -755,6 +758,31 @@ post och hoppar tillbaka. Oändligheten är avsiktlig.
 
 Calls: `trap #8`, `trap #7`, indirekta callbacks.
 
+### `$007830` slot5_callsite_007ca8
+
+**[Verified runtime, PC-correlated]** Instruktionen är `jsr $7ca8.w` i
+Slot 5-kod. I det uppmätta, MIDI-bekräftade note-fallet träffade läs-tapen
+en gång med `PC==$007830`. Detta verifierar att anropsstället exekverar i
+det fallet; det gör inte Slot 5 till en universell sequencer-noteväg.
+
+Calls: `$007CA8`.
+
+### `$007CA8` slot5_call_target
+
+**[Verified runtime, PC-correlated; semantics partial]** Målet för
+`$007830` PC-matchade i samma MIDI-note-körning. Adressen ligger i blocket
+som tidigare dokumenterats kring `$007C7C-$007CEE`, men `$007C7C` självt
+är `[DISPROVEN]` som blockets exekverande entry. Namnet här anger endast
+den verifierade call-relationen; full rutinsemantik och eventuell användning
+av sequencer-playback är `[OPEN]`.
+
+### `$007E24` runtime_routine_semantics_open
+
+**[Verified execution; OPEN semantics]** PC-matchar frekvent i den senaste
+körningen och läser `$007C7C` som data. Att `$007C7C` fick read-tap-träffar
+var därför inte execution-evidens. Ingen starkare funktionell identitet är
+fastställd för `$007E24`.
+
 ## FDC-väntningar
 
 Timeoutvärdet sätts på `$FB7BD6`: `move.l #$00013880,($0476).w` =
@@ -950,16 +978,13 @@ Formulering per post: känd anropad adress; syfte ännu inte identifierat.
 
 ## Coverage
 
-Detta index täcker 51 namngivna adresser i den sorterade översikten:
-42 ROM-adresser (varav 15 tillagda från
-`keyboard-and-sample-bridge-3.md`-`-6.md`s panel-/MIDI-/schemaläggar-
-brygg-spår -- se "Panel-/MIDI-notdispatch" och de nya TRAP-postarna
-under "Schemaläggare"), 7 diskresidenta V350-adresser och 1
-DPRAM-thunk.
-
-Identifierade: 42. Delvis identifierade: 8. Kända okända: 23 poster.
-Listan är avsiktligt ofullständig; den markerar vad som är stabilt nog
-att bära vidare till kod och vad som fortfarande kräver mätning.
+Den sorterade översikten innehåller 55 adressrader efter
+transportstädningen. Listan är avsiktligt ofullständig och blandar inte
+execution-status med semantisk identitet: `$007830`/`$007CA8` är
+PC-korrelerade, medan `$007E24` fortfarande har öppna semantics. `$007C7C`
+läggs avsiktligt inte in som rutin-entry eftersom den identiteten är
+`[DISPROVEN]`. Indexet markerar vad som är stabilt nog att bära vidare och
+vad som fortfarande kräver mätning.
 
 ---
 
