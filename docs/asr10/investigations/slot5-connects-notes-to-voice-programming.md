@@ -30,6 +30,18 @@ stack content (the register name issue that blocked this initially —
 is `SP` — is recorded so a future task doesn't lose time on it again).
 **Resolved properly via Del 2 instead** (below).
 
+**[Corrected, follow-up]** This tap was a bare read on `$007C7C`'s
+address, no PC-correlation (§8.10 postdates this task). Re-measured
+later with `pc_correlated_read_tap()`: `$007C7C` never shows
+`PC==$007C7C` in any state, including a fresh MIDI-confirmed note — it
+is read as data by a different, frequently-executing routine at
+`$007E24`, not executed itself. The zero-vs-one *shape* here (0 idle, 1
+per note) is not retracted — something real happens once per note in
+this address's vicinity, matching Del 2's own independent, properly
+PC-correlated confirmation that `$007830`/`$007CA8` genuinely execute
+once per note. Only the specific claim "`$007C7C` is called" is wrong;
+the sequencer-silence negative and the once-per-note shape both stand.
+
 ## Del 2 — all six scheduler slots identified; Slot 5 is the connector
 
 Read all six slots' dispatch addresses (base `$23F6`, stride `$16`,

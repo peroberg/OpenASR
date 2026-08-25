@@ -105,12 +105,26 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 84 Markdown-filer (räknat om 2026-08-25)
+## `investigations/` — 85 Markdown-filer (räknat om 2026-08-25)
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `transport-ab-test-play-stop-continue.md`: `$1D`=Play,
+Senaste tillägget är `slot5-pc-correlation-and-atrk-slot-table.md`: kontrollerar
+Slot 5-fyndet mot §8.10 sedan `$007C7C` visade sig aldrig PC-matcha —
+kopplingen står kvar, PC-korrelerad denna gång, men den verkliga
+måladressen är `$007CA8`, inte `$007C7C` (44 byte in i samma block);
+rättar alla tidigare slutsatser som citerade fel adress. Förklarar
+`$001098`-tabellens cykling i B som normalt beteende (3 riktiga
+instrument mot bankfilens egen skivinnehåll, 8 fasta
+instrument/spår-knappar enligt manualen) i stället för en bugg.
+Effektpresettabellens skrivare undflyr adressbaserad write-tapping
+(en riktig metodlucka); kontrollkörningen `ATRK`→`TUTORIAL BNK`→`ATRK`
+försöktes seriöst men blockeras fortfarande av en bankladdning som
+permanent låser filbläddraren till Seq/Song-läge, beskrivet exakt i
+stället för löst. Röstlivslängder mätta som siffror i båda fallen men
+inte urskiljande utan en `CR`-bitavkodning denna uppgift inte hann med.
+Föregående tillägg var `transport-ab-test-play-stop-continue.md`: `$1D`=Play,
 `$17`=Stop/Continue bekräftade dynamiskt via ES5506-registeraktivitet
 (stopp till noll, återupptagning med nyprogrammerade röster); `$17`s
 "CREATE NEW SEQUENCE" står kvar som ett eget, giltigt sammanhang —

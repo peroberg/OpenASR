@@ -1909,6 +1909,13 @@ subsystems, not one pipeline with a gate in the middle. This revises
 prior tasks' framing: there is no single gate to find between the two;
 they were never connected.
 
+**[Corrected — see "Slot 5, PC-correlated, and the $007C7C/$007E24
+correction" below]** The block's real, PC-confirmed entry point is
+`$007CA8`, not `$007C7C` — the two are 44 bytes apart within this same
+range, and only `$007CA8` is ever seen with `PC` matching it. The block
+identity, disassembly, and behavior described here are unaffected;
+only the specific entry address is corrected.
+
 **[Corrected, not resolved]** `$001098` as memory content is static
 zero (4 boot-time writes only); the *register value* `$1098` used by
 `$F902D8`'s own `A4` was not traced to its load source this task —
@@ -1929,6 +1936,15 @@ re-attempted this task, same structural blocker as before.
 reached by the `$17` sequence-creation chain across a full `$00`-`$17`
 sweep (0 calls) — the sequencer path stays confirmed silent. Its panel-
 note caller is identified via the scheduler slots, not stack tracing.
+
+**[Corrected]** This section's own tap was a bare read-tap on `$007C7C`'s
+entry, no PC-correlation recorded — at risk under §8.10, and now
+re-measured: `$007C7C` never shows `PC==$007C7C` in any state tried,
+including a fresh, real, MIDI-confirmed note. The zero-vs-nonzero
+*shape* of the original measurement (0 idle, 1 per note) survives and
+is independently reconfirmed below, but attributed to the wrong
+address — see "Slot 5, PC-correlated" below for the corrected entry
+point (`$007CA8`) and full accounting.
 
 **[Verified, key finding]** All six scheduler slots read (base `$23F6`,
 stride `$16`, task at `+6`): Slot 2=`$0073EA` (MIDI-clock poll,
@@ -2038,10 +2054,12 @@ established for `$10`/`$11`. Bare `$17` from idle or with only a bank
 loaded has zero effect in either display or guard state, confirmed this
 task.
 
-**[OPEN, corrected]** `$007C7C`'s execution during Play is not
-PC-confirmed: a PC-correlated tap shows 374 reads, zero with
-`PC==$007C7C`. The real, repeated reader is `$007E24` (373/374 hits) —
-previously undocumented in this role.
+**[Verified, resolved — see "Slot 5, PC-correlated" below]** `$007C7C`'s
+execution during Play is not PC-confirmed: a PC-correlated tap shows 374
+reads, zero with `PC==$007C7C`. The real, repeated reader is `$007E24`
+(373/374 hits). Follow-up: the Slot 5 → voice-programming connection
+itself holds — its own address was simply wrong. The real, PC-confirmed
+call target is `$007CA8`, 44 bytes into the same block.
 
 **[Verified]** A per-slot association table at `$001098` (~72-byte
 stride, ≥8 slots): case A (`TUTORIAL BNK`) shows 5-6 distinct
@@ -2076,3 +2094,49 @@ selection — the one real difference from a bank load, which populates
 every slot from its own predetermined list without this prompt. No
 Command-mode category provides equivalent placement; the closest
 entries (`COPY INSTRUMENT`, `IMPORT NON-ASR SOUNDS`) are not it.
+
+## Slot 5 re-checked against §8.10; the $001098 table explained (docs/asr10/investigations/slot5-pc-correlation-and-atrk-slot-table.md)
+
+**[Verified, PC-correlated]** Slot 5's connection to voice programming
+holds: `$007830` (the `jsr` inside Slot 5's own code) and `$007CA8` (its
+target) both show `PC` matching the tapped address on a real,
+MIDI-confirmed note. **The entry address is corrected: `$007CA8`, not
+`$007C7C`** — 44 bytes apart in the same block. `$007C7C` itself is
+never PC-matched in any test; it is read as data by `$007E24`, a real,
+previously-undocumented, frequently-executing routine in its own right
+(`[OPEN]`). Spread through every prior conclusion citing `$007C7C` as
+the callee.
+
+**[Verified]** `ATRK TUT BNK`'s `$001098` slot-table cycling (3 values
+across 8 slots) is normal, not a bug: the bank file's own on-disk
+content references exactly 3 instruments (`BLUES DRUMS`/`BASS`/`ORGAN`)
+plus its bundled song, while `TUTORIAL BNK` references 6; the manual
+documents a fixed 8-button `Instrument/sequence track` control group
+independent of how many instruments a bank provides. A 3-instrument bank
+driving an up-to-8-track song has no other correct way to fill the
+table. B's load also touches three writer PCs (`$00DE16`/`$00DE10`/
+`$00DE0A`) plus `$F95470` that a plain bank-only load never reaches —
+consistent with Song-specific population code.
+
+**[OPEN]** The effects-preset table's content is reconfirmed but its
+writer evades address-keyed write-tapping entirely (only a boot-time
+filler write is caught; the real reverb strings appear by the end of
+the load through an uncaught mechanism) — a real method gap, not
+chased further. The intended `ATRK`→`TUTORIAL BNK`→`ATRK` control run
+was attempted properly this time and is still blocked: a Song-bundling
+bank load permanently locks file browsing to a 3-entry Seq/Song cycle,
+and the manual's own dedicated `Instrument` object-page button (which
+should escape it) has no known code in this project — a bounded sweep
+found `$04` opens an Instrument edit page (new data for that gap) but
+not the file browser.
+
+**[OPEN, ambiguous]** Voice-lifetime intervals (time between successive
+`CR` writes to the same ES5506 voice) were measured for both cases —
+A: mean 142.8ms, 52.5% under 10ms; B: mean 200.6ms, 55.3% under 10ms —
+but do not discriminate the two cases, and every measured interval in
+both cases paired with an identical `START`/`END` as the prior write,
+meaning most `CR` writes are gate/envelope touches on an
+already-programmed voice, not full retriggers. Reading this as "note
+lifetime" needs a `CR`-bit decode this task didn't reach. The clicking's
+strongest lead remains the prior round's redundant-sample-sharing
+finding, not this metric.

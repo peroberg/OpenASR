@@ -105,9 +105,14 @@ all, and `$D08`'s own touches carry the release-path's signature, not
 a new note being created. Per the task's own required framing, kept
 separate:
 
-- **`[Verified]`** — Slot 5 (via its own call chain) relays an
-  observed *panel* note to `$007C7C`, using `$000D08`/`$000D11` as the
-  note/velocity representation.
+- **`[Verified, address corrected — see transport-ab-test-play-stop-continue.md
+  and its follow-up]`** — Slot 5 (via its own call chain) relays an
+  observed *panel* note to voice programming, using `$000D08`/`$000D11`
+  as the note/velocity representation. The call target named here,
+  `$007C7C`, never PC-matches in a later, properly PC-correlated
+  re-test (§8.10) — the real, confirmed entry point is `$007CA8`, 44
+  bytes into the same block. The relay itself, and the note/velocity
+  fields, are unaffected by this correction.
 - **`[OPEN]`** — whether the sequencer uses this same path under any
   condition not tested this round (only the specific `$17` creation
   chain was checked; no other sequencer state was reachable this
