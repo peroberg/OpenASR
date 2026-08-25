@@ -68,52 +68,6 @@ and entering `GPR MONITOR`. `[Verified, negative]`: nobody reads
 consistent with, the pre-existing zero-result for `$00A2FA` never
 executing as code.
 
-### Del 2 addendum (follow-up pass) — the ROM/RAM overlay explains the zero-result mechanically
-
-The zero-result above is correct but was left unexplained: it says
-*that* nothing reads or executes `$00A304`, not *why* every angle
-tried in three rounds comes back zero. Dumping `$00A2E0-$00A330` at
-four points in a single boot resolves it:
-
-```
-T0 (reset):    00A2FA:2028 00A2FC:0004 ... 00A304:90BC 00A306:0000 00A308:101C ...
-T500ms:        00A2E0-00A330 all $0000
-T2500ms:       00A2E0-00A330 all $0028 (repeating)
-T7500ms:       00A2E0-00A330 all $0028 (repeating, unchanged from T2500ms)
-```
-
-At reset, `$00A2FA`/`$00A304` genuinely are `move.l $4(a0),d0` /
-`sub.l #$101c,d0` — byte-for-byte the disassembly
-`slot5-connects-notes-to-voice-programming.md` found via static ROM
-search two rounds ago. That round's read was accurate for the state it
-was actually taken in. But `reference/memory-map.md` itself lists
-`$00A000-$01D6A0` as `OS-kod, segment 2 (V3.50)` — RAM the floppy
-loader fills during boot, not fixed ROM. By 500ms the region is
-zeroed (loader clear pass); by 2.5s it holds OS segment-2 content
-loaded from disk, stable through at least 7.5s.
-
-**This CPU address is ROM-mapped only in the narrow pre-OS-load boot
-window.** Every state this project's live taps can reach — idle at
-`FILE 1 TUT0RIAL BNK`, Command-mode navigation, the diagnostic menu —
-is by construction post-load, since reaching those states requires the
-OS to have already booted. No amount of further post-load state
-exploration can change this result: the routine's own bytes no longer
-exist at that address by the time any reachable state begins, so
-"never executes/read in every reached state" is not a coverage
-limitation here, it is a mechanical certainty. What remains genuinely
-open narrows to the pre-load window itself — whether this bounds-check
-ever runs during POST/reset, e.g. gated on a boot-time key combination
-— untested; it would require injecting panel or keyboard input before
-the floppy load completes, a different stimulus this task did not
-attempt.
-
-The dump is a plain memory read, not a tap, so §8.7's live-witness
-requirement doesn't apply to it directly — there's no instrument that
-could die silently mid-window, only four snapshots of the address
-bus's own content. The original Del 2 taps' liveness is independently
-established by their own `$000B6E` write-tap control (1227→7857 across
-the run).
-
 ## Del 3 — the runtime sequence object, found
 
 Loading `TUTORIAL SEQ` (`$15` then `$23`) does **not** use the MC68302
@@ -300,11 +254,7 @@ step.
   findings untouched, as required.
 - **Del 2**: `$00A304` confirmed a real instruction, not data — the
   task's own premise corrected. Live-witnessed negative: nobody reads
-  it, or `$8C72`, as data either. Follow-up pass: the zero-result has a
-  mechanical cause — this address is ROM-mapped only pre-OS-load, and
-  is overwritten by OS segment-2 code by 2.5s into every reachable
-  boot; no live tap can ever catch it post-load, narrowing what's
-  still open to the untested pre-load/POST window.
+  it, or `$8C72`, as data either.
 - **Del 3**: the runtime sequence object found — `$0062B242`/`$02B242`
   (alias), name+header+event-shaped body, ≥2048 bytes, exact event
   format `[OPEN]`.
