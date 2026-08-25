@@ -1737,6 +1737,21 @@ stage, dispatching into scheduler slot `$DA` at ~83Hz) and `$0073A8`
 `$00D42` linked list via `$00E68E`, touching MC68302 PIO-region
 addresses — shaped like MIDI-clock transmission). Neither consumer
 touches sequence-event data; the real event-consumer for `TUTORIAL
+
+**[OPEN, prefetch-osäkert — §8.10 audit]** The `~83Hz` figure for
+`$00E66E` and the positive-execution claim for `$0073A8` above rest on
+`tempo-clock-consumer-chain.md`'s own read-taps with no PC-correlation
+anywhere in that file (checked directly: zero `PC`/`CURPC` references
+in the source). `$00E66E` is reached via a `jsr` from `$007822`, not
+by falling through past an unconditional branch the way `$782A` was —
+structurally less exposed to that specific adjacent-branch pattern,
+but that is a plausibility argument, not a measurement, and §8.10's own
+criterion is documented PC-correlation or equivalent, which neither
+finding has. Both stay `[Verified runtime, disassembled]` for the
+disassembly itself (the routines' existence and shape are static-read
+facts, not at risk); only the live-execution/frequency claim is
+downgraded, pending re-measurement with `asr10_taps.lua`'s
+`pc_correlated_read_tap()`.
 SEQ`'s own allocated object remains `[OPEN]`.
 
 **[Self-correction, recorded]** Several early taps this round returned
@@ -1828,6 +1843,18 @@ confirmed executing at 144Hz. The `$67AC`/`jumptable_dispatch_15entry`/
 unrelated (keyboard) investigation and is retracted, not softened.
 `$F8F2FA`'s own per-type dispatch (table at `$8258`) was traced to a
 `jmp` that fires at 144Hz, landing near `$006014` — not fully resolved.
+
+**[OPEN, prefetch-osäkert — §8.10 audit]** `$F8F2FA` executing at 144Hz
+itself stays `[Verified]` — that leg is trap-based (`TRAP #9`/`#C`
+register capture, `A1` matching Slot 3's own header), which is
+inherently execution-confirmed and not exposed to instruction-prefetch
+false positives (a TRAP exception only fires if the TRAP instruction
+itself actually executes). The second leg — the `jmp (a0)` landing near
+`$006014` — has no PC value shown for that specific tap anywhere in
+`execution-traced-clock-and-sequencer-stepper.md`, unlike this same
+file's other 144Hz/1000Hz claims (`$00F902D8`, `$F88366`), which do
+show explicit PCs. Downgraded pending a `pc_correlated_read_tap()`
+remeasurement.
 
 **[Verified runtime, new lead]** A real, independent sequencer-stepper
 candidate: `$00F902D8` executes at exactly the 144Hz pulse rate,
@@ -1957,3 +1984,43 @@ all by any mechanism.
 executes across idle or ten steps of Command-mode navigation; its
 target on success (`$8C72`) reads as repeating table data, not code.
 Real ROM content, confirmed unreached in every state found so far.
+
+## The call graph as a set-intersection search; ROM strings found (docs/asr10/investigations/call-graph-intersection-and-rom-string-search.md)
+
+**[Verified, negative — structural, not a coverage gap in the search
+itself]** Computed the intersection of "forward-reachable from the panel
+classification chain" (`$FFB0BC`/`$FFB392`/`$FFB20A`/`$FFB43E`) and
+"backward-reachable to Slot 3's task" (`$F8F2FA`) over
+`call-graph-edges.csv`'s full 5243 edges. **Intersection: 0 nodes**,
+identical with and without the 1404 mirror-hypothesis edges, and
+identical with or without adding the panel cluster's own documented
+(not newly reverse-engineered) bridge points into ROM (`$F87FD2`,
+`TRAP #2`/`#3`/`#4`/`#9` targets). Cause, confirmed directly: the entire
+panel cluster uses only `bsr`/`bra`/`jmp (An)` internally (none of the
+four opcodes the graph's own construction method scans for), and
+`$F8F2FA` is dispatched via `TRAP #9`, not any absolute jsr/jmp — neither
+side of the question is visible to this graph by construction. Does not
+say no path exists; says this technique cannot see either end of it.
+
+**[Verified]** `GPR MONITOR` (`$F8101C`), `INSTRUCTION MONITOR`
+(`$F81028`), `ESP TESTS` (`$F814F4`), `SOFTWARE INFORMATION` (`$F813E7`),
+`A/D TO D/A` (`$F81046`), `DC OFFSET` (`$F81051`), `MIDI LOOP`
+(`$F8105B`), and the manual's `" BARS - KEEP TRACK?"` (`$F81C70`),
+`TEMPO` (`$F802EB`), `CLICK` (`$F802F7`) all located as plain-ASCII,
+null-terminated fragments in the boot ROM (`asr10.bin`, hash-verified
+against `DOCUMENTATION-MANIFEST.md`) — none in either floppy OS image.
+Menu lines are assembled at display time from independently-stored word
+fragments (`KEYBOARD`/`EXAMINE `/`CALIBRATE`-style pieces), not stored as
+complete strings; the `O`→`0`/`S`→`5` substitution seen on the live VFD
+is a display/transcription-layer effect, not a ROM encoding choice — ROM
+bytes use real ASCII letters throughout.
+
+**[Verified, negative, structural]** Zero absolute 32-bit references to
+any of the 12 string addresses above exist anywhere in the ROM or either
+floppy image (same domain-filtered technique as the call graph). Expected
+given the fragment-table structure: an index-based walker (small integer
+in, N-null-terminator count) has no literal address to find by this
+method — the same addressing-mode blind spot as the panel-cluster result
+above. Who reads each string, and under what condition, remains `[OPEN]`
+— not unsearched, structurally invisible to static absolute-reference
+search.

@@ -105,12 +105,28 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 75 Markdown-filer vid audit 2026-08-25
+## `investigations/` — 83 Markdown-filer (räknat om 2026-08-25)
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `note-velocity-structure-and-sequencer-silence.md`:
+Senaste tillägget är `call-graph-intersection-and-rom-string-search.md`:
+använder `call-graph-edges.csv` som mängdoperation (panel-nåbart ∩
+sekvenserar-nående) — snittet är tomt, med och utan de 1404
+spegelkanterna, förklarat av att panelklustret enbart använder
+`bsr`/`bra`/`jmp (An)` internt och att `$F8F2FA` nås via `TRAP #9`, inget
+som grafens egen byggmetod (absoluta jsr/jmp-operander) kan se. Hittar
+tio ROM-strängar/fragment (`GPR MONITOR`, `TEMPO`, `" BARS - KEEP
+TRACK?"` m.fl.) som osammanhängande, nolltermineraded fragment i
+`asr10.bin` — inga i någon diskavbild — och visar att menyrader byggs
+ihop vid visning, inte lagras hela. Noll absoluta referenser till någon
+strängadress hittades, strukturellt förväntat för en indexbaserad
+fragmenttabell, inte ett osökt hål. Redan-tillämpad §8.10-granskning
+(huvudagenten, eftersom den tidigare körningen ingick i den reverterade
+fork-commiten): nedgraderar `$00E66E`/`$0073A8` och typ-`$0E`s
+`$006014`-landningsben till `[OPEN, prefetch-osäkert]`; `$F8C588` och
+`$00A304` orörda. Föregående tillägg var
+`note-velocity-structure-and-sequencer-silence.md`:
 fångar och rättar en egen felslutsats (Slot 5s `$782A` "83 Hz-poll" var
 en CPU-prefetch-artefakt från en intilliggande ovillkorlig gren, inte
 en verklig kontroll) innan den rapporterades som fynd, identifierar
