@@ -1895,3 +1895,33 @@ entries were not re-verified for actual firing.
 
 **[OPEN, unchanged]** Diagnostic menu backward trace — not
 re-attempted this task, same structural blocker as before.
+
+## Slot 5 is the note-to-voice connector; six slots identified (docs/asr10/investigations/slot5-connects-notes-to-voice-programming.md)
+
+**[Verified]** `$007C7C` (the voice-programming routine) is never
+reached by the `$17` sequence-creation chain across a full `$00`-`$17`
+sweep (0 calls) — the sequencer path stays confirmed silent. Its panel-
+note caller is identified via the scheduler slots, not stack tracing.
+
+**[Verified, key finding]** All six scheduler slots read (base `$23F6`,
+stride `$16`, task at `+6`): Slot 2=`$0073EA` (MIDI-clock poll,
+known), Slot 3=`$F8F2FA` (tempo producer, known), **Slot 5=`$00780C`
+is the note-to-voice connector** — its own task runs a continuous
+~83Hz check (`$00782A`) that conditionally calls the real voice-
+programming routine (`$007CA8`) exactly once per note (measured: 0
+calls idle, 1 call per panel note press). Slots 0 (`$002B4C`), 1
+(`$FFC8B0`), 4 (`$0069CC`) read but not characterized — `[OPEN]`.
+
+**[Partial]** The `$8258` type-dispatch table re-read, stable; only
+type `$0E` remains execution-confirmed (144Hz, prior round). The other
+twelve entries' target-address decoding is ambiguous (word
+zero-extend vs. paired-longword) and untested for actual firing —
+kept explicitly separate from confirmed findings.
+
+**[OPEN, new lead]** A static ROM search (not live tapping — sidesteps
+the overlay confound) found a genuine 32-bit reference to `GPR
+MONITOR`'s own address at `$00A304`: a bounds check against exactly
+`$101C`-`$103C`. Semantic connection to the string itself is
+unconfirmed (could be a coincidental address-range check, the same
+trap this project has hit before) — a real, concrete next address
+rather than a repeat of the same blocked method a fourth time.

@@ -105,12 +105,23 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 73 Markdown-filer vid audit 2026-08-25
+## `investigations/` — 74 Markdown-filer vid audit 2026-08-25
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `trap-c-and-the-real-note-path.md`: disassemblerar
+Senaste tillägget är `slot5-connects-notes-to-voice-programming.md`:
+läser alla sex schemaläggarslottars identitet (inte bara beläggning) —
+Slot 5 (`$00780C`, den kända pollaren) visar sig köra en kontinuerlig
+~83 Hz notkontroll som villkorligt anropar röstprogrammeringsrutinen
+exakt en gång per not, uppmätt direkt (0 vid idle, 1 vid ett
+tangenttryck). Bekräftar att sekvenserarkedjan aldrig når
+röstprogrammeringen (0 anrop genom hela `$17`-kedjan). Hittar för
+första gången på tre försök en verklig ROM-referens till
+diagnostiksträngarnas adress (`$00A304`, en gränskontroll mot exakt
+`$101C`-`$103C`) via statisk ROM-sökning i stället för live-tappar —
+den semantiska kopplingen obekräftad, men en konkret ny adress att gå
+vidare från. Föregående `trap-c-and-the-real-note-path.md`: disassemblerar
 TRAP #C ($F88174) och visar att dess egen data i tempokedjan är Slot 3s
 självupparmning (typ $0E, nedräknande fält), inte sekvensinnehåll.
 Spårar sedan bakåt från bekräftade ES5506-skrivningar under en verklig
