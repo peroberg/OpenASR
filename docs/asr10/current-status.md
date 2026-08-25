@@ -2011,6 +2011,23 @@ executes across idle or ten steps of Command-mode navigation; its
 target on success (`$8C72`) reads as repeating table data, not code.
 Real ROM content, confirmed unreached in every state found so far.
 
+**[Verified, mechanism — follow-up, see `diagnostic-menu-and-sequence-object-probe.md` addendum]**
+The zero-result above has a mechanical cause, not just a coverage gap.
+`$00A2E0-$00A330` dumped at four points in one boot: at reset it is
+byte-for-byte the disassembled bounds-check routine
+(`$00A2FA`=`move.l $4(a0),d0` … `$00A304`=`sub.l #$101c,d0`); by 500ms
+it is zeroed; by 2.5s (stable through 7.5s) it holds repeating `$0028`
+— OS segment-2 code loaded from the floppy, per `memory-map.md`'s own
+`$00A000-$01D6A0` = "OS-kod, segment 2" entry. **This CPU address is
+ROM-mapped only in the pre-OS-load boot window.** Every state this
+project's live taps can reach (idle, Command mode, the diagnostic
+menu) is by construction post-load, so no amount of further post-load
+state exploration can ever catch this routine executing or being read
+— the bytes are gone by then, not merely uncalled. What remains open
+is narrower than before: only the pre-load/POST window itself, e.g.
+whether this check gates on a boot-time key combination — untested,
+would require injecting input before the floppy load completes.
+
 ## Diagnostic menu found by testimony; the runtime sequence object found and read-audited; a note-field address correction (docs/asr10/investigations/diagnostic-menu-and-sequence-object-probe.md)
 
 **[Verified runtime]** The diagnostic menu, sought across four
