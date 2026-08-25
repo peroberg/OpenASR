@@ -1925,3 +1925,35 @@ MONITOR`'s own address at `$00A304`: a bounds check against exactly
 unconfirmed (could be a coincidental address-range check, the same
 trap this project has hit before) — a real, concrete next address
 rather than a repeat of the same blocked method a fourth time.
+
+## Slot 5 reads two plain bytes ($D08/$D11), not a queue; the sequencer never writes them (docs/asr10/investigations/note-velocity-structure-and-sequencer-silence.md)
+
+**[Verified, self-correction]** `$00782A` firing at a steady 83.5Hz
+regardless of notes turned out to be a CPU prefetch artifact from the
+adjacent unconditional `bra.b $77ca` (Slot 5's own tick-divider
+branch), not a genuine per-poll check — caught by tapping the same
+instruction's own extension word (`$782C`, 0 idle / 1 per note) before
+being reported as "Slot 5 polls note state at 83Hz," which would have
+been subtly wrong.
+
+**[Verified]** The structure Slot 5's call chain reads is
+`$000D08`/`$000D11` — two plain global bytes, not a queue/flag/ring
+buffer. Value-confirmed: at rest both `$00`; during a held `KEY_C`
+note, `$D08=$64` (100, exactly `esqpanel.cpp`'s own `KEY_VELOCITY`
+constant) and `$D11=$3C` (60, Middle C). Writers identified:
+`$0171B4` (key-down, both fields as one word), `$017276` (note
+number, both key-down and key-up), `$0169C0`/`$F8C2F6` (key-up
+touches). MIDI note-on untested this round.
+
+**[Verified]** With `TUTORIAL SEQ` loaded and `$17` executed, `$D11`
+is never written and `$D08`'s three touches carry the key-*release*
+signature (`$0169C0`, value `$60`), not a new note. Scoped strictly
+per the task's own instruction: this rules out only "the sequencer's
+`$17` chain via this specific structure" — it says nothing about
+whether the sequencer uses another path, or whether playback starts at
+all by any mechanism.
+
+**[OPEN, narrowed]** `$00A304`'s containing routine (`$00A2FA`) never
+executes across idle or ten steps of Command-mode navigation; its
+target on success (`$8C72`) reads as repeating table data, not code.
+Real ROM content, confirmed unreached in every state found so far.
