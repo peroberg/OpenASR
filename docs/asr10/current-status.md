@@ -2024,3 +2024,55 @@ method — the same addressing-mode blind spot as the panel-cluster result
 above. Who reads each string, and under what condition, remains `[OPEN]`
 — not unsearched, structurally invisible to static absolute-reference
 search.
+
+## Transport confirmed dynamically; A/B click investigation (docs/asr10/investigations/transport-ab-test-play-stop-continue.md)
+
+**[Verified runtime]** `$1D`=Play, `$17`=Stop/Continue, confirmed via
+ES5506 register-write activity: Play produces sustained voice-register
+traffic; Stop drops it to zero in-window; Continue resumes it with
+freshly-programmed, varied voice addresses (not a reset). `$17`'s prior
+`"CREATE NEW SEQUENCE"` attribution (a specific 23-button Command-menu
+prefix context) stands alongside this — both real, reached from
+different navigation states, the same raw-code reuse already
+established for `$10`/`$11`. Bare `$17` from idle or with only a bank
+loaded has zero effect in either display or guard state, confirmed this
+task.
+
+**[OPEN, corrected]** `$007C7C`'s execution during Play is not
+PC-confirmed: a PC-correlated tap shows 374 reads, zero with
+`PC==$007C7C`. The real, repeated reader is `$007E24` (373/374 hits) —
+previously undocumented in this role.
+
+**[Verified]** A per-slot association table at `$001098` (~72-byte
+stride, ≥8 slots): case A (`TUTORIAL BNK`) shows 5-6 distinct
+per-slot references with unused slots empty; case B (`ATRK TUT BNK`)
+shows every slot populated but cycling through only 3 distinct
+references (matching its 3 real instruments) — confirmed deterministic
+across repeat loads (Del 4's control), not history-dependent.
+
+**[Verified, structural — not yet tied to an audio measurement]** Case
+B's active ES5506 voices redundantly share only 4 distinct sample
+regions across ~18 voices (9-way/3-way duplication); case A's are
+diverse. Neither case shows a literal START≈END degenerate voice. This
+task's own WAV click-heuristic found no signature in either case's
+audio (miscalibrated for B's much lower overall level, not a negative
+result) — the redundancy is the strongest candidate mechanism for the
+reported clicking, not a closed case.
+
+**[OPEN, real lead, imperfectly controlled]** An effects-preset string
+table (`"HALL REVERB"` etc.) is present after a fresh-boot `ATRK TUT BNK`
+load and zeroed after a second `ATRK` load with something else loaded
+between — found despite the intended middle step (`TUTORIAL BNK`) not
+being reached due to a genuine post-bank-load navigation-context switch
+(`$0A` starts filtering to Song-type entries after a Song-bundling bank
+loads; `$0B` still walks the full catalog). Flagged for a rerun with
+correct navigation, not resolved this task.
+
+**[Verified runtime]** Single-instrument loading (e.g. `BLUES DRUMS`,
+a standalone catalog file separate from any bank) uses the identical
+LOAD/INST file browser as bank loading; after `$23` it shows
+`"PICK IN5TRUMENT BUTT0N"` verbatim, requiring explicit destination-slot
+selection — the one real difference from a bank load, which populates
+every slot from its own predetermined list without this prompt. No
+Command-mode category provides equivalent placement; the closest
+entries (`COPY INSTRUMENT`, `IMPORT NON-ASR SOUNDS`) are not it.

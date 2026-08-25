@@ -105,12 +105,28 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 83 Markdown-filer (räknat om 2026-08-25)
+## `investigations/` — 84 Markdown-filer (räknat om 2026-08-25)
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `call-graph-intersection-and-rom-string-search.md`:
+Senaste tillägget är `transport-ab-test-play-stop-continue.md`: `$1D`=Play,
+`$17`=Stop/Continue bekräftade dynamiskt via ES5506-registeraktivitet
+(stopp till noll, återupptagning med nyprogrammerade röster); `$17`s
+"CREATE NEW SEQUENCE" står kvar som ett eget, giltigt sammanhang —
+kontextberoende, inte en felaktig attribution. `$007C7C` visar sig inte
+PC-bekräftat exekvera under uppspelning (374 träffar, noll `matched`);
+den verkliga upprepade läsaren är `$007E24`. En platstabell vid `$001098`
+skiljer fallen exakt: A har en distinkt referens per plats och tomma
+oanvända platser, B har alla platser fyllda men cirkulerande genom bara
+3 distinkta referenser — deterministiskt, inte historieberoende. B:s
+aktiva röster delar bara 4 sampelregioner över ~18 röster (9-faldig/
+3-faldig dubblering); A:s är olika. En effektpresettabell finns efter
+första `ATRK`-laddningen och är nollställd efter en andra — en verklig
+ledtråd, ofullständigt kontrollerad denna uppgift. Enskild
+instrumentladdning bekräftad: `"PICK IN5TRUMENT BUTT0N"`, samma
+filbläddrare som bankladdning, ett extra platsval. Föregående tillägg
+var `call-graph-intersection-and-rom-string-search.md`:
 använder `call-graph-edges.csv` som mängdoperation (panel-nåbart ∩
 sekvenserar-nående) — snittet är tomt, med och utan de 1404
 spegelkanterna, förklarat av att panelklustret enbart använder
