@@ -64,6 +64,7 @@ runtime-tool            instrumentering
 | `boot-runtime-timeline.md` | **aktuell** | ny 2026-08-11 | reset → runtime, ansvarsfördelning ROM/RAM | dynamisk PC-profil, IRQ6-källor, regionklassade övergångar |
 | `call-graph.md` | **aktuell, coverage-kvalificerad** | ny 2026-08-04, rättelse 2026-08-25 | kontrollflödesmodell och CSV-schema; inte komplett firmware-callgraph | ur `call-graph-edges.csv`, `routines.csv`; BSR/BRA/Bcc/PC-relative/indirekt/TRAP saknas i extractionen |
 | `display-protocol.md` | **aktuell, funktionellt avgränsad** | runtimeinventering 2026-08-24, statusnot 2026-08-25 | DUART/displaybyteprotokoll, cursor, attribut och öppna UI-gränser | verifierade mekanismer är inte en komplett UI-modell |
+| `front-panel-model.md` | **aktuell** | manual-, runtime- och källkodsinventering 2026-08-25 | layoutoberoende semantisk panelmodell, kontrollgrupper, verifierade råkoder, host-keymap och displaygräns | normerande underlag för framtida display-, racklayout- och host-control-faser |
 | `e2-address-model.md` | **aktuell** | riktad adressrevision | `$FFxxxx`-mekanismer och `$FC5803` | skiljer verifierad decode från speglingshypotes |
 | `es5701-wiring.md` | oförändrad | i trädet | ES5701-koppling | — |
 | `hardware-map.md` | **aktuell** | uppdaterad 2026-08-04 | fysiska komponenter | chip-select-tabellen tillagd; två rättelserutor markerar föråldrade `$FC6816`- och SCSI-avsnitt som historik |

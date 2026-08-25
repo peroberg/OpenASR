@@ -42,12 +42,12 @@ firmware -> MC68302 SCC/SIB -> DUART channel B THRB ($FC480D)
 ```
 
 `asr10panel_device` also keeps its own parallel mirror
-(`m_text_chars`/`m_text_position`, used by `current_text()` and every
-Lua regression test's `display.read_raw()`), independent of
-`esq1x22_device`'s own internal `m_chars`/`m_attrs` state — the two
-copies are kept in step because both are driven from the same
-`send_to_display()` call for every printable byte, not because one
-reads the other.
+(`m_text_chars`/`m_text_position`, exposed by `current_text()`), independent of
+`esq1x22_device`'s own internal `m_chars`/`m_attrs` state. The Lua regression
+helper `lua/lib/asr10_display.lua::read_raw()` does **not** use that shadow; it
+decodes the rendered `vfd0`-`vfd21` outputs. Both internal text models receive
+the same `send_to_display()` byte stream, but one does not read the other, and
+only the VFD state applies cursor-column rewrites during partial updates.
 
 Unrecognized codes are not silently dropped: `send_to_display()` calls
 `report_unhandled_display_code()`, which fires `osd_printf_error()`
