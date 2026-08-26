@@ -2282,3 +2282,34 @@ ANALOG INPUTS`; `$0D = Env1` is `[Verified runtime, Command/service context]`.
 
 This is a later hardware/input-model item and does not displace the sequencer
 playback defect or practical UI work in the project priority order.
+
+## Analog selector/control domain mapped (docs/asr10/investigations/analog-selector-control-map-v350.md)
+
+**[Verified firmware + runtime]** The complete bounded V3.50 acquisition
+domain is now characterized. The hard-coded ordinary path selects
+0=PITCHWHL, 2=MODWHEEL, 5=MR. KNOB/Data Entry, 3=VOLUME and 4=PEDAL, with
+periodic 7=REFRENCE. Selector 7 is a filtered calibration source used to
+derive `$0DF2`, not a host control. The generic ES5506 callback contract is a
+right-justified raw ten-bit value; firmware performs the control-specific
+calibration, filtering, dead-zone, clamp and slew work.
+
+**[Verified conditional path; Likely semantic]** Selector 1 is gated by the
+boot-ROM model flag `"88"` at `$FFCCD1` and a post-key-event countdown at
+`$FFD0EA`. Its producer at `$000172EC` filters and scales PAR to 0..127 and
+dispatches shared controller index `$0E`. Together with the ASR-88-only mono
+pressure hardware documented by Ensoniq, this makes selector 1 likely ASR-88
+mono/channel pressure; direct ASR-88 runtime/name evidence is still absent.
+
+**[Verified, bounded]** Selector 6 has no generator in the analyzed V3.50
+select/settle/PAR path. All direct calls and literal PBDAT writers were checked,
+and a 10,737-read live-witness run observed every known selector but neither 1
+nor 6. Selector 6 is therefore unreachable in this acquisition path, while its
+physical mux-pin role remains `[OPEN]`.
+
+**[Corrected source model]** MR. KNOB is the Service Manual's diagnostic name
+for the Data Entry slider: one semantic control. Current MAME adjusters are
+misrouted/disconnected: Data Entry writes emulator index 3 although firmware
+uses selector 5; Volume writes 5 although firmware uses 3; Input Level writes 4,
+which firmware uses for Pedal. Input Level is `[DISPROVEN]` as a member of this
+PAR scan and belongs to the separately open audio-input/gain model. Pitch, mod,
+pedal and ASR-88 pressure host inputs are absent. No C++ routing was changed.

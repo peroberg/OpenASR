@@ -169,6 +169,13 @@ ES5506 PAR-läsningar; att den fysiskt driver just U55 är `[Likely]` tills
 pinrouting verifierats. Det är den mest använda enskilda 68302-registeradressen
 i hela OS:et (12 respektive 14 referenser).
 
+Den fullständiga avgränsade V3.50-domänen är 0,2,5,3,4 plus periodisk 7 och
+villkorlig 1. Selector 1 kräver ASR-88-modellflagga samt key-event-countdown och
+är `[Likely]` mono/channel pressure. Selector 6 saknar generator i den
+analyserade acquisitionvägen och är `[Verified unreachable]` där; detta bevisar
+inte dess fysiska mux-pinidentitet. Se
+`../investigations/analog-selector-control-map-v350.md`.
+
 **Blind fläck:** räkningen ovan täcker bara 32-bitars absolut adressering.
 Registerrelativa åtkomster `(d,An)` syns inte. Det felet har kostat projektet fem gånger.
 

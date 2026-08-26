@@ -25,6 +25,10 @@ live in `../reference/subroutine-index.md`.
 - V3.50 continuously scans 0,2,5,3,4 (plus periodic 7) at 500 aggregate PAR
   reads/s in both idle and the analog diagnostic. The diagnostic only selects
   a RAM-table entry for display. See `analog-control-acquisition-v350.md`.
+- The complete bounded selector domain is now mapped. Selector 1 is enabled
+  only by the ASR-88 model flag plus a post-key-event countdown and is
+  `[Likely]` mono/channel pressure. Selector 6 has no generator in the analyzed
+  V3.50 acquisition path. See `analog-selector-control-map-v350.md`.
 
 ## Reproduction history
 
@@ -52,6 +56,9 @@ live in `../reference/subroutine-index.md`.
 - Firmware/diagnostic identities are now mapped: 0=PITCHWHL, 2=MODWHEEL,
   4=PEDAL, 3=VOLUME, 5=MR. KNOB and 7=REFRENCE. Their physical connector/U55
   input-pin routing remains unknown.
+- Selector 1's exact vendor/controller-name binding awaits ASR-88 runtime.
+  Selector 6's physical mux-pin purpose remains unknown despite being
+  unreachable in the analyzed V3.50 acquisition path.
 - `$FC6000-$FC6FFF` accesses were invisible to Lua taps in one observe run
   despite the channel-select path executing; this remains a low-priority
   tap-layer mystery, not hardware evidence.

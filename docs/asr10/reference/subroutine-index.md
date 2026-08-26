@@ -642,7 +642,8 @@ MC68302 PBDAT bits 2:0 före varje PAR-läsning. Panelens tre adjusters skriver
 dessutom emulatorindex 3=Data Entry, 4=Input Level, 5=Volume, i konflikt med
 firmwaremappningen 3=VOLUME, 4=PEDAL, 5=MR. KNOB. Defaults håller boot vid liv,
 men är inte en korrekt acquisitionmodell. Se
-`../investigations/analog-control-acquisition-v350.md`.
+`../investigations/analog-control-acquisition-v350.md` och
+`../investigations/analog-selector-control-map-v350.md`.
 
 ### `$F8DAFE` par_read_raw
 
@@ -744,6 +745,13 @@ Sekvensen är kanal 0 -> `$F8D920`, 2 -> `$F8D992`, 5 -> `$F8D9DE`,
 villkorlig. Uppmätt total är 500 PAR-läsningar/s, de fem vanliga kanalerna
 strax under 100/s vardera och kanal 7 cirka 1,7/s.
 
+**[Verified bounded selector domain]** Sekvensen är hårdkodad. Byte
+`$FFCCD1` sätts av boot-ROM endast när modelword är `"88"`; då räknas
+`$FFD0EA`, som laddas med 4 av en kvalificerande key/event-väg, ned före den
+villkorliga selector-1-läsningen och `$000172EC`. Selector 6 har ingen generator
+i den analyserade V3.50 select/settle/PAR-vägen. Selector 1:s semantik är
+`[Likely]` ASR-88 mono/channel pressure; selector 6:s fysiska roll är `[OPEN]`.
+
 ### `$0069A2` analog_select_and_settle
 
 **[Verified firmware + runtime]** `andi.b #$F8,$FC6829` följt av
@@ -765,6 +773,19 @@ Calls: `$006864`.
 `jsr $F8DB4C`, egen kopia av divisionen.
 
 Calls: `$006864`, `$F8DB4C`.
+
+Selector 7 är **[Verified]** en kalibreringsreferens: rutinen filtrerar
+referensblocket och räknar om 0.16-faktorn `$0DF2` när värdet ändras. Den ska
+inte modelleras som en hostkontroll. Exakt fysisk referensspänning är `[OPEN]`.
+
+### `$000172EC` asr88_pressure_process
+
+**[Verified conditional mechanism; Likely semantic name]** Anropas endast av
+selector-1-grenen när ASR-88-modellflaggan och key-event-countdown tillåter det.
+Läser PAR via `$F8DAFE`, filtrerar i block `$FFD0DC`, använder `$0DF2` och en
+modellberoende kurvtabell, klampar 0..127, lagrar `$FFD0E0` och dispatchar
+controllerindex `$0E` via `$F8DC66`. Kombinationen med dokumenterad ASR-88
+mono-pressure-hårdvara gör namnet sannolikt men inte runtime-verifierat.
 
 ### `$0077C2` sched_slot5_poller
 
@@ -918,6 +939,9 @@ latch, så de två första MOVEP-byten är alltid `$00`. Data finns bara på
 | `$0DDE` / `$0DE0` | Kanal 0:s dödzon, centrum +/- `$528` |
 | `$0DF2` | Kalibreringsfaktor, 0.16 fixpunkt |
 | `$0EA4` / `$0EA6` | analogdiagnostikens viewer-index / kopierade displayvärde; UI-valet ändrar inte background scan |
+| `$FFCCD1` | modellflagga: boot-ROM sätter sann endast när modelword är `"88"`; gate för selector 1 |
+| `$FFD0DC`/`$FFD0E0`/`$FFD0E2` | villkorligt selector-1-block: rå/processed/filter state för `[Likely]` ASR-88 pressure |
+| `$FFD0EA` | key/event-laddad countdown (4) för selector-1-vägen |
 | `$FFD0B0` | Slot 5:s skanningsindex |
 
 ## Enhetsfönster

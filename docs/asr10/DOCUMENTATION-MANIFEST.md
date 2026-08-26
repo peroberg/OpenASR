@@ -118,12 +118,19 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 88 Markdown-filer (räknat om 2026-08-26)
+## `investigations/` — 89 Markdown-filer (räknat om 2026-08-26)
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `analog-control-acquisition-v350.md`: verifierar en
+Senaste tillägget är `analog-selector-control-map-v350.md`: kartlägger hela den
+funktionella PBDAT/PAR-domänen 0-7. Selector 1 är en verifierad ASR-88-villkorsväg
+med `[Likely]` mono/channel-pressure-semantik; selector 6 är
+`[Verified unreachable]` i den avgränsade V3.50-acquisitionvägen. Journalen
+verifierar även MR. KNOB = Data Entry, avför Input Level från denna scan,
+karakteriserar selector 7 som kalibreringsreferens och specificerar rått
+10-bitars board-callbackkontrakt utan att implementera det. Föregående tillägg
+är `analog-control-acquisition-v350.md`: verifierar en
 kontinuerlig V3.50-kedja PBDAT PB2-PB0 -> cirka 1,98 ms -> ES5506 PAR ->
 kontrollspecifika RAM-block, 500 läsningar/s både idle och diagnostik. Visar
 att `EXAMINE ANALOG INPUTS` endast väljer viewer-index/RAM-cell, kartlägger

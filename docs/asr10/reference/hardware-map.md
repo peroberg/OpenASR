@@ -308,6 +308,17 @@ updates per-control RAM blocks. The runtime selector order is
 MODWHEEL, MR. KNOB, VOLUME, PEDAL and REFRENCE respectively. Aggregate PAR
 rate is 500/s in both normal idle and diagnostics.
 
+The remaining logical selector values are bounded more tightly in V3.50.
+Selector 1 is conditional on boot-ROM model `"88"` and a key-event countdown;
+its 0..127 producer is `[Likely]` the ASR-88 mono/channel-pressure source.
+Selector 6 has no generator in the analyzed acquisition path and is
+`[Verified unreachable]` there, while its physical pin purpose remains
+`[OPEN]`. Selector 7 is a periodically filtered calibration reference, not a
+host control. `MR. KNOB` is the service diagnostic name for the Data Entry
+slider. Input Level is not a member of this PAR scan; it belongs to the
+separate audio-input/gain subsystem. See
+`../investigations/analog-selector-control-map-v350.md`.
+
 The board has U55 MC74HC4051N, an 8:1 analog mux. Component capability plus
 the measured three-bit scan makes U55 `[Likely acquisition mux]`, not
 `[Verified acquisition mux]`. Still `[OPEN]`: U55 pin 3 COM destination,

@@ -208,8 +208,14 @@ signature and is deliberately not installed in the raw-code column.
 
 The source model already exposes `Volume`, `Data Entry` and `Input Level` as
 continuous host inputs. They do not use the button raw-code protocol and are
-listed for completeness. Keybed, pitch/modulation wheels, Patch Select and foot
-controls are performance-controller work outside this front-panel specification.
+listed for completeness. `MR. KNOB` is `[Verified vendor terminology]` for the
+same physical Data Entry slider, not another semantic control. The three current
+adjusters do not reach firmware through its PBDAT-selected PAR path; their
+numeric indexes also conflict with the verified selector map. Input Level is
+`[DISPROVEN]` as a member of that scan and instead belongs to the separately
+open audio-input/gain model. Keybed, pitch/modulation wheels, Patch Select and
+foot controls remain performance-controller work outside this front-panel
+specification.
 
 ## 3. Layout invariants
 
@@ -301,9 +307,9 @@ existence of the physical label in the manual.
 | Transport | `TransportPlay` | PLAY | — | `$1D` | `[Verified runtime, sequence loaded]` | — | Status indicator source `[OPEN]` | Starts sequencer activity |
 | Auxiliary | `SampleSourceSelect` | SAMPLE | SOURCE SELECT | `$20` | `[Verified runtime]` | `S` | Indicator source `[OPEN]` | `S` currently collides with musical C-sharp |
 | Auxiliary | `FxSelectBypass` | FX SELECT | FX BYPASS | — | `[OPEN]` | — | Indicator source `[OPEN]` | Prior `$07` candidate remains only `[Likely]` |
-| Continuous | `Volume` | VOLUME | — | not applicable | `[Verified source-level host input, disconnected acquisition]` | MAME adjuster | — | Writes emulator channel 5, while V3.50 uses PBDAT selector 3; min/mid/max did not affect PAR |
-| Continuous | `DataEntry` | DATA ENTRY | — | not applicable | `[Verified source-level host input, disconnected acquisition]` | MAME adjuster | — | Writes emulator channel 3, while V3.50 uses selector 5 for MR. KNOB; min/mid/max did not affect PAR |
-| Continuous | `InputLevel` | INPUT LEVEL | — | not applicable | `[Verified source-level host input, unverified consumer]` | MAME adjuster | — | Writes emulator channel 4, which V3.50 uses for PEDAL; distinct from four feedback indicators |
+| Continuous | `Volume` | VOLUME | — | not applicable | `[Verified source-level host input, disconnected/misrouted acquisition]` | MAME adjuster | — | Writes emulator channel 5, while V3.50 uses PBDAT selector 3; min/mid/max did not affect PAR |
+| Continuous | `DataEntry` | DATA ENTRY | MR. KNOB (diagnostic alias) | not applicable | `[Verified identity; disconnected/misrouted acquisition]` | MAME adjuster | — | Writes emulator channel 3, while V3.50 uses selector 5; min/mid/max did not affect PAR |
+| Continuous | `InputLevel` | INPUT LEVEL | — | not applicable | `[Verified source-level host input; DISPROVEN as PAR-scan member]` | MAME adjuster | — | Writes emulator channel 4, which V3.50 uses for PEDAL; belongs to open audio-input/gain path and is distinct from four feedback indicators |
 
 The `$77` bit-0 observation is deliberately not generalized to a globally unique
 Track 1 lamp source: it toggles correctly in an isolated Instrument 1
