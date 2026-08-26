@@ -31,7 +31,8 @@ no longer investigative live in `../reference/subroutine-index.md`.
   `$2E,$57,$36,$00`; physical output is the inverse of the internal OPR latch.
 - OPR was observed constant around the PAR loop and does not select the ADC
   channel in the verified path.
-- ADC channel selection is MC68302 PBDAT bit 2:0, not DUART OPR.
+- Firmware's analog channel selection is MC68302 PBDAT bit 2:0, not DUART
+  OPR. U55 as the physical mux is `[Likely]`; pin routing is `[OPEN]`.
 
 ## SRA bit 7
 

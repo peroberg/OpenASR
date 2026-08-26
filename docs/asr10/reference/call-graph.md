@@ -243,7 +243,7 @@ runtime-körningen är en **V1.61-körning** ur en historisk blockerutredning; a
 förväntat SCC-avbrott faktiskt uteblev är inte dynamiskt visat. Se
 `mc68302-status.md` §3.
 
-### 3.7 PAR / analog mux  [V]
+### 3.7 PAR / analog selector  [V firmware; physical mux Likely]
 
 ```
 OS RAM $0067EC  andi.b #$F8,($FC6829)   ; nollställ PB2-PB0

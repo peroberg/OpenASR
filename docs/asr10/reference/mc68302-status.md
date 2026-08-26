@@ -32,7 +32,7 @@ av nuvarande HEAD, som når `FILE 1  TUTORIAL BNK`. Se §3 "Vad detta INTE visar
 | `$FC6818` | "control/ack/EOI-ish candidate" | **ISR** — In-Service Register | delvis rätt; EOI sker hit |
 | `$FC6884` | "timer/control/reload candidate" | **SCM1** — SCC1 Mode Register | **fel** — se §3 |
 | `$FC6894` | "timer/control/reload candidate" | **SCM2** — SCC2 Mode Register | **fel** — se §3 |
-| `$FC6829` | oidentifierad | **PBDAT låg byte** | analog mux-kanalval |
+| `$FC6829` | oidentifierad | **PBDAT låg byte** | firmwarets analoga kanalval; U55-koppling `[Likely]` |
 | `$FC68B2` | (jag skrev SIMODE) | **SIMASK** — Serial Interface Mask Register | **min egen felattribuering, rättad** |
 | `$FC68B4` | (jag skrev SIMASK) | **SIMODE** — Serial Interface Mode Register | den tidigare projektanalysen hade rätt |
 

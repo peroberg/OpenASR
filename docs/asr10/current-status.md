@@ -2246,3 +2246,39 @@ already-programmed voice, not full retriggers. Reading this as "note
 lifetime" needs a `CR`-bit decode this task didn't reach. The clicking's
 strongest lead remains the prior round's redundant-sample-sharing
 finding, not this metric.
+
+## Analog/control acquisition characterized (docs/asr10/investigations/analog-control-acquisition-v350.md)
+
+**[Verified runtime + firmware]** V3.50 uses ES5506 global PAR/POT register
+`$0D`. Firmware writes MC68302 PBDAT PB2-PB0, waits/yields, then reads PAR
+through `$FC60B0`'s MOVEP sequence at `$FC2069/$6B/$6D/$6F`. The continuous
+selector scan is 0,2,5,3,4 plus periodic 7. A clean four-second window measured
+2,000 complete reads: 500.0/s total, approximately 100/s per ordinary channel
+and 1.75/s for the reference selector. Mean final-selector-to-read delay was
+1,980.1 us.
+
+**[Verified runtime]** `EXAMINE ANALOG INPUTS` is passive, not an active ADC
+mode. Idle, menu, every analog page and two A/B/A loops retain the same PAR
+rate and selector histogram. UI choice changes `$0EA4` and which continuously
+maintained table byte is copied to `$0EA6`: PITCHWHL `$0D8F` (selector 0),
+MODWHEEL `$0D9D` (2), PEDAL `$0DAB` (4), VOLUME `$0DB9` (3), MR. KNOB
+`$0DC7` (5), REFRENCE `$0DD6` (7). DUART A and SCC accesses were zero with
+live witnesses; DUART B traffic on value pages is the known display path.
+
+**[Verified firmware arithmetic]** The raw ten-bit value is left-shifted six,
+then each control has its own calibration/dead-zone/multiply/clamp path. The
+simple universal `>>3`/`>>2` hypothesis is `[DISPROVEN]`.
+
+**[Likely physical]** U55 HC4051 is now the strong acquisition-mux candidate,
+but COM/select/input pin routing remains `[OPEN]` until schematic or continuity
+evidence. No mux was implemented. The current callback is explicitly wrong for
+this path: it indexes with `m_duart_io & 7`, not PBDAT; 0/512/1023 injection
+through its Data Entry and Volume adjusters did not change PAR or diagnostics.
+
+**Panel correction.** Raw `$0C` as Env1/service entry is `[DISPROVEN]` in the
+tested Command context (`QUANTIZE TRACK`). Raw `$0D`, the bounded ROM-table
+candidate for mapped `$31`, reaches the service family and then `EXAMINE
+ANALOG INPUTS`; `$0D = Env1` is `[Verified runtime, Command/service context]`.
+
+This is a later hardware/input-model item and does not displace the sequencer
+playback defect or practical UI work in the project priority order.

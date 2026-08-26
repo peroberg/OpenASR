@@ -13,8 +13,9 @@ The sampling display is maintained by V3.50 code at static RAM
 not use an SCC register, Port B bit, ES5506 register, ES5510 register, or sample
 RAM in its direct exit decision. It dequeues scheduler events with `trap #5`
 and has one sampling-success event tag: `$90E8`. Concurrent level-meter service
-does continue to select the analog mux through PBDAT low byte and read ES5506
-PAR; that traffic is not the exit branch itself.
+does continue to write the firmware analog selector through PBDAT low byte and
+read ES5506 PAR; that traffic is not the exit branch itself. Later work makes
+U55 the `[Likely]` physical mux but does not verify its pins.
 
 The only literal `$90E8` producer in the V3.50 image is in the normal
 continuation of `scc_rx_common`:

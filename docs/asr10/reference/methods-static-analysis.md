@@ -105,7 +105,9 @@ som gäller båda är ett fynd om *maskinen*.
 
 **Resultat:** MC68302 UM Table 2-9 gav `Base + 828 = PBDAT`. Det gjorde att
 `$FC6829` — den mest refererade 68302-adressen i hela OS:et — kunde identifieras som
-PBDAT:s låga byte, dvs kanalvalet till den analoga multiplexern.
+PBDAT:s låga byte, dvs firmwarets analoga kanalval. Senare runtime parar detta
+med ES5506 PAR; identiteten på den fysiska multiplexern är fortfarande
+`[Likely]`, inte härledd ur registermanualen.
 
 **Verifiera alltid kartan mot kända skrivningar innan den används:**
 

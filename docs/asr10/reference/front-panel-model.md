@@ -280,7 +280,7 @@ existence of the physical label in the manual.
 | Navigation | `NavRight` | RIGHT | — | `$11` | `[Verified runtime]` | Right Arrow | — | Moves underline Field 1 -> Field 2 in REC SRC |
 | Navigation | `EnterYes` | ENTER | YES | `$23` | `[Verified runtime]` | Enter/Return | — | Confirmation/proceed choice |
 | Navigation | `CancelNo` | CANCEL | NO | `$21` | `[Verified runtime]` | — | — | `$22` is `[DISPROVEN]` as Cancel/No |
-| Numeric/Parameter | `Env1Numeric1` | ENV 1 | 1 | — | `[OPEN]` | — | — | One dual-role physical button |
+| Numeric/Parameter | `Env1Numeric1` | ENV 1 | 1 | `$0D` | `[Verified runtime, Command/service context]` | — | — | Opens the service/diagnostic command family; `$0C` as Env1 is `[DISPROVEN]` in that context |
 | Numeric/Parameter | `Env2Numeric2` | ENV 2 | 2 | — | `[OPEN]` | — | — | One dual-role physical button |
 | Numeric/Parameter | `Env3Numeric3` | ENV 3 | 3 | — | `[OPEN]` | — | — | One dual-role physical button |
 | Numeric/Parameter | `PitchNumeric4` | PITCH | 4 | — | `[OPEN]` | — | — | One dual-role physical button |
@@ -301,9 +301,9 @@ existence of the physical label in the manual.
 | Transport | `TransportPlay` | PLAY | — | `$1D` | `[Verified runtime, sequence loaded]` | — | Status indicator source `[OPEN]` | Starts sequencer activity |
 | Auxiliary | `SampleSourceSelect` | SAMPLE | SOURCE SELECT | `$20` | `[Verified runtime]` | `S` | Indicator source `[OPEN]` | `S` currently collides with musical C-sharp |
 | Auxiliary | `FxSelectBypass` | FX SELECT | FX BYPASS | — | `[OPEN]` | — | Indicator source `[OPEN]` | Prior `$07` candidate remains only `[Likely]` |
-| Continuous | `Volume` | VOLUME | — | not applicable | `[Verified source-level host input]` | MAME adjuster | — | Analog channel 5 in current model |
-| Continuous | `DataEntry` | DATA ENTRY | — | not applicable | `[Verified source-level host input]` | MAME adjuster | — | Analog channel 3 in current model |
-| Continuous | `InputLevel` | INPUT LEVEL | — | not applicable | `[Verified source-level host input]` | MAME adjuster | — | Analog channel 4; distinct from four feedback indicators |
+| Continuous | `Volume` | VOLUME | — | not applicable | `[Verified source-level host input, disconnected acquisition]` | MAME adjuster | — | Writes emulator channel 5, while V3.50 uses PBDAT selector 3; min/mid/max did not affect PAR |
+| Continuous | `DataEntry` | DATA ENTRY | — | not applicable | `[Verified source-level host input, disconnected acquisition]` | MAME adjuster | — | Writes emulator channel 3, while V3.50 uses selector 5 for MR. KNOB; min/mid/max did not affect PAR |
+| Continuous | `InputLevel` | INPUT LEVEL | — | not applicable | `[Verified source-level host input, unverified consumer]` | MAME adjuster | — | Writes emulator channel 4, which V3.50 uses for PEDAL; distinct from four feedback indicators |
 
 The `$77` bit-0 observation is deliberately not generalized to a globally unique
 Track 1 lamp source: it toggles correctly in an isolated Instrument 1

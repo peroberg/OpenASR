@@ -299,6 +299,27 @@ ERROR 009 No LRCLK input to 68302
 
 But do not assume PCM sample data itself is transported through MC68302 registers.
 
+### Analog performance/control acquisition
+
+This is separate from PCM sampling. V3.50 continuously writes MC68302 PBDAT
+bits 2:0, waits about 1.98 ms, reads the ES5506's 10-bit PAR/POT register and
+updates per-control RAM blocks. The runtime selector order is
+0,2,5,3,4 with periodic 7; the diagnostic viewer maps these to PITCHWHL,
+MODWHEEL, MR. KNOB, VOLUME, PEDAL and REFRENCE respectively. Aggregate PAR
+rate is 500/s in both normal idle and diagnostics.
+
+The board has U55 MC74HC4051N, an 8:1 analog mux. Component capability plus
+the measured three-bit scan makes U55 `[Likely acquisition mux]`, not
+`[Verified acquisition mux]`. Still `[OPEN]`: U55 pin 3 COM destination,
+pins 9/10/11 selector source, pin 6 enable and X0-X7 physical control mapping.
+See `../investigations/analog-control-acquisition-v350.md`.
+
+The current harness is not yet a faithful implementation: its ES5506 PAR
+callback selects an emulator value with `m_duart_io & 7`, not firmware PBDAT,
+and the three host adjuster channel labels do not match the measured firmware
+selector identities. This is documented technical debt, not fixed in the
+analysis round.
+
 ### Panel/frontpanel
 
 Evidence points to a panel/frontpanel/DUART-like window:

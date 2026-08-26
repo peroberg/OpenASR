@@ -137,7 +137,7 @@ Offset enligt MC68302 UM, Table 2-9 (`Base = $FC6800`). Räkningen är antalet
 | `$FC6824` | PBCNT | 1 | 0 | 0 | `$0080` |
 | `$FC6826` | PBDDR | 1 | 0 | 1 | `$F097` |
 | `$FC6828` | PBDAT | 3 | 0 | 0 | `$0007` vid init |
-| **`$FC6829`** | **PBDAT (låg byte)** | 2 | **12** | **14** | **analog mux-kanalval** |
+| **`$FC6829`** | **PBDAT (låg byte)** | 2 | **12** | **14** | **firmwarets analoga kanalval; fysisk muxkoppling `[Likely]`** |
 | `$FC6830-$FC683E` | BR0/OR0…BR3/OR3 | 1 var | 0 | 0 | endast boot |
 | `$FC684A` | WRR | 1 | 0 | 0 | `$0000` |
 | `$FC6850` | TMR2 | 1 | 0 | 0 | `$003B` |
@@ -163,9 +163,11 @@ Tre oberoende korsvalideringar av offsetkartan:
 
 **Korrigering:** `$FC6829` har tidigare beskrivits utan registeridentitet. Det är
 PBDAT:s låga byte. `ori.b #$07,($00FC6829).l` i PAR-kalibreringen sätter alltså
-PB2–PB0, dvs **kanalvalet till den analoga multiplexern**, och `andi.b #$F8` nollställer
-fältet först. Det är den mest använda enskilda 68302-registeradressen i hela OS:et
-(12 respektive 14 referenser).
+PB2–PB0, dvs **firmwarets analoga kanalval**, och `andi.b #$F8` nollställer
+fältet först. V3.50-runtime parar den cykliska 0/2/5/3/4(+7)-sekvensen med
+ES5506 PAR-läsningar; att den fysiskt driver just U55 är `[Likely]` tills
+pinrouting verifierats. Det är den mest använda enskilda 68302-registeradressen
+i hela OS:et (12 respektive 14 referenser).
 
 **Blind fläck:** räkningen ovan täcker bara 32-bitars absolut adressering.
 Registerrelativa åtkomster `(d,An)` syns inte. Det felet har kostat projektet fem gånger.

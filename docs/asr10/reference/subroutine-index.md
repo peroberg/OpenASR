@@ -636,11 +636,13 @@ I nuvarande källa används `asr10_boot_state::analog_r()` via
 `asr10_boot()`. Paneldevice kan uppdatera kanalvärden via
 `m_panel->write_analog().set(FUNC(asr10_boot_state::analog_w))`.
 
-**[Verified]** Callbacken läser den firmware-valda kanalen ur panelens analoga
-latch och returnerar motsvarande 10-bitarsvärde. Omappade kanaler har
-board-defaults så att OS-kalibreringen inte dividerar med noll. Kanal 7 mäts
-åtta gånger; summan blir D2 och D2 är divisor i kalibreringsfaktorn. Övriga
-kanaler primar filter, centrum och trösklar.
+**[Corrected]** Callbacken läser **inte** firmwarets PBDAT-val. Den indexerar
+`m_analog_values` med `m_duart_io & 7`, medan V3.50 bevisligen skriver
+MC68302 PBDAT bits 2:0 före varje PAR-läsning. Panelens tre adjusters skriver
+dessutom emulatorindex 3=Data Entry, 4=Input Level, 5=Volume, i konflikt med
+firmwaremappningen 3=VOLUME, 4=PEDAL, 5=MR. KNOB. Defaults håller boot vid liv,
+men är inte en korrekt acquisitionmodell. Se
+`../investigations/analog-control-acquisition-v350.md`.
 
 ### `$F8DAFE` par_read_raw
 
@@ -699,7 +701,7 @@ sloten. Rutinen yieldar därefter via `trap #7`, läser PAR med
 ackumulerar i D6. Returnerar summan i D2. Fullt utslag = `$FFC0`.
 Väljer ingen kanal.
 
-Called by: `$0067F4`, `$00681C`, `$00684A`, (`$0068C8`).
+Called by: `$0067F4`, `$00681C`, `$00684A`.
 
 Calls: `$FC60B0`, `trap #8`, `trap #7`.
 
@@ -733,6 +735,21 @@ primar filtercellen `($0DC2+6)`, sätter `A3 = $F8DB12`, och anropar
 `$F8DC2E`.
 
 Calls: `$006864`, `$F8DC2E`.
+
+### `$0068BC` analog_background_scan
+
+**[Verified firmware + runtime]** Kör kontinuerligt även vid normal idle.
+Sekvensen är kanal 0 -> `$F8D920`, 2 -> `$F8D992`, 5 -> `$F8D9DE`,
+3 -> `$F8DA58`, 4 -> `$F8DA98`; kanal 7 läggs till periodiskt och kanal 1 är
+villkorlig. Uppmätt total är 500 PAR-läsningar/s, de fem vanliga kanalerna
+strax under 100/s vardera och kanal 7 cirka 1,7/s.
+
+### `$0069A2` analog_select_and_settle
+
+**[Verified firmware + runtime]** `andi.b #$F8,$FC6829` följt av
+`or.b D0,$FC6829`, sedan `trap #8/#7` innan efterföljande ROM-handler läser
+PAR. Uppmätt tid från den sista selector-skrivningen till fullbordad PAR-read:
+mean 1 980,1 us (stabil fyrasekunders diagnostic-menu-fas).
 
 ### `$00683A` analog_calibrate_ch0
 
@@ -896,10 +913,11 @@ latch, så de två första MOVEP-byten är alltid `$00`. Data finns bara på
 | `$0B6A` | Senast dispatchade uppgift |
 | `$0B82` | Tickräknare |
 | `$0CE3` | Testad av slot 5 |
-| `$0DC2`, `$0DD0` | Reglageinstansblock, `$0E` isär. `+6` filtertillstånd, `+8`/`+A` trösklar |
-| `$0DD6` | Kanal 7:s råsumma; inte formellt divisorn |
+| `$0D8A`/`$0D98`/`$0DA6`/`$0DB4`/`$0DC2`/`$0DD0` | 14-byte analogblock för PITCHWHL/MODWHEEL/PEDAL/VOLUME/MR.KNOB/REFRENCE; displaybytes `$0D8F/$0D9D/$0DAB/$0DB9/$0DC7/$0DD6` |
+| `$0DD6` | Kanal 7:s råsumma under bootkalibrering; senare reference-blockets visade high byte; inte formellt divisorn |
 | `$0DDE` / `$0DE0` | Kanal 0:s dödzon, centrum +/- `$528` |
 | `$0DF2` | Kalibreringsfaktor, 0.16 fixpunkt |
+| `$0EA4` / `$0EA6` | analogdiagnostikens viewer-index / kopierade displayvärde; UI-valet ändrar inte background scan |
 | `$FFD0B0` | Slot 5:s skanningsindex |
 
 ## Enhetsfönster
@@ -910,7 +928,7 @@ latch, så de två första MOVEP-byten är alltid `$00`. Data finns bara på
 | `$FC3000`-`$FC303F` | ES5510 host. `$FC31C1` = host offset `$E0`, "Write select GPR+INSTR" |
 | `$FC4801 + 2n` | SCN2681/MC68681 DUART. Kanal B panel [Verified], kanal A MIDI [Likely] |
 | `$FC6000`-`$FC67FF` | MC68302 DPRAM (thunkbiblioteket) |
-| `$FC6800`+ | MC68302 SIM-register. GIMR `$6812`, IPR `$6814`, IMR `$6816`, ISR `$6818`, PBDAT `$6828`/`$6829` (bit 2:0 = ADC-kanalval) |
+| `$FC6800`+ | MC68302 SIM-register. GIMR `$6812`, IPR `$6814`, IMR `$6816`, ISR `$6818`, PBDAT `$6828`/`$6829` (bit 2:0 = firmwarets analoga kanalval; fysisk U55-koppling `[Likely]`) |
 
 ## Diskformat
 
@@ -968,8 +986,9 @@ Formulering per post: känd anropad adress; syfte ännu inte identifierat.
   ingen effekt.
 - **[Verified]** MAME saknar inte implicit timerstart (AN414).
   `mc68681.cpp` startar timern vid ACR bit 6-övergång.
-- **[Verified]** DUART OPR väljer inte ADC-kanal. OPR är konstant vid
-  PAR-fönstret. Kanalvalet är MC68302 PBDAT bit 2:0.
+- **[Verified]** DUART OPR väljer inte firmwarets analoga kanal. OPR är
+  konstant vid PAR-fönstret. Kanalvalet är MC68302 PBDAT bit 2:0; U55 som
+  fysisk mux är `[Likely]`, inte pinverifierad.
 - **[Verified]** `$0DD6` är inte formellt divisorn vid `$006800`.
   Divisorn är D2 register-direkt, även om dataflödet kommer från samma
   kanal 7-summa.

@@ -15,10 +15,16 @@ live in `../reference/subroutine-index.md`.
   zero vector 5, formatted as ERROR 130.
 - `$0DD6` stores the channel-7 raw sum; it is not the CPU divisor operand.
   The divisor operand at `$006800` is register D2.
-- MC68302 PBDAT bit 2:0 selects ADC channel. Firmware uses at least channels
-  0, 2, 3, 4, 5 and 7; the boot-critical calibration path uses 7, 5, 0.
-- The current driver binds a fixed PAR value so V350 proceeds to the file
-  browser. That is plumbing, not a physical ADC model.
+- MC68302 PBDAT bit 2:0 carries the firmware's analog channel selector.
+  Firmware uses at least channels 0, 2, 3, 4, 5 and 7; the boot-critical
+  calibration path uses 7, 5, 0. Runtime now pairs these writes with PAR reads,
+  but physical U55 pin routing remains unverified.
+- The current driver does not follow that selector. Its PAR callback indexes
+  board-default values with `m_duart_io & 7`; this is boot plumbing, not a
+  physical ADC model and not the firmware-selected channel path.
+- V3.50 continuously scans 0,2,5,3,4 (plus periodic 7) at 500 aggregate PAR
+  reads/s in both idle and the analog diagnostic. The diagnostic only selects
+  a RAM-table entry for display. See `analog-control-acquisition-v350.md`.
 
 ## Reproduction history
 
@@ -26,9 +32,9 @@ live in `../reference/subroutine-index.md`.
   raises ERROR 130.
 - Lua `answer` mode proved that correctly channelised synthetic PAR was
   sufficient to pass ERROR 130 with the ES5510 path enabled.
-- Later C++ cleanup made the fixed PAR path unconditional; the boot now reaches
-  `FILE 1 TUTORIAL BNK` without `ASR10_EXPERIMENT_PAR_DIAGNOSTIC` or
-  `ASR10_DIAG_PAR_VALUE`.
+- Later C++ cleanup replaced the gated fixed-value workaround with
+  `analog_r()` plus per-index defaults; the boot now reaches `FILE 1 TUTORIAL
+  BNK` without `ASR10_EXPERIMENT_PAR_DIAGNOSTIC` or `ASR10_DIAG_PAR_VALUE`.
 
 ## Disproved
 
@@ -42,8 +48,10 @@ live in `../reference/subroutine-index.md`.
 
 ## Open
 
-- The fixed PAR value is not measured from hardware.
-- Physical identity of each ADC channel is unknown.
+- The current default-derived `$200` PAR value is not measured from hardware.
+- Firmware/diagnostic identities are now mapped: 0=PITCHWHL, 2=MODWHEEL,
+  4=PEDAL, 3=VOLUME, 5=MR. KNOB and 7=REFRENCE. Their physical connector/U55
+  input-pin routing remains unknown.
 - `$FC6000-$FC6FFF` accesses were invisible to Lua taps in one observe run
   despite the channel-select path executing; this remains a low-priority
   tap-layer mystery, not hardware evidence.
