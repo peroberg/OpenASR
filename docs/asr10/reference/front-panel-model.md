@@ -273,13 +273,13 @@ existence of the physical label in the manual.
 | Instrument/Track | `InstrumentTrack6` | 6 | — | — | `[OPEN]` | — | Track 6 lamp source `[OPEN]` | — |
 | Instrument/Track | `InstrumentTrack7` | 7 | — | — | `[OPEN]` | — | Track 7 lamp source `[OPEN]` | — |
 | Instrument/Track | `InstrumentTrack8` | 8 | — | — | `[OPEN]` | — | Track 8 lamp source `[OPEN]` | — |
-| Mode | `ModeLoad` | LOAD | — | — | `[OPEN]` | — | Mode indicator source `[OPEN]` | Physical blink is panel-local; encoding unknown |
+| Mode | `ModeLoad` | LOAD | — | `$1A` | `[Verified runtime]` | `L` | Mode indicator source `[OPEN]` | Returns a selected instrument to the firmware file browser |
 | Mode | `ModeCommand` | COMMAND | — | `$06` | `[Verified runtime]` | `C` | Mode indicator source `[OPEN]` | Reaches Command pages |
-| Mode | `ModeEdit` | EDIT | — | — | `[OPEN]` | — | Mode indicator source `[OPEN]` | Layout label is not evidence |
+| Mode | `ModeEdit` | EDIT | — | `$05` | `[Verified runtime]` | `E` | Mode indicator source `[OPEN]` | Selected instrument -> layer/wave parameter page |
 | Category | `CategoryInstrument` | INSTRUMENT | — | — | `[OPEN]` | — | Page indicator source `[OPEN]` | Distinct from InstrumentTrack1 |
 | Category | `CategorySeqSong` | SEQ • SONG | — | `$15` | `[Verified runtime]` | `Q` | Page indicator source `[OPEN]` | Reaches real sequence-file listing |
 | Category | `CategorySystemMidi` | SYSTEM • MIDI | — | — | `[OPEN]` | — | Page indicator source `[OPEN]` | — |
-| Category | `CategoryEffects` | EFFECTS | — | — | `[OPEN]` | — | Page indicator source `[OPEN]` | Distinct from FX Select/Bypass |
+| Category | `CategoryEffects` | EFFECTS | — | `$09` | `[Verified runtime]` | `F` | Page indicator source `[OPEN]` | Reaches the real effect-file browser; distinct from FX Select/Bypass |
 | Navigation | `NavUp` | UP | — | `$0A` | `[Verified runtime]` | Up Arrow | — | Increases value/choice |
 | Navigation | `NavDown` | DOWN | — | `$0B` | `[Verified runtime]` | Down Arrow | — | Decreases value/choice |
 | Navigation | `NavLeft` | LEFT | — | `$10` | `[Verified runtime]` | Left Arrow | — | Moves underline Field 2 -> Field 1 in REC SRC |
@@ -323,13 +323,16 @@ all four Input Level indicators remain semantic outputs with unknown raw sources
 | Raw | Semantic control | Scope and evidence |
 |---:|---|---|
 | `$02` | Instrument / Sequence Track 1 | Instrument selection and single-file destination flow |
+| `$05` | Edit | Selected instrument -> layer/wave parameter page |
 | `$06` | Command | Reaches Command mode and its category pages |
+| `$09` | Effects | Reaches the effect-file browser (`LUSH PLATE` witness) |
 | `$0A` | Up | Increases enumerated/numeric values; VOLUME ceiling witness |
 | `$0B` | Down | Decreases VOLUME 99 -> 98 and enumerated values |
 | `$10` | Left | REC SRC underline moves Field 2 -> Field 1 |
 | `$11` | Right | REC SRC underline moves Field 1 -> Field 2 |
 | `$15` | Seq • Song | Reaches the real `TUTORIAL SEQ` listing |
 | `$17` | Stop • Continue | Active playback only; context-dependent elsewhere |
+| `$1A` | Load | Selected instrument -> file browser |
 | `$1D` | Play | Loaded playable-sequence context |
 | `$20` | Sample • Source Select | Reaches REC SRC workflow |
 | `$21` | Cancel • No | Backs out of a genuine confirmation sub-step |
@@ -337,8 +340,7 @@ all four Input Level indicators remain semantic outputs with unknown raw sources
 
 ### Controls whose button raw code remains OPEN
 
-- Mode: Load, Edit.
-- Category: Instrument, System • MIDI, Effects.
+- Category: Instrument, System • MIDI.
 - Instrument / Sequence Tracks 2-8.
 - Numeric / Parameter Select: Env 1/1 through Layer/9 and Track/0.
 - Audio Track 1 and Audio Track 2.
@@ -357,8 +359,9 @@ sources rather than button codes. Continuous controls do not use button codes.
   handlers instead. The verified arrows are `$10`/`$11`.
 - `$22` as Cancel/No is `[DISPROVEN]` by a confirmation-screen A/B test; `$21`
   uniquely performs Cancel/No there.
-- Labels such as `$05=EDIT`, `$19=RECORD` or `$1A=LOAD` in the current diagnostic
-  layout are not evidence and are not carried into this model.
+- The diagnostic-layout labels were not used as proof: `$05`, `$09` and `$1A`
+  were promoted only after their separate runtime witnesses. `$19=RECORD` is
+  still not evidence and remains `[OPEN]`.
 - The ROM raw-to-mapped table suggests groups, but a statically grouped or
   adjacent entry is not a verified physical identity. In particular,
   Track 1 `$02` does not imply any raw code for Tracks 2-8.
@@ -374,13 +377,16 @@ The authoritative inventory is `INPUT_PORTS_START(asr10panel_device)` in
 | Host key | MAME field | Semantic control | Raw |
 |---|---|---|---:|
 | `1` | `BTN_02` | Instrument / Sequence Track 1 | `$02` |
+| `E` | `EDIT` | Edit | `$05` |
 | `C` | `COMMAND` | Command | `$06` |
+| `F` | `EFFECTS` | Effects | `$09` |
 | Up Arrow | `BTN_0A` | Up | `$0A` |
 | Down Arrow | `BTN_0B` | Down | `$0B` |
 | Left Arrow | `BTN_10` | Left | `$10` |
 | Right Arrow | `BTN_11` | Right | `$11` |
 | `Q` | `BTN_15` | Seq • Song | `$15` |
 | Space | `STOP / CONTINUE` | Stop • Continue | `$17` |
+| `L` | `LOAD` | Load | `$1A` |
 | `P` | `PLAY` | Play | `$1D` |
 | `S` | `BTN_20` | Sample • Source Select | `$20` |
 | Enter/Return | `BTN_23` | Enter • Yes | `$23` |
@@ -394,10 +400,9 @@ its verified raw identity.
 The ASR-10 has no computer-keyboard musical-typing port. `Z,S,X,D,C,V,G,B,H,N,
 J,M,Comma,-,=` are therefore free of ASR-10 keybed behavior; `C` now reaches
 the physical Command button. The following requested panel mnemonics remain
-unbound because their raw codes are `[OPEN]`: `L` Load, `E` Edit, `R` Record,
-`F` Effects and `2` through `8` Instrument / Sequence Tracks. They need a
-targeted per-control runtime confirmation, not a contiguous-code inference or
-a blind matrix sweep.
+unbound because their raw codes are `[OPEN]`: `R` Record and `2` through `8`
+Instrument / Sequence Tracks. They need a targeted per-control runtime
+confirmation, not a contiguous-code inference or a blind matrix sweep.
 
 ### Current and future collisions
 

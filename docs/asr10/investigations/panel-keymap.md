@@ -20,11 +20,11 @@ ioport-falt ar alternativ, inte kombinationer, och kunde darfor inte gora
 | `$02` | klick | `$22` | klick |
 | `$03` | klick | `$23` | klick |
 | `$04` | klick | `$24` | klick |
-| `$05` | klick | `$25` | klick |
+| `$05` | `E` (Edit), klick | `$25` | klick |
 | `$06` | `C` (Command), klick | `$26` | klick |
 | `$07` | klick | `$27` | klick |
 | `$08` | klick | `$28` | klick |
-| `$09` | klick | `$29` | klick |
+| `$09` | `F` (Effects), klick | `$29` | klick |
 | `$0A` | `Up`, klick | `$2A` | klick |
 | `$0B` | `Down`, klick | `$2B` | klick |
 | `$0C` | klick | `$2C` | klick |
@@ -41,7 +41,7 @@ ioport-falt ar alternativ, inte kombinationer, och kunde darfor inte gora
 | `$17` | `Space` (Stop/Continue), klick | `$37` | klick |
 | `$18` | klick | `$38` | klick |
 | `$19` | klick | `$39` | klick |
-| `$1A` | klick | `$3A` | klick |
+| `$1A` | `L` (Load), klick | `$3A` | klick |
 | `$1B` | klick | `$3B` | klick |
 | `$1C` | klick | `$3C` | klick |
 | `$1D` | `P` (Play), klick | `$3D` | klick |
@@ -65,8 +65,9 @@ knapparna ska anvandas via layoutklick tills funktionerna ar verifierade.
 **Uppdaterat 2026-08-27:** ASR-10:s separata `keys_0` musical-typing-port
 (`Z,S,X,D,C,V,G,B,H,N,J,M,Comma,-,=`) ar borttagen. `C`, `P` och Space ar
 nu fysiska panelbindningar till de verifierade koderna ovan; MAME:s nuvarande
-standard-Pause ar F5, inte P. Load/Edit/Record/Effects och Track 2-8 ar fortsatt
-obundna eftersom deras individuella rawkoder ar `[OPEN]`.
+standard-Pause ar F5, inte P. Load/Edit/Effects ar nu fysiska panelbindningar
+till `$1A`/`$05`/`$09`; Record och Track 2-8 ar fortsatt obundna eftersom deras
+individuella rawkoder ar `[OPEN]`.
 
 **Rattat, 2026-08-24** (`panel-button-and-transport-map.md`): `$0C`/`$0D`
 hade tidigare `Left`/`Right` som tangentbordsgenvag. Matt direkt: fran

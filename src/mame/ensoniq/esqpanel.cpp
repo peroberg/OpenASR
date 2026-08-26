@@ -1006,13 +1006,15 @@ static INPUT_PORTS_START(asr10panel_device)
 	PORT_BIT(0x00000004, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_02") PORT_CODE(KEYCODE_1) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x02)
 	ASR10_PANEL_BUTTON(0x00000008, "BTN_03", 0x03)
 	ASR10_PANEL_BUTTON(0x00000010, "BTN_04", 0x04)
-	ASR10_PANEL_BUTTON(0x00000020, "BTN_05", 0x05)
+	// EDIT is verified as raw $05 from a selected instrument to its layer page.
+	PORT_BIT(0x00000020, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("EDIT") PORT_CODE(KEYCODE_E) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x05)
 	// COMMAND is verified as raw $06. Host keys drive physical panel edges;
 	// firmware retains all context-dependent behavior.
 	PORT_BIT(0x00000040, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("COMMAND") PORT_CODE(KEYCODE_C) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x06)
 	ASR10_PANEL_BUTTON(0x00000080, "BTN_07", 0x07)
 	ASR10_PANEL_BUTTON(0x00000100, "BTN_08", 0x08)
-	ASR10_PANEL_BUTTON(0x00000200, "BTN_09", 0x09)
+	// EFFECTS is verified as raw $09 by its real effect-file browser.
+	PORT_BIT(0x00000200, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("EFFECTS") PORT_CODE(KEYCODE_F) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x09)
 	// BTN_0A/BTN_0B: KEYCODE_UP/DOWN, swapped 2026-08-24
 	// (partial-update-position-probe.md Del 5). The pilot keymap had
 	// $0A=KEYCODE_DOWN/$0B=KEYCODE_UP; measured against effect, not
@@ -1062,7 +1064,9 @@ static INPUT_PORTS_START(asr10panel_device)
 	PORT_BIT(0x00800000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("STOP / CONTINUE") PORT_CODE(KEYCODE_SPACE) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x17)
 	ASR10_PANEL_BUTTON(0x01000000, "BTN_18", 0x18)
 	ASR10_PANEL_BUTTON(0x02000000, "BTN_19", 0x19)
-	ASR10_PANEL_BUTTON(0x04000000, "BTN_1A", 0x1a)
+	// LOAD is verified as raw $1A by returning from a selected instrument to
+	// the firmware's file browser.
+	PORT_BIT(0x04000000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("LOAD") PORT_CODE(KEYCODE_L) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x1a)
 	ASR10_PANEL_BUTTON(0x08000000, "BTN_1B", 0x1b)
 	ASR10_PANEL_BUTTON(0x10000000, "BTN_1C", 0x1c)
 	// PLAY is verified as raw $1D with a playable sequence loaded. MAME's

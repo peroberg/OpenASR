@@ -6,7 +6,10 @@
 --    four distinct wire events (press A, press B while A still held, release
 --    A, release B), not a merged/ghosted pair. This is the same pressed-state
 --    mechanism a later verified Record+Play binding will use.
--- 2. BTN_0A (a confirmed-working navigation control) actually changes
+-- 2. Newly host-bound Load/Edit/Effects fields each retain their distinct raw
+--    wire frames; their firmware identities are covered by the focused V3.50
+--    witnesses documented in primary-panel-controls-v350.md.
+-- 3. BTN_0A (a confirmed-working navigation control) actually changes
 --    REC SRC Field 2, i.e. a navigation button really does move/change
 --    a field, not just click without effect.
 --
@@ -72,6 +75,33 @@ if not (saw_press_a and saw_press_b and saw_release_a and saw_release_b) then
   return
 end
 
+-- The semantic host fields must still be ordinary physical controls.  Assert
+-- both edges for the three newly verified raw codes rather than invoking any
+-- firmware-level shortcut.
+local function press_wire(code)
+  local port_name = (code < 0x20) and ":panel:buttons_0" or ":panel:buttons_32"
+  local field = manager.machine.ioport.ports[port_name]:field(1 << (code & 0x1f))
+  field:set_value(1)
+  emu.wait(emu.attotime.from_msec(60))
+  field:clear_value()
+  emu.wait(emu.attotime.from_msec(60))
+end
+
+local primary_before = #stream
+for _, code in ipairs({0x05, 0x09, 0x1a}) do press_wire(code) end
+local primary_seen = {}
+for i = primary_before + 1, #stream - 1 do
+  local byte, next_byte = stream[i], stream[i + 1]
+  if next_byte == 0x00 then primary_seen[byte] = true end
+end
+for _, code in ipairs({0x05, 0x09, 0x1a}) do
+  if not (primary_seen[0x80 | code] and primary_seen[code]) then
+    reg.fail("panel_input", string.format("primary_wire_missing raw=%02X press=%s release=%s",
+      code, tostring(primary_seen[0x80 | code]), tostring(primary_seen[code])))
+    return
+  end
+end
+
 -- Navigation check: BTN_0A genuinely changes REC SRC Field 2.
 local function press_button(code, settle_ms)
   local port_name = (code < 0x20) and ":panel:buttons_0" or ":panel:buttons_32"
@@ -94,4 +124,4 @@ if mode_after == mode_before then
   return
 end
 
-reg.pass("panel_input", string.format("hold_ok=true nav_mode=%u->%u", mode_before, mode_after))
+reg.pass("panel_input", string.format("hold_ok=true primary_wire=05,09,1A nav_mode=%u->%u", mode_before, mode_after))
