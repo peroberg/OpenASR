@@ -2,12 +2,10 @@
 -- panel-button-and-transport-map.md establishes -- separate from
 -- display_protocol.lua, which locks in rendering given known inputs.
 --
--- 1. Two buttons held simultaneously generate four distinct wire
---    events (press A, press B while A still held, release A, release
---    B), not a merged/ghosted pair -- the infrastructure "hold Record,
---    press Play" needs, verified here with the two buttons that
---    currently have keyboard bindings (BTN_0A/BTN_0B) since the real
---    Record/Play codes are not identified.
+-- 1. Two host-bound physical transport buttons held simultaneously generate
+--    four distinct wire events (press A, press B while A still held, release
+--    A, release B), not a merged/ghosted pair. This is the same pressed-state
+--    mechanism a later verified Record+Play binding will use.
 -- 2. BTN_0A (a confirmed-working navigation control) actually changes
 --    REC SRC Field 2, i.e. a navigation button really does move/change
 --    a field, not just click without effect.
@@ -38,8 +36,8 @@ if not ok then
 end
 
 local port = manager.machine.ioport.ports[":panel:buttons_0"]
-local field_a = port:field(1 << 0x0a)  -- BTN_0A
-local field_b = port:field(1 << 0x0b)  -- BTN_0B
+local field_a = port:field(1 << 0x17)  -- Stop / Continue
+local field_b = port:field(1 << 0x1d)  -- Play
 
 local before = #stream
 field_a:set_value(1)
@@ -61,10 +59,10 @@ print(string.format("PI_HOLD_SEQ %s", table.concat(hex, " ")))
 local saw_press_a, saw_press_b, saw_release_a, saw_release_b = false, false, false, false
 for i = 1, #seq - 1 do
   local b0, b1 = seq[i], seq[i + 1]
-  if b0 == 0x8a and b1 == 0x00 then saw_press_a = true end
-  if b0 == 0x8b and b1 == 0x00 then saw_press_b = true end
-  if b0 == 0x0a and b1 == 0x00 then saw_release_a = true end
-  if b0 == 0x0b and b1 == 0x00 then saw_release_b = true end
+  if b0 == 0x97 and b1 == 0x00 then saw_press_a = true end
+  if b0 == 0x9d and b1 == 0x00 then saw_press_b = true end
+  if b0 == 0x17 and b1 == 0x00 then saw_release_a = true end
+  if b0 == 0x1d and b1 == 0x00 then saw_release_b = true end
 end
 
 if not (saw_press_a and saw_press_b and saw_release_a and saw_release_b) then

@@ -115,14 +115,6 @@ public:
 
 	DECLARE_INPUT_CHANGED_MEMBER(button_change);
 	DECLARE_INPUT_CHANGED_MEMBER(analog_value_change);
-	// 61-key keyboard, computer-keyboard-driven: one playable octave
-	// (Z..M/,) plus an octave shift (-/=), not a full 61-key physical
-	// layout -- docs/asr10/investigations/keyboard-and-sample-bridge.md.
-	// Fixed velocity, no continuous pressure: a plain computer keyboard
-	// has neither; explicitly a simplification, not a modeled velocity
-	// curve.
-	DECLARE_INPUT_CHANGED_MEMBER(key_change);
-	DECLARE_INPUT_CHANGED_MEMBER(octave_change);
 
 protected:
 	virtual void device_add_mconfig(machine_config &config) override ATTR_COLD;
@@ -166,17 +158,6 @@ private:
 	std::array<uint8_t, 256> m_seen_unhandled_display_code{};
 	void report_unhandled_display_code(uint8_t data);
 
-	// Octave shift range 0-4 (5 positions) x one 13-semitone computer-
-	// keyboard octave (offsets 0-12, C..C) exactly spans key numbers
-	// 0-60 (61 keys) with no gaps: octave*12 ranges {0,12,24,36,48},
-	// each overlapping the next by the shared C at the top/bottom.
-	int m_octave = 2;
-	// Tracks which absolute key number key_down() was actually sent for
-	// each held computer key, so key_up() releases the SAME key even if
-	// the octave was shifted while the key was still held -- without
-	// this, a mid-hold octave change would send key_up() for the wrong
-	// key number and leave the original note stuck on.
-	uint8_t m_key_number_for_offset[13]{};
 };
 
 class esqpanel2x40_device : public esqpanel_device {

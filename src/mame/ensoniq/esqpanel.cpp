@@ -1007,7 +1007,9 @@ static INPUT_PORTS_START(asr10panel_device)
 	ASR10_PANEL_BUTTON(0x00000008, "BTN_03", 0x03)
 	ASR10_PANEL_BUTTON(0x00000010, "BTN_04", 0x04)
 	ASR10_PANEL_BUTTON(0x00000020, "BTN_05", 0x05)
-	ASR10_PANEL_BUTTON(0x00000040, "BTN_06", 0x06)
+	// COMMAND is verified as raw $06. Host keys drive physical panel edges;
+	// firmware retains all context-dependent behavior.
+	PORT_BIT(0x00000040, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("COMMAND") PORT_CODE(KEYCODE_C) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x06)
 	ASR10_PANEL_BUTTON(0x00000080, "BTN_07", 0x07)
 	ASR10_PANEL_BUTTON(0x00000100, "BTN_08", 0x08)
 	ASR10_PANEL_BUTTON(0x00000200, "BTN_09", 0x09)
@@ -1055,13 +1057,17 @@ static INPUT_PORTS_START(asr10panel_device)
 	// function is measured, not guessed at.
 	PORT_BIT(0x00200000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_15") PORT_CODE(KEYCODE_Q) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x15)
 	ASR10_PANEL_BUTTON(0x00400000, "BTN_16", 0x16)
-	ASR10_PANEL_BUTTON(0x00800000, "BTN_17", 0x17)
+	// STOP/CONTINUE is raw $17 during active playback. It remains a physical
+	// pressed-state button rather than a MAME transport action.
+	PORT_BIT(0x00800000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("STOP / CONTINUE") PORT_CODE(KEYCODE_SPACE) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x17)
 	ASR10_PANEL_BUTTON(0x01000000, "BTN_18", 0x18)
 	ASR10_PANEL_BUTTON(0x02000000, "BTN_19", 0x19)
 	ASR10_PANEL_BUTTON(0x04000000, "BTN_1A", 0x1a)
 	ASR10_PANEL_BUTTON(0x08000000, "BTN_1B", 0x1b)
 	ASR10_PANEL_BUTTON(0x10000000, "BTN_1C", 0x1c)
-	ASR10_PANEL_BUTTON(0x20000000, "BTN_1D", 0x1d)
+	// PLAY is verified as raw $1D with a playable sequence loaded. MAME's
+	// default pause binding is F5, so KEYCODE_P has no default UI collision.
+	PORT_BIT(0x20000000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("PLAY") PORT_CODE(KEYCODE_P) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x1d)
 	ASR10_PANEL_BUTTON(0x40000000, "BTN_1E", 0x1e)
 	ASR10_PANEL_BUTTON(0x80000000, "BTN_1F", 0x1f)
 
@@ -1109,33 +1115,6 @@ static INPUT_PORTS_START(asr10panel_device)
 
 #undef ASR10_PANEL_BUTTON
 
-	// 61-key keyboard stimulus, computer-keyboard-driven (esqpanel.h's
-	// own comment). One octave, common "music typing" QWERTY layout
-	// (Z=C .. M=B, comma=C of the next octave), plus octave shift on
-	// minus/equals. Key numbers are computed in key_change() from
-	// (m_octave*12 + offset), not hardcoded here -- offset (param) is
-	// 0-12 within the octave.
-#define ASR10_PANEL_KEY(mask, name, keycode, note_offset) \
-	PORT_BIT(mask, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME(name) PORT_CODE(keycode) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::key_change), note_offset)
-
-	PORT_START("keys_0")
-	ASR10_PANEL_KEY(0x00000001, "KEY_C",  KEYCODE_Z,      0)
-	ASR10_PANEL_KEY(0x00000002, "KEY_Cs", KEYCODE_S,      1)
-	ASR10_PANEL_KEY(0x00000004, "KEY_D",  KEYCODE_X,      2)
-	ASR10_PANEL_KEY(0x00000008, "KEY_Ds", KEYCODE_D,      3)
-	ASR10_PANEL_KEY(0x00000010, "KEY_E",  KEYCODE_C,      4)
-	ASR10_PANEL_KEY(0x00000020, "KEY_F",  KEYCODE_V,      5)
-	ASR10_PANEL_KEY(0x00000040, "KEY_Fs", KEYCODE_G,      6)
-	ASR10_PANEL_KEY(0x00000080, "KEY_G",  KEYCODE_B,      7)
-	ASR10_PANEL_KEY(0x00000100, "KEY_Gs", KEYCODE_H,      8)
-	ASR10_PANEL_KEY(0x00000200, "KEY_A",  KEYCODE_N,      9)
-	ASR10_PANEL_KEY(0x00000400, "KEY_As", KEYCODE_J,     10)
-	ASR10_PANEL_KEY(0x00000800, "KEY_B",  KEYCODE_M,     11)
-	ASR10_PANEL_KEY(0x00001000, "KEY_C2", KEYCODE_COMMA, 12)
-	PORT_BIT(0x00002000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("OCTAVE_DOWN") PORT_CODE(KEYCODE_MINUS) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::octave_change), 0)
-	PORT_BIT(0x00004000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("OCTAVE_UP") PORT_CODE(KEYCODE_EQUALS) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::octave_change), 1)
-#undef ASR10_PANEL_KEY
-
 	PORT_START("analog_pitch_wheel")
 	configurer.field_alloc(IPT_ADJUSTER, 0x200, 0x3ff, "Pitch Wheel");
 	configurer.field_set_min_max(0, 0x3ff);
@@ -1177,35 +1156,6 @@ INPUT_CHANGED_MEMBER(asr10panel_device::analog_value_change)
 	const int channel = param;
 	const int clamped = std::clamp(int(newval), 0, 1023);
 	set_analog_value(channel, u16(clamped));
-}
-
-INPUT_CHANGED_MEMBER(asr10panel_device::key_change)
-{
-	// Fixed velocity: a plain computer keyboard has no velocity/pressure
-	// input at all -- explicitly a simplification (esqpanel.h's own
-	// comment), not a modeled MIDI velocity curve.
-	static constexpr u8 KEY_VELOCITY = 100;
-	const u8 note_offset = u8(param) & 0x0f;
-	if (newval)
-	{
-		const u8 key = std::min<u8>(u8(m_octave * 12 + note_offset), 60);
-		m_key_number_for_offset[note_offset] = key;
-		key_down(key, KEY_VELOCITY);
-	}
-	else
-	{
-		key_up(m_key_number_for_offset[note_offset]);
-	}
-}
-
-INPUT_CHANGED_MEMBER(asr10panel_device::octave_change)
-{
-	if (!newval) // act on press only, not release
-		return;
-	if (param)
-		m_octave = std::min(m_octave + 1, 4);
-	else
-		m_octave = std::max(m_octave - 1, 0);
 }
 
 asr10panel_device::asr10panel_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :

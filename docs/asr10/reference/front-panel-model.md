@@ -274,7 +274,7 @@ existence of the physical label in the manual.
 | Instrument/Track | `InstrumentTrack7` | 7 | — | — | `[OPEN]` | — | Track 7 lamp source `[OPEN]` | — |
 | Instrument/Track | `InstrumentTrack8` | 8 | — | — | `[OPEN]` | — | Track 8 lamp source `[OPEN]` | — |
 | Mode | `ModeLoad` | LOAD | — | — | `[OPEN]` | — | Mode indicator source `[OPEN]` | Physical blink is panel-local; encoding unknown |
-| Mode | `ModeCommand` | COMMAND | — | `$06` | `[Verified runtime]` | — | Mode indicator source `[OPEN]` | Reaches Command pages |
+| Mode | `ModeCommand` | COMMAND | — | `$06` | `[Verified runtime]` | `C` | Mode indicator source `[OPEN]` | Reaches Command pages |
 | Mode | `ModeEdit` | EDIT | — | — | `[OPEN]` | — | Mode indicator source `[OPEN]` | Layout label is not evidence |
 | Category | `CategoryInstrument` | INSTRUMENT | — | — | `[OPEN]` | — | Page indicator source `[OPEN]` | Distinct from InstrumentTrack1 |
 | Category | `CategorySeqSong` | SEQ • SONG | — | `$15` | `[Verified runtime]` | `Q` | Page indicator source `[OPEN]` | Reaches real sequence-file listing |
@@ -303,9 +303,9 @@ existence of the physical label in the manual.
 | Input Level | `InputRightSignal` | RIGHT SIGNAL | — | — | raw source `[OPEN]` | — | Output itself | Under common INPUT LEVEL identity |
 | Input Level | `InputRightPeak` | RIGHT PEAK | — | — | raw source `[OPEN]` | — | Output itself | Under common INPUT LEVEL identity |
 | Transport | `TransportRecord` | RECORD | — | — | `[OPEN]` | — | Status indicator source `[OPEN]` | Must retain pressed state |
-| Transport | `TransportStopContinue` | STOP | CONTINUE | `$17` | `[Verified runtime, active playback]` | — | Status indicator source `[OPEN]` | Context-dependent raw code |
-| Transport | `TransportPlay` | PLAY | — | `$1D` | `[Verified runtime, sequence loaded]` | — | Status indicator source `[OPEN]` | Starts sequencer activity |
-| Auxiliary | `SampleSourceSelect` | SAMPLE | SOURCE SELECT | `$20` | `[Verified runtime]` | `S` | Indicator source `[OPEN]` | `S` currently collides with musical C-sharp |
+| Transport | `TransportStopContinue` | STOP | CONTINUE | `$17` | `[Verified runtime, active playback]` | Space | Status indicator source `[OPEN]` | Context-dependent raw code |
+| Transport | `TransportPlay` | PLAY | — | `$1D` | `[Verified runtime, sequence loaded]` | `P` | Status indicator source `[OPEN]` | Starts sequencer activity |
+| Auxiliary | `SampleSourceSelect` | SAMPLE | SOURCE SELECT | `$20` | `[Verified runtime]` | `S` | Indicator source `[OPEN]` | No ASR-10 musical-typing collision |
 | Auxiliary | `FxSelectBypass` | FX SELECT | FX BYPASS | — | `[OPEN]` | — | Indicator source `[OPEN]` | Prior `$07` candidate remains only `[Likely]` |
 | Continuous | `Volume` | VOLUME | — | not applicable | `[Verified source-level host input, disconnected/misrouted acquisition]` | MAME adjuster | — | Writes emulator channel 5, while V3.50 uses PBDAT selector 3; min/mid/max did not affect PAR |
 | Continuous | `DataEntry` | DATA ENTRY | MR. KNOB (diagnostic alias) | not applicable | `[Verified identity; disconnected/misrouted acquisition]` | MAME adjuster | — | Writes emulator channel 3, while V3.50 uses selector 5; min/mid/max did not affect PAR |
@@ -374,54 +374,38 @@ The authoritative inventory is `INPUT_PORTS_START(asr10panel_device)` in
 | Host key | MAME field | Semantic control | Raw |
 |---|---|---|---:|
 | `1` | `BTN_02` | Instrument / Sequence Track 1 | `$02` |
+| `C` | `COMMAND` | Command | `$06` |
 | Up Arrow | `BTN_0A` | Up | `$0A` |
 | Down Arrow | `BTN_0B` | Down | `$0B` |
 | Left Arrow | `BTN_10` | Left | `$10` |
 | Right Arrow | `BTN_11` | Right | `$11` |
 | `Q` | `BTN_15` | Seq • Song | `$15` |
+| Space | `STOP / CONTINUE` | Stop • Continue | `$17` |
+| `P` | `PLAY` | Play | `$1D` |
 | `S` | `BTN_20` | Sample • Source Select | `$20` |
 | Enter/Return | `BTN_23` | Enter • Yes | `$23` |
 
 All 64 `BTN_00`-`BTN_3F` fields remain clickable in the diagnostic layout, but
-clickability is not a semantic assignment. No current host key is bound to
-Command, Cancel/No, Play or Stop/Continue even though their raw identities are
-verified.
+clickability is not a semantic assignment. Cancel/No remains unbound despite
+its verified raw identity.
 
-### Musical typing keyboard
+### Deliberately pending host keys
 
-The separate `keys_0` port supplies one computer-keyboard octave at fixed
-velocity 100. The absolute note is `octave * 12 + offset`; octave positions are
-0-4 and the top C overlaps the next octave.
-
-| Host key | Musical field | Offset |
-|---|---|---:|
-| `Z` | C | 0 |
-| `S` | C-sharp | 1 |
-| `X` | D | 2 |
-| `D` | D-sharp | 3 |
-| `C` | E | 4 |
-| `V` | F | 5 |
-| `G` | F-sharp | 6 |
-| `B` | G | 7 |
-| `H` | G-sharp | 8 |
-| `N` | A | 9 |
-| `J` | A-sharp | 10 |
-| `M` | B | 11 |
-| Comma | upper C | 12 |
-| Minus | octave down | — |
-| Equals | octave up | — |
+The ASR-10 has no computer-keyboard musical-typing port. `Z,S,X,D,C,V,G,B,H,N,
+J,M,Comma,-,=` are therefore free of ASR-10 keybed behavior; `C` now reaches
+the physical Command button. The following requested panel mnemonics remain
+unbound because their raw codes are `[OPEN]`: `L` Load, `E` Edit, `R` Record,
+`F` Effects and `2` through `8` Instrument / Sequence Tracks. They need a
+targeted per-control runtime confirmation, not a contiguous-code inference or
+a blind matrix sweep.
 
 ### Current and future collisions
 
-- `S` is an actual current collision: it triggers both Sample/Source Select and
-  musical C-sharp.
-- `C` currently triggers musical E, so the proposed future mnemonic
-  `C -> Command` would collide and must not be added silently.
 - Enter is also MAME's common UI-select key. The current panel binding exists,
   but UI focus/capture behavior must be considered in the final host-control
   design.
-- Future `P -> Play` conflicts with MAME's default pause convention unless the
-  host-input design deliberately resolves it.
+- `P -> Play` has no default MAME pause collision: the current MAME UI Pause
+  input is F5. A user may still configure a personal conflicting binding.
 
 No collision redesign belongs in this phase.
 
@@ -586,11 +570,10 @@ placed and labelled, but must not be wired to a guessed `BTN_xx`.
 
 ### Phase 4 — host controls and real pressed-state gestures
 
-Design the host map with the musical keyboard and MAME UI collisions visible.
-Candidate mnemonics include `L` Load, `C` Command, `E` Edit, `I` Instrument, `S`
-Seq/Song, `Y` System/MIDI, `F` Effects, `1`-`8` Instrument/Track, `R` Record and
-`P` Play. A binding lands only after its raw button is verified and its collision
-is consciously resolved. Record+Play uses ordinary held-button edges, never a
+The ASR-10 host keyboard is a front-panel projection, not musical typing.
+Implemented verified bindings are `1`, `C`, arrows, `Q`, Space, `P`, `S` and
+Enter/Return. `L`, `E`, `R`, `F` and `2`-`8` remain pending their individual raw
+button confirmations. Record+Play uses ordinary held-button edges, never a
 special recording action.
 
 ## References

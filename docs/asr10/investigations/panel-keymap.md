@@ -7,7 +7,7 @@ Klickbar panel:
 
 - Alla 64 koder finns som klickbara knappar i ASR-panelens layout.
 - Knapparna ligger i ett 8x8-rutnat och ar markta med hexkoden `00`...`3F`.
-- Endast de verifierade markorknapparna har tangentbordskoder.
+- Endast kontroller med verifierade rawkoder har tangentbordskoder.
 
 Det tidigare Shift-bankforsoket ar borttaget. Flera `PORT_CODE` pa samma
 ioport-falt ar alternativ, inte kombinationer, och kunde darfor inte gora
@@ -21,7 +21,7 @@ ioport-falt ar alternativ, inte kombinationer, och kunde darfor inte gora
 | `$03` | klick | `$23` | klick |
 | `$04` | klick | `$24` | klick |
 | `$05` | klick | `$25` | klick |
-| `$06` | klick | `$26` | klick |
+| `$06` | `C` (Command), klick | `$26` | klick |
 | `$07` | klick | `$27` | klick |
 | `$08` | klick | `$28` | klick |
 | `$09` | klick | `$29` | klick |
@@ -38,13 +38,13 @@ ioport-falt ar alternativ, inte kombinationer, och kunde darfor inte gora
 | `$14` | klick | `$34` | klick |
 | `$15` | `Q` (Seq*Song), klick | `$35` | klick |
 | `$16` | klick | `$36` | klick |
-| `$17` | klick | `$37` | klick |
+| `$17` | `Space` (Stop/Continue), klick | `$37` | klick |
 | `$18` | klick | `$38` | klick |
 | `$19` | klick | `$39` | klick |
 | `$1A` | klick | `$3A` | klick |
 | `$1B` | klick | `$3B` | klick |
 | `$1C` | klick | `$3C` | klick |
-| `$1D` | klick | `$3D` | klick |
+| `$1D` | `P` (Play), klick | `$3D` | klick |
 | `$1E` | klick | `$3E` | klick |
 | `$1F` | klick | `$3F` | klick |
 
@@ -53,8 +53,6 @@ Valda bort fran pilotmappningen:
 - `Tab`: MAME:s UI-meny.
 - `Esc`: UI Cancel/exit.
 - `Enter`/`Return`: UI Select och host-beroende standardkommando.
-- `Space`: vanlig UI/host-genvag och latt att trycka av misstag.
-- `P`: MAME pause.
 - funktionstangenter: MAME UI/debug/video-kommandon.
 - `Backspace`, `Delete`, `Insert`, `Home`, `End`, `Page Up`, `Page Down`:
   vanliga UI-/navigeringsgenvagar.
@@ -63,6 +61,12 @@ Valda bort fran pilotmappningen:
 
 Ovriga tangentbordskoder ar inte bundna i pilotmappningen. De 62 oidentifierade
 knapparna ska anvandas via layoutklick tills funktionerna ar verifierade.
+
+**Uppdaterat 2026-08-27:** ASR-10:s separata `keys_0` musical-typing-port
+(`Z,S,X,D,C,V,G,B,H,N,J,M,Comma,-,=`) ar borttagen. `C`, `P` och Space ar
+nu fysiska panelbindningar till de verifierade koderna ovan; MAME:s nuvarande
+standard-Pause ar F5, inte P. Load/Edit/Record/Effects och Track 2-8 ar fortsatt
+obundna eftersom deras individuella rawkoder ar `[OPEN]`.
 
 **Rattat, 2026-08-24** (`panel-button-and-transport-map.md`): `$0C`/`$0D`
 hade tidigare `Left`/`Right` som tangentbordsgenvag. Matt direkt: fran
