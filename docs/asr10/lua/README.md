@@ -32,7 +32,7 @@ Körs av `docs/asr10/regression-test.sh` och ska underhållas.
 | `lib/asr10_guards.lua` | MC68302-vakter: IACK-undantagsvektor, synkron undantagshanterare (vektor 2/3/8, kalibrerad mot en känd krasch), SIB-täckning (klassificering portad från `mc68302_device`, allowlist inkluderar nu $0812/GIMR), IDMA SAPR/CMR/BCR, GIMR-vektorbas (pollningsbaserad). Aggregerade larm, första förekomst per villkor. Se `investigations/mc68302-consolidation.md` och `mc68302-consolidation-2.md`. |
 | `lib/scc_rx_record_probe.lua` | Delad Fas 4B-runner för post-framing SCC-byte, firmwareägd descriptor/IDMA och destinations-/ES5506-observation. Fas 5A:s opt-in mäter dessutom RECORD-stop och metadata utan att ändra källan. Endast wrappers under `archive/` laddar den. |
 | `display_protocol_stream_replay.lua` | Deterministiskt kontraktstest för V3.50:s TEMPO-stream samt full redraw, `$14` absolute update, underline, annunciatorretention och strukturellt OPEN `$74-$76`-operandpar. |
-| `display_field_rewrite.lua` | Firmware/device-regression för EDIT SEQUENCE/TEMPO: synligt `90 -> 91 -> 90`, anchor/underline 6-8, ingen trailing text. |
+| `display_field_rewrite.lua` | Firmware/device-regression för EDIT SEQUENCE/TEMPO: BAR->TEMPO återställer vald field, synligt `90 -> 91 -> 92 -> 91 -> 90`, anchor/underline 6-8 och ingen trailing text/cursor-drift. |
 | `fixtures/display_tempo_v350.lua` | Exakt rå Channel-B-stream och korrekt facit för TEMPO-fullredraw, Up och Down. Ingen protokollimplementation. |
 
 ## Experiment

@@ -75,6 +75,13 @@ historical and passed.
   verifies the same transition through firmware and the actual device path.
 - The established suite is now 16 tests and 17 `PASS` lines, including the new
   firmware/device field-rewrite acceptance, exit 0.
+- **[Verified runtime, bounded stability]** Representative real V3.50 workflows
+  now pass across TEMPO (including BAR round-trip and repeated rewrites), LOAD
+  file browsing, Command/Master Tune, an Edit Instrument layer page, REC SRC,
+  VOLUME and retained annunciator traffic. No trailing glyphs, cursor drift,
+  stale screen state or underline leakage was observed. The decoder is therefore
+  workable/stable for navigation in these workflows, not fully understood;
+  see `investigations/display-stability-workflows-v350.md`.
 - **[DISPROVEN address label]** Channel-B THRB is CPU byte address `$FC4817`,
   not the older display reference's `$FC480D`. The old value came from
   mis-converting Lua's aligned 16-bit tap bucket. The captured traffic itself
@@ -386,9 +393,11 @@ Priorities are deliberately ordered by present functional value:
    described above. Transport is no longer the blocker; musical/audio-correct
    playback across the sequencer-to-ES5506 chain is.
 2. **UI/front panel:** the bounded ASR-specific `$62/$63` selected-field state
-   machine is implemented and TEMPO-regression-locked. Broader UI validation,
-   including Master Tune and workflows outside REC SRC/FX/VOLUME/TEMPO, remains
-   `[OPEN]`; the display protocol as a whole is not declared complete.
+   machine is implemented and regression-locked. Representative LOAD, Command,
+   Edit, REC SRC, VOLUME, TEMPO and annunciator workflows are workable/stable
+   for navigation. Complete application coverage, OPEN command semantics,
+   indicator identities and blink remain `[OPEN]`; the display protocol as a
+   whole is not declared complete.
 3. **Tooling:** regenerate the 68000 static graph with BSR, BRA/Bcc,
    PC-relative effective addresses, register-indirect JMP/JSR and
    TRAP/callback dispatch, with call/control/data edges kept separate. This is

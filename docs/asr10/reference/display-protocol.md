@@ -4,7 +4,9 @@ Canonical reference for the host-to-front-panel byte stream. First inventoried
 2026-08-24 and re-measured byte-by-byte on 2026-08-26. Detailed provenance:
 `../investigations/display-protocol-inventory.md`,
 `../investigations/partial-update-position-probe.md` and
-`../investigations/display-protocol-state-machine-v350.md`.
+`../investigations/display-protocol-state-machine-v350.md`. Practical workflow
+coverage is recorded in
+`../investigations/display-stability-workflows-v350.md`.
 
 ## Current functional boundary
 
@@ -17,6 +19,13 @@ anchor used by `$63` partial rewrites. `asr10panel_device` now restores that
 anchor and its underline attribute. The real V3.50 `EDIT SEQUENCE -> TEMPO`
 path visibly round-trips `90 -> 91 -> 90` without trailing text; REC SRC
 field-relative updates use the same mechanism.
+
+**[Verified runtime, bounded stability]** Fresh-boot V3.50 validation covers
+TEMPO/BAR, LOAD file browsing, Command/Master Tune, an Edit Instrument layer
+page, REC SRC, VOLUME and an annunciator-plus-clear transition. No cursor drift,
+appended garbage, stale glyphs or field-attribute leakage was observed. This is
+enough to call the decoder workable/stable for practical navigation in those
+workflows, not complete.
 
 This is not a claim that display/UI behavior is complete. Undecoded panel
 control traffic, output bit identities, blink and workflows outside the bounded
@@ -125,7 +134,8 @@ columns and ends at cursor 9 without overflow or LOOP corruption.
 
 `../lua/display_protocol_stream_replay.lua` locks the transaction contract;
 `../lua/display_field_rewrite.lua` locks the same transition through the real
-V3.50 firmware/device path.
+V3.50 firmware/device path, including a BAR -> TEMPO state round-trip and
+repeated `90 -> 91 -> 92 -> 91 -> 90` rewrites.
 
 ## State ownership contract
 
@@ -147,7 +157,10 @@ remains `[OPEN]` rather than acquiring inferred rendering semantics.
 - Non-ring producer framing and high boot/transition controls.
 - 39 output-bit identities and panel-local blink encoding.
 - Real-hardware behavior for standalone columns 22-31.
-- Master Tune's reported one-step lag and unmeasured UI workflows.
+- Master Tune outside the bounded baseline -> `1` -> baseline workflow, and
+  unmeasured UI workflows. The previously reported one-step lag did not
+  reproduce in that bounded round-trip, whose baseline glyph remains ambiguous,
+  but is not globally disproven.
 
 The implemented mechanism is bounded to the verified grammar above; it does not
 make the complete ASR-10 display protocol solved.
