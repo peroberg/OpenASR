@@ -325,6 +325,32 @@ dynamiskt härledd adressering (aritmetiskt beräknad adress, pekare hämtad ur 
 eller ur RAM, runtimegenererad kod), ligga i en kodväg som ännu inte klassificerats eller
 ännu inte exekverats — **eller saknas helt**. Metoden kan inte skilja dem åt.
 
+### Runtimeobservation 2026-08-27
+
+E4:s första riktade körning är nu gjord. En Lua-skrivtapp över hela CS1,
+retained genom hela mätningen och med levande low-RAM-witness, fångade **133**
+firmware-skrivningar i V3.50 genom:
+
+```
+FILE 1 -> FILE LOADED -> Instrument 1 -> MIDI note-on
+```
+
+Skrivningarna ligger i `$FF7F00-$FF7FF6`. Boot skriver den regelbundna
+stride-8-serien; note-on ger tre ord från den redan kartlagda
+per-voice-helperkedjan:
+
+```
+$F8E278 -> $FF7F00 = $0006
+$F8E27C -> $FF7F02 = $0007
+$F8E280 -> $FF7F04 = $0008
+```
+
+`$F8E270` laddar `A0` från röstpostens `+$2A`, vars initiering utgår från
+`$FF7F00`. CS1 är därmed **[Verified runtime used]**, medan den fysiska
+mottagaren och registersemantiken fortsatt är `[OPEN]`. Den observerade
+per-voice-trafiken är inte belägg för clock/rate-control. Se
+`../investigations/audio-clock-and-rate-architecture-v350.md`.
+
 ### Hypoteser
 
 | # | hypotes | talar för | talar emot |
@@ -347,7 +373,8 @@ CS1   $FF6000-$FF7FFF
 ```
 
 Inga identifierade direkta absoluta eller immediate-basreferenser i ROM eller i någon
-OS-version.
+OS-version; runtime använder i stället åtminstone en indirekt/per-röstväg i
+`$FF7Fxx`.
 
 Elektriskt är fönstret alltså kartlagt. Funktionellt är det helt öppet.
 
@@ -356,16 +383,16 @@ Elektriskt är fönstret alltså kartlagt. Funktionellt är det helt öppet.
 Att CS1 är oförklarat betyder **inte** att analysen är fel. "Tidigt initierat" är inte
 samma sak som "tidigt använt".
 
-Skrivtapp på `$FF6000-$FF7FFF`, logga **adress, bredd, värde, PC och körfas**.
-Normal boot är bara första försöket. Kör därefter igenom:
+För framtida funktionsklassning: skrivtappa `$FF6000-$FF7FFF`, logga
+**adress, bredd, värde, PC och körfas**. Normal boot och en note-on är nu
+verifierade; kör därefter igenom:
 
 ```
 filbläddring · instrumentladdning · spela ljud · sampling
 effektladdning · hårdvarutest · optionsdetektering
 ```
 
-Om det fortfarande blir noll skrivningar är CS1 sannolikt en latent option, en serviceväg
-eller en funktion som inte nås i nuvarande emulering. ES5701/ljud-glue är fortfarande en
-rimlig hypotes men saknar positiv accessevidens.
+ES5701/ljud-glue är fortfarande en rimlig hypotes men saknar positiv
+**funktions- eller kopplingsevidens** från CS1-trafiken.
 
 Jämför också mot `Asr10Cs3Decoder` i 68302-emulatorprojektet innan nya hypoteser läggs till.
