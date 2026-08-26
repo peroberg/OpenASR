@@ -57,23 +57,24 @@ historical and passed.
 
 ## Current display protocol boundary
 
-- **[Verified protocol, implementation pending]** On the reproducible
+- **[Verified mechanism, implemented]** On the reproducible
   `EDIT SEQUENCE -> TEMPO` path, the full redraw marks the selected value field
   at columns 6-8 with `$62 $60 $03 "90 " $72`. Up then emits exactly
   `$63 "91 " $72`. `$62` establishes the selected-field anchor and `$63`
-  restores it for a partial rewrite. The current decoder ignores `$63`, so it
-  appends `91 ` at columns 19-21 instead of replacing `90 `. REC SRC
-  independently shows the same `$63` contract at column 17.
-- **[Verified fault class A]** The firmware stream contains the correct new
-  value and field-relative positioning relation; the decoder loses it. No
-  permanent fix was made in the analysis round. The saved V3.50 fixture and
-  source-equivalent replay live in `lua/fixtures/display_tempo_v350.lua` and
-  `lua/display_protocol_stream_replay.lua`.
-- **[Verified architecture defect]** `asr10panel_device`'s linear text shadow
-  and `esq1x22_device`'s renderer state diverge. VOLUME `$14 "98"` updates the
-  visible renderer while the shadow remains `99`; TEMPO `$63` is missing from
-  both. The next implementation must create one ASR-owned cursor/text/field
-  state and leave the generic VFD layer as renderer.
+  now restores it and its underline for a partial rewrite. Runtime acceptance
+  visibly round-trips `90 -> 91 -> 90` without trailing text or LOOP corruption;
+  REC SRC independently uses the same mechanism at column 17.
+- **[Verified implementation boundary]** `asr10panel_device` now owns the ASR
+  cursor, current attribute, selected-field anchor/attribute and pending operand
+  state. The stale linear `m_text_chars` shadow was removed; the ASR path sends
+  explicit position/glyph/underline operations to the generic 1x22 renderer.
+  VOLUME `$14 "98"`, field underline and `$77-$7B` retention remain verified.
+- The saved V3.50 fixture and contract replay live in
+  `lua/fixtures/display_tempo_v350.lua` and
+  `lua/display_protocol_stream_replay.lua`; `lua/display_field_rewrite.lua`
+  verifies the same transition through firmware and the actual device path.
+- The established suite is now 16 tests and 17 `PASS` lines, including the new
+  firmware/device field-rewrite acceptance, exit 0.
 - **[DISPROVEN address label]** Channel-B THRB is CPU byte address `$FC4817`,
   not the older display reference's `$FC480D`. The old value came from
   mis-converting Lua's aligned 16-bit tap bucket. The captured traffic itself
@@ -384,11 +385,10 @@ Priorities are deliberately ordered by present functional value:
 1. **Functional:** the reproducible incorrect/clicking sequencer playback
    described above. Transport is no longer the blocker; musical/audio-correct
    playback across the sequencer-to-ES5506 chain is.
-2. **UI/front panel:** implement the now-measured ASR-specific `$62/$63`
-   selected-field state machine against the retained TEMPO fixture. Absolute
-   cursor updates and full-redraw underline work, but field-relative value
-   updates currently append or disappear. Broader UI validation remains
-   `[OPEN]` after that bounded implementation.
+2. **UI/front panel:** the bounded ASR-specific `$62/$63` selected-field state
+   machine is implemented and TEMPO-regression-locked. Broader UI validation,
+   including Master Tune and workflows outside REC SRC/FX/VOLUME/TEMPO, remains
+   `[OPEN]`; the display protocol as a whole is not declared complete.
 3. **Tooling:** regenerate the 68000 static graph with BSR, BRA/Bcc,
    PC-relative effective addresses, register-indirect JMP/JSR and
    TRAP/callback dispatch, with call/control/data edges kept separate. This is

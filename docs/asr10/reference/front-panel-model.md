@@ -479,65 +479,52 @@ firmware panel-display writer
   -> asr10panel_device::rcv_complete()
        - returns the ASR path's observed $FF response
   -> asr10panel_device::send_to_display()
-  -> esq1x22_device::write_char()
+       - owns ASR cursor, field, attribute and operand state
+  -> esq1x22_device::render_character(column, glyph, underline) / clear()
   -> esqvfd_device::update_display()
   -> MAME outputs and layout renderer
 ```
 
-### ASR-specific state already in `asr10panel_device`
+### ASR-specific state in `asr10panel_device`
 
 - explicit 62,500-baud panel cadence and the `$FF` host response;
 - interception of `$77`-`$7B <value>` annunciator writes;
 - raw annunciator outputs and the narrow `$77` bit-0 mirror;
-- a 22-byte printable-text shadow (`m_text_chars`/`m_text_position`) exposed by
-  `current_text()`; the current Lua display helper instead decodes the rendered
-  `vfd0`-`vfd21` outputs;
-- recognition/classification of clear `$66`, printable `$20`-`$5F`, field
-  attribute `$60 <operand>` and `$62`/`$72` field controls, but not the now
-  verified `$63` selected-field rewrite command;
+- pending operand class, logical cursor, current underline, selected-field
+  anchor and retained selected-field attribute;
+- interpretation of direct columns, printable bytes, `$60`, `$62`, `$63`,
+  `$66` and `$72` before generic rendering;
+- bounded one-operand consumption for `$74-$76` without assigning semantics;
 - first-occurrence reporting of display codes it does not recognize.
 
-The ASR-specific classifier does not currently recognize `$00`-`$1F` as cursor
-columns, even though the downstream VFD class does. Likewise, the one-operand
-`$74-$76` lookback lives only downstream. A byte can therefore be understood
-by the VFD while still being reported as unhandled by the ASR layer. That
-mismatch is part of the boundary to clean up in Phase 2, not a new opcode
-interpretation.
+The former linear `m_text_chars`/`m_text_position` shadow and `current_text()`
+API were removed. They had no runtime consumer and were already known to remain
+stale after absolute partial updates.
 
-### ASR protocol currently implemented inside generic `esq1x22_device`
+### Generic 1 x 22 renderer boundary
 
-- `$00`-`$1F` cursor-column positioning;
-- `$60 <attr>` field attribute, with bit `$02` selecting underline;
-- `$62` (currently only an attribute reset; the ASR selected-field anchor is
-  lost), `$72` end-field attribute reset;
-- `$66` clear and `$20`-`$5F` printable placement;
-- operand consumption for the still-undecoded `$74`/`$75`/`$76` family.
+The ASR path calls explicit-position `render_character()` and generic `clear()`;
+`esq1x22_device` owns only character/attribute cells for that path. Its legacy
+`write_char()` raw-byte parser remains for the separate EPS 1x22 panel and was
+not generally refactored in this bounded ASR task.
 
-These instructions are ASR-observed protocol semantics even though they live in
-a generically named 1 x 22 VFD class today. `esqvfd_device::update_display()` is
-the genuinely generic rendering layer: it turns character/attribute arrays into
-glyph-segment and underline outputs. The layout only places those outputs.
+`esqvfd_device::update_display()` remains the generic rendering layer: it turns
+character/attribute cells into glyph-segment and underline outputs. The layout
+only places those outputs.
 
-### Split state ownership
+### State ownership
 
 | State | Current owner | Boundary consequence |
 |---|---|---|
 | Raw annunciator register bytes | `asr10panel_device` | Not forwarded to VFD |
-| Printable text shadow for tests | `asr10panel_device` | Advances linearly and resets on `$66` |
-| Cursor column for rendered partial updates | `esq1x22_device::m_cursx` | `$00`-`$1F` is interpreted only here |
-| Current field attribute | `esq1x22_device::m_curattr` | ASR layer tracks only that an operand is pending |
-| Rendered characters/attributes | `esq1x22_device` | Separate from `current_text()` shadow |
+| ASR operand/cursor/field/attribute state | `asr10panel_device` | One authoritative protocol decoder |
+| Rendered characters/attributes | `esq1x22_device` | Updated by explicit column/glyph/underline operation |
 | Segment and underline outputs | `esqvfd_device` | Generic output generation |
 | Geometry and artwork | `asr10_panel.lay` | Must not define protocol meaning |
 
-The two text models are fed by the same byte stream but one is not derived from
-the other. In particular, the ASR shadow does not apply cursor-column opcodes or
-rewrite its earlier positions during partial updates, while the rendered VFD
-does. This split must be resolved or deliberately formalized by Phase 2; the
-`current_text()` shadow and the visible display are not automatically equivalent
-for every partial-update workflow. Current Lua regression display reads use the
-visible VFD outputs, which is the correct side of that boundary for rendering
-acceptance.
+Lua regression display reads continue to use visible `vfd0`-`vfd43` outputs,
+which now reflect the ASR-owned logical cursor and field state without a second
+independently advanced text shadow.
 
 ### Verified display commands and OPEN surface
 
@@ -545,10 +532,10 @@ acceptance.
 attributes, `$62`/`$72` field boundaries, annunciator register capture and the
 named partial-update cases in `display-protocol.md`.
 
-`[Verified protocol, not implemented]`: `$62` marks the selected-field anchor
-and `$63` restores it for a partial rewrite ending at `$72`. The exact vendor
-names remain open, but the operational contract is measured on both REC SRC
-and TEMPO.
+`[Verified mechanism, implemented]`: `$62` marks the selected-field anchor and
+`$63` restores it and the field attribute for a partial rewrite ending at
+`$72`. The exact vendor names remain open. The operational contract is measured
+on REC SRC and runtime-regression-locked on TEMPO.
 
 `[OPEN]`: the `$74`/`$75`/`$76` panel-control family; `$E7 $71` and adjacent
 `$7E`/`$FC`/`$FD`/`$FF`/`$D5` transition codes; the
@@ -561,12 +548,9 @@ layout appearance.
 
 ## 11. Known UI defects and acceptance boundary
 
-- **[Verified fault boundary; fix intentionally pending] EDIT SEQUENCE ->
-  TEMPO:** the full page correctly marks the underlined value field at columns
-  6-8, then Up emits `$63 "91 " $72`. The current decoder ignores `$63` and
-  appends `91 ` at columns 19-21. The firmware stream contains the required
-  selected-field relation; the missing decoder state is documented in
-  `display-protocol.md`.
+- **[Verified fixed mechanism] EDIT SEQUENCE -> TEMPO:** the full page marks
+  columns 6-8, Up's `$63 "91 " $72` changes `90 -> 91`, and Down changes it
+  back to `90`. Underline remains 6-8; no text is appended and LOOP is intact.
 - **[OPEN] Master Tune value display:** a prior manual GUI observation reports
   the display one value-step behind the edited value. The manual expects the
   shown current value to follow the edit; firmware behavior versus display-model
@@ -577,24 +561,16 @@ layout appearance.
   labels and the standing local label edits are not semantic evidence.
 - Most indicator identities and all ASR-specific blink encoding remain open.
 
-Phase 2 analysis captured and replayed the exact EDIT SEQUENCE/TEMPO byte stream
-with live renderer and shadow state. The next implementation round must consume
-the retained fixture with one ASR-owned state machine and check visible output,
-not only the ASR text shadow.
+Phase 2 analysis and implementation are complete for the bounded verified
+grammar. This does not close the OPEN commands or prove every UI workflow.
 
 ## 12. Next implementation stages
 
-### Phase 2 — ASR-specific display protocol/state machine
+### Phase 2 — ASR-specific display protocol/state machine — complete, bounded
 
-Acceptance case: `EDIT SEQUENCE -> TEMPO`. It must render and update the correct:
-
-- column;
-- selected field;
-- value;
-- underline and Left/Right navigation.
-
-The implementation must establish one authoritative ASR display state boundary
-before generic rendering. No control code is guessed; unknowns remain loud.
+`EDIT SEQUENCE -> TEMPO` passes through the real firmware/device path with the
+correct column, selected value, underline and partial rewrites. Unknown controls
+remain loud and semantically OPEN.
 
 ### Phase 3 — rack front-panel layout
 

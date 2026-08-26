@@ -786,10 +786,15 @@ void asr10panel_device::device_start()
 
 	save_item(NAME(m_annunciator_state));
 	save_item(NAME(m_instrument_lamp_state));
-	save_item(NAME(m_text_chars));
-	save_item(NAME(m_text_position));
 	save_item(NAME(m_pending_annunciator_command));
+	save_item(NAME(m_pending_open_command));
+	save_item(NAME(m_display_cursor));
+	save_item(NAME(m_selected_field_anchor));
 	save_item(NAME(m_pending_field_attr));
+	save_item(NAME(m_current_underline));
+	save_item(NAME(m_selected_field_underline));
+	save_item(NAME(m_selected_field_valid));
+	save_item(NAME(m_defining_selected_field));
 	save_item(NAME(m_seen_unhandled_display_code));
 }
 
@@ -807,10 +812,15 @@ void asr10panel_device::device_reset()
 
 	m_annunciator_state.fill(0);
 	m_instrument_lamp_state.fill(0);
-	m_text_chars.fill(' ');
-	m_text_position = 0;
 	m_pending_annunciator_command = 0;
+	m_pending_open_command = 0;
+	m_display_cursor = 0;
+	m_selected_field_anchor = 0;
 	m_pending_field_attr = false;
+	m_current_underline = false;
+	m_selected_field_underline = false;
+	m_selected_field_valid = false;
+	m_defining_selected_field = false;
 	m_seen_unhandled_display_code.fill(0);
 	m_disable_eps_echo = std::getenv("ASR10_PANEL_DISABLE_ECHO") != nullptr;
 
@@ -869,46 +879,85 @@ void asr10panel_device::send_to_display(uint8_t data)
 		return;
 	}
 
-	if (m_pending_field_attr)
+	// The physical stream establishes one following operand for these still
+	// semantically OPEN commands. Preserve that bounded behavior without
+	// assigning the command or operand a display meaning.
+	if (m_pending_open_command)
 	{
-		// Operand of 0x60 (see below) -- understood, not alarm-worthy.
-		// The attribute itself is applied in esq1x22_device::write_char().
-		m_pending_field_attr = false;
-		m_vfd->write_char(data);
+		m_pending_open_command = 0;
 		return;
 	}
 
-	if (data == 0x66)
+	if (m_pending_field_attr)
 	{
-		m_text_chars.fill(' ');
-		m_text_position = 0;
-	}
-	else if (data >= 0x20 && data <= 0x5f)
-	{
-		// Printable range is recognized regardless of our own 22-char
-		// mirror buffer's bounds -- a byte that overflows m_text_chars
-		// is still known text (esq1x22_device has its own, separate
-		// bounds check), not an unhandled control code.
-		if (m_text_position < m_text_chars.size())
-			m_text_chars[m_text_position++] = data;
-	}
-	else if (data == 0x60)
-	{
-		// Del 3: field-attribute opcode, expects one operand byte next
-		// (docs/asr10/investigations/display-protocol-inventory.md).
-		m_pending_field_attr = true;
-	}
-	else if (data != 0x62 && data != 0x72)
-	{
-		// Del 3: 0x62 ("next field") and 0x72 ("end of field") are
-		// understood structurally -- they reset the current text
-		// attribute in esq1x22_device::write_char() -- but carry no
-		// operand and need no state here. Anything else reaching this
-		// branch is genuinely unrecognized.
-		report_unhandled_display_code(data);
+		m_current_underline = bool(data & 0x02);
+		if (m_defining_selected_field)
+			m_selected_field_underline = m_current_underline;
+		m_pending_field_attr = false;
+		return;
 	}
 
-	m_vfd->write_char(data);
+	if (data >= 0x74 && data <= 0x76)
+	{
+		report_unhandled_display_code(data);
+		m_pending_open_command = data;
+		return;
+	}
+
+	if (data <= 0x1f)
+	{
+		m_display_cursor = data;
+		return;
+	}
+
+	if (data >= 0x20 && data <= 0x5f)
+	{
+		m_vfd->render_character(m_display_cursor, data, m_current_underline);
+		m_display_cursor++;
+		if (m_display_cursor >= 23)
+			m_display_cursor = 23;
+		return;
+	}
+
+	switch (data)
+	{
+	case 0x60:
+		m_pending_field_attr = true;
+		break;
+
+	case 0x62:
+		m_selected_field_anchor = m_display_cursor;
+		m_selected_field_valid = true;
+		m_defining_selected_field = true;
+		m_current_underline = false;
+		break;
+
+	case 0x63:
+		if (m_selected_field_valid)
+		{
+			m_display_cursor = m_selected_field_anchor;
+			m_current_underline = m_selected_field_underline;
+		}
+		break;
+
+	case 0x66:
+		m_vfd->clear();
+		m_display_cursor = 0;
+		m_current_underline = false;
+		m_selected_field_underline = false;
+		m_selected_field_valid = false;
+		m_defining_selected_field = false;
+		break;
+
+	case 0x72:
+		m_current_underline = false;
+		m_defining_selected_field = false;
+		break;
+
+	default:
+		report_unhandled_display_code(data);
+		break;
+	}
 }
 
 void asr10panel_device::report_unhandled_display_code(uint8_t data)
@@ -932,11 +981,6 @@ std::string asr10panel_device::unhandled_code_summary() const
 		}
 	}
 	return result;
-}
-
-std::string asr10panel_device::current_text() const
-{
-	return std::string(m_text_chars.begin(), m_text_chars.end());
 }
 
 std::string asr10panel_device::annunciator_summary() const

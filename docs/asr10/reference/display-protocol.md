@@ -12,11 +12,11 @@ Canonical reference for the host-to-front-panel byte stream. First inventoried
 cursor columns and full-redraw underline/field attributes work in the current
 model. Numeric absolute partial update (`VOLUME=99 -> 98`) works visibly.
 
-**[Verified protocol, not implemented]** `$62` establishes the selected-field
-anchor used by `$63` partial rewrites. The current decoder ignores `$63`.
-Consequently both `REC SRC LEFT -> RIGHT` and `TEMPO=90 -> 91` carry correct
-field-relative firmware streams but render incorrectly. `EDIT SEQUENCE ->
-TEMPO` is decoder fault A, not a bad firmware stream.
+**[Verified mechanism, implemented]** `$62` establishes the selected-field
+anchor used by `$63` partial rewrites. `asr10panel_device` now restores that
+anchor and its underline attribute. The real V3.50 `EDIT SEQUENCE -> TEMPO`
+path visibly round-trips `90 -> 91 -> 90` without trailing text; REC SRC
+field-relative updates use the same mechanism.
 
 This is not a claim that display/UI behavior is complete. Undecoded panel
 control traffic, output bit identities, blink and workflows outside the bounded
@@ -30,11 +30,10 @@ firmware
   -> scn2681_device::b_tx_cb
   -> asr10panel_device::rcv_complete()
   -> asr10panel_device::send_to_display(byte)
-       intercepts $77-$7B + operand, forwards other bytes
-  -> esq1x22_device::write_char()
-       interprets $00-$1F, $20-$5F, $60, $62, $66, $72
-       consumes one operand after $74-$76 but does not interpret it
-       ignores $63/$67 and other unknowns
+       owns ASR cursor, attribute, selected-field and operand state
+       retains $77-$7B output registers separately from text
+  -> esq1x22_device::render_character(column, glyph, underline) / clear()
+       generic explicit-position renderer operations, no ASR opcode decoding
   -> esqvfd_device::update_display()
   -> vfd0-vfd21 glyphs, vfd22-vfd43 underlines, layout
 ```
@@ -50,23 +49,19 @@ label was wrong.
 The combined THRB stream has multiple producers and is not self-describing
 text. Raw range tests are applied only after pending-operand and frame context.
 
-## Current split state
+## Current state ownership
 
-`asr10panel_device` keeps a 22-byte linear text shadow and shadow cursor;
-`esq1x22_device` separately owns rendered chars, per-cell attributes, current
-attribute and renderer cursor. The Lua display helper reads the rendered
-`vfd0`-`vfd21` outputs, not `current_text()`.
+`asr10panel_device` is the authoritative ASR raw-byte decoder. It owns pending
+operand class, logical cursor, current underline state, selected-field anchor
+and retained selected-field attribute. `$77-$7B` output registers remain in
+the same ASR device but are routed before text state.
 
-The split is observably inconsistent:
-
-- `VOLUME=99 -> 98`, stream `$14 39 38`: renderer relocates to column 20 and
-  shows `98`; the shadow ignores `$14` and remains `99`.
-- TEMPO Up, stream `$63 39 31 20 72`: both ignore `$63` and append `91 ` at
-  columns 19-21; TEMPO Down then writes outside the visible range and leaves
-  the bad display unchanged.
-
-The shadow is not authoritative. The future decoder must have one ASR-owned
-text/cursor/field state.
+The old `m_text_chars`/`m_text_position` linear shadow and `current_text()` API
+were removed: they had no runtime consumer and were already proven stale after
+`VOLUME` absolute updates. `esq1x22_device` now receives explicit position,
+glyph and underline renderer operations on the ASR path. Its legacy raw-byte
+parser remains available to the separate EPS 1x22 panel path; `esqvfd_device`
+remains generic output rendering.
 
 ## Byte/command inventory
 
@@ -76,11 +71,11 @@ text/cursor/field state.
 | `$00-$1F` standalone | 1 | Direct cursor column. `$00` positions page/field overwrites; `$14` positions VOLUME digits at column 20 | `[Verified, context-qualified]`; identical values in operand/frame slots are not cursor commands |
 | `$60 <attr>` | 2 | Begin attribute run. Observed `$01` normal, `$03` underline; bit `$02` selects underline | `[Verified]` |
 | `$62` | 1 | Mark selected-field anchor for the following `$60 $03` run | `[Verified operational contract; exact vendor name OPEN]`; REC SRC anchors 17/8, BAR 0/17/20, TEMPO 6, FX 3 |
-| `$63` | 1 | Restore selected-field anchor for printable partial rewrite ending at `$72` | `[Verified, not implemented]`; `63 "91 " 72` targets TEMPO column 6 and `63 "RIGHT" 72` targets REC SRC column 17 |
-| `$66` | 1 | Standalone clear: renderer glyphs/attrs cleared, cursor 0, current attr normal; ASR shadow chars/cursor reset | `[Verified]`; retained `$77-$7B` outputs survive. A `$66` in an operand slot is data, not necessarily clear |
+| `$63` | 1 | Restore selected-field anchor and retained attribute for printable partial rewrite ending at `$72` | `[Verified mechanism, implemented]`; `63 "91 " 72` targets TEMPO column 6 and `63 "RIGHT" 72` targets REC SRC column 17 |
+| `$66` | 1 | Standalone clear: renderer glyphs/attrs cleared, ASR cursor 0, current attr normal | `[Verified]`; retained `$77-$7B` outputs survive. A `$66` in an operand slot is data, not necessarily clear |
 | `$67` | 1 | Reproducibly appears as empty `$67 $72` after `$63 $72` on FX pages; no printable payload/effect measured | `[OPEN]` |
 | `$72` | 1 | End field/partial run; current attr -> normal | `[Verified]` |
-| `$74-$76 <value>` | 2 on physical stream | Open panel control/output family; current VFD consumes next byte with no visible state change | `[OPEN, structure bounded]`; operands are not nibble-only: `$74 $40`, `$75 $00/$08`, `$76 $00` observed |
+| `$74-$76 <value>` | 2 on physical stream | Open panel control/output family; ASR decoder consumes the bounded operand with no visible state change | `[OPEN, structure bounded]`; operands are not nibble-only: `$74 $40`, `$75 $00/$08`, `$76 $00` observed |
 | `$77-$7B <value>` | 2 | Select/update one of five retained 8-bit output/annunciator registers; not forwarded to VFD | `[Verified structure]`; state retained across `$66` |
 | `$77` bit 0 | — | Reversible in the isolated load/select/reselect case, but also changes in another context | `[Verified narrow]`; current mirror `asr10_instlamp0` must not be generalized |
 | other 39 `$77-$7B` bits | — | Retained raw output bits | `[OPEN]` identities and solid/blink meaning |
@@ -123,28 +118,26 @@ Up:   63 "91 " 72
 Down: 63 "90 " 72
 ```
 
-After the full page, renderer and shadow cursor are 19 and underline is 6-8.
-Current `$63` no-op writes Up at 19-21, producing
-`TEMPO=90   LOOP=ON 91 `. The required transition is cursor 19 -> selected
-anchor 6 before writing, producing `TEMPO=91   LOOP=ON`, while retaining
-underline 6-8.
+After the full page, the ASR cursor is 19 and underline is 6-8. `$63` now moves
+the cursor to saved anchor 6 and restores the selected underline before writing.
+Up therefore produces `TEMPO=91   LOOP=ON`; Down restores `90` at the same
+columns and ends at cursor 9 without overflow or LOOP corruption.
 
-`../lua/display_protocol_stream_replay.lua` deterministically reproduces both
-the current failure and the measured field-aware result. It is an analysis
-oracle, not yet a C++ device regression; the next implementation round should
-make the real ASR decoder consume the same fixture.
+`../lua/display_protocol_stream_replay.lua` locks the transaction contract;
+`../lua/display_field_rewrite.lua` locks the same transition through the real
+V3.50 firmware/device path.
 
 ## State ownership contract
 
-The raw-byte owner should be ASR-specific (`asr10panel_device` or a dedicated
-ASR child). It owns pending command/operand, cursor, `chars[22]`, `attrs[22]`,
-current run attribute, selected-field anchor/attribute, rewrite state and
-output-register routing. A generic `esq1x22_device` should accept renderer
-operations/state, not interpret raw ASR opcodes. `esqvfd_device` remains the
-generic glyph/underline output renderer.
+The implemented raw-byte owner is `asr10panel_device`. It owns pending
+command/operand, cursor, current run attribute, selected-field anchor/attribute
+and output-register routing. `esq1x22_device` accepts explicit renderer
+operations on this path; `esqvfd_device` remains the generic glyph/underline
+output renderer.
 
-Unknown observed controls stay explicit and loud; they must not fall through
-as printable/cursor data merely because their value overlaps another class.
+Known operand contexts are routed before printable/cursor ranges. Unknown
+observed controls stay explicit and loud; unresolved producer-frame grammar
+remains `[OPEN]` rather than acquiring inferred rendering semantics.
 
 ## Still OPEN
 
@@ -156,4 +149,5 @@ as printable/cursor data merely because their value overlaps another class.
 - Real-hardware behavior for standalone columns 22-31.
 - Master Tune's reported one-step lag and unmeasured UI workflows.
 
-No permanent display behavior was changed during this analysis.
+The implemented mechanism is bounded to the verified grammar above; it does not
+make the complete ASR-10 display protocol solved.

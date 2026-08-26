@@ -1,5 +1,12 @@
 # ASR-10 display protocol state machine, before implementation (2026-08-26)
 
+> **Implementation follow-up, 2026-08-26:** the measured `$62/$63/$72`
+> selected-field mechanism is now implemented in `asr10panel_device` and
+> regression-locked by `lua/display_field_rewrite.lua`. The analysis and old
+> failure below remain provenance for why the implementation changed. `$67`,
+> `$74-$76` semantics and the other named OPEN classes remain `[OPEN]`. The
+> post-implementation suite passes 16 tests, 17 `PASS` lines, exit 0.
+
 This is Phase 2 of the semantic front-panel work. It changes no display or
 panel behavior. All runtime observations use V3.50, Channel-B transmit
 write-taps, saved-device-state reads and rendered `vfd0`-`vfd43` outputs. No
@@ -242,42 +249,34 @@ Two independent cursor/text models exist today:
 | TEMPO Up, `$63 39 31 20 72` | ignores `$63`, appends at cols 19-21 | ignores `$63`, appends at shadow positions 19-21 | both wrong in the same visible way |
 | TEMPO Down after the append | cursor 22/23, writes outside visible 0-21 | shadow full at 22, drops glyphs | both remain stale; internal cursors diverge 23 vs 22 |
 
-`current_text()` is not used by the visible output and is not authoritative.
-The regression helper correctly reads `vfd0`-`vfd21`, but the renderer itself
-still lacks `$63`. The next display implementation must not retain two
-independently-mutated ASR text states.
+At the analysis checkpoint, `current_text()` was not used by visible output and
+was not authoritative. The implementation follow-up removes that shadow/API;
+the regression helper continues to read `vfd0`-`vfd21`.
 
 ## 8. Replay control
 
-`lua/display_protocol_stream_replay.lua` consumes the saved TEMPO fixture in
-two deterministic modes:
-
-1. source-equivalent current behavior (`$62` only resets attr, `$63` no-op),
-   reproducing `TEMPO=90   LOOP=ON 91 ` after Up and the unchanged bad display
-   after Down;
-2. the measured field contract (`$62` records selected column 6, `$63`
-   restores it while preserving underline), producing `TEMPO=91...` then
-   `TEMPO=90...`.
+`lua/display_protocol_stream_replay.lua` consumes the saved TEMPO fixture as a
+contract test for the implemented state machine. It checks `90 -> 91 -> 90`,
+cursor 9 after each rewrite, underline retention, `$14` absolute overwrite,
+annunciator retention across `$66` and no text effect from bounded `$74 <op>`.
 
 It passes as:
 
 ```text
-PASS display_protocol_stream_replay current_bug_reproduced=true field_contract=true
+PASS display_protocol_stream_replay tempo=90->91->90 absolute=true underline=true annunciator_retained=true open_pairs_ignored=true
 ```
 
-This replay is an analysis oracle, not yet a C++ device regression: Lua cannot
-call the private `esq1x22_device::write_char()` entry directly. The exact
-fixture is deliberately retained so the next implementation round can make the
-real ASR decoder consume it and turn the same assertions into a device-level
-test.
+`lua/display_field_rewrite.lua` separately drives the same path through V3.50,
+the DUART, `asr10panel_device` and visible VFD outputs. It verifies anchor and
+underline columns 6-8 and rejects trailing text.
 
 ## 9. Ownership decision and state-machine contract
 
-**Recommendation:** an ASR-specific decoder owned by
-`asr10panel_device` (or a dedicated child used only by it) must own the raw
-panel stream and its single authoritative ASR display state. A generic
-`esq1x22_device` should accept renderer operations/state, not interpret raw
-ASR opcodes. `esqvfd_device` remains glyph/underline-to-output rendering.
+**Implemented boundary:** `asr10panel_device` owns the raw ASR panel stream and
+its authoritative protocol state. It sends explicit column/glyph/underline
+operations to `esq1x22_device`; `esqvfd_device` remains
+glyph/underline-to-output rendering. The separate EPS 1x22 raw parser remains
+available and was not generally refactored.
 
 The required observed state is:
 
@@ -285,13 +284,15 @@ The required observed state is:
 Asr10PanelProtocolState
   pending command/operand class
   text cursor column
-  chars[22]
-  attrs[22]
   current run attribute
   selected field anchor + retained field attribute
-  selected-field rewrite active
+  selected-field definition validity/state
   output_registers[5] for $77-$7B
   explicit OPEN register/control observations for $74-$76 and others
+
+GenericRendererState
+  chars/attrs cells
+  glyph and underline outputs
 ```
 
 Required operations, named by measured effect rather than guessed hardware
@@ -304,10 +305,9 @@ begin_attribute_run(operand)
 mark_selected_field_anchor()
 begin_selected_field_rewrite()
 end_field_run()
-write_printable(byte)
+render_character(column, byte, underline)
 write_output_register(index, operand)
 record_open_control(opcode, operand/context)
-render(chars, attrs)
 ```
 
 The decoder must route output-register/frame traffic separately before the

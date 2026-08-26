@@ -13,11 +13,10 @@ return {
   down = { 0x63, 0x39, 0x30, 0x20, 0x72 },
   expected = {
     initial = "TEMPO=90   LOOP=ON    ",
-    current_after_up = "TEMPO=90   LOOP=ON 91 ",
-    current_after_down = "TEMPO=90   LOOP=ON 91 ",
-    protocol_after_up = "TEMPO=91   LOOP=ON    ",
-    protocol_after_down = "TEMPO=90   LOOP=ON    ",
+    after_up = "TEMPO=91   LOOP=ON    ",
+    after_down = "TEMPO=90   LOOP=ON    ",
     underline = "0000001110000000000000",
     selected_column = 6,
+    cursor_after_rewrite = 9,
   },
 }

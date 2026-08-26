@@ -110,7 +110,6 @@ protected:
 class asr10panel_device : public esqpanel_device {
 public:
 	asr10panel_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock = 0);
-	std::string current_text() const;
 	std::string annunciator_summary() const;
 	std::string unhandled_code_summary() const;
 
@@ -148,20 +147,17 @@ protected:
 private:
 	std::array<uint8_t, 5> m_annunciator_state{};
 	std::array<uint8_t, 8> m_instrument_lamp_state{};
-	std::array<uint8_t, 22> m_text_chars{};
-	uint8_t m_text_position = 0;
+	// Authoritative ASR display-protocol state. Character/attribute cells stay
+	// in the generic renderer and are updated at explicit logical columns.
 	uint8_t m_pending_annunciator_command = 0;
-	// Del 3 (display-protocol-inventory.md): 0x60 <attr> sets the
-	// current-field text attribute for the next run of printable
-	// characters (attr bit 0x02 = underlined/currently-selected field,
-	// matching the manual's "cursor (underline) beneath the field"
-	// description) -- a two-byte ASR-10 opcode+operand pair, handled in
-	// esq1x22_device::write_char() (mirrors that class's own existing
-	// m_lastchar-based lookback for 0xfa/0xff on the 2x40 variant).
-	// This flag exists only so send_to_display() can tell an operand
-	// byte apart from a genuinely unhandled one for the alarm below --
-	// the actual attribute state lives in m_vfd, not here.
+	uint8_t m_pending_open_command = 0;
+	uint8_t m_display_cursor = 0;
+	uint8_t m_selected_field_anchor = 0;
 	bool m_pending_field_attr = false;
+	bool m_current_underline = false;
+	bool m_selected_field_underline = false;
+	bool m_selected_field_valid = false;
+	bool m_defining_selected_field = false;
 	bool m_disable_eps_echo = false;
 
 	// Del 2: an unrecognized display control code says so, once per

@@ -509,11 +509,10 @@ void esq1x22_device::write_char(uint8_t data)
 		return;
 	}
 
-	// $74/$75/$76 <nibble>: still-unidentified countdown-animation family
-	// (docs/asr10/investigations/display-protocol-inventory.md Del 1;
-	// still [OPEN], not decoded here). Consume the operand so it can't
-	// be misread as the cursor-position opcode below -- both live in
-	// the same low byte range.
+	// $74/$75/$76 each consume one operand on the observed physical stream,
+	// but their semantics remain OPEN (operands are not nibble-only: $74 $40
+	// is observed). Consume the operand so it cannot be misread as a cursor
+	// column -- both occur in the same low byte range.
 	if (m_lastchar == 0x74 || m_lastchar == 0x75 || m_lastchar == 0x76) {
 		m_lastchar = 0;
 		return;
@@ -551,8 +550,8 @@ void esq1x22_device::write_char(uint8_t data)
 			case 0x60:  // field-attribute opcode; operand handled above
 				break;
 
-			case 0x62:  // next field -- reset attribute to normal until
-				// the field's own 0x60 sets it again
+			case 0x62:  // observed field marker; this legacy raw-byte path
+				// only resets attribute until the following 0x60
 				m_curattr = AT_NORMAL;
 				break;
 
@@ -582,6 +581,17 @@ void esq1x22_device::write_char(uint8_t data)
 		}
 	}
 
+	update_display();
+}
+
+void esq1x22_device::render_character(uint8_t column, uint8_t data, bool underline)
+{
+	if (column >= std::size(m_chars[0]) || data < 0x20 || data > 0x5f)
+		return;
+
+	m_chars[0][column] = data - ' ';
+	m_attrs[0][column] = underline ? AT_UNDERLINE : AT_NORMAL;
+	m_dirty[0][column] = 1;
 	update_display();
 }
 

@@ -63,7 +63,7 @@ runtime-tool            instrumentering
 | `boot-sequence.md` | **aktuell** | uppdaterad 2026-08-04 | reset → FILE 1 | steg 1b DPRAM-bryggan tillagt; chip-select-luckan i steg 2 stängd; steg 7 utbyggt med M1–M3 |
 | `boot-runtime-timeline.md` | **aktuell** | ny 2026-08-11 | reset → runtime, ansvarsfördelning ROM/RAM | dynamisk PC-profil, IRQ6-källor, regionklassade övergångar |
 | `call-graph.md` | **aktuell, coverage-kvalificerad** | ny 2026-08-04, rättelse 2026-08-25 | kontrollflödesmodell och CSV-schema; inte komplett firmware-callgraph | ur `call-graph-edges.csv`, `routines.csv`; BSR/BRA/Bcc/PC-relative/indirekt/TRAP saknas i extractionen |
-| `display-protocol.md` | **aktuell, state-machine-kvalificerad** | runtimeinventering 2026-08-24, byte/state-analys 2026-08-26 | Channel-B-protokoll, cursor, `$62/$63` selected-field-state, attribut, outputregister och öppna frameklasser | TEMPO-felgränsen verifierad; implementation med en ASR-ägd state machine återstår |
+| `display-protocol.md` | **aktuell, state-machine-implementerad** | runtimeinventering 2026-08-24, byte/state-analys och implementation 2026-08-26 | Channel-B-protokoll, ASR-ägd cursor, `$62/$63` selected-field-state, attribut, outputregister och öppna frameklasser | TEMPO `90 -> 91 -> 90` firmwareverifierad; `$67`, `$74-$76` och övriga OPEN-klasser kvarstår |
 | `front-panel-model.md` | **aktuell** | manual-, runtime- och källkodsinventering 2026-08-25 | layoutoberoende semantisk panelmodell, kontrollgrupper, verifierade råkoder, host-keymap och displaygräns | normerande underlag för framtida display-, racklayout- och host-control-faser |
 | `e2-address-model.md` | **aktuell** | riktad adressrevision | `$FFxxxx`-mekanismer och `$FC5803` | skiljer verifierad decode från speglingshypotes |
 | `es5701-wiring.md` | oförändrad | i trädet | ES5701-koppling | — |
@@ -126,11 +126,13 @@ pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
 Senaste tillägget är `display-protocol-state-machine-v350.md`: fångar
 filbrowser, REC SRC, VOLUME, FX och EDIT SEQUENCE/TEMPO byte för byte med live
 renderer-/shadow-state. Verifierar `$62` som selected-field-anchor och `$63`
-som field-relative partial rewrite; dagens decoder ignorerar `$63`, vilket
-förklarar TEMPO-appendfelet utan firmwarehack. Rättar dessutom THRB-adressen
+som field-relative partial rewrite; implementationen ägs nu av
+`asr10panel_device` och TEMPO round-trip-regressionen är grön. Den ursprungliga
+analysen förklarar det tidigare appendfelet utan firmwarehack. Rättar dessutom
+THRB-adressen
 `$FC480D` -> `$FC4817`, nedgraderar `$74-$76` från nibble-only animation till
 `[OPEN]` one-operand panel-control/output (bl.a. `$74 $40`), och sparar exakt
-TEMPO-fixture plus deterministisk replay inför nästa implementation. Föregående
+TEMPO-fixture plus deterministisk replay och firmwaretest. Föregående
 tillägg är `slot5-pc-correlation-and-atrk-slot-table.md`: kontrollerar
 Slot 5-fyndet mot §8.10 sedan `$007C7C` visade sig aldrig PC-matcha —
 kopplingen står kvar, PC-korrelerad denna gång, men den verkliga
