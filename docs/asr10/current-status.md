@@ -2271,9 +2271,7 @@ simple universal `>>3`/`>>2` hypothesis is `[DISPROVEN]`.
 
 **[Likely physical]** U55 HC4051 is now the strong acquisition-mux candidate,
 but COM/select/input pin routing remains `[OPEN]` until schematic or continuity
-evidence. No mux was implemented. The current callback is explicitly wrong for
-this path: it indexes with `m_duart_io & 7`, not PBDAT; 0/512/1023 injection
-through its Data Entry and Volume adjusters did not change PAR or diagnostics.
+evidence.
 
 **Panel correction.** Raw `$0C` as Env1/service entry is `[DISPROVEN]` in the
 tested Command context (`QUANTIZE TRACK`). Raw `$0D`, the bounded ROM-table
@@ -2306,10 +2304,20 @@ and a 10,737-read live-witness run observed every known selector but neither 1
 nor 6. Selector 6 is therefore unreachable in this acquisition path, while its
 physical mux-pin role remains `[OPEN]`.
 
+**[Implemented, runtime-verified]** `asr10_boot_state` now takes selector
+PB2-PB0 from the generic MC68302 PBDAT output latch and routes it through an
+ASR-owned raw 10-bit source mux to generic ES5506 PAR. The panel sources are
+Pitch=0, Mod=2, Volume=3, Pedal/CV=4 and Data Entry=5; 7 is the fixed `$300`
+calibration reference. `lua/analog_pot_wiring_verify.lua` observed the
+firmware PBDAT -> PAR path for 0/2/3/4/5/7 with retained RAM witnesses and
+reached `PITCHWHL 64` via `EXAMINE ANALOG INPUTS`. Selector 1 remains an
+unclassified ASR-88 conditional fallback, selector 6 has no assigned role,
+and Input Level remains outside the POT scan.
+
 **[Corrected source model]** MR. KNOB is the Service Manual's diagnostic name
-for the Data Entry slider: one semantic control. Current MAME adjusters are
-misrouted/disconnected: Data Entry writes emulator index 3 although firmware
-uses selector 5; Volume writes 5 although firmware uses 3; Input Level writes 4,
-which firmware uses for Pedal. Input Level is `[DISPROVEN]` as a member of this
-PAR scan and belongs to the separately open audio-input/gain model. Pitch, mod,
-pedal and ASR-88 pressure host inputs are absent. No C++ routing was changed.
+for the Data Entry slider: one semantic control. Before this implementation,
+Data Entry was misrouted to index 3, Volume to 5, and Input Level occupied
+index 4. The implemented sources use the firmware selectors stated above.
+Input Level is `[DISPROVEN]` as a member of this PAR scan and belongs to the
+separately open audio-input/gain model. ASR-88 pressure remains `[Likely]`;
+physical U55 routing and selector 6 remain `[OPEN]`.

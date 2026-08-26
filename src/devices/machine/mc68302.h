@@ -80,6 +80,11 @@ public:
 	// Board-level signal into a Port B GPIO input pin (e.g. the driver's
 	// LRCLK timer into PB3). See mc68302sim.h's set_external_input().
 	void set_pb_input(unsigned bit, bool level);
+	// Port-B output latch as last written by the CPU.  This deliberately does
+	// not apply PBCNT/PBDDR input muxing: a board device that is wired to an
+	// output pin needs the driven latch value, while read_pbdat() models CPU
+	// readback.  Board-specific interpretation belongs to the owning machine.
+	uint16_t pbdat_latch() const;
 
 	// External IRQ6 IACK vector, MC68302 User's Manual Table 3-5 /
 	// docs/mc68302/vector-origin-map.md: vector = (GIMR bits 7-5 << 5) |

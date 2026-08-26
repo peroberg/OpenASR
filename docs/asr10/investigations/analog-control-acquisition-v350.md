@@ -274,7 +274,7 @@ These formulas are `[Verified firmware arithmetic]`. The measured current
 model returned only `$200`, so real-controller endpoint curves, tolerances and
 dead zones remain `[OPEN physical/runtime with real input]`.
 
-## Current MAME input-model boundary
+## Pre-implementation MAME input-model boundary
 
 The ASR panel currently exposes only three adjusters:
 
@@ -347,12 +347,18 @@ the falsifier for U55 identity.
 | U55 is the acquisition mux | `[Likely]` |
 | U55 COM/select physical wiring | `[OPEN]` |
 | current host adjusters exercise the measured path | `[DISPROVEN current model]` |
+| PBDAT-selected ASR semantic-source mux | `[Implemented; runtime-verified for 0/2/3/4/5/7]` |
 
-## Smallest next experiment
+## Implemented model and remaining physical closure
 
-Do not implement a mux yet. First trace U55 COM and select pins on a board or
+The later implementation replaces the DUART-selected callback with an
+ASR-machine-owned `PBDAT & 7` mux and right-justified 10-bit semantic sources.
+The generic MC68302 exposes only its PBDAT output latch and the generic ES5506
+remains unaware of selectors. Runtime verification observes the firmware
+PBDAT -> selector -> PAR path for selectors 0, 2, 3, 4, 5 and 7, with the
+expected raw values `$200`, `$200`, `$3ff`, `$200`, `$200` and `$300`.
+
+Physical closure remains separate: trace U55 COM and select pins on a board or
 schematic. A continuity result from U55 pins 9/10/11 to PB0/PB1/PB2 and pin 3
 to ES5506 POT_IN would promote the physical identity; a different destination
-would falsify it while leaving the verified firmware scan intact. Only after
-that should a separate implementation task replace the DUART-selected callback
-with a PBDAT-selected, board-mapped input path.
+would falsify it while leaving the functional firmware model intact.

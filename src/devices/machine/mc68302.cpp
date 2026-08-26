@@ -389,6 +389,11 @@ void mc68302_device::set_pb_input(unsigned bit, bool level)
 	m_sim->set_external_input(bit, level);
 }
 
+uint16_t mc68302_device::pbdat_latch() const
+{
+	return m_sim->pbdat_latch();
+}
+
 void mc68302_device::handle_cp_command(uint8_t command)
 {
 	if (command == 0x81)

@@ -129,7 +129,11 @@ med `[Likely]` mono/channel-pressure-semantik; selector 6 är
 `[Verified unreachable]` i den avgränsade V3.50-acquisitionvägen. Journalen
 verifierar även MR. KNOB = Data Entry, avför Input Level från denna scan,
 karakteriserar selector 7 som kalibreringsreferens och specificerar rått
-10-bitars board-callbackkontrakt utan att implementera det. Föregående tillägg
+10-bitars board-callbackkontrakt. Kontraktet är nu implementerat och
+runtime-verifierat med `lua/analog_pot_wiring_verify.lua`: den generiska
+MC68302 PBDAT-latchen går till ASR-maskinens selector-mux och vidare till
+generisk ES5506 PAR, utan Input Level, selector-6-semantik eller klassificerad
+selector-1-producer. Föregående tillägg
 är `analog-control-acquisition-v350.md`: verifierar en
 kontinuerlig V3.50-kedja PBDAT PB2-PB0 -> cirka 1,98 ms -> ES5506 PAR ->
 kontrollspecifika RAM-block, 500 läsningar/s både idle och diagnostik. Visar

@@ -1136,18 +1136,28 @@ static INPUT_PORTS_START(asr10panel_device)
 	PORT_BIT(0x00004000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("OCTAVE_UP") PORT_CODE(KEYCODE_EQUALS) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::octave_change), 1)
 #undef ASR10_PANEL_KEY
 
-	PORT_START("analog_data_entry")
-	configurer.field_alloc(IPT_ADJUSTER, 0x200, 0x3ff, "Data Entry");
+	PORT_START("analog_pitch_wheel")
+	configurer.field_alloc(IPT_ADJUSTER, 0x200, 0x3ff, "Pitch Wheel");
 	configurer.field_set_min_max(0, 0x3ff);
-	PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::analog_value_change), 3)
+	PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::analog_value_change), 0)
 
-	PORT_START("analog_input_level")
-	configurer.field_alloc(IPT_ADJUSTER, 0x200, 0x3ff, "Input Level");
+	PORT_START("analog_mod_wheel")
+	configurer.field_alloc(IPT_ADJUSTER, 0x200, 0x3ff, "Mod Wheel");
 	configurer.field_set_min_max(0, 0x3ff);
-	PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::analog_value_change), 4)
+	PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::analog_value_change), 2)
 
 	PORT_START("analog_volume")
 	configurer.field_alloc(IPT_ADJUSTER, 0x3ff, 0x3ff, "Volume");
+	configurer.field_set_min_max(0, 0x3ff);
+	PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::analog_value_change), 3)
+
+	PORT_START("analog_pedal")
+	configurer.field_alloc(IPT_ADJUSTER, 0x200, 0x3ff, "Pedal / CV");
+	configurer.field_set_min_max(0, 0x3ff);
+	PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::analog_value_change), 4)
+
+	PORT_START("analog_data_entry")
+	configurer.field_alloc(IPT_ADJUSTER, 0x200, 0x3ff, "Data Entry");
 	configurer.field_set_min_max(0, 0x3ff);
 	PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::analog_value_change), 5)
 INPUT_PORTS_END
@@ -1166,7 +1176,7 @@ INPUT_CHANGED_MEMBER(asr10panel_device::analog_value_change)
 {
 	const int channel = param;
 	const int clamped = std::clamp(int(newval), 0, 1023);
-	set_analog_value(channel, u16(clamped << 6));
+	set_analog_value(channel, u16(clamped));
 }
 
 INPUT_CHANGED_MEMBER(asr10panel_device::key_change)

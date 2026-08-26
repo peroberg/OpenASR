@@ -126,7 +126,9 @@ private:
 
 	std::unique_ptr<u16[]> m_lowmem_shadow;
 	u16 m_m68302_internal_shadow[0x80]{};
-	u8 m_duart_io = 0;
+	// Raw, right-justified 10-bit board sources for the ES5506 PAR callback.
+	// Source selection is PBDAT PB2-PB0, not DUART OPR; see
+	// docs/asr10/investigations/analog-selector-control-map-v350.md.
 	std::array<u16, 8> m_analog_values{};
 
 	virtual void machine_start() override ATTR_COLD;
@@ -154,76 +156,8 @@ private:
 	TIMER_CALLBACK_MEMBER(idma_tc_deliver);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	u16 analog_r();
 	void analog_w(offs_t offset, u16 data);
-	void duart_output(u8 data);
 	// ES5510 host select/commit: FC3101/FC3141/FC3181 are each a
 	// single-word map range, so the `offset` MAME's address_map passes to
 	// an .rw() handler installed there is always 0 (relative to that
@@ -254,13 +188,8 @@ private:
 	void es5510_host_write_select_gpr_instr_w(offs_t offset, u8 data);
 
 
-
-
-
-
 	static void floppy_drives(device_slot_interface &device);
 	static void floppy_formats(format_registration &fr);
-
 };
 
 
@@ -273,20 +202,20 @@ void asr10_boot_state::machine_start()
 	save_pointer(NAME(m_lowmem_shadow), LOWMEM_WORDS);
 	save_item(NAME(m_m68302_internal_shadow));
 	save_item(NAME(m_lrclk_level));
+	save_item(NAME(m_analog_values));
 }
 
 
 void asr10_boot_state::machine_reset()
 {
-	m_duart_io = 0;
-	m_analog_values[0] = 0x8000; // neutral/unassigned
-	m_analog_values[1] = 0x8000; // neutral/unassigned
-	m_analog_values[2] = 0x8000; // neutral/unassigned
-	m_analog_values[3] = 0x8000; // Data Entry, centered
-	m_analog_values[4] = 0x8000; // Input Level, centered
-	m_analog_values[5] = 0xffc0; // Volume, full
-	m_analog_values[6] = 0x8000; // neutral/unassigned
-	m_analog_values[7] = 0x8000; // neutral/unassigned
+	m_analog_values[0] = 0x200; // Pitch wheel, boot-calibrated center
+	m_analog_values[1] = 0x200; // ASR-88 conditional source; no ASR-10 label
+	m_analog_values[2] = 0x200; // Mod wheel
+	m_analog_values[3] = 0x3ff; // Volume
+	m_analog_values[4] = 0x200; // Pedal/CV
+	m_analog_values[5] = 0x200; // MR. KNOB / Data Entry
+	m_analog_values[6] = 0x200; // No producer in the analyzed V3.50 path
+	m_analog_values[7] = 0x300; // Stable calibration reference: viewer >= 190
 
 	// Board-level LRCLK into PB3 (GPIO input, docs/mc68302/pin-function-map.md):
 	// external to the 68302, always running once the machine is up, not a
@@ -576,27 +505,16 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::lrclk_toggle)
 	m_maincpu->set_pb_input(3, m_lrclk_level);
 }
 
-
-
-
 u16 asr10_boot_state::analog_r()
 {
-	const u8 channel = m_duart_io & 7;
-	const u16 value = (m_analog_values[channel] >> 6) & 0x03ff;
-
-	return value;
+	const u8 selector = m_maincpu->pbdat_latch() & 7;
+	return m_analog_values[selector] & 0x03ff;
 }
 
 void asr10_boot_state::analog_w(offs_t offset, u16 data)
 {
-	m_analog_values[offset & 7] = data;
+	m_analog_values[offset & 7] = data & 0x03ff;
 }
-
-void asr10_boot_state::duart_output(u8 data)
-{
-	m_duart_io = data;
-}
-
 
 // ES5510 host select/commit wrappers. FC3100-FC3101, FC3140-FC3141 and FC3180-FC3181 are
 // each installed as their own single-word address_map range, so the
@@ -649,17 +567,10 @@ void asr10_boot_state::es5510_host_write_select_gpr_instr_w(offs_t offset, u8 da
 	m_es5510_host->host_w(0xe0, data);
 }
 
-
-
-
-
-
-
 void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 {
 	COMBINE_DATA(&m_lowmem_shadow[offset]);
 }
-
 
 u16 asr10_boot_state::system_ram_alias_r(offs_t offset, u16 mem_mask)
 {
@@ -749,28 +660,6 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 u16 asr10_boot_state::scsi_asr_candidate_r(offs_t offset, u16 mem_mask)
 {
 	return 0;
@@ -780,9 +669,6 @@ u16 asr10_boot_state::scsi_asr_candidate_r(offs_t offset, u16 mem_mask)
 void asr10_boot_state::scsi_asr_candidate_w(offs_t offset, u16 data, u16 mem_mask)
 {
 }
-
-
-
 
 
 void asr10_boot_state::floppy_drives(device_slot_interface &device)
@@ -905,7 +791,6 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	SCN2681(config, m_duart, XTAL(16'000'000) / 4);
 	m_duart->irq_cb().set_inputline(m_maincpu, 6);
 	m_duart->b_tx_cb().set(m_panel, FUNC(asr10panel_device::rx_w));
-	m_duart->outport_cb().set(FUNC(asr10_boot_state::duart_output));
 	// set_clocks() maps to IP3/IP4/IP5/IP6. With CSRA/CSRB selector $E,
 	// mc68681.cpp uses IP3/16 for channel A and IP5/16 for channel B.
 	m_duart->set_clocks(500'000, 500'000, 1'000'000, 1'000'000);
@@ -1012,7 +897,6 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	// or a flat 10MHz stays [OPEN], not established.
 	es5510_device &es5510_host(ES5510(config, m_es5510_host, XTAL(10'000'000)));
 	es5510_host.set_disable();
-
 }
 
 

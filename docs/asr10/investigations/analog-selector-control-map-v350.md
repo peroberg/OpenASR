@@ -143,7 +143,7 @@ explanation.
 | 6 | Never | no generator in analyzed path | none | `[OPEN]` (unused/reserved physically possible) | none | none | none | `[Verified unreachable in analyzed V3.50 acquisition path]` |
 | 7 | About every 60 scans; also boot calibration | countdown `$0DF0`; explicit boot calls | yes; `$0068C8/$F8DB4C`, boot `$0067EC/$006864` | Calibration reference | block `$0DD0`; displayed high byte `$0DD6`; factor `$0DF2` | `REFRENCE` | none; should not be a user control | `[Verified calibration/reference role]` |
 
-## Current MAME control inventory
+## Pre-implementation MAME control inventory
 
 ### Analog inputs
 
@@ -213,7 +213,7 @@ value `0..1023`; the device masks it with `$03FF`. Firmware, not the board
 callback, then shifts left six and performs control-specific calibration,
 filtering, dead-zone handling, multiplication, clamping and volume slew.
 
-Consequently the future ASR-10 board callback must return **raw 10-bit values**,
+Consequently the ASR-10 board callback returns **raw 10-bit values**,
 not preprocessed 7-bit or 8-bit controller values. The earlier universal
 `raw >> 3`/`raw >> 2` processing hypothesis remains `[DISPROVEN]`; the
 diagnostic viewer's displayed byte is not the producer contract.
@@ -225,7 +225,7 @@ targeted test. Pitch center is boot-calibrated and must be stable, but its exact
 physical raw midpoint is not measured. Selector 1's ASR-88 curve table cannot
 be characterized from the current ASR-10 ROM/model.
 
-## Minimum future emulator contract (not implemented here)
+## Implemented emulator contract
 
 Ownership should be:
 
@@ -242,10 +242,18 @@ board helper) should own selector routing. The panel/input device may expose
 semantic host controls and raw values, but should neither select the mux nor
 bypass PBDAT. Input Level belongs to a future audio-input path.
 
-A minimum mapping is 0=pitch, 2=mod, 3=volume, 4=pedal, 5=data entry,
-7=reference, with conditional ASR-88 selector 1 pressure support only when that
-machine variant is modeled. Selector 6 must remain unassigned unless new
-firmware or board evidence supplies a role.
+Implemented in `asr10_boot_state`: `mc68302_device::pbdat_latch()` exposes the
+generic CPU output latch; `analog_r()` masks PB2-PB0 and selects the ASR-owned
+raw source before the generic ES5506 PAR callback. The panel exposes 10-bit
+Pitch, Mod, Volume, Pedal/CV and Data Entry inputs at selectors 0, 2, 3, 4 and
+5. Selector 7 is the fixed `$300` calibration source. Selectors 1 and 6 remain
+neutral, unlabelled board fallbacks: this ASR-10 model supplies no pressure
+producer and assigns no invented selector-6 role. Input Level was removed from
+this mux domain.
+
+`lua/analog_pot_wiring_verify.lua` runtime-verifies selectors 0, 2, 3, 4, 5
+and 7 through firmware PBDAT writes and ES5506 PAR reads, with a retained RAM
+witness. It also reaches `EXAMINE ANALOG INPUTS` and observes `PITCHWHL 64`.
 
 ## Status and remaining questions
 
@@ -261,6 +269,7 @@ firmware or board evidence supplies a role.
 | selector 7 is a calibration/reference source, not a host control | `[Verified firmware]` |
 | U55 is the functional acquisition mux | `[Likely]` |
 | U55 COM/select/enable/X0-X7 physical nets | `[OPEN board-level provenance]` |
+| PBDAT-selected ASR semantic-source mux | `[Implemented; runtime-verified for 0/2/3/4/5/7]` |
 
 The smallest remaining falsifiable experiment is an ASR-88-specific run with
 the correct boot ROM/model: produce one qualifying key/pressure event and
