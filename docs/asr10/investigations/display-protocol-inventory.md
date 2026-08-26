@@ -1,5 +1,17 @@
 # Display protocol: codes, cursor/underline, annunciators (2026-08-24)
 
+> **Correction 2026-08-26:** This journal preserves the original investigation,
+> but three conclusions below have been superseded by byte/state capture in
+> `display-protocol-state-machine-v350.md`. Channel-B THRB is CPU byte address
+> `$FC4817`, not `$FC480D`; the latter came from converting an aligned Lua
+> word-tap bucket as a byte offset. `$74-$76` are not verified as a nibble-only
+> animation family (`$74 $40`, `$75 $00/$08` and `$76 $00` are observed), so
+> their meaning remains `[OPEN]`. Finally, selected-field partial updates do
+> require positioning state: `$62` establishes an operational field anchor and
+> `$63` restores it before a value-only rewrite. The old full-redraw replay did
+> not exercise that transaction class. See the current canonical table in
+> `../reference/display-protocol.md`.
+
 The first implementation task in a while, following two measurement-only
 rounds (stereo verification, PB9/10/11). Measure first, build second,
 lock with test. `[Verified]` unless marked otherwise.

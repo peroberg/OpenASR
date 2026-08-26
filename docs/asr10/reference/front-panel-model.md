@@ -493,20 +493,23 @@ firmware panel-display writer
   `current_text()`; the current Lua display helper instead decodes the rendered
   `vfd0`-`vfd21` outputs;
 - recognition/classification of clear `$66`, printable `$20`-`$5F`, field
-  attribute `$60 <operand>` and field boundaries `$62`/`$72`;
+  attribute `$60 <operand>` and `$62`/`$72` field controls, but not the now
+  verified `$63` selected-field rewrite command;
 - first-occurrence reporting of display codes it does not recognize.
 
 The ASR-specific classifier does not currently recognize `$00`-`$1F` as cursor
-columns, even though the downstream VFD class does. Likewise, the animation
-lookback lives only downstream. A byte can therefore be understood by the VFD
-while still being reported as unhandled by the ASR layer. That mismatch is part
-of the boundary to clean up in Phase 2, not a new opcode interpretation.
+columns, even though the downstream VFD class does. Likewise, the one-operand
+`$74-$76` lookback lives only downstream. A byte can therefore be understood
+by the VFD while still being reported as unhandled by the ASR layer. That
+mismatch is part of the boundary to clean up in Phase 2, not a new opcode
+interpretation.
 
 ### ASR protocol currently implemented inside generic `esq1x22_device`
 
 - `$00`-`$1F` cursor-column positioning;
 - `$60 <attr>` field attribute, with bit `$02` selecting underline;
-- `$62` next-field and `$72` end-field attribute reset;
+- `$62` (currently only an attribute reset; the ASR selected-field anchor is
+  lost), `$72` end-field attribute reset;
 - `$66` clear and `$20`-`$5F` printable placement;
 - operand consumption for the still-undecoded `$74`/`$75`/`$76` family.
 
@@ -542,10 +545,15 @@ acceptance.
 attributes, `$62`/`$72` field boundaries, annunciator register capture and the
 named partial-update cases in `display-protocol.md`.
 
-`[OPEN]`: the `$74`/`$75`/`$76` animation family; `$E7 $71` and adjacent
+`[Verified protocol, not implemented]`: `$62` marks the selected-field anchor
+and `$63` restores it for a partial rewrite ending at `$72`. The exact vendor
+names remain open, but the operational contract is measured on both REC SRC
+and TEMPO.
+
+`[OPEN]`: the `$74`/`$75`/`$76` panel-control family; `$E7 $71` and adjacent
 `$7E`/`$FC`/`$FD`/`$FF`/`$D5` transition codes; the
 `$E0`/`$B0 <value>`/`$7F`/`$C0` cluster; the
-`$90`/`$80`/`$3C`/`$64` VOLUME-context cluster; `$63`/`$67` near the FX
+`$90`/`$80`/`$3C`/`$64` VOLUME-context cluster; `$67` near the FX
 algorithm list; the other 39 annunciator bits; panel-local blink encoding; and
 application-level cursor/field/value behavior outside the measured screens.
 Unknown commands must not acquire rendering or semantic names from proximity or
@@ -553,12 +561,12 @@ layout appearance.
 
 ## 11. Known UI defects and acceptance boundary
 
-- **[OPEN, reproducible acceptance failure] EDIT SEQUENCE -> TEMPO:** the
-  parameter/value positioning does not behave correctly. This specification
-  phase does not assign a root cause or create a new runtime trace. The case is
-  valuable because it simultaneously exercises page entry, column placement,
-  field selection, value update and underline/navigation across the current
-  ASR-shadow/generic-VFD boundary.
+- **[Verified fault boundary; fix intentionally pending] EDIT SEQUENCE ->
+  TEMPO:** the full page correctly marks the underlined value field at columns
+  6-8, then Up emits `$63 "91 " $72`. The current decoder ignores `$63` and
+  appends `91 ` at columns 19-21. The firmware stream contains the required
+  selected-field relation; the missing decoder state is documented in
+  `display-protocol.md`.
 - **[OPEN] Master Tune value display:** a prior manual GUI observation reports
   the display one value-step behind the edited value. The manual expects the
   shown current value to follow the edit; firmware behavior versus display-model
@@ -569,9 +577,9 @@ layout appearance.
   labels and the standing local label edits are not semantic evidence.
 - Most indicator identities and all ASR-specific blink encoding remain open.
 
-Phase 2 must first capture the exact EDIT SEQUENCE/TEMPO byte stream and visible
-state through a live witnessed run, then make the smallest protocol/state change
-that explains the failure. The acceptance test must check the visible output,
+Phase 2 analysis captured and replayed the exact EDIT SEQUENCE/TEMPO byte stream
+with live renderer and shadow state. The next implementation round must consume
+the retained fixture with one ASR-owned state machine and check visible output,
 not only the ASR text shadow.
 
 ## 12. Next implementation stages

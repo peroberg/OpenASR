@@ -1,93 +1,159 @@
 # ASR-10 panel display protocol
 
-Reference table for the byte stream the host (MC68302, DUART channel B,
-`asr10_boot.cpp`'s `duart_panel_asr_candidate_w`) sends to the front-panel
-VFD. Measured 2026-08-24 by tapping the DUART's channel-B THRB register
-directly (word offset 6 within the `$FC4800-$FC481F` CS window, i.e.
-CPU address `$FC480D`, low byte lane — found by tapping the *whole*
-16-register window and letting the histogram show which register
-dominates, not by assuming the standard SCN2681 register map's usual
-THRB slot). Investigation: `../investigations/display-protocol-inventory.md`.
+Canonical reference for the host-to-front-panel byte stream. First inventoried
+2026-08-24 and re-measured byte-by-byte on 2026-08-26. Detailed provenance:
+`../investigations/display-protocol-inventory.md`,
+`../investigations/partial-update-position-probe.md` and
+`../investigations/display-protocol-state-machine-v350.md`.
 
 ## Current functional boundary
 
-**[Verified, bounded]** The DUART-to-display path, printable text,
-cursor-column opcodes, underline/field attributes and the partial-update cases
-named in the table below work in the current model.
+**[Verified, bounded]** Channel-B delivery, printable text, clear, absolute
+cursor columns and full-redraw underline/field attributes work in the current
+model. Numeric absolute partial update (`VOLUME=99 -> 98`) works visibly.
 
-**[OPEN]** This is not a claim that the display or front-panel UI is complete
-or fully correct. Cursor behavior, parameter-field selection and value editing
-still need validation through normal user workflows, and the undecoded control
-codes and annunciator meanings below remain open. Protocol mechanisms verified
-in isolated screens must not be generalized to complete application-level UI
-behavior without corresponding runtime coverage.
+**[Verified protocol, not implemented]** `$62` establishes the selected-field
+anchor used by `$63` partial rewrites. The current decoder ignores `$63`.
+Consequently both `REC SRC LEFT -> RIGHT` and `TEMPO=90 -> 91` carry correct
+field-relative firmware streams but render incorrectly. `EDIT SEQUENCE ->
+TEMPO` is decoder fault A, not a bad firmware stream.
 
-## Code path (Del 0)
+This is not a claim that display/UI behavior is complete. Undecoded panel
+control traffic, output bit identities, blink and workflows outside the bounded
+captures remain `[OPEN]`.
 
+## Address and code path
+
+```text
+firmware
+  -> DUART channel B THRB, CPU byte address $FC4817 (odd low-byte lane)
+  -> scn2681_device::b_tx_cb
+  -> asr10panel_device::rcv_complete()
+  -> asr10panel_device::send_to_display(byte)
+       intercepts $77-$7B + operand, forwards other bytes
+  -> esq1x22_device::write_char()
+       interprets $00-$1F, $20-$5F, $60, $62, $66, $72
+       consumes one operand after $74-$76 but does not interpret it
+       ignores $63/$67 and other unknowns
+  -> esqvfd_device::update_display()
+  -> vfd0-vfd21 glyphs, vfd22-vfd43 underlines, layout
 ```
-firmware -> MC68302 SCC/SIB -> DUART channel B THRB ($FC480D)
-  -> scn2681_device -> b_tx_cb -> asr10panel_device::rx_w() (device_serial_interface)
-  -> asr10panel_device::rcv_complete() -> send_to_display(byte)
-  -> asr10panel_device::send_to_display() [src/mame/ensoniq/esqpanel.cpp]
-       - intercepts $77-$7b (2-byte annunciator opcode+value) -- does NOT forward to m_vfd
-       - intercepts nothing else; forwards everything else to:
-  -> esq1x22_device::write_char() [src/mame/ensoniq/esqvfd.cpp]
-       - interprets cursor $00-$1f (with operand lookback),
-         $66/$60+operand/$62/$72/$20-$5f
-       - unrecognized codes: silently ignored (no-op), no longer printf'd
-  -> esqvfd_device::update_display() [shared base class, esqvfd.cpp]
-       - pushes segment codes to output "vfd0".."vfd21"
-       - pushes underline state to output "vfd22".."vfd43"
-  -> src/mame/layout/asr10_panel.lay renders both
+
+**[DISPROVEN]** The earlier reference called the tap bucket CPU address
+`$FC480D`. Current address-map and MC68681 code, the ROM's absolute accesses
+and tap alignment agree on `$FC4817`: handler word offset `$0B`, MC68681
+register `$0B`/THRB. Lua's 16-bit tap represents aligned `$FC4816/$FC4817`
+with a low-nibble-6 bucket; converting that bucket as a byte offset caused the
+old address error. The captured bytes were Channel-B traffic; only the address
+label was wrong.
+
+The combined THRB stream has multiple producers and is not self-describing
+text. Raw range tests are applied only after pending-operand and frame context.
+
+## Current split state
+
+`asr10panel_device` keeps a 22-byte linear text shadow and shadow cursor;
+`esq1x22_device` separately owns rendered chars, per-cell attributes, current
+attribute and renderer cursor. The Lua display helper reads the rendered
+`vfd0`-`vfd21` outputs, not `current_text()`.
+
+The split is observably inconsistent:
+
+- `VOLUME=99 -> 98`, stream `$14 39 38`: renderer relocates to column 20 and
+  shows `98`; the shadow ignores `$14` and remains `99`.
+- TEMPO Up, stream `$63 39 31 20 72`: both ignore `$63` and append `91 ` at
+  columns 19-21; TEMPO Down then writes outside the visible range and leaves
+  the bad display unchanged.
+
+The shadow is not authoritative. The future decoder must have one ASR-owned
+text/cursor/field state.
+
+## Byte/command inventory
+
+| Code | Bytes | Interpretation and state transition | Evidence/status |
+|---|---:|---|---|
+| `$20-$5F` in a text run | 1 | Printable ASCII at current cursor, then advance. Only text after pending/frame context is resolved | `[Verified, context-qualified]` |
+| `$00-$1F` standalone | 1 | Direct cursor column. `$00` positions page/field overwrites; `$14` positions VOLUME digits at column 20 | `[Verified, context-qualified]`; identical values in operand/frame slots are not cursor commands |
+| `$60 <attr>` | 2 | Begin attribute run. Observed `$01` normal, `$03` underline; bit `$02` selects underline | `[Verified]` |
+| `$62` | 1 | Mark selected-field anchor for the following `$60 $03` run | `[Verified operational contract; exact vendor name OPEN]`; REC SRC anchors 17/8, BAR 0/17/20, TEMPO 6, FX 3 |
+| `$63` | 1 | Restore selected-field anchor for printable partial rewrite ending at `$72` | `[Verified, not implemented]`; `63 "91 " 72` targets TEMPO column 6 and `63 "RIGHT" 72` targets REC SRC column 17 |
+| `$66` | 1 | Standalone clear: renderer glyphs/attrs cleared, cursor 0, current attr normal; ASR shadow chars/cursor reset | `[Verified]`; retained `$77-$7B` outputs survive. A `$66` in an operand slot is data, not necessarily clear |
+| `$67` | 1 | Reproducibly appears as empty `$67 $72` after `$63 $72` on FX pages; no printable payload/effect measured | `[OPEN]` |
+| `$72` | 1 | End field/partial run; current attr -> normal | `[Verified]` |
+| `$74-$76 <value>` | 2 on physical stream | Open panel control/output family; current VFD consumes next byte with no visible state change | `[OPEN, structure bounded]`; operands are not nibble-only: `$74 $40`, `$75 $00/$08`, `$76 $00` observed |
+| `$77-$7B <value>` | 2 | Select/update one of five retained 8-bit output/annunciator registers; not forwarded to VFD | `[Verified structure]`; state retained across `$66` |
+| `$77` bit 0 | — | Reversible in the isolated load/select/reselect case, but also changes in another context | `[Verified narrow]`; current mirror `asr10_instlamp0` must not be generalized |
+| other 39 `$77-$7B` bits | — | Retained raw output bits | `[OPEN]` identities and solid/blink meaning |
+| `$E7 $71` | unresolved | Fixed transition pair near boot/load redraws; no verified text-state effect | `[OPEN]`; do not name reset |
+| `$7E/$FC/$FD/$FF/$D5` | unresolved | Panel control/frame data near transitions | `[OPEN]` |
+| `$C0 00`; `$E0 00 40`; `$B0 01 7F`; `$46 00`; `$47 00`; `$D0 ...` | frame-dependent | Separate producer-frame traffic before instrument/VOLUME redraw | `[OPEN]`; callback-PC provenance retracts the claim that every low member is a display-column byte |
+| `$90/$80/$3C/$64` | unresolved | Earlier VOLUME-context controls, absent from the 2026-08-26 bounded action streams | `[OPEN]`; retained as prior reproducible provenance |
+
+### `$74-$76` correction
+
+The old table called these opcode+nibble countdown/animation pairs. The new
+capture disproves the operand-range claim (`$74 $40`) and shows ring and
+separate-producer bytes interleaving on the physical stream. Countdown-like
+subsequences remain observed, but do not establish animation semantics.
+`$74-$76` are absent from stable TEMPO Up/Down and are not its missing
+positioning mechanism.
+
+## Transaction forms
+
+| Form | Protocol shape | Retained state |
+|---|---|---|
+| Full redraw | `$66`, then printable/field runs | output registers survive |
+| Absolute partial | standalone column, printable bytes | unrelated glyphs/attrs survive |
+| Selected-field partial | `$63`, field text, `$72` | `$62`-established anchor and field attribute survive |
+| Field/attribute redraw | `$00` or `$66`, `$60` runs, `$62` before selected `$60 $03` run | selected anchor rebuilt; REC SRC Left/Right redraw identical text with different underline |
+| Output-only | `$77-$7B <value>`; `$74-$76` separately open | no text cursor effect |
+
+No pure attribute-only transaction with zero text bytes was observed in this
+bounded set.
+
+## TEMPO acceptance stream and replay
+
+Exact captured fixture: `../lua/fixtures/display_tempo_v350.lua`.
+
+```text
+full page:
+66 60 01 "TEMPO=" 62 60 03 "90 " 72 60 01 "  LOOP=ON " 72
+
+Up:   63 "91 " 72
+Down: 63 "90 " 72
 ```
 
-`asr10panel_device` also keeps its own parallel mirror
-(`m_text_chars`/`m_text_position`, exposed by `current_text()`), independent of
-`esq1x22_device`'s own internal `m_chars`/`m_attrs` state. The Lua regression
-helper `lua/lib/asr10_display.lua::read_raw()` does **not** use that shadow; it
-decodes the rendered `vfd0`-`vfd21` outputs. Both internal text models receive
-the same `send_to_display()` byte stream, but one does not read the other, and
-only the VFD state applies cursor-column rewrites during partial updates.
+After the full page, renderer and shadow cursor are 19 and underline is 6-8.
+Current `$63` no-op writes Up at 19-21, producing
+`TEMPO=90   LOOP=ON 91 `. The required transition is cursor 19 -> selected
+anchor 6 before writing, producing `TEMPO=91   LOOP=ON`, while retaining
+underline 6-8.
 
-Unrecognized codes are not silently dropped: `send_to_display()` calls
-`report_unhandled_display_code()`, which fires `osd_printf_error()`
-once per distinct code value (aggregated, first occurrence only — Del
-2). `esq1x22_device`'s own former per-byte `printf("Unhandled control
-code...")` (the source of the "Unhandled control code NN" noise filtered
-out of every Lua probe's output all session) is removed; the one
-aggregated alarm in `asr10panel_device` is authoritative.
+`../lua/display_protocol_stream_replay.lua` deterministically reproduces both
+the current failure and the measured field-aware result. It is an analysis
+oracle, not yet a C++ device regression; the next implementation round should
+make the real ASR decoder consume the same fixture.
 
-## Code table
+## State ownership contract
 
-Evidence levels: `[Verified]` = implemented and regression-tested against
-a live, known-correct rendering; `[Verified narrow]` = confirmed for the
-specific measured context only, not generalized; `[Derived]` = confidently
-reconstructed from stream structure and cross-checked against ground-truth
-display text, not directly stated by any source; `[OPEN]` = observed,
-not decoded — flagged by the Del 2 alarm, not guessed at.
+The raw-byte owner should be ASR-specific (`asr10panel_device` or a dedicated
+ASR child). It owns pending command/operand, cursor, `chars[22]`, `attrs[22]`,
+current run attribute, selected-field anchor/attribute, rewrite state and
+output-register routing. A generic `esq1x22_device` should accept renderer
+operations/state, not interpret raw ASR opcodes. `esqvfd_device` remains the
+generic glyph/underline output renderer.
 
-| Code | Bytes | Meaning | Evidence | Notes |
-|---|---|---|---|---|
-| `$20-$5F` | 1 | Printable ASCII character; write glyph at cursor, advance, clamp at column 23 | `[Verified, coverage: full-redraw]` | Downgraded 2026-08-24 (`../investigations/partial-update-position-probe.md` Del 1). The full-stream replay that validated this only covered 18 *full-screen redraws* (each starting after a `$66` clear, so sequential placement from column 0 is sufficient on its own). It does not cover partial updates, which need the cursor-position opcode below and were the actual gap: without it, a changed value was appended after the old one instead of overwriting it (measured live on the "VOLUME=99" screen: `"VOLUME=99"` -> `"VOLUME=9998"` -> ... across repeated value changes) |
-| `$00-$1F` | 1 | Cursor-position opcode: sets the write column directly to the byte's own value (`$00`-`$15`, matching the 22-column display) | `[Verified]` | Measured live, not inferred: `$14` (=20 decimal) precedes the two value digits of "VOLUME=99" every time Up/Down changes it, an exact match to that field's column; `$00` (=column 0) precedes REC SRC's own field-switch redraw. Implemented `esq1x22_device::write_char()`, fixes the append bug above; regression-tested (`panel_navigation.lua`). A follow-up sweep independently observed values `$00`-`$0A`, `$0C`-`$0F`, `$15` in this role, all within the valid 0-21 column range, none exceeding it — corroborating, not just the one value. Must not be misread when it's actually the operand of `$74`/`$75`/`$76` (see below); disambiguated by lookback exactly like `$60`'s own operand |
-| `$66` (`'f'`) | 1 | Clear screen: reset cursor, chars, attributes, and current attribute to normal | `[Verified]` | Pre-existing |
-| `$60 <attr>` | 2 | Set current text attribute for the next run of printable characters. `attr & 0x02` != 0 selects underline | `[Verified]` | Implemented `esq1x22_device::write_char()`; regression-tested (`display_protocol.lua`) against the REC SRC screen's Field 2 value, both `LEFT ` and `RIGHT`, both correctly underlined at columns 17-21 |
-| `$62` | 1 | "Next field": resets current attribute to normal | `[Derived]`/`[Verified]` | Appears once between two attributed field runs on every multi-field screen observed (REC SRC, FX Select); no operand |
-| `$72` | 1 | "End of field": resets current attribute to normal | `[Derived]`/`[Verified]` | Appears after every attributed field run observed; no operand |
-| `$77`-`$7b <value>` | 2 | Select one of 5 annunciator registers, write `<value>` | `[Verified]` | Pre-existing. Intercepted in `asr10panel_device`, not forwarded to the VFD |
-| `$77` bit 0 | — | Set during the load->select->reselect sequence when Instrument 1 is selected (BTN_02 from idle FILE LOADED); clears on reselect (deselect) | `[Verified narrow]` | Also changes when entering Sample-Source Select / Level Detect — NOT confirmed to mean "instrument 1 selected" in general, only confirmed reversible in the specific isolated sequence tested. Mirrored to output `asr10_instlamp0` |
-| `$77`-`$7b`, other 39 bits | — | Unknown | `[OPEN]` | Wired raw to `asr10_annbit0`-`asr10_annbit39` (5 registers x 8 bits). The layout marks their meaning as open; rendering is not evidence for a semantic assignment |
-| `$74 <nibble>` | 2 | Repeating, wrapping 4-bit countdown (`$0F`->`$00`), ~8 ticks per burst, bursts recur every ~150-800ms across boot/load/note/menu-nav contexts | `[OPEN]` | Almost certainly an animated busy/activity indicator; exact visual meaning not established (no manual description, no real-hardware reference available). See Del 1 in the investigation doc for the full timing analysis. Its operand is disambiguated from the cursor-position opcode above by lookback, same technique as `$60`'s operand |
-| `$75 <nibble>`, `$76 <nibble>` | 2 | Same countdown family as `$74`; used specifically for the terminal tick of some (not all) bursts | `[OPEN]` | Not distinguished further; may encode an outer pass/phase counter |
-| `$E7 $71` | 2 (fixed pair) | Always appears together, at boot start and before other full-screen redraws during the load/"shuffling" phase | `[OPEN]` | Candidate: a display-reset/init pair preceding a fresh full-line redraw |
-| `$7E`, `$FC`, `$FD`, `$FF`, `$D5` | 1 each | Appear clustered with `$E7 $71` near screen transitions (boot greeting, "KEYBOARD TUNED") | `[OPEN]` | Not decoded. (`$15`, previously listed in this cluster, is now understood as the cursor-position opcode above — column 21 — and removed from here, 2026-08-24) |
-| `$E0`, `$B0 <val>`, `$7F`, `$C0` | 1 each | Appear clustered right after "KEYBOARD TUNED" text and around "FILE LOADED" | `[OPEN]` | Not decoded. Previously logged as pairs `$E0 $00`/`$C0 $00`; the trailing `$00` in each is now understood as the cursor-position opcode (column 0) above, a separate, already-explained byte, not part of `$E0`/`$C0`'s own (still unknown) meaning — corrected 2026-08-24 |
-| `$90`, `$80`, `$3C`, `$64` | 1 each | Appear during the "JM DIGI SYN  VOLUME=99" context | `[OPEN]` | Candidate: a volume/VU bar-graph sub-protocol, given the context; not decoded |
-| `$63`, `$67` | 1 each | Appear near "...CHOR+REV+DDL" (FX Select algorithm list) | `[OPEN]` | Not decoded |
+Unknown observed controls stay explicit and loud; they must not fall through
+as printable/cursor data merely because their value overlaps another class.
 
-## What is NOT implemented
+## Still OPEN
 
-No rendering was built for any `[OPEN]` code. Per instruction, unknown
-control codes are made loud (Del 2's aggregated alarm), not guessed at.
-Future work narrowing any `[OPEN]` row should update this table in
-place with the new evidence level, not create a duplicate table.
+- Exact vendor names for `$62/$63`, and `$60` bits beyond observed `$01/$03`.
+- `$67` beyond the empty FX sequence.
+- Meaning/retention/rendering of `$74-$76`.
+- Non-ring producer framing and high boot/transition controls.
+- 39 output-bit identities and panel-local blink encoding.
+- Real-hardware behavior for standalone columns 22-31.
+- Master Tune's reported one-step lag and unmeasured UI workflows.
+
+No permanent display behavior was changed during this analysis.

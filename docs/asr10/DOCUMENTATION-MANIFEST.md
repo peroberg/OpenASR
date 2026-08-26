@@ -63,7 +63,7 @@ runtime-tool            instrumentering
 | `boot-sequence.md` | **aktuell** | uppdaterad 2026-08-04 | reset → FILE 1 | steg 1b DPRAM-bryggan tillagt; chip-select-luckan i steg 2 stängd; steg 7 utbyggt med M1–M3 |
 | `boot-runtime-timeline.md` | **aktuell** | ny 2026-08-11 | reset → runtime, ansvarsfördelning ROM/RAM | dynamisk PC-profil, IRQ6-källor, regionklassade övergångar |
 | `call-graph.md` | **aktuell, coverage-kvalificerad** | ny 2026-08-04, rättelse 2026-08-25 | kontrollflödesmodell och CSV-schema; inte komplett firmware-callgraph | ur `call-graph-edges.csv`, `routines.csv`; BSR/BRA/Bcc/PC-relative/indirekt/TRAP saknas i extractionen |
-| `display-protocol.md` | **aktuell, funktionellt avgränsad** | runtimeinventering 2026-08-24, statusnot 2026-08-25 | DUART/displaybyteprotokoll, cursor, attribut och öppna UI-gränser | verifierade mekanismer är inte en komplett UI-modell |
+| `display-protocol.md` | **aktuell, state-machine-kvalificerad** | runtimeinventering 2026-08-24, byte/state-analys 2026-08-26 | Channel-B-protokoll, cursor, `$62/$63` selected-field-state, attribut, outputregister och öppna frameklasser | TEMPO-felgränsen verifierad; implementation med en ASR-ägd state machine återstår |
 | `front-panel-model.md` | **aktuell** | manual-, runtime- och källkodsinventering 2026-08-25 | layoutoberoende semantisk panelmodell, kontrollgrupper, verifierade råkoder, host-keymap och displaygräns | normerande underlag för framtida display-, racklayout- och host-control-faser |
 | `e2-address-model.md` | **aktuell** | riktad adressrevision | `$FFxxxx`-mekanismer och `$FC5803` | skiljer verifierad decode från speglingshypotes |
 | `es5701-wiring.md` | oförändrad | i trädet | ES5701-koppling | — |
@@ -118,12 +118,20 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 85 Markdown-filer (räknat om 2026-08-25)
+## `investigations/` — 86 Markdown-filer (räknat om 2026-08-26)
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `slot5-pc-correlation-and-atrk-slot-table.md`: kontrollerar
+Senaste tillägget är `display-protocol-state-machine-v350.md`: fångar
+filbrowser, REC SRC, VOLUME, FX och EDIT SEQUENCE/TEMPO byte för byte med live
+renderer-/shadow-state. Verifierar `$62` som selected-field-anchor och `$63`
+som field-relative partial rewrite; dagens decoder ignorerar `$63`, vilket
+förklarar TEMPO-appendfelet utan firmwarehack. Rättar dessutom THRB-adressen
+`$FC480D` -> `$FC4817`, nedgraderar `$74-$76` från nibble-only animation till
+`[OPEN]` one-operand panel-control/output (bl.a. `$74 $40`), och sparar exakt
+TEMPO-fixture plus deterministisk replay inför nästa implementation. Föregående
+tillägg är `slot5-pc-correlation-and-atrk-slot-table.md`: kontrollerar
 Slot 5-fyndet mot §8.10 sedan `$007C7C` visade sig aldrig PC-matcha —
 kopplingen står kvar, PC-korrelerad denna gång, men den verkliga
 måladressen är `$007CA8`, inte `$007C7C` (44 byte in i samma block);

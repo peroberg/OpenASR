@@ -45,6 +45,7 @@ Panel receive terminology:
 ## Current handoff
 
 The current resume point is this document together with
+`investigations/display-protocol-state-machine-v350.md`,
 `investigations/transport-ab-test-play-stop-continue.md` and
 `investigations/slot5-pc-correlation-and-atrk-slot-table.md`.
 `reference/handoff-2026-08-23.md` is the five-minute freeze snapshot and now
@@ -53,6 +54,34 @@ provenance, not the current work priority. `reference/architecture-handoff.md`
 preserves the earlier pre-IDMA architecture checkpoint and remains useful for
 the service-kernel model, but its runtime stall and implementation target are
 historical and passed.
+
+## Current display protocol boundary
+
+- **[Verified protocol, implementation pending]** On the reproducible
+  `EDIT SEQUENCE -> TEMPO` path, the full redraw marks the selected value field
+  at columns 6-8 with `$62 $60 $03 "90 " $72`. Up then emits exactly
+  `$63 "91 " $72`. `$62` establishes the selected-field anchor and `$63`
+  restores it for a partial rewrite. The current decoder ignores `$63`, so it
+  appends `91 ` at columns 19-21 instead of replacing `90 `. REC SRC
+  independently shows the same `$63` contract at column 17.
+- **[Verified fault class A]** The firmware stream contains the correct new
+  value and field-relative positioning relation; the decoder loses it. No
+  permanent fix was made in the analysis round. The saved V3.50 fixture and
+  source-equivalent replay live in `lua/fixtures/display_tempo_v350.lua` and
+  `lua/display_protocol_stream_replay.lua`.
+- **[Verified architecture defect]** `asr10panel_device`'s linear text shadow
+  and `esq1x22_device`'s renderer state diverge. VOLUME `$14 "98"` updates the
+  visible renderer while the shadow remains `99`; TEMPO `$63` is missing from
+  both. The next implementation must create one ASR-owned cursor/text/field
+  state and leave the generic VFD layer as renderer.
+- **[DISPROVEN address label]** Channel-B THRB is CPU byte address `$FC4817`,
+  not the older display reference's `$FC480D`. The old value came from
+  mis-converting Lua's aligned 16-bit tap bucket. The captured traffic itself
+  remains valid.
+- **[OPEN, corrected]** `$74-$76` are one-operand panel-control/output traffic,
+  but not a proven nibble-only animation family: `$74 $40`, `$75 $00/$08` and
+  `$76 $00` occur. `$67`, high transition controls, output-bit identities and
+  blink remain open.
 
 ## Current transport and sequencer boundary
 
@@ -355,11 +384,11 @@ Priorities are deliberately ordered by present functional value:
 1. **Functional:** the reproducible incorrect/clicking sequencer playback
    described above. Transport is no longer the blocker; musical/audio-correct
    playback across the sequencer-to-ES5506 chain is.
-2. **UI/front panel:** the DUART/display path, text, cursor-column protocol,
-   underline/field attributes and measured partial-update cases work, but the
-   complete functional UI model is `[OPEN]`. Normal cursor movement,
-   parameter-field selection and value editing must be validated through real
-   workflows before the display/front panel can be called complete.
+2. **UI/front panel:** implement the now-measured ASR-specific `$62/$63`
+   selected-field state machine against the retained TEMPO fixture. Absolute
+   cursor updates and full-redraw underline work, but field-relative value
+   updates currently append or disappear. Broader UI validation remains
+   `[OPEN]` after that bounded implementation.
 3. **Tooling:** regenerate the 68000 static graph with BSR, BRA/Bcc,
    PC-relative effective addresses, register-indirect JMP/JSR and
    TRAP/callback dispatch, with call/control/data edges kept separate. This is
@@ -1545,6 +1574,14 @@ Previous entries stand. Added by the static analysis:
   prove.
 
 ## Display protocol: cursor/underline and annunciators (docs/asr10/investigations/display-protocol-inventory.md)
+
+**[Correction 2026-08-26]** The following paragraphs describe the 2026-08-24
+checkpoint. The THRB CPU byte address is `$FC4817`, not `$FC480D`; `$74-$76`
+remain an `[OPEN]` one-operand panel-control/output family rather than a
+verified animation family; and later live capture verifies `$62/$63`
+selected-field state. The current result and fault boundary are in **Current
+display protocol boundary** above and
+`investigations/display-protocol-state-machine-v350.md`.
 
 **[Verified runtime]** The panel display byte stream (DUART channel B
 THRB, `$FC480D`) was traced end to end and inventoried across boot,

@@ -1,0 +1,23 @@
+-- Exact Channel-B THRB bytes captured from V3.50 on 2026-08-26.
+-- Navigation: load TUTORIAL SEQ, raw $05, Seq/Song $15, Right $11 x3.
+-- This is evidence/replay input, not an implementation of the protocol.
+
+return {
+  enter_tempo = {
+    0x66, 0x60, 0x01, 0x54, 0x45, 0x4d, 0x50, 0x4f, 0x3d,
+    0x62, 0x60, 0x03, 0x39, 0x30, 0x20, 0x72,
+    0x60, 0x01, 0x20, 0x20, 0x4c, 0x4f, 0x4f, 0x50, 0x3d,
+    0x4f, 0x4e, 0x20, 0x72,
+  },
+  up = { 0x63, 0x39, 0x31, 0x20, 0x72 },
+  down = { 0x63, 0x39, 0x30, 0x20, 0x72 },
+  expected = {
+    initial = "TEMPO=90   LOOP=ON    ",
+    current_after_up = "TEMPO=90   LOOP=ON 91 ",
+    current_after_down = "TEMPO=90   LOOP=ON 91 ",
+    protocol_after_up = "TEMPO=91   LOOP=ON    ",
+    protocol_after_down = "TEMPO=90   LOOP=ON    ",
+    underline = "0000001110000000000000",
+    selected_column = 6,
+  },
+}
