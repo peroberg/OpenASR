@@ -11,7 +11,7 @@ reversible ES5506 active-voice write:
 effect object selected/loaded
   -> $F973F0 uploader, source base in $0E8E
   -> ES5510 host upload and firmware readback verification
-  -> runtime RAM reconfiguration code at $00E800
+  -> runtime RAM reconfiguration code at $00E7B4
   -> D4 -> ES5506 ACTV write at $FC205E
 ```
 
@@ -108,16 +108,18 @@ RAM code and fields are not yet semantically decoded.  Other readers at
 for naming a rate field.
 
 The only consumer with a concrete audio control consequence in this pass is
-the runtime routine at `$00E800`.  Its relevant instructions decode as:
+the runtime routine at `$00E7B4`.  Its relevant instructions decode as:
 
 ```text
 $00E810  movea.l #$00FC6829,A1
 ...       waits on the status bit at (A1)
-$00E824  move.b D4,($005E,A0)       ; A0 = $00FC2001
+$00E826  move.b D4,($005E,A0)       ; A0 = $00FC2001
 ```
 
 The final store is `$FC205F`/the ACTV register byte lane.  The write tap sees
-the aligned word address `$FC205E`.  D4 is therefore the immediate firmware
+the aligned word address `$FC205E` and its post-write PC is `$00E82A`.
+Earlier notes labeled the instruction `$00E824`; disassembly establishes that
+the instruction starts at `$00E826`.  D4 is therefore the immediate firmware
 rate/slot-control value.  The routine is copied/executed RAM; this evidence
 does **not** identify the earlier assignment to D4.
 
@@ -167,7 +169,7 @@ effect object A/B
   -> committed source base/cursor ($0E8E/$0E7E)
   -> $F973F0 ES5510 upload + verified readback
   -> unclassified runtime consumer(s)
-  -> D4 at $00E824
+  -> D4 at $00E826
   -> ES5506 ACTV $1F <-> $17
 ```
 
@@ -178,7 +180,7 @@ therefore remains arithmetic only.  No rate fix, clock divide, effect-name
 special case, or ES5701 model is justified by this result.
 
 The smallest next investigation is to capture the caller/assignment that
-sets D4 before `$00E800`, then backtrack that value into a named object field.
+sets D4 before `$00E7B4`, then backtrack that value into a named object field.
 In parallel, use a direct manual 30-kHz object such as `ROM-04 DUAL DELAYS`
 as the low-class effect oracle; no UI sweep or clock experiment is required.
 
@@ -207,7 +209,7 @@ RATE/POLYPHONY FIELD:
     descriptor/metadata field that supplies it is [OPEN].
 
 CONSUMER:
-    $00E800/$00E824 writes D4 to ES5506 ACTV after the host-verified load.
+    $00E7B4/$00E826 writes D4 to ES5506 ACTV after the host-verified load.
 
 HARDWARE CONTROL:
     ES5506 ACTV at $FC205E/$FC205F: $1F -> $17 -> $1F [Verified runtime].
