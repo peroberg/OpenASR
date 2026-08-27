@@ -958,6 +958,16 @@ therefore changes its generic ES5506 stream rate from 59,523.789 to
 proof of physical ASR-10 clock routing; see
 `investigations/audio-frame-timing-actv-differential-v350.md`.
 
+**[Disproven implementation boundary]** A subsequent ASR-only experiment
+used the verified ACTV host write as a runtime effective-clock proxy
+(`$1F -> 15.23809 MHz`, `$17 -> 16.9344 MHz`) without reading firmware RAM or
+claiming physical Y2/Y3/ES5701 routing. MAME's API safely changed the generic
+ES5506 stream rate, but the known-note `-wavwrite` result changed
+262.3 -> 196.7 Hz (x0.750), not a predicted/documented relation. The wrapper
+was reverted and the 262.3-Hz regression restored. ACTV alone is therefore
+not yet a sufficient ASR board-clock boundary; see
+`investigations/audio-rate-model-implementation-v350.md`.
+
 8th regression test's pass band moved `100-180Hz` -> `230-290Hz`, with
 the reason (clock correction, not loosened tolerance) stated in the
 test's own comment and the commit message. Suite is 8/8.
