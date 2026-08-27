@@ -127,6 +127,13 @@ protocol.
 The verified MOVEP thunks access PAR, PAGE and IRQV-like registers through the
 `$FC2001` odd-lane convention.
 
+[Verified source] The ASR-10 Musician's and Service Manuals define two
+effect-selected **system** rate/polyphony classes: 29.7619 kHz / 31 voices and
+44.1000 kHz / 23 voices. The user-facing count must not be silently equated
+with ES5506's zero-based ACTV slots (32 and 24 would be `$1f` and `$17`). The
+firmware/board representation of this documented state remains `[OPEN]`; see
+`../investigations/audio-rate-mode-state-v350.md`.
+
 [Verified runtime] ES5506 `PAR` now reads through the ASR-10 panel analog path
 instead of a fixed constant. Current V3.50 still reaches `FILE 1  TUTORIAL BNK`;
 observed PAR reads returned raw centered 10-bit data.
