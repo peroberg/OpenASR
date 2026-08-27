@@ -915,11 +915,12 @@ words/sec within bucket-quantization noise. Closing proof: 20
 consecutive (address, fetched-value) pairs compared bit-exact against
 the CPU's own view of the same backing store — **20/20 exact
 matches**. **The addressing hypothesis is refuted with direct,
-bit-exact evidence**, not just recalculation. `ACTV=0x1F` (31,
-constant, never changes) confirmed; `m_sample_rate=31,250Hz` fixed;
-neither 29.76kHz nor 44.1kHz reachable from 16MHz at any `ACTV`, and
-moot regardless since `ACTV` never varies between measurements. No
-code changes follow (Del 3/4 were conditioned on confirming the bug).
+bit-exact evidence**, not just recalculation. In that historical 16MHz
+test `ACTV=0x1F` (31, constant) and `m_sample_rate=31,250Hz`; the
+later V3.50 A/B/A effect-commit result supersedes only its old
+"never changes" conclusion. Neither 29.76kHz nor 44.1kHz was reachable
+from that historical 16MHz configuration at any `ACTV`; no code change
+followed because Del 3/4 were conditioned on confirming an addressing bug.
 The ~1.91x absolute-pitch gap stays `[OPEN]`, now with the entire
 signal path (register → live fetch → output) verified bit-exact,
 narrowing the remaining candidate to the sample's own data/tuning
@@ -948,11 +949,14 @@ ASR-10's documented 29.76kHz/44.1kHz modes: `es5506.cpp` uses an
 `es5506_device` -- no code-visible bug to point to either way.
 `esq5505.cpp`'s own precedent (`30.47618_MHz_XTAL / 2` fed to ES5505)
 supports a crystal-network `/2` as the better-explained candidate,
-left `[OPEN]`. Checked ES5506's `MODE` (`$0D`, Single/Master/Normal)
-and `ACT` (`$1F`, 31 voices) registers: both written once at boot,
-never touched again in any measurement this series has taken -- no
-runtime 29.76/44.1kHz mode switch observed, and no PB pin/register
-bit/Port A output identified as a mode selector in existing docs.
+left `[OPEN]`. The preceding ACTV conclusion is historical and superseded by
+the later V3.50 effect-commit A/B/A witness: ROM HALL REVERB -> 44LUSH PLATE
+-> ROM HALL REVERB writes `$1F -> $17 -> $1F` at `$00E826`. Current MAME
+therefore changes its generic ES5506 stream rate from 59,523.789 to
+79,365.052 Hz and back, while its synthetic PB3 timer remains invariant at
+44.1k toggles/s (22.05k full cycles/s). This is a current-model split, not
+proof of physical ASR-10 clock routing; see
+`investigations/audio-frame-timing-actv-differential-v350.md`.
 
 8th regression test's pass band moved `100-180Hz` -> `230-290Hz`, with
 the reason (clock correction, not loosened tolerance) stated in the

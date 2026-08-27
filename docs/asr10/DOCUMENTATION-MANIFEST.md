@@ -118,12 +118,18 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 89 Markdown-filer (räknat om 2026-08-26)
+## `investigations/` — 101 Markdown-filer (räknat om 2026-08-28)
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `analog-selector-control-map-v350.md`: kartlägger hela den
+Senaste tillägget är `audio-frame-timing-actv-differential-v350.md`: mäter den
+verifierade ROM HALL REVERB -> 44LUSH PLATE -> ROM HALL REVERB-transitionen.
+Den visar invariant syntetisk PB3 vid 44.1k toggles/s (22.05k fullcykler/s),
+medan ACTV `$1F -> $17 -> $1F` byter generisk ES5506-stream-rate
+59,523.789 -> 79,365.052 -> 59,523.789 Hz. Det är en
+current-MAME-modellgräns, inte fysisk clock-routing. Föregående tillägg är
+`analog-selector-control-map-v350.md`: kartlägger hela den
 funktionella PBDAT/PAR-domänen 0-7. Selector 1 är en verifierad ASR-88-villkorsväg
 med `[Likely]` mono/channel-pressure-semantik; selector 6 är
 `[Verified unreachable]` i den avgränsade V3.50-acquisitionvägen. Journalen
