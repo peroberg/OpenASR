@@ -114,7 +114,7 @@ $00E504  rts
 
 `$F8C09E` writes the caller's A0-rooted header (`+8 = D0`, `+A = D1`) and
 initializes successive `+$28` descriptor records using D3 and D1.  With D0=8,
-its DBRA loop emits nine records; `$00E4DA` repeats the operation four times.
+its decrement-and-branch loop emits eight records; `$00E4DA` repeats the operation four times.
 The resulting dataflow is:
 
 ```text
