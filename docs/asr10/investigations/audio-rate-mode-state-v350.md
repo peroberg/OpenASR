@@ -2,6 +2,12 @@
 
 ## Executive summary
 
+> **Superseded runtime limitation (2026-08-27):** a later committed-object
+> A/B/A trace successfully loads Bank `44LUSH PLATE` and finds the reversible
+> OTTO transition `ACTV $1f -> $17 -> $1f`.  It still does not establish the
+> descriptor field, board-clock route or ESP timing.  See
+> `effect-rate-state-provenance-v350.md` for the current bounded result.
+
 ASR-10 documentation independently establishes two effect-selected **system
 sample-rate / polyphony** classes:
 
