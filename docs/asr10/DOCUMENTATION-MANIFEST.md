@@ -118,12 +118,17 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 107 Markdown-filer (räknat om 2026-08-28)
+## `investigations/` — 108 Markdown-filer (räknat om 2026-08-28)
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `pitch-mode-d2-source-v350.md`: följer endast D2 som
+Senaste tillägget är `effect-mode-metadata-source-v350.md`: bekräftar att
+`$0E92` pekar direkt på current-effect-objektet och att dess byte `+$66`
+kopieras till `$0CE3`: ROM HALL `$FFF9B68C=$00`, 44LUSH
+`$0062B666=$01`, sedan ROM HALL `$00`. Detta är direct effect-metadata
+provenance, inte belägg för explicit sample-rate-/clock- eller ES5701-semantik.
+Föregående tillägg är `pitch-mode-d2-source-v350.md`: följer endast D2 som
 skrivs till `$0D66` och når en direkt, lokal `$0CE3`-test/branch. Zero väljer
 `#$8DF5`, nonzero `#$94C3`, och `$F8CCD6` persisterar resultatet. Detta binder
 effect-selected mode till den globala pitch-offsetkedjan utan att påstå fysisk

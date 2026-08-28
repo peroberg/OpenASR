@@ -1012,6 +1012,16 @@ earlier A and two-note witnesses complete A/B/A.  This is verified firmware
 provenance to effect-selected mode, not a physical-rate or ACTV-to-pitch edge.
 See `investigations/pitch-mode-d2-source-v350.md`.
 
+**[Verified firmware/runtime, object-metadata boundary]** `$0E92` is the
+current-effect object pointer, not a separate copied descriptor for this
+field.  The established `$013060` operation reads `A1+$66` directly into
+`$0CE3`; current A/B/A2 witnesses give ROM HALL
+`$FFF9B626+$66=$00`, 44LUSH `$0062B600+$66=$01`, then ROM HALL `$00` again.
+Thus object `+$66` is direct effect-selected operating/ACTV-class metadata.
+It is not yet named explicit sample-rate metadata, a physical clock selector,
+or an ES5701 control.  See
+`investigations/effect-mode-metadata-source-v350.md`.
+
 8th regression test's pass band moved `100-180Hz` -> `230-290Hz`, with
 the reason (clock correction, not loosened tolerance) stated in the
 test's own comment and the commit message. Suite is 8/8.
