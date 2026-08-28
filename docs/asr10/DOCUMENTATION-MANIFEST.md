@@ -118,12 +118,17 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 108 Markdown-filer (räknat om 2026-08-28)
+## `investigations/` — 109 Markdown-filer (räknat om 2026-08-28)
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `effect-mode-metadata-source-v350.md`: bekräftar att
+Senaste tillägget är `effect-mode-object-construction-v350.md`: verifierar
+destinationsskrivningen som etablerar 44LUSH RAM-objektets `+$66=$01`, men
+stannar när writer-PC-snapshots inte säkert kan ge source-address utan
+trap/loader/file-formatanalys. Det fastställer current-effect-objektet som
+earliest safe firmware boundary och lämnar nästa steg till filformatprojektet.
+Föregående tillägg är `effect-mode-metadata-source-v350.md`: bekräftar att
 `$0E92` pekar direkt på current-effect-objektet och att dess byte `+$66`
 kopieras till `$0CE3`: ROM HALL `$FFF9B68C=$00`, 44LUSH
 `$0062B666=$01`, sedan ROM HALL `$00`. Detta är direct effect-metadata
