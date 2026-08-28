@@ -118,12 +118,17 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 112 Markdown-filer (räknat om 2026-08-29)
+## `investigations/` — 113 Markdown-filer (räknat om 2026-08-29)
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `effect-serialized-mode-byte-differential-v350.md`:
+Senaste tillägget är `effect-serialized-30k-controls-v350.md`: gör en
+deduplicerad artifact-inventering av V1.61/V3.50 och fastställer att de tolv
+44-kHz-effectfilerna är byteidentiska mellan bilderna; ingen kvalificerad
+serialiserad 30-kHz-kontroll finns lokalt. Därför lämnas den binära
+`+$66`-klassificeraren och explicit sample-rate-semantik OPEN. Föregående
+`effect-serialized-mode-byte-differential-v350.md`:
 läser `+$66` direkt från samtliga tolv lokalt tillgängliga V3.50 type-`$0021`
 effectfiler.  Musikerhandbokens oberoende Version-2-klassificering anger hela
 denna kohort som 44 kHz, och samtliga tolv har `$01`; den saknar dock en
