@@ -123,11 +123,14 @@ sanning, och får inte tyst tas bort.
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `effect-mode-object-construction-v350.md`: verifierar
-destinationsskrivningen som etablerar 44LUSH RAM-objektets `+$66=$01`, men
-stannar när writer-PC-snapshots inte säkert kan ge source-address utan
-trap/loader/file-formatanalys. Det fastställer current-effect-objektet som
-earliest safe firmware boundary och lämnar nästa steg till filformatprojektet.
+Senaste tillägget är `effect-mode-construction-semantics-v350.md`: korrigerar
+den för snäva handoff-slutsatsen efter destinationstappen. Det verifierar att
+44LUSH RAM-objektets `+$66=$01` kommer som del av en sekventiell
+installationstidsström, men skiljer ännu inte serialiserad direktkopiering,
+ROM/OS-transformering eller runtime-härledning. Filformatshandoff är därför
+inte ännu motiverad. Föregående `effect-mode-object-construction-v350.md`
+bevaras som den smalare destinationstappens provenance och dess stoppgräns,
+inte som aktuell slutgräns för konstruktionsemantiken.
 Föregående tillägg är `effect-mode-metadata-source-v350.md`: bekräftar att
 `$0E92` pekar direkt på current-effect-objektet och att dess byte `+$66`
 kopieras till `$0CE3`: ROM HALL `$FFF9B68C=$00`, 44LUSH

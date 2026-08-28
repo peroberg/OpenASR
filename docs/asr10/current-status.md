@@ -1022,14 +1022,16 @@ It is not yet named explicit sample-rate metadata, a physical clock selector,
 or an ES5701 control.  See
 `investigations/effect-mode-metadata-source-v350.md`.
 
-**[Verified bounded stop / file-format handoff]** A destination-only live
-probe confirms that 44LUSH installation establishes `$0062B666=$01`, but its
-PC snapshots do not yield a safe source effective address without entering
-trap/loader/object-construction analysis.  The earliest safe firmware boundary
-is therefore the current-effect object `+$66`; upstream provenance now belongs
-to the ASR effect-file/object-format project.  Do not continue this firmware
-branch merely to chase the loader.  See
-`investigations/effect-mode-object-construction-v350.md`.
+**[Verified construction stream; source semantics open]** A first
+destination-only probe established that 44LUSH installation writes
+`$0062B666=$01`, but its scheduler/interrupt-return PC snapshots could not name
+a source.  The subsequent bounded construction probe establishes that this byte
+is the high lane of the sequential installation-time population of the loaded
+RAM object; it does not expose the producer or source address.  Therefore the
+construction class remains `[OPEN]` between serialized-direct,
+serialized-transformed and runtime-derived, and a file-format handoff is **not
+yet** justified.  See
+`investigations/effect-mode-construction-semantics-v350.md`.
 
 8th regression test's pass band moved `100-180Hz` -> `230-290Hz`, with
 the reason (clock correction, not loosened tolerance) stated in the
