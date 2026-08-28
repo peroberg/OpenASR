@@ -118,12 +118,18 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 105 Markdown-filer (räknat om 2026-08-28)
+## `investigations/` — 106 Markdown-filer (räknat om 2026-08-28)
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `pitch-mode-additive-input-v350.md`: avgränsar den första
+Senaste tillägget är `voice-pitch-mode-source-v350.md`: följer den lokala
+note-setupen `$007962..$007984` ett steg uppströms och isolerar `$0D66` som
+dess enda reversibla indirekta mode-source. `$F8CCD6` skriver
+`$8DF5 -> $94C3 -> $8DF5` före notes; `$007980` subtraherar värdet och ger
+exakt -1742 i voice `$86(A4)` för både 3C och 3D. D2/branchprovenance, direkt
+`$0CE3`/ACTV-koppling och fysisk clockrouting lämnas uttryckligen open.
+Föregående tillägg är `pitch-mode-additive-input-v350.md`: avgränsar den första
 direkta reversibla mode-termen före `$F8D33E -> $0D80` till voice-record
 `$86(A4)` (observerad `$815E`). Den skrivs vid note setup som
 `$B5B0 -> $AEE2 -> $B5B0`, adderas direkt till D0 och ger exakt -1742

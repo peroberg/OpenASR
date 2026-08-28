@@ -993,6 +993,16 @@ evidence, not verified clock-routing or firmware intent; the source writer's
 immediate inputs remain `[OPEN]`.  See
 `investigations/pitch-mode-additive-input-v350.md`.
 
+**[Verified firmware/runtime, one further bounded source]** The local
+`$007962..$007984` note-setup block derives voice `$86(A4)` from otherwise
+common operands and subtracts persistent RAM `$0D66`.  `$0D66` alone switches
+`$8DF5 -> $94C3 -> $8DF5` at `$F8CCD6` during effect reconfiguration, producing
+the exact `-1742` `$86` offset for both 3C and 3D.  This establishes a
+mode-correlated pre-note source, not a named rate coefficient: D2/branch
+provenance upstream of `$F8CCD6`, direct `$0CE3`/ACTV dataflow, and physical
+clock routing remain `[OPEN]`.  See
+`investigations/voice-pitch-mode-source-v350.md`.
+
 8th regression test's pass band moved `100-180Hz` -> `230-290Hz`, with
 the reason (clock correction, not loosened tolerance) stated in the
 test's own comment and the commit message. Suite is 8/8.
