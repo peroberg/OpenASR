@@ -1003,6 +1003,15 @@ provenance upstream of `$F8CCD6`, direct `$0CE3`/ACTV dataflow, and physical
 clock routing remain `[OPEN]`.  See
 `investigations/voice-pitch-mode-source-v350.md`.
 
+**[Verified firmware/runtime, direct current-effect provenance]** The
+`$0D66` source is now bound directly to the descriptor-derived current-effect
+mode byte: `$F8CC9A` tests `$0CE3`, `$F8CC9E` selects immediate D2 values
+`$8DF5` (zero) or `$94C3` (nonzero), and `$F8CCD6` persists D2 to `$0D66`.
+The live B/A2 stores returned `$94C3/$8DF5` with matching `$0CE3=01/00`; the
+earlier A and two-note witnesses complete A/B/A.  This is verified firmware
+provenance to effect-selected mode, not a physical-rate or ACTV-to-pitch edge.
+See `investigations/pitch-mode-d2-source-v350.md`.
+
 8th regression test's pass band moved `100-180Hz` -> `230-290Hz`, with
 the reason (clock correction, not loosened tolerance) stated in the
 test's own comment and the commit message. Suite is 8/8.
