@@ -118,12 +118,18 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 102 Markdown-filer (räknat om 2026-08-28)
+## `investigations/` — 103 Markdown-filer (räknat om 2026-08-28)
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `audio-rate-model-implementation-v350.md`: avgränsar och
+Senaste tillägget är `voice-fc-rate-mode-differential-v350.md`: visar i en
+successful ROM-HALL -> 44LUSH -> ROM-HALL A/B/A att samma uppmätta
+JM-DIGI-voice får ett reversibelt FC-intervall vars mittpunktsratio ligger
+inom 0.03% av 29.7619/44.1, medan CR/bank/START/END/ACCUM är lika. Detta är
+firmware/current-MAME voice-programming, inte fysisk klockrouting; den första
+modeberoende FC-producern är fortsatt open. Föregående tillägg är
+`audio-rate-model-implementation-v350.md`: avgränsar och
 återställer ett ACTV-drivet effective-clock-experiment. MAME:s runtime-
 clock-API fungerar, men en oacceptabel och oförklarad known-note-förändring
 262.3 -> 196.7 Hz falsifierar ACTV ensam som tillräcklig ASR-policygräns;

@@ -968,6 +968,19 @@ was reverted and the 262.3-Hz regression restored. ACTV alone is therefore
 not yet a sufficient ASR board-clock boundary; see
 `investigations/audio-rate-model-implementation-v350.md`.
 
+**[Verified firmware/current-MAME runtime]** The same selected `JM DIGI SYN`
+MIDI `$3C` voice is programmed differently across the successful
+ROM-HALL -> 44LUSH -> ROM-HALL effect transition: FC's reversible LFO range
+changes from `$369..$397` (midpoint 896) to `$24D..$26C` (604.5) and returns,
+while CR, bank, START, END and ACCUM remain the same.  The FC ratio is
+0.674665, within 0.03% of 29.7619/44.1; together with MAME's current 4/3
+ACTV stream-rate ratio it predicts the measured B/A note-frequency ratio to
+within 0.28%.  ECOUNT and K2 also change reversibly.  This proves
+mode-dependent firmware voice programming, not a physical clock path, and
+does not fully explain the separate rejected x0.750 low-mode clock experiment.
+The FC producer is open upstream of final `D0 -> $FC602E` host writes; see
+`investigations/voice-fc-rate-mode-differential-v350.md`.
+
 8th regression test's pass band moved `100-180Hz` -> `230-290Hz`, with
 the reason (clock correction, not loosened tolerance) stated in the
 test's own comment and the commit message. Suite is 8/8.
