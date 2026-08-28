@@ -1039,6 +1039,19 @@ The byte's semantic name is still `[OPEN]`: direct serialization is not proof
 of sample-rate or clock meaning.  See
 `investigations/effect-object-filesystem-provenance-v350.md`.
 
+**[Verified serialized positive cohort; binary classifier open]** The local
+V3.50 disk's twelve type-`$0021` effect files are independently identified by
+the Musician's Manual as Version 2's 44 kHz effect group.  Direct per-file
+reads show the same logical object window `+$62..+$6A =
+$00/$00/$82/$83/$01/$00/$00/$00/$00` in all twelve, hence `+$66=$01` for the
+complete locally available 44 kHz serialized cohort.  No independently
+classified *serialized disk* 30 kHz effect file is available in the V3.50
+image, and ROM HALL's runtime `$00` is deliberately not substituted for that
+missing file-format control.  Therefore `$01` is a strong positive association,
+but a binary 30 kHz/44.1 kHz classifier and an explicit `sample-rate` semantic
+remain `[OPEN]`.  See
+`investigations/effect-serialized-mode-byte-differential-v350.md`.
+
 8th regression test's pass band moved `100-180Hz` -> `230-290Hz`, with
 the reason (clock correction, not loosened tolerance) stated in the
 test's own comment and the commit message. Suite is 8/8.
