@@ -981,6 +981,18 @@ does not fully explain the separate rejected x0.750 low-mode clock experiment.
 The FC producer is open upstream of final `D0 -> $FC602E` host writes; see
 `investigations/voice-fc-rate-mode-differential-v350.md`.
 
+**[Verified firmware/runtime, narrower pitch provenance]** The first direct
+reversible mode-dependent operand now reached before the persistent pitch
+intermediate is voice-record `$86(A4)` (observed `$815E`).  `$007984` writes
+`$B5B0 -> $AEE2 -> $B5B0` at note setup; `$F8D33C` adds that word directly to
+D0 before `$F8D33E` writes `$0D80`.  The resulting exact `-1742`-unit offset
+repeats for notes 3C and 3D, while those notes differ by independently observed
+`+256` `$0D80` units per semitone.  That scale implies 0.674992 for the offset,
+within 0.0177% of documented 29.7619/44.1.  This is strong pitch-domain
+evidence, not verified clock-routing or firmware intent; the source writer's
+immediate inputs remain `[OPEN]`.  See
+`investigations/pitch-mode-additive-input-v350.md`.
+
 8th regression test's pass band moved `100-180Hz` -> `230-290Hz`, with
 the reason (clock correction, not loosened tolerance) stated in the
 test's own comment and the commit message. Suite is 8/8.
