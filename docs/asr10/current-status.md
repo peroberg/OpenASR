@@ -1022,16 +1022,16 @@ It is not yet named explicit sample-rate metadata, a physical clock selector,
 or an ES5701 control.  See
 `investigations/effect-mode-metadata-source-v350.md`.
 
-**[Verified construction stream; source semantics open]** A first
+**[Verified current-model installation producer; source semantics open]** A
 destination-only probe established that 44LUSH installation writes
-`$0062B666=$01`, but its scheduler/interrupt-return PC snapshots could not name
-a source.  The subsequent bounded construction probe establishes that this byte
-is the high lane of the sequential installation-time population of the loaded
-RAM object; it does not expose the producer or source address.  Therefore the
-construction class remains `[OPEN]` between serialized-direct,
-serialized-transformed and runtime-derived, and a file-format handoff is **not
-yet** justified.  See
-`investigations/effect-mode-construction-semantics-v350.md`.
+`$0062B666=$01` as the high lane of a sequential current-effect RAM-object
+stream, but scheduler/interrupt-return PC snapshots could not name a writer.
+A temporary direct device-path witness now identifies the current MAME producer
+as MC68302 external IDMA: FDC `dma_r()` byte `$01` reaches DAPR `$0062B666`
+with nominal SAPR `$FFFC5803`; neighbouring bytes `$82/$83/$01` reach
+`+$64/+65/+66`.  This does not map the transfer to a serialized effect field,
+so construction class remains `[OPEN]` and file-format handoff is not yet
+justified.  See `investigations/effect-object-install-producer-v350.md`.
 
 8th regression test's pass band moved `100-180Hz` -> `230-290Hz`, with
 the reason (clock correction, not loosened tolerance) stated in the
