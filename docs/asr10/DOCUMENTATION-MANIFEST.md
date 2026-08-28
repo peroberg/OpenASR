@@ -118,18 +118,24 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 109 Markdown-filer (räknat om 2026-08-28)
+## `investigations/` — 110 Markdown-filer (räknat om 2026-08-28)
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `effect-object-install-producer-v350.md`: identifierar
+Senaste tillägget är `effect-object-floppy-byte-provenance-v350.md`: sluter
+den nuvarande MAME-modellens transportkedja för 44LUSH-objektets bytes
+`+$64/+65/+66=$82/$83/$01`. FDC READ DATA `$46`, drive 0/head 0 och verifierad
+C/H/R/N `76/0/15/2` levererar sektoroffset 100/101/102 genom extern IDMA till
+`$0062B664..666`; grannkorrelationen visar bytebevarande över samma sektor.
+Detta är inte fil-/record-/fältssemantik: den frågan är nästa avgränsade domän,
+och construction class är fortsatt OPEN. Föregående
+`effect-object-install-producer-v350.md` identifierar
 den nuvarande modellens producent av 44LUSH-objektets sekventiella
 installationsström som MC68302 extern IDMA. FDC:s `dma_r()`-byte `$01` når
 DAPR `$0062B666`; `$82/$83/$01` korrelerar över `+$64/+65/+66`. Detta är
-inte ännu en filformatmappning, så serialiserad direktkopiering,
-ROM/OS-transformering och runtime-härledning är fortsatt öppna och
-filformatshandoff är inte ännu motiverad. Föregående
+inte i sig en filformatmappning, så serialiserad direktkopiering,
+ROM/OS-transformering och runtime-härledning är fortsatt öppna. Föregående
 `effect-mode-construction-semantics-v350.md` korrigerade den för snäva
 handoff-slutsatsen efter destinationstappen.
 `effect-mode-object-construction-v350.md` bevaras som den smalare

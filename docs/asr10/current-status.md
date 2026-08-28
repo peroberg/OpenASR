@@ -1022,16 +1022,20 @@ It is not yet named explicit sample-rate metadata, a physical clock selector,
 or an ES5701 control.  See
 `investigations/effect-mode-metadata-source-v350.md`.
 
-**[Verified current-model installation producer; source semantics open]** A
+**[Verified current-model floppy transport; source semantics open]** A
 destination-only probe established that 44LUSH installation writes
 `$0062B666=$01` as the high lane of a sequential current-effect RAM-object
 stream, but scheduler/interrupt-return PC snapshots could not name a writer.
 A temporary direct device-path witness now identifies the current MAME producer
 as MC68302 external IDMA: FDC `dma_r()` byte `$01` reaches DAPR `$0062B666`
 with nominal SAPR `$FFFC5803`; neighbouring bytes `$82/$83/$01` reach
-`+$64/+65/+66`.  This does not map the transfer to a serialized effect field,
-so construction class remains `[OPEN]` and file-format handoff is not yet
-justified.  See `investigations/effect-object-install-producer-v350.md`.
+`+$64/+65/+66`.  A later bounded FDC-state witness maps them to drive 0/head
+0, C/H/R/N `76/0/15/2`, sector offsets 100/101/102, respectively; the three
+are one continuous same-sector transfer.  This is verified current-model
+transport provenance only: the sector's filesystem/file/record ownership and
+the construction class remain `[OPEN]`.  File-format handoff is now justified
+for that next mapping domain, not as a claim that `+$66` is a named serialized
+field.  See `investigations/effect-object-floppy-byte-provenance-v350.md`.
 
 8th regression test's pass band moved `100-180Hz` -> `230-290Hz`, with
 the reason (clock correction, not loosened tolerance) stated in the
