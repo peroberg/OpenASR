@@ -389,20 +389,25 @@ architectural model that did not exist before. Summary only — details in `refe
 
 Priorities are deliberately ordered by present functional value:
 
-1. **Functional:** the reproducible incorrect/clicking sequencer playback
-   described above. Transport is no longer the blocker; musical/audio-correct
-   playback across the sequencer-to-ES5506 chain is.
-2. **UI/front panel:** the bounded ASR-specific `$62/$63` selected-field state
+1. **Architecture before audio-symptom work:** `audio-system-frame-model-v350.md`
+   now separates the verified V3.50 mode/ACTV/pitch contract from the still-open
+   physical ASR audio clock/frame route. Do not treat the sequencer symptom as a
+   clock diagnosis, and do not implement an ACTV, ES5701, PB3 or oscillator
+   policy before a board-level source discriminates the physical route.
+2. **Functional after that boundary:** the reproducible incorrect/clicking
+   sequencer playback described above. Transport is no longer the blocker;
+   musical/audio-correct playback across the sequencer-to-ES5506 chain is.
+3. **UI/front panel:** the bounded ASR-specific `$62/$63` selected-field state
    machine is implemented and regression-locked. Representative LOAD, Command,
    Edit, REC SRC, VOLUME, TEMPO and annunciator workflows are workable/stable
    for navigation. Complete application coverage, OPEN command semantics,
    indicator identities and blink remain `[OPEN]`; the display protocol as a
    whole is not declared complete.
-3. **Tooling:** regenerate the 68000 static graph with BSR, BRA/Bcc,
+4. **Tooling:** regenerate the 68000 static graph with BSR, BRA/Bcc,
    PC-relative effective addresses, register-indirect JMP/JSR and
    TRAP/callback dispatch, with call/control/data edges kept separate. This is
    a separate tooling task, not a blocker ahead of the playback defect.
-4. **Later/parked hardware:** ES5510 execution/effects, the ES5506 factor-two
+5. **Later/parked hardware:** ES5510 execution/effects, the ES5506 factor-two
    question, SCSI, PB9/PB10/PB11, physical keybed/controller and ADC routing,
    and expanded RAM configurations.
 

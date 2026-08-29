@@ -118,12 +118,18 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 115 Markdown-filer (räknat om 2026-08-29)
+## `investigations/` — 116 Markdown-filer (räknat om 2026-08-29)
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `fmfx-serialized-effect-control.md`: korrigerar den
+Senaste tillägget är `audio-system-frame-model-v350.md`: en
+arkitektur-först-syntes av ES5506/ES5510/ES5701-specifikationerna, den lokala
+ES5701-VHDL-filen och V3.50:s verifierade A/B/A. Den fastställer ES5506 som
+audio-frame-rate-gränsen och en mode-samordnad firmwarekonfiguration, men
+lämnar den fysiska ASR-klockans producent och route `[OPEN]`; ingen ACTV-,
+ES5701-, PB3- eller oscillatorpolicy implementeras. Föregående
+`fmfx-serialized-effect-control.md`: korrigerar den
 angivna men frånvarande `.efe`-sökvägen till den faktiska read-only
 `FMFX.hfe`-disken, verifierar dess `$0018` EPS-16 Plus fristående
 FM+FX-effectobjekt och läser det strukturellt alignade fönstret
