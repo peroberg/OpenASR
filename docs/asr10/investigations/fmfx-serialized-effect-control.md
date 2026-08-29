@@ -128,15 +128,68 @@ The safe term remains **serialized effect operating-mode byte** or
 observation with **unknown rate semantics**, not evidence that `$00` means
 30 kHz.  No audio-model change is justified.
 
-## Single next experiment
+## Final bounded EPS type-`$0018` differential
 
-Acquire or identify an original, independently rate-labelled 30 kHz standalone
-EPS/ASR effect file with an aligned object base.  First establish its rate
-class from the artifact/documentation, then read only `+$62..+$6A`; a verified
-30 kHz `+$66=$01` would be a counterexample, while two independent `$00`
-controls would complete the missing negative side of the differential.
+This final local pass tested the only available direct discriminator for the
+format-only alternative: an artifact-named `44K` EPS type-`$0018` standalone
+effect.  The local artifact inventory has exactly this split:
+
+| source HFE | artifact name | directory type | blocks | start block | rate evidence | eligible `$0018` control? |
+|---|---|---:|---:|---:|---|---|
+| `FMFX.hfe` | `FM+FX` | `$0018` | 10 | `$000F` | no explicit 30k/44k label | no |
+| `WBFX38.hfe` | `44K DELAYS+X` | `$0003` Instrument | 13 | `$0129` | explicit artifact name `44K` | no: container, not standalone effect |
+| `WBFX38.hfe` | `44K REVERB+X` | `$0003` Instrument | 14 | `$0136` | explicit artifact name `44K` | no: container, not standalone effect |
+| `WBFX38.hfe` | `44K-COMPRS+X` | `$0003` Instrument | 22 | `$0144` | explicit artifact name `44K` | no: container, not standalone effect |
+| `WBFX38.hfe` | `44K-COMPRSSR` | `$0003` Instrument | 22 | `$015A` | explicit artifact name `44K` | no: container, not standalone effect |
+
+The four `44K` names are a positive control that the bounded artifact-name
+search observes the expected labels.  Their `$0003` type is the previously
+established Instrument-container boundary.  Reading any container `+$66` as an
+effect byte would violate the object-boundary rule, so Gate 2 is not entered
+for them.  No explicit-`44K` standalone `$0018` effect exists in the local
+`floppies/fx/` set.
+
+### One bounded 30k search
+
+The same read-only decoded images (`FMFX`, `WBFX12`, and `WBFX38`) were searched
+once for explicit `30K`, `30KHZ`, and spaced `30 KHz` spellings.  It produced
+zero hits.  There is no bundled local documentation that maps an exact local
+artifact name to 30 kHz.  The positive `44K` results above make this a bounded
+artifact-inventory result, not an untested search mechanism.
+
+No absence of `44K`, no `$00` byte, and no ROM-like algorithm was promoted to a
+30 kHz label.  Hence no explicit 30k `$0018` control exists in this local
+dataset.
+
+### Result and parked boundary
 
 ```text
-RESULT: STRUCTURAL OBSERVATION / RATE CLASS UNKNOWN
+EXPLICIT 44K EPS $0018 CONTROL: NOT FOUND
+EXPLICIT 30K EPS $0018 CONTROL: NOT FOUND
+EPS $0018 FORMAT-ONLY EXPLANATION: STILL POSSIBLE
+SERIALIZED +$66 BRANCH: PARKED
 MODEL CHANGE JUSTIFIED: NO
 ```
+
+The `FM+FX +$66=$00` observation remains valid only in its EPS `$0018`,
+rate-unknown domain.  Because no explicit 44k `$0018` control was available,
+this pass cannot test whether EPS `$0018` itself can produce `$01`; because no
+explicit 30k control was available, it cannot test `$00 -> 30k`.  The binary
+differential and explicit field semantics therefore remain open.
+
+## Final hypothesis status
+
+| hypothesis | verdict | reason |
+|---|---|---|
+| H1 `+$66` is persistent effect-dependent operating-mode metadata | PARTIALLY SUPPORTED, unchanged | serialized persistence remains established in its respective ASR/EPS representations |
+| H2 30k-class uses `$00` | OPEN | no independently classified serialized 30k control exists locally |
+| H3 44.1k-class uses `$01` | SUPPORTED, unchanged | prior 12/12 ASR V3.50 cohort; no EPS `$0018` 44k control was found |
+| H4 `+$66` distinguishes 30k/44.1k operating classes | OPEN | neither required local negative control nor an EPS `$0018` positive comparison was available |
+| H5 `+$66` is explicitly a sample-rate field | OPEN | no direct semantic evidence was added |
+| H6 `+$66` is a broader operating-mode field | PARTIALLY SUPPORTED, unchanged | this final bounded pass does not distinguish it from narrower alternatives |
+
+No additional `+$66` artifact search, embedded-Effect reverse engineering,
+filesystem work, or firmware provenance is recommended for this branch.  The
+next work should return to the project’s current functional priority —
+controlled sequencer-to-voice audio correctness — rather than extend this
+parked metadata correlation.

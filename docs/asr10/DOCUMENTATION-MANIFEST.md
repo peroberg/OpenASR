@@ -127,9 +127,12 @@ Senaste tillägget är `fmfx-serialized-effect-control.md`: korrigerar den
 angivna men frånvarande `.efe`-sökvägen till den faktiska read-only
 `FMFX.hfe`-disken, verifierar dess `$0018` EPS-16 Plus fristående
 FM+FX-effectobjekt och läser det strukturellt alignade fönstret
-`+$62..+$6A=00 00 72 73 00 00 00 00 00`.  FM+FX saknar oberoende
-30/44-kHz-klassificering, så `$00` är endast en observation och inte en
-30-kHz-kontroll.  Föregående `waveboy-hfe-effect-rate-controls.md`: kvalificerar två
+`+$62..+$6A=00 00 72 73 00 00 00 00 00`.  Den sista bounded
+`$0018`-kontrollen finner att alla fyra artifact-namngivna `44K`-leads i
+`WBFX38` är `$0003` Instrument-containrar, inte standalone effects, och
+att inget explicit 30k-fall finns lokalt.  `$00` är därför endast en
+rate-okänd observation och hela serialiserade `+$66`-grenen är **PARKED**,
+inte uppgraderad till en 30-kHz-kontroll.  Föregående `waveboy-hfe-effect-rate-controls.md`: kvalificerar två
 read-only WaveBoy HFE-artifacts, dekodar dem med befintlig MAME-`floptool` till
 EPS-16-format och inventerar 55 type-`$0003` Instrument-containrar. Den
 oberoende Tempo Sync'd Delays 30/44-kHz-pardokumentationen kan inte knytas till
