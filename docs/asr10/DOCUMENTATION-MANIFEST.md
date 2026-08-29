@@ -118,12 +118,18 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 114 Markdown-filer (räknat om 2026-08-29)
+## `investigations/` — 115 Markdown-filer (räknat om 2026-08-29)
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `waveboy-hfe-effect-rate-controls.md`: kvalificerar två
+Senaste tillägget är `fmfx-serialized-effect-control.md`: korrigerar den
+angivna men frånvarande `.efe`-sökvägen till den faktiska read-only
+`FMFX.hfe`-disken, verifierar dess `$0018` EPS-16 Plus fristående
+FM+FX-effectobjekt och läser det strukturellt alignade fönstret
+`+$62..+$6A=00 00 72 73 00 00 00 00 00`.  FM+FX saknar oberoende
+30/44-kHz-klassificering, så `$00` är endast en observation och inte en
+30-kHz-kontroll.  Föregående `waveboy-hfe-effect-rate-controls.md`: kvalificerar två
 read-only WaveBoy HFE-artifacts, dekodar dem med befintlig MAME-`floptool` till
 EPS-16-format och inventerar 55 type-`$0003` Instrument-containrar. Den
 oberoende Tempo Sync'd Delays 30/44-kHz-pardokumentationen kan inte knytas till
