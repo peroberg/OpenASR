@@ -390,10 +390,13 @@ architectural model that did not exist before. Summary only — details in `refe
 Priorities are deliberately ordered by present functional value:
 
 1. **Architecture before audio-symptom work:** `audio-system-frame-model-v350.md`
-   now separates the verified V3.50 mode/ACTV/pitch contract from the still-open
-   physical ASR audio clock/frame route. Do not treat the sequencer symptom as a
-   clock diagnosis, and do not implement an ACTV, ES5701, PB3 or oscillator
-   policy before a board-level source discriminates the physical route.
+   separates the verified V3.50 mode/ACTV/pitch contract from the still-open
+   physical ASR audio clock/frame route. The subsequent retained A/B/A census
+   in `audio-rate-control-write-v350.md` found no additional reversible
+   firmware-visible SIB/CS1/CS2/CS3 control state. Do not treat the sequencer
+   symptom as a clock diagnosis, and do not implement an ACTV, ES5701, PB3 or
+   oscillator policy before board-level secondary-decode/net evidence
+   discriminates the physical route.
 2. **Functional after that boundary:** the reproducible incorrect/clicking
    sequencer playback described above. Transport is no longer the blocker;
    musical/audio-correct playback across the sequencer-to-ES5506 chain is.
