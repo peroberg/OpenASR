@@ -118,12 +118,17 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 117 Markdown-filer (räknat om 2026-08-30)
+## `investigations/` — 118 Markdown-filer (räknat om 2026-08-30)
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `audio-rate-control-write-v350.md`: ett retained-Lua
+Senaste tillägget är `es5506-es5510-pump-comparison-v350.md`: en kort
+källjämförelse som korrigerar referensvalet för en framtida ASR-audiokedja.
+KT/TS är MAME:s närmaste **ES5506 + ES5510**-konfiguration; VFX/SD-1 är
+ES5505-föregångaren som visar en separat ESPHALT-styrning. Ingen av dem
+etablerar ASR:s par-routning eller HALT-koppling, och ingen modelländring
+följer. Föregående `audio-rate-control-write-v350.md`: ett retained-Lua
 A/B/A-census av SIB PIO/CS, hela CS1/CS2 och de statiska periferi-`.ram()`-
 hålen. Det finner ingen ytterligare reversibel firmware-synlig hårdvaruskrift
 utöver den redan verifierade ACTV-/pitch-/effectprogrammeringskedjan: BR/OR
