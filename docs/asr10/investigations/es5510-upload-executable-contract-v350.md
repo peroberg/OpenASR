@@ -439,12 +439,45 @@ ASR pump mapping remains unestablished.  Temporary trace code was removed;
 the reduced logs remain outside the tree at
 `/tmp/asr10-44lush-ser-trace.log` and `/tmp/asr10-44lush-ser2.log`.
 
-## Single next experiment
+### Full-input adapter boundary
 
-No further ES5510 serial-pair hunting is recommended in this branch.  A future
-dedicated task may model the 44LUSH multi-input/frame contract, but only with
-a new bounded hypothesis.  The next audio-rate task must keep this unresolved
-pump topology separate from 30/44.1-kHz clock/frame modeling.
+A final, deliberately single-case follow-up attempted to discriminate the
+remaining multi-input question without a routing matrix.  It temporarily
+duplicated the one observed active ES5506 lane pair to the three generic
+inputs that the 44LUSH image reads (SER0, SER2, SER3), exposed its observed
+SER1 output, and kept the old rate policy unchanged.  The first release gate
+was deliberately rejected because it could run an unrelated uploaded image;
+the tightened gate released only after a post-commit image matched the
+previously reconstructed ROM-HALL or 44LUSH END boundary.
+
+Neither variant reached a valid firmware witness: the temporary configuration
+terminated with exit status `139` before boot output, panel witness, or WAV
+data.  This is a MAME adapter/configuration failure, **not** a negative
+44LUSH routing result.  The temporary changes were removed before regression.
+
+The precise remaining implementation boundary is therefore not a new
+SER-value guess:
+
+```text
+ASR-owned frame adapter
+  = safely gate generic run_once() across all upload lifecycles
+  + expose the program's observed SER0/SER2/SER3 inputs
+  + expose its observed SER1 output
+  + run once per ES5506-derived frame
+```
+
+No existing generic `ESQ_5505_5510_PUMP` configuration supplies that contract:
+it hardwires SER0/SER1/SER2 inputs and SER3 output for the VFX-family model.
+Creating the adapter would be a new functional implementation hypothesis, not
+an observation-only continuation.  It is consequently [OPEN], and no
+generalized ASR [Likely functional] pump contract is established yet.
+
+## Stop boundary
+
+Do not continue serial-pair hunting.  A future dedicated implementation task
+may propose and test the bounded ASR frame-adapter contract above, with
+explicit lifecycle and frame acceptance tests for both ROM HALL and 44LUSH.
+It must keep that work separate from the already-[Likely] 30/44.1-kHz policy.
 
 ## Non-results / retained boundaries
 
