@@ -126,9 +126,9 @@ pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
 Senaste tillägget är `es5510-upload-executable-contract-v350.md`: en smal
 gränsdragning mellan verifierad ES5510 host-upload/readback och en säkert
 exekverbar frame-policy. V3.50 konfigurerar host serial/control/HALT och
-initialiserar observerade instruktionsposter med `END`, men den generiska
-pumpens obegränsade `run_once()` kräver fortfarande ett separat aktivt-
-program/HALT-witness. Ingen pump, routing eller klockpolicy följer.
+de två fångade aktiva programmen når `END` linjärt från PC 0 i den generiska
+ES5510-modellen. Den fysiska HALT-policyn och seriella routningen är dock
+fortfarande öppna; ingen pump-, routing- eller klockpolicy följer.
 Föregående `es5506-es5510-pump-comparison-v350.md`: en kort
 källjämförelse som korrigerar referensvalet för en framtida ASR-audiokedja.
 KT/TS är MAME:s närmaste **ES5506 + ES5510**-konfiguration; VFX/SD-1 är

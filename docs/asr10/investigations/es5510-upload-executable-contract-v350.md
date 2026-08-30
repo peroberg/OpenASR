@@ -122,6 +122,57 @@ This is useful but deliberately limited:
 The `END` fill must not be mistaken for evidence that an arbitrary uploaded
 effect program is bounded the same way.
 
+## Active-program END reconstruction
+
+The follow-up used one temporary, retained three-tap Lua probe and only normal
+panel edges:
+
+```text
+FILE 16 44LUSH PLATE -> Enter/Yes             = B
+FX Select -> Down -> ROM-01 HALL REVERB       = A2
+Up -> loaded 44LUSH PLATE                     = B2
+Down -> ROM-01 HALL REVERB                    = A3
+```
+
+For every `$C0` or `$E0` commit below `$A0`, the probe reconstructed the six
+previous instruction-latch bytes and retained the latest word for that index.
+It did not invoke ES5510 execution.  The mode/object witnesses were:
+
+| snapshot | `$0CE3` | current-effect object | commits so far | first `END` |
+|---|---:|---:|---:|---:|
+| B, 44LUSH | `$01` | `$0062B600` | 471 | `$3B` |
+| A2, ROM-01 HALL | `$00` | `$FFF9B626` | 560 | `$58` |
+| B2, 44LUSH | `$01` | `$0062B600` | 620 | `$3B` |
+| A3, ROM-01 HALL | `$00` | `$FFF9B626` | 709 | `$58` |
+
+The actual terminating committed words are:
+
+```text
+44LUSH:     index $3B = $7A81FFFFF040
+ROM-01 HALL:index $58 = $3662FFFFF040
+```
+
+Both have the generic decoder's ALU opcode `$F` at bits 15:12.  The current
+generic `execute_run()` has no program branch mechanism: it starts a released
+halted processor at PC 0, increments PC after every instruction, and handles
+opcode `$F` as `END` regardless of the instruction skip condition.  Therefore
+these are not merely candidate values in storage: **[Verified current MAME
+device model]** `run_once()` beginning at PC 0 has a finite endpoint after 60
+instructions for 44LUSH and 89 for ROM-01 HALL, provided its HALT line is
+asserted before that endpoint is sampled.
+
+The byte-for-byte index/instruction lists through those endpoints were
+identical for B/B2 and A2/A3 respectively (`diff -u` exit 0).  SHA-256 of the
+first-observed normalized lists was:
+
+```text
+44LUSH $00..$3B:     35810521e01b2168ac528ae1c7fd228368aeb0313ebc877f8a11d3a5962c3770
+ROM-01 HALL $00..$58:fa65ea95fab476bf2da29b66bdd6aeb7995319495701c70c565b08aa06431004
+```
+
+The temporary probe was removed after the run. Its reduced raw output remains
+outside the tree at `/private/tmp/asr10-es5510-program-aba-r2.log`.
+
 ## Contract classification
 
 | Contract element | Status | Evidence |
@@ -130,33 +181,35 @@ effect program is bounded the same way.
 | Firmware configures host-control, HALT-enable, and Host Serial Control before upload | [Verified] | bounded Lua host-write witness |
 | Host Serial Control remains unchanged across measured A/B/A effect loads | [Verified] | retained A/B/A census |
 | Generic pump's `run_once()` needs a reachable END/HALT termination | [Verified] | generic device source |
-| ASR uploaded effect program satisfies that termination contract per frame | [OPEN] | no instruction-stream execution witness |
+| Measured ASR uploaded program reaches generic `END` from PC 0 | [Verified current MAME device model] | B/A2/B2/A3 latch/commit reconstruction |
+| Actual ASR frame boundary supplies the physical HALT behavior | [OPEN] | no board/pin witness |
 | Generic pump's SER0-2 in / SER3 out routing matches ASR | [OPEN] | `$48` makes that assumption especially unjustified |
 | VFX DUART ESPHALT policy applies to ASR | [OPEN] | family precedent only |
 
 ## Conclusion
 
-The firmware upload is no longer the blocker, but it is not a sufficient
-execution-start contract. The correct boundary is:
+The firmware upload is no longer the blocker. For the two controlled programs,
+the generic interpreter now has a finite PC-0-to-END path. The remaining
+execution contract is narrower:
 
 ```text
-verified upload/readback + host serial/HALT setup
-    != verified frame-safe generic run_once execution
+verified upload/readback + finite generic program endpoint
+    != verified ASR physical HALT policy or serial routing
 ```
 
-Accordingly, enabling the pump by an invented configuration-time or ACTV-time
-HALT release is not a defensible ASR change. No production model change is
-justified.
+Accordingly, a pump can now be tested with a **clearly synthetic, post-upload
+HALT policy** without risking an unbounded generic program loop for these two
+effects.  That policy remains an experiment, not ASR hardware evidence. No
+production model change is justified by this reconstruction alone.
 
 ## Single next experiment
 
-Repeat the established controlled A/B/A effect-selection workflow with one
-bounded Lua probe that reconstructs only actual instruction-latch writes and
-their `$C0/$E0` commit indices for the two committed effects. It must identify
-the first reachable generic `END` candidate after each upload (or explicitly
-show that this cannot be inferred from upload order). Do not route audio or
-call `run_once()` in that experiment. Its result decides whether a
-budgeted/safe generic-pump execution spike is meaningful.
+Make one temporary generic-pump integration spike only after a verified effect
+commit: retain the existing ES5506 rate, configure the stock pump as in the
+one-ES5506 KT/TS reference, use an explicitly synthetic post-upload HALT
+release, and capture whether ES5510 produces bounded serial output.  Do not
+claim the routing or HALT policy is physical ASR wiring; remove the spike if it
+does not produce a clean result.
 
 ## Non-results / retained boundaries
 
