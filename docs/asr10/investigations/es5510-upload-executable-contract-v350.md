@@ -441,43 +441,67 @@ the reduced logs remain outside the tree at
 
 ### Full-input adapter boundary
 
-A final, deliberately single-case follow-up attempted to discriminate the
-remaining multi-input question without a routing matrix.  It temporarily
-duplicated the one observed active ES5506 lane pair to the three generic
-inputs that the 44LUSH image reads (SER0, SER2, SER3), exposed its observed
-SER1 output, and kept the old rate policy unchanged.  The first release gate
-was deliberately rejected because it could run an unrelated uploaded image;
-the tightened gate released only after a post-commit image matched the
-previously reconstructed ROM-HALL or 44LUSH END boundary.
+The earlier temporary full-input experiment failed before boot because it
+incorrectly passed the ES5506 **master** clock into the pump's stream.  The
+resulting resampler allocation fault (`exit 139`) was a MAME adapter bug, not
+negative routing evidence.  The implemented replacement uses the same
+`sample_rate_changed()` bridge as KT/TS: the pump receives ES5506's already
+computed frame rate, while the existing ASR mode policy remains the only code
+that selects the ES5506 master-clock value.
 
-Neither variant reached a valid firmware witness: the temporary configuration
-terminated with exit status `139` before boot output, panel witness, or WAV
-data.  This is a MAME adapter/configuration failure, **not** a negative
-44LUSH routing result.  The temporary changes were removed before regression.
-
-The precise remaining implementation boundary is therefore not a new
-SER-value guess:
+The resulting [HYPOTHESIS] is deliberately a small functional contract:
 
 ```text
 ASR-owned frame adapter
-  = safely gate generic run_once() across all upload lifecycles
-  + expose the program's observed SER0/SER2/SER3 inputs
-  + expose its observed SER1 output
-  + run once per ES5506-derived frame
+  = halt on every $C0/$E0 program commit
+  + release only 10 ms after the final commit, and only for the
+    previously reconstructed ROM-HALL or 44LUSH PC-0/END images
+  + ES5506 lane 0/1 duplicated to SER0, SER2 and SER3
+  + SER1 as processed stereo output
+  + exactly one generic run_once() per ES5506-derived pump frame
 ```
 
-No existing generic `ESQ_5505_5510_PUMP` configuration supplies that contract:
-it hardwires SER0/SER1/SER2 inputs and SER3 output for the VFX-family model.
-Creating the adapter would be a new functional implementation hypothesis, not
-an observation-only continuation.  It is consequently [OPEN], and no
-generalized ASR [Likely functional] pump contract is established yet.
+The generic pump gained a serial-route option rather than an ASR-specific
+mixer.  Its established VFX route remains the default; the ASR hypothesis
+selects the port relationship above.  While its program-image gate is closed,
+the same adapter passes lane 0/1 dry.  This preserves audio for unclassified
+instrument programs without pretending that they have a verified ESP frame
+contract.  When the gate is open, main output is SER1 only.
+
+## Functional acceptance
+
+The adapter booted normally in both no-media and V3.50-media modes.  The
+existing, unchanged `audio_rate_mode.lua` then exercised the established
+ROM-HALL -> 44LUSH -> ROM-HALL sequence with a known C4 MIDI note.  It kept
+the regular firmware mode witnesses and its WAV checks passed:
+
+| state | `$0CE3` | WAV peak | measured frequency |
+|---|---:|---:|---:|
+| A, ROM HALL | `$00` | 10,818 | 262.3 Hz |
+| B, 44LUSH | `$01` | 18,359 | 260.9 Hz |
+| A2, ROM HALL | `$00` | 11,999 | 260.9 Hz |
+
+The ordinary `note_audio` control also remains audible through the intentionally
+dry closed-gate fallback (`peak=3852`, `262.3 Hz`).  The full V3.50 regression
+control rows remain green after the adapter change.
+
+This is sufficient to promote only the functional statement below:
+
+| Claim | Status |
+|---|---|
+| The current MAME adapter can execute verified ROM HALL and 44LUSH images once per ES5506-derived frame and return audible SER1 output. | [Likely functional] |
+| The same functional route supports the controlled 30k -> 44.1k -> 30k A/B/A note acceptance. | [Likely functional] |
+| The route is ASR's physical SER wiring. | [OPEN] |
+| The post-upload timer/image gate is ASR's physical HALT signal. | [OPEN] |
+| The mode policy identifies physical clock mux/divider wiring. | [OPEN] |
 
 ## Stop boundary
 
-Do not continue serial-pair hunting.  A future dedicated implementation task
-may propose and test the bounded ASR frame-adapter contract above, with
-explicit lifecycle and frame acceptance tests for both ROM HALL and 44LUSH.
-It must keep that work separate from the already-[Likely] 30/44.1-kHz policy.
+The controlled point-2 contract and its point-4 A/B/A acceptance are complete
+for ROM HALL and 44LUSH.  Do not use this result to infer board nets, or
+expand it into a general routing search.  Further work may widen the
+program-image admission set only when another effect has an independently
+reconstructed safe endpoint and a focused acceptance case.
 
 ## Non-results / retained boundaries
 

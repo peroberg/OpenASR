@@ -49,6 +49,7 @@
 #include "esqpanel.h"
 #include "formats/esq16_dsk.h"
 #include "sound/es5506.h"
+#include "sound/esqpump.h"
 #include "cpu/es5510/es5510.h"
 #include "formats/hxchfe_dsk.h"
 #include "speaker.h"
@@ -80,6 +81,7 @@ public:
 		, m_rom(*this, "maincpu")
 		, m_es5506_host(*this, "es5506_host")
 		, m_es5510_host(*this, "es5510_host")
+		, m_pump(*this, "pump")
 		, m_sample_ram(*this, ":asr10_sample_ram")
 	{
 	}
@@ -122,11 +124,13 @@ private:
 
 	optional_device<es5506_device> m_es5506_host;
 	optional_device<es5510_device> m_es5510_host;
+	optional_device<esq_5505_5510_pump_device> m_pump;
 	// Same backing store as mem_map's own $100000-$1FFFFF (".share()"),
 	// bound here so system_ram_alias_r/w can dispatch into it directly.
 	required_shared_ptr<u16> m_sample_ram;
 
 	emu_timer *m_lrclk_timer = nullptr;
+	emu_timer *m_pump_release_timer = nullptr;
 	bool m_lrclk_level = false;
 	emu_timer *m_idma_tc_timer = nullptr;
 
@@ -148,6 +152,9 @@ private:
 	void lowmem_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 	void apply_effect_audio_rate_policy();
 	void effect_audio_rate_postload();
+	void es5506_frame_rate_changed(u32 rate);
+	void es5510_program_commit();
+	TIMER_CALLBACK_MEMBER(pump_release);
 	u16 system_ram_alias_r(offs_t offset, u16 mem_mask = ~0);
 	void system_ram_alias_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 	u16 high_alias_r(offs_t offset, u16 mem_mask = ~0);
@@ -205,6 +212,7 @@ private:
 void asr10_boot_state::machine_start()
 {
 	m_lrclk_timer = timer_alloc(FUNC(asr10_boot_state::lrclk_toggle), this);
+	m_pump_release_timer = timer_alloc(FUNC(asr10_boot_state::pump_release), this);
 	m_idma_tc_timer = timer_alloc(FUNC(asr10_boot_state::idma_tc_deliver), this);
 	m_lowmem_shadow = make_unique_clear<u16[]>(LOWMEM_WORDS);
 
@@ -567,6 +575,7 @@ u8 asr10_boot_state::es5510_host_write_select_instr_r(offs_t offset)
 
 void asr10_boot_state::es5510_host_write_select_instr_w(offs_t offset, u8 data)
 {
+	es5510_program_commit();
 	m_es5510_host->host_w(0xc0, data);
 }
 
@@ -577,7 +586,17 @@ u8 asr10_boot_state::es5510_host_write_select_gpr_instr_r(offs_t offset)
 
 void asr10_boot_state::es5510_host_write_select_gpr_instr_w(offs_t offset, u8 data)
 {
+	es5510_program_commit();
 	m_es5510_host->host_w(0xe0, data);
+}
+
+void asr10_boot_state::es5510_program_commit()
+{
+	if (m_pump)
+	{
+		m_pump->set_esp_halted(true);
+		m_pump_release_timer->adjust(attotime::from_msec(10));
+	}
 }
 
 void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
@@ -600,8 +619,31 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 
 void asr10_boot_state::apply_effect_audio_rate_policy()
 {
+	const u32 clock = m_effect_audio_mode ? AUDIO_RATE_MODE1_CLOCK : AUDIO_RATE_MODE0_CLOCK;
 	if (m_es5506_host)
-		m_es5506_host->set_unscaled_clock(m_effect_audio_mode ? AUDIO_RATE_MODE1_CLOCK : AUDIO_RATE_MODE0_CLOCK);
+		m_es5506_host->set_unscaled_clock(clock);
+}
+
+void asr10_boot_state::es5506_frame_rate_changed(u32 rate)
+{
+	if (m_pump)
+		m_pump->set_unscaled_clock(rate);
+}
+
+TIMER_CALLBACK_MEMBER(asr10_boot_state::pump_release)
+{
+	if (!m_pump || !m_es5510_host)
+		return;
+
+	// The known-program gate deliberately rejects all other uploaded images.
+	// It is a functional safety hypothesis, not an ASR HALT-pin reconstruction.
+	const bool lush = m_es5510_host->_instr(0x00) == 0xffffffff9040ULL
+		&& m_es5510_host->_instr(0x3b) == 0x7a81fffff040ULL;
+	const bool hall = m_es5510_host->_instr(0x00) == 0xffffffff9040ULL
+		&& m_es5510_host->_instr(0x01) == 0xea7dffff9128ULL
+		&& m_es5510_host->_instr(0x58) == 0x3662fffff040ULL;
+	if (lush || hall)
+		m_pump->set_esp_halted(false);
 }
 
 void asr10_boot_state::effect_audio_rate_postload()
@@ -881,22 +923,14 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	es5506_host.set_addrmap(1, &asr10_boot_state::es5506_wavetable_bank1_map);
 	es5506_host.set_addrmap(2, &asr10_boot_state::es5506_unpopulated_wavetable_map);
 	es5506_host.set_addrmap(3, &asr10_boot_state::es5506_unpopulated_wavetable_map);
+	es5506_host.sample_rate_changed().set(FUNC(asr10_boot_state::es5506_frame_rate_changed));
 
 	es5506_host.read_port_cb().set(FUNC(asr10_boot_state::analog_r));
 
-	// Output routing: previously absent entirely (zero SPEAKER/add_route
-	// calls anywhere in this driver, confirmed by grep before writing
-	// this -- the device's own stream had nowhere to go regardless of
-	// what its bank RAM held). set_channels() is left at its default
-	// (falls back to 1 in es5506_device::device_start(), producing one
-	// L/R pair) -- the minimal two-route wiring below is enough to find
-	// out whether anything but silence comes out; a real channel count
-	// is a later refinement, not required to answer that. Same idiom as
-	// esqkt.cpp/esq5505.cpp (same chip family), minus their optional
-	// "pump" analog-filter stage.
+	// The [Hypothesis] adapter needs four exposed pairs to duplicate the
+	// observed active lane 0/1 into its three program-read serial ports.
 	SPEAKER(config, "speaker", 2).front();
-	es5506_host.add_route(0, "speaker", 1.0, 0);
-	es5506_host.add_route(1, "speaker", 1.0, 1);
+	es5506_host.set_channels(4);
 
 	// ES5510 host window (filesystem-browser-map.md 4.24):
 	// instantiate a stock es5510_device purely as a host-interface
@@ -934,6 +968,26 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	// or a flat 10MHz stays [OPEN], not established.
 	es5510_device &es5510_host(ES5510(config, m_es5510_host, XTAL(10'000'000)));
 	es5510_host.set_disable();
+
+	// [HYPOTHESIS] ASR functional frame adapter.  It is deliberately a
+	// serial-contract choice, not a physical board-route claim: the known
+	// 44LUSH image reads SER0/SER2/SER3 and writes SER1.  HALT remains true
+	// except after a verified post-upload ROM-HALL or 44LUSH image.
+	ESQ_5505_5510_PUMP(config, m_pump, AUDIO_RATE_MODE0_CLOCK / (16 * 32));
+	m_pump->set_esp("es5510_host");
+	m_pump->set_serial_route(esq_5505_5510_pump_device::serial_route::ser0_ser2_ser3_to_ser1);
+	m_pump->set_esp_halted(true);
+	m_pump->add_route(0, "speaker", 1.0, 0);
+	m_pump->add_route(1, "speaker", 1.0, 1);
+
+	// Minimal discriminating functional map: one observed active ES5506 pair
+	// is supplied identically to each port the 44LUSH image actually reads.
+	es5506_host.add_route(0, "pump", 1.0, 0); // SER3 left
+	es5506_host.add_route(1, "pump", 1.0, 1); // SER3 right
+	es5506_host.add_route(0, "pump", 1.0, 2); // SER0 left
+	es5506_host.add_route(1, "pump", 1.0, 3); // SER0 right
+	es5506_host.add_route(0, "pump", 1.0, 6); // SER2 left
+	es5506_host.add_route(1, "pump", 1.0, 7); // SER2 right
 }
 
 
