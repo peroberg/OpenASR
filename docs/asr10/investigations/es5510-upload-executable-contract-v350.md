@@ -318,14 +318,60 @@ runs. Logs remain outside the tree at
 `/private/tmp/asr10-es5506-lanes-romhall.log` and
 `/private/tmp/asr10-es5506-lanes-romhall-r2.log`.
 
+### Synthetic lane-0/1 SER matrix
+
+The final bounded spike retained the same V3.50 workflow, but drove the known
+active ES5506 lane 0/1 pair into one generic pump pair at a time.  A temporary
+post-ROM-HALL release was constrained to the already reconstructed PC-0 END
+image `$58 = $3662FFFFF040`; it is explicitly synthetic, not an ASR HALT-pin
+policy.  `-wavwrite` kept the sound streams live.  Each run had the same
+pre-note witness:
+
+```text
+t=25.050000  $0CE3=00  FX?R0M-?1 HALL RE?ERB
+rhra=3, voice_writes=6288
+```
+
+The generic device's firmware-programmed Host Serial Control is `$48`.  Its
+current MAME decoder calls SER0, SER2 and SER3 inputs, and SER1 an output.
+The original stock pump's implicit `SER3` output assumption was therefore not
+a valid output witness for this program.  The spike recorded all eight
+generic SER registers immediately before and after `run_once()` in three
+100,000-frame post-note windows:
+
+| injected ES5506 lane 0/1 | pre-run nonzero pair peaks | post-run nonzero pair peaks | result |
+|---|---|---|---|
+| generic SER0 | SER0 `3219/3219`, `3957/3957`, `1383/1383` | SER0 unchanged; SER1 `3523/3216`, `3500/3868`, `1417/1533` | [Verified current MAME spike] input reaches a program that emits SER1 |
+| generic SER1 | SER1 same three input peak pairs | all SER registers zero after `run_once()` | no usable output; consistent with `$48` marking SER1 output |
+| generic SER2 | SER2 same three input peak pairs | SER2 unchanged; SER1 the same `3523/3216`, `3500/3868`, `1417/1533` peaks | [Verified current MAME spike] input reaches a program that emits SER1 |
+
+SER3 remained zero in all three cases.  Thus the measured generic execution
+contract for the controlled ROM-HALL program is:
+
+```text
+ES5506 lane 0/1 -> generic SER0 or SER2 -> ROM-HALL run_once() -> generic SER1
+```
+
+This is sufficient to reject the previous stock KT/TS assumption (lanes 2--7
+to SER0--2 and SER3 to outputs) as an ASR implementation.  It is not a
+physical ASR board serial-net mapping: the source-routing, post-upload HALT
+release and target selection were all synthetic, and the generic device does
+not enforce physical serial direction at `ser_w()`.
+
+All temporary C++ pump/routing/release instrumentation and the Lua workflow
+were removed after the three runs.  The reduced logs remain outside the tree
+at `/tmp/asr10-ser-matrix-ser0-post.log`,
+`/tmp/asr10-ser-matrix-ser1-post.log`, and
+`/tmp/asr10-ser-matrix-ser2-post.log`.
+
 ## Single next experiment
 
-Make a temporary, explicitly synthetic ES5506 0--1-to-one-SER-pair matrix
-probe under the same known ROM-HALL/note workflow. Test SER0, SER1 and SER2
-one at a time, preserving the verified END gate, and record which generic
-input pair (if any) gives bounded nonzero SER3 output. This determines generic
-microprogram input consumption; it must not be called physical ASR wiring or
-an ES5506-rate result.
+Make one minimal synthetic output-adapter spike: preserve the controlled
+ES5506 lane 0/1 -> generic SER0 path, take the measured generic SER1 pair to
+the temporary speaker/WAV output, and verify non-silent bounded output for
+ROM-HALL and 44LUSH.  It would close the generic signal-path part of the pump
+work only; it must remain separate from physical wiring and 30/44.1-kHz rate
+modeling.
 
 ## Non-results / retained boundaries
 
