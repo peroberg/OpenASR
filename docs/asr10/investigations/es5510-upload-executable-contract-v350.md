@@ -403,13 +403,48 @@ Temporary code and Lua scripts were removed.  Reduced logs remain outside the
 tree at `/tmp/asr10-ser1-output-romhall.log` and
 `/tmp/asr10-ser1-output-44lush-r2.log`.
 
+### 44LUSH direct SER-access boundary
+
+One final temporary ES5510-internal witness marked SER special-register
+accesses only while generic `run_once()` executed the exact reconstructed
+44LUSH `$3B` image.  It excluded both host upload accesses and pump-side
+`ser_w()` injection.  Across two live 100,000-frame post-note windows it
+reported:
+
+```text
+reads = $F3 = SER0R, SER0L, SER2R, SER2L, SER3R, SER3L
+writes = $0C = SER1R, SER1L
+```
+
+This is **[Verified current MAME synthetic execution]** for the generic
+interpreter and the witnessed 44LUSH program image.  It gives a concrete
+reason why a single SER0 source is insufficient, but it does not determine
+the required relationship among the three input pairs.
+
+The only directly justified final variant routed lane 0/1 to generic SER2,
+while retaining generic SER1 -> WAV.  It again had `$0CE3=$01`, END `$3B`,
+MIDI `rhra=3`, and `voice_writes=2324`, but WAV peak remained zero.  Thus:
+
+| claim | status |
+|---|---|
+| 44LUSH reads SER0, SER2, SER3 and writes SER1 in the generic interpreter | [Verified current MAME synthetic execution] |
+| lane 0/1 -> SER2 alone is sufficient for 44LUSH -> SER1 -> WAV | [DISPROVEN] |
+| the required multi-input/frame relationship | [OPEN] |
+
+Finding a working 44LUSH path now requires either combinations of SER0/SER2/
+SER3 or a deeper serial/frame-contract analysis.  That exceeds the bounded
+single-pair pump experiment.  The ES5510 pump topology is therefore parked:
+ROM-HALL proves the generic execution principle, while a shared permanent
+ASR pump mapping remains unestablished.  Temporary trace code was removed;
+the reduced logs remain outside the tree at
+`/tmp/asr10-44lush-ser-trace.log` and `/tmp/asr10-44lush-ser2.log`.
+
 ## Single next experiment
 
-Before adding any permanent generic pump topology, capture the 44LUSH active
-program's direct generic SER reads/writes under the same bounded synthetic
-frame invocation.  That distinguishes a different serial pair from a missing
-frame/host contract; it remains separate from physical wiring and
-30/44.1-kHz rate modeling.
+No further ES5510 serial-pair hunting is recommended in this branch.  A future
+dedicated task may model the 44LUSH multi-input/frame contract, but only with
+a new bounded hypothesis.  The next audio-rate task must keep this unresolved
+pump topology separate from 30/44.1-kHz clock/frame modeling.
 
 ## Non-results / retained boundaries
 
