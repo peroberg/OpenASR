@@ -364,14 +364,52 @@ at `/tmp/asr10-ser-matrix-ser0-post.log`,
 `/tmp/asr10-ser-matrix-ser1-post.log`, and
 `/tmp/asr10-ser-matrix-ser2-post.log`.
 
+### Synthetic SER1-to-WAV output adapter
+
+The next disposable spike kept the measured lane 0/1 -> generic SER0 input,
+but temporarily sent generic SER1 (rather than the stock pump's SER3) to the
+speaker/WAV outputs.  It changed neither ES5506 rate nor persistent routing.
+
+For controlled ROM-01 HALL, the active-program witness was `$0CE3=$00`, END
+`$58`, MIDI `rhra=3`, and `voice_writes=6288`.  The WAV capture passed the
+existing independent measurement with `peak=3464` and `freq=262.3 Hz`.
+Therefore **[Verified current MAME synthetic spike]** this complete generic
+path produces reproducible non-silent audio:
+
+```text
+ES5506 lane 0/1 -> generic SER0 -> ROM-HALL program -> generic SER1 -> WAV
+```
+
+The corresponding 44LUSH control reached `$0CE3=$01`, received the MIDI note
+(`rhra=3`, `voice_writes=2324`) and released the reconstructed END `$3B`, but
+its SER1-adapter WAV had peak zero.  A bounded all-SER post-execution witness
+showed only the injected SER0 pair (`2921/2921`) in its first post-note window;
+SER1, SER2 and SER3 stayed zero.  This is a valid negative result for this
+one synthetic mapping because the pump was live, the firmware mode/program
+and note path were all witnessed, and the same adapter was positive for
+ROM-HALL.  It does **not** say that 44LUSH cannot execute or that ASR's
+physical wiring is absent: the 44LUSH program may require a distinct serial
+input/output or frame contract.
+
+Consequently the generic data-path result is deliberately split:
+
+| claim | status |
+|---|---|
+| ROM-HALL has one working synthetic ES5506 -> ES5510 -> WAV path | [Verified current MAME synthetic spike] |
+| one fixed synthetic SER0/SER1 path works for both ROM-HALL and 44LUSH | [DISPROVEN] |
+| physical ASR serial routing / frame contract | [OPEN] |
+
+Temporary code and Lua scripts were removed.  Reduced logs remain outside the
+tree at `/tmp/asr10-ser1-output-romhall.log` and
+`/tmp/asr10-ser1-output-44lush-r2.log`.
+
 ## Single next experiment
 
-Make one minimal synthetic output-adapter spike: preserve the controlled
-ES5506 lane 0/1 -> generic SER0 path, take the measured generic SER1 pair to
-the temporary speaker/WAV output, and verify non-silent bounded output for
-ROM-HALL and 44LUSH.  It would close the generic signal-path part of the pump
-work only; it must remain separate from physical wiring and 30/44.1-kHz rate
-modeling.
+Before adding any permanent generic pump topology, capture the 44LUSH active
+program's direct generic SER reads/writes under the same bounded synthetic
+frame invocation.  That distinguishes a different serial pair from a missing
+frame/host contract; it remains separate from physical wiring and
+30/44.1-kHz rate modeling.
 
 ## Non-results / retained boundaries
 
