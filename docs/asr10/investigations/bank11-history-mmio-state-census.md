@@ -99,6 +99,49 @@ write the differing `$100000-$11DFFF` prefix.  BAD and GOOD File-11 write
 sets differ only at `$11D000` (eight writes only in GOOD) and minor `$1Fxxxx`
 payload/count details.
 
+## Direct ES5506 sample-reference test
+
+The retained-prefix correlation was tested directly, without changing machine
+behaviour.  A temporary, bounded Lua probe decoded the final ES5506 host
+register commits after the same File-11 load followed by Play in each flow.
+It retained a live panel/load witness and recorded each voice's final CR,
+START, END, ACCUM, and volumes.  The raw evidence remains outside the tree:
+
+* `/private/tmp/asr10-bank11-prefix-reference-bad.log`
+* `/private/tmp/asr10-bank11-prefix-reference-good.log`
+
+The address test deliberately used the driver's existing ES5506 wavetable
+maps rather than an inferred sample-pointer convention:
+
+* bank 0 word addresses `$000000-$07FFFF` share CPU sample RAM
+  `$100000-$1FFFFF`; consequently the candidate CPU prefix maps to bank-0
+  words `$000000-$00EFFF`;
+* bank 1 word addresses `$000000-$07FFFF` use the existing CPU low-memory
+  mapping, not that sample-RAM share; and
+* CR bits 15:14 select the ES5506 bank.  START, END, and ACCUM are only
+  compared with the prefix when that selection is bank 0.
+
+Both completed File-11 Play windows produced the same normalized final
+voice-register rows.  All 32 observed voices selected bank 1; this includes
+every voice with non-zero final volume.  The probe therefore found:
+
+| Flow | Final decoded voices | Bank-0 references into `$100000-$11DFFF` |
+|---|---:|---:|
+| BAD: Boot -> File 11 -> Play | 32 | 0 |
+| GOOD: Boot -> File 1 -> File 11 -> Play | 32 | 0 |
+
+For example, active voice 1 ended with `CR=$4300` (bank 1),
+`START=$35624000`, `END=$372CDF80`, and `ACCUM=$34FB4000` in both flows.
+The observation establishes the relevant final voice/sample setup after Play;
+the memory-tap PC is intentionally not used as a CPU-writer claim.
+
+Thus the differing prefix is **not directly dereferenced by the observed
+ES5506 File-11 voices in the current model**.  This is a falsification of the
+specific hypothesis that BAD versus GOOD reaches different prefix contents
+through the File-11 ES5506 voice/sample reference.  It does not assign an
+acoustic cause to the remaining BAD/GOOD symptom, and it does not claim that
+no other subsystem can inspect that RAM.
+
 ## What this establishes
 
 * [Verified] The strict File-1/File-11 panel paths can be reproduced.
@@ -106,11 +149,12 @@ payload/count details.
   supplies no BAD/GOOD hardware-write discriminant.
 * [Verified] The File-11 load inherits a materially different sample-RAM
   prefix in the two paths and does not initialize that prefix.
+* [DISPROVEN, bounded] The observed File-11 ES5506 voice/sample setup does
+  not use that prefix as a direct sample source: both paths select bank 1 and
+  yield zero bank-0 references into `$100000-$11DFFF`.
 
 ## What this does not establish
 
-* [OPEN] Whether a File-11 voice/track actually dereferences the preserved
-  prefix during BAD or GOOD playback.
 * [OPEN] Whether the retained bytes are correct serialized/allocation state,
   harmless residual sample data, or an emulation-side allocation omission.
 * [OPEN] The acoustic BAD/GOOD mechanism.  This experiment used ES5506 host
@@ -120,14 +164,19 @@ payload/count details.
 No production change is justified from a correlation between retained sample
 RAM and the reported playback difference.
 
-## Single next experiment
+## Stop boundary
 
-Perform a bounded **Bank-11 loader/allocation ownership** experiment: identify
-the File-11 sample/directory/allocation references and whether they designate
-the preserved `$100000-$11DFFF` prefix.  Only if that direct dependency is
-falsified should work move to sequencer/voice/audio behavior.
+The requested direct-prefix hypothesis is falsified, so the Bank-11 branch
+stops here.  No loader/allocation or sequencer follow-up is justified by this
+prefix correlation alone, and no production change is justified.
+
+The separate main-plan boundary remains unchanged: ES5510 execution is good
+enough for now; the functional two-rate policy is [Likely]; the next selected
+macro-area is the still-[OPEN] generic ASR ES5506-to-ES5510 frame/SER/HALT
+contract.  This document makes no new audio/pump claim.
 
 ## Deletion accounting
 
 Production C++: +0/-0.  Temporary Lua probes: +0/-0 in the tree (removed
-from `/private/tmp` after evidence capture).  Documentation: +1 file.
+from `/private/tmp` after evidence capture).  Documentation: +1 file, then
+this bounded follow-up edit.
