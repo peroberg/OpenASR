@@ -131,6 +131,34 @@ run_test nodisk docs/asr10/lua/nodisk.lua "" || failures=$((failures + 1))
 run_test file_loaded docs/asr10/lua/file_loaded.lua "$IMAGE" || failures=$((failures + 1))
 run_test mc68302_guards docs/asr10/lua/mc68302_guards.lua "$IMAGE" || failures=$((failures + 1))
 run_test_audio note_audio docs/asr10/lua/note_audio.lua "$IMAGE" || failures=$((failures + 1))
+
+run_test_audio_aba() {
+	name=$1
+	script=$2
+	image=$3
+	log="/tmp/asr10-regression-${name}.log"
+	wav="/tmp/asr10-regression-${name}.wav"
+
+	rm -f "$wav"
+	SDL_VIDEODRIVER=dummy "$MAME" asr10booth -flop1 "$image" $COMMON \
+		-seconds_to_run 45 -autoboot_script "$script" -wavwrite "$wav" >"$log" 2>&1
+
+	if ! grep -q "^PASS ${name}" "$log"; then
+		grep -E "^(PASS|FAIL) ${name}" "$log" || echo "FAIL ${name} no PASS/FAIL line; see ${log}"
+		return 1
+	fi
+	grep "^PASS ${name}" "$log"
+	for label in A B A2; do
+		onset=$(grep "^AUDIO_RATE_MODE_ONSET ${label} " "$log" | sed -n 's/.*t=\([0-9.]*\).*/\1/p')
+		if [ -z "$onset" ] || ! "$PYTHON" docs/asr10/lua/check_note_audio.py "$wav" "$onset"; then
+			echo "FAIL ${name} ${label}_wav"
+			return 1
+		fi
+	done
+	return 0
+}
+
+run_test_audio_aba audio_rate_mode docs/asr10/lua/audio_rate_mode.lua "$IMAGE" || failures=$((failures + 1))
 run_test interrupt_controller docs/asr10/lua/interrupt_controller.lua "$IMAGE" || failures=$((failures + 1))
 run_test memory_size docs/asr10/lua/memory_size.lua "$IMAGE" || failures=$((failures + 1))
 run_test stereo_round_trip docs/asr10/lua/stereo_round_trip.lua "$IMAGE" || failures=$((failures + 1))

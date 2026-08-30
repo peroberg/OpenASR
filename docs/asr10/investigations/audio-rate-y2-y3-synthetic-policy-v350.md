@@ -114,13 +114,63 @@ Raw transient evidence is retained outside the repository at:
 | The temporary Y2/Y3 values are ASR board-clock nets or a physical selector. | `[OPEN]` | this spike supplies no board routing evidence |
 | The documented 29.7619/44.1-kHz labels equal MAME's generic stream rates. | `[OPEN]` | this successful current-MAME policy uses 59,523.789/88,200 Hz |
 
-The C++ hook and temporary Lua script were deleted immediately after the two
-captures.  No emulator behaviour is retained.
+## Falsification: datasheet-rate half-clock alternative
+
+The OTTO specification gives the physical-chip examples 16.0 MHz / 32 slots
+and 16.9 MHz / 24 slots.  Those values are numerically Y2/2 and Y3/2, so the
+most important nearby alternative was tested again at the **same `$0CE3`
+mode-commit boundary**, not through the already rejected ACTV callback:
+
+| phase | temporary clock policy | measured dominant frequency |
+|---|---|---:|
+| A | Y2/2 = 15,238,090 Hz | 196.7 Hz |
+| B | Y3/2 = 16,934,400 Hz | 196.7 Hz |
+| A2 | Y2/2 = 15,238,090 Hz | 197.5 Hz |
+
+It preserves A/B pitch *relation* but moves the known C4 about 25% low.  This
+is `[DISPROVEN]` as the current-MAME functional policy.  It does **not**
+disprove a physical divider on an ASR board: an unmodelled downstream timing or
+audio-domain relation could still exist.
+
+## Retained functional model
+
+The temporary tests are now a small ASR board policy in production code:
+
+```text
+current effect +$66 -> $0CE3
+  $00 -> ES5506 current-MAME device clock 30,476,180 Hz
+  $01 -> ES5506 current-MAME device clock 33,868,800 Hz
+```
+
+This is `[Likely functional model]`, not `[Verified physical]`.  It is the
+simplest surviving implementation because it uses the two documented board
+oscillator values, the verified firmware operating-mode byte, and no invented
+register, divider, mux control, FC compensation, or effect-name special case.
+It is backed by the permanent `audio_rate_mode` A/B/A WAV acceptance:
+
+```text
+ROM HALL C4   262.3 Hz
+44LUSH C4     260.9 Hz
+ROM HALL C4   260.9 Hz
+```
+
+The production model must be revised if any of the following occurs:
+
+1. a second independently controlled note/effect A/B/A does not preserve its
+   pitch under this policy;
+2. firmware-visible evidence identifies a different rate-selection state that
+   contradicts `$0CE3` mode selection; or
+3. a simple physical measurement, schematic or net trace identifies an
+   incompatible ES5506 clock relation.
+
+The original temporary C++ hooks and Lua probes were deleted.  The retained
+implementation is covered by the reusable acceptance, not by diagnostic code.
 
 ## Next single experiment
 
-Before making a production rate model, obtain a physical board/schematic/net
-boundary that discriminates the ES5506 clock route and any Y2/Y3 selection.
-The synthetic policy is a useful **functional target**, not implementation
-authority.  Separately, the parked ES5510 serial-routing question must not be
-reopened merely to explain this direct-ES5506 pitch result.
+Use one additional independently controlled A/B/A note or effect as a
+functional falsifier.  A physical board measurement is worthwhile only when a
+single accessible clock/CLKIN point can distinguish the surviving clock-route
+alternatives; it is not a prerequisite for this `[Likely]` model.  Separately,
+the parked ES5510 serial-routing question must not be reopened merely to
+explain this direct-ES5506 pitch result.

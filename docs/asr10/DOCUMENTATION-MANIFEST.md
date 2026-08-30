@@ -118,12 +118,16 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 118 Markdown-filer (räknat om 2026-08-30)
+## `investigations/` — 119 Markdown-filer (räknat om 2026-08-30)
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `es5510-upload-executable-contract-v350.md`: en smal
+Senaste tillägget är `audio-rate-y2-y3-synthetic-policy-v350.md`: en
+reproducerbar A/B/A-falsifiering som behåller en `[Likely functional]`
+ES5506 two-rate policy för `$0CE3` mode 0/1, medan fysisk Y2/Y3-routing,
+divider och ES5701 fortfarande är `[OPEN]`.  Föregående
+`es5510-upload-executable-contract-v350.md` är en smal
 gränsdragning mellan verifierad ES5510 host-upload/readback och en säkert
 exekverbar frame-policy. V3.50 konfigurerar host serial/control/HALT och
 de två fångade aktiva programmen når `END` linjärt från PC 0 i den generiska

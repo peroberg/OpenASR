@@ -73,8 +73,9 @@ historical and passed.
   `lua/fixtures/display_tempo_v350.lua` and
   `lua/display_protocol_stream_replay.lua`; `lua/display_field_rewrite.lua`
   verifies the same transition through firmware and the actual device path.
-- The established suite is now 16 tests and 17 `PASS` lines, including the new
-  firmware/device field-rewrite acceptance, exit 0.
+- The established suite is now 17 tests and 21 `PASS` lines, including the
+  firmware/device field-rewrite acceptance and the A/B/A effect-rate audio
+  acceptance, exit 0.
 - **[Verified runtime, bounded stability]** Representative real V3.50 workflows
   now pass across TEMPO (including BAR round-trip and repeated rewrites), LOAD
   file browsing, Command/Master Tune, an Edit Instrument layer page, REC SRC,
@@ -389,14 +390,16 @@ architectural model that did not exist before. Summary only — details in `refe
 
 Priorities are deliberately ordered by present functional value:
 
-1. **Architecture before audio-symptom work:** `audio-system-frame-model-v350.md`
-   separates the verified V3.50 mode/ACTV/pitch contract from the still-open
-   physical ASR audio clock/frame route. The subsequent retained A/B/A census
-   in `audio-rate-control-write-v350.md` found no additional reversible
-   firmware-visible SIB/CS1/CS2/CS3 control state. Do not treat the sequencer
-   symptom as a clock diagnosis, and do not implement an ACTV, ES5701, PB3 or
-   oscillator policy before board-level secondary-decode/net evidence
-   discriminates the physical route.
+1. **Functional audio-rate policy, with physical route open:** the verified
+   V3.50 `$0CE3` mode transaction and its FC compensation now drive a retained
+   `[Likely functional]` two-rate ES5506 board policy.  Its A/B/A acceptance
+   keeps the controlled C4 at 262.3/260.9/260.9 Hz for ROM HALL/44LUSH/ROM
+   HALL.  The retained census in `audio-rate-control-write-v350.md` still found
+   no additional reversible SIB/CS1/CS2/CS3 control state.  This is not a
+   claim that ES5701, PB3, a divider or a physical Y2/Y3 mux implements the
+   policy; physical routing remains `[OPEN]`, but is no longer a prerequisite
+   for the functional model.  See
+   `investigations/audio-rate-y2-y3-synthetic-policy-v350.md`.
 2. **Functional after that boundary:** the reproducible incorrect/clicking
    sequencer playback described above. Transport is no longer the blocker;
    musical/audio-correct playback across the sequencer-to-ES5506 chain is.

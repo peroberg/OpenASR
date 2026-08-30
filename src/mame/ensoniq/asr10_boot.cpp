@@ -103,6 +103,12 @@ private:
 	// same already-backed image. Stage A hardcodes the stock 2 MB size;
 	// Stage B replaces this with the configured ram_device size.
 	static constexpr u32 SYSTEM_RAM_BYTES = 0x00200000;
+	// [Likely functional policy] The verified effect operating-mode commit
+	// selects the two current-MAME ES5506 device-domain rates.  These values
+	// match the board oscillator inventory, but this is not a claim about the
+	// physical ASR clock mux, divider, ES5701, or pin routing.
+	static constexpr u32 AUDIO_RATE_MODE0_CLOCK = 30'476'180;
+	static constexpr u32 AUDIO_RATE_MODE1_CLOCK = 33'868'800;
 
 	static constexpr bool ASR10_MISSING_FDC_RATE_SOURCE = true;
 
@@ -130,6 +136,7 @@ private:
 	// Source selection is PBDAT PB2-PB0, not DUART OPR; see
 	// docs/asr10/investigations/analog-selector-control-map-v350.md.
 	std::array<u16, 8> m_analog_values{};
+	u8 m_effect_audio_mode = 0;
 
 	virtual void machine_start() override ATTR_COLD;
 	virtual void machine_reset() override ATTR_COLD;
@@ -139,6 +146,8 @@ private:
 
 	u16 low_rom_or_lowmem_r(offs_t offset, u16 mem_mask = ~0);
 	void lowmem_w(offs_t offset, u16 data, u16 mem_mask = ~0);
+	void apply_effect_audio_rate_policy();
+	void effect_audio_rate_postload();
 	u16 system_ram_alias_r(offs_t offset, u16 mem_mask = ~0);
 	void system_ram_alias_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 	u16 high_alias_r(offs_t offset, u16 mem_mask = ~0);
@@ -203,11 +212,15 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_m68302_internal_shadow));
 	save_item(NAME(m_lrclk_level));
 	save_item(NAME(m_analog_values));
+	save_item(NAME(m_effect_audio_mode));
+	machine().save().register_postload(save_prepost_delegate(FUNC(asr10_boot_state::effect_audio_rate_postload), this));
 }
 
 
 void asr10_boot_state::machine_reset()
 {
+	m_effect_audio_mode = 0;
+	apply_effect_audio_rate_policy();
 	m_analog_values[0] = 0x200; // Pitch wheel, boot-calibrated center
 	m_analog_values[1] = 0x200; // ASR-88 conditional source; no ASR-10 label
 	m_analog_values[2] = 0x200; // Mod wheel
@@ -570,6 +583,30 @@ void asr10_boot_state::es5510_host_write_select_gpr_instr_w(offs_t offset, u8 da
 void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 {
 	COMBINE_DATA(&m_lowmem_shadow[offset]);
+
+	// `$0CE3` is the PC-correlated current-effect operating-mode byte.  Its
+	// values 0/1 drive the separately verified ACTV and pitch setup branches;
+	// this board-level policy adds only the surviving current-MAME rate relation.
+	if (offset == (0x0ce2 / 2) && ACCESSING_BITS_0_7)
+	{
+		const u8 mode = m_lowmem_shadow[offset] & 0xff;
+		if (mode <= 1)
+		{
+			m_effect_audio_mode = mode;
+			apply_effect_audio_rate_policy();
+		}
+	}
+}
+
+void asr10_boot_state::apply_effect_audio_rate_policy()
+{
+	if (m_es5506_host)
+		m_es5506_host->set_unscaled_clock(m_effect_audio_mode ? AUDIO_RATE_MODE1_CLOCK : AUDIO_RATE_MODE0_CLOCK);
+}
+
+void asr10_boot_state::effect_audio_rate_postload()
+{
+	apply_effect_audio_rate_policy();
 }
 
 u16 asr10_boot_state::system_ram_alias_r(offs_t offset, u16 mem_mask)
@@ -839,7 +876,7 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	// board's documented 29.76kHz mode; esq5505.cpp's own precedent
 	// (30.47618MHz_XTAL / 2 fed to ES5505) supports a crystal-network
 	// /2 as the more likely explanation, not confirmed further here.
-	es5506_device &es5506_host(ES5506(config, m_es5506_host, XTAL(30'476'180)));
+	es5506_device &es5506_host(ES5506(config, m_es5506_host, AUDIO_RATE_MODE0_CLOCK));
 	es5506_host.set_addrmap(0, &asr10_boot_state::es5506_wavetable_map);
 	es5506_host.set_addrmap(1, &asr10_boot_state::es5506_wavetable_bank1_map);
 	es5506_host.set_addrmap(2, &asr10_boot_state::es5506_unpopulated_wavetable_map);
