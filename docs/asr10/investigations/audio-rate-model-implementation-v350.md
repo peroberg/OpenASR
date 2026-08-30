@@ -1,5 +1,11 @@
 # ASR-10 V3.50: rejected ACTV effective-clock implementation experiment
 
+> **Historical rejected policy.** This ACTV-only `set_unscaled_clock()` trial
+> remains `[DISPROVEN]`. It is not the current model: the later mode-driven
+> `[Likely functional]` policy is documented in
+> `audio-rate-y2-y3-synthetic-policy-v350.md` and summarised in
+> `../HANDOFF.md`.
+
 ## Scope and decision
 
 This was the first bounded implementation experiment following the verified

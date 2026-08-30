@@ -49,7 +49,8 @@ runtime-tool            instrumentering
 
 | path | kategori | status | källa | typ | beskriver | ersätter | härleds ur |
 |---|---|---|---|---|---|---|---|
-| `current-status.md` | current-status | **aktuell** | löpande handoff, statusstädad 2026-08-25 | handkurerad | aktuellt läge, nästa experiment | tidigare kumulativ status | reference/ + investigations/ |
+| `current-status.md` | current-status | **aktuell** | löpande handoff, statusstädad 2026-08-30 | handkurerad | aktuellt läge, nästa experiment | tidigare kumulativ status | `HANDOFF.md` + reference/ + investigations/ |
+| `HANDOFF.md` | current-status | **aktuell ingång** | Part I handoff 2026-08-30, HEAD `7bfd2f3722d` | handkurerad | systemöversikt, evidensgränser, testbaseline och reviewer-regler | äldre handoff-checkpoints som aktuell ingång | current-status + reference/ + senaste investigations/ |
 | `DOCUMENTATION-MANIFEST.md` | current-status | **aktuell** | detta dokument | handkurerad | vilka dokument som ingår | — | — |
 | `regression-test.sh` | runtime-tool | **aktuell** | i trädet | handkurerad | boot, panel, load, guards och torrt note-audio | äldre FILE 1-only-baseline | lua/ |
 
@@ -57,7 +58,7 @@ runtime-tool            instrumentering
 
 | path | status | källa | beskriver | ersätter / härleds ur |
 |---|---|---|---|---|
-| `handoff-2026-08-23.md` | **historisk freeze med aktuell post-freeze-rättelse** | repo- och evidensaudit 2026-08-23, statusnot 2026-08-25 | femminutersläge, falsifierade hypoteser, öppna frågor och arbetskopiegräns | läses för freeze-provenance; aktuell runtime och prioritet i `current-status.md` |
+| `handoff-2026-08-23.md` | **historisk freeze med post-freeze-rättelse** | repo- och evidensaudit 2026-08-23, statusnot 2026-08-25 | femminutersläge, falsifierade hypoteser, öppna frågor och arbetskopiegräns | läses för freeze-provenance; aktuell runtime och prioritet i `HANDOFF.md`/`current-status.md` |
 | `architecture-handoff.md` | **historiskt checkpoint** | pre-IDMA-arkitektur, märkt 2026-08-22 | servicekärna och den passerade storage-blockeraren | runtime-status ersatt av `current-status.md`; arkitekturdelar fortsatt relevanta |
 | `audio-storage-architecture.md` | **aktuell** | uppdaterad 2026-08-22 | gränsen storage / ES5701 / ES5506 / ES5510 | senare load- och note-audio-evidens införd |
 | `boot-sequence.md` | **aktuell** | uppdaterad 2026-08-04 | reset → FILE 1 | steg 1b DPRAM-bryggan tillagt; chip-select-luckan i steg 2 stängd; steg 7 utbyggt med M1–M3 |
@@ -122,17 +123,17 @@ sanning, och får inte tyst tas bort.
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
-pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `audio-rate-y2-y3-synthetic-policy-v350.md`: en
-reproducerbar A/B/A-falsifiering som behåller en `[Likely functional]`
-ES5506 two-rate policy för `$0CE3` mode 0/1, medan fysisk Y2/Y3-routing,
-divider och ES5701 fortfarande är `[OPEN]`.  Föregående
-`es5510-upload-executable-contract-v350.md` är en smal
-gränsdragning mellan verifierad ES5510 host-upload/readback och en säkert
-exekverbar frame-policy. V3.50 konfigurerar host serial/control/HALT och
-de två fångade aktiva programmen når `END` linjärt från PC 0 i den generiska
-ES5510-modellen. Den fysiska HALT-policyn och seriella routningen är dock
-fortfarande öppna; ingen pump-, routing- eller klockpolicy följer.
+pekar uttryckligen på `HANDOFF.md`, `current-status.md` och `reference/` som
+aktuell sanning. Senaste tillägget är
+`es5510-upload-executable-contract-v350.md`, uppdaterad i commit
+`7bfd2f3722d`: en bounded `[Likely functional]` ASR-frameadapter för ROM HALL
+och 44LUSH. Den säkrar post-upload-admission, matar lane 0/1 funktionellt till
+SER0/SER2/SER3, kör en ESP-frame per ES5506-frame och läser SER1. Det är
+uttryckligen inte belägg för fysisk HALT eller serial wiring.
+`audio-rate-y2-y3-synthetic-policy-v350.md` behåller samtidigt en
+`[Likely functional]` ES5506 two-rate policy för `$0CE3` mode 0/1 efter
+reproducerbar A/B/A-falsifiering; fysisk Y2/Y3-routing, divider och ES5701
+är fortsatt `[OPEN]`. Full aktuell syntes finns i `../HANDOFF.md`.
 Föregående `es5506-es5510-pump-comparison-v350.md`: en kort
 källjämförelse som korrigerar referensvalet för en framtida ASR-audiokedja.
 KT/TS är MAME:s närmaste **ES5506 + ES5510**-konfiguration; VFX/SD-1 är

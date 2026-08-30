@@ -1,5 +1,10 @@
 # ES5506 -> ES5510 pump comparison — exact-chip references
 
+> **Superseded as the current implementation boundary.** This source comparison
+> selected the generic mechanism. The bounded ASR functional adapter landed
+> later in `7bfd2f3722d`; it does not upgrade the physical routing/HALT claim.
+> See `es5510-upload-executable-contract-v350.md` and `../HANDOFF.md`.
+
 ## Question
 
 What is the smallest reusable MAME mechanism for the missing ASR-10 audio

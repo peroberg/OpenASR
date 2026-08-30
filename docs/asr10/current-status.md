@@ -1,7 +1,8 @@
 # ASR-10 current status
 
 Current truth and cumulative revision journal for the ASR-10 MAME bring-up.
-Start with `reference/handoff-2026-08-23.md` for the five-minute freeze snapshot.
+Start with `HANDOFF.md` for the current reviewer-oriented technical handoff.
+`reference/handoff-2026-08-23.md` is the earlier five-minute freeze snapshot.
 Verified reference facts belong in `reference/`, reproducible analysis output belongs
 in `static/`, and experiment history belongs in `investigations/` or `archive/`.
 Older paragraphs below preserve provenance; an explicit later update or the freeze
@@ -44,6 +45,13 @@ Panel receive terminology:
 
 ## Current handoff
 
+**Current Part I handoff (2026-08-30):** `HANDOFF.md` supersedes earlier
+handoff documents as the current overview. It freezes the functional
+ES5510/rate milestone at `[Likely functional]` (not physical-board verified),
+records the Bank 11 rejected candidates, and gives current review priorities.
+It is intentionally a state-of-the-system document rather than a new
+investigation.
+
 The current resume point is this document together with
 `investigations/display-protocol-state-machine-v350.md`,
 `investigations/transport-ab-test-play-stop-continue.md` and
@@ -54,6 +62,28 @@ provenance, not the current work priority. `reference/architecture-handoff.md`
 preserves the earlier pre-IDMA architecture checkpoint and remains useful for
 the service-kernel model, but its runtime stall and implementation target are
 historical and passed.
+
+## Part I audio/rate milestone — current policy, 2026-08-30
+
+- **[Likely functional, bounded]** `7bfd2f3722d` establishes an ASR-specific
+  ES5506 -> ES5510 frame adapter for ROM HALL and 44LUSH: safe post-upload
+  admission, lane 0/1 functional fan-out to SER0/SER2/SER3, one ESP run per
+  ES5506-derived frame and SER1 output. It is not physical wiring or a
+  verified HALT signal. Unknown ESP images retain dry fallback.
+- **[Likely functional]** `a8481df1f72` supplies the mode-driven 30k/44.1k
+  MAME rate policy. The controlled C4 ROM HALL -> 44LUSH -> ROM HALL run is
+  audible and approximately `262.3 -> 260.9 -> 260.9 Hz`; this is bounded
+  end-to-end acceptance, not a physical clock/mux/divider/ES5701 conclusion.
+- **[OPEN]** Physical ASR audio clock/frame routing, ES5506 CLKIN source,
+  divider/mux and ES5701 role. `Y2/2 <-> Y3/2` is disproven only as a direct
+  MAME-device-clock policy.
+- The serialised effect `+$66` branch is **PARKED**. Its 44LUSH direct
+  provenance is retained, but no independently classified serialised 30k
+  control was found; it is not a literal sample-rate field.
+- **[OPEN]** Bank 11 remains history-dependent. The sample-RAM
+  `$100000-$11DFFF` candidate is disproven because observed Bank 11 voices do
+  not reference it; the next valid lead is the first musical-runtime BAD/GOOD
+  divergence, not another MMIO/prefix census.
 
 ## Current display protocol boundary
 
@@ -73,7 +103,8 @@ historical and passed.
   `lua/fixtures/display_tempo_v350.lua` and
   `lua/display_protocol_stream_replay.lua`; `lua/display_field_rewrite.lua`
   verifies the same transition through firmware and the actual device path.
-- The established suite is now 17 tests and 21 `PASS` lines, including the
+- The established suite is now 16 named controls and normally 21 `PASS` lines,
+  including the
   firmware/device field-rewrite acceptance and the A/B/A effect-rate audio
   acceptance, exit 0.
 - **[Verified runtime, bounded stability]** Representative real V3.50 workflows

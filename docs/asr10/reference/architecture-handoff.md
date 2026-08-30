@@ -4,8 +4,8 @@
 > captured the architecture before storage IRQ1 and IDMA were completed. Later
 > verified runtime passed RECALIBRATE, SEEK, READ DATA and IDMA, reached
 > `FILE LOADED`, selected an instrument and produced pitch-checked dry ES5506
-> audio. Use `../current-status.md` for current runtime state and the next
-> experiment. Statements below about a "current stall", missing IRQ1/IDMA or the
+> audio. Use `../HANDOFF.md` and `../current-status.md` for current runtime
+> state and the next experiment. Statements below about a "current stall", missing IRQ1/IDMA or the
 > next implementation target describe the earlier checkpoint unless explicitly
 > marked as a later update.
 

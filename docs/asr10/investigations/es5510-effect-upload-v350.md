@@ -1,5 +1,12 @@
 # ES5510 effect upload and commit — ASR-10 V3.50
 
+> **Superseded as current execution boundary.** This journal remains the
+> provenance for host upload/readback. The later bounded functional execution
+> and frame-adapter policy is in
+> `es5510-upload-executable-contract-v350.md` at commit `7bfd2f3722d`.
+> It must not be read as saying that ASR has no pump or no ES5510 execution;
+> physical routing/HALT remains `[OPEN]`.
+
 ## 1. Executive result
 
 The stated blocker does **not** reproduce at the current revision.  V3.50

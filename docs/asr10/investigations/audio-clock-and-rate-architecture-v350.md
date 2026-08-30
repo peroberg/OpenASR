@@ -1,5 +1,11 @@
 # ASR-10 V3.50 — audio clock and rate architecture
 
+> **Historical architecture boundary.** The later functional two-rate policy
+> is committed in `a8481df1f72` and the bounded ESP frame adapter in
+> `7bfd2f3722d`. This document's direct-speaker/current-clock description is
+> provenance for the pre-adapter model, not current MAME behaviour. The
+> physical ASR clock route remains `[OPEN]`; see `../HANDOFF.md`.
+
 ## Executive summary
 
 This pass does **not** establish a firmware-controlled 30 kHz ↔ 44.1 kHz
