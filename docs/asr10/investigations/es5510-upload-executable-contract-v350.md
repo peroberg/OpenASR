@@ -285,13 +285,47 @@ runs. Reduced logs remain outside the tree at
 `/private/tmp/asr10-pump-romhall-note.log` and
 `/private/tmp/asr10-pump-romhall-note-r2.log`.
 
+### Passive ES5506 lane observation
+
+The next probe removed ES5510 and the pump entirely.  It temporarily exposed
+the generic ES5506 model's four stereo stream pairs, retained raw pre-route
+peak energy for lanes 0--7, and otherwise repeated the exact controlled
+workflow above.  It did not alter the ES5506 clock, add a route, or execute
+ESP code.
+
+Both runs had the same ROM-HALL witness at `t=25.110`, then the same note
+receive witness (`rhra=3`, `voice_writes=6270`).  The three post-note
+100,000-sample windows were byte-for-byte identical:
+
+| window | lanes 0--7 peak energy |
+|---|---|
+| 1 | `[46770,46770,0,0,0,0,0,0]` |
+| 2 | `[63531,63531,0,0,0,0,0,0]` |
+| 3 | `[22014,22014,0,0,0,0,0,0]` |
+
+Therefore **[Verified current MAME ES5506-device model]** the controlled
+single-instrument note occupies the first stereo pair only.  In particular,
+the stock KT/TS pump's ESP inputs (ES5506 lanes 2--7) are correctly observed
+as silent in the previous spike; that negative result is not an error in how
+the pump sampled its input streams.  The stock topology instead treats the
+active 0--1 pair as its bypass path.
+
+This is not a physical ASR OEX pin map, nor a claim that lanes 2--7 are never
+used by other ASR programs.  It is the required bounded observation that the
+known default voice is on lanes 0--1 in the current model.  The temporary
+four-pair configuration and raw-energy diagnostic were removed after both
+runs. Logs remain outside the tree at
+`/private/tmp/asr10-es5506-lanes-romhall.log` and
+`/private/tmp/asr10-es5506-lanes-romhall-r2.log`.
+
 ## Single next experiment
 
-Measure the raw ES5506 stream lanes 0--7 during this same known-program/note
-workflow, without invoking ES5510.  This distinguishes whether the existing
-audible ES5506 signal is confined to the generic pump's bypass lanes 0--1 or
-whether an ASR-specific serial crossbar is missing. Do not alter ES5506 rate or
-infer physical ASR wiring merely from a stream-lane observation.
+Make a temporary, explicitly synthetic ES5506 0--1-to-one-SER-pair matrix
+probe under the same known ROM-HALL/note workflow. Test SER0, SER1 and SER2
+one at a time, preserving the verified END gate, and record which generic
+input pair (if any) gives bounded nonzero SER3 output. This determines generic
+microprogram input consumption; it must not be called physical ASR wiring or
+an ES5506-rate result.
 
 ## Non-results / retained boundaries
 
