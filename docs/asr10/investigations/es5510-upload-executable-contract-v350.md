@@ -204,12 +204,51 @@ production model change is justified by this reconstruction alone.
 
 ## Single next experiment
 
-Make one temporary generic-pump integration spike only after a verified effect
-commit: retain the existing ES5506 rate, configure the stock pump as in the
-one-ES5506 KT/TS reference, use an explicitly synthetic post-upload HALT
-release, and capture whether ES5510 produces bounded serial output.  Do not
-claim the routing or HALT policy is physical ASR wiring; remove the spike if it
-does not produce a clean result.
+### Synthetic post-upload pump spike
+
+One temporary C++ spike used the stock one-ES5506 KT/TS pump topology, leaving
+the ASR ES5506 clock unchanged.  It was deliberately not an ASR wiring claim:
+
+- every `$C0`/`$E0` instruction commit halted the generic pump;
+- after 10 ms without a new commit, it scanned the PC-0 image;
+- it released only when the first generic `END` was exactly the measured
+  `$3B`/`$58` `$F040` endpoint;
+- a temporary pump-side peak witness retained the six generic SER inputs and
+  two SER3 outputs.
+
+The normal V3.50 instrument/note workflow gave this bounded result:
+
+| event | result |
+|---|---|
+| initial verified ROM-HALL image | synthetic release at `$58 = $3662FFFFF040` |
+| generic frames executed before next upload | 300,000; no hang |
+| SER0--2 input peaks in that pre-note interval | all zero |
+| SER3 output peaks in that pre-note interval | both zero |
+| later Instrument-select upload at `t=21.788` | new `$00..$58` image did **not** satisfy the measured ROM-HALL/44LUSH endpoint identity; pump remained safely halted |
+| MIDI note-on at `t=23.120` | firmware received it and programmed 2,400 ES5506 voice writes, but occurred after the synthetic pump had halted |
+| routed pump WAV | peak zero |
+
+Thus **[Verified current MAME spike]** the reconstructed ROM-HALL program can
+be repeatedly invoked by generic `run_once()` without the previous unbounded
+loop.  It does **not** test ES5506-to-ES5510 signal flow: the only observed
+executed interval had no serial input, and the later note belonged to a
+different, unclassified program image.  Zero output is consequently not
+evidence against the generic serial routing, nor evidence for ASR physical
+routing.
+
+All pump routing, synthetic HALT policy and temporary diagnostics were removed
+after the run.  The retained reduced logs are outside the tree at
+`/private/tmp/asr10-pump-spike-note.log` and
+`/private/tmp/asr10-pump-commit-note.log`.
+
+## Single next experiment
+
+Make one controlled panel workflow that first selects/loads the instrument,
+then re-applies a **verified** ROM-HALL or 44LUSH program, confirms its END
+identity, and finally injects the known note while that same program remains
+active. Re-run the same temporary generic pump spike only for that interval.
+It must report nonzero/zero SER inputs and outputs separately. Do not alter the
+ES5506 rate or claim the synthetic HALT/routing policy is physical ASR wiring.
 
 ## Non-results / retained boundaries
 
