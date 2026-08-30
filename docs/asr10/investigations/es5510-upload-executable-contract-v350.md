@@ -241,14 +241,57 @@ after the run.  The retained reduced logs are outside the tree at
 `/private/tmp/asr10-pump-spike-note.log` and
 `/private/tmp/asr10-pump-commit-note.log`.
 
+### Controlled known-program serial-input result
+
+The follow-up corrected the prior lifecycle ambiguity with a normal panel
+workflow: load/select `JM DIGI SYN`, enter FX Select with raw `$07`, then use
+Up twice to restore `ROM-01 HALL REVERB` before injecting the known MIDI note.
+The live pre-note witness was identical in two runs:
+
+```text
+t=25.110000  $0CE3=$00  display="FX?R0M-?1  HALL RE?ERB"
+synthetic release: END $58 = $3662FFFFF040
+```
+
+The same temporary stock KT/TS topology fed ES5506 channels 2--7 to generic
+ES5510 SER0--2.  After the witness it observed the note for four seconds.
+Both runs gave:
+
+| witness | result |
+|---|---|
+| MIDI receive / ES5506 programming | `rhra=3`, `voice_writes=6270` |
+| generic pump frames after note | crossed 500,000 and 600,000 sample witnesses |
+| SER0--2 input peaks (six lanes) | `[0,0,0,0,0,0]` |
+| SER3 output peaks | `[0,0]` |
+
+This is a true binary result for the tested integration:
+
+```text
+known ROM-HALL program + active ES5506 voice
+    -> stock KT/TS ES5506 channels 2--7 -> generic SER0--2
+    -> no sample data observed
+```
+
+It is **[Verified current MAME spike]** that the stock KT/TS pump mapping is
+not a working ASR signal path under this controlled note.  It is **not** a
+measurement of physical ASR SER pins: that topology was deliberately
+synthetic, and its channels 0--1 are bypass outputs rather than generic ESP
+inputs.  Therefore the result neither disproves a different ASR board serial
+mapping nor identifies its actual routing.  It does rule out adopting the
+stock KT/TS mapping as the ASR implementation without further evidence.
+
+All temporary C++ and Lua instrumentation was removed after the two matching
+runs. Reduced logs remain outside the tree at
+`/private/tmp/asr10-pump-romhall-note.log` and
+`/private/tmp/asr10-pump-romhall-note-r2.log`.
+
 ## Single next experiment
 
-Make one controlled panel workflow that first selects/loads the instrument,
-then re-applies a **verified** ROM-HALL or 44LUSH program, confirms its END
-identity, and finally injects the known note while that same program remains
-active. Re-run the same temporary generic pump spike only for that interval.
-It must report nonzero/zero SER inputs and outputs separately. Do not alter the
-ES5506 rate or claim the synthetic HALT/routing policy is physical ASR wiring.
+Measure the raw ES5506 stream lanes 0--7 during this same known-program/note
+workflow, without invoking ES5510.  This distinguishes whether the existing
+audible ES5506 signal is confined to the generic pump's bypass lanes 0--1 or
+whether an ASR-specific serial crossbar is missing. Do not alter ES5506 rate or
+infer physical ASR wiring merely from a stream-lane observation.
 
 ## Non-results / retained boundaries
 
