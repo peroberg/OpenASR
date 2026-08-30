@@ -123,7 +123,13 @@ sanning, och får inte tyst tas bort.
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `current-status.md` och `reference/` som aktuell sanning.
-Senaste tillägget är `es5506-es5510-pump-comparison-v350.md`: en kort
+Senaste tillägget är `es5510-upload-executable-contract-v350.md`: en smal
+gränsdragning mellan verifierad ES5510 host-upload/readback och en säkert
+exekverbar frame-policy. V3.50 konfigurerar host serial/control/HALT och
+initialiserar observerade instruktionsposter med `END`, men den generiska
+pumpens obegränsade `run_once()` kräver fortfarande ett separat aktivt-
+program/HALT-witness. Ingen pump, routing eller klockpolicy följer.
+Föregående `es5506-es5510-pump-comparison-v350.md`: en kort
 källjämförelse som korrigerar referensvalet för en framtida ASR-audiokedja.
 KT/TS är MAME:s närmaste **ES5506 + ES5510**-konfiguration; VFX/SD-1 är
 ES5505-föregångaren som visar en separat ESPHALT-styrning. Ingen av dem
