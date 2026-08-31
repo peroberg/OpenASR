@@ -96,6 +96,9 @@ public:
 	// NOTE: address range only; FC/RW/CFC/MRW and DTACK are ignored.
 	bool cs0_covers(uint32_t address) const { return m_cs[0].enabled && address >= m_cs[0].base && address < m_cs[0].end; }
 
+	void register_save_items(save_manager &save, device_t &device);
+	void recompute_all_cs();
+
 private:
 	void recompute_cs(unsigned index);
 

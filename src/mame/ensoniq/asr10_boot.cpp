@@ -135,7 +135,6 @@ private:
 	emu_timer *m_idma_tc_timer = nullptr;
 
 	std::unique_ptr<u16[]> m_lowmem_shadow;
-	u16 m_m68302_internal_shadow[0x80]{};
 	// Raw, right-justified 10-bit board sources for the ES5506 PAR callback.
 	// Source selection is PBDAT PB2-PB0, not DUART OPR; see
 	// docs/asr10/investigations/analog-selector-control-map-v350.md.
@@ -217,7 +216,6 @@ void asr10_boot_state::machine_start()
 	m_lowmem_shadow = make_unique_clear<u16[]>(LOWMEM_WORDS);
 
 	save_pointer(NAME(m_lowmem_shadow), LOWMEM_WORDS);
-	save_item(NAME(m_m68302_internal_shadow));
 	save_item(NAME(m_lrclk_level));
 	save_item(NAME(m_analog_values));
 	save_item(NAME(m_effect_audio_mode));
@@ -246,7 +244,6 @@ void asr10_boot_state::machine_reset()
 	m_lrclk_level = false;
 	m_lrclk_timer->adjust(attotime::from_hz(44100), 0, attotime::from_hz(44100));
 	std::fill_n(m_lowmem_shadow.get(), LOWMEM_WORDS, 0);
-	std::fill(std::begin(m_m68302_internal_shadow), std::end(m_m68302_internal_shadow), 0);
 
 }
 

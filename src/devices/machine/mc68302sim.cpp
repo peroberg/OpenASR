@@ -137,3 +137,21 @@ void mc68302_device::mc68302_sim::recompute_cs(unsigned index)
 	const uint32_t size = 0x2000u << dont_care_bits;
 	decode.end = decode.base + size;
 }
+
+void mc68302_device::mc68302_sim::recompute_all_cs()
+{
+	for (unsigned index = 0; index < 4; index++)
+		recompute_cs(index);
+}
+
+void mc68302_device::mc68302_sim::register_save_items(save_manager &save, device_t &device)
+{
+	save.save_item(&device, device.name(), device.tag(), 0, m_pbcnt, "m_sim->m_pbcnt");
+	save.save_item(&device, device.name(), device.tag(), 0, m_pbddr, "m_sim->m_pbddr");
+	save.save_item(&device, device.name(), device.tag(), 0, m_pbdat, "m_sim->m_pbdat");
+	save.save_item(&device, device.name(), device.tag(), 0, m_pb_external_input, "m_sim->m_pb_external_input");
+	save.save_item(&device, device.name(), device.tag(), 0, m_fc6860, "m_sim->m_fc6860");
+	save.save_item(&device, device.name(), device.tag(), 0, m_fc6860_reads_since_write, "m_sim->m_fc6860_reads_since_write");
+	save.save_item(&device, device.name(), device.tag(), 0, m_br, "m_sim->m_br");
+	save.save_item(&device, device.name(), device.tag(), 0, m_or, "m_sim->m_or");
+}

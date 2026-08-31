@@ -130,8 +130,8 @@ void mc68302_device::device_start()
 	save_item(NAME(m_scr_low));
 	save_item(NAME(m_window_installed));
 	save_item(NAME(m_window_base));
-	// FIXME: m_shadow, m_offset_access_count, and mc68302_sim internals are
-	// not registered, so save/load restores incomplete device state.
+	save_item(NAME(m_shadow));
+	m_sim->register_save_items(machine().save(), *this);
 	save_item(NAME(m_known_count));
 	save_item(NAME(m_internal_ram_count));
 	save_item(NAME(m_known_unimplemented_count));
@@ -159,6 +159,19 @@ void mc68302_device::device_start()
 void mc68302_device::device_stop()
 {
 	remove_internal_window();
+}
+
+
+void mc68302_device::device_post_load()
+{
+	m68000_device::device_post_load();
+
+	m_sim->recompute_all_cs();
+	if (m_window_installed)
+	{
+		m_window_base = (uint32_t(m_bar) & 0x0fff) << 12;
+	}
+	update_internal_irq();
 }
 
 
