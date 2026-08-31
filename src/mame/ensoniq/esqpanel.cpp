@@ -460,6 +460,16 @@ void esqpanel_device::device_start()
 		m_external_timer = timer_alloc(FUNC(esqpanel_device::check_external_panel_server), this);
 		m_external_timer->enable(false);
 	}
+
+	save_item(NAME(m_light_states));
+	save_item(NAME(m_eps_mode));
+	save_item(NAME(m_expect_calibration_second_byte));
+	save_item(NAME(m_expect_light_second_byte));
+	save_item(NAME(m_xmitring));
+	save_item(NAME(m_xmit_read));
+	save_item(NAME(m_xmit_write));
+	save_item(NAME(m_tx_busy));
+	save_item(NAME(m_xmit_overflow_count));
 }
 
 

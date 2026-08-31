@@ -37,6 +37,9 @@ void esq_5505_5510_pump_device::device_start()
 	// On the VFX, those will simply remain silent.
 	m_stream = stream_alloc(8, 4, clock(), STREAM_SYNCHRONOUS);
 
+	save_item(NAME(m_esp_halted));
+	save_item(NAME(m_serial_route));
+
 #if PUMP_DETECT_SILENCE
 	silent_for = 500;
 	was_silence = 1;
@@ -100,11 +103,15 @@ void esq_5505_5510_pump_device::sound_stream_update(sound_stream &stream)
 	m_esp->ser_w(7, m_esp->ser_r(1) + m_esp->ser_r(3) + m_esp->ser_r(5));
 #else
 	if (!m_esp_halted) {
+#if PUMP_TRACK_SAMPLES
 		osd_ticks_t a = osd_ticks();
 		m_esp->run_once();
 		osd_ticks_t b = osd_ticks();
 		ticks_spent_processing += (b - a);
 		samples_processed++;
+#else
+		m_esp->run_once();
+#endif
 	}
 #endif
 

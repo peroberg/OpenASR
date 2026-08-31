@@ -116,4 +116,6 @@ private:
 
 DECLARE_DEVICE_TYPE(ESQ_5505_5510_PUMP, esq_5505_5510_pump_device)
 
+ALLOW_SAVE_TYPE(esq_5505_5510_pump_device::serial_route);
+
 #endif // MAME_SOUND_ESQPUMP_H
