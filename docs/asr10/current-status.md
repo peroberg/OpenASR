@@ -80,10 +80,21 @@ historical and passed.
 - The serialised effect `+$66` branch is **PARKED**. Its 44LUSH direct
   provenance is retained, but no independently classified serialised 30k
   control was found; it is not a literal sample-rate field.
-- **[OPEN]** Bank 11 remains history-dependent. The sample-RAM
-  `$100000-$11DFFF` candidate is disproven because observed Bank 11 voices do
-  not reference it; the next valid lead is the first musical-runtime BAD/GOOD
-  divergence, not another MMIO/prefix census.
+- **[EXPLAINED / NOT EMULATOR DEFECT]** Bank 11 (`ATRK TUT BNK`):
+  - **Rotorsak:** Ensoniq `BANK`-filer (typ `$1E`) är metadatakonfigurationer
+    (routing, slot-tilldelning, MIDI-kanaler och sequencerpeckare) som länkar
+    till separata instrumentfiler (typ `$03`), men innehåller inga egna PCM-vågformer
+    och utför ingen automatisk bakgrundsinläsning från disk.
+  - **BAD-flödet (`RESET -> BOOT -> Bank 11`):** Ett `invalid/incomplete load state`;
+    banken laddas i tomt minne utan sina instrumentberoenden. Rösterna pekar på
+    orört Sample-RAM (`$1CD062`, `$1D2C38`) och spelar upp kvarlämnad boot-data
+    (`$0734` / `$074B`), vilket resulterar i tystnad/DC-klick. **[OBSERVED]**
+  - **Tidigare "GOOD"-flödet (`File 1 -> Bank 11`):** Ett *history-dependent
+    accidental compatibility case*. Det återanvände felaktig PCM-data från File 1
+    som råkade ligga kvar i Sample-RAM och maskerade det saknade beroendet.
+  - **Semantiskt korrekt flöde:** Ladda de tre underliggande instrumenten före banken:
+    `RESET -> BOOT -> Ladda File 12 (BLUES DRUMS) -> Ladda File 13 (BLUES BASS) -> Ladda File 14 (BLUES ORGAN) -> Ladda File 11 (ATRK TUT BNK) -> PLAY`.
+    Detta är implementerat och verifierat grönt i `docs/asr10/lua/bank11_true_load_play.lua`.
 
 ## Current display protocol boundary
 
