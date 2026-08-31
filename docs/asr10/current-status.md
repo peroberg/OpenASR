@@ -79,7 +79,23 @@ historical and passed.
   MAME-device-clock policy.
 - The serialised effect `+$66` branch is **PARKED**. Its 44LUSH direct
   provenance is retained, but no independently classified serialised 30k
-  control was found; it is not a literal sample-rate field.
+  control was found; it is not a literal sample-rate field. Lifecycle-provenance
+  från disk till RAM (`File $21 -> RAM-objekt -> $000E92 + $66 -> $000CE3`) är
+  verifierad under 44LUSH-laddning, men fältet klassificeras fortsatt som
+  effektspecifik metadata snarare än ett fristående klockvalfält.
+- **[VERIFIED]** Disk-effect lifecycle: Filtyp `$21` (t.ex. `44LUSH PLATE`) läses
+  via FDC IDMA från disk, etablerar ett RAM-objekt (t.ex. vid `$00655200`),
+  uppdaterar current-effect pointer `$000E92` och laddas sedan till ES5510
+  host interface via `$FC3000-$FC31FF`. `44LUSH load path` är därmed en
+  **[VERIFIED functional path]**.
+- **[EXPLAINED / NOT EMULATOR DEFECT]** `EFFECT DOWNLOAD FAILED`:
+  - **Mekanism:** Uppstår när användaren väljer `FX=BANK` eller `FX=INST` utan
+    att en diskeffekt eller ett instrument med inbyggd effekt `[INFERRED]` har
+    laddats i förväg.
+  - **Avbrottspunkt:** Avbrottet sker i 68k-firmwarens interna deskriptorvalidering
+    (`cmpi.l` mot tom/oinitierad RAM-buffert) före någon FDC- eller ESP-kontakt
+    äger rum (`0` FDC/SCSI/ESP-accesser uppmätta) **[OBSERVED]**. När en giltig
+    effektfil laddas från disk sker host upload till ES5510 helt utan fel.
 - **[EXPLAINED / NOT EMULATOR DEFECT]** Bank 11 (`ATRK TUT BNK`):
   - **Rotorsak:** Ensoniq `BANK`-filer (typ `$1E`) är metadatakonfigurationer
     (routing, slot-tilldelning, MIDI-kanaler och sequencerpeckare) som länkar
