@@ -45,6 +45,9 @@
 #include "machine/mc68302.h"
 #include "machine/mc68681.h"
 #include "machine/upd765.h"
+#include "machine/wd33c9x.h"
+#include "machine/nscsi_bus.h"
+#include "bus/nscsi/devices.h"
 
 #include "esqpanel.h"
 #include "formats/esq16_dsk.h"
@@ -82,6 +85,7 @@ public:
 		, m_es5506_host(*this, "es5506_host")
 		, m_es5510_host(*this, "es5510_host")
 		, m_pump(*this, "pump")
+		, m_scsi(*this, "wd33c93a")
 		, m_sample_ram(*this, ":asr10_sample_ram")
 	{
 	}
@@ -125,6 +129,7 @@ private:
 	optional_device<es5506_device> m_es5506_host;
 	optional_device<es5510_device> m_es5510_host;
 	optional_device<esq_5505_5510_pump_device> m_pump;
+	optional_device<wd33c93a_device> m_scsi;
 	// Same backing store as mem_map's own $100000-$1FFFFF (".share()"),
 	// bound here so system_ram_alias_r/w can dispatch into it directly.
 	required_shared_ptr<u16> m_sample_ram;
@@ -133,6 +138,8 @@ private:
 	emu_timer *m_pump_release_timer = nullptr;
 	bool m_lrclk_level = false;
 	emu_timer *m_idma_tc_timer = nullptr;
+	int m_fdc_irq = 0;
+	int m_scsi_irq = 0;
 
 	std::unique_ptr<u16[]> m_lowmem_shadow;
 	// Raw, right-justified 10-bit board sources for the ES5506 PAR callback.
@@ -162,12 +169,13 @@ private:
 	void upd72069_fdc_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 	u16 duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask = ~0);
 	void duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 mem_mask = ~0);
-	u16 scsi_asr_candidate_r(offs_t offset, u16 mem_mask = ~0);
-	void scsi_asr_candidate_w(offs_t offset, u16 data, u16 mem_mask = ~0);
+	void fdc_intrq_w(int state);
+	void scsi_irq_w(int state);
 
 	TIMER_CALLBACK_MEMBER(lrclk_toggle);
 	u8 maincpu_iack_r(u8 level);
 	void idma_drq_w(int state);
+	void scsi_drq_w(int state);
 	TIMER_CALLBACK_MEMBER(idma_tc_deliver);
 
 
@@ -219,6 +227,8 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_lrclk_level));
 	save_item(NAME(m_analog_values));
 	save_item(NAME(m_effect_audio_mode));
+	save_item(NAME(m_fdc_irq));
+	save_item(NAME(m_scsi_irq));
 	machine().save().register_postload(save_prepost_delegate(FUNC(asr10_boot_state::effect_audio_rate_postload), this));
 }
 
@@ -227,6 +237,8 @@ void asr10_boot_state::machine_reset()
 {
 	m_effect_audio_mode = 0;
 	apply_effect_audio_rate_policy();
+	m_fdc_irq = 0;
+	m_scsi_irq = 0;
 	m_analog_values[0] = 0x200; // Pitch wheel, boot-calibrated center
 	m_analog_values[1] = 0x200; // ASR-88 conditional source; no ASR-10 label
 	m_analog_values[2] = 0x200; // Mod wheel
@@ -354,7 +366,8 @@ void asr10_boot_state::mem_map(address_map &map)
 	map(0xfc4004, 0xfc47ff).ram();
 	map(0xfc4800, 0xfc481f).rw(FUNC(asr10_boot_state::duart_panel_asr_candidate_r), FUNC(asr10_boot_state::duart_panel_asr_candidate_w));
 	map(0xfc4820, 0xfc4fff).ram();
-	map(0xfc5000, 0xfc501f).rw(FUNC(asr10_boot_state::scsi_asr_candidate_r), FUNC(asr10_boot_state::scsi_asr_candidate_w));
+	map(0xfc5000, 0xfc5003).rw(m_scsi, FUNC(wd33c93a_device::indir_r), FUNC(wd33c93a_device::indir_w)).umask16(0x00ff);
+	map(0xfc5004, 0xfc501f).ram();
 	// 0xFC6000-0xFC6FFF (the MC68302 internal 4KB window) is owned by
 	// m_maincpu itself now -- installed dynamically on BAR write, see
 	// mc68302_device::install_internal_window(). This plain RAM range is
@@ -502,6 +515,16 @@ TIMER_CALLBACK_MEMBER(asr10_boot_state::idma_tc_deliver)
 {
 	m_fdc->tc_w(true);
 	m_fdc->tc_w(false);
+}
+
+
+void asr10_boot_state::scsi_drq_w(int state)
+{
+	if (!state || !m_maincpu->idma_channel_active())
+		return;
+
+	const u8 data = m_scsi->dma_r();
+	m_maincpu->idma_transfer_in(data);
 }
 
 
@@ -736,14 +759,17 @@ void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 
 }
 
 
-u16 asr10_boot_state::scsi_asr_candidate_r(offs_t offset, u16 mem_mask)
+void asr10_boot_state::fdc_intrq_w(int state)
 {
-	return 0;
+	m_fdc_irq = state;
+	m_maincpu->set_input_line(1, (m_fdc_irq || m_scsi_irq) ? ASSERT_LINE : CLEAR_LINE);
 }
 
 
-void asr10_boot_state::scsi_asr_candidate_w(offs_t offset, u16 data, u16 mem_mask)
+void asr10_boot_state::scsi_irq_w(int state)
 {
+	m_scsi_irq = state;
+	m_maincpu->set_input_line(1, (m_fdc_irq || m_scsi_irq) ? ASSERT_LINE : CLEAR_LINE);
 }
 
 
@@ -831,13 +857,27 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	// so this driver does not implement the internal IPR/IMR/ISR path or
 	// vector $4B delivery, only the transfer itself.
 	m_fdc->set_ready_line_connected(false);
-	m_fdc->intrq_wr_callback().set_inputline(m_maincpu, 1);
+	m_fdc->intrq_wr_callback().set(FUNC(asr10_boot_state::fdc_intrq_w));
 	m_fdc->drq_wr_callback().set(FUNC(asr10_boot_state::idma_drq_w));
 
 
 	// The uPD72069 sees this child connector as drive 0 via the conventional "fdc:0" tag.
 	// Mounted HFE media changes Recalibrate/Sense from 68,00 (not ready) to 20,00.
 	FLOPPY_CONNECTOR(config, m_floppy_connector, asr10_boot_state::floppy_drives, "35hd", asr10_boot_state::floppy_formats, true);
+
+	auto &scsi(NSCSI_BUS(config, "scsibus"));
+	NSCSI_CONNECTOR(config, "scsibus:0", default_scsi_devices, "harddisk");
+	NSCSI_CONNECTOR(config, "scsibus:1", default_scsi_devices, nullptr);
+	NSCSI_CONNECTOR(config, "scsibus:2", default_scsi_devices, nullptr);
+	NSCSI_CONNECTOR(config, "scsibus:3", default_scsi_devices, nullptr);
+	NSCSI_CONNECTOR(config, "scsibus:4", default_scsi_devices, nullptr);
+	NSCSI_CONNECTOR(config, "scsibus:5", default_scsi_devices, nullptr);
+	NSCSI_CONNECTOR(config, "scsibus:6", default_scsi_devices, nullptr);
+
+	auto &wd33c93(WD33C93A(config, m_scsi, XTAL(10'000'000)));
+	wd33c93.irq_cb().set(*this, FUNC(asr10_boot_state::scsi_irq_w));
+	wd33c93.drq_cb().set(*this, FUNC(asr10_boot_state::scsi_drq_w));
+	scsi.set_external_device(7, wd33c93);
 
 	// U20, per docs/hardware-identity.md. X1 is derived, not a separate
 	// crystal: the board has no 3.6864MHz part (Y1=16MHz, Y2=30.476MHz,
