@@ -108,6 +108,7 @@ private:
 	emu_timer *m_timer;
 
 	bool set_command_length(const uint8_t cc);
+	void load_command_cdb();
 	uint8_t get_msg_out() const;
 };
 

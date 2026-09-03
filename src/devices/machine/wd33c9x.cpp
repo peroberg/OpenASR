@@ -1039,7 +1039,7 @@ void wd33c9x_base_device::step(bool timeout)
 				delay(1);
 			} else {
 				set_scsi_state_sub(ARB_TIMEOUT_BUSY);
-				delay(1); // Should be the select timeout...
+				delay(250000); // 250ms standard SCSI select timeout
 			}
 		}
 		break;
@@ -1177,7 +1177,7 @@ void wd33c9x_base_device::step(bool timeout)
 				irq_fifo_push(SCSI_STATUS_REQ | m_xfr_phase);
 			}
 		} else {
-			if (cc == COMMAND_CC_SELECT_TRANSFER)
+			if (cc == COMMAND_CC_SELECT_TRANSFER || cc == COMMAND_CC_SELECT_ATN_TRANSFER)
 				m_regs[COMMAND_PHASE] = COMMAND_PHASE_CP_BYTES_0;
 			else
 				m_regs[COMMAND_PHASE] = COMMAND_PHASE_SELECTED;
@@ -1270,9 +1270,15 @@ void wd33c9x_base_device::step(bool timeout)
 
 			switch ((m_xfr_phase << 3) | xfr_phase) {
 			case ((S_PHASE_MSG_OUT << 3) | S_PHASE_MSG_OUT):
-			case ((S_PHASE_COMMAND << 3) | S_PHASE_COMMAND):
 			case ((S_PHASE_MSG_IN  << 3) | S_PHASE_MSG_IN):
 				next_state = INIT_XFR;
+				break;
+
+			case ((S_PHASE_COMMAND << 3) | S_PHASE_COMMAND):
+				next_state = INIT_XFR;
+				if (sat && data_fifo_empty()) {
+					load_command_cdb();
+				}
 				break;
 
 			case ((S_PHASE_DATA_IN  << 3) | S_PHASE_DATA_IN):
@@ -1309,7 +1315,9 @@ void wd33c9x_base_device::step(bool timeout)
 			case ((S_PHASE_DATA_IN  << 3) | S_PHASE_STATUS):
 			case ((S_PHASE_STATUS   << 3) | S_PHASE_MSG_IN):
 				if (!(m_xfr_phase & 1) && !data_fifo_empty()) {
-					fatalerror("%s: Data FIFO is not empty on phase transition.\n", shortname());
+					logerror("%s: Data FIFO is not empty on phase transition.\n", shortname());
+					m_data_fifo_pos = 0;
+					m_data_fifo_size = 0;
 				}
 
 				if (sat) {
@@ -1318,18 +1326,12 @@ void wd33c9x_base_device::step(bool timeout)
 						next_state = INIT_XFR;
 						break;
 
-					case S_PHASE_COMMAND: {
+					case S_PHASE_COMMAND:
 						next_state = INIT_XFR;
-						m_regs[COMMAND_PHASE] = COMMAND_PHASE_CP_BYTES_0;
-						std::string cmd;
-						for (uint8_t i = 0; i < m_command_length; ++i) {
-							const uint8_t command_byte = m_regs[CDB_1 + i];
-							cmd += util::string_format(" %02x", command_byte);
-							data_fifo_push(command_byte);
+						if (data_fifo_empty()) {
+							load_command_cdb();
 						}
-						LOGMASKED(LOG_COMMANDS, "Sending command:%s (%d)\n", cmd, m_transfer_count);
 						break;
-					}
 
 					case S_PHASE_DATA_OUT:
 					case S_PHASE_DATA_IN:
@@ -1746,6 +1748,18 @@ bool wd33c9x_base_device::set_command_length(const uint8_t cc)
 	}
 	LOGMASKED(LOG_COMMANDS, "SCSI Command Length %d bytes\n", m_command_length);
 	return ret;
+}
+
+void wd33c9x_base_device::load_command_cdb()
+{
+	m_regs[COMMAND_PHASE] = COMMAND_PHASE_CP_BYTES_0;
+	std::string cmd;
+	for (uint8_t i = 0; i < m_command_length; ++i) {
+		const uint8_t command_byte = m_regs[CDB_1 + i];
+		cmd += util::string_format(" %02x", command_byte);
+		data_fifo_push(command_byte);
+	}
+	LOGMASKED(LOG_COMMANDS, "Sending command:%s (%d)\n", cmd, m_transfer_count);
 }
 
 //-------------------------------------------------
