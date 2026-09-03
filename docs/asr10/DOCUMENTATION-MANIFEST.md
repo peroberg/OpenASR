@@ -119,13 +119,20 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 119 Markdown-filer (räknat om 2026-08-30)
+## `investigations/` — 128 Markdown-filer (räknat om 2026-09-03)
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `HANDOFF.md`, `current-status.md` och `reference/` som
 aktuell sanning. Senaste tillägget är
-`es5510-upload-executable-contract-v350.md`, uppdaterad i commit
+`upd72069-standby-auxcmd-fix.md` (2026-09-03): generisk MAME-fix i `src/devices/machine/upd765.cpp`
+för NEC uPD72069 standby auxcmd `$35/$34`. Delegering till `upd72065_device::auxcmd_w` eliminerar
+felaktig `PHASE_RESULT` / `MSR $D0` som orsakade firmware FDC busy timeout (`$049D=$0D`, `$04AE=$20`),
+och möjliggör full autentisk inläsning av `ORCH STRNGS1` från CDR-1 (extent `$C1C9..$C58B`, 963 block)
+samt hörbar uppspelning. Storage-spåret är därmed `[VERIFIED / FUNCTIONALLY CLOSED / FROZEN]`.
+Föregående tillägg är `writable-scsi-hdd-and-format.md`, `scsi-initiator-cdb-reconstruction.md` och
+`scsi-idma-read-reconstruction.md`.
+Föregående `es5510-upload-executable-contract-v350.md`, uppdaterad i commit
 `7bfd2f3722d`: en bounded `[Likely functional]` ASR-frameadapter för ROM HALL
 och 44LUSH. Den säkrar post-upload-admission, matar lane 0/1 funktionellt till
 SER0/SER2/SER3, kör en ESP-frame per ES5506-frame och läser SER1. Det är

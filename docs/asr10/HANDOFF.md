@@ -30,7 +30,7 @@ coverage and positive controls. The normative rules and labels are in
                                       |-- ROM/RAM and sample RAM
                                       |-- uPD72069 FDC -> external IDMA -> RAM
                                       |-- DUART -> panel/display path
-                                      |-- SCSI candidate window (partial)
+                                      |-- WD33C93A SCSI (ID 0 HDD, ID 4 CD-ROM)
                                       `-- ES5506 -> functional ESP frame adapter -> ES5510 -> audio
 ```
 
@@ -46,7 +46,7 @@ and `investigations/audio-rate-control-write-v350.md`.
 | Subsystem | Current status | Important boundary |
 |---|---|---|
 | Boot, V3.50 load, FDC/IDMA | **[Verified runtime/current model]** | V3.50 reaches `FILE 1`; real MAME FDC/IDMA is used for bounded load cases. Physical IRQ/glue routing is not fully known. |
-| Storage | **[Partly functional]** | FDC boot/load works. SCSI is a partial candidate/stub; ASR filesystem `SAVE`/write semantics are not modelled merely by MAME save states. |
+| Storage | **[Verified / Functionally Closed / Frozen]** | Cold HDD boot, authentic Ensoniq HDD filesystem, OS V3.50 boot, SCSI device switch, authentic CDR-1 browse, type-3 Bank load, Sample-RAM transfer, ES5506 voice programming and audible output are fully verified. |
 | DUART/panel/display | **[Verified bounded runtime]** | Normal boot/navigation, display fields and selected workflows work; full UI semantics and every DUART output pin are not claimed. |
 | ES5506 dry voice path | **[Verified runtime]** | Note allocation, sample fetch and audible pitched output are established for bounded controls. |
 | ES5510 upload/execution | Good enough / functionally established | Host upload/readback is verified. Safe execution is admitted only through the explicit adapter lifecycle below. |
@@ -140,6 +140,46 @@ broad hardware census.
 
 Primary record: `investigations/bank11-history-mmio-state-census.md`.
 
+## Storage subsystem freeze: [VERIFIED / FUNCTIONALLY CLOSED / FROZEN]
+
+The storage subsystem is functionally complete and frozen:
+
+```text
+cold HDD boot
+  ↓
+authentic Ensoniq HDD filesystem
+  ↓
+OS V3.50 boot
+  ↓
+SCSI device switch (to SCSI ID 4)
+  ↓
+authentic Ensoniq CDR-1 browse
+  ↓
+type-3 Bank load (ORCH STRNGS1: 963 blocks, $C1C9..$C58B)
+  ↓
+Sample-RAM transfer
+  ↓
+ES5506 voice programming
+  ↓
+audible output (Middle C, 262.3 Hz)
+```
+
+### uPD72069 Standby Auxcmd Fix (Generic MAME)
+
+- **Symptom:** HDD boot → CHANGE STORAGE DEVICE to SCSI 4 → browse CDR-1 OK → load file (`ORCH STRNGS1`) → `FILE OPERATION ERROR`. 0 SCSI READ commands sent to WD33C93.
+- **Root cause:** In upstream MAME `src/devices/machine/upd765.cpp`, `upd72069_device::auxcmd_w()` erroneously grouped `case 0x35:` (*set standby*) and `case 0x34:` (*reset standby*) under `PHASE_RESULT` with `ST0_UNK`. This caused FDC MSR to report `$D0` (`MSR_RQM | MSR_DIO | MSR_CB`).
+- **First causal divergence:** Firmware's `prepare_device_for_io` (`$013398`) issues auxcmd `$35` before SCSI operations, then polls FDC MSR bit 4 (`MSR_CB`) at `$FFFB8D1E`. Because `MSR_CB` never cleared, it timed out after 8,000 loops, set `$049D=$0D` (`FILE OPERATION ERROR`) and `$04AE=$20` (FDC busy timeout), and aborted before issuing any SCSI commands.
+- **Fix:** In `src/devices/machine/upd765.cpp`, `case 0x35:` and `case 0x34:` are delegated to base class `upd72065_device::auxcmd_w(data)` (`break;`). FDC remains idle with MSR `$80` (`MSR_CB` = 0).
+- **Epistemic status:**
+  - **[VERIFIED]** `FILE OPERATION ERROR` was caused by uPD72069 incorrect `PHASE_RESULT` after auxcmd `$35/$34`.
+  - **[VERIFIED]** Defect was in generic `upd765.cpp`, not in ASR driver. Zero ASR-specific workarounds.
+  - **[VERIFIED]** CD file-load after HDD boot and SCSI switch works completely. First authentic READ is at `LBA $0000C1C9`, extent reads to `LBA $0000C58B` (963 blocks), followed by `FILE LOADED`.
+  - **[VERIFIED]** ORCH STRNGS1 plays with audible Middle C note (~262.3 Hz, peak 11057) via MIDI.
+  - **[DISPROVEN]** SCSI/IDMA/CD-filesystem as the cause of this error.
+  - **Note:** The `ORCH STRNGS1` file extent is exactly 963 × 512 bytes. Sample-RAM writes observed during load do not represent sample payload size without independent verification.
+
+Primary record: `investigations/upd72069-standby-auxcmd-fix.md`.
+
 ## Important remaining boundaries
 
 - **Physical audio rate/clock:** no verified ASR CLKIN source, divider/mux,
@@ -148,9 +188,9 @@ Primary record: `investigations/bank11-history-mmio-state-census.md`.
 - **Resampling:** MAME stream resampling and the ASR board/sample-rate
   architecture are separate questions. A working frame adapter does not
   establish original board resampling or serial timing.
-- **Storage future:** SCSI device behaviour and physical completion wiring are
-  open. An ASR filesystem `SAVE`/write path is a separate future capability;
-  it must not be conflated with MAME save-state serialization.
+- **Storage:** **[VERIFIED / FUNCTIONALLY CLOSED / FROZEN]**. Both floppy boot/load,
+  SCSI HDD boot/format/remount, and SCSI CD-ROM browse/load are functionally closed.
+  Physical completion IRQ line glue details remain secondary/open.
 - **Sequencer:** transport is working, but audio-correct musical playback is
   not demonstrated. This and the Bank 11 first-divergence question are the
   most useful next reviewer areas.

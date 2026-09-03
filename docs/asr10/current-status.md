@@ -49,8 +49,41 @@ Panel receive terminology:
 handoff documents as the current overview. It freezes the functional
 ES5510/rate milestone at `[Likely functional]` (not physical-board verified),
 records the Bank 11 rejected candidates, and gives current review priorities.
-It is intentionally a state-of-the-system document rather than a new
-investigation.
+## Storage Subsystem Milestone — [VERIFIED / FUNCTIONALLY CLOSED / FROZEN] (2026-09-03)
+
+- **[VERIFIED / FUNCTIONALLY CLOSED / FROZEN]** The end-to-end storage chain is fully verified:
+  ```text
+  cold HDD boot
+    ↓
+  authentic Ensoniq HDD filesystem
+    ↓
+  OS V3.50 boot
+    ↓
+  SCSI device switch (to SCSI ID 4)
+    ↓
+  authentic Ensoniq CDR-1 browse
+    ↓
+  type-3 Bank load (ORCH STRNGS1: 963 blocks, $C1C9..$C58B)
+    ↓
+  Sample-RAM transfer
+    ↓
+  ES5506 voice programming
+    ↓
+  audible output (Middle C, 262.3 Hz)
+  ```
+- **uPD72069 Standby Auxcmd Fix (Generic MAME `src/devices/machine/upd765.cpp`):**
+  - **Symptom:** HDD boot → CHANGE STORAGE DEVICE to SCSI 4 → browse CDR-1 OK → load file (`ORCH STRNGS1`) → `FILE OPERATION ERROR`. 0 SCSI READ commands sent to WD33C93.
+  - **Root cause:** In upstream MAME `src/devices/machine/upd765.cpp`, `upd72069_device::auxcmd_w()` erroneously grouped `case 0x35:` (*set standby*) and `case 0x34:` (*reset standby*) under `PHASE_RESULT` with `ST0_UNK`. This caused FDC MSR to report `$D0` (`MSR_RQM | MSR_DIO | MSR_CB`).
+  - **First causal divergence:** Firmware's `prepare_device_for_io` (`$013398`) issues auxcmd `$35` before SCSI operations, then polls FDC MSR bit 4 (`MSR_CB`) at `$FFFB8D1E`. Because `MSR_CB` never cleared, it timed out after 8,000 loops, set `$049D=$0D` (`FILE OPERATION ERROR`) and `$04AE=$20` (FDC busy timeout), and aborted before issuing any SCSI commands.
+  - **Fix:** In `src/devices/machine/upd765.cpp`, `case 0x35:` and `case 0x34:` are delegated to base class `upd72065_device::auxcmd_w(data)` (`break;`). FDC remains idle with MSR `$80` (`MSR_CB` = 0).
+  - **Epistemic status:**
+    - **[VERIFIED]** `FILE OPERATION ERROR` was caused by uPD72069 incorrect `PHASE_RESULT` after auxcmd `$35/$34`.
+    - **[VERIFIED]** Defect was in generic `upd765.cpp`, not in ASR driver. Zero ASR-specific workarounds.
+    - **[VERIFIED]** CD file-load after HDD boot and SCSI switch works completely. First authentic READ is at `LBA $0000C1C9`, extent reads to `LBA $0000C58B` (963 blocks), followed by `FILE LOADED`.
+    - **[VERIFIED]** ORCH STRNGS1 plays with audible Middle C note (~262.3 Hz, peak 11057) via MIDI.
+    - **[DISPROVEN]** SCSI/IDMA/CD-filesystem as the cause of this error.
+    - **Note:** The `ORCH STRNGS1` file extent is exactly 963 × 512 bytes. Sample-RAM writes observed during load do not represent sample payload size without independent verification.
+  - **Primary record:** `investigations/upd72069-standby-auxcmd-fix.md`.
 
 The current resume point is this document together with
 `investigations/display-protocol-state-machine-v350.md`,
