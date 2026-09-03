@@ -3461,12 +3461,14 @@ void upd72069_device::auxcmd_w(uint8_t data)
 		result[0] = ST0_UNK;
 		result_pos = 1;
 		break;
+	case 0x35: // set standby
+	case 0x34: // reset standby
+		upd72065_device::auxcmd_w(data);
+		break;
 	case 0xc3: case 0xd3: case 0xe3: case 0xf3: // precompensation (72069 exclusive)
 	case 0x4f: // select IBM format (select 77 tracks on some other 7206x variants)
 	case 0x5f: // select ECMA/ISO format (select 255 tracks on some other 7206x variants)
-	case 0x35: // set standby
 	case 0x47: // start clock
-	case 0x34: // reset standby
 	case 0x33: // enable external mode
 	case 0x80: // Not a valid auxcmd, but the Akai S3000 sends it and expects an ACK.
 		main_phase = PHASE_RESULT;
