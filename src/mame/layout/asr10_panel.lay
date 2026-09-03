@@ -96,11 +96,11 @@ license:CC0-1.0
 	</element>
 
 	<element name="button_label_0A">
-		<text string="DWN"><color red="0.92" green="0.92" blue="0.92" /></text>
+		<text string="UP"><color red="0.92" green="0.92" blue="0.92" /></text>
 	</element>
 
 	<element name="button_label_0B">
-		<text string="UP"><color red="0.92" green="0.92" blue="0.92" /></text>
+		<text string="DWN"><color red="0.92" green="0.92" blue="0.92" /></text>
 	</element>
 
 	<element name="button_label_0C">
@@ -120,11 +120,11 @@ license:CC0-1.0
 	</element>
 
 	<element name="button_label_10">
-		<text string="LEFT"><color red="0.92" green="0.92" blue="0.92" /></text>
+		<text string="LFT"><color red="0.92" green="0.92" blue="0.92" /></text>
 	</element>
 
 	<element name="button_label_11">
-		<text string="RGTH"><color red="0.92" green="0.92" blue="0.92" /></text>
+		<text string="RGT"><color red="0.92" green="0.92" blue="0.92" /></text>
 	</element>
 
 	<element name="button_label_12">
@@ -148,7 +148,7 @@ license:CC0-1.0
 	</element>
 
 	<element name="button_label_17">
-		<text string="17"><color red="0.92" green="0.92" blue="0.92" /></text>
+		<text string="STOP"><color red="0.92" green="0.92" blue="0.92" /></text>
 	</element>
 
 	<element name="button_label_18">
@@ -156,7 +156,7 @@ license:CC0-1.0
 	</element>
 
 	<element name="button_label_19">
-		<text string="19"><color red="0.92" green="0.92" blue="0.92" /></text>
+		<text string="REC"><color red="0.92" green="0.92" blue="0.92" /></text>
 	</element>
 
 	<element name="button_label_1A">
@@ -172,7 +172,7 @@ license:CC0-1.0
 	</element>
 
 	<element name="button_label_1D">
-		<text string="1D"><color red="0.92" green="0.92" blue="0.92" /></text>
+		<text string="PLAY"><color red="0.92" green="0.92" blue="0.92" /></text>
 	</element>
 
 	<element name="button_label_1E">

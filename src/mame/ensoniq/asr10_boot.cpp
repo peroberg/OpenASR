@@ -48,6 +48,8 @@
 #include "machine/wd33c9x.h"
 #include "machine/nscsi_bus.h"
 #include "bus/nscsi/devices.h"
+#include "bus/nscsi/cd.h"
+#include "bus/nscsi/hd.h"
 
 #include "esqpanel.h"
 #include "formats/esq16_dsk.h"
@@ -791,6 +793,15 @@ void asr10_boot_state::floppy_formats(format_registration &fr)
 static INPUT_PORTS_START(asr10_boot)
 INPUT_PORTS_END
 
+static void asr10_scsi_devices(device_slot_interface &device)
+{
+	device.option_add("harddisk", NSCSI_HARDDISK);
+	device.option_add("cdrom", NSCSI_CDROM).machine_config(
+		[](device_t *device)
+		{
+			downcast<nscsi_cdrom_device &>(*device).set_block_size(512);
+		});
+}
 
 void asr10_boot_state::asr10_boot(machine_config &config)
 {
@@ -866,13 +877,13 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	FLOPPY_CONNECTOR(config, m_floppy_connector, asr10_boot_state::floppy_drives, "35hd", asr10_boot_state::floppy_formats, true);
 
 	auto &scsi(NSCSI_BUS(config, "scsibus"));
-	NSCSI_CONNECTOR(config, "scsibus:0", default_scsi_devices, "harddisk");
-	NSCSI_CONNECTOR(config, "scsibus:1", default_scsi_devices, nullptr);
-	NSCSI_CONNECTOR(config, "scsibus:2", default_scsi_devices, nullptr);
-	NSCSI_CONNECTOR(config, "scsibus:3", default_scsi_devices, nullptr);
-	NSCSI_CONNECTOR(config, "scsibus:4", default_scsi_devices, nullptr);
-	NSCSI_CONNECTOR(config, "scsibus:5", default_scsi_devices, nullptr);
-	NSCSI_CONNECTOR(config, "scsibus:6", default_scsi_devices, nullptr);
+	NSCSI_CONNECTOR(config, "scsibus:0", asr10_scsi_devices, "harddisk");
+	NSCSI_CONNECTOR(config, "scsibus:1", asr10_scsi_devices, nullptr);
+	NSCSI_CONNECTOR(config, "scsibus:2", asr10_scsi_devices, nullptr);
+	NSCSI_CONNECTOR(config, "scsibus:3", asr10_scsi_devices, nullptr);
+	NSCSI_CONNECTOR(config, "scsibus:4", asr10_scsi_devices, "cdrom");
+	NSCSI_CONNECTOR(config, "scsibus:5", asr10_scsi_devices, nullptr);
+	NSCSI_CONNECTOR(config, "scsibus:6", asr10_scsi_devices, nullptr);
 
 	auto &wd33c93(WD33C93A(config, m_scsi, XTAL(10'000'000)));
 	wd33c93.irq_cb().set(*this, FUNC(asr10_boot_state::scsi_irq_w));
