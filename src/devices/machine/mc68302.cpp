@@ -12,6 +12,9 @@ DEFINE_DEVICE_TYPE(MC68302, mc68302_device, "mc68302", "MC68302")
 // Internal SIB register offsets this step recognizes by name (all other
 // offsets in the documented ranges below are known-unimplemented shadow
 // storage; docs/mc68302/sib-register-map.md).
+static constexpr uint16_t OFFSET_PACNT  = 0x081e;
+static constexpr uint16_t OFFSET_PADDR  = 0x0820;
+static constexpr uint16_t OFFSET_PADAT  = 0x0822;
 static constexpr uint16_t OFFSET_PBCNT  = 0x0824;
 static constexpr uint16_t OFFSET_PBDDR  = 0x0826;
 static constexpr uint16_t OFFSET_PBDAT  = 0x0828;
@@ -68,6 +71,8 @@ mc68302_device::mc68302_device(const machine_config &mconfig, const char *tag, d
 	m_bar(0),
 	m_scr_high(0),
 	m_scr_low(0),
+	m_pa_out_cb(*this),
+	m_pb_out_cb(*this),
 	m_window_installed(false),
 	m_window_base(0),
 	m_known_count(0),
@@ -407,6 +412,11 @@ uint16_t mc68302_device::pbdat_latch() const
 	return m_sim->pbdat_latch();
 }
 
+uint16_t mc68302_device::padat_latch() const
+{
+	return m_sim->padat_latch();
+}
+
 void mc68302_device::handle_cp_command(uint8_t command)
 {
 	if (command == 0x81)
@@ -551,6 +561,15 @@ uint16_t mc68302_device::internal_r(offs_t offset, uint16_t mem_mask)
 
 	switch (byte_offset)
 	{
+	case OFFSET_PACNT:
+		m_known_count++;
+		return m_sim->pacnt_latch() & mem_mask;
+	case OFFSET_PADDR:
+		m_known_count++;
+		return m_sim->paddr_latch() & mem_mask;
+	case OFFSET_PADAT:
+		m_known_count++;
+		return m_sim->read_padat(mem_mask);
 	case OFFSET_PBCNT:
 		m_known_count++;
 		// FIXME: m_sim stores PBCNT/PBDDR, but readback is not implemented;
@@ -632,6 +651,24 @@ void mc68302_device::internal_w(offs_t offset, uint16_t data, uint16_t mem_mask)
 
 	switch (byte_offset)
 	{
+	case OFFSET_PACNT:
+		m_known_count++;
+		m_sim->write_pacnt(data, mem_mask);
+		return;
+	case OFFSET_PADDR:
+		m_known_count++;
+		m_sim->write_paddr(data, mem_mask);
+		return;
+	case OFFSET_PADAT:
+	{
+		m_known_count++;
+		const uint16_t old_val = m_sim->padat_latch();
+		m_sim->write_padat(data, mem_mask);
+		const uint16_t new_val = m_sim->padat_latch();
+		if (new_val != old_val)
+			m_pa_out_cb(new_val);
+		return;
+	}
 	case OFFSET_PBCNT:
 		m_known_count++;
 		m_sim->write_pbcnt(data, mem_mask);
@@ -641,9 +678,15 @@ void mc68302_device::internal_w(offs_t offset, uint16_t data, uint16_t mem_mask)
 		m_sim->write_pbddr(data, mem_mask);
 		return;
 	case OFFSET_PBDAT:
+	{
 		m_known_count++;
+		const uint16_t old_val = m_sim->pbdat_latch();
 		m_sim->write_pbdat(data, mem_mask);
+		const uint16_t new_val = m_sim->pbdat_latch();
+		if (new_val != old_val)
+			m_pb_out_cb(new_val);
 		return;
+	}
 	case OFFSET_FC6860:
 		m_known_count++;
 		if (mem_mask & 0xff00)

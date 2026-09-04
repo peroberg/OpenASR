@@ -69,6 +69,14 @@ public:
 
 	void reset();
 
+	void write_pacnt(uint16_t data, uint16_t mem_mask);
+	void write_paddr(uint16_t data, uint16_t mem_mask);
+	uint16_t read_padat(uint16_t mem_mask) const;
+	void write_padat(uint16_t data, uint16_t mem_mask);
+	uint16_t padat_latch() const { return m_padat; }
+	uint16_t pacnt_latch() const { return m_pacnt; }
+	uint16_t paddr_latch() const { return m_paddr; }
+
 	void write_pbcnt(uint16_t data, uint16_t mem_mask);
 	void write_pbddr(uint16_t data, uint16_t mem_mask);
 	uint16_t read_pbdat(uint16_t mem_mask) const;
@@ -101,6 +109,11 @@ public:
 
 private:
 	void recompute_cs(unsigned index);
+
+	uint16_t m_pacnt = 0x0000;
+	uint16_t m_paddr = 0x0000;
+	uint16_t m_padat = 0x0000;
+	uint16_t m_pa_external_input = 0x0000;
 
 	uint16_t m_pbcnt = PBCNT_RESET;
 	uint16_t m_pbddr = 0x0000;

@@ -85,6 +85,10 @@ public:
 	// output pin needs the driven latch value, while read_pbdat() models CPU
 	// readback.  Board-specific interpretation belongs to the owning machine.
 	uint16_t pbdat_latch() const;
+	uint16_t padat_latch() const;
+
+	auto pa_out_cb() { return m_pa_out_cb.bind(); }
+	auto pb_out_cb() { return m_pb_out_cb.bind(); }
 
 	// External IRQ6 IACK vector, MC68302 User's Manual Table 3-5 /
 	// docs/mc68302/vector-origin-map.md: vector = (GIMR bits 7-5 << 5) |
@@ -193,6 +197,8 @@ private:
 	uint16_t m_bar;
 	uint16_t m_scr_high;
 	uint16_t m_scr_low;
+	devcb_write16 m_pa_out_cb;
+	devcb_write16 m_pb_out_cb;
 	bool m_window_installed;
 	uint32_t m_window_base;
 

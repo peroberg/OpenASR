@@ -8,6 +8,10 @@
 
 void mc68302_device::mc68302_sim::reset()
 {
+	m_pacnt = 0x0000;
+	m_paddr = 0x0000;
+	m_padat = 0x0000;
+	m_pa_external_input = 0x0000;
 	m_pbcnt = PBCNT_RESET;
 	m_pbddr = 0x0000;
 	m_pbdat = 0x0000;
@@ -24,6 +28,30 @@ void mc68302_device::mc68302_sim::reset()
 	}
 	for (unsigned index = 0; index < 4; index++)
 		recompute_cs(index);
+}
+
+
+void mc68302_device::mc68302_sim::write_pacnt(uint16_t data, uint16_t mem_mask)
+{
+	COMBINE_DATA(&m_pacnt);
+}
+
+void mc68302_device::mc68302_sim::write_paddr(uint16_t data, uint16_t mem_mask)
+{
+	COMBINE_DATA(&m_paddr);
+}
+
+uint16_t mc68302_device::mc68302_sim::read_padat(uint16_t mem_mask) const
+{
+	const uint16_t gpio_mask = ~m_pacnt;
+	const uint16_t output_bits = m_paddr & gpio_mask;
+	const uint16_t input_bits = gpio_mask & ~m_paddr;
+	return ((m_padat & output_bits) | (m_pa_external_input & input_bits)) & mem_mask;
+}
+
+void mc68302_device::mc68302_sim::write_padat(uint16_t data, uint16_t mem_mask)
+{
+	COMBINE_DATA(&m_padat);
 }
 
 
@@ -146,6 +174,10 @@ void mc68302_device::mc68302_sim::recompute_all_cs()
 
 void mc68302_device::mc68302_sim::register_save_items(save_manager &save, device_t &device)
 {
+	save.save_item(&device, device.name(), device.tag(), 0, m_pacnt, "m_sim->m_pacnt");
+	save.save_item(&device, device.name(), device.tag(), 0, m_paddr, "m_sim->m_paddr");
+	save.save_item(&device, device.name(), device.tag(), 0, m_padat, "m_sim->m_padat");
+	save.save_item(&device, device.name(), device.tag(), 0, m_pa_external_input, "m_sim->m_pa_external_input");
 	save.save_item(&device, device.name(), device.tag(), 0, m_pbcnt, "m_sim->m_pbcnt");
 	save.save_item(&device, device.name(), device.tag(), 0, m_pbddr, "m_sim->m_pbddr");
 	save.save_item(&device, device.name(), device.tag(), 0, m_pbdat, "m_sim->m_pbdat");
