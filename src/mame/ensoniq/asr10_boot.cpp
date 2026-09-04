@@ -137,7 +137,6 @@ private:
 	required_shared_ptr<u16> m_sample_ram;
 
 	emu_timer *m_lrclk_timer = nullptr;
-	emu_timer *m_pump_release_timer = nullptr;
 	bool m_lrclk_level = false;
 	emu_timer *m_idma_tc_timer = nullptr;
 	int m_fdc_irq = 0;
@@ -148,7 +147,10 @@ private:
 	// Source selection is PBDAT PB2-PB0, not DUART OPR; see
 	// docs/asr10/investigations/analog-selector-control-map-v350.md.
 	std::array<u16, 8> m_analog_values{};
+	// Operating-mode byte tracked from `$0CE3`.  Mode 0 is 30 kHz (the
+	// power-on default); mode 1 is 44.1 kHz.
 	u8 m_effect_audio_mode = 0;
+	bool m_esp_program_loaded = false;
 
 	virtual void machine_start() override ATTR_COLD;
 	virtual void machine_reset() override ATTR_COLD;
@@ -161,8 +163,7 @@ private:
 	void apply_effect_audio_rate_policy();
 	void effect_audio_rate_postload();
 	void es5506_frame_rate_changed(u32 rate);
-	void es5510_program_commit();
-	TIMER_CALLBACK_MEMBER(pump_release);
+	void mc68302_pa_w(u16 data);
 	u16 system_ram_alias_r(offs_t offset, u16 mem_mask = ~0);
 	void system_ram_alias_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 	u16 high_alias_r(offs_t offset, u16 mem_mask = ~0);
@@ -221,7 +222,6 @@ private:
 void asr10_boot_state::machine_start()
 {
 	m_lrclk_timer = timer_alloc(FUNC(asr10_boot_state::lrclk_toggle), this);
-	m_pump_release_timer = timer_alloc(FUNC(asr10_boot_state::pump_release), this);
 	m_idma_tc_timer = timer_alloc(FUNC(asr10_boot_state::idma_tc_deliver), this);
 	m_lowmem_shadow = make_unique_clear<u16[]>(LOWMEM_WORDS);
 
@@ -229,6 +229,7 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_lrclk_level));
 	save_item(NAME(m_analog_values));
 	save_item(NAME(m_effect_audio_mode));
+	save_item(NAME(m_esp_program_loaded));
 	save_item(NAME(m_fdc_irq));
 	save_item(NAME(m_scsi_irq));
 	machine().save().register_postload(save_prepost_delegate(FUNC(asr10_boot_state::effect_audio_rate_postload), this));
@@ -237,6 +238,7 @@ void asr10_boot_state::machine_start()
 
 void asr10_boot_state::machine_reset()
 {
+	m_esp_program_loaded = false;
 	m_effect_audio_mode = 0;
 	apply_effect_audio_rate_policy();
 	m_fdc_irq = 0;
@@ -259,6 +261,8 @@ void asr10_boot_state::machine_reset()
 	m_lrclk_timer->adjust(attotime::from_hz(44100), 0, attotime::from_hz(44100));
 	std::fill_n(m_lowmem_shadow.get(), LOWMEM_WORDS, 0);
 
+	if (m_pump)
+		m_pump->set_esp_halted(true);
 }
 
 void asr10_boot_state::mem_map(address_map &map)
@@ -597,7 +601,7 @@ u8 asr10_boot_state::es5510_host_write_select_instr_r(offs_t offset)
 
 void asr10_boot_state::es5510_host_write_select_instr_w(offs_t offset, u8 data)
 {
-	es5510_program_commit();
+	m_esp_program_loaded = true;
 	m_es5510_host->host_w(0xc0, data);
 }
 
@@ -608,17 +612,8 @@ u8 asr10_boot_state::es5510_host_write_select_gpr_instr_r(offs_t offset)
 
 void asr10_boot_state::es5510_host_write_select_gpr_instr_w(offs_t offset, u8 data)
 {
-	es5510_program_commit();
+	m_esp_program_loaded = true;
 	m_es5510_host->host_w(0xe0, data);
-}
-
-void asr10_boot_state::es5510_program_commit()
-{
-	if (m_pump)
-	{
-		m_pump->set_esp_halted(true);
-		m_pump_release_timer->adjust(attotime::from_msec(10));
-	}
 }
 
 void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
@@ -631,7 +626,7 @@ void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 	if (offset == (0x0ce2 / 2) && ACCESSING_BITS_0_7)
 	{
 		const u8 mode = m_lowmem_shadow[offset] & 0xff;
-		if (mode <= 1)
+		if (mode <= 1 && mode != m_effect_audio_mode)
 		{
 			m_effect_audio_mode = mode;
 			apply_effect_audio_rate_policy();
@@ -652,25 +647,21 @@ void asr10_boot_state::es5506_frame_rate_changed(u32 rate)
 		m_pump->set_unscaled_clock(rate);
 }
 
-TIMER_CALLBACK_MEMBER(asr10_boot_state::pump_release)
+void asr10_boot_state::mc68302_pa_w(u16 data)
 {
-	if (!m_pump || !m_es5510_host)
-		return;
-
-	// The known-program gate deliberately rejects all other uploaded images.
-	// It is a functional safety hypothesis, not an ASR HALT-pin reconstruction.
-	const bool lush = m_es5510_host->_instr(0x00) == 0xffffffff9040ULL
-		&& m_es5510_host->_instr(0x3b) == 0x7a81fffff040ULL;
-	const bool hall = m_es5510_host->_instr(0x00) == 0xffffffff9040ULL
-		&& m_es5510_host->_instr(0x01) == 0xea7dffff9128ULL
-		&& m_es5510_host->_instr(0x58) == 0x3662fffff040ULL;
-	if (lush || hall)
-		m_pump->set_esp_halted(false);
+	// MC68302 Port A PA4 (bit 4 of $FC6823 / PADAT) drives the hardware RUN/HALT line:
+	// PA4 = 0: ESP halted during program/GPR upload ($FFF977B0)
+	// PA4 = 1: ESP running ($FFF977C6)
+	const bool run = BIT(data, 4);
+	if (m_pump)
+		m_pump->set_esp_halted(!(run && m_esp_program_loaded));
 }
 
 void asr10_boot_state::effect_audio_rate_postload()
 {
 	apply_effect_audio_rate_policy();
+	if (m_pump && m_maincpu)
+		m_pump->set_esp_halted(!(BIT(m_maincpu->padat_latch(), 4) && m_esp_program_loaded));
 }
 
 u16 asr10_boot_state::system_ram_alias_r(offs_t offset, u16 mem_mask)
@@ -812,6 +803,7 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	MC68302(config, m_maincpu, XTAL(16'000'000));
 	m_maincpu->set_addrmap(AS_PROGRAM, &asr10_boot_state::mem_map);
 	m_maincpu->set_addrmap(m68000_base_device::AS_CPU_SPACE, &asr10_boot_state::cpu_space_map);
+	m_maincpu->pa_out_cb().set(*this, FUNC(asr10_boot_state::mc68302_pa_w));
 
 	// Klockprovenens (keyboard-and-sample-bridge-10.md): GISSNING.
 	// Borrows Y1's own value only as a placeholder; not measured or
@@ -978,7 +970,7 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	// The [Hypothesis] adapter needs four exposed pairs to duplicate the
 	// observed active lane 0/1 into its three program-read serial ports.
 	SPEAKER(config, "speaker", 2).front();
-	es5506_host.set_channels(4);
+	es5506_host.set_channels(6);
 
 	// ES5510 host window (filesystem-browser-map.md 4.24):
 	// instantiate a stock es5510_device purely as a host-interface
@@ -1028,14 +1020,16 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	m_pump->add_route(0, "speaker", 1.0, 0);
 	m_pump->add_route(1, "speaker", 1.0, 1);
 
-	// Minimal discriminating functional map: one observed active ES5506 pair
-	// is supplied identically to each port the 44LUSH image actually reads.
-	es5506_host.add_route(0, "pump", 1.0, 0); // SER3 left
-	es5506_host.add_route(1, "pump", 1.0, 1); // SER3 right
-	es5506_host.add_route(0, "pump", 1.0, 2); // SER0 left
-	es5506_host.add_route(1, "pump", 1.0, 3); // SER0 right
-	es5506_host.add_route(0, "pump", 1.0, 6); // SER2 left
-	es5506_host.add_route(1, "pump", 1.0, 7); // SER2 right
+	// Authentic ASR-10 bus-to-ESP serial topology:
+	// BUS1 (Pair 0, outs 0/1) -> SER0 (pump inputs 2/3)
+	// BUS2 (Pair 1, outs 2/3) -> SER2 (pump inputs 6/7)
+	// BUS3 (Pair 2, outs 4/5) -> SER3 (pump inputs 0/1)
+	es5506_host.add_route(0, "pump", 1.0, 2); // BUS1 -> SER0 L
+	es5506_host.add_route(1, "pump", 1.0, 3); // BUS1 -> SER0 R
+	es5506_host.add_route(2, "pump", 1.0, 6); // BUS2 -> SER2 L
+	es5506_host.add_route(3, "pump", 1.0, 7); // BUS2 -> SER2 R
+	es5506_host.add_route(4, "pump", 1.0, 0); // BUS3 -> SER3 L
+	es5506_host.add_route(5, "pump", 1.0, 1); // BUS3 -> SER3 R
 }
 
 
