@@ -28,7 +28,7 @@ FFFB8D2C: 11FC 000D 049D   MOVE.B #$0D, ($049D)    ; FILE OPERATION ERROR
 FFFB8D32: 11FC 0020 04AE   MOVE.B #$20, ($04AE)    ; FDC busy timeout flagga
 ```
 
-I upstream MAME [`src/devices/machine/upd765.cpp`](file:///Users/paroberg/develop/mame-upstream/src/devices/machine/upd765.cpp) (introducerat i commit `93ed4a942bfa`, 2025-10-25) grupperades `case 0x35:` (*set standby*) och `case 0x34:` (*reset standby*) under en `switch`-gren som satte:
+I upstream MAME [`src/devices/machine/upd765.cpp`](../../../src/devices/machine/upd765.cpp) (introducerat i commit `93ed4a942bfa`, 2025-10-25) grupperades `case 0x35:` (*set standby*) och `case 0x34:` (*reset standby*) under en `switch`-gren som satte:
 
 ```cpp
 main_phase = PHASE_RESULT;
@@ -48,7 +48,7 @@ Eftersom bit 4 (`MSR_CB`, Command Busy) var satt och FIFO inte lästes, loopade 
 
 Auxcmd `$35` (*set standby*) och `$34` (*reset standby*) returnerar inte något resultat i FIFO enligt NEC:s hårdvaruspecifikation för uPD72065/72069. De ska inte försätta enheten i `PHASE_RESULT`.
 
-I [`upd72069_device::auxcmd_w`](file:///Users/paroberg/develop/mame-upstream/src/devices/machine/upd765.cpp#L3460-L3478) separerades dessa kommandon och delegerades till basklassen:
+I [`upd72069_device::auxcmd_w`](../../../src/devices/machine/upd765.cpp#L3460-L3478) separerades dessa kommandon och delegerades till basklassen:
 
 ```diff
 --- a/src/devices/machine/upd765.cpp
@@ -101,7 +101,7 @@ Fullständigt inläsnings- och uppspelningstest kördes från CD-ROM via SCSI ID
 
 ### 3. Full regression
 
-Hela acceptanssviten ([`docs/asr10/regression-test.sh`](file:///Users/paroberg/develop/mame-upstream/docs/asr10/regression-test.sh)) kördes och passerade samtliga 21 deltester utan anmärkning:
+Hela acceptanssviten ([`docs/asr10/regression-test.sh`](../regression-test.sh)) kördes och passerade samtliga 21 deltester utan anmärkning:
 
 ```text
 PASS boot display="FILE 1  TUT0RIAL BNK  "
