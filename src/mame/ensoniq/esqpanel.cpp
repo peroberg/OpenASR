@@ -22,6 +22,7 @@
 #include "logmacro.h"
 
 
+#include "asr10_panel.lh"
 #include "esq2by40_vfx.lh"
 #include "sd1.lh"
 #include "sd132.lh"
@@ -414,6 +415,7 @@ namespace esqpanel {
 //**************************************************************************
 
 DEFINE_DEVICE_TYPE(ESQPANEL1X22,     esqpanel1x22_device,     "esqpanel122",     "Ensoniq front panel with 1x22 VFD")
+DEFINE_DEVICE_TYPE(ASR10PANEL,       asr10panel_device,       "asr10panel",      "Ensoniq ASR-10 front panel with 1x22 VFD and annunciators")
 DEFINE_DEVICE_TYPE(ESQPANEL2X40,     esqpanel2x40_device,     "esqpanel240",     "Ensoniq front panel with 2x40 VFD")
 DEFINE_DEVICE_TYPE(ESQPANEL2X40_VFX, esqpanel2x40_vfx_device, "esqpanel240_vfx", "Ensoniq front panel with 2x40 VFD for VFX family")
 DEFINE_DEVICE_TYPE(ESQPANEL2X16_SQ1, esqpanel2x16_sq1_device, "esqpanel216_sq1", "Ensoniq front panel with 2x16 LCD")
@@ -458,6 +460,16 @@ void esqpanel_device::device_start()
 		m_external_timer = timer_alloc(FUNC(esqpanel_device::check_external_panel_server), this);
 		m_external_timer->enable(false);
 	}
+
+	save_item(NAME(m_light_states));
+	save_item(NAME(m_eps_mode));
+	save_item(NAME(m_expect_calibration_second_byte));
+	save_item(NAME(m_expect_light_second_byte));
+	save_item(NAME(m_xmitring));
+	save_item(NAME(m_xmit_read));
+	save_item(NAME(m_xmit_write));
+	save_item(NAME(m_tx_busy));
+	save_item(NAME(m_xmit_overflow_count));
 }
 
 
@@ -505,6 +517,7 @@ void esqpanel_device::rcv_complete()    // Rx completed receiving byte
 {
 	receive_register_extract();
 	uint8_t data = get_received_char();
+	debug_rx_complete(data);
 
 //  if (data >= 0xe0) LOG("Got %02x from motherboard (second %s)\n", data, m_expect_calibration_second_byte ? "yes" : "no");
 
@@ -591,6 +604,7 @@ void esqpanel_device::rcv_complete()    // Rx completed receiving byte
 	// If this was not inhibited, send this to the display as well.
 	if (!skip_display)
 	{
+		debug_send_to_display(data);
 		send_to_display(data);
 	}
 }
@@ -598,6 +612,7 @@ void esqpanel_device::rcv_complete()    // Rx completed receiving byte
 void esqpanel_device::tra_complete()    // Tx completed sending byte
 {
 //  LOG("panel Tx complete\n");
+	debug_tra_complete();
 	// is there more waiting to send?
 	if (m_xmit_read != m_xmit_write)
 	{
@@ -621,6 +636,7 @@ void esqpanel_device::tra_callback()    // Tx send bit
 void esqpanel_device::xmit_char(uint8_t data)
 {
 //  LOG("Panel: xmit %02x\n", data);
+	debug_xmit_char(data);
 
 	// if tx is busy it'll pick this up automatically when it completes
 	if (!m_tx_busy)
@@ -630,7 +646,32 @@ void esqpanel_device::xmit_char(uint8_t data)
 	}
 	else
 	{
-		// tx is busy, it'll pick this up next time
+		// tx is busy, it'll pick this up next time -- unless the ring is
+		// already full, in which case the byte about to be pushed would
+		// silently overwrite one tra_complete() hasn't drained yet.
+		// Measured actually happening under fast play, not just
+		// theoretically possible: docs/asr10/investigations/
+		// keyboard-and-sample-bridge.md's 13-key stress test lost 32 of
+		// 52 expected bytes with no prior check at all. Dropped and
+		// counted loudly here instead.
+		int next_write = m_xmit_write + 1;
+		if (next_write >= XMIT_RING_SIZE)
+			next_write = 0;
+		if (next_write == m_xmit_read)
+		{
+			// logerror() alone is not loud enough for this project's own
+			// headless testing constraints: its callback is only
+			// registered when -log is passed (src/emu/machine.cpp:289,
+			// checked directly), and -log is forbidden here. osd_printf_
+			// error() always prints, -log or not -- confirmed against
+			// this project's own captured run output already showing
+			// unconditional osd-level messages (e.g. MAME's own
+			// install_read_tap range errors) with no -log in play.
+			m_xmit_overflow_count++;
+			logerror("esqpanel: XMIT_RING_SIZE overflow (count=%u), dropping byte %02x\n", m_xmit_overflow_count, data);
+			osd_printf_error("esqpanel: XMIT_RING_SIZE overflow (count=%u), dropping byte %02x\n", m_xmit_overflow_count, data);
+			return;
+		}
 		m_xmitring[m_xmit_write++] = data;
 		if (m_xmit_write >= XMIT_RING_SIZE)
 		{
@@ -739,6 +780,404 @@ void esqpanel1x22_device::device_add_mconfig(machine_config &config)
 esqpanel1x22_device::esqpanel1x22_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :
 	esqpanel_device(mconfig, ESQPANEL1X22, tag, owner, clock),
 	m_vfd(*this, "vfd")
+{
+	m_eps_mode = true;
+}
+
+void asr10panel_device::device_add_mconfig(machine_config &config)
+{
+	ESQ1X22(config, m_vfd, 60);
+	config.set_default_layout(layout_asr10_panel);
+}
+
+void asr10panel_device::device_start()
+{
+	esqpanel_device::device_start();
+
+	save_item(NAME(m_annunciator_state));
+	save_item(NAME(m_instrument_lamp_state));
+	save_item(NAME(m_pending_annunciator_command));
+	save_item(NAME(m_pending_open_command));
+	save_item(NAME(m_display_cursor));
+	save_item(NAME(m_selected_field_anchor));
+	save_item(NAME(m_pending_field_attr));
+	save_item(NAME(m_current_underline));
+	save_item(NAME(m_selected_field_underline));
+	save_item(NAME(m_selected_field_valid));
+	save_item(NAME(m_defining_selected_field));
+	save_item(NAME(m_seen_unhandled_display_code));
+}
+
+void asr10panel_device::device_reset()
+{
+	esqpanel_device::device_reset();
+
+	// ASR-10 channel B measured cadence: host writes are paced by one 62500
+	// baud character time each way (176 us TX + 176 us $ff reply). No vendor
+	// source in docs/asr10/sources/ currently identifies a different panel
+	// clock, so keep the ASR-specific rate explicit here rather than relying
+	// on the EPS base-class default.
+	set_rcv_rate(62500);
+	set_tra_rate(62500);
+
+	m_annunciator_state.fill(0);
+	m_instrument_lamp_state.fill(0);
+	m_pending_annunciator_command = 0;
+	m_pending_open_command = 0;
+	m_display_cursor = 0;
+	m_selected_field_anchor = 0;
+	m_pending_field_attr = false;
+	m_current_underline = false;
+	m_selected_field_underline = false;
+	m_selected_field_valid = false;
+	m_defining_selected_field = false;
+	m_seen_unhandled_display_code.fill(0);
+	m_disable_eps_echo = std::getenv("ASR10_PANEL_DISABLE_ECHO") != nullptr;
+
+	for (u32 index = 0; index != m_annunciator_state.size(); index++)
+		m_annunciator_regs[index] = 0;
+	for (u32 index = 0; index != m_instrument_lamp_state.size(); index++)
+		m_instrument_lamps[index] = 0;
+	for (u32 index = 0; index != m_annunciator_bits.size(); index++)
+		m_annunciator_bits[index] = 0;
+}
+
+void asr10panel_device::rcv_complete()
+{
+	receive_register_extract();
+	const uint8_t data = get_received_char();
+	debug_rx_complete(data);
+
+	// ASR-10 uses the EPS-family two-byte panel protocol for keys, but boot
+	// stalls in LOADING SYSTEM if display/scan traffic is echoed. The observed
+	// idle response on the working ASR path is $ff.
+	if (!m_disable_eps_echo)
+		xmit_char(0xff);
+
+	debug_send_to_display(data);
+	send_to_display(data);
+}
+
+
+void asr10panel_device::send_to_display(uint8_t data)
+{
+	if (m_pending_annunciator_command)
+	{
+		const u32 reg_index = m_pending_annunciator_command - 0x77;
+		m_annunciator_state[reg_index] = data;
+		m_annunciator_regs[reg_index] = data;
+
+		// Bit-level fanout: only bit 0 of $77 has a confirmed meaning
+		// (docs/asr10/investigations/annunciator-bit-probe.md -- BTN_02
+		// from idle FILE LOADED sets it, pressing BTN_02 again on the
+		// already-selected instrument clears it, both directions
+		// verified), mirrored into the pre-existing instrument-lamp
+		// output. The other 39 bits are wired raw, unlabeled, until
+		// correlated against more known-lit states.
+		for (u32 bit = 0; bit != 8; bit++)
+			m_annunciator_bits[reg_index * 8 + bit] = (data >> bit) & 1;
+		if (reg_index == 0)
+			m_instrument_lamps[0] = data & 1;
+
+		m_pending_annunciator_command = 0;
+		return;
+	}
+
+	if (data >= 0x77 && data <= 0x7b)
+	{
+		m_pending_annunciator_command = data;
+		return;
+	}
+
+	// The physical stream establishes one following operand for these still
+	// semantically OPEN commands. Preserve that bounded behavior without
+	// assigning the command or operand a display meaning.
+	if (m_pending_open_command)
+	{
+		m_pending_open_command = 0;
+		return;
+	}
+
+	if (m_pending_field_attr)
+	{
+		m_current_underline = bool(data & 0x02);
+		if (m_defining_selected_field)
+			m_selected_field_underline = m_current_underline;
+		m_pending_field_attr = false;
+		return;
+	}
+
+	if (data >= 0x74 && data <= 0x76)
+	{
+		report_unhandled_display_code(data);
+		m_pending_open_command = data;
+		return;
+	}
+
+	if (data <= 0x1f)
+	{
+		m_display_cursor = data;
+		return;
+	}
+
+	if (data >= 0x20 && data <= 0x5f)
+	{
+		m_vfd->render_character(m_display_cursor, data, m_current_underline);
+		m_display_cursor++;
+		if (m_display_cursor >= 23)
+			m_display_cursor = 23;
+		return;
+	}
+
+	switch (data)
+	{
+	case 0x60:
+		m_pending_field_attr = true;
+		break;
+
+	case 0x62:
+		m_selected_field_anchor = m_display_cursor;
+		m_selected_field_valid = true;
+		m_defining_selected_field = true;
+		m_current_underline = false;
+		break;
+
+	case 0x63:
+		if (m_selected_field_valid)
+		{
+			m_display_cursor = m_selected_field_anchor;
+			m_current_underline = m_selected_field_underline;
+		}
+		break;
+
+	case 0x66:
+		m_vfd->clear();
+		m_display_cursor = 0;
+		m_current_underline = false;
+		m_selected_field_underline = false;
+		m_selected_field_valid = false;
+		m_defining_selected_field = false;
+		break;
+
+	case 0x72:
+		m_current_underline = false;
+		m_defining_selected_field = false;
+		break;
+
+	default:
+		report_unhandled_display_code(data);
+		break;
+	}
+}
+
+void asr10panel_device::report_unhandled_display_code(uint8_t data)
+{
+	if (m_seen_unhandled_display_code[data])
+		return;
+	m_seen_unhandled_display_code[data] = 1;
+	osd_printf_error("asr10panel: unhandled display control code $%02X (first occurrence)\n", data);
+}
+
+std::string asr10panel_device::unhandled_code_summary() const
+{
+	std::string result;
+	for (u32 code = 0; code != m_seen_unhandled_display_code.size(); code++)
+	{
+		if (m_seen_unhandled_display_code[code])
+		{
+			if (!result.empty())
+				result += ' ';
+			result += util::string_format("%02x", code);
+		}
+	}
+	return result;
+}
+
+std::string asr10panel_device::annunciator_summary() const
+{
+	std::string result;
+	for (u32 index = 0; index != m_annunciator_state.size(); index++)
+	{
+		if (index)
+			result += ' ';
+		result += util::string_format("%02x:%02x", 0x77 + index, m_annunciator_state[index]);
+	}
+	return result;
+}
+
+static INPUT_PORTS_START(asr10panel_device)
+#define ASR10_PANEL_BUTTON(mask, name, param) \
+	PORT_BIT(mask, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME(name) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), param)
+
+	PORT_START("buttons_0")
+	ASR10_PANEL_BUTTON(0x00000001, "BTN_00", 0x00)
+	ASR10_PANEL_BUTTON(0x00000002, "BTN_01", 0x01)
+	// BTN_02: Instrument/Sequence Track 1, verified dynamically.
+	PORT_BIT(0x00000004, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_02") PORT_CODE(KEYCODE_1) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x02)
+	ASR10_PANEL_BUTTON(0x00000008, "BTN_03", 0x03)
+	ASR10_PANEL_BUTTON(0x00000010, "BTN_04", 0x04)
+	// EDIT is verified as raw $05 from a selected instrument to its layer page.
+	PORT_BIT(0x00000020, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("EDIT") PORT_CODE(KEYCODE_E) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x05)
+	// COMMAND is verified as raw $06. Host keys drive physical panel edges;
+	// firmware retains all context-dependent behavior.
+	PORT_BIT(0x00000040, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("COMMAND") PORT_CODE(KEYCODE_C) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x06)
+	ASR10_PANEL_BUTTON(0x00000080, "BTN_07", 0x07)
+	ASR10_PANEL_BUTTON(0x00000100, "BTN_08", 0x08)
+	// EFFECTS is verified as raw $09 by its real effect-file browser.
+	PORT_BIT(0x00000200, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("EFFECTS") PORT_CODE(KEYCODE_F) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x09)
+	// BTN_0A/BTN_0B: KEYCODE_UP/DOWN, swapped 2026-08-24
+	// (partial-update-position-probe.md Del 5). The pilot keymap had
+	// $0A=KEYCODE_DOWN/$0B=KEYCODE_UP; measured against effect, not
+	// label, on the VOLUME=99 screen: $0A held the value at its ceiling
+	// (no visible change across two presses -- consistent with already
+	// being at the top, i.e. genuinely Up), and $0B moved it down by one
+	// digit (99->98, genuinely Down). REC SRC Field 2 cycling direction
+	// is unaffected by this swap (still $0A/$0B, just the keyboard
+	// shortcut now points at the code that actually behaves like Up).
+	PORT_BIT(0x00000400, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_0A") PORT_CODE(KEYCODE_UP) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x0a)
+	PORT_BIT(0x00000800, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_0B") PORT_CODE(KEYCODE_DOWN) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x0b)
+	// BTN_0C/BTN_0D: KEYCODE_LEFT/RIGHT removed, 2026-08-24
+	// (panel-button-and-transport-map.md Del 2). Measured directly: from
+	// the REC SRC screen these navigate to an unrelated top-level menu
+	// (COPY/ERASE/FILTER/SHIFT AUDIO TRACK on repeated presses), not a
+	// cursor move -- the pilot keymap's Left/Right label was wrong, not
+	// just unverified. Real hardware's Left/Right Arrow raw codes remain
+	// unidentified; keeping the wrong keyboard shortcut bound here would
+	// actively mislead rather than just be unverified, so these two
+	// revert to click-only like the other 60 unidentified buttons.
+	ASR10_PANEL_BUTTON(0x00001000, "BTN_0C", 0x0c)
+	ASR10_PANEL_BUTTON(0x00002000, "BTN_0D", 0x0d)
+	ASR10_PANEL_BUTTON(0x00004000, "BTN_0E", 0x0e)
+	ASR10_PANEL_BUTTON(0x00008000, "BTN_0F", 0x0f)
+	// BTN_10/BTN_11: KEYCODE_LEFT/RIGHT, measured 2026-08-24
+	// (partial-update-position-probe.md Del 5) using the display's own
+	// underline output as ground truth, not display text alone: from
+	// REC SRC with Field 2 underlined, $10 moves the underline to
+	// Field 1 ("INPUTDRY", columns 8-15); $11 from there moves it back
+	// to Field 2, staying on the same screen -- exactly the manual's
+	// "Left/Right Arrow moves to the next parameter" description, both
+	// directions confirmed round-trip.
+	PORT_BIT(0x00010000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_10") PORT_CODE(KEYCODE_LEFT) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x10)
+	PORT_BIT(0x00020000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_11") PORT_CODE(KEYCODE_RIGHT) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x11)
+	ASR10_PANEL_BUTTON(0x00040000, "BTN_12", 0x12)
+	ASR10_PANEL_BUTTON(0x00080000, "BTN_13", 0x13)
+	ASR10_PANEL_BUTTON(0x00100000, "BTN_14", 0x14)
+	// BTN_15: KEYCODE_Q ("Sequence"), added 2026-08-24. Measured: $15
+	// reliably lands on a genuine sequence-file listing ("FILE 9
+	// TUT0RIAL 5EQ") when a sequence exists on the loaded disk -- the
+	// Seq*Song category button. Only assigned a mnemonic because the
+	// function is measured, not guessed at.
+	PORT_BIT(0x00200000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_15") PORT_CODE(KEYCODE_Q) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x15)
+	ASR10_PANEL_BUTTON(0x00400000, "BTN_16", 0x16)
+	// STOP/CONTINUE is raw $17 during active playback. It remains a physical
+	// pressed-state button rather than a MAME transport action.
+	PORT_BIT(0x00800000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("STOP / CONTINUE") PORT_CODE(KEYCODE_SPACE) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x17)
+	ASR10_PANEL_BUTTON(0x01000000, "BTN_18", 0x18)
+	ASR10_PANEL_BUTTON(0x02000000, "BTN_19", 0x19)
+	// LOAD is verified as raw $1A by returning from a selected instrument to
+	// the firmware's file browser.
+	PORT_BIT(0x04000000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("LOAD") PORT_CODE(KEYCODE_L) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x1a)
+	ASR10_PANEL_BUTTON(0x08000000, "BTN_1B", 0x1b)
+	ASR10_PANEL_BUTTON(0x10000000, "BTN_1C", 0x1c)
+	// PLAY is verified as raw $1D with a playable sequence loaded. MAME's
+	// default pause binding is F5, so KEYCODE_P has no default UI collision.
+	PORT_BIT(0x20000000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("PLAY") PORT_CODE(KEYCODE_P) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x1d)
+	ASR10_PANEL_BUTTON(0x40000000, "BTN_1E", 0x1e)
+	ASR10_PANEL_BUTTON(0x80000000, "BTN_1F", 0x1f)
+
+	PORT_START("buttons_32")
+	// BTN_20: KEYCODE_S ("Sample"), added 2026-08-24. Measured (prior
+	// task): $20 is Sample*Source Select. Note: KEYCODE_S collides with
+	// KEY_Cs (C-sharp) on the note-typing keyboard below -- pressing 'S'
+	// fires both. Documented rather than silently avoided, since the
+	// mnemonic scheme is keyed to measured function, not collision-free
+	// key layout; a future task can pick a different key if this proves
+	// disruptive in practice.
+	PORT_BIT(0x00000001, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_20") PORT_CODE(KEYCODE_S) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x20)
+	ASR10_PANEL_BUTTON(0x00000002, "BTN_21", 0x21)
+	ASR10_PANEL_BUTTON(0x00000004, "BTN_22", 0x22)
+	// BTN_23: Enter*Yes, verified dynamically.
+	PORT_BIT(0x00000008, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_23") PORT_CODE(KEYCODE_ENTER) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x23)
+	ASR10_PANEL_BUTTON(0x00000010, "BTN_24", 0x24)
+	ASR10_PANEL_BUTTON(0x00000020, "BTN_25", 0x25)
+	ASR10_PANEL_BUTTON(0x00000040, "BTN_26", 0x26)
+	ASR10_PANEL_BUTTON(0x00000080, "BTN_27", 0x27)
+	ASR10_PANEL_BUTTON(0x00000100, "BTN_28", 0x28)
+	ASR10_PANEL_BUTTON(0x00000200, "BTN_29", 0x29)
+	ASR10_PANEL_BUTTON(0x00000400, "BTN_2A", 0x2a)
+	ASR10_PANEL_BUTTON(0x00000800, "BTN_2B", 0x2b)
+	ASR10_PANEL_BUTTON(0x00001000, "BTN_2C", 0x2c)
+	ASR10_PANEL_BUTTON(0x00002000, "BTN_2D", 0x2d)
+	ASR10_PANEL_BUTTON(0x00004000, "BTN_2E", 0x2e)
+	ASR10_PANEL_BUTTON(0x00008000, "BTN_2F", 0x2f)
+	ASR10_PANEL_BUTTON(0x00010000, "BTN_30", 0x30)
+	ASR10_PANEL_BUTTON(0x00020000, "BTN_31", 0x31)
+	ASR10_PANEL_BUTTON(0x00040000, "BTN_32", 0x32)
+	ASR10_PANEL_BUTTON(0x00080000, "BTN_33", 0x33)
+	ASR10_PANEL_BUTTON(0x00100000, "BTN_34", 0x34)
+	ASR10_PANEL_BUTTON(0x00200000, "BTN_35", 0x35)
+	ASR10_PANEL_BUTTON(0x00400000, "BTN_36", 0x36)
+	ASR10_PANEL_BUTTON(0x00800000, "BTN_37", 0x37)
+	ASR10_PANEL_BUTTON(0x01000000, "BTN_38", 0x38)
+	ASR10_PANEL_BUTTON(0x02000000, "BTN_39", 0x39)
+	ASR10_PANEL_BUTTON(0x04000000, "BTN_3A", 0x3a)
+	ASR10_PANEL_BUTTON(0x08000000, "BTN_3B", 0x3b)
+	ASR10_PANEL_BUTTON(0x10000000, "BTN_3C", 0x3c)
+	ASR10_PANEL_BUTTON(0x20000000, "BTN_3D", 0x3d)
+	ASR10_PANEL_BUTTON(0x40000000, "BTN_3E", 0x3e)
+	ASR10_PANEL_BUTTON(0x80000000, "BTN_3F", 0x3f)
+
+#undef ASR10_PANEL_BUTTON
+
+	PORT_START("analog_pitch_wheel")
+	configurer.field_alloc(IPT_ADJUSTER, 0x200, 0x3ff, "Pitch Wheel");
+	configurer.field_set_min_max(0, 0x3ff);
+	PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::analog_value_change), 0)
+
+	PORT_START("analog_mod_wheel")
+	configurer.field_alloc(IPT_ADJUSTER, 0x200, 0x3ff, "Mod Wheel");
+	configurer.field_set_min_max(0, 0x3ff);
+	PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::analog_value_change), 2)
+
+	PORT_START("analog_volume")
+	configurer.field_alloc(IPT_ADJUSTER, 0x3ff, 0x3ff, "Volume");
+	configurer.field_set_min_max(0, 0x3ff);
+	PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::analog_value_change), 3)
+
+	PORT_START("analog_pedal")
+	configurer.field_alloc(IPT_ADJUSTER, 0x200, 0x3ff, "Pedal / CV");
+	configurer.field_set_min_max(0, 0x3ff);
+	PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::analog_value_change), 4)
+
+	PORT_START("analog_data_entry")
+	configurer.field_alloc(IPT_ADJUSTER, 0x200, 0x3ff, "Data Entry");
+	configurer.field_set_min_max(0, 0x3ff);
+	PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::analog_value_change), 5)
+INPUT_PORTS_END
+
+ioport_constructor asr10panel_device::device_input_ports() const
+{
+	return INPUT_PORTS_NAME(asr10panel_device);
+}
+
+INPUT_CHANGED_MEMBER(asr10panel_device::button_change)
+{
+	esqpanel_device::set_button(param, newval != 0);
+}
+
+INPUT_CHANGED_MEMBER(asr10panel_device::analog_value_change)
+{
+	const int channel = param;
+	const int clamped = std::clamp(int(newval), 0, 1023);
+	set_analog_value(channel, u16(clamped));
+}
+
+asr10panel_device::asr10panel_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :
+	esqpanel_device(mconfig, ASR10PANEL, tag, owner, clock),
+	m_vfd(*this, "vfd"),
+	m_annunciator_regs(*this, "asr10_annreg%u", 0U),
+	m_instrument_lamps(*this, "asr10_instlamp%u", 0U),
+	m_annunciator_bits(*this, "asr10_annbit%u", 0U)
 {
 	m_eps_mode = true;
 }

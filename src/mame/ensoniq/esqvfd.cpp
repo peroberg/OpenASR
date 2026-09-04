@@ -15,6 +15,7 @@
 #define LOGDC(...) LOGMASKED(LOG_DISPLAY_COMMANDS, __VA_ARGS__)
 
 // #define VERBOSE LOG_DISPLAY_COMMANDS
+#define LOG_VFD_TEXT 0
 
 #include "logmacro.h"
 
@@ -124,12 +125,17 @@ static const uint16_t font[] = {
 	0x0000, // 0000 0000 0000 0000 (DEL)
 };
 
-esqvfd_device::esqvfd_device(const machine_config &mconfig, device_type type, const char *tag, device_t *owner, uint32_t clock, dimensions_param &&dimensions) :
-	device_t(mconfig, type, tag, owner, clock),
-	m_vfds(std::move(std::get<0>(dimensions))),
-	m_rows(std::get<1>(dimensions)),
-	m_cols(std::get<2>(dimensions))
-{
+esqvfd_device::esqvfd_device(
+	const machine_config &mconfig,
+	device_type type,
+	const char *tag,
+	device_t *owner,
+	uint32_t clock,
+	int rows,
+	int cols) : device_t(mconfig, type, tag, owner, clock),
+	            m_vfds(owner ? *owner : *this, "vfd%u", 0U),
+	            m_rows(rows),
+	            m_cols(cols) {
 }
 
 void esqvfd_device::device_start()
@@ -155,7 +161,7 @@ void esqvfd_device::device_reset()
 	m_blink_on = false;
 	memset(m_chars, 0, sizeof(m_chars));
 	memset(m_attrs, 0, sizeof(m_attrs));
-	memset(m_dirty, 1, sizeof(m_attrs));
+	memset(m_dirty, 1, sizeof(m_dirty));
 }
 
 // generic display update; can override from child classes if not good enough
@@ -167,10 +173,10 @@ void esqvfd_device::update_display()
 				uint32_t segdata = conv_segments(font[m_chars[row][col]]);
 
 				// digits:
-				m_vfds->set((row * m_cols) + col, segdata);
+				m_vfds[(row * m_cols) + col] = segdata;
 
 				// underlines:
-				m_vfds->set((row * m_cols) + col + (m_rows * m_cols), (m_attrs[row][col] & AT_UNDERLINE) ? 1 : 0);
+				m_vfds[(row * m_cols) + col + (m_rows * m_cols)] = (m_attrs[row][col] & AT_UNDERLINE) ? 1 : 0;
 
 				m_dirty[row][col] = 0;
 			}
@@ -397,17 +403,6 @@ bool esq2x40_device::write_contents(std::ostream &o)
 	return true;
 }
 
-
-esq2x40_device::esq2x40_device(const machine_config &mconfig, device_type type, const char *tag, device_t *owner, uint32_t clock) :
-	esqvfd_device(mconfig, type, tag, owner, clock, make_dimensions<2, 40>(*this))
-{
-}
-
-esq2x40_device::esq2x40_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :
-	esq2x40_device(mconfig, ESQ2X40, tag, owner, clock)
-{
-}
-
 ROM_START( esq2x40_vfx_device )
 	ROM_REGION16_BE( 192, "font", 0 )
 	ROM_LOAD( "esqvfd_font_vfx.bin", 0, 192, CRC(58dc335b) SHA1(097fc3e1930a49ab61f73ea7a6191c892004f823) )
@@ -418,7 +413,11 @@ const tiny_rom_entry *esq2x40_vfx_device::device_rom_region() const
 	return ROM_NAME( esq2x40_vfx_device );
 }
 
-esq2x40_vfx_device::esq2x40_vfx_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :
+esq2x40_vfx_device::esq2x40_vfx_device(
+	const machine_config &mconfig,
+	const char *tag,
+	device_t *owner,
+	uint32_t clock) :
 	esq2x40_device(mconfig, ESQ2X40_VFX, tag, owner, clock),
 	m_font(*this, "font")
 {
@@ -434,36 +433,57 @@ void esq2x40_vfx_device::device_add_mconfig(machine_config &config)
 // Handles blinking of underline and of entire character,
 void esq2x40_vfx_device::update_display()
 {
-	for (int row = 0; row < m_rows; row++) {
-		for (int col = 0; col < m_cols; col++) {
-			if (m_dirty[row][col]) {
+#if LOG_VFD_TEXT
+	if (!machine().side_effects_disabled())
+	{
+		char line0[41]{};
+		char line1[41]{};
+
+		for (int col = 0; col < 40; col++)
+		{
+			line0[col] = char(m_chars[0][col] + ' ');
+			line1[col] = char(m_chars[1][col] + ' ');
+		}
+
+		logerror("VFD0: [%s]\n", line0);
+		logerror("VFD1: [%s]\n", line1);
+	}
+#endif
+
+	for (int row = 0; row < m_rows; row++)
+	{
+		for (int col = 0; col < m_cols; col++)
+		{
+			if (m_dirty[row][col])
+			{
 				uint8_t c = m_chars[row][col];
 
 				uint16_t char_segments = m_font[c < 96 ? c : 0];
 				auto attr = m_attrs[row][col];
 				uint16_t segments;
 
-				if ((attr & AT_BLINK) && !m_blink_on) {
-					// something is blinked off
-					if (attr & AT_UNDERLINE) // blink the underline off
+				if ((attr & AT_BLINK) && !m_blink_on)
+				{
+					if (attr & AT_UNDERLINE)
 						segments = char_segments;
-					else // there is no underline, blink the entire character
+					else
 						segments = 0;
-				} else {
+				}
+				else
+				{
 					if (attr & AT_UNDERLINE)
 						segments = char_segments | 0x8000;
 					else
 						segments = char_segments;
 				}
 
-				m_vfds->set((row * m_cols) + col, segments);
+				m_vfds[(row * m_cols) + col] = segments;
 
 				m_dirty[row][col] = 0;
 			}
 		}
 	}
 }
-
 
 /* 1x22 display from the VFX (not right, but it'll do for now) */
 
@@ -475,6 +495,48 @@ void esq1x22_device::device_add_mconfig(machine_config &config)
 
 void esq1x22_device::write_char(uint8_t data)
 {
+	// ASR-10 field-attribute opcode: 0x60 <attr> sets the attribute for
+	// the next run of printable characters -- attr bit 0x02 marks the
+	// field as underlined (the manual's "cursor (underline) beneath the
+	// field", moved by the Left/Right Arrow buttons on most screens).
+	// Two-byte opcode+operand, same m_lastchar lookback technique
+	// esq2x40_device already uses for its own 0xfa/0xff pairs. Derived
+	// from the byte stream, not guessed --
+	// docs/asr10/investigations/display-protocol-inventory.md.
+	if (m_lastchar == 0x60) {
+		m_curattr = (data & 0x02) ? AT_UNDERLINE : AT_NORMAL;
+		m_lastchar = 0;
+		return;
+	}
+
+	// $74/$75/$76 each consume one operand on the observed physical stream,
+	// but their semantics remain OPEN (operands are not nibble-only: $74 $40
+	// is observed). Consume the operand so it cannot be misread as a cursor
+	// column -- both occur in the same low byte range.
+	if (m_lastchar == 0x74 || m_lastchar == 0x75 || m_lastchar == 0x76) {
+		m_lastchar = 0;
+		return;
+	}
+
+	m_lastchar = data;
+
+	// Cursor-position opcode: a standalone byte $00-$1F sets the write
+	// column directly. Measured live, not inferred
+	// (docs/asr10/investigations/partial-update-position-probe.md):
+	// $14 (=20 decimal) precedes the two value digits of "VOLUME=99"
+	// each time Up/Down changes it, an exact match to that field's
+	// column; $00 (=column 0) precedes REC SRC's own field-switch
+	// redraw. A full redraw (after a $66 clear) never needs this, since
+	// sequential placement from column 0 already lands correctly --
+	// this is specifically what a *partial* update (no clear) needs to
+	// avoid writing at whatever column a previous, unrelated write left
+	// the cursor at (previously the missing mechanism: a changed value
+	// was appended after the old one instead of overwriting it).
+	if (data <= 0x1f) {
+		m_cursx = data;
+		return;
+	}
+
 	if (data >= 0x60) {
 		switch (data) {
 			case 'f':   // clear screen
@@ -482,15 +544,34 @@ void esq1x22_device::write_char(uint8_t data)
 				memset(m_chars, 0, sizeof(m_chars));
 				memset(m_attrs, 0, sizeof(m_attrs));
 				memset(m_dirty, 1, sizeof(m_dirty));
+				m_curattr = AT_NORMAL;
+				break;
+
+			case 0x60:  // field-attribute opcode; operand handled above
+				break;
+
+			case 0x62:  // observed field marker; this legacy raw-byte path
+				// only resets attribute until the following 0x60
+				m_curattr = AT_NORMAL;
+				break;
+
+			case 0x72:  // end of attributed field
+				m_curattr = AT_NORMAL;
 				break;
 
 			default:
-				printf("Unhandled control code %02x\n", data);
+				// docs/asr10/investigations/display-protocol-inventory.md
+				// Del 2: the aggregated, first-occurrence-per-code alarm
+				// for this lives in asr10panel_device::send_to_display(),
+				// which sees every byte before it reaches here -- no
+				// second, redundant alarm mechanism needed in this
+				// shared class.
 				break;
 		}
 	} else {
 		if ((data >= 0x20) && (data <= 0x5f)) {
 			m_chars[0][m_cursx] = data - ' ';
+			m_attrs[0][m_cursx] = m_curattr;
 			m_dirty[0][m_cursx] = 1;
 			m_cursx++;
 
@@ -503,8 +584,19 @@ void esq1x22_device::write_char(uint8_t data)
 	update_display();
 }
 
+void esq1x22_device::render_character(uint8_t column, uint8_t data, bool underline)
+{
+	if (column >= std::size(m_chars[0]) || data < 0x20 || data > 0x5f)
+		return;
+
+	m_chars[0][column] = data - ' ';
+	m_attrs[0][column] = underline ? AT_UNDERLINE : AT_NORMAL;
+	m_dirty[0][column] = 1;
+	update_display();
+}
+
 esq1x22_device::esq1x22_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :
-	esqvfd_device(mconfig, ESQ1X22, tag, owner, clock, make_dimensions<1, 22>(*this))
+	esqvfd_device(mconfig, ESQ1X22, tag, owner, clock, 1, 22)
 {
 }
 
@@ -553,8 +645,27 @@ void esq2x40_sq1_device::write_char(uint8_t data)
 }
 
 esq2x40_sq1_device::esq2x40_sq1_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :
-	esqvfd_device(mconfig, ESQ2X40_SQ1, tag, owner, clock, make_dimensions<2, 40>(*this))
+	esqvfd_device(mconfig, ESQ2X40_SQ1, tag, owner, clock, 2, 40)
 {
 	m_wait87shift = false;
 	m_wait88shift = false;
+}
+
+esq2x40_device::esq2x40_device(
+	const machine_config &mconfig,
+	device_type type,
+	const char *tag,
+	device_t *owner,
+	uint32_t clock) :
+	esqvfd_device(mconfig, type, tag, owner, clock, 2, 40)
+{
+}
+
+esq2x40_device::esq2x40_device(
+	const machine_config &mconfig,
+	const char *tag,
+	device_t *owner,
+	uint32_t clock) :
+	esq2x40_device(mconfig, ESQ2X40, tag, owner, clock)
+{
 }

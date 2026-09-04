@@ -15,6 +15,7 @@
 #pragma once
 
 #include "flopimg.h"
+#include "upd765_dsk.h"
 
 class esqimg_format : public floppy_image_format_t
 {
@@ -37,5 +38,20 @@ private:
 };
 
 extern const esqimg_format FLOPPY_ESQIMG_FORMAT;
+
+class asr10img_format : public upd765_format
+{
+public:
+	asr10img_format();
+
+	virtual const char *name() const noexcept override;
+	virtual const char *description() const noexcept override;
+	virtual const char *extensions() const noexcept override;
+
+private:
+	static const format formats[];
+};
+
+extern const asr10img_format FLOPPY_ASR10IMG_FORMAT;
 
 #endif // MAME_FORMATS_ESQ16_DSK_H

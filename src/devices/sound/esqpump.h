@@ -16,9 +16,16 @@
 class esq_5505_5510_pump_device : public device_t, public device_sound_interface
 {
 public:
+	enum class serial_route : u8
+	{
+		vfx,
+		ser0_ser2_ser3_to_ser1
+	};
+
 	esq_5505_5510_pump_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
 
 	template <typename T> void set_esp(T &&tag) { m_esp.set_tag(std::forward<T>(tag)); }
+	void set_serial_route(serial_route route) { m_serial_route = route; }
 	void set_esp_halted(bool esp_halted) {
 		m_esp_halted = esp_halted;
 		logerror("ESP-halted -> %d\n", m_esp_halted);
@@ -83,6 +90,7 @@ private:
 
 	// Is the ESP halted by the CPU?
 	bool m_esp_halted;
+	serial_route m_serial_route;
 
 #if !PUMP_FAKE_ESP_PROCESSING
 	osd_ticks_t ticks_spent_processing;
@@ -107,5 +115,7 @@ private:
 };
 
 DECLARE_DEVICE_TYPE(ESQ_5505_5510_PUMP, esq_5505_5510_pump_device)
+
+ALLOW_SAVE_TYPE(esq_5505_5510_pump_device::serial_route);
 
 #endif // MAME_SOUND_ESQPUMP_H

@@ -18563,6 +18563,9 @@ ks32
 asr10
 asrx
 
+@source:ensoniq/asr10_boot.cpp
+asr10booth
+
 @source:ensoniq/esqkt.cpp
 kt76
 ts10

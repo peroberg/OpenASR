@@ -1,101 +1,174 @@
-# MAME
+# OpenASR
 
-## What is MAME?
+**OpenASR** is an open-source emulator and reverse-engineering research platform for the **Ensoniq ASR-10** (Advanced Sampling Recorder), developed on top of the [MAME](https://github.com/mamedev/mame) emulation framework.
 
-MAME is a multi-purpose emulation framework.
+The project aims to achieve cycle-accurate, hardware-faithful emulation of the ASR-10 architecture, including its Motorola MC68302 processor, Ensoniq OTTO (ES5506) wavetable synthesis engine, Ensoniq ESP (ES5510) digital signal processor, SCSI controller (WD33C93A), floppy disk controller (uPD72069), and front-panel VFD interface.
 
-MAME's purpose is to preserve decades of software history. As electronic technology continues to rush forward, MAME prevents this important "vintage" software from being lost and forgotten. This is achieved by documenting the hardware and how it functions. The source code to MAME serves as this documentation. The fact that the software is usable serves primarily to validate the accuracy of the documentation (how else can you prove that you have recreated the hardware faithfully?). Over time, MAME (originally stood for Multiple Arcade Machine Emulator) absorbed the sister-project MESS (Multi Emulator Super System), so MAME now documents a wide variety of (mostly vintage) computers, video game consoles and calculators, in addition to the arcade video games that were its initial focus.
+> **Development Status**: OpenASR is in **active development / research preview**. Core system architecture, booting, storage, and synthesis pipelines are functioning, while higher-level sequence validation, UI layout refinement, and edge-case timing fidelity remain under active investigation.
 
-## Where can I find out more?
+---
 
-* [Official MAME Development Team Site](https://www.mamedev.org/) (includes binary downloads, wiki, forums, and more)
-* [MAME Testers](https://mametesters.org/) (official bug tracker for MAME)
+## Current Status
 
-### Community
+### Known Working
+- **Firmware Boot**: Boots authentic Ensoniq boot ROMs (`asr-648c-lo-1.5b.bin` / `asr-65e0-hi-1.5b.bin`) through MC68302 initialization, power-on diagnostics, and disk readiness checks.
+- **Floppy Subsystem**: High-density 3.5" disk image support (OS Version 3.50 and 1.61) with uPD72069 floppy controller, IDMA data transfer, and standby auxiliary command support.
+- **SCSI Storage Subsystem**: WD33C93A SCSI controller supporting:
+  - Direct SCSI hard disk booting (`-hard1`, SCSI ID 0)
+  - Authentic low-level disk formatting via firmware (`SYSTEM/MIDI -> FORMAT SCSI DRIVE`)
+  - Persistent read/write operations and file system mounting
+  - SCSI CD-ROM browsing and bank loading (`-cdrom`, SCSI ID 4, supporting authentic Ensoniq CDR-series libraries)
+  - Simultaneous multi-device configurations (HDD + CD-ROM)
+- **Memory & System Architecture**: 2 MB – 16 MB sample RAM aliasing, MC68302 SIM (BAR/SCR, chip selects, Port A GPIO, Port B GPIO, interrupt controller with authentic IACK autovectored handling).
+- **Sound Synthesis (ES5506 / OTTO)**:
+  - 6-channel output with authentic bus routing (`BUS1/2/3` to ESP serial ports `SER0/2/3`)
+  - Specification-correct clock domains: Mode 0 ($Y_2/2 = 15.238090\text{ MHz} \to F_s = 29,761.895\text{ Hz}$) and Mode 1 ($Y_3/2 = 16.934400\text{ MHz} \to F_s = 44,100.000\text{ Hz}$) matching authentic firmware reference `$0D66` traversal math 1:1.
+- **Effects DSP (ES5510 / ESP)**: Firmware-driven execution lifecycle controlled via MC68302 Port A pin PA4 (halted during microcode/GPR upload, running during audio processing).
+- **Sequencer**: Real-time event dispatch, transport controls (Play/Stop/Continue), and clocking operational.
+- **Front Panel & Display**: 22-character vacuum fluorescent display (VFD) output, softkey navigation, and parameter editing.
+- **Automated Regression Harness**: 12-stage non-interactive headless test suite verifying boot, UI, storage, audio capture, and operating modes.
 
-* [MAME Forums on bannister.org](https://forums.bannister.org/ubbthreads.php?ubb=cfrm&c=5)
-* [r/MAME](https://www.reddit.com/r/MAME/) on Reddit
-* [MAMEWorld Forums](https://www.mameworld.info/ubbthreads/)
+### Open Areas & Known Limitations
+- **Multi-Voice / Dense Demo Playback**: Certain dense multi-instrument sequences exhibit intermittent audio artifacts (rhythmic crackle). Cause has not yet been localized.
+- **Sequencer Verification**: While sequence playback runs and responds to transport controls, comprehensive timing and event-mask verification against real hardware recordings remains ongoing.
+- **Front-Panel Geometry**: Current MAME layout provides functional debug access to all front-panel buttons, but does not yet visually mirror the physical ASR-10 chassis panel layout.
+- **Board-Level Clock Routing**: The $Y_2/2$ and $Y_3/2$ clock domains are verified numerically and acoustically, but physical PCB multiplexer/divider topology between crystals and OTTO pins remains unverified by physical schematics.
 
-## Development
+---
 
-![Alt](https://repobeats.axiom.co/api/embed/8461d8ae4630322dafc736fc25782de214b49630.svg "Repobeats analytics image")
+## Building OpenASR
 
-### CI status and code scanning
+OpenASR is built using MAME's standard build system.
 
-[![CI (Linux)](https://github.com/mamedev/mame/workflows/CI%20(Linux)/badge.svg)](https://github.com/mamedev/mame/actions/workflows/ci-linux.yml) [![CI (Windows](https://github.com/mamedev/mame/workflows/CI%20(Windows)/badge.svg)](https://github.com/mamedev/mame/actions/workflows/ci-windows.yml) [![CI (macOS)](https://github.com/mamedev/mame/workflows/CI%20(macOS)/badge.svg)](https://github.com/mamedev/mame/actions/workflows/ci-macos.yml) [![Compile UI translations](https://github.com/mamedev/mame/workflows/Compile%20UI%20translations/badge.svg)](https://github.com/mamedev/mame/actions/workflows/language.yml) [![Build documentation](https://github.com/mamedev/mame/workflows/Build%20documentation/badge.svg)](https://github.com/mamedev/mame/actions/workflows/docs.yml)  [![Coverity Scan Status](https://scan.coverity.com/projects/5727/badge.svg?flat=1)](https://scan.coverity.com/projects/mame-emulator)
+### Prerequisites
+- **Compiler**: Modern C++17 compiler (Clang 12+ or GCC 10+)
+- **Build Tools**: GNU Make, Python 3
+- **Libraries**: SDL2 (including development headers)
 
-### How to compile?
+### Compilation Commands
 
-If you're on a UNIX-like system (including Linux and macOS), it could be as easy as typing
-
-```
-make
-```
-
-for a full build,
-
-```
-make SUBTARGET=tiny
-```
-
-for a build including a small subset of supported systems.
-
-See the [Compiling MAME](http://docs.mamedev.org/initialsetup/compilingmame.html) page on our documentation site for more information, including prerequisites for macOS and popular Linux distributions.
-
-For recent versions of macOS you need to install [Xcode](https://developer.apple.com/xcode/) including command-line tools and [SDL 2.0](https://github.com/libsdl-org/SDL/releases/latest).
-
-For Windows users, we provide a ready-made [build environment](http://www.mamedev.org/tools/) based on MinGW-w64.
-
-Visual Studio builds are also possible, but you still need [build environment](http://www.mamedev.org/tools/) based on MinGW-w64.
-In order to generate solution and project files just run:
-
-```
-make vs2022
-```
-or use this command to build it directly using msbuild
-
-```
-make vs2022 MSBUILD=1
+To build only the OpenASR driver and its immediate dependencies (recommended for development):
+```sh
+# On Linux / macOS (adjust -j to your CPU core count)
+make SOURCES=src/mame/ensoniq/asr10_boot.cpp -j$(nproc 2>/dev/null || sysctl -n hw.ncpu)
 ```
 
-### Coding standard
+To build the entire MAME suite:
+```sh
+make -j$(nproc 2>/dev/null || sysctl -n hw.ncpu)
+```
 
-MAME source code should be viewed and edited with your editor set to use four spaces per tab. Tabs are used for initial indentation of lines, with one tab used per indentation level. Spaces are used for other alignment within a line.
+The resulting binary is named `mame` (or `mame.exe` on Windows) in the repository root.
 
-Some parts of the code follow [Allman style](https://en.wikipedia.org/wiki/Indent_style#Allman_style); some parts of the code follow [K&R style](https://en.wikipedia.org/wiki/Indent_style#K.26R_style) -- mostly depending on who wrote the original version. **Above all else, be consistent with what you modify, and keep whitespace changes to a minimum when modifying existing source.** For new code, the majority tends to prefer Allman style, so if you don't care much, use that.
+---
 
-All contributors need to either add a standard header for license info (on new files) or inform us of their wishes regarding which of the following licenses they would like their code to be made available under: the [BSD-3-Clause](http://opensource.org/licenses/BSD-3-Clause) license, the [LGPL-2.1](http://opensource.org/licenses/LGPL-2.1), or the [GPL-2.0](http://opensource.org/licenses/GPL-2.0).
+## Running OpenASR
 
-See more specific [C++ Coding Guidelines](https://docs.mamedev.org/contributing/cxx.html) on our documentation web site.
+The driver name is **`asr10booth`**.
 
-## License
+### 1. No-Media Boot (Diagnostics)
+Tests firmware boot and front-panel prompt without loading an OS disk:
+```sh
+./mame asr10booth
+```
+*Expected display*: `PLEASE INSERT DISK`
 
-The MAME project as a whole is made available under the terms of the
-[GNU General Public License, version 2](http://opensource.org/licenses/GPL-2.0)
-or later (GPL-2.0+), since it contains code made available under multiple
-GPL-compatible licenses.  A great majority of the source files (over 90%
-including core files) are made available under the terms of the
-[3-clause BSD License](http://opensource.org/licenses/BSD-3-Clause), and we
-would encourage new contributors to make their contributions available under the
-terms of this license.
+### 2. Standard Floppy Boot (OS V3.50)
+Boots the ASR-10 operating system from a floppy disk image:
+```sh
+./mame asr10booth -flop1 floppies/asr10booth/V350.img
+```
+*Expected display*: `FILE 1  TUTORIAL BNK` (or default loaded bank)
 
-Please note that MAME is a registered trademark of Gregory Ember, and permission
-is required to use the "MAME" name, logo, or wordmark.
+### 3. SCSI Hard Disk Boot
+Boots directly from an Ensoniq-formatted SCSI hard disk image mounted at SCSI ID 0:
+```sh
+./mame asr10booth -hard1 media/asr10_hdd.chd
+```
 
-<a href="http://opensource.org/licenses/GPL-2.0" target="_blank">
-<img align="right" width="100" src="https://opensource.org/wp-content/uploads/2009/06/OSIApproved.svg">
-</a>
+### 4. SCSI CD-ROM Browsing
+Loads the OS from floppy and attaches an Ensoniq CDR sound library at SCSI ID 4:
+```sh
+./mame asr10booth -flop1 floppies/asr10booth/V350.img -cdrom media/cdr1_sound_library.chd
+```
 
-    Copyright (c) 1997-2026  MAMEdev and contributors
+### 5. Simultaneous Hard Disk + CD-ROM
+Full production studio configuration:
+```sh
+./mame asr10booth -hard1 media/asr10_hdd.chd -cdrom media/cdr1_sound_library.chd
+```
 
-    This program is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License version 2, as provided in
-    docs/legal/GPL-2.0.
+### Headless / Benchmark Mode
+For fast, non-GUI execution (e.g. for batch testing or tracing):
+```sh
+SDL_VIDEODRIVER=dummy ./mame asr10booth \
+  -flop1 floppies/asr10booth/V350.img \
+  -video none -sound none -nothrottle -seconds_to_run 30
+```
 
-    This program is distributed in the hope that it will be useful, but WITHOUT
-    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-    more details.
+---
 
-Please see [COPYING](COPYING) for more details.
+## Automated Regression Testing
+
+The test suite validates the complete software stack headlessly using Lua integration scripts:
+```sh
+docs/asr10/regression-test.sh floppies/asr10booth/V350.img
+```
+
+### Test Suite Scope
+1. **Boot**: Cold boot to `FILE 1  TUTORIAL BNK` prompt.
+2. **Display**: Character ring buffer and VFD output.
+3. **Button**: Keypad scan and channel navigation.
+4. **No-disk**: Cold boot without media to `PLEASE INSERT DISK`.
+5. **File Loaded**: Floppy DMA transfer of 172 KB bank.
+6. **MC68302 Guards**: Bus error and unhandled interrupt assertion guards.
+7. **Note Audio**: MIDI Note-On transmission, ES5506 voice register programming, and audio WAV capture.
+8. **Audio Pitch**: Autocorrelation pitch detection validating 130.8 Hz fundamental frequency for JM DIGI SYN Note 60 under 29.76 kHz Mode-0 clock.
+9. **Audio Rate Mode**: A/B/A switching between 29.76 kHz (Mode 0) and 44.1 kHz (Mode 1).
+10. **Interrupt Controller**: MC68302 IACK autovectoring (`$4B`/`$4D`).
+11. **Memory Size**: Low-memory allocator boundary check (2 MB / 16 MB).
+12. **Display Protocol & Field Rewrite**: Cursor navigation, underline tracking, and tempo field edits.
+
+*Prerequisite*: Requires a local, legally obtained `V350.img` floppy image.
+
+---
+
+## Project Layout
+
+```text
+├── src/
+│   ├── mame/ensoniq/
+│   │   └── asr10_boot.cpp       # Main ASR-10 system driver & hardware bus wiring
+│   └── devices/
+│       ├── machine/mc68302*     # Motorola MC68302 Integrated Multiprotocol Processor
+│       ├── machine/wd33c9x*     # Western Digital WD33C93A SCSI Controller
+│       ├── machine/upd765*      # NEC uPD72069 Floppy Disk Controller
+│       ├── sound/es5506*        # Ensoniq ES5506 (OTTO) Wavetable Synthesizer
+│       └── sound/es5510*        # Ensoniq ES5510 (ESP) Signal Processor
+├── docs/
+│   ├── asr10/
+│   │   ├── README.md            # Comprehensive research documentation index
+│   │   ├── current-status.md    # Active engineering baseline and verified findings
+│   │   ├── regression-test.sh   # Full acceptance test suite
+│   │   ├── reference/           # Architectural specifications and subsystem guides
+│   │   ├── investigations/      # Detailed engineering investigation reports
+│   │   └── lua/                 # Automated testing probes and headless harnesses
+│   └── ensoniq/
+│       └── README.md            # Bibliographic index and SHA-256 hashes of silicon manuals
+├── roms/
+│   └── README.md                # ROM placement instructions and checksums
+├── media/
+│   └── README.md                # Hard disk and CD-ROM placement instructions
+└── floppies/
+    └── README.md                # Floppy image instructions
+```
+
+---
+
+## Legal & Media Notice
+
+OpenASR is an independent reverse-engineering and emulation research project. It is **not** affiliated with, endorsed by, or sponsored by Ensoniq Corp. or its successors.
+
+- **No ROMs or Firmware Included**: System ROMs (`asr-648c-lo-1.5b.bin`, `asr-65e0-hi-1.5b.bin`) and OS images (`V350.img`, `V161.img`) are the intellectual property of their respective copyright holders and are **not** distributed with OpenASR.
+- **No Commercial Media Included**: Factory sound libraries, sample disks, CD-ROMs, and demo sequences must be provided by the user from legally obtained physical media or authentic backups.
+- **MAME Ancestry**: OpenASR includes MAME core and device emulation code subject to the MAME licensing terms (BSD-3-Clause and GNU GPL-2.0+). See `LICENSE` for details.

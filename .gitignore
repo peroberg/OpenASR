@@ -49,3 +49,34 @@ regtests/chdman/temp
 regtests/jedutil/output
 /CMakeLists.txt
 /samples
+
+# OpenASR media directories (track README, ignore media files)
+!/roms/
+!/roms/README.md
+/roms/*
+!/roms/README.md
+
+!/media/
+!/media/README.md
+/media/*
+!/media/README.md
+
+!/floppies/
+!/floppies/README.md
+/floppies/*
+!/floppies/README.md
+
+# Local reference PDFs and proprietary transcriptions
+docs/ensoniq/*.pdf
+/es5701.md
+
+# Emulator media, runtime dumps, and capture output
+*.img
+*.chd
+*.iso
+*.cue
+*.nvram
+*.sta
+*.dasm
+*.raw
+*.vfd

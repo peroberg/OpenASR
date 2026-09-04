@@ -20,6 +20,7 @@ m68000_device::m68000_device(const machine_config &mconfig, device_type type, co
 	: m68000_base_device(mconfig, type, tag, owner, clock),
 	  m_cmpild_instr_callback(*this),
 	  m_rte_instr_callback(*this),
+	  m_instruction_execute_callback(*this),
 	  m_tas_write_callback(*this),
 	  m_program_config("program", ENDIANNESS_BIG, 16, 24),
 	  m_opcodes_config("opcodes", ENDIANNESS_BIG, 16, 24),
@@ -162,6 +163,9 @@ void m68000_device::execute_run()
 				m_ipc = m_pc - 2;
 				m_irdi = m_ird;
 
+				if(!m_instruction_execute_callback.isnull())
+					m_instruction_execute_callback(m_ipc);
+
 				if(debugger_enabled())
 					debugger_instruction_hook(m_ipc);
 			}
@@ -224,6 +228,7 @@ void m68000_device::device_start()
 
 	m_cmpild_instr_callback.resolve();
 	m_rte_instr_callback.resolve();
+	m_instruction_execute_callback.resolve();
 	m_tas_write_callback.resolve();
 
 	if(!m_disable_spaces) {
@@ -541,4 +546,3 @@ bool m68000_device::memory_translate(int spacenum, int intention, offs_t &addres
 	else
 		return device_memory_interface::memory_translate(spacenum, intention, address, target_space);
 }
-

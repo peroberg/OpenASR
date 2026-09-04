@@ -14,6 +14,8 @@
 
 #define ES5506_MAKE_WAVS 0
 
+DECLARE_DEVICE_TYPE(ES5506, es5506_device)
+
 class es550x_device : public device_t, public device_sound_interface, public device_memory_interface
 {
 public:
@@ -210,8 +212,6 @@ private:
 	u8       m_wend;                   // W_END register
 	u8       m_lrend;                  // LR_END register
 };
-
-DECLARE_DEVICE_TYPE(ES5506, es5506_device)
 
 
 class es5505_device : public es550x_device

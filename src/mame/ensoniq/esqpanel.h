@@ -10,6 +10,7 @@
 
 #include "diserial.h"
 
+#include <array>
 #include <iostream>
 #include <set>
 #include <vector>
@@ -54,6 +55,10 @@ protected:
 	virtual void tra_callback() override;    // Tx send bit
 
 	virtual void send_to_display(uint8_t data) = 0;
+	virtual void debug_rx_complete(uint8_t data) { }
+	virtual void debug_send_to_display(uint8_t data) { }
+	virtual void debug_xmit_char(uint8_t data) { }
+	virtual void debug_tra_complete() { }
 
 	std::set<int> m_pressed_buttons;
 	TIMER_CALLBACK_MEMBER(check_external_panel_server);
@@ -79,6 +84,13 @@ private:
 	uint8_t m_xmitring[XMIT_RING_SIZE];
 	int m_xmit_read, m_xmit_write = 0;
 	bool m_tx_busy = false;
+	// xmit_char() had no overflow check at all -- confirmed to actually
+	// drop bytes under fast play, not just theoretically
+	// (docs/asr10/investigations/keyboard-and-sample-bridge.md: a
+	// 13-key stress press lost 32 of 52 expected bytes). Counted and
+	// logged loudly now instead of silently overwritten, same principle
+	// as the rest of the mc68302 consolidation.
+	unsigned m_xmit_overflow_count = 0;
 
 	emu_timer *m_external_timer = nullptr;
 };
@@ -93,6 +105,59 @@ protected:
 	virtual void send_to_display(uint8_t data) override { m_vfd->write_char(data); }
 
 	required_device<esq1x22_device> m_vfd;
+};
+
+class asr10panel_device : public esqpanel_device {
+public:
+	asr10panel_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock = 0);
+	std::string annunciator_summary() const;
+	std::string unhandled_code_summary() const;
+
+	DECLARE_INPUT_CHANGED_MEMBER(button_change);
+	DECLARE_INPUT_CHANGED_MEMBER(analog_value_change);
+
+protected:
+	virtual void device_add_mconfig(machine_config &config) override ATTR_COLD;
+	virtual void device_start() override ATTR_COLD;
+	virtual void device_reset() override ATTR_COLD;
+	virtual ioport_constructor device_input_ports() const override;
+	virtual void rcv_complete() override;
+	virtual void send_to_display(uint8_t data) override;
+
+	required_device<esq1x22_device> m_vfd;
+	output_finder<5> m_annunciator_regs;
+	output_finder<8> m_instrument_lamps;
+	// Bit-level view of the 5 annunciator registers (5*8=40 candidate
+	// lamps -- "about thirty" per the project's own count of populated
+	// bits). Only bit 0 of $77 has a confirmed meaning so far (mirrored
+	// into m_instrument_lamps[0] below, verified against a known-lit
+	// state: BTN_02 from idle FILE LOADED); the rest are wired raw and
+	// unlabeled until correlated against more known states --
+	// docs/asr10/investigations/annunciator-bit-probe.md.
+	output_finder<40> m_annunciator_bits;
+
+private:
+	std::array<uint8_t, 5> m_annunciator_state{};
+	std::array<uint8_t, 8> m_instrument_lamp_state{};
+	// Authoritative ASR display-protocol state. Character/attribute cells stay
+	// in the generic renderer and are updated at explicit logical columns.
+	uint8_t m_pending_annunciator_command = 0;
+	uint8_t m_pending_open_command = 0;
+	uint8_t m_display_cursor = 0;
+	uint8_t m_selected_field_anchor = 0;
+	bool m_pending_field_attr = false;
+	bool m_current_underline = false;
+	bool m_selected_field_underline = false;
+	bool m_selected_field_valid = false;
+	bool m_defining_selected_field = false;
+	bool m_disable_eps_echo = false;
+
+	// Del 2: an unrecognized display control code says so, once per
+	// distinct code, instead of staying silent or flooding output --
+	// docs/asr10/investigations/display-protocol-inventory.md Del 2.
+	std::array<uint8_t, 256> m_seen_unhandled_display_code{};
+	void report_unhandled_display_code(uint8_t data);
+
 };
 
 class esqpanel2x40_device : public esqpanel_device {
@@ -192,6 +257,7 @@ protected:
 };
 
 DECLARE_DEVICE_TYPE(ESQPANEL1X22,     esqpanel1x22_device)
+DECLARE_DEVICE_TYPE(ASR10PANEL,       asr10panel_device)
 DECLARE_DEVICE_TYPE(ESQPANEL2X40,     esqpanel2x40_device)
 DECLARE_DEVICE_TYPE(ESQPANEL2X40_VFX, esqpanel2x40_vfx_device)
 DECLARE_DEVICE_TYPE(ESQPANEL2X40_SQ1, esqpanel2x40_sq1_device)

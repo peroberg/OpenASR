@@ -224,13 +224,8 @@ void nscsi_harddisk_device::scsi_command()
 
 		LOG("command WRITE start=%08x blocks=%04x\n", lba, blocks);
 
-		if(image->write(lba, block)) {
-			scsi_data_out(2, blocks*bytes_per_sector);
-			scsi_status_complete(SS_GOOD);
-		} else {
-			scsi_status_complete(SS_CHECK_CONDITION);
-			sense(false, SK_ILLEGAL_REQUEST, SK_ASC_INVALID_FIELD_IN_CDB);
-		}
+		scsi_data_out(2, blocks*bytes_per_sector);
+		scsi_status_complete(SS_GOOD);
 		break;
 
 	case SC_INQUIRY: {
@@ -581,33 +576,21 @@ void nscsi_harddisk_device::scsi_command()
 
 		LOG("command WRITE EXTENDED start=%08x blocks=%04x\n", lba, blocks);
 
-		if(image->write(lba, block)) {
-			scsi_data_out(2, blocks*bytes_per_sector);
-			scsi_status_complete(SS_GOOD);
-		}
-		else
-		{
-			scsi_status_complete(SS_CHECK_CONDITION);
-			sense(false, SK_ILLEGAL_REQUEST, SK_ASC_INVALID_FIELD_IN_CDB);
-		}
+		scsi_data_out(2, blocks*bytes_per_sector);
+		scsi_status_complete(SS_GOOD);
 		break;
 
 	case SC_FORMAT_UNIT:
-		LOG("command FORMAT UNIT:%s%s%s%s%s\n",
-				(m_scsi_cmdbuf[1] & 0x80) ? " FMT-PINFO" : "",
-				(m_scsi_cmdbuf[1] & 0x40) ? " RTO_REQ" : "",
-				(m_scsi_cmdbuf[1] & 0x20) ? " LONG-LIST" : "",
-				(m_scsi_cmdbuf[1] & 0x10) ? " FMTDATA" : "",
-				(m_scsi_cmdbuf[1] & 0x08) ? " CMPLIST" : "");
+		LOG("command FORMAT UNIT\n");
+		// format unit
+		if(image->exists())
 		{
 			const auto &info = image->get_info();
 			auto block = std::make_unique<uint8_t[]>(info.sectorbytes);
-			for(int cyl = 0; cyl < info.cylinders; cyl++) {
-				for(int head = 0; head < info.heads; head++) {
-					for(int sector = 0; sector < info.sectors; sector++) {
-						image->write(cyl * head * sector, block.get());
-					}
-				}
+			std::fill_n(block.get(), info.sectorbytes, 0);
+			uint32_t total_sectors = info.cylinders * info.heads * info.sectors;
+			for (uint32_t lba = 0; lba < total_sectors; ++lba) {
+				image->write(lba, block.get());
 			}
 		}
 		scsi_status_complete(SS_GOOD);

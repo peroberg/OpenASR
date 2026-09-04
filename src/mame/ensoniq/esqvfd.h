@@ -3,10 +3,6 @@
 #ifndef MAME_ENSONIQ_ESQVFD_H
 #define MAME_ENSONIQ_ESQVFD_H
 
-#include <memory>
-#include <tuple>
-
-
 class esqvfd_device : public device_t {
 public:
 	void write(uint8_t data) { write_char(data); }
@@ -23,24 +19,7 @@ public:
 	static uint32_t conv_segments(uint16_t segin) { return bitswap<15>(segin, 12, 11, 7, 6, 4, 10, 3, 14, 15, 0, 13, 9, 5, 1, 2); }
 
 protected:
-	class output_helper {
-	public:
-		typedef std::unique_ptr<output_helper> ptr;
-		virtual ~output_helper() { }
-		virtual int32_t set(unsigned n, int32_t value) = 0;
-	};
-
-	template <unsigned N> class output_helper_impl : public output_helper, protected output_manager::output_finder<void, N> {
-	public:
-		output_helper_impl(device_t &device) : output_manager::output_finder<void, N>(device, "vfd%u", 0U) { }
-		virtual int32_t set(unsigned n, int32_t value) override { return this->operator[](n) = value; }
-	};
-
-	typedef std::tuple<output_helper::ptr, int, int> dimensions_param;
-
-	template <int R, int C> static dimensions_param make_dimensions(device_t &device) { return dimensions_param(std::make_unique<output_helper_impl<2 * R * C> >(device), R, C); }
-
-	esqvfd_device(const machine_config &mconfig, device_type type, const char *tag, device_t *owner, uint32_t clock, dimensions_param &&dimensions);
+	esqvfd_device(const machine_config &mconfig, device_type type, const char *tag, device_t *owner, uint32_t clock, int rows, int cols);
 
 	static constexpr uint8_t AT_NORMAL      = 0x00;
 	static constexpr uint8_t AT_UNDERLINE   = 0x01;
@@ -49,7 +28,7 @@ protected:
 	virtual void device_start() override ATTR_COLD;
 	virtual void device_reset() override ATTR_COLD;
 
-	output_helper::ptr m_vfds;
+	output_finder<160> m_vfds;
 	bool m_blink_on = false;
 	int m_cursx = 0, m_cursy = 0;
 	int m_savedx = 0, m_savedy = 0;
@@ -66,6 +45,7 @@ public:
 	esq1x22_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
 
 	virtual void write_char(uint8_t data) override;
+	void render_character(uint8_t column, uint8_t data, bool underline);
 
 protected:
 	virtual void device_add_mconfig(machine_config &config) override ATTR_COLD;
@@ -89,8 +69,6 @@ class esq2x40_vfx_device : public esq2x40_device {
 public:
 	esq2x40_vfx_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
 	virtual void update_display() override;
-
-	template <int R, int C> static dimensions_param make_dimensions(device_t &device) { return dimensions_param(std::make_unique<output_helper_impl<R * C> >(device), R, C); }
 
 protected:
 	// device-level overrides

@@ -1,0 +1,490 @@
+<?xml version="1.0"?>
+<!--
+license:CC0-1.0
+-->
+
+<mamelayout version="2">
+
+	<element name="vfd0" defstate="0">
+		<led14segsc>
+			<color red="0.45" green="1.0" blue="0.95" />
+		</led14segsc>
+	</element>
+
+	<element name="underline" defstate="0">
+		<rect state="0"><color red="0.06" green="0.12" blue="0.10" /></rect>
+		<rect state="1"><color red="0.45" green="1.00" blue="0.95" /></rect>
+	</element>
+
+	<!-- Del 4 (docs/asr10/investigations/annunciator-bit-probe.md), Del 5
+	     (docs/asr10/investigations/panel-button-and-transport-map.md):
+	     raw bit-level view of the 5 annunciator registers ($77 to $7b),
+	     8 bits each. `[OPEN]`: only asr10_instlamp0 (register $77 bit 0)
+	     has a confirmed meaning, and gets its own labeled, bright-amber
+	     `instlamp` below. The other 39 bits are `annlamp`, deliberately
+	     dim, desaturated grey-amber even when lit, and explicitly
+	     labelled "OPEN" in the view, so an unidentified bit reads as
+	     unknown at a glance, not as confirmed information. A lit lamp
+	     without a known meaning is worse than no lamp at all; do not
+	     brighten this color or drop the label without first
+	     establishing what the bit means. -->
+	<element name="annlamp" defstate="0">
+		<rect state="0"><color red="0.10" green="0.09" blue="0.08" /></rect>
+		<rect state="1"><color red="0.45" green="0.38" blue="0.28" /></rect>
+	</element>
+
+	<element name="annlamp_open_label">
+		<text string="OPEN, UNKNOWN MEANING"><color red="0.50" green="0.42" blue="0.30" /></text>
+	</element>
+
+	<element name="instlamp" defstate="0">
+		<rect state="0"><color red="0.10" green="0.08" blue="0.05" /></rect>
+		<rect state="1"><color red="1.00" green="0.85" blue="0.20" /></rect>
+	</element>
+
+	<element name="instlamp_label">
+		<text string="INST 1"><color red="0.55" green="0.55" blue="0.45" /></text>
+	</element>
+
+	<element name="background">
+		<rect><color red="0.05" green="0.05" blue="0.06" /></rect>
+	</element>
+
+	<element name="button">
+		<rect state="0"><color red="0.18" green="0.18" blue="0.20" /></rect>
+		<rect state="1"><color red="0.50" green="0.62" blue="0.70" /></rect>
+	</element>
+
+	<element name="button_label_00">
+		<text string="00"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_01">
+		<text string="01"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_02">
+		<text string="#1"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_03">
+		<text string="03"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_04">
+		<text string="#5"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_05">
+		<text string="EDIT"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_06">
+		<text string="CMD"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_07">
+		<text string="07"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_08">
+		<text string="#2"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_09">
+		<text string="EFX"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_0A">
+		<text string="UP"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_0B">
+		<text string="DWN"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_0C">
+		<text string="TRK"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_0D">
+		<text string="TEST"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_0E">
+		<text string="#3"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_0F">
+		<text string="INST"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_10">
+		<text string="LFT"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_11">
+		<text string="RGT"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_12">
+		<text string="12"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_13">
+		<text string="13"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_14">
+		<text string="#4"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_15">
+		<text string="SEQ"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_16">
+		<text string="#8"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_17">
+		<text string="STOP"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_18">
+		<text string="PTC"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_19">
+		<text string="REC"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_1A">
+		<text string="LOAD"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_1B">
+		<text string="SYS"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_1C">
+		<text string="#7"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_1D">
+		<text string="PLAY"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_1E">
+		<text string="AMP"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_1F">
+		<text string="LFO"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_20">
+		<text string="SMP"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_21">
+		<text string="21"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_22">
+		<text string="#6"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_23">
+		<text string="YES"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_24">
+		<text string="WAV"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_25">
+		<text string="LAY"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_26">
+		<text string="26"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_27">
+		<text string="27"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_28">
+		<text string="28"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_29">
+		<text string="29"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_2A">
+		<text string="2A"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_2B">
+		<text string="2B"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_2C">
+		<text string="2C"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_2D">
+		<text string="2D"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_2E">
+		<text string="2E"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_2F">
+		<text string="2F"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_30">
+		<text string="30"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_31">
+		<text string="31"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_32">
+		<text string="32"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_33">
+		<text string="33"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_34">
+		<text string="34"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_35">
+		<text string="35"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_36">
+		<text string="36"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_37">
+		<text string="37"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_38">
+		<text string="38"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_39">
+		<text string="39"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_3A">
+		<text string="3A"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_3B">
+		<text string="3B"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_3C">
+		<text string="3C"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_3D">
+		<text string="3D"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_3E">
+		<text string="3E"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="button_label_3F">
+		<text string="3F"><color red="0.92" green="0.92" blue="0.92" /></text>
+	</element>
+
+	<element name="annunciator_placeholder">
+		<rect><color red="0.10" green="0.10" blue="0.11" /></rect>
+	</element>
+
+	<element name="annunciator_label">
+		<text string="ANNUNCIATORS (raw bits)"><color red="0.45" green="0.45" blue="0.45" /></text>
+	</element>
+
+	<view name="ASR-10 Panel">
+		<element ref="background">
+			<bounds x="0" y="0" width="152" height="106" />
+		</element>
+
+		<repeat count="22">
+			<param name="n" start="0" increment="1" />
+			<param name="u" start="22" increment="1" />
+			<param name="x" start="5" increment="6" />
+			<element name="vfd~n~" ref="vfd0">
+				<bounds x="~x~" y="4" width="5.6" height="8" />
+			</element>
+			<element name="vfd~u~" ref="underline">
+				<bounds x="~x~" y="13" width="4.4" height="0.8" />
+			</element>
+		</repeat>
+
+		<element ref="annunciator_placeholder">
+			<bounds x="5" y="17" width="132" height="8" />
+		</element>
+		<element ref="annunciator_label">
+			<bounds x="8" y="18.5" width="56" height="4" />
+		</element>
+		<repeat count="40">
+			<param name="n" start="0" increment="1" />
+			<param name="x" start="66" increment="1.7" />
+			<element name="asr10_annbit~n~" ref="annlamp">
+				<bounds x="~x~" y="18" width="1.3" height="3" />
+			</element>
+		</repeat>
+		<element ref="annlamp_open_label">
+			<bounds x="66" y="21" width="68" height="2.2" />
+		</element>
+		<element ref="instlamp_label">
+			<bounds x="66" y="23.5" width="16" height="2.5" />
+		</element>
+		<element name="asr10_instlamp0" ref="instlamp">
+			<bounds x="83" y="23.5" width="4" height="2.5" />
+		</element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x00000001"><bounds x="5" y="30" width="14" height="7" /></element>
+		<element ref="button_label_00" inputtag="buttons_0" inputmask="0x00000001"><bounds x="5" y="30" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x00000002"><bounds x="21" y="30" width="14" height="7" /></element>
+		<element ref="button_label_01" inputtag="buttons_0" inputmask="0x00000002"><bounds x="21" y="30" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x00000004"><bounds x="37" y="30" width="14" height="7" /></element>
+		<element ref="button_label_02" inputtag="buttons_0" inputmask="0x00000004"><bounds x="37" y="30" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x00000008"><bounds x="53" y="30" width="14" height="7" /></element>
+		<element ref="button_label_03" inputtag="buttons_0" inputmask="0x00000008"><bounds x="53" y="30" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x00000010"><bounds x="69" y="30" width="14" height="7" /></element>
+		<element ref="button_label_04" inputtag="buttons_0" inputmask="0x00000010"><bounds x="69" y="30" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x00000020"><bounds x="85" y="30" width="14" height="7" /></element>
+		<element ref="button_label_05" inputtag="buttons_0" inputmask="0x00000020"><bounds x="85" y="30" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x00000040"><bounds x="101" y="30" width="14" height="7" /></element>
+		<element ref="button_label_06" inputtag="buttons_0" inputmask="0x00000040"><bounds x="101" y="30" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x00000080"><bounds x="117" y="30" width="14" height="7" /></element>
+		<element ref="button_label_07" inputtag="buttons_0" inputmask="0x00000080"><bounds x="117" y="30" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x00000100"><bounds x="5" y="39" width="14" height="7" /></element>
+		<element ref="button_label_08" inputtag="buttons_0" inputmask="0x00000100"><bounds x="5" y="39" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x00000200"><bounds x="21" y="39" width="14" height="7" /></element>
+		<element ref="button_label_09" inputtag="buttons_0" inputmask="0x00000200"><bounds x="21" y="39" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x00000400"><bounds x="37" y="39" width="14" height="7" /></element>
+		<element ref="button_label_0A" inputtag="buttons_0" inputmask="0x00000400"><bounds x="37" y="39" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x00000800"><bounds x="53" y="39" width="14" height="7" /></element>
+		<element ref="button_label_0B" inputtag="buttons_0" inputmask="0x00000800"><bounds x="53" y="39" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x00001000"><bounds x="69" y="39" width="14" height="7" /></element>
+		<element ref="button_label_0C" inputtag="buttons_0" inputmask="0x00001000"><bounds x="69" y="39" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x00002000"><bounds x="85" y="39" width="14" height="7" /></element>
+		<element ref="button_label_0D" inputtag="buttons_0" inputmask="0x00002000"><bounds x="85" y="39" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x00004000"><bounds x="101" y="39" width="14" height="7" /></element>
+		<element ref="button_label_0E" inputtag="buttons_0" inputmask="0x00004000"><bounds x="101" y="39" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x00008000"><bounds x="117" y="39" width="14" height="7" /></element>
+		<element ref="button_label_0F" inputtag="buttons_0" inputmask="0x00008000"><bounds x="117" y="39" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x00010000"><bounds x="5" y="48" width="14" height="7" /></element>
+		<element ref="button_label_10" inputtag="buttons_0" inputmask="0x00010000"><bounds x="5" y="48" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x00020000"><bounds x="21" y="48" width="14" height="7" /></element>
+		<element ref="button_label_11" inputtag="buttons_0" inputmask="0x00020000"><bounds x="21" y="48" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x00040000"><bounds x="37" y="48" width="14" height="7" /></element>
+		<element ref="button_label_12" inputtag="buttons_0" inputmask="0x00040000"><bounds x="37" y="48" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x00080000"><bounds x="53" y="48" width="14" height="7" /></element>
+		<element ref="button_label_13" inputtag="buttons_0" inputmask="0x00080000"><bounds x="53" y="48" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x00100000"><bounds x="69" y="48" width="14" height="7" /></element>
+		<element ref="button_label_14" inputtag="buttons_0" inputmask="0x00100000"><bounds x="69" y="48" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x00200000"><bounds x="85" y="48" width="14" height="7" /></element>
+		<element ref="button_label_15" inputtag="buttons_0" inputmask="0x00200000"><bounds x="85" y="48" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x00400000"><bounds x="101" y="48" width="14" height="7" /></element>
+		<element ref="button_label_16" inputtag="buttons_0" inputmask="0x00400000"><bounds x="101" y="48" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x00800000"><bounds x="117" y="48" width="14" height="7" /></element>
+		<element ref="button_label_17" inputtag="buttons_0" inputmask="0x00800000"><bounds x="117" y="48" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x01000000"><bounds x="5" y="57" width="14" height="7" /></element>
+		<element ref="button_label_18" inputtag="buttons_0" inputmask="0x01000000"><bounds x="5" y="57" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x02000000"><bounds x="21" y="57" width="14" height="7" /></element>
+		<element ref="button_label_19" inputtag="buttons_0" inputmask="0x02000000"><bounds x="21" y="57" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x04000000"><bounds x="37" y="57" width="14" height="7" /></element>
+		<element ref="button_label_1A" inputtag="buttons_0" inputmask="0x04000000"><bounds x="37" y="57" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x08000000"><bounds x="53" y="57" width="14" height="7" /></element>
+		<element ref="button_label_1B" inputtag="buttons_0" inputmask="0x08000000"><bounds x="53" y="57" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x10000000"><bounds x="69" y="57" width="14" height="7" /></element>
+		<element ref="button_label_1C" inputtag="buttons_0" inputmask="0x10000000"><bounds x="69" y="57" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x20000000"><bounds x="85" y="57" width="14" height="7" /></element>
+		<element ref="button_label_1D" inputtag="buttons_0" inputmask="0x20000000"><bounds x="85" y="57" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x40000000"><bounds x="101" y="57" width="14" height="7" /></element>
+		<element ref="button_label_1E" inputtag="buttons_0" inputmask="0x40000000"><bounds x="101" y="57" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_0" inputmask="0x80000000"><bounds x="117" y="57" width="14" height="7" /></element>
+		<element ref="button_label_1F" inputtag="buttons_0" inputmask="0x80000000"><bounds x="117" y="57" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x00000001"><bounds x="5" y="66" width="14" height="7" /></element>
+		<element ref="button_label_20" inputtag="buttons_32" inputmask="0x00000001"><bounds x="5" y="66" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x00000002"><bounds x="21" y="66" width="14" height="7" /></element>
+		<element ref="button_label_21" inputtag="buttons_32" inputmask="0x00000002"><bounds x="21" y="66" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x00000004"><bounds x="37" y="66" width="14" height="7" /></element>
+		<element ref="button_label_22" inputtag="buttons_32" inputmask="0x00000004"><bounds x="37" y="66" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x00000008"><bounds x="53" y="66" width="14" height="7" /></element>
+		<element ref="button_label_23" inputtag="buttons_32" inputmask="0x00000008"><bounds x="53" y="66" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x00000010"><bounds x="69" y="66" width="14" height="7" /></element>
+		<element ref="button_label_24" inputtag="buttons_32" inputmask="0x00000010"><bounds x="69" y="66" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x00000020"><bounds x="85" y="66" width="14" height="7" /></element>
+		<element ref="button_label_25" inputtag="buttons_32" inputmask="0x00000020"><bounds x="85" y="66" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x00000040"><bounds x="101" y="66" width="14" height="7" /></element>
+		<element ref="button_label_26" inputtag="buttons_32" inputmask="0x00000040"><bounds x="101" y="66" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x00000080"><bounds x="117" y="66" width="14" height="7" /></element>
+		<element ref="button_label_27" inputtag="buttons_32" inputmask="0x00000080"><bounds x="117" y="66" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x00000100"><bounds x="5" y="75" width="14" height="7" /></element>
+		<element ref="button_label_28" inputtag="buttons_32" inputmask="0x00000100"><bounds x="5" y="75" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x00000200"><bounds x="21" y="75" width="14" height="7" /></element>
+		<element ref="button_label_29" inputtag="buttons_32" inputmask="0x00000200"><bounds x="21" y="75" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x00000400"><bounds x="37" y="75" width="14" height="7" /></element>
+		<element ref="button_label_2A" inputtag="buttons_32" inputmask="0x00000400"><bounds x="37" y="75" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x00000800"><bounds x="53" y="75" width="14" height="7" /></element>
+		<element ref="button_label_2B" inputtag="buttons_32" inputmask="0x00000800"><bounds x="53" y="75" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x00001000"><bounds x="69" y="75" width="14" height="7" /></element>
+		<element ref="button_label_2C" inputtag="buttons_32" inputmask="0x00001000"><bounds x="69" y="75" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x00002000"><bounds x="85" y="75" width="14" height="7" /></element>
+		<element ref="button_label_2D" inputtag="buttons_32" inputmask="0x00002000"><bounds x="85" y="75" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x00004000"><bounds x="101" y="75" width="14" height="7" /></element>
+		<element ref="button_label_2E" inputtag="buttons_32" inputmask="0x00004000"><bounds x="101" y="75" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x00008000"><bounds x="117" y="75" width="14" height="7" /></element>
+		<element ref="button_label_2F" inputtag="buttons_32" inputmask="0x00008000"><bounds x="117" y="75" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x00010000"><bounds x="5" y="84" width="14" height="7" /></element>
+		<element ref="button_label_30" inputtag="buttons_32" inputmask="0x00010000"><bounds x="5" y="84" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x00020000"><bounds x="21" y="84" width="14" height="7" /></element>
+		<element ref="button_label_31" inputtag="buttons_32" inputmask="0x00020000"><bounds x="21" y="84" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x00040000"><bounds x="37" y="84" width="14" height="7" /></element>
+		<element ref="button_label_32" inputtag="buttons_32" inputmask="0x00040000"><bounds x="37" y="84" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x00080000"><bounds x="53" y="84" width="14" height="7" /></element>
+		<element ref="button_label_33" inputtag="buttons_32" inputmask="0x00080000"><bounds x="53" y="84" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x00100000"><bounds x="69" y="84" width="14" height="7" /></element>
+		<element ref="button_label_34" inputtag="buttons_32" inputmask="0x00100000"><bounds x="69" y="84" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x00200000"><bounds x="85" y="84" width="14" height="7" /></element>
+		<element ref="button_label_35" inputtag="buttons_32" inputmask="0x00200000"><bounds x="85" y="84" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x00400000"><bounds x="101" y="84" width="14" height="7" /></element>
+		<element ref="button_label_36" inputtag="buttons_32" inputmask="0x00400000"><bounds x="101" y="84" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x00800000"><bounds x="117" y="84" width="14" height="7" /></element>
+		<element ref="button_label_37" inputtag="buttons_32" inputmask="0x00800000"><bounds x="117" y="84" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x01000000"><bounds x="5" y="93" width="14" height="7" /></element>
+		<element ref="button_label_38" inputtag="buttons_32" inputmask="0x01000000"><bounds x="5" y="93" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x02000000"><bounds x="21" y="93" width="14" height="7" /></element>
+		<element ref="button_label_39" inputtag="buttons_32" inputmask="0x02000000"><bounds x="21" y="93" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x04000000"><bounds x="37" y="93" width="14" height="7" /></element>
+		<element ref="button_label_3A" inputtag="buttons_32" inputmask="0x04000000"><bounds x="37" y="93" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x08000000"><bounds x="53" y="93" width="14" height="7" /></element>
+		<element ref="button_label_3B" inputtag="buttons_32" inputmask="0x08000000"><bounds x="53" y="93" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x10000000"><bounds x="69" y="93" width="14" height="7" /></element>
+		<element ref="button_label_3C" inputtag="buttons_32" inputmask="0x10000000"><bounds x="69" y="93" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x20000000"><bounds x="85" y="93" width="14" height="7" /></element>
+		<element ref="button_label_3D" inputtag="buttons_32" inputmask="0x20000000"><bounds x="85" y="93" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x40000000"><bounds x="101" y="93" width="14" height="7" /></element>
+		<element ref="button_label_3E" inputtag="buttons_32" inputmask="0x40000000"><bounds x="101" y="93" width="14" height="7" /></element>
+		<element ref="button" inputtag="buttons_32" inputmask="0x80000000"><bounds x="117" y="93" width="14" height="7" /></element>
+		<element ref="button_label_3F" inputtag="buttons_32" inputmask="0x80000000"><bounds x="117" y="93" width="14" height="7" /></element>
+	</view>
+</mamelayout>

@@ -22,6 +22,7 @@ esq_5505_5510_pump_device::esq_5505_5510_pump_device(const machine_config &mconf
 	, m_stream(nullptr)
 	, m_esp(*this, finder_base::DUMMY_TAG)
 	, m_esp_halted(true)
+	, m_serial_route(serial_route::vfx)
 	, ticks_spent_processing(0)
 	, samples_processed(0)
 {
@@ -35,6 +36,9 @@ void esq_5505_5510_pump_device::device_start()
 	// these will be channels 2 and 3 and can be routed to a separate 'aux' output device.
 	// On the VFX, those will simply remain silent.
 	m_stream = stream_alloc(8, 4, clock(), STREAM_SYNCHRONOUS);
+
+	save_item(NAME(m_esp_halted));
+	save_item(NAME(m_serial_route));
 
 #if PUMP_DETECT_SILENCE
 	silent_for = 500;
@@ -66,34 +70,68 @@ void esq_5505_5510_pump_device::sound_stream_update(sound_stream &stream)
 	constexpr sound_stream::sample_t input_scale = 32768.0;
 	constexpr sound_stream::sample_t output_scale = 1.0 / input_scale;
 
-	// Push the 'Aux' output samples directly into the output stream
-	stream.put(2, 0, stream.get(0, 0));
-	stream.put(3, 0, stream.get(1, 0));
+	if (m_serial_route == serial_route::vfx)
+	{
+		// Push the 'Aux' output samples directly into the output stream
+		stream.put(2, 0, stream.get(0, 0));
+		stream.put(3, 0, stream.get(1, 0));
 
-	// Push the 'FX1', 'FX2' and 'DRY' samples into the ESP
-	m_esp->ser_w(0, s32(stream.get(2, 0) * input_scale));
-	m_esp->ser_w(1, s32(stream.get(3, 0) * input_scale));
-	m_esp->ser_w(2, s32(stream.get(4, 0) * input_scale));
-	m_esp->ser_w(3, s32(stream.get(5, 0) * input_scale));
-	m_esp->ser_w(4, s32(stream.get(6, 0) * input_scale));
-	m_esp->ser_w(5, s32(stream.get(7, 0) * input_scale));
+		// Push the 'FX1', 'FX2' and 'DRY' samples into the ESP
+		m_esp->ser_w(0, s32(stream.get(2, 0) * input_scale));
+		m_esp->ser_w(1, s32(stream.get(3, 0) * input_scale));
+		m_esp->ser_w(2, s32(stream.get(4, 0) * input_scale));
+		m_esp->ser_w(3, s32(stream.get(5, 0) * input_scale));
+		m_esp->ser_w(4, s32(stream.get(6, 0) * input_scale));
+		m_esp->ser_w(5, s32(stream.get(7, 0) * input_scale));
+	}
+	else
+	{
+		// Functional serial contract: inputs 2/3, 6/7 and 0/1 respectively
+		// feed SER0, SER2 and SER3; SER1 is the processed stereo result.
+		stream.put(2, 0, 0.0);
+		stream.put(3, 0, 0.0);
+		m_esp->ser_w(0, s32(stream.get(2, 0) * input_scale));
+		m_esp->ser_w(1, s32(stream.get(3, 0) * input_scale));
+		m_esp->ser_w(4, s32(stream.get(6, 0) * input_scale));
+		m_esp->ser_w(5, s32(stream.get(7, 0) * input_scale));
+		m_esp->ser_w(6, s32(stream.get(0, 0) * input_scale));
+		m_esp->ser_w(7, s32(stream.get(1, 0) * input_scale));
+	}
 
 #if PUMP_FAKE_ESP_PROCESSING
 	m_esp->ser_w(6, m_esp->ser_r(0) + m_esp->ser_r(2) + m_esp->ser_r(4));
 	m_esp->ser_w(7, m_esp->ser_r(1) + m_esp->ser_r(3) + m_esp->ser_r(5));
 #else
 	if (!m_esp_halted) {
+#if PUMP_TRACK_SAMPLES
 		osd_ticks_t a = osd_ticks();
 		m_esp->run_once();
 		osd_ticks_t b = osd_ticks();
 		ticks_spent_processing += (b - a);
 		samples_processed++;
+#else
+		m_esp->run_once();
+#endif
 	}
 #endif
 
-	// Read the processed result from the ESP.
-	sound_stream::sample_t l = sound_stream::sample_t(m_esp->ser_r(6)) * output_scale;
-	sound_stream::sample_t r = sound_stream::sample_t(m_esp->ser_r(7)) * output_scale;
+	// Read the configured processed result from the ESP.  The functional
+	// multi-input route falls back to its dry source while the caller keeps an
+	// unknown/incomplete image halted; once released, SER1 is its only main
+	// output.
+	sound_stream::sample_t l;
+	sound_stream::sample_t r;
+	if (m_serial_route == serial_route::ser0_ser2_ser3_to_ser1 && m_esp_halted)
+	{
+		l = stream.get(0, 0);
+		r = stream.get(1, 0);
+	}
+	else
+	{
+		const int output_port = (m_serial_route == serial_route::vfx) ? 6 : 2;
+		l = sound_stream::sample_t(m_esp->ser_r(output_port + 0)) * output_scale;
+		r = sound_stream::sample_t(m_esp->ser_r(output_port + 1)) * output_scale;
+	}
 
 #if !PUMP_FAKE_ESP_PROCESSING && PUMP_REPLACE_ESP_PROGRAM
 	// if we're processing the fake program through the ESP, the result should just be that of adding the inputs

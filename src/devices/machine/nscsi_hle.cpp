@@ -124,7 +124,7 @@ void nscsi_full_device::step(bool timeout)
 	switch(m_scsi_state & SUB_MASK ? m_scsi_state & SUB_MASK : m_scsi_state & STATE_MASK) {
 	case IDLE:
 		if(((ctrl & (S_SEL|S_BSY)) == S_SEL) && (m_scsi_id != -1) && ((data & (1 << m_scsi_id)) != 0)) {
-			for(m_scsi_initiator_id = 0; m_scsi_initiator_id != 16 && (m_scsi_initiator_id == m_scsi_id || (data & (1 << m_scsi_initiator_id))); m_scsi_initiator_id++) {};
+			for(m_scsi_initiator_id = 0; m_scsi_initiator_id != 16 && (m_scsi_initiator_id == m_scsi_id || !(data & (1 << m_scsi_initiator_id))); m_scsi_initiator_id++) {};
 			if(m_scsi_initiator_id == 16)
 				m_scsi_initiator_id = -1;
 			m_scsi_state = TARGET_SELECT_WAIT_BUS_SETTLE;

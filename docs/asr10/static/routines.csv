@@ -1,0 +1,26 @@
+routine_id,logical_name,name,canonical_status,start,end,space,version,boundary_evidence,confidence,source_document,comment
+rom_f8000c,reset_entry,reset_entry,resolved,$F8000C,$F80077,ROM,ROM,"reset-vektorns PC + fallande kod till lea-paret",verified,boot-sequence.md,"slutar dar snippet-kopieringen borjar"
+dpram_fc6200,reset_bridge,reset_bridge,resolved,$FC6200,$FC620D,DPRAM,ROM,"exakt 14 byte kopierade fran $F80078",verified,memory-map.md,"BR0 <- $1F01 + jmp $FFFB8E06"
+rom_fb8e06,pio_init,pio_init,resolved,$FB8E06,,ROM,ROM,"hoppmal fran reset-bryggan",start-verified,boot-sequence.md,"slut ej faststallt"
+rom_f87f80,sched_save,sched_save,resolved,$F87F80,,ROM,ROM,"vektor 33-omradet, kand entrypoint",start-verified,subroutine-index.md,
+rom_f87f92,sched_scan,sched_scan,resolved,$F87F92,,ROM,ROM,"kand dispatcher-scan",start-verified,runtime-service-model.md,"$00C6/$00C8 kobasen"
+rom_f87fcc,sched_idle,sched_idle,resolved,$F87FCC,,ROM,ROM,"kand idle-loop",start-verified,runtime-service-model.md,
+rom_f88280,exception_tail,exception_tail,resolved,$F88280,,ROM,ROM,"vektor 32-mal; gemensam exception-svans",start-verified,vector-map.md,"producerar ERROR nnn"
+rom_f882aa,exception_stub_table,exception_stub_table,resolved,$F882AA,$F882DD,ROM,ROM,"stubbtabell, 4 byte per post",verified,vector-map.md,"vektor 2-31 -> moveq #kod,D0"
+rom_f976ec,enter_critical_section,enter_critical_section,resolved,$F976EC,$F976F9,ROM,ROM,"kand entrypoint + foljande rutinstart",verified,subroutine-index.md,"move.w SR,D0 / ($0E82).w / or.w #$0700 / A000"
+rom_f976fa,restore_critical_section,restore_critical_section,resolved,$F976FA,,ROM,ROM,"foljer direkt pa enter",start-verified,subroutine-index.md,"D0 <- ($0E82).w / A000"
+rom_f8c16c,scc1_init,scc1_init,resolved,$F8C16C,$F8C187,ROM,ROM,"RTS pa $F8C186",verified,mc68302-status.md,"parameter-RAM $FC6400, ENTER HUNT MODE $21"
+rom_f8c188,scc2_init,scc2_init,resolved,$F8C188,$F8C1A1,ROM,ROM,"RTS pa $F8C1A0",verified,mc68302-status.md,"parameter-RAM $FC6500, ENTER HUNT MODE $23"
+rom_f8c1a2,cp_command_handshake,cp_command_handshake,resolved,$F8C1A2,$F8C1BD,ROM,ROM,"RTS pa $F8C1BC",verified,mc68302-status.md,"busy-wait pa CR bit 0 fore och efter skrivning"
+rom_f8c1be,scc_config_helper,scc_config_helper,partially_resolved,$F8C1BE,,ROM,ROM,"bindningsslot $8D50 pekar hit",start-verified,mc68302-status.md,"anropad av bade scc1_init och scc2_init; funktion ej avkodad"
+rom_f8c142,lrclk_edge_detect,lrclk_edge_detect,resolved,$F8C142,,ROM,ROM,"kand PB3/LRCLK-flankdetektor",start-verified,mc68302-status.md,"$7FFF timeout -> ERROR 009"
+rom_f884be,duart_dispatch,duart_dispatch,resolved,$F884BE,,ROM,ROM,"kand DUART-dispatcher",start-verified,call-graph.md,
+rom_f97662,host_port_verified_write_read,host_port_verified_write_read,resolved,$F97662,$F976AF,ROM,ROM,"bindningsslot $8030; 203 anropsstallen fran ROM",verified,panel-button-sweep-v350.md,"$03C8-gated host-port write/read with compare/retry"
+rom_f95eaa,,,unresolved_high_priority,$F95EAA,,ROM,ROM,"1 anrop i V1.61, 33 i V3.50",start-verified,static-analysis,"storsta versionsskillnaden i materialet"
+os_008d56,scc1_isr,scc1_isr,resolved,$008D56,$008D91,OS-RAM,V161;V350,"RTE pa $008D90; adressen verifierat IDENTISK i bada versionerna",verified,mc68302-status.md,"EOI ISR <- $2000"
+os_008d92,scc2_isr,scc2_isr,resolved,$008D92,$008DCF,OS-RAM,V161;V350,"RTE pa $008DCE; adressen verifierat IDENTISK i bada versionerna",verified,mc68302-status.md,"EOI ISR <- $0400"
+os_00643c,scc_rx_common,,partially_resolved,$00643C,,OS-RAM,V161;V350,"anropad av bada SCC-ISR; SCCE- och BD-ringhantering disassemblerad",verified,scc-hardware-gap.md,"eventkvittens och descriptorhantering verifierad; lyckad mottagningsvags datakonsument oppen"
+os_v350_006864,par_sample_accumulate,par_sample_accumulate,resolved,$006864,$006891,OS-RAM,V350,"RTS pa $006890",verified,subroutine-index.md,"8 sampel, trap #8 / trap #7, jsr $FFFC60B0"
+os_v350_0067ec,par_calibrate,par_calibrate,resolved,$0067EC,,OS-RAM,V350,"kalibreringens borjan, kanalvalssekvens",start-verified,subroutine-index.md,"divu pa $006800 -> ERROR 130 nar D2=0"
+os_v161_00bee2,scc_receiver_enable,scc_receiver_enable,resolved,$00BEE2,$00BF27,OS-RAM,V161,"RTS pa $00BF26",verified,mc68302-status.md,"LRCLK-poll, ENR, IMR-avmaskering; runtime-observerad"
+os_v350_00e48a,scc_receiver_enable,scc_receiver_enable,partially_resolved,$00E48A,$00E4D5,OS-RAM,V350,"samma bytesekvens som V1.61-varianten, adress harledd via segment 2-regeln",likely,mc68302-status.md,"EJ runtime-observerad; adressen beror pa segmentregeln"
