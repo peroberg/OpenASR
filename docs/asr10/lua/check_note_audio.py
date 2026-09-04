@@ -25,27 +25,20 @@ PEAK_THRESHOLD = 500       # out of 32767; well above any DC/noise floor
 
 FREQ_WINDOW_START = 0.15
 FREQ_WINDOW_END = 0.35
-# Band and reference clock updated in keyboard-and-sample-bridge-9.md:
-# the ES5506 clock moved from XTAL(16'000'000) (Y1, the MPU crystal,
-# borrowed from esq5505.cpp precedent only because it shared a number)
-# to XTAL(30'476'180) (Y2, the board's own documented ES5506/ES5510
-# crystal -- two independent lines, a backwards calculation from
-# measured pitch and the board's crystal list, converged on this value
-# within 0.4%). This is NOT a loosened tolerance -- the previous
-# 100-180Hz band was correct for the previous (wrong) clock, and this
-# band is correct for the corrected one. $3C measures ~259-261Hz
-# against a MIDI-nominal 261.6Hz (~0.4-0.6% low, consistent with the
-# sample's own tuning, not a formula error -- interval ratios
-# (semitone/whole-tone/fifth/octave) hold within 0.3% of equal
-# temperament at this clock).
-FREQ_MIN_HZ = 230.0
-FREQ_MAX_HZ = 290.0
+# Pass band for JM DIGI SYN Note 60 with specification-correct ES5506 clock
+# (Mode 0: Y2 / 2 = 15.238090 MHz, Fs = 29,761.895 Hz).
+# The analyzed JM DIGI SYN WaveSample has PCM periodicity approximately 99.65
+# words and Root Key C5 (consistent with a one-octave-below-root relationship).
+# With authentic firmware traversal for MIDI Note 60 under the specification-
+# correct Mode-0 clock, the observed component is approximately 130.8 Hz.
+FREQ_MIN_HZ = 115.0
+FREQ_MAX_HZ = 145.0
 # Autocorrelation search range: wider than the pass band so a
 # reported failure shows the actual pitch, not just "out of range",
 # but still narrow enough to stay fast in pure Python (no numpy
 # dependency in this checker).
-FREQ_MIN_LIMIT_HZ = 150.0
-FREQ_MAX_LIMIT_HZ = 350.0
+FREQ_MIN_LIMIT_HZ = 80.0
+FREQ_MAX_LIMIT_HZ = 200.0
 
 
 def autocorr_pitch(chan, rate, s0, s1, fmin, fmax):

@@ -111,12 +111,12 @@ private:
 	// same already-backed image. Stage A hardcodes the stock 2 MB size;
 	// Stage B replaces this with the configured ram_device size.
 	static constexpr u32 SYSTEM_RAM_BYTES = 0x00200000;
-	// [Likely functional policy] The verified effect operating-mode commit
-	// selects the two current-MAME ES5506 device-domain rates.  These values
-	// match the board oscillator inventory, but this is not a claim about the
-	// physical ASR clock mux, divider, ES5701, or pin routing.
-	static constexpr u32 AUDIO_RATE_MODE0_CLOCK = 30'476'180;
-	static constexpr u32 AUDIO_RATE_MODE1_CLOCK = 33'868'800;
+	// The verified effect operating-mode commit selects the two spec-consistent
+	// ES5506 input clock domains:
+	// Mode 0: Y2 / 2 = 30.476180 MHz / 2 = 15.238090 MHz -> Fs = 15.238090 / (16 * 32) = 29,761.895 Hz
+	// Mode 1: Y3 / 2 = 33.868800 MHz / 2 = 16.934400 MHz -> Fs = 16.934400 / (16 * 24) = 44,100.000 Hz
+	static constexpr u32 AUDIO_RATE_MODE0_CLOCK = 30'476'180 / 2;
+	static constexpr u32 AUDIO_RATE_MODE1_CLOCK = 33'868'800 / 2;
 
 	static constexpr bool ASR10_MISSING_FDC_RATE_SOURCE = true;
 
@@ -929,35 +929,15 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	m_panel->write_tx().set(m_duart, FUNC(scn2681_device::rx_b_w));
 	m_panel->write_analog().set(FUNC(asr10_boot_state::analog_w));
 
-	// Phase 1 host-port fingerprint mapping. Not board-proven: see
-	// docs/asr10/es5506-chain-verification.md.
-	// Klockprovenens (keyboard-and-sample-bridge-10.md): HÄRLEDD
-	// (bakåträkning från uppmätt tonhöjd) + FAMILJEPRECEDENS (kortets
-	// egen kristallista). En faktor-2-spänning mot databladets "up to
-	// 16MHz"-specifikation och esq5505.cpp:s /2-delning av samma
-	// namngivna kristall står kvar som en namngiven, oöppnad skuld --
-	// se journaldokumentet, ingen mekanism är fastställd.
-	// keyboard-and-sample-bridge-9.md: XTAL(16'000'000) was Y1, the MPU
-	// crystal, borrowed from esq5505.cpp precedent only because it
-	// shared a number, not because it's ES5506's own board crystal.
-	// The board's crystal complement is Y1=16MHz (MPU), Y2=30.47618MHz
-	// and Y3=33.8688MHz (ES5506/ES5510/AD-DA side, per PLAN.md section 3
-	// and es5506-hostport.md's own crystal table). Two independent
-	// lines converge on Y2: a backwards calculation from measured $3C
-	// pitch (keyboard-and-sample-bridge-7.md, ~30.6MHz) and the board's
-	// documented crystal (30.47618MHz), within 0.4%. Measured after
-	// this change (autocorrelation, not zero-crossing): $3C lands at
-	// ~259-261Hz against a MIDI-nominal 261.6Hz (~0.4-0.6% low,
-	// consistent with the sample's own tuning); semitone/whole-tone/
-	// fifth/octave interval ratios hold within 0.3% of equal
-	// temperament at this clock -- see the investigation doc for the
-	// full measurement. Open: MAME's sample_rate divisor
-	// (16*(ACT+1)) is identical for es5505_device and es5506_device
-	// (es5506.cpp), so no MAME-code-visible divisor bug explains why
-	// this clock divided by (16*32) comes out at exactly double the
-	// board's documented 29.76kHz mode; esq5505.cpp's own precedent
-	// (30.47618MHz_XTAL / 2 fed to ES5505) supports a crystal-network
-	// /2 as the more likely explanation, not confirmed further here.
+	// ES5506 clock contract:
+	// [VERIFIED] ES5506 Rev 2.3 specification: Fs = CLK / (16 * active_voices),
+	// with input CLK operating in the 8..16.9 MHz range.
+	// [VERIFIED] Authentic firmware system sample rate reference $0D66 encodes
+	// 29,761.90 Hz (Mode 0) and 44,100.00 Hz (Mode 1).
+	// [VERIFIED] These rates correspond numerically to Y2/2 (15.238090 MHz / 512)
+	// and Y3/2 (16.934400 MHz / 384), matching firmware traversal math 1:1.
+	// [OPEN] Exact physical PCB divider/mux topology between Y2/Y3 and OTTO has
+	// not been traced.
 	es5506_device &es5506_host(ES5506(config, m_es5506_host, AUDIO_RATE_MODE0_CLOCK));
 	es5506_host.set_addrmap(0, &asr10_boot_state::es5506_wavetable_map);
 	es5506_host.set_addrmap(1, &asr10_boot_state::es5506_wavetable_bank1_map);
