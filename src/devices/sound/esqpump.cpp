@@ -67,8 +67,12 @@ void esq_5505_5510_pump_device::device_clock_changed()
 
 void esq_5505_5510_pump_device::sound_stream_update(sound_stream &stream)
 {
-	constexpr sound_stream::sample_t input_scale = 32768.0;
+	constexpr sound_stream::sample_t input_scale = 32767.0;
 	constexpr sound_stream::sample_t output_scale = 1.0 / input_scale;
+
+	auto to_esp_sample = [](sound_stream::sample_t sample) -> int16_t {
+		return int16_t(std::clamp<s32>(s32(sample * input_scale), -32768, 32767));
+	};
 
 	if (m_serial_route == serial_route::vfx)
 	{
@@ -77,12 +81,12 @@ void esq_5505_5510_pump_device::sound_stream_update(sound_stream &stream)
 		stream.put(3, 0, stream.get(1, 0));
 
 		// Push the 'FX1', 'FX2' and 'DRY' samples into the ESP
-		m_esp->ser_w(0, s32(stream.get(2, 0) * input_scale));
-		m_esp->ser_w(1, s32(stream.get(3, 0) * input_scale));
-		m_esp->ser_w(2, s32(stream.get(4, 0) * input_scale));
-		m_esp->ser_w(3, s32(stream.get(5, 0) * input_scale));
-		m_esp->ser_w(4, s32(stream.get(6, 0) * input_scale));
-		m_esp->ser_w(5, s32(stream.get(7, 0) * input_scale));
+		m_esp->ser_w(0, to_esp_sample(stream.get(2, 0)));
+		m_esp->ser_w(1, to_esp_sample(stream.get(3, 0)));
+		m_esp->ser_w(2, to_esp_sample(stream.get(4, 0)));
+		m_esp->ser_w(3, to_esp_sample(stream.get(5, 0)));
+		m_esp->ser_w(4, to_esp_sample(stream.get(6, 0)));
+		m_esp->ser_w(5, to_esp_sample(stream.get(7, 0)));
 	}
 	else
 	{
@@ -90,12 +94,12 @@ void esq_5505_5510_pump_device::sound_stream_update(sound_stream &stream)
 		// feed SER0, SER2 and SER3; SER1 is the processed stereo result.
 		stream.put(2, 0, 0.0);
 		stream.put(3, 0, 0.0);
-		m_esp->ser_w(0, s32(stream.get(2, 0) * input_scale));
-		m_esp->ser_w(1, s32(stream.get(3, 0) * input_scale));
-		m_esp->ser_w(4, s32(stream.get(6, 0) * input_scale));
-		m_esp->ser_w(5, s32(stream.get(7, 0) * input_scale));
-		m_esp->ser_w(6, s32(stream.get(0, 0) * input_scale));
-		m_esp->ser_w(7, s32(stream.get(1, 0) * input_scale));
+		m_esp->ser_w(0, to_esp_sample(stream.get(2, 0)));
+		m_esp->ser_w(1, to_esp_sample(stream.get(3, 0)));
+		m_esp->ser_w(4, to_esp_sample(stream.get(6, 0)));
+		m_esp->ser_w(5, to_esp_sample(stream.get(7, 0)));
+		m_esp->ser_w(6, to_esp_sample(stream.get(0, 0)));
+		m_esp->ser_w(7, to_esp_sample(stream.get(1, 0)));
 	}
 
 #if PUMP_FAKE_ESP_PROCESSING
@@ -129,8 +133,8 @@ void esq_5505_5510_pump_device::sound_stream_update(sound_stream &stream)
 	else
 	{
 		const int output_port = (m_serial_route == serial_route::vfx) ? 6 : 2;
-		l = sound_stream::sample_t(m_esp->ser_r(output_port + 0)) * output_scale;
-		r = sound_stream::sample_t(m_esp->ser_r(output_port + 1)) * output_scale;
+		l = std::clamp<sound_stream::sample_t>(sound_stream::sample_t(m_esp->ser_r(output_port + 0)) * output_scale, -1.0, 1.0);
+		r = std::clamp<sound_stream::sample_t>(sound_stream::sample_t(m_esp->ser_r(output_port + 1)) * output_scale, -1.0, 1.0);
 	}
 
 #if !PUMP_FAKE_ESP_PROCESSING && PUMP_REPLACE_ESP_PROGRAM
