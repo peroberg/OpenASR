@@ -1060,8 +1060,8 @@ int32_t es5510_device::read_reg(uint8_t reg)
 
 void es5510_device::run_once()
 {
-	// turn HALT off
-	set_HALT(false);
+	if (halt_asserted)
+		return;
 
 	// run for one instruction
 	icount = 1;
@@ -1075,6 +1075,8 @@ void es5510_device::run_once()
 		icount = 1;
 		execute_run();
 	}
+
+	set_HALT(false);
 }
 
 int8_t countLowOnes(int32_t x) {

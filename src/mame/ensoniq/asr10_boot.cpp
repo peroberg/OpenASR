@@ -151,6 +151,7 @@ private:
 	// power-on default); mode 1 is 44.1 kHz.
 	u8 m_effect_audio_mode = 0;
 	bool m_esp_program_loaded = false;
+	bool m_esp_program_received = false;
 
 	virtual void machine_start() override ATTR_COLD;
 	virtual void machine_reset() override ATTR_COLD;
@@ -231,6 +232,7 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_analog_values));
 	save_item(NAME(m_effect_audio_mode));
 	save_item(NAME(m_esp_program_loaded));
+	save_item(NAME(m_esp_program_received));
 	save_item(NAME(m_fdc_irq));
 	save_item(NAME(m_scsi_irq));
 	machine().save().register_postload(save_prepost_delegate(FUNC(asr10_boot_state::effect_audio_rate_postload), this));
@@ -240,6 +242,7 @@ void asr10_boot_state::machine_start()
 void asr10_boot_state::machine_reset()
 {
 	m_esp_program_loaded = false;
+	m_esp_program_received = false;
 	m_effect_audio_mode = 0;
 	apply_effect_audio_rate_policy();
 	m_fdc_irq = 0;
@@ -604,7 +607,7 @@ u8 asr10_boot_state::es5510_host_write_select_instr_r(offs_t offset)
 
 void asr10_boot_state::es5510_host_write_select_instr_w(offs_t offset, u8 data)
 {
-	m_esp_program_loaded = true;
+	m_esp_program_received = true;
 	m_es5510_host->host_w(0xc0, data);
 }
 
@@ -615,7 +618,7 @@ u8 asr10_boot_state::es5510_host_write_select_gpr_instr_r(offs_t offset)
 
 void asr10_boot_state::es5510_host_write_select_gpr_instr_w(offs_t offset, u8 data)
 {
-	m_esp_program_loaded = true;
+	m_esp_program_received = true;
 	m_es5510_host->host_w(0xe0, data);
 }
 
@@ -658,6 +661,15 @@ void asr10_boot_state::mc68302_pa_w(u16 data)
 	const bool run = BIT(data, 4);
 	if (m_es5510_host)
 		m_es5510_host->set_HALT(!run);
+	if (run)
+	{
+		if (m_esp_program_received)
+			m_esp_program_loaded = true;
+	}
+	else
+	{
+		m_esp_program_loaded = false;
+	}
 	if (m_pump)
 		m_pump->set_esp_halted(!(run && m_esp_program_loaded));
 }
