@@ -1096,6 +1096,7 @@ inline void es5506_device::reg_write_low(es550x_voice *voice, offs_t offset, u32
 	switch (offset)
 	{
 		case 0x00/8:    // CR
+			m_stream->update();
 			voice->control = data & 0xffff;
 			LOG("voice %d, control=%04x\n", m_current_page & 0x1f, voice->control);
 			break;
@@ -1153,6 +1154,7 @@ inline void es5506_device::reg_write_low(es550x_voice *voice, offs_t offset, u32
 
 		case 0x58/8:    // ACTV
 		{
+			m_stream->update();
 			m_active_voices = data & 0x1f;
 			m_sample_rate = m_master_clock / (16 * (m_active_voices + 1));
 			m_stream->set_sample_rate(m_sample_rate);
@@ -1163,6 +1165,7 @@ inline void es5506_device::reg_write_low(es550x_voice *voice, offs_t offset, u32
 		}
 
 		case 0x60/8:    // MODE
+			m_stream->update();
 			// [4:3] = 00 : Single, Master, Early address mode
 			// [4:3] = 01 : Single, Master, Normal address mode
 			// [4:3] = 10 : Dual, Slave, Normal address mode
@@ -1185,6 +1188,7 @@ inline void es5506_device::reg_write_high(es550x_voice *voice, offs_t offset, u3
 	switch (offset)
 	{
 		case 0x00/8:    // CR
+			m_stream->update();
 			voice->control = data & 0xffff;
 			LOG("voice %d, control=%04x\n", m_current_page & 0x1f, voice->control);
 			break;
@@ -1235,16 +1239,19 @@ inline void es5506_device::reg_write_high(es550x_voice *voice, offs_t offset, u3
 			break;
 
 		case 0x50/8:    // W_ST
+			m_stream->update();
 			m_wst = data & 0x7f;
 			LOGMASKED(LOG_SERIAL, "%s: word clock start = %02x\n", machine().describe_context(), m_wst);
 			break;
 
 		case 0x58/8:    // W_END
+			m_stream->update();
 			m_wend = data & 0x7f;
 			LOGMASKED(LOG_SERIAL, "%s: word clock end = %02x\n", machine().describe_context(), m_wend);
 			break;
 
 		case 0x60/8:    // LR_END
+			m_stream->update();
 			m_lrend = data & 0x7f;
 			LOGMASKED(LOG_SERIAL, "%s: left/right clock end = %02x\n", machine().describe_context(), m_lrend);
 			break;
@@ -1336,9 +1343,6 @@ void es5506_device::write(offs_t offset, u8 data)
 	// wait for a write to complete
 	if (shift != 24)
 		return;
-
-	// force an update
-	m_stream->update();
 
 	// switch off the page and register
 	if (m_current_page < 0x20)
