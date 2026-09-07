@@ -262,6 +262,8 @@ void asr10_boot_state::machine_reset()
 	m_lrclk_timer->adjust(attotime::from_hz(44100), 0, attotime::from_hz(44100));
 	std::fill_n(m_lowmem_shadow.get(), LOWMEM_WORDS, 0);
 
+	if (m_es5510_host)
+		m_es5510_host->set_HALT(true);
 	if (m_pump)
 		m_pump->set_esp_halted(true);
 }
@@ -654,6 +656,8 @@ void asr10_boot_state::mc68302_pa_w(u16 data)
 	// PA4 = 0: ESP halted during program/GPR upload ($FFF977B0)
 	// PA4 = 1: ESP running ($FFF977C6)
 	const bool run = BIT(data, 4);
+	if (m_es5510_host)
+		m_es5510_host->set_HALT(!run);
 	if (m_pump)
 		m_pump->set_esp_halted(!(run && m_esp_program_loaded));
 }
@@ -661,8 +665,14 @@ void asr10_boot_state::mc68302_pa_w(u16 data)
 void asr10_boot_state::effect_audio_rate_postload()
 {
 	apply_effect_audio_rate_policy();
-	if (m_pump && m_maincpu)
-		m_pump->set_esp_halted(!(BIT(m_maincpu->padat_latch(), 4) && m_esp_program_loaded));
+	if (m_maincpu)
+	{
+		const bool run = BIT(m_maincpu->padat_latch(), 4);
+		if (m_es5510_host)
+			m_es5510_host->set_HALT(!run);
+		if (m_pump)
+			m_pump->set_esp_halted(!(run && m_esp_program_loaded));
+	}
 }
 
 u16 asr10_boot_state::system_ram_alias_r(offs_t offset, u16 mem_mask)
