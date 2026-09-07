@@ -845,7 +845,7 @@ void es550x_device::generate_ulaw(es550x_voice *voice, s32 *dest)
 			s32 val2;
 			if (get_integer_addr(accum) >= get_integer_addr(voice->end) && !(voice->control & CONTROL_LEI))
 			{
-				if (voice->control & CONTROL_LOOPMASK)
+				if ((voice->control & CONTROL_LOOPMASK) && !(voice->control & CONTROL_BLE))
 					val2 = read_sample(voice, get_integer_addr(voice->start));
 				else
 					val2 = val1;
@@ -886,14 +886,14 @@ void es550x_device::generate_ulaw(es550x_voice *voice, s32 *dest)
 			s32 val2;
 			if (get_integer_addr(accum) >= get_integer_addr(voice->end) && !(voice->control & CONTROL_LEI))
 			{
-				if (voice->control & CONTROL_LOOPMASK)
+				if ((voice->control & CONTROL_LOOPMASK) && !(voice->control & CONTROL_BLE))
 					val2 = read_sample(voice, get_integer_addr(voice->start));
 				else
 					val2 = val1;
 			}
 			else if (get_integer_addr(accum) <= get_integer_addr(voice->start) && !(voice->control & CONTROL_LEI))
 			{
-				if (voice->control & CONTROL_LOOPMASK)
+				if ((voice->control & CONTROL_LOOPMASK) && !(voice->control & CONTROL_BLE))
 					val2 = read_sample(voice, get_integer_addr(voice->end));
 				else
 					val2 = val1;
@@ -960,7 +960,7 @@ void es550x_device::generate_pcm(es550x_voice *voice, s32 *dest)
 			s32 val2;
 			if (get_integer_addr(accum) >= get_integer_addr(voice->end) && !(voice->control & CONTROL_LEI))
 			{
-				if (voice->control & CONTROL_LOOPMASK)
+				if ((voice->control & CONTROL_LOOPMASK) && !(voice->control & CONTROL_BLE))
 					val2 = (s16)read_sample(voice, get_integer_addr(voice->start));
 				else
 					val2 = val1;
@@ -997,14 +997,14 @@ void es550x_device::generate_pcm(es550x_voice *voice, s32 *dest)
 			s32 val2;
 			if (get_integer_addr(accum) >= get_integer_addr(voice->end) && !(voice->control & CONTROL_LEI))
 			{
-				if (voice->control & CONTROL_LOOPMASK)
+				if ((voice->control & CONTROL_LOOPMASK) && !(voice->control & CONTROL_BLE))
 					val2 = (s16)read_sample(voice, get_integer_addr(voice->start));
 				else
 					val2 = val1;
 			}
 			else if (get_integer_addr(accum) <= get_integer_addr(voice->start) && !(voice->control & CONTROL_LEI))
 			{
-				if (voice->control & CONTROL_LOOPMASK)
+				if ((voice->control & CONTROL_LOOPMASK) && !(voice->control & CONTROL_BLE))
 					val2 = (s16)read_sample(voice, get_integer_addr(voice->end));
 				else
 					val2 = val1;
