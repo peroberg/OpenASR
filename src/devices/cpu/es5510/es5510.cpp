@@ -101,6 +101,16 @@ inline static int32_t negate(int32_t value) {
 	return ((value ^ 0x00ffffff) + 1) & 0x00ffffff;
 }
 
+inline static int16_t clamp_to_s16(int32_t value) {
+	int32_t sval;
+	if (value >= 0x00800000 && value <= 0x00ffffff) {
+		sval = util::sext(value, 24) >> 8;
+	} else {
+		sval = value >> 8;
+	}
+	return std::clamp<int32_t>(sval, -32768, 32767);
+}
+
 inline static int32_t asl(int32_t value, int shift, uint8_t &flags) {
 	const int32_t src24 = value & 0x00ffffff;
 	const bool carry = BIT(src24, 24 - shift);
@@ -431,7 +441,7 @@ void es5510_device::host_w(offs_t offset, uint8_t data)
 		}
 		else
 		{
-			dram_w(dadr_latch, dol_latch >> 8);
+			dram_w(dadr_latch, clamp_to_s16(dol_latch));
 		}
 		break;
 
@@ -971,7 +981,7 @@ void es5510_device::execute_run() {
 					if (ram_p.io) {
 						// write_io(ram_p.io, dol[0]);
 					} else {
-						dram_w(ram_p.address, dol[0] >> 8);
+						dram_w(ram_p.address, clamp_to_s16(dol[0]));
 						LOG_EXEC("  . RAM: writing %x (%d) [of %x (%d)] to address %x\n", dol[0]&0xffff00, util::sext(dol[0] & 0xffff00, 24), dol[0], util::sext(dol[0], 24), ram_p.address);
 					}
 				}
@@ -1078,10 +1088,10 @@ int8_t countLowOnes(int32_t x) {
 
 #if VERBOSE_EXEC
 #define WRITE_REG(r, x) do { r = value; LOG_EXEC("  . writing %x (%d) to " #r "\n", r, util::sext(r, 24)); } while(0)
-#define WRITE_REG16(r, x) do { r = ((value >> 8) & 0xffff); LOG_EXEC("  . writing %x (%d) as %x (%d) to " #r "\n", value, util::sext(value, 24), r, r); } while(0)
+#define WRITE_REG16(r, x) do { r = clamp_to_s16(value); LOG_EXEC("  . writing %x (%d) as %x (%d) to " #r "\n", value, util::sext(value, 24), (uint16_t)r, r); } while(0)
 #else
 #define WRITE_REG(r, x) do { r = value; } while(0)
-#define WRITE_REG16(r, x) do { r = ((value >> 8) & 0xffff); } while(0)
+#define WRITE_REG16(r, x) do { r = clamp_to_s16(value); } while(0)
 #endif
 
 void es5510_device::write_reg(uint8_t reg, int32_t value)
@@ -1274,7 +1284,8 @@ int32_t es5510_device::alu_operation(uint8_t op, int32_t a, int32_t b, uint8_t &
 		return (b << 15) & 0x007fffff;
 
 	case 0xd: // DIFF
-		return add(0x007fffff, negate(b), flags);
+		tmp = add(0x007fffff, negate(b), flags);
+		return saturate(tmp, flags, false);
 
 	case 0xe: // ASR
 		flags = setFlagTo(flags, FLAG_N, (b & 0x00800000) != 0);
