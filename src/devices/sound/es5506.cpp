@@ -423,14 +423,25 @@ void es550x_device::update_internal_irq_state()
 
 	    Reset the voice vector to show the IRQB line is low (top bit set).
 	    If we have any stacked interrupts (other voices waiting to be
-	    processed - with their IRQ bit set) then they will be moved into
-	    the vector next time the voice is processed.  In emulation
-	    terms they get updated next time generate_samples() is called.
+	    processed - with their IRQ bit set) then promote the next voice
+	    immediately without waiting for the next sample generation.
 	*/
 
 	m_irqv = 0x80;
 
 	m_irq_cb(0); // IRQB set low
+
+	for (int v = 0; v <= m_active_voices; v++)
+	{
+		es550x_voice *voice = &m_voice[v];
+		if (voice->control & CONTROL_IRQ)
+		{
+			m_irqv = v & 0x1f;
+			voice->control &= ~CONTROL_IRQ;
+			update_irq_state();
+			break;
+		}
+	}
 }
 
 /**********************************************************************************************

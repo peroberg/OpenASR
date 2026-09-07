@@ -174,6 +174,7 @@ private:
 	void duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 	void fdc_intrq_w(int state);
 	void scsi_irq_w(int state);
+	void es5506_irq_w(int state);
 
 	TIMER_CALLBACK_MEMBER(lrclk_toggle);
 	u8 maincpu_iack_r(u8 level);
@@ -766,6 +767,12 @@ void asr10_boot_state::scsi_irq_w(int state)
 }
 
 
+void asr10_boot_state::es5506_irq_w(int state)
+{
+	m_maincpu->set_pb_input(9, state != 0);
+}
+
+
 void asr10_boot_state::floppy_drives(device_slot_interface &device)
 {
 	device.option_add_internal("35hd", FLOPPY_35_HD);
@@ -946,6 +953,7 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	es5506_host.sample_rate_changed().set(FUNC(asr10_boot_state::es5506_frame_rate_changed));
 
 	es5506_host.read_port_cb().set(FUNC(asr10_boot_state::analog_r));
+	es5506_host.irq_cb().set(*this, FUNC(asr10_boot_state::es5506_irq_w));
 
 	// The [Hypothesis] adapter needs four exposed pairs to duplicate the
 	// observed active lane 0/1 into its three program-read serial ports.

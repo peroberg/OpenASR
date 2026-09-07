@@ -227,6 +227,8 @@ private:
 	uint32_t m_idma_dest;
 	uint32_t m_idma_remaining;
 	emu_timer *m_idma_timer = nullptr;
+	bool m_pb9_state = false;
+	bool m_pb9_pending = false;
 };
 
 DECLARE_DEVICE_TYPE(MC68302, mc68302_device)

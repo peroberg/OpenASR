@@ -59,7 +59,9 @@ static constexpr uint8_t SCC_VECTOR_LOW[2]   = { 0x0d, 0x0a };
 static constexpr uint16_t SCC_IRQ_BITS       = SCC_IRQ_BIT[0] | SCC_IRQ_BIT[1];
 static constexpr uint16_t IDMA_IRQ_BIT       = 0x0800;
 static constexpr uint8_t IDMA_VECTOR_LOW     = 0x0b;
-static constexpr uint16_t MODELED_IRQ_BITS   = SCC_IRQ_BITS | IDMA_IRQ_BIT;
+static constexpr uint16_t PB9_IRQ_BIT        = 0x0080;
+static constexpr uint8_t PB9_VECTOR_LOW      = 0x07;
+static constexpr uint16_t MODELED_IRQ_BITS   = SCC_IRQ_BITS | IDMA_IRQ_BIT | PB9_IRQ_BIT;
 static constexpr uint16_t IDMA_CMR_INTN      = 0x2000;
 static constexpr uint16_t IDMA_CMR_RST       = 0x0002;
 static constexpr uint16_t IDMA_CMR_STR       = 0x0001;
@@ -88,7 +90,9 @@ mc68302_device::mc68302_device(const machine_config &mconfig, const char *tag, d
 	m_idma_active(false),
 	m_idma_source(0),
 	m_idma_dest(0),
-	m_idma_remaining(0)
+	m_idma_remaining(0),
+	m_pb9_state(false),
+	m_pb9_pending(false)
 {
 	auto bmap = address_map_constructor(FUNC(mc68302_device::bootstrap_map), this);
 	m_program_config.m_internal_map = bmap;
@@ -154,6 +158,8 @@ void mc68302_device::device_start()
 	save_item(NAME(m_idma_source));
 	save_item(NAME(m_idma_dest));
 	save_item(NAME(m_idma_remaining));
+	save_item(NAME(m_pb9_state));
+	save_item(NAME(m_pb9_pending));
 	m_idma_timer = timer_alloc(FUNC(mc68302_device::idma_internal_transfer), this);
 
 	state_add(SCC1_RX_STATE, "SCC1RX", m_scc_rx_ingress[0]).callimport().noshow();
@@ -219,6 +225,8 @@ void mc68302_device::device_reset()
 	m_idma_dest = 0;
 	m_idma_remaining = 0;
 	m_idma_timer->adjust(attotime::never);
+	m_pb9_state = false;
+	m_pb9_pending = false;
 }
 
 void mc68302_device::state_import(const device_state_entry &entry)
@@ -405,6 +413,15 @@ bool mc68302_device::cs0_covers(uint32_t address) const
 void mc68302_device::set_pb_input(unsigned bit, bool level)
 {
 	m_sim->set_external_input(bit, level);
+	if (bit == 9)
+	{
+		if (level && !m_pb9_state)
+		{
+			m_pb9_pending = true;
+			update_internal_irq();
+		}
+		m_pb9_state = level;
+	}
 }
 
 uint16_t mc68302_device::pbdat_latch() const
@@ -439,6 +456,8 @@ void mc68302_device::update_internal_irq()
 	}
 	if ((m_idma_csr & 0x01) && (m_idma_cmr & IDMA_CMR_INTN))
 		pending |= IDMA_IRQ_BIT;
+	if (m_pb9_pending)
+		pending |= PB9_IRQ_BIT;
 	m_shadow[OFFSET_IPR >> 1] = pending;
 
 	const uint16_t eligible = pending & m_shadow[OFFSET_IMR >> 1]
@@ -480,13 +499,15 @@ uint8_t mc68302_device::irq4_ack_vector()
 {
 	const uint16_t eligible = m_shadow[OFFSET_IPR >> 1] & m_shadow[OFFSET_IMR >> 1]
 		& ~m_shadow[OFFSET_ISR >> 1] & MODELED_IRQ_BITS;
-	static constexpr uint16_t priority[] = { SCC_IRQ_BIT[0], IDMA_IRQ_BIT, SCC_IRQ_BIT[1] };
-	static constexpr uint8_t vector[] = { SCC_VECTOR_LOW[0], IDMA_VECTOR_LOW, SCC_VECTOR_LOW[1] };
+	static constexpr uint16_t priority[] = { SCC_IRQ_BIT[0], IDMA_IRQ_BIT, SCC_IRQ_BIT[1], PB9_IRQ_BIT };
+	static constexpr uint8_t vector[] = { SCC_VECTOR_LOW[0], IDMA_VECTOR_LOW, SCC_VECTOR_LOW[1], PB9_VECTOR_LOW };
 	for (unsigned source = 0; source < std::size(priority); source++)
 	{
 		if (eligible & priority[source])
 		{
 			m_shadow[OFFSET_ISR >> 1] |= priority[source];
+			if (priority[source] == PB9_IRQ_BIT)
+				m_pb9_pending = false;
 			update_internal_irq();
 			return uint8_t((m_shadow[OFFSET_GIMR >> 1] & 0x00e0) | vector[source]);
 		}
@@ -702,6 +723,8 @@ void mc68302_device::internal_w(offs_t offset, uint16_t data, uint16_t mem_mask)
 		return;
 	case OFFSET_IPR:
 		m_known_count++;
+		if ((data & mem_mask) & PB9_IRQ_BIT)
+			m_pb9_pending = false;
 		m_shadow[offset & 0x7ff] &= ~(data & mem_mask);
 		update_internal_irq();
 		return;
