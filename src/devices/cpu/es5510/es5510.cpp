@@ -572,6 +572,7 @@ void es5510_device::device_start() {
 
 	save_item(NAME(icount));
 	save_item(NAME(halt_asserted));
+	save_item(NAME(state));
 	save_item(NAME(pc));
 	save_item(NAME(ser0r));
 	save_item(NAME(ser0l));
@@ -614,6 +615,8 @@ void es5510_device::device_start() {
 
 	save_item(NAME(alu.aReg));
 	save_item(NAME(alu.bReg));
+	save_item(NAME(alu.src));
+	save_item(NAME(alu.dst));
 	save_item(NAME(alu.op));
 	save_item(NAME(alu.aValue));
 	save_item(NAME(alu.bValue));
@@ -623,6 +626,8 @@ void es5510_device::device_start() {
 
 	save_item(NAME(mulacc.cReg));
 	save_item(NAME(mulacc.dReg));
+	save_item(NAME(mulacc.src));
+	save_item(NAME(mulacc.dst));
 	save_item(NAME(mulacc.accumulate));
 	save_item(NAME(mulacc.cValue));
 	save_item(NAME(mulacc.dValue));
@@ -632,12 +637,15 @@ void es5510_device::device_start() {
 
 	save_item(NAME(ram.address));
 	save_item(NAME(ram.io));
+	save_item(NAME(ram.cycle));
 
 	save_item(NAME(ram_p.address));
 	save_item(NAME(ram_p.io));
+	save_item(NAME(ram_p.cycle));
 
 	save_item(NAME(ram_pp.address));
 	save_item(NAME(ram_pp.io));
+	save_item(NAME(ram_pp.cycle));
 }
 
 void es5510_device::device_reset() {

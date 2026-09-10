@@ -196,4 +196,8 @@ private:
 
 DECLARE_DEVICE_TYPE(ES5510, es5510_device)
 
+ALLOW_SAVE_TYPE(es5510_device::state_t);
+ALLOW_SAVE_TYPE(es5510_device::op_src_dst_t);
+ALLOW_SAVE_TYPE(es5510_device::ram_cycle_t);
+
 #endif // MAME_CPU_ES5510_ES5510_H
