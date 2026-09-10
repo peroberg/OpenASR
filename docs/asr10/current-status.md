@@ -105,6 +105,7 @@ records the Bank 11 rejected candidates, and gives current review priorities.
 
 The current resume point is this document together with
 `investigations/cs1-voice-banking-and-sample-addressing.md`,
+`investigations/save-state-audio-mvp.md`,
 `investigations/display-protocol-state-machine-v350.md`,
 `investigations/transport-ab-test-play-stop-continue.md` and
 `investigations/slot5-pc-correlation-and-atrk-slot-table.md`.
