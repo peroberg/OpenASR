@@ -96,8 +96,6 @@ public:
 
 private:
 	void es5506_wavetable_map(address_map &map) ATTR_COLD;
-	void es5506_unpopulated_wavetable_map(address_map &map) ATTR_COLD;
-	void es5506_wavetable_bank1_map(address_map &map) ATTR_COLD;
 	static constexpr u32 ROM_MASK = 0x0003ffff;
 	static constexpr u32 LOWMEM_WORDS = 0x00100000 / 2;
 	// docs/asr10/investigations/memory-size-belief-analysis.md +
@@ -152,6 +150,7 @@ private:
 	u8 m_effect_audio_mode = 0;
 	bool m_esp_program_loaded = false;
 	bool m_esp_program_received = false;
+	std::array<std::array<u16, 4>, 32> m_voice_bank{};
 
 	virtual void machine_start() override ATTR_COLD;
 	virtual void machine_reset() override ATTR_COLD;
@@ -161,6 +160,9 @@ private:
 
 	u16 low_rom_or_lowmem_r(offs_t offset, u16 mem_mask = ~0);
 	void lowmem_w(offs_t offset, u16 data, u16 mem_mask = ~0);
+	u16 voice_bank_r(offs_t offset, u16 mem_mask = ~0);
+	void voice_bank_w(offs_t offset, u16 data, u16 mem_mask = ~0);
+	u16 es5506_wavetable_r(offs_t offset);
 	void apply_effect_audio_rate_policy();
 	void effect_audio_rate_postload();
 	void es5506_frame_rate_changed(u32 rate);
@@ -233,6 +235,7 @@ void asr10_boot_state::machine_start()
 	save_item(NAME(m_effect_audio_mode));
 	save_item(NAME(m_esp_program_loaded));
 	save_item(NAME(m_esp_program_received));
+	save_item(NAME(m_voice_bank));
 	save_item(NAME(m_fdc_irq));
 	save_item(NAME(m_scsi_irq));
 	machine().save().register_postload(save_prepost_delegate(FUNC(asr10_boot_state::effect_audio_rate_postload), this));
@@ -241,6 +244,8 @@ void asr10_boot_state::machine_start()
 
 void asr10_boot_state::machine_reset()
 {
+	for (auto &vb : m_voice_bank)
+		vb.fill(0);
 	m_esp_program_loaded = false;
 	m_esp_program_received = false;
 	m_effect_audio_mode = 0;
@@ -385,7 +390,9 @@ void asr10_boot_state::mem_map(address_map &map)
 	// mc68302_device::install_internal_window(). This plain RAM range is
 	// the neutral fallback for everything else; the device's dynamic
 	// install shadows its own slice of it once the ROM programs BAR.
-	map(0xfc5020, 0xffffff).ram();
+	map(0xfc5020, 0xff7eff).ram();
+	map(0xff7f00, 0xff7fff).rw(FUNC(asr10_boot_state::voice_bank_r), FUNC(asr10_boot_state::voice_bank_w));
+	map(0xff8000, 0xffffff).ram();
 }
 
 
@@ -405,56 +412,45 @@ void asr10_boot_state::cpu_space_map(address_map &map)
 
 void asr10_boot_state::es5506_wavetable_map(address_map &map)
 {
-	// Bank 0's first $80000 words ($000000-$07FFFF, word-addressed --
-	// es5506_device's own m_bank0_config is (ENDIANNESS_BIG, 16, 21, -1))
-	// is exactly 0x100000 bytes: the same size, width and endianness as
-	// mem_map's $100000-$1FFFFF, verified against MAME's own share-size
-	// check (emumem_aspace.cpp: prepare_map_generic()'s share->compare()
-	// fatalerrors on any mismatch) before writing this. Shared via a
-	// root-relative tag (":asr10_sample_ram", matching the cross-device
-	// .share() pattern in fd1089.cpp -- a plain tag would resolve
-	// per-device via device_t::subtag() and silently create two
-	// disconnected allocations instead of one shared block) so this is
-	// the *same* backing store as mem_map's own $100000-$1FFFFF, not a
-	// private copy. sample-ram-and-voice-registers.md's numeric
-	// follow-up: voice 0's own END/ACCUM already resolves into this exact
-	// range. The remaining $080000-$1FFFFF stays private/unshared,
-	// unchanged from before.
-	map(0x000000, 0x07ffff).ram().share(":asr10_sample_ram");
-	map(0x080000, 0x1fffff).ram();
+	map(0x000000, 0x1fffff).r(FUNC(asr10_boot_state::es5506_wavetable_r));
 }
 
-void asr10_boot_state::es5506_unpopulated_wavetable_map(address_map &map)
+// External voice banking glue logic on MC68302 CS1 ($FF7F00-$FF7FFF).
+// The firmware initializes 32 voice-banking table entries (8 bytes / 4 words each)
+// at $F8CD22-$F8CD56: voice 0/1 use entry 0 ($FF7F00), voice 2 uses entry 1 ($FF7F08),
+// and voice V uses entry (V - 1) at $FF7F00 + (V - 1) * 8.
+// During sample setup at $F8E250-$F8E27C, firmware writes the starting physical
+// megabyte index d0 = (a3 >> 20) & 0x0F to word 0, d0+1 to word 1, d0+2 to word 2,
+// and d0+3 to word 3.
+u16 asr10_boot_state::voice_bank_r(offs_t offset, u16 mem_mask)
 {
-	map(0x000000, 0x1fffff).noprw();
+	const u8 entry = (offset >> 2) & 0x1f;
+	const u8 word = offset & 3;
+	return m_voice_bank[entry][word] & mem_mask;
 }
 
-void asr10_boot_state::es5506_wavetable_bank1_map(address_map &map)
+void asr10_boot_state::voice_bank_w(offs_t offset, u16 data, u16 mem_mask)
 {
-	// keyboard-and-sample-bridge-6.md: voice 1/2's own programmed
-	// START/END, read back after a real note-on with the instrument
-	// selected, decode (bank field bits 14-15 of CR = 1, per
-	// es5506.h/.cpp's own get_bank()) to a bank-relative word range that
-	// lands entirely inside $000944-$0552FF -- the exact CPU lowmem
-	// range the loaded 172,544-byte instrument payload is already known
-	// to occupy (file-loaded-verification-probe.md). Bank 1 is CPU
-	// lowmem, not a second sample-RAM pool. Reuses mem_map's own
-	// low_rom_or_lowmem_r/lowmem_w handlers directly -- same backing
-	// store (m_lowmem_shadow), not a private copy -- word range
-	// $000000-$07FFFF matches mem_map's $000000-$0FFFFF (1MB) exactly,
-	// same technique already validated for bank 0's $100000-$1FFFFF
-	// share. mem_map() itself is untouched.
-	//
-	// Known simplification (keyboard-and-sample-bridge-7.md): reusing
-	// low_rom_or_lowmem_r gives ES5506 bank 1 the same ROM overlay
-	// mem_map's CPU side sees during boot (cs0_covers(0)). Real
-	// hardware's ES5506 sample bus faces DRAM only, never the ROM
-	// overlay -- this driver's bank 1 is momentarily wider than the
-	// real chip's view. Harmless for playback (notes only trigger
-	// post-boot, once the overlay is long gone and cs0_covers(0) is
-	// false), but written down per project policy on known
-	// simplifications.
-	map(0x000000, 0x07ffff).rw(FUNC(asr10_boot_state::low_rom_or_lowmem_r), FUNC(asr10_boot_state::lowmem_w));
+	const u8 entry = (offset >> 2) & 0x1f;
+	const u8 word = offset & 3;
+	COMBINE_DATA(&m_voice_bank[entry][word]);
+}
+
+// In ES5506, the 21-bit word address has bits 20:19 selecting which of four 1 MB
+// windows within the 4 MB space is addressed, and bits 18:0 providing the 1 MB
+// sub-offset (512K words). Dynamic voice banking translates this into the shared
+// 2 MB DRAM system RAM (m_lowmem_shadow for chunk 0, m_sample_ram for chunk 1).
+u16 asr10_boot_state::es5506_wavetable_r(offs_t offset)
+{
+	const u32 voice = m_es5506_host ? m_es5506_host->get_voice_index() : 0;
+	const u32 entry = (voice > 0) ? (voice - 1) : 0;
+	const u32 bank_idx = (offset >> 19) & 3;
+	const u32 sub_offset = offset & 0x7ffff;
+	const u32 megabyte = m_voice_bank[entry][bank_idx];
+	const u32 phys_byte_address = ((megabyte << 20) | (sub_offset << 1)) % SYSTEM_RAM_BYTES;
+	if (phys_byte_address < LOWMEM_WORDS * 2)
+		return m_lowmem_shadow[phys_byte_address >> 1];
+	return m_sample_ram[(phys_byte_address - LOWMEM_WORDS * 2) >> 1];
 }
 
 
@@ -969,9 +965,9 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	// not been traced.
 	es5506_device &es5506_host(ES5506(config, m_es5506_host, AUDIO_RATE_MODE0_CLOCK));
 	es5506_host.set_addrmap(0, &asr10_boot_state::es5506_wavetable_map);
-	es5506_host.set_addrmap(1, &asr10_boot_state::es5506_wavetable_bank1_map);
-	es5506_host.set_addrmap(2, &asr10_boot_state::es5506_unpopulated_wavetable_map);
-	es5506_host.set_addrmap(3, &asr10_boot_state::es5506_unpopulated_wavetable_map);
+	es5506_host.set_addrmap(1, &asr10_boot_state::es5506_wavetable_map);
+	es5506_host.set_addrmap(2, &asr10_boot_state::es5506_wavetable_map);
+	es5506_host.set_addrmap(3, &asr10_boot_state::es5506_wavetable_map);
 	es5506_host.sample_rate_changed().set(FUNC(asr10_boot_state::es5506_frame_rate_changed));
 
 	es5506_host.read_port_cb().set(FUNC(asr10_boot_state::analog_r));

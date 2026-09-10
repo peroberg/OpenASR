@@ -85,7 +85,26 @@ records the Bank 11 rejected candidates, and gives current review priorities.
     - **Note:** The `ORCH STRNGS1` file extent is exactly 963 × 512 bytes. Sample-RAM writes observed during load do not represent sample payload size without independent verification.
   - **Primary record:** `investigations/upd72069-standby-auxcmd-fix.md`.
 
+## Voice Banking and Sample Addressing Milestone — [VERIFIED / RESOLVED] (2026-09-11)
+
+- **[VERIFIED / RESOLVED]** Intermittent playability / bank load outcome defect is completely resolved:
+  - **Phenomenon:** Fresh boot -> `ATRK TUT BNK` -> `BLUES DRUMS` produced a near-silent click (Peak 486), whereas loading `TUTORIAL BNK` first produced phantom audible sound (Peak 5065).
+  - **Architectural Discovery:** Firmware ROM disassembly (`$F8CD22-$F8CD56` and `$F8E250-$F8E27C`) established that Ensoniq samplers utilize external voice-banking glue logic on MC68302 CS1 (`$FF7F00-$FF7FFF`).
+    - Firmware allocates 32 voice-banking descriptor table entries at `$FF7F00 + (voice - 1) * 8` for voices $V \ge 1$ (Voice 0/1 share entry 0).
+    - During voice setup, the 24-bit pointer's physical megabyte index `d0 = (a3 >> 20) & 0x0F` is written to Word 0, `d0+1` to Word 1, `d0+2` to Word 2, and `d0+3` to Word 3.
+    - ES5506 21-bit word addresses have bits 20:19 selecting which of the 4 megabyte pages within the 4 MB window is addressed (Words 0..3 of the voice table entry), and bits 18:0 providing the 1 MB sub-offset (512K words).
+    - Physical DRAM address: `phys_byte_address = ((megabyte << 20) | (sub_offset << 1)) % SYSTEM_RAM_BYTES`.
+  - **Root Cause:** `asr10_boot.cpp` previously hardcoded Bank 1 to `m_lowmem_shadow` (Chunk 0) and Bank 0 to `m_sample_ram` (Chunk 1). Because firmware voices always program `CR = 0x4300` (Bank 1), all samples allocated in odd megabytes (`BLUES DRUMS` at physical MB 7 -> Chunk 1) read from Chunk 0 instead, resulting in uninitialized boot silence or leftover phantom data from prior loads.
+  - **Implementation:** Installed `voice_bank_r`/`voice_bank_w` at `$FF7F00-$FF7FFF` and dynamic voice banking in `es5506_wavetable_r`. Unified all 4 ES5506 bank address maps. Net driver lines: -4 lines.
+  - **Verification:**
+    - `BLUES DRUMS` Peak: Path 1 jumped from 486 (1.5%) to 14536 (44.4%), RMS 521.75; Path 2 Peak 14559 (44.4%), RMS 520.86.
+    - Cross-correlation between Path 1 and Path 2 waveforms: 0.998892 (99.89% matching across histories).
+    - 8-iteration repeated bank-load reproducer (`bank11_reproducer.lua`): 8/8 transitions passed with identical memory hash `E1F17C2E` and zero divergence.
+    - Full regression suite: 21/21 PASS lines.
+  - **Primary record:** `investigations/cs1-voice-banking-and-sample-addressing.md`.
+
 The current resume point is this document together with
+`investigations/cs1-voice-banking-and-sample-addressing.md`,
 `investigations/display-protocol-state-machine-v350.md`,
 `investigations/transport-ab-test-play-stop-continue.md` and
 `investigations/slot5-pc-correlation-and-atrk-slot-table.md`.
