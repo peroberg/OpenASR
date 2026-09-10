@@ -119,7 +119,7 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 129 Markdown-filer (räknat om 2026-09-11)
+## `investigations/` — 131 Markdown-filer (räknat om 2026-09-11)
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
@@ -129,7 +129,12 @@ den dokumenterar upptäckten och implementationen av MC68302 CS1 voice banking
 (`$FF7F00-$FF7FFF`), dynamisk ES5506 wavetable-översättning, eliminering av den
 intermittenta playability-defekten (BLUES DRUMS Path 1 peak 486 -> 14536, Path 1 vs Path 2
 korrelation 0.998892), 8/8 godkända bank-load-övergångar och 21/21 godkända regressionsinvarianter.
-Föregående tillägg är
+Föregående tillägg är `audio-history-agy-handoff.md` (2026-09-10):
+historisk handoff för H0/H2-undersökningen som etablerade $0B6E DUART-timerfas som
+orsak till tidsförskjutningen. Föregående tillägg är `save-state-audio-mvp.md` (2026-09-08):
+den dokumenterar ES5510-pipeline-state, MC68302 BAR-window post-load,
+same-process/persistent byte-exakt PCM-verifiering och den uttryckliga
+begränsningen att live-FDC-överföringar inte får save-statas. Föregående tillägg är
 `upd72069-standby-auxcmd-fix.md` (2026-09-03): generisk MAME-fix i `src/devices/machine/upd765.cpp`
 för NEC uPD72069 standby auxcmd `$35/$34`. Delegering till `upd72065_device::auxcmd_w` eliminerar
 felaktig `PHASE_RESULT` / `MSR $D0` som orsakade firmware FDC busy timeout (`$049D=$0D`, `$04AE=$20`),
