@@ -178,10 +178,15 @@ void mc68302_device::device_post_load()
 	m68000_device::device_post_load();
 
 	m_sim->recompute_all_cs();
-	if (m_window_installed)
+	const bool restore_window = m_window_installed;
+	if (m_internal_window_mapped)
 	{
-		m_window_base = (uint32_t(m_bar) & 0x0fff) << 12;
+		m_s_program->unmap_readwrite(m_mapped_window_base, m_mapped_window_base + 0x0fff);
+		m_internal_window_mapped = false;
 	}
+	m_window_installed = false;
+	if (restore_window)
+		install_internal_window();
 	update_internal_irq();
 }
 
@@ -315,13 +320,16 @@ void mc68302_device::install_internal_window()
 	// it) across its whole exercised path, so that restoration path has
 	// never actually run here -- untested, not proven safe.
 	m_window_installed = true;
+	m_internal_window_mapped = true;
+	m_mapped_window_base = m_window_base;
 }
 
 void mc68302_device::remove_internal_window()
 {
-	if (m_window_installed)
+	if (m_internal_window_mapped)
 	{
-		m_s_program->unmap_readwrite(m_window_base, m_window_base + 0x0fff);
+		m_s_program->unmap_readwrite(m_mapped_window_base, m_mapped_window_base + 0x0fff);
+		m_internal_window_mapped = false;
 		m_window_installed = false;
 	}
 }

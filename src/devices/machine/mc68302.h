@@ -201,6 +201,11 @@ private:
 	devcb_write16 m_pb_out_cb;
 	bool m_window_installed;
 	uint32_t m_window_base;
+	// Address-map installation is derived runtime state.  It is deliberately
+	// separate from saved logical BAR/window state so post-load can remove a
+	// handler left by the execution that followed the save.
+	bool m_internal_window_mapped = false;
+	uint32_t m_mapped_window_base = 0;
 
 	uint32_t m_known_count;
 	uint32_t m_internal_ram_count;
