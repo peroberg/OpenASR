@@ -72,7 +72,7 @@ When an instrument sample is triggered for voice playback:
 ## 3. Hardware Architecture & Mathematical Derivation
 
 On the Ensoniq ASR-10 mainboard:
-- The MC68302 Chip Select 1 (`CS1`, configured at `$FF7F00-$FF7FFF`) accesses external voice-banking glue logic.
+- The MC68302 Chip Select 1 (`CS1`, configured for the 8 KiB window `$FF6000-$FF7FFF`, with the per-voice banking table occupying the upper 256 bytes at `$FF7F00-$FF7FFF`) accesses external voice-banking glue logic.
 - The ES5506 provides a 21-bit word-addressed wavetable bus (`A20:A0`), representing a 4 MB window (2M words):
   - **Bits 20:19 (`(offset >> 19) & 3`):** Selects which of four 1 MB pages within the 4 MB window is being addressed (Words 0..3 of the voice's table entry).
   - **Bits 18:0 (`offset & 0x7FFFF`):** Offset within that 1 MB page (512K words).
@@ -167,3 +167,11 @@ All 21 regression checks pass cleanly:
 - 16 named tests, 21 PASS output lines.
 - `note_audio_wav`: `peak=3586 freq=130.8Hz`.
 - `audio_rate_mode`: A, B, A2 all passing.
+
+---
+
+## 7. Board-Level Physical Implementation Frontier & MAME Modeling Notes
+
+1. **Physical Attribution Frontier:** While the functional contract of CS1 per-voice banking is verified by ROM firmware and empirical audio output, the physical IC(s) on the 4-layer ASR-10 Digital Board that store the table, track active voice execution, and generate external DTACK remain strictly `[OPEN]`. Digital Board schematics were omitted from service documentation. See `cs1-board-level-implementation-frontier.md` for the dedicated board-level audit.
+2. **ES5701 (SuperGLU) Exclusion:** The ES5701 silicon specification (Bob Yannes Rev. 2) confirms zero internal registers/RAM, no CS1 connectivity, and address outputs limited to LA19. ES5701 is definitively `[DISPROVEN]` as the storage receiver for the per-voice banking table.
+3. **MAME Write-Only Modeling Note:** MC68302 CS1 hardware is configured write-only (`BR1=$1FEF`, `OR1=$FFFE`, `RW=1, MRW=1`). In `asr10_boot.cpp`, `voice_bank_r` is installed alongside `voice_bank_w`. Firmware never reads from this window, so read availability is runtime-inert, but does not reflect hardware write-only behavior.

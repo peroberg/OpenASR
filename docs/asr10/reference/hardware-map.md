@@ -394,6 +394,11 @@ Possible relation to current blocker:
 Super-GLU-adjacent completion/timer/status behavior in the current model:
 `$FC6884`/`$FC6894` are MC68302 SCM1/SCM2 and `$2400` is IMR bits SCC1+SCC2.
 Storage completion routing remains separate from ES5701/Super-GLU audio glue.
+
+[DISPROVEN — specified ES5701 register/storage model] ES5701 SuperGLU contains zero
+internal registers or RAM, has no CS1 connection, and addresses only up to LA19.
+It does not and cannot store the per-voice sample banking table ($FF7F00-$FF7FFF).
+Its role is restricted to audio host/memory bus translation, isolation and clock division.
 ```
 
 ## Current control-plane model
@@ -445,34 +450,34 @@ For samtliga fyra ar CFC = 0 - ingen FC-jamforelse ar paslagen nagonstans.
 |---|---|---|---|---|---|---|
 | CS0 (reset) | `$0001` | `$3F82` | `$000000-$03FFFF` | endast lasning | 1 WS | ROM-overlagg vid boot |
 | CS0 (efter) | `$1F01` | `$3F82` | `$F80000-$FBFFFF` | endast lasning | 1 WS | ROM, 256 KB |
-| CS1 | `$1FEF` | `$FFFE` | `$FF6000-$FF7FFF` | **endast skrivning** | **extern** | **oidentifierat** |
+| CS1 | `$1FEF` | `$FFFE` | `$FF6000-$FF7FFF` | **endast skrivning** | **extern** | per-röst sample-banking-tabell (`$FF7F00-$FF7FFF`); fysisk mottagare öppen |
 | CS2 | `$1F85` | `$FFFC` | `$FC2000-$FC3FFF` | las + skriv | extern | ES5506 `$FC2000`, ES5510 `$FC3000` |
 | CS3 | `$1F89` | `$7FFC` | `$FC4000-$FC5FFF` | las + skriv | 3 WS | FDC `$FC4000`, DUART `$FC4801`, SCSI `$FC5001` |
 
 Allt utanfor CS0-CS3 och BAR-fonstret (`$FC6000-$FC6FFF`) maste avkodas av kortlogiken.
 68302:an gor det inte.
 
-### CS1 `$FF6000-$FF7FFF` - oppen hardvarufraga
+### CS1 `$FF6000-$FF7FFF` — per-röst sample-banking [VERIFIED funktion / OPEN hårdvara]
 
 ```
 enabled
 write-selected / write-only
 external DTACK
 no function-code comparison
-function unknown
+function: per-voice sample banking table at $FF7F00-$FF7FFF (32 voices x 4 words)
 ```
 
-Fonstret ligger medvetet utanfor 68000:ans kortadresserbara omrade - en teckenutvidgad
-`abs.w` kan bara ge `$000000-$007FFF` eller `$FF8000-$FFFFFF`. CS1 kan alltsa bara nas
-med 32-bitars absolut eller registerindirekt adressering.
+Fönstret är 8 KB (`$FF6000-$FF7FFF`). Firmware använder de översta 256 byten
+(`$FF7F00-$FF7FFF`) för att konfigurera en 32-rösters översättningstabell där varje rösts
+4 MB ES5506-adressfönster dynamiskt pekas mot godtyckliga 1 MB DRAM-segment.
+Implementeringen i `asr10_boot.cpp` (commit `b7cd112199d`) löste den intermittenta
+Bank 11-playability-defekten.
 
-Inga identifierade direkta absoluta eller immediate-basreferenser finns i ROM eller i
-nagon OS-version (954 pekarladdningar genomsokta; 31 traffar CS2, 5 traffar CS3, 0
-traffar CS1). Eventuell anvandning kan vara indirekt, dynamiskt harledd, ligga i en annu
-inte exekverad kodvag - eller saknas helt.
-
-RW-, MRW- och DTACK-falten ar **inte** defaultvarden. Nagon har medvetet programmerat
-CS1 som en skrivport. Experiment E4 (skrivtapp over flera anvandningsfaser) ar nasta steg.
+**Dokumentationsgräns:** ES5701 SuperGLU saknar register/RAM och är utesluten
+(`[DISPROVEN]`). Den fysiska krets/diskret logik som tar emot CS1 och genererar extern DTACK
+på det 4-lagers moderkortet är `[OPEN]` då Digital Board-schemat saknas i servicemanualerna
+(`DOCUMENTATION FRONTIER REACHED — BOARD OWNERSHIP`). Se
+`../investigations/cs1-board-level-implementation-frontier.md`.
 
 ### SCSI ligger i CS3, inte CS1 `[V]`
 

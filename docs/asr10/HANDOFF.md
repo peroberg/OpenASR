@@ -34,12 +34,14 @@ coverage and positive controls. The normative rules and labels are in
                                       `-- ES5506 -> functional ESP frame adapter -> ES5510 -> audio
 ```
 
-The firmware-visible CS regions and their coarse use are established; secondary
-board decode remains incomplete. In particular, CS1 is an unresolved,
-write-only external region, while CS2 contains the ES5506/ES5510 host regions
+The firmware-visible CS regions are established: CS1 is verified as per-voice
+sample banking ($FF7F00-$FF7FFF), CS2 contains the ES5506/ES5510 host regions,
 and CS3 contains FDC, DUART and SCSI candidates. CS selection is not proof of
-the physical receiver behind every address. See `reference/hardware-map.md`
-and `investigations/audio-rate-control-write-v350.md`.
+the physical board receiver behind every address. For CS1, functional emulation
+is complete, while the physical receiver IC(s) on the 4-layer Digital Board
+remain at the documentation frontier. See `reference/hardware-map.md`,
+`investigations/cs1-voice-banking-and-sample-addressing.md`, and
+`investigations/cs1-board-level-implementation-frontier.md`.
 
 ### Subsystem status
 
@@ -53,7 +55,7 @@ and `investigations/audio-rate-control-write-v350.md`.
 | ES5506 -> ES5510 frame path | **[Likely functional, bounded]** | ROM HALL and 44LUSH work through the functional adapter; physical serial wiring and HALT are open. |
 | 30 kHz / 44.1 kHz policy | **[Likely functional]** | A firmware-mode-driven MAME policy produces the intended two functional modes; physical clock route is open. |
 | Sequencer/music correctness | **[OPEN]** | Transport runs and is audible, but original-musical playback remains unvalidated. |
-| Bank 11 history-dependent symptom | **[OPEN]** | A real BAD/GOOD user symptom survives; several simpler hardware/state explanations are falsified. |
+| Bank 11 history-dependent playability | **[VERIFIED / RESOLVED]** | Resolved by dynamic CS1 per-voice sample banking (commit `b7cd112199d`). Path 1 vs Path 2 waveform correlation 99.89%. |
 
 ## What works end-to-end today
 
@@ -119,26 +121,21 @@ The primary records are
   serialised 30 kHz control exists locally. It must not be reintroduced as a
   binary sample-rate fact.
 
-## Bank 11: active symptom, rejected shortcuts
+## Bank 11: resolved playability defect (CS1 dynamic voice banking) [VERIFIED / RESOLVED]
 
-The reproducible user flows are:
+The historical playability defect across alternating bank loads:
 
 ```text
-BAD:   boot -> File 11 -> Play
-GOOD:  boot -> File 1 / Tutorial Bank -> File 11 -> Play
+BAD:   boot -> File 11 (ATRK TUT BNK) -> BLUES DRUMS -> click / near-silent (Peak 486)
+GOOD:  boot -> File 1 (TUTORIAL BNK) -> File 11 -> phantom audible audio (Peak 5065)
 ```
 
-This remains a real **[OPEN]** history-dependent symptom. The following have
-already failed as explanations in the controlled census: ignored/partial MMIO,
-SIB/PIO, CS1/CS2/CS3, the SCSI stub, FDC state and initial DUART state. The
-specific sample-RAM-prefix hypothesis is **[DISPROVEN]**: the differing
-`$100000-$11DFFF` contents are not referenced by observed Bank 11 ES5506
-voice/sample setup. Do not reopen any of those candidates without new evidence.
-A future investigation starts at the musical/runtime chain and finds the first
-BAD/GOOD divergence (sequence/track/instrument/voice/result), not at another
-broad hardware census.
+has been completely resolved by dynamic CS1 per-voice sample banking (commit `b7cd112199d`):
+- **Causal Defect:** The previous driver hardcoded ES5506 Bank 1 wavetable reads to DRAM Chunk 0 (`m_lowmem_shadow`). `BLUES DRUMS` resides in physical megabyte 7 (DRAM Chunk 1 / `m_sample_ram`). On fresh boot, Chunk 0 held uninitialized silence. After loading `TUTORIAL BNK`, Chunk 0 retained leftover PCM from `JM DRUMS`, playing phantom audio.
+- **Resolution:** Implementing dynamic per-voice translation from the `$FF7F00-$FF7FFF` table enables both paths to correctly read Chunk 1, producing authentic drum audio (Peak ~14550, RMS ~521, 99.89% waveform cross-correlation).
+- **Physical Boundary:** The physical IC(s) storing the table on the 4-layer Digital Board remain at the documentation frontier (`DOCUMENTATION FRONTIER REACHED — BOARD OWNERSHIP`).
 
-Primary record: `investigations/bank11-history-mmio-state-census.md`.
+Primary records: `investigations/cs1-voice-banking-and-sample-addressing.md` and `investigations/cs1-board-level-implementation-frontier.md`.
 
 ## Storage subsystem freeze: [VERIFIED / FUNCTIONALLY CLOSED / FROZEN]
 
@@ -192,10 +189,11 @@ Primary record: `investigations/upd72069-standby-auxcmd-fix.md`.
   SCSI HDD boot/format/remount, and SCSI CD-ROM browse/load are functionally closed.
   Physical completion IRQ line glue details remain secondary/open.
 - **Sequencer:** transport is working, but audio-correct musical playback is
-  not demonstrated. This and the Bank 11 first-divergence question are the
-  most useful next reviewer areas.
-- **Board decode:** CS regions are known at coarse level; secondary decode,
-  particularly CS1 and unresolved portions of CS2, remains open.
+  not demonstrated.
+- **Board decode:** CS regions are known; CS1 per-voice banking ($FF7F00-$FF7FFF)
+  is functionally verified and resolved in emulation, with physical board receiver
+  IC(s) parked at the documentation frontier. Portions of secondary decode for
+  discrete board control remain open.
 
 ## Regression and review procedure
 
@@ -235,15 +233,15 @@ M  src/mame/layout/asr10_panel.lay
   field.
 - MAME save states are not ASR disk/filesystem SAVE.
 - ES5510 success for ROM HALL and 44LUSH is not a claim for all ESP programs.
-- Bank 11's prefix, MMIO and init candidates are not live leads anymore.
+- Bank 11 playability is resolved; do not reopen sample-RAM-prefix or MMIO candidates.
 
 ## Recommended next review areas
 
-1. The first controlled BAD/GOOD divergence in Bank 11's musical runtime chain.
-2. Sequencer/track/instrument/voice evidence needed to assess musical
+1. Sequencer/track/instrument/voice evidence needed to assess musical
    correctness, independently of transport start/stop.
+2. Verification of additional complex/multi-sample instruments under dynamic CS1 voice banking.
 3. Storage write/SCSI work as a separately scoped subsystem, with explicit
    separation of ASR filesystem operations from MAME state saves.
-4. Physical audio-clock evidence only when a concrete board observation can
-   discriminate remaining models; do not treat it as a prerequisite for using
-   the current functional policy.
+4. Physical audio-clock and board-ownership evidence only when concrete board observation
+   or authentic schematics become available; do not treat physical IC identification as
+   a prerequisite for functional emulation progress.

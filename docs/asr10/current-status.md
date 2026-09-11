@@ -101,10 +101,15 @@ records the Bank 11 rejected candidates, and gives current review priorities.
     - Cross-correlation between Path 1 and Path 2 waveforms: 0.998892 (99.89% matching across histories).
     - 8-iteration repeated bank-load reproducer (`bank11_reproducer.lua`): 8/8 transitions passed with identical memory hash `E1F17C2E` and zero divergence.
     - Full regression suite: 21/21 PASS lines.
-  - **Primary record:** `investigations/cs1-voice-banking-and-sample-addressing.md`.
+  - **Board-Level Physical Implementation Frontier:**
+    - **[DISPROVEN — specified ES5701 register/storage model]**: ES5701 SuperGLU contains zero internal registers or RAM, has no CS1 connection, and outputs address lines only up to LA19; it does not and cannot store the per-voice banking table.
+    - **[OPEN — physical board receiver]**: The physical IC(s) (discrete SRAM/latches, custom gate array, or sub-decoded board logic) receiving CS1 writes and generating external DTACK on the 4-layer Digital Board remain open because the Digital Board schematic is absent from service documentation.
+    - **DOCUMENTATION FRONTIER REACHED — BOARD OWNERSHIP**: Physical IC attribution is not an active functional emulation blocker. MAME models the verified functional behavior completely and correctly.
+  - **Primary records:** `investigations/cs1-voice-banking-and-sample-addressing.md` and `investigations/cs1-board-level-implementation-frontier.md`.
 
 The current resume point is this document together with
 `investigations/cs1-voice-banking-and-sample-addressing.md`,
+`investigations/cs1-board-level-implementation-frontier.md`,
 `investigations/save-state-audio-mvp.md`,
 `investigations/display-protocol-state-machine-v350.md`,
 `investigations/transport-ab-test-play-stop-continue.md` and

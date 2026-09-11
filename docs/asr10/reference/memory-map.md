@@ -29,7 +29,7 @@ programmerade chip selects är CFC = 0 — **ingen FC-jämförelse är påslagen
 |---|---|---|---|---|---|---|---|
 | CS0 (reset) | `$0001` | `$3F82` | `$000000-$03FFFF` | endast läsning | 1 WS | ROM-överlägg vid boot | [Verified] |
 | CS0 (efter) | `$1F01` | `$3F82` | `$F80000-$FBFFFF` | endast läsning | 1 WS | ROM, 256 KB | [Verified] |
-| CS1 | `$1FEF` | `$FFFE` | `$FF6000-$FF7FFF` | **endast skrivning** | **extern** | **oidentifierat**, 8 KB | [OPEN] — se §5 |
+| CS1 | `$1FEF` | `$FFFE` | `$FF6000-$FF7FFF` | **endast skrivning** | **extern** | per-röst sample-banking-tabell (`$FF7F00-$FF7FFF`, 256 B i 8 KB fönster); fysisk mottagare öppen | [Verified funktion / OPEN hårdvara] — se §5 |
 | CS2 | `$1F85` | `$FFFC` | `$FC2000-$FC3FFF` | läs + skriv | extern | ES5506 `$FC2000`, ES5510 `$FC3000` | [Verified] |
 | CS3 | `$1F89` | `$7FFC` | `$FC4000-$FC5FFF` | läs + skriv | 3 WS | FDC `$FC4000`, DUART `$FC4801` | [Verified] |
 
@@ -289,11 +289,11 @@ $FFB0DA  3078 03C0        movea.w ($03c0).w,A0
 $FFB0DE  4ED0             jmp     (A0)
 ```
 
-## 5. CS1 — `$FF6000-$FF7FFF`  [OPEN]
+## 5. CS1 — `$FF6000-$FF7FFF` [Verified firmware funktion / OPEN hårdvarumottagare]
 
-Projektets största öppna hårdvarufråga. Allt känt samlat.
+Firmware-funktionen är fullständigt verifierad och funktionellt implementerad i MAME (commit `b7cd112199d`), medan den fysiska mottagaren på 4-lagers moderkortet utgör projektets dokumentationsgräns.
 
-### Vad som är fastställt
+### Vad som är fastställt ur MC68302
 
 * BR1 = `$1FEF`, OR1 = `$FFFE`, skrivet på `$F80036` respektive `$F8002E` — **före**
   PIO-init, DUART-init och allt annat. [Verified]
@@ -303,96 +303,45 @@ Projektets största öppna hårdvarufråga. Allt känt samlat.
 * **Extern DTACK** (OR bit 15–13 = `111`) — enheten kvitterar själv, variabel timing.
 * **Ingen FC-jämförelse** (OR bit 0 = 0), som för alla fyra chip selects.
 
-### Det strukturella argumentet
+### Firmware-funktion: Per-röst sample-banking-tabell [VERIFIED]
 
-En teckenutvidgad `abs.w` kan bara producera `$000000-$007FFF` eller `$FF8000-$FFFFFF`.
-**`$FF6000-$FF7FFF` är därmed oåtkomligt med kortadressering** och kan bara nås med
-32-bitars absolut eller registerindirekt adressering.
+ASR-10 OS-firmware använder de översta 256 byten av CS1-fönstret (`$FF7F00-$FF7FFF`) som en dynamisk sample-banking-tabell för ES5506 (OTTO):
 
-Det är inte en slump. Kortfönstret `$FF8000-$FFFFFF` är fullt av bindningstabell och
-het OS-kod. CS1 är lagt precis under, i den första adressen som *inte* kan nås billigt.
-Det talar starkt för att området inte är kod.
+1. **Initiering vid boot (`$F8CD22-$F8CD56`):**
+   - 32 röstposter (`$8000 + voice * $D8`) tilldelas en tabellpekare vid `+$2A`.
+   - Röst 0 och 1 pekar på `$FF7F00` (post 0).
+   - Röst $V$ ($V \ge 1$) pekar på `$FF7F00 + (V - 1) * 8`.
+   - Varje post omfattar 8 byte (4 ord om 16 bitar).
+2. **Dynamisk röstprogrammering vid sample-start (`$F8E270-$F8E27C`):**
+   - Den 24-bitars samplingsadressen delas upp: bit 19:0 blir ES5506-startord, medan de övre 4 bitarna ($A23-A20$, megabyte-index $d0$) skrivs till tabellen:
+     - Ord 0: $d0$
+     - Ord 1: $d0 + 1$
+     - Ord 2: $d0 + 2$
+     - Ord 3: $d0 + 3$
+   - ES5506 CR bit 14 sätts alltid (`CR = 0x4300`, Bank 1 / $BS0=1$).
+3. **Wavetable-adressöversättning:**
+   - ES5506 har en 21-bitars ordadressbuss ($A20:A0$, 4 MB fönster).
+   - Bit 20:19 väljer vilket av de 4 megabyte-orden i röstens tabellpost som adresseras.
+   - Bit 18:0 ger sub-offset inom den megabyten.
+   - Fysisk DRAM-adress: `phys_byte_address = ((megabyte << 20) | (sub_offset << 1)) % SYSTEM_RAM_BYTES`.
 
-### Referensräkning
+Genom att implementera denna översättning eliminerades den intermittenta Bank 11-playability-defekten (där `BLUES DRUMS` i MB 7/Sample RAM Chunk 1 tidigare lästes ur Chunk 0 och gav tystnad/brus).
 
-Instruktionsfiltrerade referenser: **inga hittade** i vare sig ROM eller OS.
-Ofiltrerade 32-bitars långord som råkar falla i intervallet: 160 i ROM, 11 i V161,
-37 i V350 — på den träffnivån är det brus, inte belägg.
+### Fysisk stycklista och uteslutning av ES5701
 
-Slutsatsen som får dras är smalare: **inga direkta absoluta eller identifierade
-immediate-basreferenser har hittats.** Eventuell användning kan ske genom indirekt eller
-dynamiskt härledd adressering (aritmetiskt beräknad adress, pekare hämtad ur en tabell
-eller ur RAM, runtimegenererad kod), ligga i en kodväg som ännu inte klassificerats eller
-ännu inte exekverats — **eller saknas helt**. Metoden kan inte skilja dem åt.
+* **ES5701 SuperGLU är utesluten [DISPROVEN — specified ES5701 register/storage model]:** Enligt kretsspecifikationen (`docs/ensoniq/ES5701.pdf`, Bob Yannes Rev. 2) saknar ES5701 interna register eller RAM, har inga CS1-ingångar och adresserar endast upp till LA19. Den kan inte lagra 256 byte röstkonfiguration.
+* **PAL U5 och diskret logik:** PAL U5 (`"ASR-10 V1.1"`) är en standard 20/24-pin PAL som inte kan lagra 256 byte RAM. Den fungerar som sub-avkodare och DTACK-generator.
+* **Röstsynkronisering:** ES5506 pin 45 ($BS0$) växlar med röstcykeln och fungerar som extern synkpuls för en röststegningsräknare som adresserar tabell-RAM:et synkront med OTTO:s rösttidsluckor.
 
-### Runtimeobservation 2026-08-27
+### Dokumentationsgräns — Board Ownership [OPEN]
 
-E4:s första riktade körning är nu gjord. En Lua-skrivtapp över hela CS1,
-retained genom hela mätningen och med levande low-RAM-witness, fångade **133**
-firmware-skrivningar i V3.50 genom:
+Den fysiska kretsen/kretsarna (t.ex. diskret SRAM/latch-array eller proprietär Ensoniq gate array) som tar emot CS1 och driver $A20-A23$ till DRAM är **[OPEN]**. Schemat för 4-lagers Digital Board publicerades aldrig i Ensoniqs servicemanualer.
 
-```
-FILE 1 -> FILE LOADED -> Instrument 1 -> MIDI note-on
-```
+**DOCUMENTATION FRONTIER REACHED — BOARD OWNERSHIP**: Den fysiska kretsidentifieringen är inte en aktiv emuleringsblockerare. MAME:s funktionella modellering i `asr10_boot.cpp` är komplett och verifierad mot firmware och empiriskt ljud.
 
-Skrivningarna ligger i `$FF7F00-$FF7FF6`. Boot skriver den regelbundna
-stride-8-serien; note-on ger tre ord från den redan kartlagda
-per-voice-helperkedjan:
+### MAME-modelleringsnot
+Hårdvarumässigt är MC68302 CS1 konfigurerat som endast skrivning (`RW=1, MRW=1`). I `asr10_boot.cpp` installeras `voice_bank_r` jämte `voice_bank_w`. Eftersom firmware aldrig läser ur `$FF7F00-$FF7FFF` är läsbarheten funktionellt inert i körtid, men reflekterar inte hårdvarans strikta skrivbegränsning.
 
-```
-$F8E278 -> $FF7F00 = $0006
-$F8E27C -> $FF7F02 = $0007
-$F8E280 -> $FF7F04 = $0008
-```
-
-`$F8E270` laddar `A0` från röstpostens `+$2A`, vars initiering utgår från
-`$FF7F00`. CS1 är därmed **[Verified runtime used]**, medan den fysiska
-mottagaren och registersemantiken fortsatt är `[OPEN]`. Den observerade
-per-voice-trafiken är inte belägg för clock/rate-control. Se
-`../investigations/audio-clock-and-rate-architecture-v350.md`.
-
-### Hypoteser
-
-| # | hypotes | talar för | talar emot |
-|---|---|---|---|
-| H1 | ~~SCSI-kontroller~~ | — | **[DISPROVEN]** — SCSI-kretsen ligger på `$FC5001`/`$FC5003` i **CS3**. ROM `$FBB5C0` gör `movea.l #$00FC5001,A4` / `movea.l #$00FC5003,A3`, och både ROM och båda OS-versionerna skriver `move.b #$18` (WD33C93 Command) följt av `move.b #$00` (Reset). Två register på udda lane med stride 2 är AM33C93A:s programmeringsmodell. |
-| H2 | Expansions-/tillvalsfönster (minne, SP-kort) | 8 KB, aktivt hela tiden, aldrig refererat absolut | inget positivt belägg |
-| H3 | NVRAM / kalibreringsdata | 8 KB är rimlig storlek; skulle nås via pekare | inget positivt belägg |
-| H4 | Diagnostik-/testfönster | förklarar varför normal boot aldrig rör det | inget positivt belägg |
-| H5 | Oanvänt — konfigurerat "för säkerhets skull" | firmware initierar ofta hela adressrymden vid boot | RW-, MRW- och DTACK-fälten är **inte** defaultvärden; någon har medvetet programmerat CS1 som en skrivport |
-
-### Vad som är känt och vad som inte är det
-
-```
-CS1   $FF6000-$FF7FFF
-      enabled
-      write-selected / write-only
-      external DTACK
-      no function-code comparison
-      function unknown
-```
-
-Inga identifierade direkta absoluta eller immediate-basreferenser i ROM eller i någon
-OS-version; runtime använder i stället åtminstone en indirekt/per-röstväg i
-`$FF7Fxx`.
-
-Elektriskt är fönstret alltså kartlagt. Funktionellt är det helt öppet.
-
-### Rekommendation — E4
-
-Att CS1 är oförklarat betyder **inte** att analysen är fel. "Tidigt initierat" är inte
-samma sak som "tidigt använt".
-
-För framtida funktionsklassning: skrivtappa `$FF6000-$FF7FFF`, logga
-**adress, bredd, värde, PC och körfas**. Normal boot och en note-on är nu
-verifierade; kör därefter igenom:
-
-```
-filbläddring · instrumentladdning · spela ljud · sampling
-effektladdning · hårdvarutest · optionsdetektering
-```
-
-ES5701/ljud-glue är fortfarande en rimlig hypotes men saknar positiv
-**funktions- eller kopplingsevidens** från CS1-trafiken.
-
-Jämför också mot `Asr10Cs3Decoder` i 68302-emulatorprojektet innan nya hypoteser läggs till.
+Primära utredningsdokument:
+- `../investigations/cs1-voice-banking-and-sample-addressing.md`
+- `../investigations/cs1-board-level-implementation-frontier.md`

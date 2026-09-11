@@ -39,6 +39,9 @@ board evidence.
 
 ```text
 MC68302/68000
+  CS1 $FF6000-$FF7FFF (table at $FF7F00-$FF7FFF)
+    -> per-voice sample banking table (32 voices x 4 words)
+
   CS2 $FC2000-$FC3FFF
     -> ES5506/OTTO host window at $FC2000
     -> ES5510/ESP host window at $FC3000-$FC31FF
@@ -56,6 +59,7 @@ storage async completion
   -> vector $51 shared FDC/SCSI completion
 
 audio runtime
+  -> CS1 per-voice sample banking (translates ES5506 wavetable bus to DRAM)
   -> ES5701/Super-GLU-class audio/sound-memory glue
   -> ES5506 sample playback
   -> ES5510 effects DSP
@@ -97,6 +101,10 @@ verified. The spec supports audio/sound-memory glue, not storage interrupt glue.
 [DISPROVEN] Nothing in the ES5701 silicon spec justifies describing ES5701 as
 the verified source of FDC/SCSI IRQ routing. Storage IRQ routing remains separate
 and open.
+
+[DISPROVEN — specified ES5701 register/storage model] ES5701 contains zero internal
+registers or RAM, has no CS1 connection, and outputs address lines only up to LA19.
+It does not and cannot store the per-voice sample banking table ($FF7F00-$FF7FFF).
 
 ## ES5506 / OTTO
 
@@ -146,9 +154,10 @@ and PB11, and surrounding documented code points toward audio/ES5506 service.
 Do not treat PB9 as a proven ES5506 wire until there is board evidence or a
 firmware chain that requires that exact source.
 
-[OPEN] The exact instrument sample-data destination, sample-memory map, loaded
-instrument runtime structure, and note-on to ES5506 voice-programming path are
-not yet verified.
+[Verified firmware / runtime] The note-on to ES5506 voice-programming path and
+per-voice sample banking table ($FF7F00-$FF7FFF) are verified (commit b7cd112199d).
+The general loaded instrument root structure, exact sample-object allocation policy,
+and physical board IC implementing the banking table remain [OPEN].
 
 ## ES5510 / ESP
 
@@ -241,9 +250,10 @@ acknowledged, and whether PAL/GAL glue participates are not verified.
 - [OPEN] PAL/GAL glue for storage completion.
 - [OPEN] Electrical interrupt sharing, polarity, acknowledge timing and line
   clearing for FDC/SCSI completion.
-- [Verified runtime] Tested load reaches low RAM and the ES5506 bank-1 mapping;
-  exact general sample-object ownership and real-board sound-memory topology
-  remain [OPEN].
+- [Verified runtime] Dynamic per-voice sample banking ($FF7F00-$FF7FFF) translates
+  ES5506 wavetable reads to DRAM across both low memory and sample RAM; exact
+  general sample-object ownership and physical board IC receiver on the 4-layer
+  PCB remain [OPEN] at the documentation frontier.
 - [OPEN] Top-level loaded instrument metadata root and producer.
 - [Verified firmware] Runtime voice record to ES5506 programming path; see
   `instrument-to-otto-runtime.md` and the object ownership model in

@@ -101,11 +101,19 @@ unobserved address window, not FC2001/FC2069 itself.
 | FC3000-FC31FF | CPU → custom PAL → some device via the same MOVEP/A0 convention as FC2001 (proven shared idiom, not shared chip) | [HYP] for device identity; [PROVEN] only that the *access convention* matches |
 | ES5570 candidate map (0x200000-0x380000, this driver's `*_vfx_candidate`/`*_ts_candidate` stubs) | Not applicable to ASR-10 — modeled on VFX-SD/TS-10's ES5570 decode, never hit at runtime | [DISPROVEN as ASR-10's actual map] — retained in the driver as inert reference stubs only |
 
-## 5. Bottom line
+## 5. Bottom line and CS1 banking exclusion
 
-The Buchty/ES5701 material is well-documented for **what ES5701 does**,
-but provides **zero direct evidence for ASR-10's actual FC-prefixed
-address map**, because ES5701 (per its own documented scope) isn't the
-address decoder — U5's custom PAL is, and that PAL has not been reverse
-engineered in any doc in this tree. Any claim that a specific FC-window
-"routes through ES5701" would currently be invention, not verification.
+The Buchty/ES5701 material and Bob Yannes Rev. 2 specification (`docs/ensoniq/ES5701.pdf`)
+are well-documented for **what ES5701 does**: audio bus glue, ESP/OTTO translation,
+bus isolation, and clock division.
+
+Crucially:
+- **[DISPROVEN — specified ES5701 register/storage model]**: ES5701 contains zero internal
+  registers or RAM, has no CS1 pin, and outputs address lines only up to LA19. It **cannot**
+  store the 256-byte per-voice sample banking table (`$FF7F00-$FF7FFF`) configured by CS1.
+- ES5701 does not decode system addresses; custom PAL U5 and ancillary decoders handle
+  board-level decode.
+- Any claim that CS1 or `$FF7F00` "routes into ES5701 registers" is disproven.
+- The physical IC(s) storing the table on the 4-layer Digital Board remain `[OPEN]` at the
+  canonical documentation frontier (`DOCUMENTATION FRONTIER REACHED — BOARD OWNERSHIP`).
+  See `../investigations/cs1-board-level-implementation-frontier.md`.
