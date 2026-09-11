@@ -119,12 +119,16 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 132 Markdown-filer (räknat om 2026-09-11)
+## `investigations/` — 133 Markdown-filer (räknat om 2026-09-11)
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `HANDOFF.md`, `current-status.md` och `reference/` som
-aktuell sanning. Senaste tillägget är `cs1-board-level-implementation-frontier.md` (2026-09-11):
+aktuell sanning. Senaste tillägget är `mc68302-unimplemented-register-coverage.md` (2026-09-11):
+den dokumenterar en fullständig SIB-registerinventering för MC68302 ($FC6000-$FC6FFF),
+empirisk accessfrekvens över boot, instrumentladdning, notuppspelning och panelinteraktion,
+och klassificering i Klass 0-5 med slutsatsen att inga ohanterade kritiska defekter kvarstår.
+Föregående tillägg är `cs1-board-level-implementation-frontier.md` (2026-09-11):
 den dokumenterar styckliste- och hårdvarugränsen för MC68302 CS1 och per-röst-banking,
 utesluter ES5701 som register/RAM-mottagare, analyserar ES5506 BS-tillstånd som plausibel
 extern röstsynk [INFERRED], fastställer att ASR-10 Digital Board-schema saknas i
