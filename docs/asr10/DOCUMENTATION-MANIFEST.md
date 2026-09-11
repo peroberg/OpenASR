@@ -127,7 +127,7 @@ pekar uttryckligen på `HANDOFF.md`, `current-status.md` och `reference/` som
 aktuell sanning. Senaste tillägget är `mc68302-unimplemented-register-coverage.md` (2026-09-11):
 den dokumenterar en fullständig SIB-registerinventering för MC68302 ($FC6000-$FC6FFF),
 empirisk accessfrekvens över boot, instrumentladdning, notuppspelning och panelinteraktion,
-och klassificering i Klass 0-5 med slutsatsen att inga ohanterade kritiska defekter kvarstår.
+och klassificering i Klass 0-5 som fastställer att för de täckta arbetslasterna (boot, laddning, notuppspelning, panel) observeras inga kritiska blockeringar i de kvarvarande omodellerade registren.
 Föregående tillägg är `cs1-board-level-implementation-frontier.md` (2026-09-11):
 den dokumenterar styckliste- och hårdvarugränsen för MC68302 CS1 och per-röst-banking,
 utesluter ES5701 som register/RAM-mottagare, analyserar ES5506 BS-tillstånd som plausibel

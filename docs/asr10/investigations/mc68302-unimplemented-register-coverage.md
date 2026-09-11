@@ -1,7 +1,7 @@
 # MC68302 Unimplemented Register Coverage Audit and Workload Classification
 
 **Date:** 2026-09-11  
-**Status:** `[VERIFIED]` across boot, instrument load, voice playback, panel navigation, and audio rate switching workloads.  
+**Status:** `[VERIFIED for covered workloads]` across boot, instrument load, voice playback, panel navigation, and audio rate switching workloads.  
 **Audited Baseline:** Master after Track A (`PBCNT`/`PBDDR` readback latch), Track B (`SAPR`/`DAPR` byte-lane preservation), and Track C (`$0CE2/$0CE3` lowmem alias canonicalization).
 
 ---
@@ -17,11 +17,11 @@ The objective is to establish:
 4. Whether any remaining unimplemented register constitutes a latent defect or causal blocker for current ASR-10 emulation.
 
 ### Key Findings
-- **Zero Unknown Accesses:** Across all measured workloads, 100% of firmware accesses fall into documented MC68302 SIB architectural blocks. No undocumented registers outside the documented CP command latch (`$FC6860`) are accessed.
-- **Modeled Core Subsystems:** Chip selects (`BR0-3`/`OR0-3`), Parallel I/O (`Port A`, `Port B`), minimal `IDMA`, `FC6860` CP command latch, and the level-4/level-1 `Interrupt Controller` (`GIMR`, `IPR`, `IMR`, `ISR`) are actively modeled and functionally validated.
-- **Zero Unmitigated Class 5 (Critical) Registers:** The review items identified prior to this audit (`PBCNT`/`PBDDR` readback corruption, `SAPR`/`DAPR` partial-write byte destruction, and lowmem alias bypassing `$0CE3` rate policy) have been cleanly resolved and verified in Tracks A, B, and C.
-- **Safe Shadow Storage (Class 1 & 2):** Unimplemented registers touched by firmware (`WRR`, `TMR2`, `TRR2`, `TCN2`, `SIMODE`, `SCM1/2`, `DSR1/2`, `SCCM1/2`, `SCCS1/2`) are configuration-only or one-time probes. Firmware never polls these registers in wait-loops or depends on unmodeled autonomous hardware state transitions from them.
-- **Unused Peripherals (Class 0):** `Timer 1`, `Timer 2` event/capture, the entire `SCC3` subsystem, `SCP`, and `SMC` are completely unconfigured and unused by Ensoniq firmware.
+- **Zero Unknown Accesses in Covered Workloads:** Across all measured workloads, 100% of firmware accesses fall into documented MC68302 SIB architectural blocks. No undocumented registers outside the documented CP command latch (`$FC6860`) are accessed.
+- **Modeled Core Subsystems:** Chip selects (`BR0-3`/`OR0-3`), Parallel I/O (`Port A`, `Port B`), minimal `IDMA`, `FC6860` CP command latch, and the level-4/level-1 `Interrupt Controller` (`GIMR`, `IPR`, `IMR`, `ISR`) are actively modeled and verified for the covered workflows.
+- **Zero Unmitigated Class 5 (Critical) Registers in Tested Workloads:** The review items identified prior to this audit (`PBCNT`/`PBDDR` readback latching, `SAPR`/`DAPR` partial-write byte preservation, and lowmem alias bypassing `$0CE3` rate policy) have been cleanly resolved and verified in Tracks A, B, and C. In the tested workloads, no remaining unimplemented register caused an observable failure, crash, or audio degradation.
+- **Shadow Storage (Class 1 & 2):** Unimplemented registers touched by firmware (`WRR`, `TMR2`, `TRR2`, `TCN2`, `SIMODE`, `SCM1/2`, `DSR1/2`, `SCCM1/2`, `SCCS1/2`) are configuration-only or one-time boot probes in the tested workloads. Firmware was not observed to poll these registers in wait-loops or stall on unmodeled autonomous hardware state transitions. However, active hardware side effects (e.g. Timer 2 counting, autonomous CP RISC execution) remain unmodeled.
+- **Unused Peripherals (Class 0):** `Timer 1`, `Timer 2` event/capture, the entire `SCC3` subsystem, `SCP`, and `SMC` are completely unconfigured and untouched across all tested Ensoniq firmware paths. Their status in untested workloads (e.g. live ADC sampling, external sync) remains unverified.
 
 ---
 
@@ -31,9 +31,9 @@ To prevent speculative or unbounded reimplementation of MC68302 features not req
 
 | Class | Name | Definition | Emulation Requirement |
 |:---:|:---|:---|:---|
-| **Class 0** | **Unused** | Registers defined in MC68302 specification but never read or written in tested ASR-10 workloads. | Stub / unmapped. Emulation completely unneeded. |
-| **Class 1** | **Config-Only** | Registers written once or during mode changes, never polled or read back at runtime. | Shadow storage (`m_shadow`) sufficient. No active state machine required. |
-| **Class 2** | **Probe-Only** | Registers read once or a few times during boot/init probing; not polled in loops. | Constant or shadow readback sufficient. |
+| **Class 0** | **Unused** | Registers defined in MC68302 specification but never read or written in tested ASR-10 workloads. | Stub / unmapped. Emulation not required for covered workloads; status in untested modes remains unverified. |
+| **Class 1** | **Config-Only** | Registers written once or during mode changes, never polled or read back at runtime in tested paths. | Shadow storage (`m_shadow`) sufficient for covered paths. Active hardware side effects remain unmodeled. |
+| **Class 2** | **Probe-Only** | Registers read once or a few times during boot/init probing; not polled in loops. | Constant or shadow readback sufficient. Dummy 0 readback accepted by firmware does not imply full peripheral fidelity. |
 | **Class 3** | **Polled / Status** | Status/event registers read repeatedly in loops during operation. | Active status bits and event clearing semantics required. |
 | **Class 4** | **Active Data Path** | Parameter RAM, buffer descriptors, or streaming registers handling live data movement. | Must match data transfer protocol (handled via high-level injection or autonomous engine). |
 | **Class 5** | **Critical / Causal** | Discrepancy between model and hardware that causes crashes, corruption, wrong pitch, or test failures. | Immediate, verified hardware fix required. |
@@ -62,7 +62,7 @@ Measurements were collected using dynamic Lua taps covering boot, OS startup, in
 | `$080C` | `$FC680C` | **IDMA BCR** | Modeled | 0 | 21 | `$0201` | **Class 1/4** | Byte count (`$0201`, `$0E01`, `$2801`). Fully modeled. |
 | `$080E` | `$FC680E` | **IDMA CSR** | Modeled | 33 | 0 | `$00` | **Class 3** | Channel status: polled for completion. Returns 0 / W1C. |
 | `$0810` | `$FC6810` | **IDMA FCR** | Modeled | 0 | 21 | `$99` | **Class 1** | Function code register (`$99`). Stored. |
-| `$0812` | `$FC6812` | **GIMR** | Modeled | 0 | 1 (boot) | `$8040` | **Class 1** | Global interrupt mode. Vector base prefix `$40`/`$50`, normal mode. |
+| `$0812` | `$FC6812` | **GIMR** | Modeled | 0 | 1 (boot) | `$8040` | **Class 1** | Global interrupt mode. Vector base prefix `$40`/`$50`, normal mode. Stored in shadow; core interrupt routing is modeled. |
 | `$0814` | `$FC6814` | **IPR** | Modeled | 4 | 38 | `$0000` / `$FFFF` | **Class 3/4** | Interrupt pending register. Modeled, W1C, updates CPU IRQ lines. |
 | `$0816` | `$FC6816` | **IMR** | Modeled | 42 | 42 | `$E480` / `$EC80` | **Class 3/4** | Interrupt mask register. Masks PB9, SCC1/2, IDMA. Fully modeled. |
 | `$0818` | `$FC6818` | **ISR** | Modeled | 0 | 8 | `$FFFF` / `$0080` | **Class 1/4** | Interrupt in-service. Modeled, W1C priority arbitration. |
@@ -73,23 +73,23 @@ Measurements were collected using dynamic Lua taps covering boot, OS startup, in
 | `$0826` | `$FC6826` | **PBDDR** | Modeled | 0 | 2 | `$F097` | **Class 1** | Port B direction. PB3 = input. Readback implemented (Track A). |
 | `$0828` | `$FC6828` | **PBDAT** | Modeled | 18,850+ | 9,156+ | `$001B` / `$0007` | **Class 4** | Port B data latch. Heavily accessed I/O port (`pb_out_cb`). |
 | `$0830-$083E` | `$FC6830-$FC683E` | **BR0-3 / OR0-3** | Modeled | 0 | 8 (boot) | Various | **Class 1** | Chip select configuration. Decoded into base/size/enable. |
-| `$0840-$0848` | `$FC6840-$FC6848` | **Timer 1 (TMR/TRR/TCR/TCN/TER)** | Shadow storage | 0 | 0 | — | **Class 0** | Completely untouched by ASR-10 firmware. |
+| `$0840-$0848` | `$FC6840-$FC6848` | **Timer 1 (TMR/TRR/TCR/TCN/TER)** | Shadow storage | 0 | 0 | — | **Class 0** | Completely untouched by ASR-10 firmware in tested workloads. |
 | `$084A` | `$FC684A` | **WRR** (Watchdog) | Shadow storage | 0 | 1 (boot) | `$0000` | **Class 1** | Watchdog reference. Written with `$0000` at boot (disables watchdog). |
-| `$084C` | `$FC684C` | **WCN** (Watchdog) | Shadow storage | 0 | 0 | — | **Class 0** | Watchdog counter. Untouched. |
+| `$084C` | `$FC684C` | **WCN** (Watchdog) | Shadow storage | 0 | 0 | — | **Class 0** | Watchdog counter. Untouched in tested workloads. |
 | `$0850` | `$FC6850` | **TMR2** | Shadow storage | 0 | 1 (boot) | `$003B` | **Class 1** | Timer 2 mode register. Written during boot init. |
 | `$0852` | `$FC6852` | **TRR2** | Shadow storage | 0 | 1 (boot) | `$3F01` | **Class 1** | Timer 2 reference register. Written during boot init. |
-| `$0854` | `$FC6854` | **TCR2** | Shadow storage | 0 | 0 | — | **Class 0** | Timer 2 capture register. Untouched. |
-| `$0856` | `$FC6856` | **TCN2** | Shadow storage | 1 (boot) | 0 | `$0000` | **Class 2** | Timer 2 counter. Read once by V3.50 OS startup probe. |
-| `$0858` | `$FC6858` | **TER2** | Shadow storage | 0 | 0 | — | **Class 0** | Timer 2 event register. Untouched. |
+| `$0854` | `$FC6854` | **TCR2** | Shadow storage | 0 | 0 | — | **Class 0** | Timer 2 capture register. Untouched in tested workloads. |
+| `$0856` | `$FC6856` | **TCN2** | Shadow storage | 1 (boot) | 0 | `$0000` | **Class 2** | Timer 2 counter. Read once by V3.50 OS startup probe (returns shadow 0; counter does not advance). |
+| `$0858` | `$FC6858` | **TER2** | Shadow storage | 0 | 0 | — | **Class 0** | Timer 2 event register. Untouched in tested workloads. |
 | `$0860` | `$FC6860` | **FC6860 (CP Command)** | Modeled | 48 | 12 | `$2200` | **Class 3/4** | Communications Processor command latch & busy bit countdown. |
 | `$0880` | `$FC6880` | **SCON1** | Shadow storage | 0 | 0 | — | **Class 0** | SCC1 configuration register. Untouched. |
-| `$0882` | `$FC6882` | **SCM1** | Shadow storage | 0 | 4 | `$7000` | **Class 1** | SCC1 mode register. Stored in shadow. |
+| `$0882` | `$FC6882` | **SCM1** | Shadow storage | 0 | 4 | `$7000` | **Class 1** | SCC1 mode register. Stored in shadow; serial controller hardware unmodeled. |
 | `$0884` | `$FC6884` | **DSR1** | Shadow storage | 0 | 8 | `$7033` | **Class 1** | SCC1 data sync register. Stored in shadow. |
 | `$0886` | `$FC6886` | **SCCE1** | Modeled (W1C) | 0 | 0 (direct) | — | **Class 1/4** | SCC1 event register. W1C wired to `update_internal_irq()`. |
 | `$0888` | `$FC6888` | **SCCM1** | Modeled (Mask) | 0 | 4 | `$FFFF` | **Class 1/4** | SCC1 mask register. Wired to `update_internal_irq()`. |
 | `$088A` | `$FC688A` | **SCCS1** | Shadow storage | 0 | 4 | `$0505` | **Class 1** | SCC1 status register. Stored in shadow. |
 | `$0890` | `$FC6890` | **SCON2** | Shadow storage | 0 | 0 | — | **Class 0** | SCC2 configuration register. Untouched. |
-| `$0892` | `$FC6892` | **SCM2** | Shadow storage | 0 | 4 | `$7000` | **Class 1** | SCC2 mode register. Stored in shadow. |
+| `$0892` | `$FC6892` | **SCM2** | Shadow storage | 0 | 4 | `$7000` | **Class 1** | SCC2 mode register. Stored in shadow; serial controller hardware unmodeled. |
 | `$0894` | `$FC6894` | **DSR2** | Shadow storage | 0 | 8 | `$7033` | **Class 1** | SCC2 data sync register. Stored in shadow. |
 | `$0896` | `$FC6896` | **SCCE2** | Modeled (W1C) | 0 | 0 (direct) | — | **Class 1/4** | SCC2 event register. W1C wired to `update_internal_irq()`. |
 | `$0898` | `$FC6898` | **SCCM2** | Modeled (Mask) | 0 | 4 | `$FFFF` | **Class 1/4** | SCC2 mask register. Wired to `update_internal_irq()`. |
@@ -104,9 +104,9 @@ Measurements were collected using dynamic Lua taps covering boot, OS startup, in
 ## 4. Subsystem Detailed Analysis
 
 ### 4.1 Timer 1, Timer 2, and Watchdog Timer
-- **Timer 1 (`$FC6840-$FC6848`):** Unused (`[VERIFIED]`, Class 0). The ASR-10 derives its operational system ticks and MIDI timing from the external DUART (`mc68681` timer and counter modes), not from 68302 Timer 1. Zero accesses occur.
-- **Watchdog Timer (`$FC684A-$FC684C`):** At ROM bootstrap PC `$FFFB8E3E`, firmware writes `WRR <- $0000`. In the MC68302 manual, bit 0 of WRR is `EN` (Enable). Writing 0 disables the hardware watchdog counter. Because the watchdog is disabled at step 1 of boot, no watchdog timeout or counter polling ever occurs. Shadow storage (`m_shadow`) is completely sufficient.
-- **Timer 2 (`$FC6850-$FC6858`):** During boot, `TMR2` is configured with `$003B` and `TRR2` with `$3F01`. The OS reads `TCN2` exactly once during bootstrap probing, but never configures interrupts for Timer 2 (`IMR` bit 6 is permanently masked: `IMR = $E480`/`$EC80`, bit 6 is 0) and never polls `TCN2` in an active loop. Emulation of an active counting timer for Timer 2 is not causally required.
+- **Timer 1 (`$FC6840-$FC6848`):** Unused in tested workloads (`[VERIFIED]`, Class 0). The ASR-10 derives its operational system ticks and MIDI timing from the external DUART (`mc68681` timer and counter modes), not from 68302 Timer 1. Zero accesses occur during the tested paths.
+- **Watchdog Timer (`$FC684A-$FC684C`):** At ROM bootstrap PC `$FFFB8E3E`, firmware writes `WRR <- $0000`. In the MC68302 manual, bit 0 of WRR is `EN` (Enable). Writing 0 disables the hardware watchdog counter. Because the watchdog is disabled at step 1 of boot, no watchdog timeout or counter polling was observed. Shadow storage (`m_shadow`) is sufficient for tested paths.
+- **Timer 2 (`$FC6850-$FC6858`):** During boot, `TMR2` is configured with `$003B` and `TRR2` with `$3F01`. The OS reads `TCN2` exactly once during bootstrap probing (which returns shadow 0 without advancing), but never configures interrupts for Timer 2 (`IMR` bit 6 is permanently masked: `IMR = $E480`/`$EC80`, bit 6 is 0) and never polls `TCN2` in an active loop. Emulation of an active counting timer for Timer 2 is not causally required for tested workloads.
 
 ### 4.2 Serial Communication Controllers (SCC1, SCC2, SCC3)
 - **SCC3 (`$FC68A0-$FC68AA`):** Unused (`[VERIFIED]`, Class 0). The third serial channel is unpopulated on the ASR-10 digital board.
@@ -114,6 +114,7 @@ Measurements were collected using dynamic Lua taps covering boot, OS startup, in
   - Firmware initializes parameter RAM buffer descriptors at `$FC6400..$FC643E` and `$FC6500..$FC653E`.
   - When recording is triggered, firmware sets up IDMA to drain the samples into system RAM.
   - In the MAME emulation, audio recording is fed via IDMA transfers and memory injection (`stereo_round_trip.lua`). The communications processor does not run a microcode RISC protocol engine. Storing configuration in shadow RAM (`m_shadow`) while providing write-one-to-clear on `SCCE1/2` satisfies the entire driver and regression suite without regressions.
+  - Active hardware serial framing and autonomous DMA descriptor advancement remain unmodeled.
 
 ### 4.3 Parallel I/O Ports A and B
 - **Port A (`$FC681E-$FC6822`):** Modeled (`[VERIFIED]`). `PADAT` bit 4 controls the ES5510 ESP RUN/HALT line. Writes to `PADAT` invoke `m_pa_out_cb`, faithfully toggling ESP execution state during microcode upload.
@@ -123,6 +124,6 @@ Measurements were collected using dynamic Lua taps covering boot, OS startup, in
 
 ## 5. Disposition & Epistemic Boundaries
 
-1. **Model Sufficiency (`[VERIFIED]`):** The current combination of active functional models (`BR0-3/OR0-3`, `Port A`, `Port B`, `IDMA`, `Interrupt Controller`, `FC6860`) and shadow storage for configuration registers completely satisfies all tested ASR-10 firmware paths.
-2. **Exclusion of Unimplemented Regs from Audio Defect (`[VERIFIED]`):** None of the remaining shadow-only registers (`WRR`, `TMR2`, `TRR2`, `SIMODE`, `SCM1/2`, `DSR1/2`, `SCCM1/2`, `SCCS1/2`, parameter RAM) interact with sample playback, wavetable address translation, or ES5506 voice programming. They are ruled out as causes for wrong pitch, distortion, or audio degradation.
-3. **No Speculative Reimplementation:** Under the project rules (`AGENTS.md` Rule 1 & Rule 5), full modeling of the MC68302 CP RISC engine, transparent serial framing, or Timer 1/2 counting must NOT be implemented unless a concrete, breaking firmware dependency is proven.
+1. **Model Sufficiency for Covered Workloads (`[VERIFIED for tested paths]`):** The current combination of active functional models (`BR0-3/OR0-3`, `Port A`, `Port B`, `IDMA`, `Interrupt Controller`, `FC6860`) and shadow storage for configuration registers is sufficient for the tested workloads (ROM boot, floppy OS load, bank load, MIDI voice playback, panel interaction, and rate switching). This does NOT constitute general MC68302 architectural completeness, nor does it guarantee zero emulation risk for untested modes (e.g. live ADC sampling, external SCC synchronization).
+2. **Exclusion of Unimplemented Regs from Tested Audio Defect (`[VERIFIED]`):** None of the remaining shadow-only registers (`WRR`, `TMR2`, `TRR2`, `SIMODE`, `SCM1/2`, `DSR1/2`, `SCCM1/2`, `SCCS1/2`, parameter RAM) interact with sample playback, wavetable address translation, or ES5506 voice programming in tested workloads. They are ruled out as direct causes for wrong pitch, distortion, or audio degradation in the verified paths.
+3. **No Speculative Reimplementation:** Under the project rules (`AGENTS.md` Rule 1 & Rule 5), full modeling of the MC68302 CP RISC engine, transparent serial framing, or Timer 1/2 counting must NOT be implemented without a concrete, breaking firmware dependency.
