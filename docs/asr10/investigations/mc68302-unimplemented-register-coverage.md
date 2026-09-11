@@ -54,17 +54,17 @@ Measurements were collected using dynamic Lua taps covering boot, OS startup, in
 | `$0600-$065F` | `$FC6600-$FC665F` | **SCC3 Parameter RAM** | Shadow storage | 0 | 0 | — | **Class 0** | Unused. SCC3 is unconfigured. |
 | `$0660-$067F` | `$FC6660-$FC667F` | **SMC/SCP Parameter RAM**| Shadow storage | 0 | 0 | — | **Class 0** | Unused. |
 | `$0800` | `$FC6800` | IDMA Reserved | Stub | 0 | 0 | — | **Class 0** | Reserved in manual. |
-| `$0802` | `$FC6802` | **IDMA CMR** | Modeled | 0 | 76 | `$0002` / `$0D51` | **Class 1/4** | Channel mode: `$0002` (reset) and `$0D51` (start transfer). Fully modeled. |
+| `$0802` | `$FC6802` | **IDMA CMR** | Modeled | 0 | 76 | `$0002` / `$0D51` | **Class 1/4** | Channel mode: `$0002` (reset) and `$0D51` (start transfer). Modeled for covered transfers. |
 | `$0804` | `$FC6804` | **IDMA SAPR_HI** | Modeled | 0 | 21 | `$FFFC` | **Class 1/4** | Source pointer high word (`$FFFC5803`). Byte lanes preserved (Track B). |
 | `$0806` | `$FC6806` | **IDMA SAPR_LO** | Modeled | 0 | 21 | `$5803` | **Class 1/4** | Source pointer low word. Byte lanes preserved (Track B). |
 | `$0808` | `$FC6808` | **IDMA DAPR_HI** | Modeled | 0 | 21 | `$0000` | **Class 1/4** | Destination pointer high word. Byte lanes preserved (Track B). |
 | `$080A` | `$FC680A` | **IDMA DAPR_LO** | Modeled | 0 | 21 | `$0944` | **Class 1/4** | Destination pointer low word. Byte lanes preserved (Track B). |
-| `$080C` | `$FC680C` | **IDMA BCR** | Modeled | 0 | 21 | `$0201` | **Class 1/4** | Byte count (`$0201`, `$0E01`, `$2801`). Fully modeled. |
+| `$080C` | `$FC680C` | **IDMA BCR** | Modeled | 0 | 21 | `$0201` | **Class 1/4** | Byte count (`$0201`, `$0E01`, `$2801`). Modeled for covered transfers. |
 | `$080E` | `$FC680E` | **IDMA CSR** | Modeled | 33 | 0 | `$00` | **Class 3** | Channel status: polled for completion. Returns 0 / W1C. |
 | `$0810` | `$FC6810` | **IDMA FCR** | Modeled | 0 | 21 | `$99` | **Class 1** | Function code register (`$99`). Stored. |
 | `$0812` | `$FC6812` | **GIMR** | Modeled | 0 | 1 (boot) | `$8040` | **Class 1** | Global interrupt mode. Vector base prefix `$40`/`$50`, normal mode. Stored in shadow; core interrupt routing is modeled. |
 | `$0814` | `$FC6814` | **IPR** | Modeled | 4 | 38 | `$0000` / `$FFFF` | **Class 3/4** | Interrupt pending register. Modeled, W1C, updates CPU IRQ lines. |
-| `$0816` | `$FC6816` | **IMR** | Modeled | 42 | 42 | `$E480` / `$EC80` | **Class 3/4** | Interrupt mask register. Masks PB9, SCC1/2, IDMA. Fully modeled. |
+| `$0816` | `$FC6816` | **IMR** | Modeled | 42 | 42 | `$E480` / `$EC80` | **Class 3/4** | Interrupt mask register. Masks PB9, SCC1/2, IDMA. Modeled for active interrupt sources. |
 | `$0818` | `$FC6818` | **ISR** | Modeled | 0 | 8 | `$FFFF` / `$0080` | **Class 1/4** | Interrupt in-service. Modeled, W1C priority arbitration. |
 | `$081E` | `$FC681E` | **PACNT** | Modeled | 0 | 1 (boot) | `$E000` | **Class 1** | Port A control. PA13-15 dedicated IDMA pins (unused). |
 | `$0820` | `$FC6820` | **PADDR** | Modeled | 1 | 2 (boot) | `$FFFF` | **Class 1** | Port A direction. Read-modify-write clears bit 4 at boot. |
@@ -94,7 +94,7 @@ Measurements were collected using dynamic Lua taps covering boot, OS startup, in
 | `$0896` | `$FC6896` | **SCCE2** | Modeled (W1C) | 0 | 0 (direct) | — | **Class 1/4** | SCC2 event register. W1C wired to `update_internal_irq()`. |
 | `$0898` | `$FC6898` | **SCCM2** | Modeled (Mask) | 0 | 4 | `$FFFF` | **Class 1/4** | SCC2 mask register. Wired to `update_internal_irq()`. |
 | `$089A` | `$FC689A` | **SCCS2** | Shadow storage | 0 | 4 | `$0505` | **Class 1** | SCC2 status register. Stored in shadow. |
-| `$08A0-$08AA` | `$FC68A0-$FC68AA` | **SCC3 (SCON/SCM/DSR/SCCE/SCCM/SCCS)** | Shadow storage | 0 | 0 | — | **Class 0** | SCC3 is completely untouched across all firmware paths. |
+| `$08A0-$08AA` | `$FC68A0-$FC68AA` | **SCC3 (SCON/SCM/DSR/SCCE/SCCM/SCCS)** | Shadow storage | 0 | 0 | — | **Class 0** | SCC3 is untouched across all tested firmware paths (unpopulated on Digital Board). |
 | `$08B0` | `$FC68B0` | **SPMODE** | Shadow storage | 0 | 0 | — | **Class 0** | Serial peripheral mode. Untouched. |
 | `$08B2` | `$FC68B2` | **SIMASK** | Shadow storage | 0 | 0 | — | **Class 0** | Serial interface mask. Untouched. |
 | `$08B4` | `$FC68B4` | **SIMODE** | Shadow storage | 0 | 4 | `$4189` | **Class 1** | Serial interface mode. Stored in shadow. |

@@ -108,9 +108,17 @@ records the Bank 11 rejected candidates, and gives current review priorities.
     - **DOCUMENTATION FRONTIER REACHED — BOARD OWNERSHIP**: Physical IC attribution is not an active functional emulation blocker. MAME models the verified functional behavior completely and correctly.
   - **Primary records:** `investigations/cs1-voice-banking-and-sample-addressing.md` and `investigations/cs1-board-level-implementation-frontier.md`.
 
+## MC68302 SIB Hardening and Lowmem Alias Milestone (2026-09-11)
+
+- **[FIXED — LATENT MODEL DEFECT]** `fdd8f734bd1`: `mc68302: return programmed Port B control and direction state`. Corrects `PBCNT` (`$FC6824`) and `PBDDR` (`$FC6826`) readback latches, which previously leaked pin data (`read_pbdat()`). Firmware writes them during boot and does not read back; verified latent for current workloads.
+- **[FIXED — LATENT MODEL DEFECT]** `5c6a8993390`: `mc68302: preserve byte lanes on SAPR and DAPR writes`. Ensures byte-sized writes preserve unwritten halves of IDMA pointer registers instead of zeroing them. Firmware uses 32-bit `move.l` across all 21 IDMA operations; verified latent for current workloads.
+- **[FIXED — LATENT MODEL DEFECT]** `1d0970e3320`: `asr10: route system RAM alias writes through lowmem handler`. Routes mirror alias writes (`$200CE2-$E00CE2`) through `lowmem_w()` to guarantee side-effect symmetry with `$000CE2/$000CE3` effect audio rate policy. Firmware writes short absolute `$CE3.w` directly; verified latent for current workloads.
+- **[SUFFICIENT FOR COVERED WORKLOADS]** `4bd2330302c` / `353300e347a`: Comprehensive MC68302 SIB register inventory and classification (`mc68302-unimplemented-register-coverage.md`). Confirmed that across boot, OS load, instrument load, voice playback, panel navigation, and rate toggling, all unmodeled registers are unaccessed (Class 0) or configuration/probe only (Class 1/2) without unhandled Class 5 critical defects in covered paths.
+
 The current resume point is this document together with
 `investigations/cs1-voice-banking-and-sample-addressing.md`,
 `investigations/cs1-board-level-implementation-frontier.md`,
+`investigations/mc68302-unimplemented-register-coverage.md`,
 `investigations/save-state-audio-mvp.md`,
 `investigations/display-protocol-state-machine-v350.md`,
 `investigations/transport-ab-test-play-stop-continue.md` and
