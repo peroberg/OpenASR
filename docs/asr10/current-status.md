@@ -114,6 +114,14 @@ records the Bank 11 rejected candidates, and gives current review priorities.
 - **[FIXED — LATENT MODEL DEFECT]** `5c6a8993390`: `mc68302: preserve byte lanes on SAPR and DAPR writes`. Ensures byte-sized writes preserve unwritten halves of IDMA pointer registers instead of zeroing them. Firmware uses 32-bit `move.l` across all 21 IDMA operations; verified latent for current workloads.
 - **[FIXED — LATENT MODEL DEFECT]** `1d0970e3320`: `asr10: route system RAM alias writes through lowmem handler`. Routes mirror alias writes (`$200CE2-$E00CE2`) through `lowmem_w()` to guarantee side-effect symmetry with `$000CE2/$000CE3` effect audio rate policy. Firmware writes short absolute `$CE3.w` directly; verified latent for current workloads.
 - **[SUFFICIENT FOR COVERED WORKLOADS]** `4bd2330302c` / `353300e347a`: Comprehensive MC68302 SIB register inventory and classification (`mc68302-unimplemented-register-coverage.md`). Confirmed that across boot, OS load, instrument load, voice playback, panel navigation, and rate toggling, all unmodeled registers are unaccessed (Class 0) or configuration/probe only (Class 1/2) without unhandled Class 5 critical defects in covered paths.
+- **[VERIFIED MODEL STATUS]** Emulator memory topology and chip-select decode boundaries:
+  - `$000000-$0FFFFF`: lowmem backing (1 MiB).
+  - `$100000-$1FFFFF`: sample-RAM backing (1 MiB).
+  - `$200000-$F7FFFF`: aliases modulo 2 MiB across both backing regions.
+  - Not "CS0 RAM"; physical DRAM organization is not inferred from emulator backing stores.
+  - MC68302 CS0 decode: bootstrap/ROM mechanism, final `$F80000-$FBFFFF`.
+  - MC68302 CS1 decode: `$FF6000-$FF7FFF`; observed/modelled banking registers at `$FF7F00-$FF7FFF`.
+- **[OPEN — EVIDENCE NEEDED]** Asymmetric reset / clear: The review item questioning potential reset vs clear asymmetry has no identified historical commit or diff fixing such a defect; status remains unverified pending discriminating evidence.
 
 The current resume point is this document together with
 `investigations/cs1-voice-banking-and-sample-addressing.md`,
