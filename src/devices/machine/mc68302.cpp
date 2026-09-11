@@ -806,19 +806,19 @@ void mc68302_device::internal_w(offs_t offset, uint16_t data, uint16_t mem_mask)
 	}
 	case OFFSET_IDMA_SAPR_HI:
 		m_known_count++;
-		m_idma_sapr = (m_idma_sapr & 0x0000ffff) | (uint32_t(data & mem_mask) << 16);
+		m_idma_sapr = (m_idma_sapr & ~(uint32_t(mem_mask) << 16)) | (uint32_t(data & mem_mask) << 16);
 		return;
 	case OFFSET_IDMA_SAPR_LO:
 		m_known_count++;
-		m_idma_sapr = (m_idma_sapr & 0xffff0000) | uint32_t(data & mem_mask);
+		m_idma_sapr = (m_idma_sapr & ~uint32_t(mem_mask)) | uint32_t(data & mem_mask);
 		return;
 	case OFFSET_IDMA_DAPR_HI:
 		m_known_count++;
-		m_idma_dapr = (m_idma_dapr & 0x0000ffff) | (uint32_t(data & mem_mask) << 16);
+		m_idma_dapr = (m_idma_dapr & ~(uint32_t(mem_mask) << 16)) | (uint32_t(data & mem_mask) << 16);
 		return;
 	case OFFSET_IDMA_DAPR_LO:
 		m_known_count++;
-		m_idma_dapr = (m_idma_dapr & 0xffff0000) | uint32_t(data & mem_mask);
+		m_idma_dapr = (m_idma_dapr & ~uint32_t(mem_mask)) | uint32_t(data & mem_mask);
 		return;
 	case OFFSET_IDMA_BCR:
 		m_known_count++;
