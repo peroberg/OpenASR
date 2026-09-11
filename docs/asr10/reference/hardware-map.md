@@ -396,8 +396,9 @@ Super-GLU-adjacent completion/timer/status behavior in the current model:
 Storage completion routing remains separate from ES5701/Super-GLU audio glue.
 
 [DISPROVEN — specified ES5701 register/storage model] ES5701 SuperGLU contains zero
-internal registers or RAM, has no CS1 connection, and addresses only up to LA19.
-It does not and cannot store the per-voice sample banking table ($FF7F00-$FF7FFF).
+internal registers or RAM capable of storing the table, and its specified address outputs
+reach only up to LA19. Physical CS1 -> ES5701 board wiring remains [NOT ESTABLISHED / OPEN],
+but ES5701 itself cannot store the per-voice sample banking table ($FF7F00-$FF7FFF).
 Its role is restricted to audio host/memory bus translation, isolation and clock division.
 ```
 
@@ -470,14 +471,17 @@ function: per-voice sample banking table at $FF7F00-$FF7FFF (32 voices x 4 words
 Fönstret är 8 KB (`$FF6000-$FF7FFF`). Firmware använder de översta 256 byten
 (`$FF7F00-$FF7FFF`) för att konfigurera en 32-rösters översättningstabell där varje rösts
 4 MB ES5506-adressfönster dynamiskt pekas mot godtyckliga 1 MB DRAM-segment.
-Implementeringen i `asr10_boot.cpp` (commit `b7cd112199d`) löste den intermittenta
-Bank 11-playability-defekten.
+Implementeringen i `asr10_boot.cpp` (commit `b7cd112199d`) löste den reproducerade
+Bank 11-playability-defekten. Detta förklarar den reproducerade historieberoende
+BANK-load-avvikelsen och stämmer med vissa tidigare symptom, men bevisar inte
+retroaktivt att alla historiska ljudanomalier hade samma orsak.
 
-**Dokumentationsgräns:** ES5701 SuperGLU saknar register/RAM och är utesluten
-(`[DISPROVEN]`). Den fysiska krets/diskret logik som tar emot CS1 och genererar extern DTACK
-på det 4-lagers moderkortet är `[OPEN]` då Digital Board-schemat saknas i servicemanualerna
-(`DOCUMENTATION FRONTIER REACHED — BOARD OWNERSHIP`). Se
-`../investigations/cs1-board-level-implementation-frontier.md`.
+**Dokumentationsgräns:** ES5701 SuperGLU saknar register/RAM kapabelt att lagra tabellen
+(`[DISPROVEN — specified ES5701 register/storage model]`). Fysisk CS1 $\rightarrow$ ES5701-koppling
+är `[NOT ESTABLISHED / OPEN]`. Den fysiska krets som tar emot CS1 och rollen för
+PAL U5 / DTACK på det 4-lagers moderkortet är `[OPEN]` då Digital Board-schemat
+saknas i servicemanualerna (`DOCUMENTATION FRONTIER REACHED — BOARD OWNERSHIP`).
+Se `../investigations/cs1-board-level-implementation-frontier.md`.
 
 ### SCSI ligger i CS3, inte CS1 `[V]`
 

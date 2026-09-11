@@ -325,13 +325,13 @@ ASR-10 OS-firmware använder de översta 256 byten av CS1-fönstret (`$FF7F00-$F
    - Bit 18:0 ger sub-offset inom den megabyten.
    - Fysisk DRAM-adress: `phys_byte_address = ((megabyte << 20) | (sub_offset << 1)) % SYSTEM_RAM_BYTES`.
 
-Genom att implementera denna översättning eliminerades den intermittenta Bank 11-playability-defekten (där `BLUES DRUMS` i MB 7/Sample RAM Chunk 1 tidigare lästes ur Chunk 0 och gav tystnad/brus).
+Genom att implementera denna översättning eliminerades den reproducerade intermittenta Bank 11-playability-defekten (där `BLUES DRUMS` i MB 7/Sample RAM Chunk 1 tidigare lästes ur Chunk 0 och gav tystnad/brus). Detta förklarar den reproducerade historieberoende BANK-load-avvikelsen och stämmer med vissa tidigare symptom, men bevisar inte retroaktivt att alla historiska ljudanomalier hade samma orsak.
 
 ### Fysisk stycklista och uteslutning av ES5701
 
-* **ES5701 SuperGLU är utesluten [DISPROVEN — specified ES5701 register/storage model]:** Enligt kretsspecifikationen (`docs/ensoniq/ES5701.pdf`, Bob Yannes Rev. 2) saknar ES5701 interna register eller RAM, har inga CS1-ingångar och adresserar endast upp till LA19. Den kan inte lagra 256 byte röstkonfiguration.
-* **PAL U5 och diskret logik:** PAL U5 (`"ASR-10 V1.1"`) är en standard 20/24-pin PAL som inte kan lagra 256 byte RAM. Den fungerar som sub-avkodare och DTACK-generator.
-* **Röstsynkronisering:** ES5506 pin 45 ($BS0$) växlar med röstcykeln och fungerar som extern synkpuls för en röststegningsräknare som adresserar tabell-RAM:et synkront med OTTO:s rösttidsluckor.
+* **ES5701 SuperGLU kan inte lagra tabellen [DISPROVEN — specified ES5701 register/storage model]:** Enligt kretsspecifikationen (`docs/ensoniq/ES5701.pdf`, Bob Yannes Rev. 2) saknar ES5701 interna register eller RAM och dess specificerade adressutgångar når endast upp till LA19. Den kan inte lagra 256 byte röstkonfiguration. Fysisk kortkoppling mellan CS1 och ES5701 förblir `[NOT ESTABLISHED / OPEN]`. Dess roll som ljud- och minnesbussglue kvarstår `[VERIFIED]`.
+* **PAL U5 och diskret logik [INFERRED / OPEN]:** PAL U5 (`"ASR-10 V1.1"`) kan inte lagra 256 byte RAM och är en plausibel deltagare i kortets sub-avkodning (`PAL U5 tar emot CS1` `[INFERRED]`, `PAL U5 deltar i sub-avkodning` `[INFERRED]`). Dess exakta CS1-koppling och roll i DTACK-generering förblir overifierade (`PAL U5 genererar extern CS1 DTACK` `[OPEN]`) utan Digital Board-schemat eller PAL-ekvationer.
+* **Röstsynkronisering [INFERRED]:** ES5506-specifikationen visar att BS-utgångarna exponerar röstberoende tillstånd externt. Detta gör en extern röstföljningsmekanism till en plausibel implementation av den observerade per-röst-bankingen, men den specifika räknar- och tabellkopplingen är inte verifierad på kretskortsnivå.
 
 ### Dokumentationsgräns — Board Ownership [OPEN]
 
@@ -339,8 +339,8 @@ Den fysiska kretsen/kretsarna (t.ex. diskret SRAM/latch-array eller proprietär 
 
 **DOCUMENTATION FRONTIER REACHED — BOARD OWNERSHIP**: Den fysiska kretsidentifieringen är inte en aktiv emuleringsblockerare. MAME:s funktionella modellering i `asr10_boot.cpp` är komplett och verifierad mot firmware och empiriskt ljud.
 
-### MAME-modelleringsnot
-Hårdvarumässigt är MC68302 CS1 konfigurerat som endast skrivning (`RW=1, MRW=1`). I `asr10_boot.cpp` installeras `voice_bank_r` jämte `voice_bank_w`. Eftersom firmware aldrig läser ur `$FF7F00-$FF7FFF` är läsbarheten funktionellt inert i körtid, men reflekterar inte hårdvarans strikta skrivbegränsning.
+### MAME-modelleringsnot [VERIFIED — MODEL DIFFERENCE]
+Hårdvarumässigt är MC68302 CS1 konfigurerat som endast skrivning (`RW=1, MRW=1`). I `asr10_boot.cpp` installeras `voice_bank_r` jämte `voice_bank_w`. Firmware utför enbart skrivningar i de etablerade vägarna, och inget runtime-beroende av läsningar har observerats. Att tillåta läsning i MAME är en modellskillnad som inte reflekterar hårdvarans strikta skrivbegränsning.
 
 Primära utredningsdokument:
 - `../investigations/cs1-voice-banking-and-sample-addressing.md`

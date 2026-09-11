@@ -109,8 +109,9 @@ bus isolation, and clock division.
 
 Crucially:
 - **[DISPROVEN — specified ES5701 register/storage model]**: ES5701 contains zero internal
-  registers or RAM, has no CS1 pin, and outputs address lines only up to LA19. It **cannot**
-  store the 256-byte per-voice sample banking table (`$FF7F00-$FF7FFF`) configured by CS1.
+  registers or RAM capable of storing the table, and its specified address outputs reach
+  only up to LA19. While physical board wiring between CS1 and ES5701 is `[NOT ESTABLISHED / OPEN]`,
+  ES5701 cannot store the 256-byte per-voice sample banking table (`$FF7F00-$FF7FFF`).
 - ES5701 does not decode system addresses; custom PAL U5 and ancillary decoders handle
   board-level decode.
 - Any claim that CS1 or `$FF7F00` "routes into ES5701 registers" is disproven.

@@ -130,9 +130,9 @@ BAD:   boot -> File 11 (ATRK TUT BNK) -> BLUES DRUMS -> click / near-silent (Pea
 GOOD:  boot -> File 1 (TUTORIAL BNK) -> File 11 -> phantom audible audio (Peak 5065)
 ```
 
-has been completely resolved by dynamic CS1 per-voice sample banking (commit `b7cd112199d`):
+has been resolved for the tested workload by dynamic CS1 per-voice sample banking (commit `b7cd112199d`):
 - **Causal Defect:** The previous driver hardcoded ES5506 Bank 1 wavetable reads to DRAM Chunk 0 (`m_lowmem_shadow`). `BLUES DRUMS` resides in physical megabyte 7 (DRAM Chunk 1 / `m_sample_ram`). On fresh boot, Chunk 0 held uninitialized silence. After loading `TUTORIAL BNK`, Chunk 0 retained leftover PCM from `JM DRUMS`, playing phantom audio.
-- **Resolution:** Implementing dynamic per-voice translation from the `$FF7F00-$FF7FFF` table enables both paths to correctly read Chunk 1, producing authentic drum audio (Peak ~14550, RMS ~521, 99.89% waveform cross-correlation).
+- **Resolution:** Implementing dynamic per-voice translation from the `$FF7F00-$FF7FFF` table enables both paths to correctly read Chunk 1, producing authentic drum audio (Peak ~14550, RMS ~521, 99.89% waveform cross-correlation). The CS1 banking defect explains the reproduced history-dependent BANK-load failure and is consistent with some earlier symptoms; it does not retroactively prove that every historical audio anomaly had the same cause.
 - **Physical Boundary:** The physical IC(s) storing the table on the 4-layer Digital Board remain at the documentation frontier (`DOCUMENTATION FRONTIER REACHED — BOARD OWNERSHIP`).
 
 Primary records: `investigations/cs1-voice-banking-and-sample-addressing.md` and `investigations/cs1-board-level-implementation-frontier.md`.

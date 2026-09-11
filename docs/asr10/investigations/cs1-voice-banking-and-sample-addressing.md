@@ -145,7 +145,7 @@ In `src/mame/ensoniq/asr10_boot.cpp`:
 | **Non-Zero Samples (>100)**| 174 | **2748** | **2743** |
 
 - **Waveform Cross-Correlation (Path 1 vs Path 2):** **0.998892 (99.89% correlation)**.
-- History-dependent divergence is completely eliminated. Both paths produce identical, authentic drum audio.
+- History-dependent divergence is completely eliminated for the tested workload; both paths produce identical drum audio. The CS1 banking defect explains the reproduced history-dependent BANK-load failure and is consistent with some earlier symptoms, but does not retroactively prove that every historical audio anomaly had the same cause.
 
 ### B. 8-Iteration Repeated Bank-Load Stress Test (`bank11_reproducer.lua`)
 
@@ -172,6 +172,6 @@ All 21 regression checks pass cleanly:
 
 ## 7. Board-Level Physical Implementation Frontier & MAME Modeling Notes
 
-1. **Physical Attribution Frontier:** While the functional contract of CS1 per-voice banking is verified by ROM firmware and empirical audio output, the physical IC(s) on the 4-layer ASR-10 Digital Board that store the table, track active voice execution, and generate external DTACK remain strictly `[OPEN]`. Digital Board schematics were omitted from service documentation. See `cs1-board-level-implementation-frontier.md` for the dedicated board-level audit.
-2. **ES5701 (SuperGLU) Exclusion:** The ES5701 silicon specification (Bob Yannes Rev. 2) confirms zero internal registers/RAM, no CS1 connectivity, and address outputs limited to LA19. ES5701 is definitively `[DISPROVEN]` as the storage receiver for the per-voice banking table.
-3. **MAME Write-Only Modeling Note:** MC68302 CS1 hardware is configured write-only (`BR1=$1FEF`, `OR1=$FFFE`, `RW=1, MRW=1`). In `asr10_boot.cpp`, `voice_bank_r` is installed alongside `voice_bank_w`. Firmware never reads from this window, so read availability is runtime-inert, but does not reflect hardware write-only behavior.
+1. **Physical Attribution Frontier:** While the functional contract of CS1 per-voice banking is verified by ROM firmware and empirical audio output, the physical IC(s) on the 4-layer ASR-10 Digital Board that store the table, the inferred voice-tracking mechanism, and the external DTACK source remain strictly `[OPEN]`. Digital Board schematics were omitted from service documentation. See `cs1-board-level-implementation-frontier.md` for the dedicated board-level audit.
+2. **ES5701 (SuperGLU) Boundary:** The ES5701 silicon specification (Bob Yannes Rev. 2) confirms zero internal registers/RAM and address outputs limited to LA19. While physical CS1 $\rightarrow$ ES5701 board wiring remains `[NOT ESTABLISHED / OPEN]`, ES5701 is definitively `[DISPROVEN — specified component storage model]` as the storage receiver for the per-voice banking table.
+3. **MAME Write-Only Modeling Note [VERIFIED — MODEL DIFFERENCE]:** MC68302 CS1 hardware is configured write-only (`BR1=$1FEF`, `OR1=$FFFE`, `RW=1, MRW=1`). In `asr10_boot.cpp`, `voice_bank_r` is installed alongside `voice_bank_w`. Firmware performs writes only in the established paths, and no firmware read dependence has been observed in the established paths. Permitting reads in MAME is a model difference that does not reflect hardware write-only behavior.

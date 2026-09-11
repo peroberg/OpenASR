@@ -126,9 +126,9 @@ inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `HANDOFF.md`, `current-status.md` och `reference/` som
 aktuell sanning. Senaste tillägget är `cs1-board-level-implementation-frontier.md` (2026-09-11):
 den dokumenterar styckliste- och hårdvarugränsen för MC68302 CS1 och per-röst-banking,
-utesluter ES5701 som register/RAM-mottagare, analyserar ES5506 pin 45 ($BS0$) som röstsynk,
-fastställer att ASR-10 Digital Board-schema saknas i servicemanualer och deklarerar
-DOCUMENTATION FRONTIER REACHED — BOARD OWNERSHIP. Föregående tillägg är
+utesluter ES5701 som register/RAM-mottagare, analyserar ES5506 BS-tillstånd som plausibel
+extern röstsynk [INFERRED], fastställer att ASR-10 Digital Board-schema saknas i
+servicemanualer och deklarerar DOCUMENTATION FRONTIER REACHED — BOARD OWNERSHIP. Föregående tillägg är
 `cs1-voice-banking-and-sample-addressing.md` (2026-09-11): den dokumenterar upptäckten
 och implementationen av MC68302 CS1 voice banking (`$FF7F00-$FF7FFF`), dynamisk ES5506
 wavetable-översättning, eliminering av den intermittenta playability-defekten (BLUES DRUMS

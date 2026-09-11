@@ -103,8 +103,9 @@ the verified source of FDC/SCSI IRQ routing. Storage IRQ routing remains separat
 and open.
 
 [DISPROVEN — specified ES5701 register/storage model] ES5701 contains zero internal
-registers or RAM, has no CS1 connection, and outputs address lines only up to LA19.
-It does not and cannot store the per-voice sample banking table ($FF7F00-$FF7FFF).
+registers or RAM capable of storing the table, and its specified address outputs reach
+only up to LA19. Physical board wiring between CS1 and ES5701 is [NOT ESTABLISHED / OPEN],
+but ES5701 cannot store the per-voice sample banking table ($FF7F00-$FF7FFF).
 
 ## ES5506 / OTTO
 
