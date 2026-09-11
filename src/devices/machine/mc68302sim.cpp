@@ -76,7 +76,7 @@ uint16_t mc68302_device::mc68302_sim::read_pbdat(uint16_t mem_mask) const
 	// real board wiring, not 68302-internal state -- and defaults to 0
 	// (undriven) until the driver says otherwise. A dedicated-function
 	// pin this device doesn't implement also reads 0.
-	const uint16_t gpio_mask = uint16_t(~m_pbcnt) | 0x0f00; // PB11-PB8 always GPIO
+	const uint16_t gpio_mask = (uint16_t(~m_pbcnt) & 0x00ff) | 0x0f00; // PB11-PB8 always GPIO
 	const uint16_t output_bits = m_pbddr & gpio_mask;
 	const uint16_t input_bits = gpio_mask & ~m_pbddr;
 	return ((m_pbdat & output_bits) | (m_pb_external_input & input_bits)) & mem_mask;

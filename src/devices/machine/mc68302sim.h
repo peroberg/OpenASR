@@ -82,6 +82,8 @@ public:
 	uint16_t read_pbdat(uint16_t mem_mask) const;
 	void write_pbdat(uint16_t data, uint16_t mem_mask);
 	uint16_t pbdat_latch() const { return m_pbdat; }
+	uint16_t pbcnt_latch() const { return m_pbcnt & 0x00ff; }
+	uint16_t pbddr_latch() const { return m_pbddr & 0x0fff; }
 
 	// External state driven onto a Port B pin from outside the chip --
 	// board wiring, not 68302-internal logic (docs/mc68302/pin-function-map.md:

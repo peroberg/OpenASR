@@ -601,12 +601,10 @@ uint16_t mc68302_device::internal_r(offs_t offset, uint16_t mem_mask)
 		return m_sim->read_padat(mem_mask);
 	case OFFSET_PBCNT:
 		m_known_count++;
-		// FIXME: m_sim stores PBCNT/PBDDR, but readback is not implemented;
-		// do not treat these reads as verified register semantics yet.
-		return 0; // write-only in this step's model; PBCNT has no documented read-back distinct from PBDDR/PBDAT
+		return m_sim->pbcnt_latch() & mem_mask;
 	case OFFSET_PBDDR:
 		m_known_count++;
-		return 0;
+		return m_sim->pbddr_latch() & mem_mask;
 	case OFFSET_PBDAT:
 		m_known_count++;
 		return m_sim->read_pbdat(mem_mask);
