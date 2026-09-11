@@ -94,7 +94,7 @@ Measurements were collected using dynamic Lua taps covering boot, OS startup, in
 | `$0896` | `$FC6896` | **SCCE2** | Modeled (W1C) | 0 | 0 (direct) | — | **Class 1/4** | SCC2 event register. W1C wired to `update_internal_irq()`. |
 | `$0898` | `$FC6898` | **SCCM2** | Modeled (Mask) | 0 | 4 | `$FFFF` | **Class 1/4** | SCC2 mask register. Wired to `update_internal_irq()`. |
 | `$089A` | `$FC689A` | **SCCS2** | Shadow storage | 0 | 4 | `$0505` | **Class 1** | SCC2 status register. Stored in shadow. |
-| `$08A0-$08AA` | `$FC68A0-$FC68AA` | **SCC3 (SCON/SCM/DSR/SCCE/SCCM/SCCS)** | Shadow storage | 0 | 0 | — | **Class 0** | SCC3 is untouched across all tested firmware paths (unpopulated on Digital Board). |
+| `$08A0-$08AA` | `$FC68A0-$FC68AA` | **SCC3 (SCON/SCM/DSR/SCCE/SCCM/SCCS)** | Shadow storage | 0 | 0 | — | **Class 0** | SCC3 is untouched across all tested firmware paths. |
 | `$08B0` | `$FC68B0` | **SPMODE** | Shadow storage | 0 | 0 | — | **Class 0** | Serial peripheral mode. Untouched. |
 | `$08B2` | `$FC68B2` | **SIMASK** | Shadow storage | 0 | 0 | — | **Class 0** | Serial interface mask. Untouched. |
 | `$08B4` | `$FC68B4` | **SIMODE** | Shadow storage | 0 | 4 | `$4189` | **Class 1** | Serial interface mode. Stored in shadow. |
@@ -109,7 +109,7 @@ Measurements were collected using dynamic Lua taps covering boot, OS startup, in
 - **Timer 2 (`$FC6850-$FC6858`):** During boot, `TMR2` is configured with `$003B` and `TRR2` with `$3F01`. The OS reads `TCN2` exactly once during bootstrap probing (which returns shadow 0 without advancing), but never configures interrupts for Timer 2 (`IMR` bit 6 is permanently masked: `IMR = $E480`/`$EC80`, bit 6 is 0) and never polls `TCN2` in an active loop. Emulation of an active counting timer for Timer 2 is not causally required for tested workloads.
 
 ### 4.2 Serial Communication Controllers (SCC1, SCC2, SCC3)
-- **SCC3 (`$FC68A0-$FC68AA`):** Unused (`[VERIFIED]`, Class 0). The third serial channel is unpopulated on the ASR-10 digital board.
+- **SCC3 (`$FC68A0-$FC68AA`):** Untouched in tested workloads (`[VERIFIED]`, Class 0). Firmware does not configure or access the third serial channel in covered paths; board-level physical connection is unverified.
 - **SCC1 & SCC2 (`$FC6880-$FC689A`):** Used strictly as high-speed serial receivers for audio ADC sample streams (LEFT on SCC1, RIGHT on SCC2).
   - Firmware initializes parameter RAM buffer descriptors at `$FC6400..$FC643E` and `$FC6500..$FC653E`.
   - When recording is triggered, firmware sets up IDMA to drain the samples into system RAM.

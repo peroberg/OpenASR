@@ -105,7 +105,7 @@ records the Bank 11 rejected candidates, and gives current review priorities.
   - **Board-Level Physical Implementation Frontier:**
     - **[DISPROVEN — specified ES5701 register/storage model]**: ES5701 SuperGLU contains zero internal registers or RAM capable of storing the table, and its specified address outputs reach only up to LA19; while physical CS1 $\rightarrow$ ES5701 board wiring remains `[NOT ESTABLISHED / OPEN]`, ES5701 cannot store the per-voice banking table.
     - **[OPEN — physical board receiver]**: The physical IC(s) receiving CS1 writes on the 4-layer Digital Board, the inferred voice-tracking mechanism `[INFERRED]`, and the source of external DTACK `[OPEN]` remain open because the Digital Board schematic is absent from service documentation.
-    - **DOCUMENTATION FRONTIER REACHED — BOARD OWNERSHIP**: Physical IC attribution is not an active functional emulation blocker. MAME models the verified functional behavior completely and correctly.
+    - **DOCUMENTATION FRONTIER REACHED — BOARD OWNERSHIP**: Physical IC attribution is not an active functional emulation blocker for tested workloads. The current functional mapping is sufficient for the verified CS1 bank-load and playback paths.
   - **Primary records:** `investigations/cs1-voice-banking-and-sample-addressing.md` and `investigations/cs1-board-level-implementation-frontier.md`.
 
 ## MC68302 SIB Hardening and Lowmem Alias Milestone (2026-09-11)
