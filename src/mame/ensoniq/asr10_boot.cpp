@@ -698,7 +698,7 @@ void asr10_boot_state::system_ram_alias_w(offs_t offset, u16 data, u16 mem_mask)
 	const u32 address = 0x00200000 + (offset << 1);
 	const u32 wrapped = address % SYSTEM_RAM_BYTES;
 	if (wrapped < LOWMEM_WORDS * 2)
-		COMBINE_DATA(&m_lowmem_shadow[wrapped >> 1]);
+		lowmem_w(wrapped >> 1, data, mem_mask);
 	else
 		COMBINE_DATA(&m_sample_ram[(wrapped - LOWMEM_WORDS * 2) >> 1]);
 }
