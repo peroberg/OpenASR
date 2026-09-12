@@ -19,7 +19,7 @@ The project aims to achieve cycle-accurate, hardware-faithful emulation of the A
   - Persistent read/write operations and file system mounting
   - SCSI CD-ROM browsing and bank loading (`-cdrom`, SCSI ID 4, supporting authentic Ensoniq CDR-series libraries)
   - Simultaneous multi-device configurations (HDD + CD-ROM)
-- **Memory & System Architecture**: 2 MB – 16 MB sample RAM aliasing, MC68302 SIM (BAR/SCR, chip selects, Port A GPIO, Port B GPIO, interrupt controller with authentic IACK autovectored handling).
+- **Memory & System Architecture**: 16 MiB distinct firmware-visible sample-memory backing, MC68302 SIM (BAR/SCR, chip selects, Port A GPIO, Port B GPIO, interrupt controller with authentic IACK autovectored handling). This is a functional model, not a claim about physical DRAM topology.
 - **Sound Synthesis (ES5506 / OTTO)**:
   - 6-channel output with authentic bus routing (`BUS1/2/3` to ESP serial ports `SER0/2/3`)
   - Specification-correct clock domains: Mode 0 ($Y_2/2 = 15.238090\text{ MHz} \to F_s = 29,761.895\text{ Hz}$) and Mode 1 ($Y_3/2 = 16.934400\text{ MHz} \to F_s = 44,100.000\text{ Hz}$) matching authentic firmware reference `$0D66` traversal math 1:1.

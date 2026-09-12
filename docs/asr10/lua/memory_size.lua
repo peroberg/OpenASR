@@ -1,19 +1,11 @@
--- 10th regression test: locks in that firmware's own memory-size belief
--- (ROM $F8A166-$F8A244's four-address alias probe) matches the machine's
--- actually-configured RAM size, not the previous always-maximum result.
--- docs/asr10/investigations/memory-size-belief-analysis.md: the four
--- probe addresses used to be modeled as isolated, never-aliasing shadow
--- registers, so ROM always concluded a fully-expanded ~15.5 MB machine
--- regardless of what mem_map actually backed. asr10_boot_state's unified
--- system_ram_alias_r/w now wraps the whole $200000-$EFFFFF window (not
--- just the four probe bytes -- ROM's own allocator base for the 2 MB
--- branch is $600000, not $000000, so the wrap has to be wide enough to
--- fold that back into the same backing store) against a hardcoded 2 MB
--- (SYSTEM_RAM_BYTES), matching the stock, out-of-the-box ASR-10.
+-- Locks in that firmware's own memory-size belief (ROM $F8A166-$F8A244's
+-- four-address alias probe) matches the distinct 16 MiB functional backing.
+-- $008000/$408000/$808000/$C08000 must not collapse through the former
+-- modulo-$200000 policy.  The ROM must therefore choose its $000000/$F80000
+-- configuration without any patched firmware state.
 --
--- Without this test, a broken priority order, a wrong SYSTEM_RAM_BYTES
--- value, or a narrowed wraparound window could silently regress the whole
--- category fix back to "always reports maximum" without any other test
+-- Without this test, a reintroduced low-address alias could silently turn
+-- the model back into the old 2 MiB configuration without any other test
 -- going red.
 
 local reg = dofile("docs/asr10/lua/lib/asr10_regression.lua")
@@ -25,18 +17,16 @@ local taps = {}
 
 local function pc() return pc_state and (pc_state.value & 0x00ffffff) or 0xffffffff end
 
--- ROM's own branch table (memory-size-belief-analysis.md, cross-checked
--- against the live disassembly of $F8A166-$F8A244): D4=$3333 alone
--- selects base=$600000, size=$200000 -- the 2 MB stock-machine branch,
--- matching SYSTEM_RAM_BYTES. D4 is a longword read of $008000, which
--- only reads $3333 if all four probe addresses now alias together.
-local EXPECTED_SIZE = 0x00200000
-local EXPECTED_BASE = 0x00600000
+-- ROM's branch table (memory-size-belief-analysis.md, cross-checked against
+-- $F8A166-$F8A244): independent $008000/$408000/$808000/$C08000 storage
+-- yields D4=0 and D5=$2222, selecting base=$000000, size=$F80000.
+local EXPECTED_SIZE = 0x00f80000
+local EXPECTED_BASE = 0x00000000
 
 -- Persisted references (SS8.6). Reassembles the first 32-bit value
 -- written to each decision cell from its two 16-bit tap halves -- later
 -- writes are the allocator's own subsequent reservations
--- ($C4E += $10000, $C62 -= $18000), not the raw decision, so only the
+-- ($C4E/C62 are subsequently adjusted for reservations), not the raw decision, so only the
 -- first complete (hi, lo) pair is kept.
 local size_hi, size_lo, size_first = nil, nil, nil
 local base_hi, base_lo, base_first = nil, nil, nil
@@ -91,10 +81,9 @@ if not size_first or not base_first then
   return
 end
 
--- The defining, load-bearing check: ROM stores base=$600000/size=$200000
--- only when D4 (the longword read back from $008000) equals $3333 -- the
--- signature that only occurs when all four probe addresses genuinely
--- alias together. Checking the stored decision is more robust than
+-- The defining check: the ROM stores base=$000000/size=$F80000 only when
+-- its independent probe reads select the expanded-memory branch. Checking
+-- the stored decision is more robust than
 -- re-reading $008000 later: that address is legitimately reused as
 -- ordinary low RAM within milliseconds (measured: 60 reads/22 writes
 -- over a full run in memory-size-belief-analysis.md), so its content long

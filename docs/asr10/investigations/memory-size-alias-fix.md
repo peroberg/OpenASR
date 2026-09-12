@@ -1,5 +1,10 @@
 # Modeling the memory size: giving the alias probe something to measure
 
+> **Historical 2 MiB milestone.** The model described below was superseded on
+> 2026-09-12 by the distinct 16 MiB production backing. Current canonical
+> status is `docs/asr10/current-status.md`; this file remains provenance for
+> the earlier stock-configuration alias implementation.
+
 Date: 2026-08-23 (fourth follow-up the same day)
 Machine: `asr10booth`, V3.50 boot run
 Scope: implement the fix for the category confirmed in

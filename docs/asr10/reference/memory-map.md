@@ -323,7 +323,7 @@ ASR-10 OS-firmware använder de översta 256 byten av CS1-fönstret (`$FF7F00-$F
    - ES5506 har en 21-bitars ordadressbuss ($A20:A0$, 4 MB fönster).
    - Bit 20:19 väljer vilket av de 4 megabyte-orden i röstens tabellpost som adresseras.
    - Bit 18:0 ger sub-offset inom den megabyten.
-   - Fysisk DRAM-adress: `phys_byte_address = ((megabyte << 20) | (sub_offset << 1)) % SYSTEM_RAM_BYTES`.
+   - Funktionell backing-adress: `phys_byte_address = (megabyte << 20) | (sub_offset << 1)`, upplöst i den gemensamma 16 MiB-emulatorbackingen. Detta är inte en fysisk DRAM-topologislutsats.
 
 Genom att implementera denna översättning eliminerades den reproducerade intermittenta Bank 11-playability-defekten (där `BLUES DRUMS` i MB 7/Sample RAM Chunk 1 tidigare lästes ur Chunk 0 och gav tystnad/brus). Detta förklarar den reproducerade historieberoende BANK-load-avvikelsen och stämmer med vissa tidigare symptom, men bevisar inte retroaktivt att alla historiska ljudanomalier hade samma orsak.
 

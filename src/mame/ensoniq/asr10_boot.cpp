@@ -88,7 +88,6 @@ public:
 		, m_es5510_host(*this, "es5510_host")
 		, m_pump(*this, "pump")
 		, m_scsi(*this, "wd33c93a")
-		, m_sample_ram(*this, ":asr10_sample_ram")
 	{
 	}
 
@@ -98,17 +97,12 @@ private:
 	void es5506_wavetable_map(address_map &map) ATTR_COLD;
 	static constexpr u32 ROM_MASK = 0x0003ffff;
 	static constexpr u32 LOWMEM_WORDS = 0x00100000 / 2;
-	// docs/asr10/investigations/memory-size-belief-analysis.md +
-	// base-relocation follow-up: ROM's own alias probe ($F8A166-$F8A244,
-	// disassembled) computes its allocator base as reported_base+$10000.
-	// For the 2 MB branch reported_base is $600000, not $000000 -- so the
-	// wraparound below must cover the *whole* $200000-$EFFFFF window, not
-	// just the four probe bytes, or firmware's own subsequent allocator
-	// use of $610000+ lands on nothing. $600000 mod SYSTEM_RAM_BYTES == 0
-	// for a power-of-two size, so a uniform wrap folds it back into the
-	// same already-backed image. Stage A hardcodes the stock 2 MB size;
-	// Stage B replaces this with the configured ram_device size.
-	static constexpr u32 SYSTEM_RAM_BYTES = 0x00200000;
+	// Verified functional model: V3.50's unmodified alias probe
+	// ($F8A166-$F8A244) detects this distinct 16 MiB backing as its
+	// $000000/$F80000 configuration.  This models firmware-visible address
+	// behavior only; it does not claim a physical ASR-10 DRAM topology.
+	static constexpr u32 SYSTEM_RAM_BYTES = 0x01000000;
+	static constexpr u32 SYSTEM_RAM_WORDS = SYSTEM_RAM_BYTES / 2;
 	// The verified effect operating-mode commit selects the two spec-consistent
 	// ES5506 input clock domains:
 	// Mode 0: Y2 / 2 = 30.476180 MHz / 2 = 15.238090 MHz -> Fs = 15.238090 / (16 * 32) = 29,761.895 Hz
@@ -130,17 +124,13 @@ private:
 	optional_device<es5510_device> m_es5510_host;
 	optional_device<esq_5505_5510_pump_device> m_pump;
 	optional_device<wd33c93a_device> m_scsi;
-	// Same backing store as mem_map's own $100000-$1FFFFF (".share()"),
-	// bound here so system_ram_alias_r/w can dispatch into it directly.
-	required_shared_ptr<u16> m_sample_ram;
-
 	emu_timer *m_lrclk_timer = nullptr;
 	bool m_lrclk_level = false;
 	emu_timer *m_idma_tc_timer = nullptr;
 	int m_fdc_irq = 0;
 	int m_scsi_irq = 0;
 
-	std::unique_ptr<u16[]> m_lowmem_shadow;
+	std::unique_ptr<u16[]> m_system_ram;
 	// Raw, right-justified 10-bit board sources for the ES5506 PAR callback.
 	// Source selection is PBDAT PB2-PB0, not DUART OPR; see
 	// docs/asr10/investigations/analog-selector-control-map-v350.md.
@@ -167,8 +157,12 @@ private:
 	void effect_audio_rate_postload();
 	void es5506_frame_rate_changed(u32 rate);
 	void mc68302_pa_w(u16 data);
-	u16 system_ram_alias_r(offs_t offset, u16 mem_mask = ~0);
-	void system_ram_alias_w(offs_t offset, u16 data, u16 mem_mask = ~0);
+	u16 system_memory_r(u32 address, u16 mem_mask = ~0);
+	void system_memory_w(u32 address, u16 data, u16 mem_mask = ~0);
+	u16 sample_memory_r(offs_t offset, u16 mem_mask = ~0);
+	void sample_memory_w(offs_t offset, u16 data, u16 mem_mask = ~0);
+	u16 expanded_memory_r(offs_t offset, u16 mem_mask = ~0);
+	void expanded_memory_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 	u16 high_alias_r(offs_t offset, u16 mem_mask = ~0);
 	void high_alias_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 	u16 upd72069_fdc_r(offs_t offset, u16 mem_mask = ~0);
@@ -227,9 +221,9 @@ void asr10_boot_state::machine_start()
 {
 	m_lrclk_timer = timer_alloc(FUNC(asr10_boot_state::lrclk_toggle), this);
 	m_idma_tc_timer = timer_alloc(FUNC(asr10_boot_state::idma_tc_deliver), this);
-	m_lowmem_shadow = make_unique_clear<u16[]>(LOWMEM_WORDS);
+	m_system_ram = make_unique_clear<u16[]>(SYSTEM_RAM_WORDS);
 
-	save_pointer(NAME(m_lowmem_shadow), LOWMEM_WORDS);
+	save_pointer(NAME(m_system_ram), SYSTEM_RAM_WORDS);
 	save_item(NAME(m_lrclk_level));
 	save_item(NAME(m_analog_values));
 	save_item(NAME(m_effect_audio_mode));
@@ -268,7 +262,7 @@ void asr10_boot_state::machine_reset()
 	// separately measured the divider source.
 	m_lrclk_level = false;
 	m_lrclk_timer->adjust(attotime::from_hz(44100), 0, attotime::from_hz(44100));
-	std::fill_n(m_lowmem_shadow.get(), LOWMEM_WORDS, 0);
+	std::fill_n(m_system_ram.get(), LOWMEM_WORDS, 0);
 
 	if (m_es5510_host)
 		m_es5510_host->set_HALT(true);
@@ -282,15 +276,9 @@ void asr10_boot_state::mem_map(address_map &map)
 	// the boot-time remap/low-memory behavior used by the ROM.
 	map(0x000000, 0x0fffff).rw(FUNC(asr10_boot_state::low_rom_or_lowmem_r), FUNC(asr10_boot_state::lowmem_w));
 
-	// ROM's own memory-size probe (docs/asr10/investigations/
-	// memory-size-belief-analysis.md, ROM $F8A166-$F8A244) reads
-	// $008000/$408000/$808000/$C08000 to detect real address-line
-	// aliasing. Its own subsequent allocator math ($C4E.l = reported_base
-	// + $10000) can also land anywhere up to $F7FFFF depending on which
-	// branch it takes (reported_base is $600000 for the 2 MB branch, not
-	// $000000) -- so the whole $200000-$F7FFFF window, not just the four
-	// probe bytes, must show the same wraparound. Folds into the same
-	// backing as $000000-$1FFFFF above; see system_ram_alias_r/w.
+	// V3.50's own memory-size probe (ROM $F8A166-$F8A244) reads
+	// $008000/$408000/$808000/$C08000 to detect address aliasing.  These
+	// windows are deliberately distinct in the 16 MiB functional model.
 	//
 	// Bugfix, docs/asr10/investigations/stereo-round-trip-verification.md:
 	// this line originally read $200000-$EFFFFF, one byte short of the
@@ -300,7 +288,7 @@ void asr10_boot_state::mem_map(address_map &map)
 	// the gap silently discarded both channels' recorded bytes -- caught
 	// only once a stereo round-trip test actually compared byte content,
 	// since no existing regression test read back what it recorded.
-	map(0x200000, 0xf7ffff).rw(FUNC(asr10_boot_state::system_ram_alias_r), FUNC(asr10_boot_state::system_ram_alias_w));
+	map(0x200000, 0xf7ffff).rw(FUNC(asr10_boot_state::expanded_memory_r), FUNC(asr10_boot_state::expanded_memory_w));
 
 	// Reference-based candidate windows that are not device implementations
 	// yet stay passive unless a real device is mapped below.
@@ -311,12 +299,8 @@ void asr10_boot_state::mem_map(address_map &map)
 	// for), then zero for the rest of the run; voice 0's own END/ACCUM
 	// (word address $20000, i.e. bank 0's own $000000-$1FFFFF space)
 	// converts to CPU byte address $140000 -- inside this exact range.
-	// .share() here is the narrow, single-purpose exception to "no
-	// mem_map change before E2 is settled": it adds and removes no
-	// decoding, only names this existing allocation so
-	// es5506_wavetable_map's own bank-0 window can reference the same
-	// backing store instead of its own separate, disconnected one.
-	map(0x100000, 0x1fffff).ram().share(":asr10_sample_ram"); // sample RAM candidate, directly tested by the boot ROM at 0x100000 -- shared with ES5506 bank 0, see es5506_wavetable_map
+	// This CPU window and the ES5506 callback both use m_system_ram.
+	map(0x100000, 0x1fffff).rw(FUNC(asr10_boot_state::sample_memory_r), FUNC(asr10_boot_state::sample_memory_w));
 
 	map(0xf80000, 0xfbffff).rw(FUNC(asr10_boot_state::high_alias_r), FUNC(asr10_boot_state::high_alias_w));
 	{
@@ -438,8 +422,8 @@ void asr10_boot_state::voice_bank_w(offs_t offset, u16 data, u16 mem_mask)
 
 // In ES5506, the 21-bit word address has bits 20:19 selecting which of four 1 MB
 // windows within the 4 MB space is addressed, and bits 18:0 providing the 1 MB
-// sub-offset (512K words). Dynamic voice banking translates this into the shared
-// 2 MB DRAM system RAM (m_lowmem_shadow for chunk 0, m_sample_ram for chunk 1).
+// sub-offset (512K words). Dynamic voice banking translates this into the
+// canonical 16 MiB firmware-visible backing store.
 u16 asr10_boot_state::es5506_wavetable_r(offs_t offset)
 {
 	const u32 voice = m_es5506_host ? m_es5506_host->get_voice_index() : 0;
@@ -447,10 +431,8 @@ u16 asr10_boot_state::es5506_wavetable_r(offs_t offset)
 	const u32 bank_idx = (offset >> 19) & 3;
 	const u32 sub_offset = offset & 0x7ffff;
 	const u32 megabyte = m_voice_bank[entry][bank_idx];
-	const u32 phys_byte_address = ((megabyte << 20) | (sub_offset << 1)) % SYSTEM_RAM_BYTES;
-	if (phys_byte_address < LOWMEM_WORDS * 2)
-		return m_lowmem_shadow[phys_byte_address >> 1];
-	return m_sample_ram[(phys_byte_address - LOWMEM_WORDS * 2) >> 1];
+	const u32 phys_byte_address = (megabyte << 20) | (sub_offset << 1);
+	return system_memory_r(phys_byte_address);
 }
 
 
@@ -539,7 +521,7 @@ void asr10_boot_state::scsi_drq_w(int state)
 u16 asr10_boot_state::low_rom_or_lowmem_r(offs_t offset, u16 mem_mask)
 {
 	if (!m_maincpu->cs0_covers(0))
-		return m_lowmem_shadow[offset] & mem_mask;
+		return system_memory_r(offset << 1, mem_mask);
 
 	const u32 byte_address = offset << 1;
 	const u8 *rom = m_rom->base();
@@ -620,14 +602,14 @@ void asr10_boot_state::es5510_host_write_select_gpr_instr_w(offs_t offset, u8 da
 
 void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
 {
-	COMBINE_DATA(&m_lowmem_shadow[offset]);
+	system_memory_w(offset << 1, data, mem_mask);
 
 	// `$0CE3` is the PC-correlated current-effect operating-mode byte.  Its
 	// values 0/1 drive the separately verified ACTV and pitch setup branches;
 	// this board-level policy adds only the surviving current-MAME rate relation.
 	if (offset == (0x0ce2 / 2) && ACCESSING_BITS_0_7)
 	{
-		const u8 mode = m_lowmem_shadow[offset] & 0xff;
+		const u8 mode = m_system_ram[offset] & 0xff;
 		if (mode <= 1 && mode != m_effect_audio_mode)
 		{
 			m_effect_audio_mode = mode;
@@ -683,24 +665,39 @@ void asr10_boot_state::effect_audio_rate_postload()
 	}
 }
 
-u16 asr10_boot_state::system_ram_alias_r(offs_t offset, u16 mem_mask)
+u16 asr10_boot_state::system_memory_r(u32 address, u16 mem_mask)
 {
-	const u32 address = 0x00200000 + (offset << 1);
-	const u32 wrapped = address % SYSTEM_RAM_BYTES;
-	if (wrapped < LOWMEM_WORDS * 2)
-		return m_lowmem_shadow[wrapped >> 1] & mem_mask;
-	return m_sample_ram[(wrapped - LOWMEM_WORDS * 2) >> 1] & mem_mask;
+	return m_system_ram[(address & (SYSTEM_RAM_BYTES - 1)) >> 1] & mem_mask;
 }
 
 
-void asr10_boot_state::system_ram_alias_w(offs_t offset, u16 data, u16 mem_mask)
+void asr10_boot_state::system_memory_w(u32 address, u16 data, u16 mem_mask)
 {
-	const u32 address = 0x00200000 + (offset << 1);
-	const u32 wrapped = address % SYSTEM_RAM_BYTES;
-	if (wrapped < LOWMEM_WORDS * 2)
-		lowmem_w(wrapped >> 1, data, mem_mask);
-	else
-		COMBINE_DATA(&m_sample_ram[(wrapped - LOWMEM_WORDS * 2) >> 1]);
+	COMBINE_DATA(&m_system_ram[(address & (SYSTEM_RAM_BYTES - 1)) >> 1]);
+}
+
+
+u16 asr10_boot_state::sample_memory_r(offs_t offset, u16 mem_mask)
+{
+	return system_memory_r(0x00100000 + (offset << 1), mem_mask);
+}
+
+
+void asr10_boot_state::sample_memory_w(offs_t offset, u16 data, u16 mem_mask)
+{
+	system_memory_w(0x00100000 + (offset << 1), data, mem_mask);
+}
+
+
+u16 asr10_boot_state::expanded_memory_r(offs_t offset, u16 mem_mask)
+{
+	return system_memory_r(0x00200000 + (offset << 1), mem_mask);
+}
+
+
+void asr10_boot_state::expanded_memory_w(offs_t offset, u16 data, u16 mem_mask)
+{
+	system_memory_w(0x00200000 + (offset << 1), data, mem_mask);
 }
 
 

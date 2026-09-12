@@ -93,7 +93,7 @@ records the Bank 11 rejected candidates, and gives current review priorities.
     - Firmware allocates 32 voice-banking descriptor table entries at `$FF7F00 + (voice - 1) * 8` for voices $V \ge 1$ (Voice 0/1 share entry 0).
     - During voice setup, the 24-bit pointer's physical megabyte index `d0 = (a3 >> 20) & 0x0F` is written to Word 0, `d0+1` to Word 1, `d0+2` to Word 2, and `d0+3` to Word 3.
     - ES5506 21-bit word addresses have bits 20:19 selecting which of the 4 megabyte pages within the 4 MB window is addressed (Words 0..3 of the voice table entry), and bits 18:0 providing the 1 MB sub-offset (512K words).
-    - Physical DRAM address: `phys_byte_address = ((megabyte << 20) | (sub_offset << 1)) % SYSTEM_RAM_BYTES`.
+    - Functional backing address: `phys_byte_address = (megabyte << 20) | (sub_offset << 1)`, resolved through the 16 MiB canonical backing store.
   - **Root Cause:** `asr10_boot.cpp` previously hardcoded Bank 1 to `m_lowmem_shadow` (Chunk 0) and Bank 0 to `m_sample_ram` (Chunk 1). Because firmware voices always program `CR = 0x4300` (Bank 1), all samples allocated in odd megabytes (`BLUES DRUMS` at physical MB 7 -> Chunk 1) read from Chunk 0 instead, resulting in uninitialized boot silence or leftover phantom data from prior loads.
   - **Implementation:** Installed `voice_bank_r`/`voice_bank_w` at `$FF7F00-$FF7FFF` and dynamic voice banking in `es5506_wavetable_r`. Unified all 4 ES5506 bank address maps. Net driver lines: -4 lines.
   - **Verification:**
@@ -108,16 +108,40 @@ records the Bank 11 rejected candidates, and gives current review priorities.
     - **DOCUMENTATION FRONTIER REACHED — BOARD OWNERSHIP**: Physical IC attribution is not an active functional emulation blocker for tested workloads. The current functional mapping is sufficient for the verified CS1 bank-load and playback paths.
   - **Primary records:** `investigations/cs1-voice-banking-and-sample-addressing.md` and `investigations/cs1-board-level-implementation-frontier.md`.
 
+## 16 MiB Sample-Memory Backing Milestone — [VERIFIED FUNCTIONAL MODEL] (2026-09-12)
+
+- **[VERIFIED — firmware]** V3.50's ordinary alias probe at ROM
+  `$F8A166-$F8A244` distinguishes `$008000/$408000/$808000/$C08000` and
+  naturally stores base `$00000000`, size `$00F80000`.  No firmware memory
+  variable, allocator counter, or probe result is patched.
+- **[VERIFIED — emulator]** `asr10_boot.cpp` now has one save-stated,
+  genuinely distinct 16 MiB backing store shared by CPU-visible memory and
+  CS1/ES5506 wavetable fetches.  The former modulo-`$200000` collapse is no
+  longer part of the production model.  Low-memory ROM-overlay behavior and
+  the `$0CE3` low-memory write side effect remain intact.
+- **[VERIFIED — acceptance]** CDR-04 `9FT-BALDWIN` loads as its actual
+  `$380800`-byte allocation at `$02B600..$3ABE00`, with 26 PCM owners across
+  emulator MBs 0--3.  A note `$36` selected CS1 `[2,3,4,5]`; logical word
+  `$01171B` translated to `$222E36`, and ES5506/CPU both read `$18E4`, which
+  matches the loaded CDR-04 PCM.  `$230000` and `$430000` are independently
+  writable. A buffer save/load restored data above 2 MiB, the CS1 entry, and
+  a subsequent ES5506 fetch; the following 250 ms audio windows on active
+  output channels were bit-identical after restore.
+- **[OPEN — physical topology]** This is a firmware-visible functional model,
+  not a claim about DRAM chips, expansion-board topology, or physical CS1
+  receiver ownership.
+- **Primary record:** `investigations/cdr04-16m-baldwin-experiment.md`.
+
 ## MC68302 SIB Hardening and Lowmem Alias Milestone (2026-09-11)
 
 - **[FIXED — LATENT MODEL DEFECT]** `fdd8f734bd1`: `mc68302: return programmed Port B control and direction state`. Corrects `PBCNT` (`$FC6824`) and `PBDDR` (`$FC6826`) readback latches, which previously leaked pin data (`read_pbdat()`). Firmware writes them during boot and does not read back; verified latent for current workloads.
 - **[FIXED — LATENT MODEL DEFECT]** `5c6a8993390`: `mc68302: preserve byte lanes on SAPR and DAPR writes`. Ensures byte-sized writes preserve unwritten halves of IDMA pointer registers instead of zeroing them. Firmware uses 32-bit `move.l` across all 21 IDMA operations; verified latent for current workloads.
-- **[FIXED — LATENT MODEL DEFECT]** `1d0970e3320`: `asr10: route system RAM alias writes through lowmem handler`. Routes mirror alias writes (`$200CE2-$E00CE2`) through `lowmem_w()` to guarantee side-effect symmetry with `$000CE2/$000CE3` effect audio rate policy. Firmware writes short absolute `$CE3.w` directly; verified latent for current workloads.
+- **[HISTORICAL 2 MiB MODEL FIX]** `1d0970e3320`: `asr10: route system RAM alias writes through lowmem handler`. Under the former modulo-2-MiB model, mirror writes (`$200CE2-$E00CE2`) had to retain the `$000CE2/$000CE3` effect-rate side effect. The 16 MiB model no longer aliases those high addresses; the actual low-memory write continues through `lowmem_w()`.
 - **[SUFFICIENT FOR COVERED WORKLOADS]** `4bd2330302c` / `353300e347a`: Comprehensive MC68302 SIB register inventory and classification (`mc68302-unimplemented-register-coverage.md`). Confirmed that across boot, OS load, instrument load, voice playback, panel navigation, and rate toggling, all unmodeled registers are unaccessed (Class 0) or configuration/probe only (Class 1/2) without unhandled Class 5 critical defects in covered paths.
 - **[VERIFIED MODEL STATUS]** Emulator memory topology and chip-select decode boundaries:
-  - `$000000-$0FFFFF`: lowmem backing (1 MiB).
-  - `$100000-$1FFFFF`: sample-RAM backing (1 MiB).
-  - `$200000-$F7FFFF`: aliases modulo 2 MiB across both backing regions.
+  - `$000000-$0FFFFF`: first MiB of the canonical backing behind the existing CS0/ROM overlay and lowmem write behavior.
+  - `$100000-$F7FFFF`: distinct CPU-visible portions of the same canonical 16 MiB backing.
+  - CS1/ES5506 accesses use that same backing; they do not collapse modulo 2 MiB.
   - Not "CS0 RAM"; physical DRAM organization is not inferred from emulator backing stores.
   - MC68302 CS0 decode: bootstrap/ROM mechanism, final `$F80000-$FBFFFF`.
   - MC68302 CS1 decode: `$FF6000-$FF7FFF`; observed/modelled banking registers at `$FF7F00-$FF7FFF`.

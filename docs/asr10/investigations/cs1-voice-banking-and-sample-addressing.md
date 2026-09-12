@@ -1,5 +1,12 @@
 # CS1 Voice Banking and Dynamic ES5506 Sample Addressing
 
+> **Current-model note (2026-09-12).** The original two-chunk backing-store
+> details below are historical provenance. Production now resolves CS1/ES5506
+> accesses through one distinct 16 MiB functional backing; see
+> `docs/asr10/current-status.md` and
+> `investigations/cdr04-16m-baldwin-experiment.md`. The firmware table and
+> CS1 translation findings remain current.
+
 **Status:** Verified and Resolved  
 **Scope:** `src/mame/ensoniq/asr10_boot.cpp` (`asr10booth`)  
 **Target Defect:** Intermittent playability / audio outcome defect where certain loaded banks/instruments produced near-silent clicks or leftover phantom audio from prior loads.
