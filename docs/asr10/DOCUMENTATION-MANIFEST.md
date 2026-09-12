@@ -49,6 +49,7 @@ runtime-tool            instrumentering
 
 | path | kategori | status | källa | typ | beskriver | ersätter | härleds ur |
 |---|---|---|---|---|---|---|---|
+| `asr10-functional-architecture.md` | canonical-reference | **aktuell auktoritativ arkitektur** | konsolidering 2026-09-13 | handkurerad | auktoritativ funktionell arkitektur och evidensgränser för maskinmodellen | äldre spridda arkitekturöversikter | källkod + referenser + nyare investigations |
 | `current-status.md` | current-status | **aktuell** | löpande handoff, statusstädad 2026-08-30 | handkurerad | aktuellt läge, nästa experiment | tidigare kumulativ status | `HANDOFF.md` + reference/ + investigations/ |
 | `HANDOFF.md` | current-status | **aktuell ingång** | Part I handoff 2026-08-30, HEAD `7bfd2f3722d` | handkurerad | systemöversikt, evidensgränser, testbaseline och reviewer-regler | äldre handoff-checkpoints som aktuell ingång | current-status + reference/ + senaste investigations/ |
 | `DOCUMENTATION-MANIFEST.md` | current-status | **aktuell** | detta dokument | handkurerad | vilka dokument som ingår | — | — |
@@ -130,7 +131,7 @@ empirisk accessfrekvens över boot, instrumentladdning, notuppspelning och panel
 och klassificering i Klass 0-5 som fastställer att för de täckta arbetslasterna (boot, laddning, notuppspelning, panel) observeras inga kritiska blockeringar i de kvarvarande omodellerade registren.
 Föregående tillägg är `cs1-board-level-implementation-frontier.md` (2026-09-11):
 den dokumenterar styckliste- och hårdvarugränsen för MC68302 CS1 och per-röst-banking,
-utesluter ES5701 som register/RAM-mottagare, analyserar ES5506 BS-tillstånd som plausibel
+visar att ES5701:s specificerade lagringsmodell inte kan rymma tabellen, analyserar ES5506 BS-tillstånd som plausibel
 extern röstsynk [INFERRED], fastställer att ASR-10 Digital Board-schema saknas i
 servicemanualer och deklarerar DOCUMENTATION FRONTIER REACHED — BOARD OWNERSHIP. Föregående tillägg är
 `cs1-voice-banking-and-sample-addressing.md` (2026-09-11): den dokumenterar upptäckten

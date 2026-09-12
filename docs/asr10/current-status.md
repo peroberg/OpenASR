@@ -103,7 +103,8 @@ records the Bank 11 rejected candidates, and gives current review priorities.
     - Full regression suite: 21/21 PASS lines.
     - **Causal Scope:** The CS1 banking defect explains the reproduced history-dependent BANK-load failure and is consistent with some earlier symptoms; it does not retroactively prove that every historical audio anomaly had the same cause.
   - **Board-Level Physical Implementation Frontier:**
-    - **[DISPROVEN — specified ES5701 register/storage model]**: ES5701 SuperGLU contains zero internal registers or RAM capable of storing the table, and its specified address outputs reach only up to LA19; while physical CS1 $\rightarrow$ ES5701 board wiring remains `[NOT ESTABLISHED / OPEN]`, ES5701 cannot store the per-voice banking table.
+    - **[DISPROVEN — specified storage model]**: The specified ES5701 storage/register model cannot itself store the complete per-voice CS1 translation table or act as the sole table store (its documented interface lacks a 256-byte register/RAM array, and specified address outputs reach only up to LA19).
+    - **[OPEN]**: Whether physical CS1, derived CS1 decode, voice/page signals, or related board signals reach or pass through ES5701 remains unestablished without Digital Board schematics.
     - **[OPEN — physical board receiver]**: The physical IC(s) receiving CS1 writes on the 4-layer Digital Board, the inferred voice-tracking mechanism `[INFERRED]`, and the source of external DTACK `[OPEN]` remain open because the Digital Board schematic is absent from service documentation.
     - **DOCUMENTATION FRONTIER REACHED — BOARD OWNERSHIP**: Physical IC attribution is not an active functional emulation blocker for tested workloads. The current functional mapping is sufficient for the verified CS1 bank-load and playback paths.
   - **Primary records:** `investigations/cs1-voice-banking-and-sample-addressing.md` and `investigations/cs1-board-level-implementation-frontier.md`.
@@ -147,7 +148,8 @@ records the Bank 11 rejected candidates, and gives current review priorities.
   - MC68302 CS1 decode: `$FF6000-$FF7FFF`; observed/modelled banking registers at `$FF7F00-$FF7FFF`.
 - **[OPEN — EVIDENCE NEEDED]** Asymmetric reset / clear: The review item questioning potential reset vs clear asymmetry has no identified historical commit or diff fixing such a defect; status remains unverified pending discriminating evidence.
 
-The current resume point is this document together with
+The primary architectural reference is `asr10-functional-architecture.md`.
+The current operational resume point is this document together with
 `investigations/cs1-voice-banking-and-sample-addressing.md`,
 `investigations/cs1-board-level-implementation-frontier.md`,
 `investigations/mc68302-unimplemented-register-coverage.md`,
