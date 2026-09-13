@@ -1089,10 +1089,6 @@ void es5506_device::generate_samples(sound_stream &stream)
 		{
 			es550x_voice *voice = &m_voice[v];
 
-			// special case: if end == start, stop the voice
-			if (voice->start == voice->end)
-				voice->control |= CONTROL_STOP0;
-
 			const int voice_channel = get_ca(voice->control);
 			const int channel = voice_channel % m_channels;
 			const int l = channel << 1;
