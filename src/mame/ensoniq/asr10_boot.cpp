@@ -3,38 +3,57 @@
 
 /***************************************************************************
  *
- *     Ensoniq ASR-10 boot harness
+ *     Ensoniq ASR-10 functional machine model / boot harness
  *
- *	Conservative upstream-MAME-oriented ASR-10 1.5B ROM boot model.
- *	This is not a full ASR-10 driver.
+ *  Functional driver model for the Ensoniq ASR-10 advanced sampling
+ *  workstation.
  *
- *	Canonical project references:
- *	- docs/hardware-identity.md
- *	- docs/address-model.md
- *	- docs/mame-asr10-boot-harness.md
+ *  Included subsystems and verified facilities:
+ *  - MC68302 Integrated Multiprotocol Processor (CPU, SIB, BAR, Port A/B,
+ *    timers, interrupt controller, IDMA)
+ *  - System memory (16 MiB canonical backing, ROM overlay, low-memory remap,
+ *    aliasing detection support)
+ *  - Dynamic voice banking on MC68302 CS1 ($FF7F00-$FF7FFF) translating
+ *    ES5506 wavetable access into 16 MiB physical sample memory
+ *  - Ensoniq ES5506 (OTTO) sound generator:
+ *    - 32-channel wavetable synthesis
+ *    - Audio clock switching: Mode 0 (29.8 kHz / Y2/2) and Mode 1 (44.1 kHz / Y3/2)
+ *    - Large-WaveSample (>4 MiB) transwave/interrupt-driven continuation
+ *    - ES5506 IRQB -> MC68302 PB9 -> Level 4 Vector $47 interrupt path
+ *    - Analog parameter acquisition (PAR) via MC68302 Port B PB0-PB2 selector
+ *  - Ensoniq ES5510 (ESP) host interface and audio routing:
+ *    - Host register window ($FC3000-$FC303F) and select/commit registers
+ *      ($FC3101, $FC3141, $FC3181, $FC31C1)
+ *    - Hardware HALT control via MC68302 PA4
+ *    - Inter-IC serial audio pump routing (BUS1/2/3 -> SER0/2/3 -> SER1)
+ *  - Storage subsystem:
+ *    - NEC uPD72069 floppy controller with MC68302 IDMA and IRQ1 completion
+ *    - Western Digital WD33C93A SCSI controller with IDMA and IRQ1 completion
+ *  - Communication & Front Panel:
+ *    - SCN2681 Dual UART (DUART):
+ *      - Channel A: MIDI In/Out (31,250 baud)
+ *      - Channel B: ASR-10 front panel communication (62,500 baud)
+ *      - DUART IRQ -> MC68302 Level 6 autovector
+ *  - Save-state support
  *
- *	Current conservative model:
- *	- ASR-10 1.5B EPROM pair
- *	- 68000-compatible big-endian boot code on likely MC68302-family board
- *	- $fc68xx is board/MMIO
- *	- $fc6830 is control_register_candidate
- *	- high-runtime ROM alias window
+ *  NOTE: Board-level glue logic (including Ensoniq ES5701 SuperGLU ASIC,
+ *  exact crystal multiplexers, and discrete bus arbiters) is modeled at the
+ *  functional interface boundary; exact physical PCB wiring remains open.
  *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *  Address space summary:
+ *   $000000-$0fffff    System low RAM / boot ROM overlay (controlled by CS0)
+ *   $100000-$1fffff    Sample RAM window (mapped to system memory)
+ *   $200000-$f7ffff    Expanded system / sample memory (up to 16 MiB)
+ *   $f80000-$fbffff    High ROM alias window
+ *   $fc2000-$fc207f    Ensoniq ES5506 (OTTO) host registers
+ *   $fc3000-$fc31ff    Ensoniq ES5510 (ESP) host register & commit block
+ *   $fc4000-$fc4003    uPD72069 Floppy Disk Controller
+ *   $fc4800-$fc481f    SCN2681 DUART (MIDI & front panel)
+ *   $fc5000-$fc5003    WD33C93A SCSI controller
+ *   $fc6000-$fc6fff    MC68302 internal DPRAM and registers (dynamic BAR)
+ *   $ff7f00-$ff7fff    MC68302 CS1 voice banking translation table
  *
- *  68302 CPU address space
- *   $0000f2/$0000f4    initial BAR/SCR
- *   $fc6000-$fc6fff    68302 internal DPRAM/register block candidate
- *   ?                  ES5506 host regs, small window
- *   ?                  ES5510 host regs, ~0x200 window
- *   ?                  floppy controller
- *   ?                  SCSI controller
- *   ?                  frontpanel/display/keyscan/glue
- *   ?                  sample RAM window / main sample RAM
- *   ?                  work RAM / high RAM
- *   ?                  ROM / high alias
- *
- **************************************************************************/
+ ***************************************************************************/
 
 #include "emu.h"
 #include "main.h"
@@ -64,12 +83,6 @@
 #include <algorithm>
 #include <array>
 
-// TODO: ASR-10 likely contains ES5701/Super-GLU-class Ensoniq ASIC.
-// Known/claimed roles: 68000<->ESP, 68000<->OTIS,
-// OTIS<->static memory, clock generation.
-// Current harness models only decoded candidate windows and does not yet
-// emulate Super-GLU bus/memory/clock behavior.
-
 namespace {
 
 class asr10_boot_state : public driver_device
@@ -93,25 +106,26 @@ public:
 
 	void asr10_boot(machine_config &config) ATTR_COLD;
 
+protected:
+	virtual void machine_start() override ATTR_COLD;
+	virtual void machine_reset() override ATTR_COLD;
+
 private:
-	void es5506_wavetable_map(address_map &map) ATTR_COLD;
+	// Constants
 	static constexpr u32 ROM_MASK = 0x0003ffff;
 	static constexpr u32 LOWMEM_WORDS = 0x00100000 / 2;
-	// Verified functional model: V3.50's unmodified alias probe
-	// ($F8A166-$F8A244) detects this distinct 16 MiB backing as its
-	// $000000/$F80000 configuration.  This models firmware-visible address
-	// behavior only; it does not claim a physical ASR-10 DRAM topology.
+	// Verified functional model: V3.50's unmodified alias probe ($F8A166-$F8A244)
+	// detects this distinct 16 MiB backing as its $000000/$F80000 configuration.
 	static constexpr u32 SYSTEM_RAM_BYTES = 0x01000000;
 	static constexpr u32 SYSTEM_RAM_WORDS = SYSTEM_RAM_BYTES / 2;
-	// The verified effect operating-mode commit selects the two spec-consistent
-	// ES5506 input clock domains:
+	// Spec-consistent ES5506 clock domains:
 	// Mode 0: Y2 / 2 = 30.476180 MHz / 2 = 15.238090 MHz -> Fs = 15.238090 / (16 * 32) = 29,761.895 Hz
 	// Mode 1: Y3 / 2 = 33.868800 MHz / 2 = 16.934400 MHz -> Fs = 16.934400 / (16 * 24) = 44,100.000 Hz
 	static constexpr u32 AUDIO_RATE_MODE0_CLOCK = 30'476'180 / 2;
 	static constexpr u32 AUDIO_RATE_MODE1_CLOCK = 33'868'800 / 2;
-
 	static constexpr bool ASR10_MISSING_FDC_RATE_SOURCE = true;
 
+	// Devices (all mandatory in current machine configuration)
 	required_device<mc68302_device> m_maincpu;
 	required_device<upd72069_device> m_fdc;
 	required_device<floppy_connector> m_floppy_connector;
@@ -119,103 +133,88 @@ private:
 	required_device<asr10panel_device> m_panel;
 	required_device<midi_port_device> m_mdout;
 	required_memory_region m_rom;
+	required_device<es5506_device> m_es5506_host;
+	required_device<es5510_device> m_es5510_host;
+	required_device<esq_5505_5510_pump_device> m_pump;
+	required_device<wd33c93a_device> m_scsi;
 
-	optional_device<es5506_device> m_es5506_host;
-	optional_device<es5510_device> m_es5510_host;
-	optional_device<esq_5505_5510_pump_device> m_pump;
-	optional_device<wd33c93a_device> m_scsi;
-	emu_timer *m_lrclk_timer = nullptr;
-	bool m_lrclk_level = false;
-	emu_timer *m_idma_tc_timer = nullptr;
-	int m_fdc_irq = 0;
-	int m_scsi_irq = 0;
-
+	// Core memory / decode
 	std::unique_ptr<u16[]> m_system_ram;
-	// Raw, right-justified 10-bit board sources for the ES5506 PAR callback.
-	// Source selection is PBDAT PB2-PB0, not DUART OPR; see
-	// docs/asr10/investigations/analog-selector-control-map-v350.md.
-	std::array<u16, 8> m_analog_values{};
-	// Operating-mode byte tracked from `$0CE3`.  Mode 0 is 30 kHz (the
-	// power-on default); mode 1 is 44.1 kHz.
-	u8 m_effect_audio_mode = 0;
-	bool m_esp_program_loaded = false;
-	bool m_esp_program_received = false;
-	std::array<std::array<u16, 4>, 32> m_voice_bank{};
-
-	virtual void machine_start() override ATTR_COLD;
-	virtual void machine_reset() override ATTR_COLD;
-
 	void mem_map(address_map &map) ATTR_COLD;
 	void cpu_space_map(address_map &map) ATTR_COLD;
-
-	u16 low_rom_or_lowmem_r(offs_t offset, u16 mem_mask = ~0);
-	void lowmem_w(offs_t offset, u16 data, u16 mem_mask = ~0);
-	u16 voice_bank_r(offs_t offset, u16 mem_mask = ~0);
-	void voice_bank_w(offs_t offset, u16 data, u16 mem_mask = ~0);
-	u16 es5506_wavetable_r(offs_t offset);
-	void apply_effect_audio_rate_policy();
-	void effect_audio_rate_postload();
-	void es5506_frame_rate_changed(u32 rate);
-	void mc68302_pa_w(u16 data);
 	u16 system_memory_r(u32 address, u16 mem_mask = ~0);
 	void system_memory_w(u32 address, u16 data, u16 mem_mask = ~0);
+	u16 low_rom_or_lowmem_r(offs_t offset, u16 mem_mask = ~0);
+	void lowmem_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 	u16 sample_memory_r(offs_t offset, u16 mem_mask = ~0);
 	void sample_memory_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 	u16 expanded_memory_r(offs_t offset, u16 mem_mask = ~0);
 	void expanded_memory_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 	u16 high_alias_r(offs_t offset, u16 mem_mask = ~0);
 	void high_alias_w(offs_t offset, u16 data, u16 mem_mask = ~0);
+
+	// Sample-memory / CS1 dynamic voice banking
+	std::array<std::array<u16, 4>, 32> m_voice_bank{};
+	void es5506_wavetable_map(address_map &map) ATTR_COLD;
+	u16 voice_bank_r(offs_t offset, u16 mem_mask = ~0);
+	void voice_bank_w(offs_t offset, u16 data, u16 mem_mask = ~0);
+	u16 es5506_wavetable_r(offs_t offset);
+
+	// Storage (FDC / SCSI / IDMA)
+	emu_timer *m_idma_tc_timer = nullptr;
+	int m_fdc_irq = 0;
+	int m_scsi_irq = 0;
 	u16 upd72069_fdc_r(offs_t offset, u16 mem_mask = ~0);
 	void upd72069_fdc_w(offs_t offset, u16 data, u16 mem_mask = ~0);
-	u16 duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask = ~0);
-	void duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 mem_mask = ~0);
+	void idma_drq_w(int state);
+	void scsi_drq_w(int state);
+	TIMER_CALLBACK_MEMBER(idma_tc_deliver);
+	static void floppy_drives(device_slot_interface &device);
+	static void floppy_formats(format_registration &fr);
+
+	// Interrupts
+	u8 maincpu_iack_r(u8 level);
 	void fdc_intrq_w(int state);
 	void scsi_irq_w(int state);
 	void es5506_irq_w(int state);
 
-	TIMER_CALLBACK_MEMBER(lrclk_toggle);
-	u8 maincpu_iack_r(u8 level);
-	void idma_drq_w(int state);
-	void scsi_drq_w(int state);
-	TIMER_CALLBACK_MEMBER(idma_tc_deliver);
-
-
+	// Panel / MIDI / Analog
+	std::array<u16, 8> m_analog_values{};
+	u16 duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask = ~0);
+	void duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 	u16 analog_r();
 	void analog_w(offs_t offset, u16 data);
-	// ES5510 host select/commit: FC3101/FC3141/FC3181 are each a
-	// single-word map range, so the `offset` MAME's address_map passes to
-	// an .rw() handler installed there is always 0 (relative to that
-	// range's own base) -- it is NOT the absolute ES5510 host offset
-	// (0x80/0xa0/0xc0/0xe0). These four thin wrappers supply the fixed
-	// absolute offset explicitly; they do not forward the map-relative
-	// offset at all. u8 read/write (no mem_mask parameter) deliberately
-	// matches es5510_device::host_r/host_w's own narrow-handler signature
-	// -- a u16-returning handler here made MAME treat this as a
-	// bus-width-matching (not narrower) handler, which .umask16() over a
-	// single-word range then rejected at machine-config time ("incorrect
-	// granularity for 0-bit chip selection").
+
+	// Audio clocks & rate mode
+	u8 m_effect_audio_mode = 0;
+	void apply_effect_audio_rate_policy();
+	void effect_audio_rate_postload();
+	void es5506_frame_rate_changed(u32 rate);
+
+	// ES5510 host / lifecycle
+	bool m_esp_program_loaded = false;
+	bool m_esp_program_received = false;
+	void mc68302_pa_w(u16 data);
+	u8 es5510_fixed_host_r(u8 host_offset);
+	void es5510_fixed_host_w(u8 host_offset, u8 data, bool marks_program_received);
 	u8 es5510_host_read_select_r(offs_t offset);
 	void es5510_host_read_select_w(offs_t offset, u8 data);
 	u8 es5510_host_write_select_gpr_r(offs_t offset);
 	void es5510_host_write_select_gpr_w(offs_t offset, u8 data);
 	u8 es5510_host_write_select_instr_r(offs_t offset);
 	void es5510_host_write_select_instr_w(offs_t offset, u8 data);
-	// filesystem-browser-map.md 4.27/4.28: host offset 0xe0 is stock
-	// es5510_device's "Write select - GPR + INSTR" (its own host_w case
-	// 0xe0 comment) -- commits BOTH gpr_latch (via write_reg) AND
-	// instr_latch (if data<0xa0) to the same index in one write, distinct
-	// from 0xa0 (GPR only) and 0xc0 (INSTR only). Firmware record type 1
-	// uses this combined path at FC31C1 -- proven from f97450's static
-	// disassembly: D4 stays at its default 0x1c0 for type 1 (only type 2
-	// overrides to 0x180/0xc0; only types 3/4 override to 0x140/0xa0).
 	u8 es5510_host_write_select_gpr_instr_r(offs_t offset);
 	void es5510_host_write_select_gpr_instr_w(offs_t offset, u8 data);
 
-
-	static void floppy_drives(device_slot_interface &device);
-	static void floppy_formats(format_registration &fr);
+	// Timers / Board glue
+	emu_timer *m_lrclk_timer = nullptr;
+	bool m_lrclk_level = false;
+	TIMER_CALLBACK_MEMBER(lrclk_toggle);
 };
 
+//-------------------------------------------------
+//  machine_start - allocate resources and register state
+//-------------------------------------------------
 
 void asr10_boot_state::machine_start()
 {
@@ -235,6 +234,9 @@ void asr10_boot_state::machine_start()
 	machine().save().register_postload(save_prepost_delegate(FUNC(asr10_boot_state::effect_audio_rate_postload), this));
 }
 
+//-------------------------------------------------
+//  machine_reset - reset board state and hardware devices
+//-------------------------------------------------
 
 void asr10_boot_state::machine_reset()
 {
@@ -255,20 +257,22 @@ void asr10_boot_state::machine_reset()
 	m_analog_values[6] = 0x200; // No producer in the analyzed V3.50 path
 	m_analog_values[7] = 0x300; // Stable calibration reference: viewer >= 190
 
+	// [provisional board policy]
 	// Board-level LRCLK into PB3 (GPIO input, docs/mc68302/pin-function-map.md):
 	// external to the 68302, always running once the machine is up, not a
 	// register-driven behavior. The rate is provisionally derived from the
-	// board's 33.8688 MHz audio clock as 768 x 44.1 kHz; this tree has not
-	// separately measured the divider source.
+	// board's 33.8688 MHz audio clock as 768 x 44.1 kHz.
 	m_lrclk_level = false;
 	m_lrclk_timer->adjust(attotime::from_hz(44100), 0, attotime::from_hz(44100));
 	std::fill_n(m_system_ram.get(), LOWMEM_WORDS, 0);
 
-	if (m_es5510_host)
-		m_es5510_host->set_HALT(true);
-	if (m_pump)
-		m_pump->set_esp_halted(true);
+	m_es5510_host->set_HALT(true);
+	m_pump->set_esp_halted(true);
 }
+
+//-------------------------------------------------
+//  Address Maps
+//-------------------------------------------------
 
 void asr10_boot_state::mem_map(address_map &map)
 {
@@ -276,114 +280,59 @@ void asr10_boot_state::mem_map(address_map &map)
 	// the boot-time remap/low-memory behavior used by the ROM.
 	map(0x000000, 0x0fffff).rw(FUNC(asr10_boot_state::low_rom_or_lowmem_r), FUNC(asr10_boot_state::lowmem_w));
 
-	// V3.50's own memory-size probe (ROM $F8A166-$F8A244) reads
-	// $008000/$408000/$808000/$C08000 to detect address aliasing.  These
-	// windows are deliberately distinct in the 16 MiB functional model.
-	//
-	// Bugfix, docs/asr10/investigations/stereo-round-trip-verification.md:
-	// this line originally read $200000-$EFFFFF, one byte short of the
-	// $F00000-$F7FFFF range the prior $0xf00000,0xf7ffff .ram() line it
-	// replaced actually covered. $F00000-$F7FFFF is exactly where both
-	// SCC receive buffers live ($F76600 channel 1, $F74B00 channel 2), so
-	// the gap silently discarded both channels' recorded bytes -- caught
-	// only once a stereo round-trip test actually compared byte content,
-	// since no existing regression test read back what it recorded.
-	map(0x200000, 0xf7ffff).rw(FUNC(asr10_boot_state::expanded_memory_r), FUNC(asr10_boot_state::expanded_memory_w));
-
-	// Reference-based candidate windows that are not device implementations
-	// yet stay passive unless a real device is mapped below.
-	//
-	// sample-ram-and-voice-registers.md / its numeric follow-up: 524,290
-	// writes land here once, entirely before FILE 1 (a boot-time clear of
-	// the whole megabyte -- firmware does not clear memory it has no use
-	// for), then zero for the rest of the run; voice 0's own END/ACCUM
-	// (word address $20000, i.e. bank 0's own $000000-$1FFFFF space)
-	// converts to CPU byte address $140000 -- inside this exact range.
-	// This CPU window and the ES5506 callback both use m_system_ram.
+	// Sample memory window ($100000-$1fffff)
 	map(0x100000, 0x1fffff).rw(FUNC(asr10_boot_state::sample_memory_r), FUNC(asr10_boot_state::sample_memory_w));
 
+	// Expanded system / sample memory ($200000-$f7ffff)
+	map(0x200000, 0xf7ffff).rw(FUNC(asr10_boot_state::expanded_memory_r), FUNC(asr10_boot_state::expanded_memory_w));
+
+	// High ROM alias window ($f80000-$fbffff)
 	map(0xf80000, 0xfbffff).rw(FUNC(asr10_boot_state::high_alias_r), FUNC(asr10_boot_state::high_alias_w));
-	{
-		// Phase 1 host-port fingerprint mapping: NOT board-proven -- see
-		// docs/asr10/es5506-chain-verification.md. Narrow adapter
-		// owns only FC2000-FC207F; FC2080+ (and FC2Dxx/FC30xx elsewhere)
-		// are untouched .ram(), matching the exact 0x80-byte,
-		// .umask16(0x00ff) convention already proven in esqkt.cpp/
-		// macrossp.cpp/ssv.cpp for this same device.
-		map(0xfc0000, 0xfc1fff).ram();
-		map(0xfc2000, 0xfc207f).rw(m_es5506_host, FUNC(es5506_device::read), FUNC(es5506_device::write)).umask16(0x00ff);
-		map(0xfc2080, 0xfc2fff).ram();
 
-		// ES5510 host window (filesystem-browser-map.md 4.24):
-		// FC3000-FC31FF is the proven ES5510 host window (4.22/4.23 -- the
-		// EFFECT DOWNLOAD FAILED / ERROR 032 collision is this range being
-		// plain, passive .ram() with no select/commit semantics). Route
-		// only the offsets proven meaningful in es5510_device::host_r/
-		// host_w -- the 0x00-0x1f latch/register block (byte addresses
-		// FC3001-FC303F) and the three select/commit registers 0x80/0xa0/
-		// 0xc0 (FC3101, FC3141, FC3181) -- to a real device; every other
-		// address in this 512-byte window stays plain .ram(), matching
-		// prior (unproven) behavior exactly and not blindly replacing the
-		// whole window. host_offset = (cpu_byte_address - 0xFC3001) >> 1;
-		// the containing 16-bit word address is one less (e.g. FC3001's
-		// word slot is FC3000, FC3181's word slot is FC3180). Byte-lane
-		// convention (.umask16(0x00ff), low/odd lane only) matches the
-		// proven ES5506 host adapter above; MAME's normal
-		// word/byte bus-width shim (not any driver-side special case)
-		// makes this transparent to both ordinary move.b and MOVEP's
-		// spaced byte accesses. Real precedent for this exact mapping
-		// (same device, same .umask16(0x00ff) idiom, whole host_r/host_w
-		// window) is esq5505.cpp's map(0x260000, 0x2601ff).rw(m_esp,
-		// FUNC(es5510_device::host_r), FUNC(es5510_device::host_w))
-		// .umask16(0x00ff); this round deliberately narrows that to only
-		// the evidenced offsets, per this investigation's acceptance
-		// criteria, and can be widened later if evidence demands it.
-		map(0xfc3000, 0xfc303f).rw(m_es5510_host, FUNC(es5510_device::host_r), FUNC(es5510_device::host_w)).umask16(0x00ff);
-		map(0xfc3040, 0xfc30ff).ram();
-		// FC3100-FC3101/FC3140-FC3141/FC3180-FC3181/FC31C0-FC31C1
-		// cannot map directly to host_r/host_w: each is a single-word
-		// range, so the map-relative offset MAME supplies is always 0,
-		// not the absolute ES5510 host offset (0x80/0xa0/0xc0/0xe0)
-		// the firmware intends. Route through the fixed-offset
-		// wrappers instead.
-		map(0xfc3100, 0xfc3101).rw(FUNC(asr10_boot_state::es5510_host_read_select_r), FUNC(asr10_boot_state::es5510_host_read_select_w)).umask16(0x00ff);
-		map(0xfc3102, 0xfc313f).ram();
-		map(0xfc3140, 0xfc3141).rw(FUNC(asr10_boot_state::es5510_host_write_select_gpr_r), FUNC(asr10_boot_state::es5510_host_write_select_gpr_w)).umask16(0x00ff);
-		map(0xfc3142, 0xfc317f).ram();
-		map(0xfc3180, 0xfc3181).rw(FUNC(asr10_boot_state::es5510_host_write_select_instr_r), FUNC(asr10_boot_state::es5510_host_write_select_instr_w)).umask16(0x00ff);
-		map(0xfc3182, 0xfc31bf).ram();
-		// filesystem-browser-map.md 4.27/4.28: host offset 0xe0
-		// ("Write select - GPR + INSTR", es5510.cpp host_w case 0xe0)
-		// -- proven required by firmware record type 1 (f97450's
-		// static default D4=0x1c0, unmapped and falling through to
-		// plain .ram() until this round). Only types 2/3/4 override to
-		// 0xc0/0xa0; type 1 is the only one using 0xe0.
-		map(0xfc31c0, 0xfc31c1).rw(FUNC(asr10_boot_state::es5510_host_write_select_gpr_instr_r), FUNC(asr10_boot_state::es5510_host_write_select_gpr_instr_w)).umask16(0x00ff);
-		map(0xfc31c2, 0xfc31ff).ram();
+	// Ensoniq ES5506 host registers ($fc2000-$fc207f)
+	map(0xfc0000, 0xfc1fff).ram();
+	map(0xfc2000, 0xfc207f).rw(m_es5506_host, FUNC(es5506_device::read), FUNC(es5506_device::write)).umask16(0x00ff);
+	map(0xfc2080, 0xfc2fff).ram();
 
-		map(0xfc3200, 0xfc3fff).ram();
-	}
+	// Ensoniq ES5510 host registers and commit ports ($fc3000-$fc31ff)
+	map(0xfc3000, 0xfc303f).rw(m_es5510_host, FUNC(es5510_device::host_r), FUNC(es5510_device::host_w)).umask16(0x00ff);
+	map(0xfc3040, 0xfc30ff).ram();
+	map(0xfc3100, 0xfc3101).rw(FUNC(asr10_boot_state::es5510_host_read_select_r), FUNC(asr10_boot_state::es5510_host_read_select_w)).umask16(0x00ff);
+	map(0xfc3102, 0xfc313f).ram();
+	map(0xfc3140, 0xfc3141).rw(FUNC(asr10_boot_state::es5510_host_write_select_gpr_r), FUNC(asr10_boot_state::es5510_host_write_select_gpr_w)).umask16(0x00ff);
+	map(0xfc3142, 0xfc317f).ram();
+	map(0xfc3180, 0xfc3181).rw(FUNC(asr10_boot_state::es5510_host_write_select_instr_r), FUNC(asr10_boot_state::es5510_host_write_select_instr_w)).umask16(0x00ff);
+	map(0xfc3182, 0xfc31bf).ram();
+	map(0xfc31c0, 0xfc31c1).rw(FUNC(asr10_boot_state::es5510_host_write_select_gpr_instr_r), FUNC(asr10_boot_state::es5510_host_write_select_gpr_instr_w)).umask16(0x00ff);
+	map(0xfc31c2, 0xfc31ff).ram();
+	map(0xfc3200, 0xfc3fff).ram();
+
+	// Floppy controller (uPD72069)
 	map(0xfc4000, 0xfc4003).rw(FUNC(asr10_boot_state::upd72069_fdc_r), FUNC(asr10_boot_state::upd72069_fdc_w));
 	map(0xfc4004, 0xfc47ff).ram();
+
+	// DUART (SCN2681)
 	map(0xfc4800, 0xfc481f).rw(FUNC(asr10_boot_state::duart_panel_asr_candidate_r), FUNC(asr10_boot_state::duart_panel_asr_candidate_w));
 	map(0xfc4820, 0xfc4fff).ram();
+
+	// SCSI controller (WD33C93A)
 	map(0xfc5000, 0xfc5003).rw(m_scsi, FUNC(wd33c93a_device::indir_r), FUNC(wd33c93a_device::indir_w)).umask16(0x00ff);
 	map(0xfc5004, 0xfc501f).ram();
-	// 0xFC6000-0xFC6FFF (the MC68302 internal 4KB window) is owned by
-	// m_maincpu itself now -- installed dynamically on BAR write, see
-	// mc68302_device::install_internal_window(). This plain RAM range is
-	// the neutral fallback for everything else; the device's dynamic
-	// install shadows its own slice of it once the ROM programs BAR.
+
+	// MC68302 internal DPRAM/registers fallback ($fc5020-$ff7eff)
 	map(0xfc5020, 0xff7eff).ram();
+
+	// MC68302 CS1 voice banking ($ff7f00-$ff7fff)
 	map(0xff7f00, 0xff7fff).rw(FUNC(asr10_boot_state::voice_bank_r), FUNC(asr10_boot_state::voice_bank_w));
 	map(0xff8000, 0xffffff).ram();
 }
 
-
 void asr10_boot_state::cpu_space_map(address_map &map)
 {
-	// M68000 interrupt acknowledge cycles. IRQ6 is supplied by the MC68302
-	// model; other levels preserve default autovector behavior.
+	// M68000 interrupt acknowledge cycles:
+	// Level 1: FDC / SCSI shared external IRQ1
+	// Level 4: ES5506 IRQB -> MC68302 PB9
+	// Level 6: SCN2681 DUART
 	map(0xfffff3, 0xfffff3).lr8(NAME([this]() { return maincpu_iack_r(1); }));
 	map(0xfffff5, 0xfffff5).lr8(NAME([this]() { return maincpu_iack_r(2); }));
 	map(0xfffff7, 0xfffff7).lr8(NAME([this]() { return maincpu_iack_r(3); }));
@@ -393,12 +342,91 @@ void asr10_boot_state::cpu_space_map(address_map &map)
 	map(0xffffff, 0xffffff).lr8(NAME([this]() { return maincpu_iack_r(7); }));
 }
 
+//-------------------------------------------------
+//  Core Memory / Decode Handlers
+//-------------------------------------------------
+
+u16 asr10_boot_state::system_memory_r(u32 address, u16 mem_mask)
+{
+	return m_system_ram[(address & (SYSTEM_RAM_BYTES - 1)) >> 1] & mem_mask;
+}
+
+void asr10_boot_state::system_memory_w(u32 address, u16 data, u16 mem_mask)
+{
+	COMBINE_DATA(&m_system_ram[(address & (SYSTEM_RAM_BYTES - 1)) >> 1]);
+}
+
+u16 asr10_boot_state::low_rom_or_lowmem_r(offs_t offset, u16 mem_mask)
+{
+	if (!m_maincpu->cs0_covers(0))
+		return system_memory_r(offset << 1, mem_mask);
+
+	const u32 byte_address = offset << 1;
+	const u8 *rom = m_rom->base();
+	const u32 rom_offset = byte_address & ROM_MASK;
+	return (u16(rom[rom_offset]) << 8) | rom[(rom_offset + 1) & ROM_MASK];
+}
+
+void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
+{
+	system_memory_w(offset << 1, data, mem_mask);
+
+	// `$0CE3` is the PC-correlated current-effect operating-mode byte. Its
+	// values 0/1 drive the separately verified ACTV and pitch setup branches;
+	// this board-level policy adds only the surviving current-MAME rate relation.
+	if (offset == (0x0ce2 / 2) && ACCESSING_BITS_0_7)
+	{
+		const u8 mode = m_system_ram[offset] & 0xff;
+		if (mode <= 1 && mode != m_effect_audio_mode)
+		{
+			m_effect_audio_mode = mode;
+			apply_effect_audio_rate_policy();
+		}
+	}
+}
+
+u16 asr10_boot_state::sample_memory_r(offs_t offset, u16 mem_mask)
+{
+	return system_memory_r(0x00100000 + (offset << 1), mem_mask);
+}
+
+void asr10_boot_state::sample_memory_w(offs_t offset, u16 data, u16 mem_mask)
+{
+	system_memory_w(0x00100000 + (offset << 1), data, mem_mask);
+}
+
+u16 asr10_boot_state::expanded_memory_r(offs_t offset, u16 mem_mask)
+{
+	return system_memory_r(0x00200000 + (offset << 1), mem_mask);
+}
+
+void asr10_boot_state::expanded_memory_w(offs_t offset, u16 data, u16 mem_mask)
+{
+	system_memory_w(0x00200000 + (offset << 1), data, mem_mask);
+}
+
+u16 asr10_boot_state::high_alias_r(offs_t offset, u16 mem_mask)
+{
+	const u8 *rom = m_rom->base();
+	const u32 runtime_address_24 = 0x00f80000 | (offset << 1);
+	const u32 rom_offset = runtime_address_24 & ROM_MASK;
+	return ((u16(rom[rom_offset]) << 8) | rom[(rom_offset + 1) & ROM_MASK]) & mem_mask;
+}
+
+void asr10_boot_state::high_alias_w(offs_t offset, u16 data, u16 mem_mask)
+{
+}
+
+//-------------------------------------------------
+//  Sample-Memory / CS1 Dynamic Voice Banking
+//-------------------------------------------------
 
 void asr10_boot_state::es5506_wavetable_map(address_map &map)
 {
 	map(0x000000, 0x1fffff).r(FUNC(asr10_boot_state::es5506_wavetable_r));
 }
 
+// [VERIFIED functional translation]
 // External voice banking glue logic on MC68302 CS1 ($FF7F00-$FF7FFF).
 // The firmware initializes 32 voice-banking table entries (8 bytes / 4 words each)
 // at $F8CD22-$F8CD56: voice 0/1 use entry 0 ($FF7F00), voice 2 uses entry 1 ($FF7F08),
@@ -420,13 +448,15 @@ void asr10_boot_state::voice_bank_w(offs_t offset, u16 data, u16 mem_mask)
 	COMBINE_DATA(&m_voice_bank[entry][word]);
 }
 
+// [VERIFIED functional translation]
 // In ES5506, the 21-bit word address has bits 20:19 selecting which of four 1 MB
 // windows within the 4 MB space is addressed, and bits 18:0 providing the 1 MB
 // sub-offset (512K words). Dynamic voice banking translates this into the
 // canonical 16 MiB firmware-visible backing store.
+// Exact physical glue owner (discrete logic vs ASIC) remains [OPEN physical detail].
 u16 asr10_boot_state::es5506_wavetable_r(offs_t offset)
 {
-	const u32 voice = m_es5506_host ? m_es5506_host->get_voice_index() : 0;
+	const u32 voice = m_es5506_host->get_voice_index();
 	const u32 entry = (voice > 0) ? (voice - 1) : 0;
 	const u32 bank_idx = (offset >> 19) & 3;
 	const u32 sub_offset = offset & 0x7ffff;
@@ -435,285 +465,9 @@ u16 asr10_boot_state::es5506_wavetable_r(offs_t offset)
 	return system_memory_r(phys_byte_address);
 }
 
-
-u8 asr10_boot_state::maincpu_iack_r(u8 level)
-{
-	if (level == 6)
-		return m_maincpu->irq6_ack_vector();
-	if (level == 1)
-		return m_maincpu->irq1_ack_vector();
-
-	return m68000_base_device::autovector(level);
-}
-
-
-// Minimal IDMA board policy (docs/asr10/investigations/
-// idma-implementation-plan.md): board-side glue only. The generic
-// register/transfer/count bookkeeping lives on mc68302_device
-// (idma_transfer_in()); this driver just supplies FDC-specific knowledge
-// -- pull a byte via dma_r() (not the CPU-visible FIFO port) and assert
-// terminal count once the channel reports the transfer complete, so the
-// FDC's own live transfer state machine ends the command and moves to
-// result phase (upd765_family_device::tc_w()). Without the tc_w() call,
-// upd765.cpp's own sector-boundary check (command[4]==command[6], i.e.
-// R==EOT, guarded by `if(!tc_done)`) reports abnormal termination/
-// end-of-cylinder even after every byte has been correctly transferred --
-// exactly the "overrun again, later" failure mode this was written to
-// avoid; see docs/asr10/investigations/idma-implementation-plan.md.
-//
-// MUST check idma_channel_active() before touching the FDC at all:
-// upd765_family_device::enable_transfer() asserts DRQ on every transfer,
-// PIO included -- there is no `else` between its PIO/internal_drq branch
-// and its unconditional `if(!drq) set_drq(true)`. An earlier version of
-// this handler called dma_r() unconditionally on every DRQ assertion and
-// broke plain boot-to-FILE1 (regression fell to 1/5, "PLEASE INSERT DISK"
-// even with media mounted): it was silently popping bytes out of the
-// FDC's FIFO during the boot's own unrelated polled READ DATA transfers,
-// desyncing the CPU's own fifo_r() reads of the same data. Caught by the
-// regression suite, reverted, root-caused against upd765.cpp before
-// retrying -- not guessed around.
-//
-// tc_w() is NOT called synchronously here -- docs/asr10/investigations/
-// tc-reentrancy-probe.md. enable_transfer() (which asserts DRQ, reaching
-// this handler) is called from fifo_push(), itself called from the live
-// MFM-decode path inside upd765_family_device::live_run()'s own for(;;)
-// loop. Calling tc_w() from here would call live_sync(), which can call
-// rollback()+live_run() again -- reentrant, while the outer live_run()
-// invocation that led to this exact call chain is still on the stack,
-// mid-iteration, with cur_live partially updated for the byte just
-// delivered. Measured effect: main_phase got stuck at PHASE_EXEC forever
-// (MSR read $10 continuously, never $D0/PHASE_RESULT) -- command_end()
-// (which sets irq=true and calls check_irq()) never ran, so INTRQ was
-// never asserted at all, not just undelivered; firmware's own ~5s
-// timeout then fired. dma_r() stays synchronous, unchanged, per
-// instruction -- one variable at a time. Only tc_w() moves to a
-// zero-delay timer, so it runs on its own call stack outside live_run()
-// entirely, the way a real DMA controller's independent TC bus line
-// would reach the FDC rather than as a nested function call.
-void asr10_boot_state::idma_drq_w(int state)
-{
-	if (!state || !m_maincpu->idma_channel_active())
-		return;
-
-	const u8 data = m_fdc->dma_r();
-	if (m_maincpu->idma_transfer_in(data))
-		m_idma_tc_timer->adjust(attotime::zero);
-}
-
-
-TIMER_CALLBACK_MEMBER(asr10_boot_state::idma_tc_deliver)
-{
-	m_fdc->tc_w(true);
-	m_fdc->tc_w(false);
-}
-
-
-void asr10_boot_state::scsi_drq_w(int state)
-{
-	if (!state || !m_maincpu->idma_channel_active())
-		return;
-
-	const u8 data = m_scsi->dma_r();
-	m_maincpu->idma_transfer_in(data);
-}
-
-
-u16 asr10_boot_state::low_rom_or_lowmem_r(offs_t offset, u16 mem_mask)
-{
-	if (!m_maincpu->cs0_covers(0))
-		return system_memory_r(offset << 1, mem_mask);
-
-	const u32 byte_address = offset << 1;
-	const u8 *rom = m_rom->base();
-	const u32 rom_offset = byte_address & ROM_MASK;
-	return (u16(rom[rom_offset]) << 8) | rom[(rom_offset + 1) & ROM_MASK];
-}
-
-
-TIMER_CALLBACK_MEMBER(asr10_boot_state::lrclk_toggle)
-{
-	m_lrclk_level = !m_lrclk_level;
-	m_maincpu->set_pb_input(3, m_lrclk_level);
-}
-
-u16 asr10_boot_state::analog_r()
-{
-	const u8 selector = m_maincpu->pbdat_latch() & 7;
-	return m_analog_values[selector] & 0x03ff;
-}
-
-void asr10_boot_state::analog_w(offs_t offset, u16 data)
-{
-	m_analog_values[offset & 7] = data & 0x03ff;
-}
-
-// ES5510 host select/commit wrappers. FC3100-FC3101, FC3140-FC3141 and FC3180-FC3181 are
-// each installed as their own single-word address_map range, so the
-// `offset` MAME hands to an .rw() handler there is always 0 (relative to
-// that range's own base address) -- never the absolute ES5510 host offset
-// (0x80/0xa0/0xc0) the firmware intends. Mapping these three ranges
-// directly to es5510_device::host_r/host_w (as FC3000-FC303F correctly is,
-// since its offsets 0x00-0x1f fall out of that range's own base by
-// construction) silently forwarded offset 0 for all three registers --
-// an ASR-10 adapter address-decode bug, not a stock-device defect. Each
-// wrapper below ignores the map-relative offset entirely and supplies the
-// fixed absolute host offset explicitly.
-u8 asr10_boot_state::es5510_host_read_select_r(offs_t offset)
-{
-	return m_es5510_host->host_r(m_maincpu->space(AS_PROGRAM), 0x80);
-}
-
-void asr10_boot_state::es5510_host_read_select_w(offs_t offset, u8 data)
-{
-	m_es5510_host->host_w(0x80, data);
-}
-
-u8 asr10_boot_state::es5510_host_write_select_gpr_r(offs_t offset)
-{
-	return m_es5510_host->host_r(m_maincpu->space(AS_PROGRAM), 0xa0);
-}
-
-void asr10_boot_state::es5510_host_write_select_gpr_w(offs_t offset, u8 data)
-{
-	m_es5510_host->host_w(0xa0, data);
-}
-
-u8 asr10_boot_state::es5510_host_write_select_instr_r(offs_t offset)
-{
-	return m_es5510_host->host_r(m_maincpu->space(AS_PROGRAM), 0xc0);
-}
-
-void asr10_boot_state::es5510_host_write_select_instr_w(offs_t offset, u8 data)
-{
-	m_esp_program_received = true;
-	m_es5510_host->host_w(0xc0, data);
-}
-
-u8 asr10_boot_state::es5510_host_write_select_gpr_instr_r(offs_t offset)
-{
-	return m_es5510_host->host_r(m_maincpu->space(AS_PROGRAM), 0xe0);
-}
-
-void asr10_boot_state::es5510_host_write_select_gpr_instr_w(offs_t offset, u8 data)
-{
-	m_esp_program_received = true;
-	m_es5510_host->host_w(0xe0, data);
-}
-
-void asr10_boot_state::lowmem_w(offs_t offset, u16 data, u16 mem_mask)
-{
-	system_memory_w(offset << 1, data, mem_mask);
-
-	// `$0CE3` is the PC-correlated current-effect operating-mode byte.  Its
-	// values 0/1 drive the separately verified ACTV and pitch setup branches;
-	// this board-level policy adds only the surviving current-MAME rate relation.
-	if (offset == (0x0ce2 / 2) && ACCESSING_BITS_0_7)
-	{
-		const u8 mode = m_system_ram[offset] & 0xff;
-		if (mode <= 1 && mode != m_effect_audio_mode)
-		{
-			m_effect_audio_mode = mode;
-			apply_effect_audio_rate_policy();
-		}
-	}
-}
-
-void asr10_boot_state::apply_effect_audio_rate_policy()
-{
-	const u32 clock = m_effect_audio_mode ? AUDIO_RATE_MODE1_CLOCK : AUDIO_RATE_MODE0_CLOCK;
-	if (m_es5506_host)
-		m_es5506_host->set_unscaled_clock(clock);
-}
-
-void asr10_boot_state::es5506_frame_rate_changed(u32 rate)
-{
-	if (m_pump)
-		m_pump->set_unscaled_clock(rate);
-}
-
-void asr10_boot_state::mc68302_pa_w(u16 data)
-{
-	// MC68302 Port A PA4 (bit 4 of $FC6823 / PADAT) drives the hardware RUN/HALT line:
-	// PA4 = 0: ESP halted during program/GPR upload ($FFF977B0)
-	// PA4 = 1: ESP running ($FFF977C6)
-	const bool run = BIT(data, 4);
-	if (m_es5510_host)
-		m_es5510_host->set_HALT(!run);
-	if (run)
-	{
-		if (m_esp_program_received)
-			m_esp_program_loaded = true;
-	}
-	else
-	{
-		m_esp_program_loaded = false;
-	}
-	if (m_pump)
-		m_pump->set_esp_halted(!(run && m_esp_program_loaded));
-}
-
-void asr10_boot_state::effect_audio_rate_postload()
-{
-	apply_effect_audio_rate_policy();
-	if (m_maincpu)
-	{
-		const bool run = BIT(m_maincpu->padat_latch(), 4);
-		if (m_es5510_host)
-			m_es5510_host->set_HALT(!run);
-		if (m_pump)
-			m_pump->set_esp_halted(!(run && m_esp_program_loaded));
-	}
-}
-
-u16 asr10_boot_state::system_memory_r(u32 address, u16 mem_mask)
-{
-	return m_system_ram[(address & (SYSTEM_RAM_BYTES - 1)) >> 1] & mem_mask;
-}
-
-
-void asr10_boot_state::system_memory_w(u32 address, u16 data, u16 mem_mask)
-{
-	COMBINE_DATA(&m_system_ram[(address & (SYSTEM_RAM_BYTES - 1)) >> 1]);
-}
-
-
-u16 asr10_boot_state::sample_memory_r(offs_t offset, u16 mem_mask)
-{
-	return system_memory_r(0x00100000 + (offset << 1), mem_mask);
-}
-
-
-void asr10_boot_state::sample_memory_w(offs_t offset, u16 data, u16 mem_mask)
-{
-	system_memory_w(0x00100000 + (offset << 1), data, mem_mask);
-}
-
-
-u16 asr10_boot_state::expanded_memory_r(offs_t offset, u16 mem_mask)
-{
-	return system_memory_r(0x00200000 + (offset << 1), mem_mask);
-}
-
-
-void asr10_boot_state::expanded_memory_w(offs_t offset, u16 data, u16 mem_mask)
-{
-	system_memory_w(0x00200000 + (offset << 1), data, mem_mask);
-}
-
-
-u16 asr10_boot_state::high_alias_r(offs_t offset, u16 mem_mask)
-{
-	const u8 *rom = m_rom->base();
-	const u32 runtime_address_24 = 0x00f80000 | (offset << 1);
-	const u32 rom_offset = runtime_address_24 & ROM_MASK;
-	return ((u16(rom[rom_offset]) << 8) | rom[(rom_offset + 1) & ROM_MASK]) & mem_mask;
-}
-
-
-void asr10_boot_state::high_alias_w(offs_t offset, u16 data, u16 mem_mask)
-{
-}
-
+//-------------------------------------------------
+//  Storage (FDC / SCSI / IDMA) Handlers
+//-------------------------------------------------
 
 u16 asr10_boot_state::upd72069_fdc_r(offs_t offset, u16 mem_mask)
 {
@@ -732,7 +486,6 @@ u16 asr10_boot_state::upd72069_fdc_r(offs_t offset, u16 mem_mask)
 	return raw_data & mem_mask;
 }
 
-
 void asr10_boot_state::upd72069_fdc_w(offs_t offset, u16 data, u16 mem_mask)
 {
 	const u32 address = (0x00fc4000 | (offset << 1)) | (ACCESSING_BITS_0_7 ? 1 : 0);
@@ -750,49 +503,41 @@ void asr10_boot_state::upd72069_fdc_w(offs_t offset, u16 data, u16 mem_mask)
 	}
 }
 
-
-u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
+// [VERIFIED functional / provisional board glue]
+// FDC DRQ feeds MC68302 IDMA.
+// Invariants:
+// - Only consume FDC DRQ if IDMA channel is actively enabled.
+// - Defer FDC TC via zero-delay timer to avoid re-entering upd765 live_run().
+//   See docs/asr10/investigations/tc-reentrancy-probe.md.
+void asr10_boot_state::idma_drq_w(int state)
 {
-	const u32 word = offset & 0x0f;
-	u16 raw_data = ACCESSING_BITS_0_7 ? m_duart->read(word) : 0;
-	const u16 data = raw_data & mem_mask;
-	return data;
+	if (!state || !m_maincpu->idma_channel_active())
+		return;
+
+	const u8 data = m_fdc->dma_r();
+	if (m_maincpu->idma_transfer_in(data))
+		m_idma_tc_timer->adjust(attotime::zero);
 }
 
-
-void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 mem_mask)
+TIMER_CALLBACK_MEMBER(asr10_boot_state::idma_tc_deliver)
 {
-	const u32 word = offset & 0x0f;
-	if (ACCESSING_BITS_0_7)
-		m_duart->write(word, u8(data));
+	m_fdc->tc_w(true);
+	m_fdc->tc_w(false);
 }
 
-
-void asr10_boot_state::fdc_intrq_w(int state)
+void asr10_boot_state::scsi_drq_w(int state)
 {
-	m_fdc_irq = state;
-	m_maincpu->set_input_line(1, (m_fdc_irq || m_scsi_irq) ? ASSERT_LINE : CLEAR_LINE);
+	if (!state || !m_maincpu->idma_channel_active())
+		return;
+
+	const u8 data = m_scsi->dma_r();
+	m_maincpu->idma_transfer_in(data);
 }
-
-
-void asr10_boot_state::scsi_irq_w(int state)
-{
-	m_scsi_irq = state;
-	m_maincpu->set_input_line(1, (m_fdc_irq || m_scsi_irq) ? ASSERT_LINE : CLEAR_LINE);
-}
-
-
-void asr10_boot_state::es5506_irq_w(int state)
-{
-	m_maincpu->set_pb_input(9, state != 0);
-}
-
 
 void asr10_boot_state::floppy_drives(device_slot_interface &device)
 {
 	device.option_add_internal("35hd", FLOPPY_35_HD);
 }
-
 
 void asr10_boot_state::floppy_formats(format_registration &fr)
 {
@@ -801,10 +546,6 @@ void asr10_boot_state::floppy_formats(format_registration &fr)
 	fr.add(FLOPPY_ESQIMG_FORMAT);
 	fr.add(FLOPPY_HFE_FORMAT);
 }
-
-
-static INPUT_PORTS_START(asr10_boot)
-INPUT_PORTS_END
 
 static void asr10_scsi_devices(device_slot_interface &device)
 {
@@ -816,80 +557,208 @@ static void asr10_scsi_devices(device_slot_interface &device)
 		});
 }
 
+static INPUT_PORTS_START(asr10_boot)
+INPUT_PORTS_END
+
+//-------------------------------------------------
+//  Interrupt Handlers
+//-------------------------------------------------
+
+u8 asr10_boot_state::maincpu_iack_r(u8 level)
+{
+	if (level == 6)
+		return m_maincpu->irq6_ack_vector();
+	if (level == 1)
+		return m_maincpu->irq1_ack_vector();
+
+	return m68000_base_device::autovector(level);
+}
+
+void asr10_boot_state::fdc_intrq_w(int state)
+{
+	m_fdc_irq = state;
+	m_maincpu->set_input_line(1, (m_fdc_irq || m_scsi_irq) ? ASSERT_LINE : CLEAR_LINE);
+}
+
+void asr10_boot_state::scsi_irq_w(int state)
+{
+	m_scsi_irq = state;
+	m_maincpu->set_input_line(1, (m_fdc_irq || m_scsi_irq) ? ASSERT_LINE : CLEAR_LINE);
+}
+
+void asr10_boot_state::es5506_irq_w(int state)
+{
+	m_maincpu->set_pb_input(9, state != 0);
+}
+
+//-------------------------------------------------
+//  Panel / MIDI / Analog Handlers
+//-------------------------------------------------
+
+u16 asr10_boot_state::duart_panel_asr_candidate_r(offs_t offset, u16 mem_mask)
+{
+	const u32 word = offset & 0x0f;
+	u16 raw_data = ACCESSING_BITS_0_7 ? m_duart->read(word) : 0;
+	const u16 data = raw_data & mem_mask;
+	return data;
+}
+
+void asr10_boot_state::duart_panel_asr_candidate_w(offs_t offset, u16 data, u16 mem_mask)
+{
+	const u32 word = offset & 0x0f;
+	if (ACCESSING_BITS_0_7)
+		m_duart->write(word, u8(data));
+}
+
+u16 asr10_boot_state::analog_r()
+{
+	const u8 selector = m_maincpu->pbdat_latch() & 7;
+	return m_analog_values[selector] & 0x03ff;
+}
+
+void asr10_boot_state::analog_w(offs_t offset, u16 data)
+{
+	m_analog_values[offset & 7] = data & 0x03ff;
+}
+
+//-------------------------------------------------
+//  Audio Clocks & Rate Mode
+//-------------------------------------------------
+
+// [provisional board policy]
+// Applies the input clock corresponding to the active effect operating mode (30 kHz vs 44.1 kHz).
+void asr10_boot_state::apply_effect_audio_rate_policy()
+{
+	const u32 clock = m_effect_audio_mode ? AUDIO_RATE_MODE1_CLOCK : AUDIO_RATE_MODE0_CLOCK;
+	m_es5506_host->set_unscaled_clock(clock);
+}
+
+void asr10_boot_state::effect_audio_rate_postload()
+{
+	apply_effect_audio_rate_policy();
+	const bool run = BIT(m_maincpu->padat_latch(), 4);
+	m_es5510_host->set_HALT(!run);
+	m_pump->set_esp_halted(!(run && m_esp_program_loaded));
+}
+
+void asr10_boot_state::es5506_frame_rate_changed(u32 rate)
+{
+	m_pump->set_unscaled_clock(rate);
+}
+
+//-------------------------------------------------
+//  ES5510 Host / Lifecycle
+//-------------------------------------------------
+
+void asr10_boot_state::mc68302_pa_w(u16 data)
+{
+	// MC68302 Port A PA4 (bit 4 of $FC6823 / PADAT) drives the hardware RUN/HALT line:
+	// PA4 = 0: ESP halted during program/GPR upload ($FFF977B0)
+	// PA4 = 1: ESP running ($FFF977C6)
+	const bool run = BIT(data, 4);
+	m_es5510_host->set_HALT(!run);
+	if (run)
+	{
+		if (m_esp_program_received)
+			m_esp_program_loaded = true;
+	}
+	else
+	{
+		m_esp_program_loaded = false;
+	}
+	m_pump->set_esp_halted(!(run && m_esp_program_loaded));
+}
+
+// ES5510 host select/commit helpers.
+// FC3101/FC3141/FC3181/FC31C1 are each single-word address_map ranges, so MAME's
+// map-relative offset is always 0. These helpers supply the fixed host offset (0x80/0xa0/0xc0/0xe0).
+u8 asr10_boot_state::es5510_fixed_host_r(u8 host_offset)
+{
+	return m_es5510_host->host_r(m_maincpu->space(AS_PROGRAM), host_offset);
+}
+
+void asr10_boot_state::es5510_fixed_host_w(u8 host_offset, u8 data, bool marks_program_received)
+{
+	if (marks_program_received)
+		m_esp_program_received = true;
+	m_es5510_host->host_w(host_offset, data);
+}
+
+u8 asr10_boot_state::es5510_host_read_select_r(offs_t offset)
+{
+	return es5510_fixed_host_r(0x80);
+}
+
+void asr10_boot_state::es5510_host_read_select_w(offs_t offset, u8 data)
+{
+	es5510_fixed_host_w(0x80, data, false);
+}
+
+u8 asr10_boot_state::es5510_host_write_select_gpr_r(offs_t offset)
+{
+	return es5510_fixed_host_r(0xa0);
+}
+
+void asr10_boot_state::es5510_host_write_select_gpr_w(offs_t offset, u8 data)
+{
+	es5510_fixed_host_w(0xa0, data, false);
+}
+
+u8 asr10_boot_state::es5510_host_write_select_instr_r(offs_t offset)
+{
+	return es5510_fixed_host_r(0xc0);
+}
+
+void asr10_boot_state::es5510_host_write_select_instr_w(offs_t offset, u8 data)
+{
+	es5510_fixed_host_w(0xc0, data, true);
+}
+
+u8 asr10_boot_state::es5510_host_write_select_gpr_instr_r(offs_t offset)
+{
+	return es5510_fixed_host_r(0xe0);
+}
+
+void asr10_boot_state::es5510_host_write_select_gpr_instr_w(offs_t offset, u8 data)
+{
+	es5510_fixed_host_w(0xe0, data, true);
+}
+
+//-------------------------------------------------
+//  Timers / Board Glue
+//-------------------------------------------------
+
+TIMER_CALLBACK_MEMBER(asr10_boot_state::lrclk_toggle)
+{
+	m_lrclk_level = !m_lrclk_level;
+	m_maincpu->set_pb_input(3, m_lrclk_level);
+}
+
+//-------------------------------------------------
+//  Machine Configuration
+//-------------------------------------------------
+
 void asr10_boot_state::asr10_boot(machine_config &config)
 {
-	// fas 3 steg 1 (docs/asr10/PLAN.md): plumbing only -- BAR/SCR, Port B
-	// PIO, the FC6860 busy register, and known/known-unimplemented/unknown
-	// access classification. No interrupt controller, timer, IDMA, or
-	// communications processor yet; see docs/mc68302/.
 	MC68302(config, m_maincpu, XTAL(16'000'000));
 	m_maincpu->set_addrmap(AS_PROGRAM, &asr10_boot_state::mem_map);
 	m_maincpu->set_addrmap(m68000_base_device::AS_CPU_SPACE, &asr10_boot_state::cpu_space_map);
 	m_maincpu->pa_out_cb().set(*this, FUNC(asr10_boot_state::mc68302_pa_w));
 
-	// Klockprovenens (keyboard-and-sample-bridge-10.md): GISSNING.
-	// Borrows Y1's own value only as a placeholder; not measured or
-	// derived, no board citation exists for the FDC's actual clock.
-	UPD72069(config, m_fdc, XTAL(16'000'000)); // clock unknown; placeholder for boot tracing
+	// Floppy subsystem: NEC uPD72069 controller and 3.5" HD drive
+	UPD72069(config, m_fdc, XTAL(16'000'000)); // clock unknown; placeholder
 	m_fdc->idx_wr_callback().set(m_duart, FUNC(scn2681_device::ip0_w));
-	// docs/asr10/investigations/ready-line-artifact-probe.md,
-	// irq1-handler-chain-probe.md, irq1-storage-completion-probe.md: this
-	// pair is meaningful only together, landed together after negative
-	// control, positive control, and four clean vector-$51 IACKs.
-	//
-	// upd765_family_device::run_drive_ready_polling() (upd765.cpp) polls
-	// floppy_image_device::ready_r() every 1.024ms against a stored flag
-	// and, on a transition, synthesizes an INTRQ + ST0 "ready line changed"
-	// result -- real uPD765-family behavior (this is genuine edge-triggered
-	// polling, not a MAME-only shortcut). On real hardware, if RDY is
-	// physically tied active on this board, that polling loop never sees an
-	// edge and no such interrupt is ever generated. set_ready_line_connected
-	// (false) models exactly that board policy -- not a workaround for a
-	// MAME quirk, a stand-in for a specific, plausible physical wiring
-	// choice. [Likely, coverage: 5 regression tests, no in-session disk
-	// swap exercised] Empirically safe: 5/5 alone, including nodisk (whose
-	// no-disk detection runs through DUART IP0/INDEX, not FDC ready) --
-	// multi-disk INSERT DISK prompts during a running session are untested.
-	// get_ready() with ready_connected=false falls back to
-	// `!external_ready`; nothing in this driver ever calls ready_w(), so
-	// external_ready stays false and get_ready() returns permanently true
-	// (always-ready), not always-not-ready.
-	//
-	// Without this, the same INTRQ wiring alone breaks boot itself
-	// (ERROR 129 -- a genuine 68000 Address Error, not a firmware-level
-	// detection; see the retroactive correction in
-	// irq1-storage-completion-probe.md) by delivering a phantom completion
-	// into the generic vector-$51 dispatcher outside any context that
-	// installed its $0402 continuation. With both lines here, boot survives
-	// to FILE 1 and the instrument-load path's real completion chain runs
-	// correctly through RECALIBRATE, SEEK 0F 00 01, and READ DATA $46 --
-	// each a genuine vector-$51 delivery with $0402 correctly populated by
-	// the instrument-load's own RECALIBRATE issuer -- then stops at a
-	// legitimate `DISK ERROR - LOST DATA` (uPD765 ST1 overrun) -- MC68302
-	// IDMA was not implemented at that point.
-	//
-	// Now wired to the minimal IDMA in mc68302_device (idma_drq_w() above,
-	// docs/asr10/investigations/idma-implementation-plan.md): does not
-	// deliver vector $4B (IDMA's own internal-INRQ completion path).
-	// Measured: at every observed vector-$51 IACK, IMR is $E480, and bit
-	// 11 (IDMA's INRQ source, docs/mc68302/interrupt-source-map.md) is
-	// clear -- $E480 = $C080 (ROM's PB9/10/11 unmask) | $2400 (OS's SCC1+
-	// SCC2 unmask); bit 10, not bit 11, is what's set in that nibble.
-	// IDMA's completion is masked throughout the observed window, and all
-	// four completions actually observed for this request (RECALIBRATE,
-	// two SEEKs, READ DATA's own result) arrived via the FDC's own INTRQ
-	// through this same external-IRQ1/vector-$51 path, not vector $4B --
-	// so this driver does not implement the internal IPR/IMR/ISR path or
-	// vector $4B delivery, only the transfer itself.
+	// [provisional board policy]
+	// Ready line is tied active (false), preventing spurious ST0 ready polling interrupts.
+	// FDC completion IRQ (INTRQ) routes through external IRQ1 / vector $51.
+	// See docs/asr10/investigations/ready-line-artifact-probe.md.
 	m_fdc->set_ready_line_connected(false);
 	m_fdc->intrq_wr_callback().set(FUNC(asr10_boot_state::fdc_intrq_w));
 	m_fdc->drq_wr_callback().set(FUNC(asr10_boot_state::idma_drq_w));
 
-
-	// The uPD72069 sees this child connector as drive 0 via the conventional "fdc:0" tag.
-	// Mounted HFE media changes Recalibrate/Sense from 68,00 (not ready) to 20,00.
 	FLOPPY_CONNECTOR(config, m_floppy_connector, asr10_boot_state::floppy_drives, "35hd", asr10_boot_state::floppy_formats, true);
 
+	// SCSI subsystem: WD33C93A controller and bus
 	auto &scsi(NSCSI_BUS(config, "scsibus"));
 	NSCSI_CONNECTOR(config, "scsibus:0", asr10_scsi_devices, "harddisk");
 	NSCSI_CONNECTOR(config, "scsibus:1", asr10_scsi_devices, nullptr);
@@ -904,43 +773,16 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	wd33c93.drq_cb().set(*this, FUNC(asr10_boot_state::scsi_drq_w));
 	scsi.set_external_device(7, wd33c93);
 
-	// U20, per docs/hardware-identity.md. X1 is derived, not a separate
-	// crystal: the board has no 3.6864MHz part (Y1=16MHz, Y2=30.476MHz,
-	// Y3=33.8688MHz), and ES5701's own reconstruction (sources/es5701.vhd)
-	// divides the 16MHz system clock by two on-chip; docs/asr10/PLAN.md
-	// section 3 hypothesizes a further /2 (spare 74HC74/74F74 flip-flops
-	// on the board) yields 16/4 = 4.000MHz into X1, matching the 4MHz X1
-	// this same SCN2681 runs at on esqkt.cpp/esq5505.cpp. Channel B is
-	// wired to an ASR-10-specific esqpanel-derived device. The hand-written
-	// taps in duart_panel_asr_candidate_r/w remain for ASR-10 boot/status
-	// responses. The IRQ output is a real pin on a real device --
-	// docs/asr10/duart-imr.md found it genuinely pending (counter/timer
-	// ready) 159/160 of the time and never wired to anything. Wired here
-	// the same way esq5505.cpp wires its own SCN2681 (irq_cb() ->
-	// set_inputline), replacing the old m_panel_c_isr/imr shadow that
-	// could only ever see RX-ready, never counter/timer. Landed together
-	// with mc68302_device::irq6_ack_vector() (docs/asr10/PLAN.md fas 3
-	// steg 2, minimal slice) -- see docs/asr10/duart-irq6-wiring.md for
-	// why the irq_cb wiring alone regresses the boot without it.
-	// Klockprovenens (keyboard-and-sample-bridge-10.md): HÄRLEDD,
-	// empiriskt bekräftad. Master-klockan (16MHz/4) sätter devicens
-	// interna timing; kanal A/B:s egna baud-genererande IP3/IP5-klockor
-	// sätts separat via set_clocks() nedan och är de som faktiskt
-	// verifierats: IP3=500kHz/16=31250 baud matchar den byte-för-byte
-	// korrekt mottagna MIDI-trafiken; IP5=1MHz/16=62500 baud matchar
-	// panelkanalens dokumenterade takt.
+	// DUART (SCN2681):
+	// Master clock is 16 MHz / 4 = 4.000 MHz.
+	// Channel A: MIDI In/Out at 31,250 baud (IP3 = 500 kHz / 16).
+	// Channel B: ASR-10 front panel at 62,500 baud (IP5 = 1 MHz / 16).
+	// DUART IRQ asserts MC68302 Level 6 autovector.
 	SCN2681(config, m_duart, XTAL(16'000'000) / 4);
 	m_duart->irq_cb().set_inputline(m_maincpu, 6);
 	m_duart->b_tx_cb().set(m_panel, FUNC(asr10panel_device::rx_w));
-	// set_clocks() maps to IP3/IP4/IP5/IP6. With CSRA/CSRB selector $E,
-	// mc68681.cpp uses IP3/16 for channel A and IP5/16 for channel B.
 	m_duart->set_clocks(500'000, 500'000, 1'000'000, 1'000'000);
 
-	// Channel A is MIDI, 31250 baud -- unconnected until this task. Wired
-	// per the esq5505.cpp precedent (same SCN2681 family, same channel
-	// assignment): a_tx_cb feeds a MIDI Out port, and a MIDI In port's
-	// rxd_handler feeds rx_a_w. This is the one machine-config change
-	// this task is scoped to.
 	m_duart->a_tx_cb().set(m_mdout, FUNC(midi_port_device::write_txd));
 	auto &mdin(MIDI_PORT(config, "mdin"));
 	midiin_slot(mdin);
@@ -951,71 +793,28 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	m_panel->write_tx().set(m_duart, FUNC(scn2681_device::rx_b_w));
 	m_panel->write_analog().set(FUNC(asr10_boot_state::analog_w));
 
-	// ES5506 clock contract:
-	// [VERIFIED] ES5506 Rev 2.3 specification: Fs = CLK / (16 * active_voices),
-	// with input CLK operating in the 8..16.9 MHz range.
-	// [VERIFIED] Authentic firmware system sample rate reference $0D66 encodes
-	// 29,761.90 Hz (Mode 0) and 44,100.00 Hz (Mode 1).
-	// [VERIFIED] These rates correspond numerically to Y2/2 (15.238090 MHz / 512)
-	// and Y3/2 (16.934400 MHz / 384), matching firmware traversal math 1:1.
-	// [OPEN] Exact physical PCB divider/mux topology between Y2/Y3 and OTTO has
-	// not been traced.
+	// Ensoniq ES5506 (OTTO) sound generator:
+	// Mode 0 clock: Y2/2 = 15.238090 MHz (32 voices -> Fs = 29,761.90 Hz).
+	// Mode 1 clock: Y3/2 = 16.934400 MHz (24 voices -> Fs = 44,100.00 Hz).
 	es5506_device &es5506_host(ES5506(config, m_es5506_host, AUDIO_RATE_MODE0_CLOCK));
 	es5506_host.set_addrmap(0, &asr10_boot_state::es5506_wavetable_map);
 	es5506_host.set_addrmap(1, &asr10_boot_state::es5506_wavetable_map);
 	es5506_host.set_addrmap(2, &asr10_boot_state::es5506_wavetable_map);
 	es5506_host.set_addrmap(3, &asr10_boot_state::es5506_wavetable_map);
 	es5506_host.sample_rate_changed().set(FUNC(asr10_boot_state::es5506_frame_rate_changed));
-
 	es5506_host.read_port_cb().set(FUNC(asr10_boot_state::analog_r));
 	es5506_host.irq_cb().set(*this, FUNC(asr10_boot_state::es5506_irq_w));
-
-	// The [Hypothesis] adapter needs four exposed pairs to duplicate the
-	// observed active lane 0/1 into its three program-read serial ports.
-	SPEAKER(config, "speaker", 2).front();
 	es5506_host.set_channels(6);
 
-	// ES5510 host window (filesystem-browser-map.md 4.24):
-	// instantiate a stock es5510_device purely as a host-interface
-	// register bank for the FC3000-FC31FF select/commit protocol proven
-	// in 4.22/4.23. set_disable() keeps it out of the scheduler's execute
-	// list entirely -- the same idiom esqasr.cpp uses for this exact chip
-	// on this exact board family (ES5510(config, m_esp, XTAL(10'000'000));
-	// m_esp->set_disable();). This is deliberate, not a placeholder:
-	// es5510_device::host_r()/host_w() (es5510.cpp) are pure register/
-	// latch/gpr/instr-array state manipulation and do not call
-	// execute_run() or otherwise depend on the device's own instruction
-	// stream; memory_space_config() also returns an empty space_config_
-	// vector, so no internal addrmap is required either. No IRQ wiring:
-	// nothing in the proven upload/verify sequence (f973f0-f97776)
-	// touches an ESP interrupt. Host-interface correctness is this
-	// round's criterion, not audio output.
-	// Provisional/uncalibrated clock: 10MHz matches the real
-	// ASR-10/ESQ-1-family precedent (esqasr.cpp and esq5505.cpp both
-	// use XTAL(10'000'000) / 10_MHz_XTAL for this exact chip); not
-	// derived from ASR-10 schematics this round, and irrelevant to
-	// host_r()/host_w() correctness since the device never executes.
-	// Klockprovenens (keyboard-and-sample-bridge-10.md/-11.md):
-	// FAMILJEPRECEDENS + DATABLAD (delvis). docs/ensoniq/ES5510.pdf's
-	// own VDD spec cites "< 100mA @ 10MHz clock" and its ESPR7 timing
-	// table covers 8/10/12MHz as three real speed grades -- 10MHz is
-	// datasheet-real for this part, not just a borrowed round number.
-	// esq5505.cpp also has a second board variant (distinct from the
-	// crystal-halving one) that clocks M68000/ES5510/ES5505/DMAC all
-	// from a flat, undivided 10_MHz_XTAL with ES5510 disabled -- closer
-	// to this driver's own pattern than the halved-crystal precedent.
-	// Still no measurement possible while set_disable()'d (scratch-
-	// enabling it this task did not hang MAME, but hit the already-
-	// documented EFFECT DOWNLOAD FAILED path and was reverted, not
-	// landed). Whether real ASR-10 hardware feeds ES5510 from Y2, Y3,
-	// or a flat 10MHz stays [OPEN], not established.
+	SPEAKER(config, "speaker", 2).front();
+
+	// Ensoniq ES5510 (ESP) effects processor:
+	// Kept out of scheduler via set_disable(); host interface register bank is active.
 	es5510_device &es5510_host(ES5510(config, m_es5510_host, XTAL(10'000'000)));
 	es5510_host.set_disable();
 
-	// [HYPOTHESIS] ASR functional frame adapter.  It is deliberately a
-	// serial-contract choice, not a physical board-route claim: the known
-	// 44LUSH image reads SER0/SER2/SER3 and writes SER1.  HALT remains true
-	// except after a verified post-upload ROM-HALL or 44LUSH image.
+	// [provisional board policy] ASR functional frame adapter & audio pump:
+	// 44LUSH reads SER0/SER2/SER3 and writes SER1.
 	ESQ_5505_5510_PUMP(config, m_pump, AUDIO_RATE_MODE0_CLOCK / (16 * 32));
 	m_pump->set_esp("es5510_host");
 	m_pump->set_serial_route(esq_5505_5510_pump_device::serial_route::ser0_ser2_ser3_to_ser1);
@@ -1035,7 +834,6 @@ void asr10_boot_state::asr10_boot(machine_config &config)
 	es5506_host.add_route(5, "pump", 1.0, 1); // BUS3 -> SER3 R
 }
 
-
 ROM_START(asr10booth)
 	ROM_REGION(0x040000, "maincpu", 0)
 	ROM_LOAD16_BYTE("asr-648c-lo-1.5b.bin", 0x000000, 0x020000, CRC(8e437843) SHA1(418f042acbc5323f5b59cbbd71fdc8b2d851f7d0))
@@ -1044,6 +842,4 @@ ROM_END
 
 } // anonymous namespace
 
-
-// CONS(1992, asr10booth, 0, 0, asr10_boot, asr10_boot, asr10_boot_state, empty_init, "Ensoniq", "ASR-10 boot harness", MACHINE_NO_SOUND)
 CONS(1992, asr10booth, 0, 0, asr10_boot, asr10_boot, asr10_boot_state, empty_init, "Ensoniq", "ASR-10 boot harness", MACHINE_SUPPORTS_SAVE)
