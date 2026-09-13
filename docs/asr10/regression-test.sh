@@ -55,6 +55,12 @@
 # comp_dist_reverb: cycles to ROM-10 then ROM-11 COMP+DIST+REVERB, verifying
 #              successful ES5510 address-register readback, zero retries, and
 #              active effect state without ERROR 032.
+# comp_pitch_shift: cycles to ROM-39 PITCH SHIFT, verifying successful
+#              ES5510 CMR/CCR/SIGREG host semantics, zero retries, and active
+#              effect state without ERROR 032.
+# es5510_special_regs: verifies host write -> internal conversion -> host
+#              readback formatting for generic ES5510 registers (SIGREG,
+#              CCR, CMR, DLENGTH, ABASE, BBASE, DBASE).
 
 set -u
 
@@ -169,6 +175,8 @@ run_test panel_input docs/asr10/lua/panel_input.lua "$IMAGE" || failures=$((fail
 run_test panel_navigation docs/asr10/lua/panel_navigation.lua "$IMAGE" || failures=$((failures + 1))
 run_test display_field_rewrite docs/asr10/lua/display_field_rewrite.lua "$IMAGE" || failures=$((failures + 1))
 run_test comp_dist_reverb docs/asr10/lua/comp_dist_reverb.lua "$IMAGE" || failures=$((failures + 1))
+run_test comp_pitch_shift docs/asr10/lua/comp_pitch_shift.lua "$IMAGE" || failures=$((failures + 1))
+run_test es5510_special_regs docs/asr10/lua/es5510_special_regs.lua "" || failures=$((failures + 1))
 
 if [ "$failures" -ne 0 ]; then
 	echo "FAIL regression failures=${failures}"

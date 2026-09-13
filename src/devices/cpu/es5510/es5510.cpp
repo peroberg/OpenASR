@@ -1053,9 +1053,10 @@ int32_t es5510_device::read_reg(uint8_t reg)
 		case 246: RETURN(abase, abase | 0x00000f);
 		case 247: RETURN(bbase, bbase | 0x00000f);
 		case 248: RETURN(dbase, dbase);
-		case 249: RETURN(sigreg, sigreg);
-		case 250: RETURN(ccr, ccr << 16);
-		case 251: RETURN(cmr, cmr << 16);
+		// Control registers are left-justified in the high host byte; unused bits read back high.
+		case 249: RETURN(sigreg, sigreg | 0x3f0000);
+		case 250: RETURN(ccr, (uint32_t(uint8_t(ccr)) << 16) | 0x070000);
+		case 251: RETURN(cmr, (uint32_t(uint8_t(cmr)) << 16) | 0x030000);
 		case 252: RETURN(minus_one, 0x00ffffff);
 		case 253: RETURN(min, 0x00800000);
 		case 254: RETURN(max, 0x007fffff);
@@ -1098,10 +1099,10 @@ int8_t countLowOnes(int32_t x) {
 }
 
 #if VERBOSE_EXEC
-#define WRITE_REG(r, x) do { r = value; LOG_EXEC("  . writing %x (%d) to " #r "\n", r, util::sext(r, 24)); } while(0)
+#define WRITE_REG(r, x) do { r = (x); LOG_EXEC("  . writing %x (%d) to " #r "\n", r, util::sext(r, 24)); } while(0)
 #define WRITE_REG16(r, x) do { r = clamp_to_s16(value); LOG_EXEC("  . writing %x (%d) as %x (%d) to " #r "\n", value, util::sext(value, 24), (uint16_t)r, r); } while(0)
 #else
-#define WRITE_REG(r, x) do { r = value; } while(0)
+#define WRITE_REG(r, x) do { r = (x); } while(0)
 #define WRITE_REG16(r, x) do { r = clamp_to_s16(value); } while(0)
 #endif
 
