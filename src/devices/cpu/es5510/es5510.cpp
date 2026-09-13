@@ -1048,9 +1048,10 @@ int32_t es5510_device::read_reg(uint8_t reg)
 		case 242: RETURN(macl, mac_overflow ? (machl < 0 ? 0x00000000 : 0x00ffffff) : (machl >>  0) & 0x00ffffff);
 		case 243: RETURN(mach, mac_overflow ? (machl < 0 ? 0x00800000 : 0x007fffff) : (machl >> 24) & 0x00ffffff);
 		case 244: RETURN(dil, dil); // DIL when reading
-		case 245: RETURN(dlength, dlength);
-		case 246: RETURN(abase, abase);
-		case 247: RETURN(bbase, bbase);
+		// Address-generator registers are 20-bit values left-justified in the 24-bit host word; unused low bits read back high.
+		case 245: RETURN(dlength, dlength | 0x00000f);
+		case 246: RETURN(abase, abase | 0x00000f);
+		case 247: RETURN(bbase, bbase | 0x00000f);
 		case 248: RETURN(dbase, dbase);
 		case 249: RETURN(sigreg, sigreg);
 		case 250: RETURN(ccr, ccr << 16);

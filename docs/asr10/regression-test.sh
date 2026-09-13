@@ -52,6 +52,9 @@
 #              TEMPO transaction through the real firmware/device path:
 #              $62 anchor, then $63 rewrites 90->91->90 at columns 6-8
 #              without trailing text or underline loss.
+# comp_dist_reverb: cycles to ROM-10 then ROM-11 COMP+DIST+REVERB, verifying
+#              successful ES5510 address-register readback, zero retries, and
+#              active effect state without ERROR 032.
 
 set -u
 
@@ -165,6 +168,7 @@ run_test display_protocol docs/asr10/lua/display_protocol.lua "$IMAGE" || failur
 run_test panel_input docs/asr10/lua/panel_input.lua "$IMAGE" || failures=$((failures + 1))
 run_test panel_navigation docs/asr10/lua/panel_navigation.lua "$IMAGE" || failures=$((failures + 1))
 run_test display_field_rewrite docs/asr10/lua/display_field_rewrite.lua "$IMAGE" || failures=$((failures + 1))
+run_test comp_dist_reverb docs/asr10/lua/comp_dist_reverb.lua "$IMAGE" || failures=$((failures + 1))
 
 if [ "$failures" -ne 0 ]; then
 	echo "FAIL regression failures=${failures}"
