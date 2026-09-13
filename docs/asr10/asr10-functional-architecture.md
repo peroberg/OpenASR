@@ -366,12 +366,11 @@ Authentic confirmation of CS1 translation occurs in the `JM DRUMS` fixture (Laye
 - **Firmware Continuation Architecture:**
   - ROM `$F8E27E` checks whether the endpoint exceeds `$40000000` (2 MegaWords / 4 MegaBytes).
   - For large endpoints, firmware initializes temporary equal loop boundaries (`START == END`) at 2 MegaBytes, arms `IRQE` + transwave mode (`BLE`), and binds ISR continuation callbacks (`$FFFF8EE2` forward, `$FFFF8EEE` reverse) `[VERIFIED]`.
-- **Execution Impediment in Generic MAME:**
-  - `es5506_device::generate_samples()` unconditionally halts playback (`STOP0 = 1`) whenever `START == END`.
-  - Consequently, synthetic large-sample tests stop immediately at the temporary boundary before the CPU interrupt continuation handler can execute `[VERIFIED MODEL LIMITATION]`.
+  - Continuation handler updates CS1 translation window pages, rescales boundaries across alternating buffer slices, and finally reinstates one-shot mode (`CR = $4304`) with the true terminal endpoint `[VERIFIED]`.
+- **Resolution in Generic MAME:**
+  - Historical check `if (voice->start == voice->end) voice->control |= CONTROL_STOP0;` in `src/devices/sound/es5506.cpp` removed (aligning with upstream 2016 ES5505 commit `9ded714f316c` where zero-length loops run on real hardware for transwaves) `[VERIFIED UPSTREAM PARITY]`.
 - **Epistemic Classification:**
-  - `[INFERRED]`: Firmware possesses an interrupt-driven CPU continuation mechanism to chain 2 MiB / 4 MiB segments for large WaveSamples.
-  - `[OPEN]`: Authentic end-to-end execution of an individual WaveSample $>4\text{ MiB}$. Requires an authentic large single-WaveSample fixture.
+  - `[VERIFIED FUNCTIONAL MODEL / ACCEPTANCE PASSED]`: Authentic end-to-end execution of an individual WaveSample $>4\text{ MiB}$ verified on CDR-03 `AUDIO DEMOS/ICY TACO` WS1 (~6.4 MiB PCM). 3 dynamic continuation transitions observed, Level 4 Vector $47$ interrupt serviced, clean terminal transition, 28.87 seconds continuous audio playback.
 
 ---
 

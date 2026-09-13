@@ -120,12 +120,19 @@ sanning, och får inte tyst tas bort.
 | `V161.img` | 1 638 400 | `2a5cc161e80001daddf532914e80e854d3079f152197ab3def31055f239182f6` |
 | `V350.img` | 1 638 400 | `2636d085a0f95aedd2378a05a35e44cb0ea6c16e24b41c344ed88d68c8c30e4b` |
 
-## `investigations/` — 133 Markdown-filer (räknat om 2026-09-11)
+## `investigations/` — 137 Markdown-filer (räknat om 2026-09-13)
 
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `HANDOFF.md`, `current-status.md` och `reference/` som
-aktuell sanning. Senaste tillägget är `mc68302-unimplemented-register-coverage.md` (2026-09-11):
+aktuell sanning. Senaste tillägget är `authentic-large-wavesample-continuation.md` (2026-09-13):
+den dokumenterar firmwarens dynamiska transwave/BLE/IRQE-baserade fortsättningsmekanism för WaveSamples >4 MiB,
+identifierar och avlägsnar den historiska generiska spärren (`start == end -> STOP0`) i `es5506.cpp` i linje med upstream commit 9ded714f316c,
+och verifierar fullständig kontinuerlig uppspelning (28.87 s audio, 3 dynamiska övergångar till terminal one-shot) med det autentiska fixturgodkännandet CDR-03 `ICY TACO` WS1.
+Föregående tillägg är `cdr16-move-me-8mb-load-hang.md` (2026-09-13):
+den dokumenterar CDR-16 `MOVE ME*8MB` heap-allokeringsloop orsakad av zero-size effekt-payload request (`size.w == 3`, container = 3 block, offset `+$15F == $04`),
+samt downstream volymetikettverifiering mot `ENSONIQID`.
+Föregående tillägg är `mc68302-unimplemented-register-coverage.md` (2026-09-11):
 den dokumenterar en fullständig SIB-registerinventering för MC68302 ($FC6000-$FC6FFF),
 empirisk accessfrekvens över boot, instrumentladdning, notuppspelning och panelinteraktion,
 och klassificering i Klass 0-5 som fastställer att för de täckta arbetslasterna (boot, laddning, notuppspelning, panel) observeras inga kritiska blockeringar i de kvarvarande omodellerade registren.
