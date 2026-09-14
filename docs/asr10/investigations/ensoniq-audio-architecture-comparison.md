@@ -24,11 +24,11 @@ runtime ACT trace; a ROM set declared in source is not an available ROM.
 
 | Attribute | ASR-10 V3.50/current harness |
 |---|---|
-| CPU | MC68302, 16 MHz [Verified board inventory / MAME code] |
-| Generator | ES5506/OTTO, U29 [Verified source/board inventory] |
-| ESP | ES5510, U43 [Verified source/board inventory] |
-| Glue | U41 is reported ES5701-family; exact ASR wiring [OPEN] |
-| Oscillators | Y1 16 MHz, Y2 30.47618 MHz, Y3 33.8688 MHz [Verified source] |
+| CPU | Main Board U28 MC68302, 16 MHz [OBSERVED — owner-supplied physical inspection; MAME verified code] |
+| Generator | Main Board U29 ES5506/OTTO [OBSERVED — owner-supplied physical inspection; verified source] |
+| ESP | Main Board U43 ES5510 [OBSERVED — owner-supplied physical inspection; verified source] |
+| Glue | Main Board U41 ES5701 [OBSERVED — owner-supplied physical inspection]; exact ASR wiring [OPEN] |
+| Oscillators | Y1 16 MHz, Y2 30.47618 MHz, Y3 33.8688 MHz [OBSERVED — owner-supplied physical inspection; canonical inventory docs/asr10/reference/physical-component-inventory.md] |
 | Generator clock in MAME | direct Y2, 30.47618 MHz [Verified MAME code]; physical path [OPEN] |
 | ESP in MAME | 10 MHz plus `set_disable()` [Verified MAME code]; board clock [OPEN] |
 | Documented mode | 29.7619 kHz / 31 voices; 44.1000 kHz / 23 voices; current effect determines it [Verified source] |

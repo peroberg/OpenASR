@@ -15,14 +15,14 @@ Question:
 > REFRENCE through the ES5506's 10-bit PAR/POT input, with an external
 > selector such as U55 MC74HC4051N?
 
-The board inventory contains U29 ES5506, U55 MC74HC4051N (8:1 analog
-multiplexer), U56 LM358 and U57 LM393. U30/U33 MC74HC4053 and U4
-MC74HC4066 also exist. Component presence and chip capability are separate
-from routing:
+The board inventory (now canonical at `docs/asr10/reference/physical-component-inventory.md`)
+contains Main Board U29 ES5506, U55 MC74HC4051N (8:1 analog multiplexer), U56 LM358
+and U57 LM393. Main Board U30/U33 MC74HC4053 and U4 MC74HC4066 also exist.
+Component presence and chip capability are separate from routing:
 
 | Claim | Status before this run |
 |---|---|
-| U55 is physically present | `[Verified hardware]` |
+| Main Board U55 is physically present | `[OBSERVED — owner-supplied physical inspection]` |
 | ES5506 exposes a 10-bit PAR/POT input | `[Verified chip capability]` |
 | U55 is the controller-input mux | `[OPEN]`, strong candidate |
 | U55 common pin feeds ES5506 POT_IN | `[OPEN]` |

@@ -44,6 +44,8 @@ Service/manual/board information indicates:
 MC68302 MCU
 ```
 
+Observed on physical hardware at Main Board U28: `MPU Motorola MC68302FC16C 1C65T QETY9307` (`[OBSERVED — owner-supplied physical inspection]`; see `docs/asr10/reference/physical-component-inventory.md`).
+
 Current harness uses:
 
 ```cpp id="11v4kv"
@@ -229,6 +231,8 @@ Likely SCSI controller:
 ```text id="gzi1rt"
 AM33C93A-16JC / WD33C93A-compatible
 ```
+
+Observed on physical hardware at SCSI Board U2: `AM33C93A - 16JC 9607GBA E 1989 AMD` (PLCC-44, `[OBSERVED — owner-supplied physical inspection]`; see `docs/asr10/reference/physical-component-inventory.md`).
 
 Current candidate address window:
 

@@ -39,12 +39,12 @@ MAME's own unrelated generic netlist engine.
 **Provenance note, since it matters for what can and can't be trusted
 here**: the crystal list this project has used elsewhere (`Y1`/`Y2`/`Y3`
 — Raltron 93L06, Ecliptek ECX-1278, ECX-964, with specific frequencies)
-came from Per **verbally**, not from any file in this tree. It is
-owner-supplied information, the same evidence category as the
-keyboard-calibration message below (Del 4) — real and usable, but not
-independently re-derivable from anything in the repository if it
-needed to be checked again. Recorded here explicitly so it is never
-mistaken for a documented, in-tree source in a future round.
+originated as owner-supplied physical observations from Per, and is now
+canonically codified in `docs/asr10/reference/physical-component-inventory.md`
+under `[OBSERVED — owner-supplied physical inspection]`. While the raw physical
+package markings and nominal frequencies are established, their downstream PCB
+trace routing and clock distribution remain `[OPEN]`. Recorded here so that
+physical crystal identity is never conflated with verified board net routing.
 
 **Result: no schematic, service manual, board photo, parts list, or
 netlist exists anywhere in this tree.** Per this task's own gate: no

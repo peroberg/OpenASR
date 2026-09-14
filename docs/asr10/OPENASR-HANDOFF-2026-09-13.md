@@ -349,6 +349,7 @@ The following issues are conclusively resolved or disproven. Do NOT reopen them 
 11. **DO NOT mass-implement incomplete MC68302 peripherals without an authentic workload requiring them.**
 12. **DO NOT present the historical ~262 Hz Note 60 audio pitch as current acceptance truth.** (Superceded: Unscaled clock artifact; current verified pitch is ~130.8 Hz).
 13. **DO NOT implement an explicit `es5701_device` without an authentic workload failure.** (Closed / Frozen: Generic ES5701 behavior is documented in `docs/asr10/investigations/es5701-super-glu-architecture.md`; current collapsed model passes all 50 internal ROM effects with 0 retries; exact board routing remains partially open; reopen only on new evidence or workload divergence).
+14. **DO NOT treat physical IC observations as schematics or netlists.** (Canonical physical component observations for the Main Board and SCSI module reside in `docs/asr10/reference/physical-component-inventory.md`. Raw markings are `[OBSERVED — owner-supplied physical inspection]`. Component identity does not imply electrical routing; board-local U-designators like U5 must always include board context e.g. Main Board U5 vs SCSI Board U5).
 
 ---
 

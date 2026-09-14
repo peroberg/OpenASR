@@ -80,6 +80,7 @@ runtime-tool            instrumentering
 | `os-code-extraction.md` | **aktuell** | uppdaterad 2026-08-04 | RAM-adress → disk | segmentreglerna tillagda |
 | `os-image-layout.md` | **aktuell** | ny 2026-08-04 | diskformat, segmentregler | — |
 | `panel-manual.md` | **aktuell** | panelprotokollanalys | panelens manuella och emulerade gränssnitt | — |
+| `physical-component-inventory.md` | **aktuell** | ägarinspektion och foton | fysiska komponentobservationer för Main Board och SCSI | normerande in-tree förteckning över råa IC-märkningar |
 | `rom-os-abi.md` | **aktuell** | ny 2026-08-04 | arkitektur, bindningstabellen | ur `os-binding-table.csv` |
 | `runtime-object-model.md` | **aktuell med historiska gränser** | firmwareobjektanalys | storage-, sample-, instrument- och voice-ägarskap | vissa pre-IDMA runtimegränser läses via `current-status.md` |
 | `runtime-service-model.md` | **aktuell** | utbruten 2026-08-04 | dispatcher-kö, servicefält, V1.61-observationer | programmatisk split av gamla `memory-map.md`, historiken oförändrad |

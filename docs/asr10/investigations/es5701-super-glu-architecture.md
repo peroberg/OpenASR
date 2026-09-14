@@ -347,7 +347,7 @@ In accordance with `docs/asr10/reference/methods-hypothesis-management.md`, ever
 - `[VERIFIED — ES5701 specification]`: Directly confirmed by Bob Yannes' Rev. 2 specification (`docs/ensoniq/ES5701.pdf`).
 - `[VERIFIED — ASR service documentation]`: Explicitly documented in Ensoniq ASR-10 Service Manual (Model #9500).
 - `[VERIFIED — schematic]`: Directly confirmed from an authentic board schematic (NB: digital board schematic was never published).
-- `[VERIFIED — PCB evidence]`: Physically observed on the physical ASR-10 Digital Board (silkscreen, IC package, socket).
+- `[OBSERVED — owner-supplied physical inspection]`: Physically witnessed and photographed on authentic ASR-10 hardware (silkscreen, IC package markings; codified in canonical inventory `docs/asr10/reference/physical-component-inventory.md`).
 - `[VERIFIED — firmware]`: Directly extracted and verified from authentic V3.50 ROM disassembly.
 - `[OBSERVED — MAME / emulator configuration]`: Measured or configured in the MAME emulation.
 - `[INFERRED]`: Deductions based on known component interfaces, functional operation, or standard 68000 bus architecture.
@@ -361,11 +361,11 @@ In accordance with `docs/asr10/reference/methods-hypothesis-management.md`, ever
 
 | Claim ID | Hardware Claim / Statement | Direct Source Document & Section | Evidence Type | Epistemic Status | Technical Analysis & Audit Notes |
 |---|---|---|---|:---:|---|
-| **HW-001** | U41 on the ASR-10 Digital Board is the ES5701 Super-GLU | *ASR-10 Service Manual* (Model #9500), Major Component Locations & Parts List; Physical board inspection | Board layout / Silkscreen / IC package | `[VERIFIED — ASR service documentation]` / `[VERIFIED — PCB evidence]` | Package marked "ES5701" in 100-pin QFP at location U41. |
-| **HW-002** | U28 is Motorola MC68302 MCU (16 MHz) | *ASR-10 Service Manual*, Parts List; Physical board inspection | Silkscreen / IC package | `[VERIFIED — ASR service documentation]` / `[VERIFIED — PCB evidence]` | Package marked "MC68302FC16C" in 132-pin PQFP. |
-| **HW-003** | U29 is Ensoniq ES5506 (OTTO) | *ASR-10 Service Manual*, Section 2 & Parts List; Physical board inspection | Service doc / Silkscreen / IC package | `[VERIFIED — ASR service documentation]` / `[VERIFIED — PCB evidence]` | Marked "ES5506" in 100-pin QFP. |
-| **HW-004** | U43 is Ensoniq ES5510 (ESP) | *ASR-10 Service Manual*, Parts List & Error Code 032 notes; Physical board inspection | Service doc / Silkscreen / IC package | `[VERIFIED — ASR service documentation]` / `[VERIFIED — PCB evidence]` | Marked "ES5510" in 44-pin PLCC. |
-| **HW-005** | U5 is custom PAL "ASR-10 V1.1" | *ASR-10 Service Manual*, Parts List; Physical board inspection | Socketed IC label / Silkscreen | `[VERIFIED — PCB evidence]` | Socketed 24-pin DIP marked "ASR-10 V1.1 PAL". |
+| **HW-001** | U41 on the ASR-10 Digital Board is the ES5701 Super-GLU | *ASR-10 Service Manual* (Model #9500), Major Component Locations & Parts List; Owner-supplied physical inspection | Board layout / Silkscreen / IC package | `[VERIFIED — ASR service documentation]` / `[OBSERVED — owner-supplied physical inspection]` | Marked "SGLU USA ENSONIQ 5701000101 9321KVB50" in 100-pin QFP at Main Board location U41 (see `docs/asr10/reference/physical-component-inventory.md`). |
+| **HW-002** | U28 is Motorola MC68302 MCU (16 MHz) | *ASR-10 Service Manual*, Parts List; Owner-supplied physical inspection | Silkscreen / IC package | `[VERIFIED — ASR service documentation]` / `[OBSERVED — owner-supplied physical inspection]` | Marked "MPU Motorola MC68302FC16C 1C65T QETY9307" in 132-pin PQFP at Main Board U28 (`docs/asr10/reference/physical-component-inventory.md`). |
+| **HW-003** | U29 is Ensoniq ES5506 (OTTO) | *ASR-10 Service Manual*, Section 2 & Parts List; Owner-supplied physical inspection | Service doc / Silkscreen / IC package | `[VERIFIED — ASR service documentation]` / `[OBSERVED — owner-supplied physical inspection]` | Marked "ENSONIQ OTTOR2 ES5506000102 0390258 FR08978 N9322" in 100-pin QFP at Main Board U29 (`docs/asr10/reference/physical-component-inventory.md`). |
+| **HW-004** | U43 is Ensoniq ES5510 (ESP) | *ASR-10 Service Manual*, Parts List & Error Code 032 notes; Owner-supplied physical inspection | Service doc / Silkscreen / IC package | `[VERIFIED — ASR service documentation]` / `[OBSERVED — owner-supplied physical inspection]` | Marked "ESP ES5510" in 44-pin PLCC at Main Board U43 (`docs/asr10/reference/physical-component-inventory.md`). |
+| **HW-005** | U5 is custom PAL "ASR-10 V1.1" | *ASR-10 Service Manual*, Parts List; Owner-supplied physical inspection | Socketed IC label / Silkscreen | `[OBSERVED — owner-supplied physical inspection]` | Socketed 20-pin DIP marked "ASR-10 V1.1 6457" at Main Board U5 (`docs/asr10/reference/physical-component-inventory.md`). |
 | **HW-006** | Digital Board 4-layer schematic was never published by Ensoniq | *ASR-10 Service Manual* (schematic index lists only KBD, PNL, PS, Filter, SCSI) | Complete service manual review | `[VERIFIED — ASR service documentation]` | Ensoniq withheld the 4-layer Digital Board schematic; netlist is not publicly available. |
 | **HW-007** | ES5701 Rev. 2 specification defines a 99-pin gate array with 4 functional blocks | `docs/ensoniq/ES5701.pdf` (Bob Yannes, Sep 14, 1988) | Silicon spec | `[VERIFIED — ES5701 specification]` | 99 active pins: ESP mux, OTIS transceiver, static memory latch/mux, clock dividers. |
 | **HW-008** | ES5701 multiplexes MC68302 A8..A1 and D7..D0 onto ES5510 A8/D7..A1/D0 | `ES5701.pdf` p. 2; ASR-10 firmware `$F973F0..$F97800` | Spec & Firmware | `[VERIFIED — ES5701 specification]` / `[VERIFIED — firmware]` / `[INFERRED — net]` | Pin functions verified in spec; firmware targets `$FC3000..$FC31FF`. Net between U41 and U43 is inferred from topology. |
@@ -391,7 +391,7 @@ In accordance with `docs/asr10/reference/methods-hypothesis-management.md`, ever
 
 #### 14.3.1 Schematic Availability & Component Identities
 - **Schematic Void:** Ensoniq published schematics for sub-assemblies (Keyboards, Front Panel, Power Supply, Audio Jack/Filter, SCSI), but **explicitly omitted the 4-layer Digital Board schematic**. Therefore, any claim about internal digital board trace connections is necessarily `[INFERRED]` or `[OPEN — PCB wiring]`, unless verified by multimeter continuity testing on physical hardware.
-- **Component Markings:** U28 (MC68302), U29 (ES5506), U41 (ES5701), U43 (ES5510), and U5 (custom PAL) are all physically confirmed by silkscreen and IC markings (`[VERIFIED — PCB evidence]`).
+- **Component Markings:** Main Board U28 (MC68302), U29 (ES5506), U41 (ES5701), U43 (ES5510), and U5 (custom PAL) are all physically confirmed by direct owner inspection and photographs (`[OBSERVED — owner-supplied physical inspection]`; see canonical inventory in `docs/asr10/reference/physical-component-inventory.md`).
 
 #### 14.3.2 ESP Path & /DTACK Path
 - **Multiplexed Bus:** The functional mapping of MC68302 address/data through ES5701 to ES5510 host port is `[VERIFIED — ES5701 specification]` and `[VERIFIED — firmware]`.
@@ -412,7 +412,7 @@ In accordance with `docs/asr10/reference/methods-hypothesis-management.md`, ever
 |---|:---:|---|
 | `[VERIFIED — ES5701 specification]` | 5 | HW-007, HW-008 (logic), HW-010, HW-015 (math), HW-020 (logic) |
 | `[VERIFIED — ASR service documentation]` | 5 | HW-001, HW-002, HW-003, HW-004, HW-006 |
-| `[VERIFIED — PCB evidence]` | 5 | HW-001, HW-002, HW-003, HW-004, HW-005 |
+| `[OBSERVED — owner-supplied physical inspection]` | 5 | HW-001, HW-002, HW-003, HW-004, HW-005 |
 | `[VERIFIED — firmware]` | 2 | HW-008 (map), HW-024 |
 | `[VERIFIED — MC68302 specification]` | 1 | HW-014 |
 | `[OBSERVED — emulator configuration]` | 1 | HW-015 (clock) |

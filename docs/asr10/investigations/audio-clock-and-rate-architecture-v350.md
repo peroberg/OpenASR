@@ -125,9 +125,9 @@ LRCLK changes OTTO's sample-update equation. `[OPEN]`
 
 | Oscillator / clock | Established consumer | MAME ASR-10 consumer | Status |
 |---|---|---|---|
-| Y1 = 16.000 MHz | MC68302/CPU board oscillator | `M68000` stand-in at 16 MHz | board list/user-supplied inventory; MAME `[Verified code]` |
-| Y2 = 30.47618 MHz | audio-side candidate; exact physical pin path untraced | ES5506 direct at 30,476,180 Hz | MAME `[Verified code]`; board path `[OPEN]` |
-| Y3 = 33.8688 MHz | audio-side candidate; exact physical pin path untraced | no audio device consumes it | MAME `[Verified code]`; board path `[OPEN]` |
+| Y1 = 16.000 MHz | MC68302/CPU board oscillator | `M68000` stand-in at 16 MHz | `[OBSERVED — owner-supplied physical inspection]` (canonical inventory); MAME `[Verified code]` |
+| Y2 = 30.47618 MHz | audio-side candidate; exact physical pin path untraced | ES5506 direct at 30,476,180 Hz | `[OBSERVED — owner-supplied physical inspection]`; MAME `[Verified code]`; board path `[OPEN]` |
+| Y3 = 33.8688 MHz | audio-side candidate; exact physical pin path untraced | no audio device consumes it | `[OBSERVED — owner-supplied physical inspection]`; MAME `[Verified code]`; board path `[OPEN]` |
 | synthetic 44.1 kHz | none | timer drives MC68302 PB3/LRCLK model | MAME `[Verified code]`; physical derivation `[OPEN]` |
 | 10 MHz | no ASR-10 wiring evidence | disabled ES5510 placeholder | MAME `[Verified code]`; board value `[OPEN]` |
 
@@ -159,9 +159,10 @@ The two crystals make a two-domain model numerically plausible:
 Y2/Y3 mux, ACTV `$17`, or an association between those values and effect
 metadata. `[OPEN]`
 
-The listed U47 SN74F161 and U50/U64 SN74F74 can in principle implement
-counter/divider/flip-flop functions; U65 SN74F02 and U67 MC74HC27 can provide
-combinational glue.  Component function alone does not establish their nets,
+The physically observed Main Board U47 SN74F161 and U50/U64 SN74F74
+(`[OBSERVED — owner-supplied physical inspection]`; see `docs/asr10/reference/physical-component-inventory.md`)
+can in principle implement counter/divider/flip-flop functions; Main Board U65 SN74F02 and U67 MC74HC27
+can provide combinational glue. Component function alone does not establish their nets,
 select inputs, or consumers. `[OPEN]`
 
 ## 4. ES5701 / SuperGLU
