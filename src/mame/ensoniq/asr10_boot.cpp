@@ -530,8 +530,16 @@ void asr10_boot_state::scsi_drq_w(int state)
 	if (!state || !m_maincpu->idma_channel_active())
 		return;
 
-	const u8 data = m_scsi->dma_r();
-	m_maincpu->idma_transfer_in(data);
+	if (m_maincpu->idma_is_memory_to_peripheral())
+	{
+		const u8 data = m_maincpu->idma_transfer_out();
+		m_scsi->dma_w(data);
+	}
+	else
+	{
+		const u8 data = m_scsi->dma_r();
+		m_maincpu->idma_transfer_in(data);
+	}
 }
 
 void asr10_boot_state::floppy_drives(device_slot_interface &device)

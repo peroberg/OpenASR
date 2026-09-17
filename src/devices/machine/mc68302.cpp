@@ -560,26 +560,43 @@ bool mc68302_device::idma_transfer_in(uint8_t data)
 	if (!m_idma_active || !m_idma_remaining)
 		return false;
 
-	// Destination increments (RAM buffer); source does not (this is a
-	// fixed peripheral register on the real board -- see
-	// docs/asr10/investigations/idma-implementation-plan.md item 4 on
-	// $FC5803/SAPR). This device does not dereference SAPR at all: the
-	// caller already pulled `data` from the source device directly (e.g.
-	// upd765_family_device::dma_r()), matching this step's deliberate
-	// choice not to implement bus-mastering/arbitration
-	// (docs/mc68302/idma-spec.md's own caveat against a transfer engine
-	// that "silently appears to work" without it).
+	// Peripheral -> Memory: write byte to current destination address.
 	m_s_program->write_byte(m_idma_dest, data);
-	m_idma_dest++;
+	if (m_idma_cmr & 0x0100) // DAPI: Destination Address Pointer Increment
+		m_idma_dest++;
 	m_idma_remaining--;
 
 	if (!m_idma_remaining)
 	{
+		m_idma_dapr = m_idma_dest;
+		m_idma_bcr = 0;
 		m_idma_active = false;
 		m_idma_csr |= 0x01; // DONE/success, docs/mc68302/idma-spec.md CSR bit 0
 		return true;
 	}
 	return false;
+}
+
+
+uint8_t mc68302_device::idma_transfer_out()
+{
+	if (!m_idma_active || !m_idma_remaining)
+		return 0;
+
+	// Memory -> Peripheral: read byte from current source address.
+	const uint8_t data = m_s_program->read_byte(m_idma_source);
+	if (m_idma_cmr & 0x0200) // SAPI: Source Address Pointer Increment
+		m_idma_source++;
+	m_idma_remaining--;
+
+	if (!m_idma_remaining)
+	{
+		m_idma_sapr = m_idma_source;
+		m_idma_bcr = 0;
+		m_idma_active = false;
+		m_idma_csr |= 0x01; // DONE/success
+	}
+	return data;
 }
 
 

@@ -149,7 +149,13 @@ public:
 	// BCR's bytes -- flagged as unverified beyond this one measurement and
 	// deliberately separate from $37A1's exact BCR-byte memory copy.
 	bool idma_channel_active() const { return m_idma_active && m_idma_remaining != 0; }
+	// MC68302 CMR bit 14 (ECO) specifies whether external handshake signals
+	// apply to the source cycle (ECO=0, peripheral -> memory) or destination
+	// cycle (ECO=1, memory -> peripheral).
+	bool idma_is_peripheral_to_memory() const { return (m_idma_cmr & 0x4000) == 0; }
+	bool idma_is_memory_to_peripheral() const { return (m_idma_cmr & 0x4000) != 0; }
 	bool idma_transfer_in(uint8_t data);
+	uint8_t idma_transfer_out();
 
 protected:
 	class mc68302_sim;
