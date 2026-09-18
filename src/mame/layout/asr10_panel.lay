@@ -46,6 +46,15 @@ license:CC0-1.0
 		<text string="INST 1"><color red="0.55" green="0.55" blue="0.45" /></text>
 	</element>
 
+	<element name="instlamp_label_0"><text string="INST 1"><color red="0.55" green="0.55" blue="0.45" /></text></element>
+	<element name="instlamp_label_1"><text string="INST 2"><color red="0.55" green="0.55" blue="0.45" /></text></element>
+	<element name="instlamp_label_2"><text string="INST 3"><color red="0.55" green="0.55" blue="0.45" /></text></element>
+	<element name="instlamp_label_3"><text string="INST 4"><color red="0.55" green="0.55" blue="0.45" /></text></element>
+	<element name="instlamp_label_4"><text string="INST 5"><color red="0.55" green="0.55" blue="0.45" /></text></element>
+	<element name="instlamp_label_5"><text string="INST 6"><color red="0.55" green="0.55" blue="0.45" /></text></element>
+	<element name="instlamp_label_6"><text string="INST 7"><color red="0.55" green="0.55" blue="0.45" /></text></element>
+	<element name="instlamp_label_7"><text string="INST 8"><color red="0.55" green="0.55" blue="0.45" /></text></element>
+
 	<element name="background">
 		<rect><color red="0.05" green="0.05" blue="0.06" /></rect>
 	</element>
@@ -352,22 +361,29 @@ license:CC0-1.0
 		<element ref="annlamp_open_label">
 			<bounds x="66" y="21" width="68" height="2.2" />
 		</element>
-		<element ref="instlamp_label">
-			<bounds x="66" y="23.5" width="16" height="2.5" />
-		</element>
-		<element name="asr10_instlamp0" ref="instlamp">
-			<bounds x="83" y="23.5" width="4" height="2.5" />
-		</element>
+		<repeat count="8">
+			<param name="n" start="0" increment="1" />
+			<param name="lx" start="8" increment="16" />
+			<param name="bx" start="19.5" increment="16" />
+			<element ref="instlamp_label_~n~">
+				<bounds x="~lx~" y="23.5" width="11" height="2.5" />
+			</element>
+			<element name="asr10_instlamp~n~" ref="instlamp">
+				<bounds x="~bx~" y="23.5" width="3.5" height="2.5" />
+			</element>
+		</repeat>
 		<element ref="button" inputtag="buttons_0" inputmask="0x00000001"><bounds x="5" y="30" width="14" height="7" /></element>
 		<element ref="button_label_00" inputtag="buttons_0" inputmask="0x00000001"><bounds x="5" y="30" width="14" height="7" /></element>
 		<element ref="button" inputtag="buttons_0" inputmask="0x00000002"><bounds x="21" y="30" width="14" height="7" /></element>
 		<element ref="button_label_01" inputtag="buttons_0" inputmask="0x00000002"><bounds x="21" y="30" width="14" height="7" /></element>
 		<element ref="button" inputtag="buttons_0" inputmask="0x00000004"><bounds x="37" y="30" width="14" height="7" /></element>
 		<element ref="button_label_02" inputtag="buttons_0" inputmask="0x00000004"><bounds x="37" y="30" width="14" height="7" /></element>
+		<element name="asr10_instlamp0" ref="instlamp"><bounds x="47" y="31" width="3" height="1.8" /></element>
 		<element ref="button" inputtag="buttons_0" inputmask="0x00000008"><bounds x="53" y="30" width="14" height="7" /></element>
 		<element ref="button_label_03" inputtag="buttons_0" inputmask="0x00000008"><bounds x="53" y="30" width="14" height="7" /></element>
 		<element ref="button" inputtag="buttons_0" inputmask="0x00000010"><bounds x="69" y="30" width="14" height="7" /></element>
 		<element ref="button_label_04" inputtag="buttons_0" inputmask="0x00000010"><bounds x="69" y="30" width="14" height="7" /></element>
+		<element name="asr10_instlamp4" ref="instlamp"><bounds x="79" y="31" width="3" height="1.8" /></element>
 		<element ref="button" inputtag="buttons_0" inputmask="0x00000020"><bounds x="85" y="30" width="14" height="7" /></element>
 		<element ref="button_label_05" inputtag="buttons_0" inputmask="0x00000020"><bounds x="85" y="30" width="14" height="7" /></element>
 		<element ref="button" inputtag="buttons_0" inputmask="0x00000040"><bounds x="101" y="30" width="14" height="7" /></element>
@@ -376,6 +392,7 @@ license:CC0-1.0
 		<element ref="button_label_07" inputtag="buttons_0" inputmask="0x00000080"><bounds x="117" y="30" width="14" height="7" /></element>
 		<element ref="button" inputtag="buttons_0" inputmask="0x00000100"><bounds x="5" y="39" width="14" height="7" /></element>
 		<element ref="button_label_08" inputtag="buttons_0" inputmask="0x00000100"><bounds x="5" y="39" width="14" height="7" /></element>
+		<element name="asr10_instlamp1" ref="instlamp"><bounds x="15" y="40" width="3" height="1.8" /></element>
 		<element ref="button" inputtag="buttons_0" inputmask="0x00000200"><bounds x="21" y="39" width="14" height="7" /></element>
 		<element ref="button_label_09" inputtag="buttons_0" inputmask="0x00000200"><bounds x="21" y="39" width="14" height="7" /></element>
 		<element ref="button" inputtag="buttons_0" inputmask="0x00000400"><bounds x="37" y="39" width="14" height="7" /></element>
@@ -388,6 +405,7 @@ license:CC0-1.0
 		<element ref="button_label_0D" inputtag="buttons_0" inputmask="0x00002000"><bounds x="85" y="39" width="14" height="7" /></element>
 		<element ref="button" inputtag="buttons_0" inputmask="0x00004000"><bounds x="101" y="39" width="14" height="7" /></element>
 		<element ref="button_label_0E" inputtag="buttons_0" inputmask="0x00004000"><bounds x="101" y="39" width="14" height="7" /></element>
+		<element name="asr10_instlamp2" ref="instlamp"><bounds x="111" y="40" width="3" height="1.8" /></element>
 		<element ref="button" inputtag="buttons_0" inputmask="0x00008000"><bounds x="117" y="39" width="14" height="7" /></element>
 		<element ref="button_label_0F" inputtag="buttons_0" inputmask="0x00008000"><bounds x="117" y="39" width="14" height="7" /></element>
 		<element ref="button" inputtag="buttons_0" inputmask="0x00010000"><bounds x="5" y="48" width="14" height="7" /></element>
@@ -400,10 +418,12 @@ license:CC0-1.0
 		<element ref="button_label_13" inputtag="buttons_0" inputmask="0x00080000"><bounds x="53" y="48" width="14" height="7" /></element>
 		<element ref="button" inputtag="buttons_0" inputmask="0x00100000"><bounds x="69" y="48" width="14" height="7" /></element>
 		<element ref="button_label_14" inputtag="buttons_0" inputmask="0x00100000"><bounds x="69" y="48" width="14" height="7" /></element>
+		<element name="asr10_instlamp3" ref="instlamp"><bounds x="79" y="49" width="3" height="1.8" /></element>
 		<element ref="button" inputtag="buttons_0" inputmask="0x00200000"><bounds x="85" y="48" width="14" height="7" /></element>
 		<element ref="button_label_15" inputtag="buttons_0" inputmask="0x00200000"><bounds x="85" y="48" width="14" height="7" /></element>
 		<element ref="button" inputtag="buttons_0" inputmask="0x00400000"><bounds x="101" y="48" width="14" height="7" /></element>
 		<element ref="button_label_16" inputtag="buttons_0" inputmask="0x00400000"><bounds x="101" y="48" width="14" height="7" /></element>
+		<element name="asr10_instlamp7" ref="instlamp"><bounds x="111" y="49" width="3" height="1.8" /></element>
 		<element ref="button" inputtag="buttons_0" inputmask="0x00800000"><bounds x="117" y="48" width="14" height="7" /></element>
 		<element ref="button_label_17" inputtag="buttons_0" inputmask="0x00800000"><bounds x="117" y="48" width="14" height="7" /></element>
 		<element ref="button" inputtag="buttons_0" inputmask="0x01000000"><bounds x="5" y="57" width="14" height="7" /></element>
@@ -416,6 +436,7 @@ license:CC0-1.0
 		<element ref="button_label_1B" inputtag="buttons_0" inputmask="0x08000000"><bounds x="53" y="57" width="14" height="7" /></element>
 		<element ref="button" inputtag="buttons_0" inputmask="0x10000000"><bounds x="69" y="57" width="14" height="7" /></element>
 		<element ref="button_label_1C" inputtag="buttons_0" inputmask="0x10000000"><bounds x="69" y="57" width="14" height="7" /></element>
+		<element name="asr10_instlamp6" ref="instlamp"><bounds x="79" y="58" width="3" height="1.8" /></element>
 		<element ref="button" inputtag="buttons_0" inputmask="0x20000000"><bounds x="85" y="57" width="14" height="7" /></element>
 		<element ref="button_label_1D" inputtag="buttons_0" inputmask="0x20000000"><bounds x="85" y="57" width="14" height="7" /></element>
 		<element ref="button" inputtag="buttons_0" inputmask="0x40000000"><bounds x="101" y="57" width="14" height="7" /></element>
@@ -428,6 +449,7 @@ license:CC0-1.0
 		<element ref="button_label_21" inputtag="buttons_32" inputmask="0x00000002"><bounds x="21" y="66" width="14" height="7" /></element>
 		<element ref="button" inputtag="buttons_32" inputmask="0x00000004"><bounds x="37" y="66" width="14" height="7" /></element>
 		<element ref="button_label_22" inputtag="buttons_32" inputmask="0x00000004"><bounds x="37" y="66" width="14" height="7" /></element>
+		<element name="asr10_instlamp5" ref="instlamp"><bounds x="47" y="67" width="3" height="1.8" /></element>
 		<element ref="button" inputtag="buttons_32" inputmask="0x00000008"><bounds x="53" y="66" width="14" height="7" /></element>
 		<element ref="button_label_23" inputtag="buttons_32" inputmask="0x00000008"><bounds x="53" y="66" width="14" height="7" /></element>
 		<element ref="button" inputtag="buttons_32" inputmask="0x00000010"><bounds x="69" y="66" width="14" height="7" /></element>

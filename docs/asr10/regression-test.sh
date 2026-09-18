@@ -61,6 +61,12 @@
 # es5510_special_regs: verifies host write -> internal conversion -> host
 #              readback formatting for generic ES5510 registers (SIGREG,
 #              CCR, CMR, DLENGTH, ABASE, BBASE, DBASE).
+# disk_label_text_edit: navigates to DISK LABEL and verifies interactive text
+#              editing: Right/Left arrow moves cursor/underline, and modifying
+#              position 2 leaves position 1 intact.
+# vfd_dp_and_inst_lamps: verifies integrated decimal point decoding in VFD
+#              (BAR=001.01 instead of BAR=00B01) and instrument selection
+#              lamps 1-8 driven by Level 2 indicator commands.
 
 set -u
 
@@ -177,6 +183,8 @@ run_test display_field_rewrite docs/asr10/lua/display_field_rewrite.lua "$IMAGE"
 run_test comp_dist_reverb docs/asr10/lua/comp_dist_reverb.lua "$IMAGE" || failures=$((failures + 1))
 run_test comp_pitch_shift docs/asr10/lua/comp_pitch_shift.lua "$IMAGE" || failures=$((failures + 1))
 run_test es5510_special_regs docs/asr10/lua/es5510_special_regs.lua "" || failures=$((failures + 1))
+run_test disk_label_text_edit docs/asr10/lua/disk_label_text_edit.lua "$IMAGE" || failures=$((failures + 1))
+run_test vfd_dp_and_inst_lamps docs/asr10/lua/vfd_dp_and_inst_lamps.lua "$IMAGE" || failures=$((failures + 1))
 
 if [ "$failures" -ne 0 ]; then
 	echo "FAIL regression failures=${failures}"

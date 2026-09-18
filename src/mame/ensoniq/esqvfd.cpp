@@ -28,15 +28,15 @@ DEFINE_DEVICE_TYPE(ESQ2X40_VFX, esq2x40_vfx_device, "esq2x40_vfx", "Ensoniq 2x40
 static const uint16_t font[] = {
 			// FEDC BA98 7654 3210
 	0x0000, // 0000 0000 0000 0000 (space)
-	0x0000, // 0000 0000 0000 0000 ! (not defined)
+	0x32b7, // 0011 0010 1011 0111 0. (Ensoniq VFD 0x21)
 	0x0009, // 0000 0000 0000 1001 ".
-	0xc62a, // 1100 0110 0010 1010 #.
+	0x1408, // 0001 0100 0000 1000 1. (Ensoniq VFD 0x23)
 	0xc62d, // 1100 0110 0010 1101 $.
-	0x0000, // 0000 0000 0000 0000 % (not defined)
+	0xf206, // 1111 0010 0000 0110 2. (Ensoniq VFD 0x25)
 	0x0000, // 0000 0000 0000 0000 & (not defined)
 	0x0040, // 0000 0000 1000 0000 '.
-	0x0880, // 0000 1000 1000 0000 (.
-	0x0050, // 0000 0000 0101 0000 ).
+	0x5226, // 0101 0010 0010 0110 3. (Ensoniq VFD 0x28)
+	0xd023, // 1101 0000 0010 0011 4. (Ensoniq VFD 0x29)
 	0xccd8, // 1100 1100 1101 1000 *.
 	0xc408, // 1100 0100 0000 1000 +.
 	0x0000, // 0000 0000 0000 0000 , (not defined)
@@ -53,8 +53,8 @@ static const uint16_t font[] = {
 	0x0026, // 0000 0000 0010 0110 7.
 	0xe227, // 1110 0010 0010 0111 8.
 	0xc227, // 1100 0010 0010 0111 9.
-	0x0000, // 0000 0000 0000 0000 : (not defined)
-	0x0000, // 0000 0000 0000 0000 ; (not defined)
+	0xd225, // 1101 0010 0010 0101 5. (Ensoniq VFD 0x3A)
+	0xf225, // 1111 0010 0010 0101 6. (Ensoniq VFD 0x3B)
 	0x0290, // 0000 0010 1001 0000 <.
 	0xc200, // 1100 0010 0000 0000 =.
 	0x0a40, // 0000 1010 0100 0000 >.
@@ -86,9 +86,9 @@ static const uint16_t font[] = {
 	0x08d0, // 0000 1000 1101 0000 X.
 	0x04c0, // 0000 0100 1100 0000 Y.
 	0x0294, // 0000 0010 1001 0100 Z.
-	0x2205, // 0010 0010 0000 0101 [.
-	0x0840, // 0000 1000 0100 0000 \.
-	0x0226, // 0000 0010 0010 0110 ].
+	0x1026, // 0001 0000 0010 0110 7. (Ensoniq VFD 0x5B)
+	0xf227, // 1111 0010 0010 0111 8. (Ensoniq VFD 0x5C)
+	0xd227, // 1101 0010 0010 0111 9. (Ensoniq VFD 0x5D)
 	0x0810, // 0000 1000 0001 0000 ^.
 	0x0200, // 0000 0010 0000 0000 _
 	0x0040, // 0000 0000 0100 0000 `
@@ -593,6 +593,21 @@ void esq1x22_device::render_character(uint8_t column, uint8_t data, bool underli
 	m_attrs[0][column] = underline ? AT_UNDERLINE : AT_NORMAL;
 	m_dirty[0][column] = 1;
 	update_display();
+}
+
+void esq1x22_device::set_underline(uint8_t column, bool underline)
+{
+	if (column >= std::size(m_chars[0]))
+		return;
+
+	uint8_t const old_attr = m_attrs[0][column];
+	uint8_t const new_attr = underline ? (old_attr | AT_UNDERLINE) : (old_attr & ~AT_UNDERLINE);
+	if (old_attr != new_attr)
+	{
+		m_attrs[0][column] = new_attr;
+		m_dirty[0][column] = 1;
+		update_display();
+	}
 }
 
 esq1x22_device::esq1x22_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :

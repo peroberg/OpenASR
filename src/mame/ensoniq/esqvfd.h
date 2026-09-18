@@ -46,6 +46,7 @@ public:
 
 	virtual void write_char(uint8_t data) override;
 	void render_character(uint8_t column, uint8_t data, bool underline);
+	void set_underline(uint8_t column, bool underline);
 
 protected:
 	virtual void device_add_mconfig(machine_config &config) override ATTR_COLD;

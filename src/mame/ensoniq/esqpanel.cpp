@@ -797,7 +797,9 @@ void asr10panel_device::device_start()
 	save_item(NAME(m_annunciator_state));
 	save_item(NAME(m_instrument_lamp_state));
 	save_item(NAME(m_pending_annunciator_command));
-	save_item(NAME(m_pending_open_command));
+	save_item(NAME(m_pending_indicator_cmd));
+	save_item(NAME(m_pending_bargraph));
+	save_item(NAME(m_vfd_brightness));
 	save_item(NAME(m_display_cursor));
 	save_item(NAME(m_selected_field_anchor));
 	save_item(NAME(m_pending_field_attr));
@@ -823,7 +825,9 @@ void asr10panel_device::device_reset()
 	m_annunciator_state.fill(0);
 	m_instrument_lamp_state.fill(0);
 	m_pending_annunciator_command = 0;
-	m_pending_open_command = 0;
+	m_pending_indicator_cmd = 0;
+	m_pending_bargraph = 0;
+	m_vfd_brightness = 0;
 	m_display_cursor = 0;
 	m_selected_field_anchor = 0;
 	m_pending_field_attr = false;
@@ -854,6 +858,126 @@ void asr10panel_device::rcv_complete()
 	if (!m_disable_eps_echo)
 		xmit_char(0xff);
 
+	m_external_panel_server->send_to_all(data);
+
+	// =========================================================================
+	// Level 1: KPC Handshake & System ($E7, $71, calibration $FB/$FD, LED/tune $FF)
+	// =========================================================================
+	if (m_expect_calibration_second_byte)
+	{
+		m_expect_calibration_second_byte = false;
+		return;
+	}
+
+	if (m_expect_light_second_byte)
+	{
+		m_expect_light_second_byte = false;
+		if (data != 0xfd)
+		{
+			const int light_number = data & 0x3f;
+			if (light_number < m_light_states.size())
+				m_light_states[light_number] = (data & 0xc0) >> 6;
+		}
+		return;
+	}
+
+	if (data == 0xe7 || data == 0x71)
+	{
+		return;
+	}
+
+	if (data == 0xfb)
+	{
+		m_expect_calibration_second_byte = true;
+		return;
+	}
+
+	if (data == 0xfd)
+	{
+		return;
+	}
+
+	if (data == 0xff)
+	{
+		m_expect_light_second_byte = true;
+		return;
+	}
+
+	if (data == 0x7f)
+	{
+		return;
+	}
+
+	// =========================================================================
+	// Level 2: Multi-byte Panel & Annunciator Controls
+	// =========================================================================
+	if (m_pending_bargraph > 0)
+	{
+		m_pending_bargraph--;
+		return;
+	}
+
+	if (data == 0x73)
+	{
+		m_pending_bargraph = 2;
+		return;
+	}
+
+	if (m_pending_indicator_cmd)
+	{
+		const uint8_t cmd = m_pending_indicator_cmd;
+		const uint8_t id = data;
+		m_pending_indicator_cmd = 0;
+
+		const uint8_t state = (cmd == 0x74) ? 0 : (cmd == 0x75 ? 1 : 2);
+		if (id < m_light_states.size())
+			m_light_states[id] = state;
+
+		if (id >= 8 && id <= 15)
+		{
+			const u32 inst_idx = id - 8;
+			m_instrument_lamp_state[inst_idx] = state;
+			m_instrument_lamps[inst_idx] = (state == 0) ? 0 : 1;
+		}
+		return;
+	}
+
+	if (data >= 0x74 && data <= 0x76)
+	{
+		m_pending_indicator_cmd = data;
+		return;
+	}
+
+	if (m_pending_annunciator_command)
+	{
+		if (m_pending_annunciator_command >= 0x77 && m_pending_annunciator_command <= 0x7b)
+		{
+			const u32 reg_index = m_pending_annunciator_command - 0x77;
+			m_annunciator_state[reg_index] = data;
+			m_annunciator_regs[reg_index] = data;
+
+			for (u32 bit = 0; bit != 8; bit++)
+				m_annunciator_bits[reg_index * 8 + bit] = (data >> bit) & 1;
+		}
+		m_pending_annunciator_command = 0;
+		return;
+	}
+
+	if (data >= 0x77 && data <= 0x7e)
+	{
+		m_pending_annunciator_command = data;
+		return;
+	}
+
+	if ((data & 0xf0) == 0xd0)
+	{
+		m_vfd_brightness = data & 0x0f;
+		return;
+	}
+
+	// =========================================================================
+	// Level 3: Pure VFD Display Control
+	// =========================================================================
 	debug_send_to_display(data);
 	send_to_display(data);
 }
@@ -861,56 +985,12 @@ void asr10panel_device::rcv_complete()
 
 void asr10panel_device::send_to_display(uint8_t data)
 {
-	if (m_pending_annunciator_command)
-	{
-		const u32 reg_index = m_pending_annunciator_command - 0x77;
-		m_annunciator_state[reg_index] = data;
-		m_annunciator_regs[reg_index] = data;
-
-		// Bit-level fanout: only bit 0 of $77 has a confirmed meaning
-		// (docs/asr10/investigations/annunciator-bit-probe.md -- BTN_02
-		// from idle FILE LOADED sets it, pressing BTN_02 again on the
-		// already-selected instrument clears it, both directions
-		// verified), mirrored into the pre-existing instrument-lamp
-		// output. The other 39 bits are wired raw, unlabeled, until
-		// correlated against more known-lit states.
-		for (u32 bit = 0; bit != 8; bit++)
-			m_annunciator_bits[reg_index * 8 + bit] = (data >> bit) & 1;
-		if (reg_index == 0)
-			m_instrument_lamps[0] = data & 1;
-
-		m_pending_annunciator_command = 0;
-		return;
-	}
-
-	if (data >= 0x77 && data <= 0x7b)
-	{
-		m_pending_annunciator_command = data;
-		return;
-	}
-
-	// The physical stream establishes one following operand for these still
-	// semantically OPEN commands. Preserve that bounded behavior without
-	// assigning the command or operand a display meaning.
-	if (m_pending_open_command)
-	{
-		m_pending_open_command = 0;
-		return;
-	}
-
 	if (m_pending_field_attr)
 	{
 		m_current_underline = bool(data & 0x02);
 		if (m_defining_selected_field)
 			m_selected_field_underline = m_current_underline;
 		m_pending_field_attr = false;
-		return;
-	}
-
-	if (data >= 0x74 && data <= 0x76)
-	{
-		report_unhandled_display_code(data);
-		m_pending_open_command = data;
 		return;
 	}
 
@@ -939,7 +1019,7 @@ void asr10panel_device::send_to_display(uint8_t data)
 		m_selected_field_anchor = m_display_cursor;
 		m_selected_field_valid = true;
 		m_defining_selected_field = true;
-		m_current_underline = false;
+		m_selected_field_underline = m_current_underline;
 		break;
 
 	case 0x63:
@@ -950,6 +1030,11 @@ void asr10panel_device::send_to_display(uint8_t data)
 		}
 		break;
 
+	case 0x65:
+		if (m_display_cursor > 0)
+			m_display_cursor--;
+		break;
+
 	case 0x66:
 		m_vfd->clear();
 		m_display_cursor = 0;
@@ -957,6 +1042,23 @@ void asr10panel_device::send_to_display(uint8_t data)
 		m_selected_field_underline = false;
 		m_selected_field_valid = false;
 		m_defining_selected_field = false;
+		break;
+
+	case 0x67:
+		m_current_underline = true;
+		m_selected_field_underline = true;
+		m_vfd->set_underline(m_display_cursor, true);
+		break;
+
+	case 0x69:
+		m_current_underline = false;
+		m_vfd->set_underline(m_display_cursor, false);
+		break;
+
+	case 0x6a:
+		m_vfd->set_underline(m_display_cursor, false);
+		if (m_display_cursor < 21)
+			m_display_cursor++;
 		break;
 
 	case 0x72:

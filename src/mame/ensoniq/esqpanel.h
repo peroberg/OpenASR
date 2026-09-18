@@ -70,14 +70,13 @@ protected:
 	std::vector<uint8_t> m_light_states;
 
 	bool m_eps_mode = false;
+	bool m_expect_calibration_second_byte = false;
+	bool m_expect_light_second_byte = false;
 
 	esqpanel::external_panel_server *m_external_panel_server;
 
 private:
 	static const int XMIT_RING_SIZE = 16;
-
-	bool m_expect_calibration_second_byte = false;
-	bool m_expect_light_second_byte = false;
 
 	devcb_write_line m_write_tx;
 	devcb_write16 m_write_analog;
@@ -141,8 +140,13 @@ private:
 	std::array<uint8_t, 8> m_instrument_lamp_state{};
 	// Authoritative ASR display-protocol state. Character/attribute cells stay
 	// in the generic renderer and are updated at explicit logical columns.
+	// Level 2: Multi-byte Panel & Annunciator Controls
 	uint8_t m_pending_annunciator_command = 0;
-	uint8_t m_pending_open_command = 0;
+	uint8_t m_pending_indicator_cmd = 0;
+	uint8_t m_pending_bargraph = 0;
+	uint8_t m_vfd_brightness = 0;
+
+	// Level 3: Authoritative ASR display-protocol state
 	uint8_t m_display_cursor = 0;
 	uint8_t m_selected_field_anchor = 0;
 	bool m_pending_field_attr = false;
