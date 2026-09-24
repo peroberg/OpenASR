@@ -109,8 +109,11 @@ public:
 	};
 
 	// direct access to the 'HALT' pin - not just through the
-	void set_HALT(bool halt) { halt_asserted = halt; }
-	bool get_HALT() { return halt_asserted; }
+	void set_HALT(bool halt);
+	bool get_HALT() const { return halt_asserted; }
+
+	void reset_pipeline();
+	void clear_serial();
 
 	void run_once();
 	void list_program(void(p)(const char *, ...));
@@ -142,6 +145,7 @@ protected:
 private:
 	int icount;
 	bool halt_asserted;
+	bool m_run_once;
 	uint8_t pc;
 	state_t state;
 	std::unique_ptr<int32_t[]> gpr;

@@ -126,7 +126,9 @@ sanning, och får inte tyst tas bort.
 Experimenthistorik och aktivt drivna frågor. Antalet är inventerat från trädet,
 inte en permanent invariant. Filerna kan innehålla ersatta claims; deras README
 pekar uttryckligen på `HANDOFF.md`, `current-status.md` och `reference/` som
-aktuell sanning. Senaste tillägget är `authentic-large-wavesample-continuation.md` (2026-09-13):
+aktuell sanning. Senaste tillägget är `es5510-cmr-unhalt-runaway-fix.md` (2026-09-24):
+den dokumenterar isoleringen och åtgärden av runaway-självoscillation vid övergången från ROM-36 (`EQ+TREMOLO+DDL`) till ROM-37 (`PHASER+DDL`) i ES5510 DSP:n. Orsaken var att `set_HALT(true)` inte sanerade `cmr` och `ccr`, vilket medförde att ROM-36:s kvarlämnade `CMR = 0x08` (NEQ, NOT=0) exekverade ROM-37:s villkorliga overflow-handler (instruktion 11) på frame 1 och kopierade `GPR_00` (+1.0) till `GPR_27`, vilket mättade `GPR_28` och drev filterpolen `GPR_92` till -1.0. Åtgärden sätter spec-enlig `cmr = 0x04` (Always TRUE/Always Skip) och nollställer pipeline/latches vid HALT/unhalt, samt spärrar seriell sample-pumpning under HALT. Samtliga 25 regressionstester godkända.
+Föregående tillägg är `authentic-large-wavesample-continuation.md` (2026-09-13):
 den dokumenterar firmwarens dynamiska transwave/BLE/IRQE-baserade fortsättningsmekanism för WaveSamples >4 MiB,
 identifierar och avlägsnar den historiska generiska spärren (`start == end -> STOP0`) i `es5506.cpp` i linje med upstream commit 9ded714f316c,
 och verifierar fullständig kontinuerlig uppspelning (28.87 s audio, 3 dynamiska övergångar till terminal one-shot) med det autentiska fixturgodkännandet CDR-03 `ICY TACO` WS1.

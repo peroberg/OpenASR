@@ -133,6 +133,7 @@ es5510_device::es5510_device(const machine_config &mconfig, const char *tag, dev
 	: cpu_device(mconfig, ES5510, tag, owner, clock)
 	, icount(0)
 	, halt_asserted(false)
+	, m_run_once(false)
 	, pc(0)
 	, state(STATE_HALTED)
 	, gpr(nullptr)
@@ -648,6 +649,45 @@ void es5510_device::device_start() {
 	save_item(NAME(ram_pp.cycle));
 }
 
+void es5510_device::reset_pipeline()
+{
+	alu.write_result = false;
+	mulacc.write_result = false;
+	machl = 0;
+	mac_overflow = false;
+	memset(&ram, 0, sizeof(ram_t));
+	memset(&ram_p, 0, sizeof(ram_t));
+	memset(&ram_pp, 0, sizeof(ram_t));
+	dol_count = 0;
+	dol[0] = dol[1] = 0;
+}
+
+void es5510_device::clear_serial()
+{
+	ser0l = ser0r = 0;
+	ser1l = ser1r = 0;
+	ser2l = ser2r = 0;
+	ser3l = ser3r = 0;
+}
+
+void es5510_device::set_HALT(bool halt)
+{
+	const bool unhalting = halt_asserted && !halt;
+	halt_asserted = halt;
+	if (unhalting)
+	{
+		reset_pipeline();
+		clear_serial();
+	}
+	else if (halt)
+	{
+		state = STATE_HALTED;
+		host_control &= ~0x04;
+		ccr = 0;
+		cmr = 0x04;
+	}
+}
+
 void es5510_device::device_reset() {
 	pc = 0x00;
 	std::fill(&gpr[0], &gpr[0xc0], 0);
@@ -661,9 +701,10 @@ void es5510_device::device_reset() {
 	host_serial = 0;
 	sigreg = 0;
 	mulshift = 2;
-	memset(&ram, 0, sizeof(ram_t));
-	memset(&ram_p, 0, sizeof(ram_t));
-	memset(&ram_pp, 0, sizeof(ram_t));
+	ccr = 0;
+	cmr = 0x04;
+	reset_pipeline();
+	clear_serial();
 }
 
 device_memory_interface::space_config_vector es5510_device::memory_space_config() const
@@ -689,7 +730,7 @@ uint32_t es5510_device::execute_max_cycles() const noexcept {
 
 void es5510_device::execute_set_input(int linenum, int state) {
 	if (linenum == ES5510_HALT) {
-		halt_asserted = (state == ASSERT_LINE);
+		set_HALT(state == ASSERT_LINE);
 	}
 }
 
@@ -788,6 +829,7 @@ void es5510_device::execute_run() {
 				state = STATE_RUNNING;
 				host_control |= 0x04; // Signal Host Access not OK
 				pc = 0;
+				reset_pipeline();
 			}
 		} else {
 			// currently running, execute one instruction.
@@ -1073,20 +1115,20 @@ void es5510_device::run_once()
 	if (halt_asserted)
 		return;
 
-	// run for one instruction
-	icount = 1;
-	execute_run();
+	m_run_once = true;
+	if (state == STATE_HALTED) {
+		state = STATE_RUNNING;
+		host_control |= 0x04;
+		pc = 0;
+		reset_pipeline();
+	}
 
-	// turn HALT on again
-	set_HALT(true);
-
-	// run ESP to the end of its program, a few instructions at a time
 	while (state != STATE_HALTED) {
 		icount = 1;
 		execute_run();
 	}
 
-	set_HALT(false);
+	m_run_once = false;
 }
 
 int8_t countLowOnes(int32_t x) {
@@ -1209,7 +1251,7 @@ void es5510_device::alu_operation_end() {
 	// Handle the END instruction separately
 	LOG_EXEC("ES5510: END\n");
 	// sample the HALT line
-	if (halt_asserted) {
+	if (halt_asserted || m_run_once) {
 		// halt
 		state = STATE_HALTED;
 		host_control &= ~0x04; // Signal Host Access OK

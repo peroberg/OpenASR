@@ -29,6 +29,9 @@ public:
 	void set_esp_halted(bool esp_halted) {
 		m_esp_halted = esp_halted;
 		logerror("ESP-halted -> %d\n", m_esp_halted);
+		if (started() && m_esp) {
+			m_esp->set_HALT(esp_halted);
+		}
 		if (!esp_halted) {
 #if PUMP_REPLACE_ESP_PROGRAM
 			m_esp->write_reg(245, 0x1d0f << 8); // dlength = 0x3fff, 16-sample delay

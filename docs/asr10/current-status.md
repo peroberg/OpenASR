@@ -2589,3 +2589,32 @@ index 4. The implemented sources use the firmware selectors stated above.
 Input Level is `[DISPROVEN]` as a member of this PAR scan and belongs to the
 separately open audio-input/gain model. ASR-88 pressure remains `[Likely]`;
 physical U55 routing and selector 6 remain `[OPEN]`.
+
+## ES5510 CMR Unhalt State, ROM 36 -> 37 Runaway Resolution, and Pipeline Sanitization (docs/asr10/investigations/es5510-cmr-unhalt-runaway-fix.md)
+
+**[Verified causal / Implemented / Spec-compliant]** Navigating from ROM-36 (`EQ+TREMOLO+DDL`)
+to ROM-37 (`PHASER+DDL`) caused explosive self-oscillation where allpass feedback pole `GPR_92`
+collapsed to -1.0 (`$800001`) and filter state `GPR_27`/`GPR_28` saturated to `$800000`.
+
+- **Causal Defect:** In `src/devices/cpu/es5510/es5510.cpp`, `set_HALT(true)` did not sanitize `cmr` and `ccr`.
+  ROM-36 terminates its loop with `CMR = 0x08` (condition `NEQ`, `NOT = 0`). On Frame 1 of ROM-37,
+  before Instruction 78 could configure Phase A `CMR = 0x24` (`NOT Overflow`), Instruction 11 (the LFO
+  overflow handler `MOV GPR_00 > GPR_27`, skippable) evaluated against stale `CMR = 0x08`. Because
+  CCR had $Z = 0$, skip evaluated false and Instruction 11 executed, copying `GPR_00` (`$7FFFFE` / +1.0)
+  into `GPR_27`. This saturated `GPR_28`, and instructions 17-18 subtracted $MACH$ from `GPR_92`,
+  driving it to -1.0.
+- **Spec Analysis:** Per Ensoniq ESP Spec Rev 2.4 §4.2.2, condition mask $0x04$ specifies `FLAG_NOT = 1`
+  with zero condition bits, evaluating to `Always TRUE` / `Always Skip`.
+- **Implementation:**
+  - In `src/devices/cpu/es5510/es5510.cpp`, `set_HALT(true)` and `device_reset()` reset `ccr = 0; cmr = 0x04;`.
+    If an effect writes CMR during HALT (ROM-39), the host value takes effect; otherwise, uninitialized
+    conditional instructions safely skip on Frame 1.
+  - Reset intermediate pipeline registers and write latches (`alu.write_result = false; mulacc.write_result = false; machl = 0; ram/ram_p/ram_pp`) on unhalt (`reset_pipeline()`).
+  - In `src/devices/sound/esqpump.cpp`, inhibit pushing serial input samples while ESP is halted (`esp_halted`).
+- **Disproven Hypotheses:**
+  - Audio scaling / excessive loop gain hypothesis is `[DISPROVEN]`. Direct boot into ROM-37 with active MIDI audio is mathematically stable.
+  - Dirty high GPRs ($0x90..0xBF$) hypothesis is `[DISPROVEN]`. Zeroing high GPRs at unhalt does not prevent runaway.
+- **Verification:**
+  - ROM-36 -> ROM-37 transition: `GPR_27 = 000000`, `GPR_28 = 000000`, `GPR_92 = E50000` (CLEAN / STABLE).
+  - Full regression test suite (`docs/asr10/regression-test.sh`): 25/25 passed (100% PASS).
+
