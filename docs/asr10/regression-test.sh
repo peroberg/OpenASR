@@ -67,6 +67,9 @@
 # vfd_dp_and_inst_lamps: verifies integrated decimal point decoding in VFD
 #              (BAR=001.01 instead of BAR=00B01) and instrument selection
 #              lamps 1-8 driven by Level 2 indicator commands.
+# annunciator_state: verifies annunciator outputs and hardware MCU priority:
+#              LOAD blinking, BANK and INST lit simultaneously on bank files, INST
+#              lit on instrument files, and System/MIDI & Effects round-trip verification.
 
 set -u
 
@@ -185,6 +188,7 @@ run_test comp_pitch_shift docs/asr10/lua/comp_pitch_shift.lua "$IMAGE" || failur
 run_test es5510_special_regs docs/asr10/lua/es5510_special_regs.lua "" || failures=$((failures + 1))
 run_test disk_label_text_edit docs/asr10/lua/disk_label_text_edit.lua "$IMAGE" || failures=$((failures + 1))
 run_test vfd_dp_and_inst_lamps docs/asr10/lua/vfd_dp_and_inst_lamps.lua "$IMAGE" || failures=$((failures + 1))
+run_test annunciator_state docs/asr10/lua/annunciator_state.lua "$IMAGE" || failures=$((failures + 1))
 
 if [ "$failures" -ne 0 ]; then
 	echo "FAIL regression failures=${failures}"

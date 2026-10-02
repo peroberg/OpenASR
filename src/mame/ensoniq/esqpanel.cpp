@@ -794,8 +794,11 @@ void asr10panel_device::device_start()
 {
 	esqpanel_device::device_start();
 
-	save_item(NAME(m_annunciator_state));
+	save_item(NAME(m_ann_left));
+	save_item(NAME(m_ann_right));
 	save_item(NAME(m_instrument_lamp_state));
+	save_item(NAME(m_loaded_lamp_state));
+	save_item(NAME(m_blink_state));
 	save_item(NAME(m_pending_annunciator_command));
 	save_item(NAME(m_pending_indicator_cmd));
 	save_item(NAME(m_pending_bargraph));
@@ -808,6 +811,8 @@ void asr10panel_device::device_start()
 	save_item(NAME(m_selected_field_valid));
 	save_item(NAME(m_defining_selected_field));
 	save_item(NAME(m_seen_unhandled_display_code));
+
+	m_ann_blink_timer = timer_alloc(FUNC(asr10panel_device::update_annunciator_blink), this);
 }
 
 void asr10panel_device::device_reset()
@@ -822,8 +827,11 @@ void asr10panel_device::device_reset()
 	set_rcv_rate(62500);
 	set_tra_rate(62500);
 
-	m_annunciator_state.fill(0);
+	m_ann_left.fill(0);
+	m_ann_right.fill(0);
+	m_blink_state = false;
 	m_instrument_lamp_state.fill(0);
+	m_loaded_lamp_state.fill(0);
 	m_pending_annunciator_command = 0;
 	m_pending_indicator_cmd = 0;
 	m_pending_bargraph = 0;
@@ -838,12 +846,57 @@ void asr10panel_device::device_reset()
 	m_seen_unhandled_display_code.fill(0);
 	m_disable_eps_echo = std::getenv("ASR10_PANEL_DISABLE_ECHO") != nullptr;
 
-	for (u32 index = 0; index != m_annunciator_state.size(); index++)
-		m_annunciator_regs[index] = 0;
-	for (u32 index = 0; index != m_instrument_lamp_state.size(); index++)
-		m_instrument_lamps[index] = 0;
+	for (u32 i = 0; i < 8; i++)
+	{
+		m_instrument_lamps[i] = 0;
+		m_loaded_lamps[i] = 0;
+	}
+
 	for (u32 index = 0; index != m_annunciator_bits.size(); index++)
-		m_annunciator_bits[index] = 0;
+		m_annunciator_bits[index] = 1;
+
+	if (m_ann_blink_timer)
+		m_ann_blink_timer->adjust(attotime::from_msec(250), 0, attotime::from_msec(250));
+
+	update_indicator_outputs();
+	update_annunciator_outputs();
+}
+
+TIMER_CALLBACK_MEMBER(asr10panel_device::update_annunciator_blink)
+{
+	m_blink_state = !m_blink_state;
+	update_annunciator_outputs();
+	update_indicator_outputs();
+}
+
+void asr10panel_device::update_annunciator_outputs()
+{
+	auto resolve_bit = [this](uint8_t state) -> uint8_t {
+		if (state == 1) return 0; // Tänd (aktiv-låg)
+		if (state == 2) return m_blink_state ? 0 : 1; // Blink
+		return 1; // Släckt
+	};
+
+	for (u32 id = 0; id < 16; id++)
+	{
+		m_annunciator_bits[id]      = resolve_bit(m_ann_left[id]);
+		m_annunciator_bits[16 + id] = resolve_bit(m_ann_right[id]);
+	}
+}
+
+void asr10panel_device::update_indicator_outputs()
+{
+	auto resolve_lamp = [this](uint8_t state) -> uint8_t {
+		if (state == 1) return 1;
+		if (state == 2) return m_blink_state ? 1 : 0;
+		return 0;
+	};
+
+	for (u32 i = 0; i < 8; i++)
+	{
+		m_loaded_lamps[i] = resolve_lamp(m_loaded_lamp_state[i]);
+		m_instrument_lamps[i] = resolve_lamp(m_instrument_lamp_state[i]);
+	}
 }
 
 void asr10panel_device::rcv_complete()
@@ -892,7 +945,7 @@ void asr10panel_device::rcv_complete()
 		return;
 	}
 
-	if (data == 0xfd)
+	if (data == 0xfc || data == 0xfd || data == 0x7e)
 	{
 		return;
 	}
@@ -903,14 +956,29 @@ void asr10panel_device::rcv_complete()
 		return;
 	}
 
-	if (data == 0x7f)
-	{
-		return;
-	}
-
 	// =========================================================================
 	// Level 2: Multi-byte Panel & Annunciator Controls
 	// =========================================================================
+	// Åtgärd 3: Skydda parsern mot förlorade bytes genom att resynka om en ny
+	// kommandobyte anländer medan ett föregående kommando väntar på nyttolast.
+	// För $7A..$7C (Höger block) kan $78 vara en legitim nyttolast (från $F8 & 0x7F),
+	// medan övriga koder ($74..$76, $77, $79..$7C, $7E, $FB..) alltid är nya kommandon.
+	const bool is_new_command = (data >= 0x74 && data <= 0x7c && !(m_pending_annunciator_command >= 0x7a && data == 0x78))
+	                            || data == 0x7e || data >= 0xfb;
+	if (is_new_command && (m_pending_annunciator_command || m_pending_indicator_cmd))
+	{
+		osd_printf_warning("asr10panel: dropped pending command (ann=$%02X, ind=$%02X), new command $%02X received\n",
+			m_pending_annunciator_command, m_pending_indicator_cmd, data);
+		m_pending_annunciator_command = 0;
+		m_pending_indicator_cmd = 0;
+	}
+
+	if (data == 0x7f)
+	{
+		if (m_pending_annunciator_command == 0 && m_pending_indicator_cmd == 0)
+			return;
+	}
+
 	if (m_pending_bargraph > 0)
 	{
 		m_pending_bargraph--;
@@ -933,11 +1001,15 @@ void asr10panel_device::rcv_complete()
 		if (id < m_light_states.size())
 			m_light_states[id] = state;
 
-		if (id >= 8 && id <= 15)
+		if (id < 8)
 		{
-			const u32 inst_idx = id - 8;
-			m_instrument_lamp_state[inst_idx] = state;
-			m_instrument_lamps[inst_idx] = (state == 0) ? 0 : 1;
+			m_loaded_lamp_state[id] = state;
+			update_indicator_outputs();
+		}
+		else if (id >= 8 && id <= 15)
+		{
+			m_instrument_lamp_state[id - 8] = state;
+			update_indicator_outputs();
 		}
 		return;
 	}
@@ -948,22 +1020,24 @@ void asr10panel_device::rcv_complete()
 		return;
 	}
 
-	if (m_pending_annunciator_command)
+	if (m_pending_annunciator_command >= 0x77 && m_pending_annunciator_command <= 0x7c)
 	{
-		if (m_pending_annunciator_command >= 0x77 && m_pending_annunciator_command <= 0x7b)
-		{
-			const u32 reg_index = m_pending_annunciator_command - 0x77;
-			m_annunciator_state[reg_index] = data;
-			m_annunciator_regs[reg_index] = data;
+		const uint8_t cmd = m_pending_annunciator_command;
+		const uint8_t id = data & 0x0f;
+		const uint8_t state = (cmd == 0x77 || cmd == 0x7a) ? 1 :
+		                      (cmd == 0x78 || cmd == 0x7b) ? 0 : 2;
 
-			for (u32 bit = 0; bit != 8; bit++)
-				m_annunciator_bits[reg_index * 8 + bit] = (data >> bit) & 1;
-		}
+		if (cmd <= 0x79)
+			m_ann_left[id] = state;
+		else
+			m_ann_right[id] = state;
+
 		m_pending_annunciator_command = 0;
+		update_annunciator_outputs();
 		return;
 	}
 
-	if (data >= 0x77 && data <= 0x7e)
+	if (data >= 0x77 && data <= 0x7c)
 	{
 		m_pending_annunciator_command = data;
 		return;
@@ -1097,13 +1171,12 @@ std::string asr10panel_device::unhandled_code_summary() const
 
 std::string asr10panel_device::annunciator_summary() const
 {
-	std::string result;
-	for (u32 index = 0; index != m_annunciator_state.size(); index++)
-	{
-		if (index)
-			result += ' ';
-		result += util::string_format("%02x:%02x", 0x77 + index, m_annunciator_state[index]);
-	}
+	std::string result = "L:";
+	for (u32 i = 0; i < 16; i++)
+		result += util::string_format("%x", m_ann_left[i]);
+	result += " R:";
+	for (u32 i = 0; i < 16; i++)
+		result += util::string_format("%x", m_ann_right[i]);
 	return result;
 }
 
@@ -1114,91 +1187,58 @@ static INPUT_PORTS_START(asr10panel_device)
 	PORT_START("buttons_0")
 	ASR10_PANEL_BUTTON(0x00000001, "BTN_00", 0x00)
 	ASR10_PANEL_BUTTON(0x00000002, "BTN_01", 0x01)
-	// BTN_02: Instrument/Sequence Track 1, verified dynamically.
-	PORT_BIT(0x00000004, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_02") PORT_CODE(KEYCODE_1) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x02)
+	// Track 1
+	PORT_BIT(0x00000004, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("Track 1") PORT_CODE(KEYCODE_1) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x02)
 	ASR10_PANEL_BUTTON(0x00000008, "BTN_03", 0x03)
-	ASR10_PANEL_BUTTON(0x00000010, "BTN_04", 0x04)
-	// EDIT is verified as raw $05 from a selected instrument to its layer page.
+	// RECORD -> Tangent 'R'
+    PORT_BIT(0x00000008, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("RECORD") PORT_CODE(KEYCODE_R) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x03)
+	// Track 5
+	PORT_BIT(0x00000010, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("Track 5") PORT_CODE(KEYCODE_5) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x04)
+	// EDIT
 	PORT_BIT(0x00000020, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("EDIT") PORT_CODE(KEYCODE_E) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x05)
-	// COMMAND is verified as raw $06. Host keys drive physical panel edges;
-	// firmware retains all context-dependent behavior.
+	// COMMAND
 	PORT_BIT(0x00000040, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("COMMAND") PORT_CODE(KEYCODE_C) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x06)
 	ASR10_PANEL_BUTTON(0x00000080, "BTN_07", 0x07)
-	ASR10_PANEL_BUTTON(0x00000100, "BTN_08", 0x08)
-	// EFFECTS is verified as raw $09 by its real effect-file browser.
+	// Track 2
+	PORT_BIT(0x00000100, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("Track 2") PORT_CODE(KEYCODE_2) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x08)
+	// EFFECTS
 	PORT_BIT(0x00000200, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("EFFECTS") PORT_CODE(KEYCODE_F) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x09)
-	// BTN_0A/BTN_0B: KEYCODE_UP/DOWN, swapped 2026-08-24
-	// (partial-update-position-probe.md Del 5). The pilot keymap had
-	// $0A=KEYCODE_DOWN/$0B=KEYCODE_UP; measured against effect, not
-	// label, on the VOLUME=99 screen: $0A held the value at its ceiling
-	// (no visible change across two presses -- consistent with already
-	// being at the top, i.e. genuinely Up), and $0B moved it down by one
-	// digit (99->98, genuinely Down). REC SRC Field 2 cycling direction
-	// is unaffected by this swap (still $0A/$0B, just the keyboard
-	// shortcut now points at the code that actually behaves like Up).
 	PORT_BIT(0x00000400, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_0A") PORT_CODE(KEYCODE_UP) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x0a)
 	PORT_BIT(0x00000800, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_0B") PORT_CODE(KEYCODE_DOWN) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x0b)
-	// BTN_0C/BTN_0D: KEYCODE_LEFT/RIGHT removed, 2026-08-24
-	// (panel-button-and-transport-map.md Del 2). Measured directly: from
-	// the REC SRC screen these navigate to an unrelated top-level menu
-	// (COPY/ERASE/FILTER/SHIFT AUDIO TRACK on repeated presses), not a
-	// cursor move -- the pilot keymap's Left/Right label was wrong, not
-	// just unverified. Real hardware's Left/Right Arrow raw codes remain
-	// unidentified; keeping the wrong keyboard shortcut bound here would
-	// actively mislead rather than just be unverified, so these two
-	// revert to click-only like the other 60 unidentified buttons.
 	ASR10_PANEL_BUTTON(0x00001000, "BTN_0C", 0x0c)
 	ASR10_PANEL_BUTTON(0x00002000, "BTN_0D", 0x0d)
-	ASR10_PANEL_BUTTON(0x00004000, "BTN_0E", 0x0e)
-	ASR10_PANEL_BUTTON(0x00008000, "BTN_0F", 0x0f)
-	// BTN_10/BTN_11: KEYCODE_LEFT/RIGHT, measured 2026-08-24
-	// (partial-update-position-probe.md Del 5) using the display's own
-	// underline output as ground truth, not display text alone: from
-	// REC SRC with Field 2 underlined, $10 moves the underline to
-	// Field 1 ("INPUTDRY", columns 8-15); $11 from there moves it back
-	// to Field 2, staying on the same screen -- exactly the manual's
-	// "Left/Right Arrow moves to the next parameter" description, both
-	// directions confirmed round-trip.
+	// Track 3
+	PORT_BIT(0x00004000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("Track 3") PORT_CODE(KEYCODE_3) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x0e)
+	// INSTRUMENT (Page) -> Tangent 'I'
+	PORT_BIT(0x00008000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("INSTRUMENT") PORT_CODE(KEYCODE_I) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x0f)
 	PORT_BIT(0x00010000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_10") PORT_CODE(KEYCODE_LEFT) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x10)
 	PORT_BIT(0x00020000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_11") PORT_CODE(KEYCODE_RIGHT) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x11)
 	ASR10_PANEL_BUTTON(0x00040000, "BTN_12", 0x12)
 	ASR10_PANEL_BUTTON(0x00080000, "BTN_13", 0x13)
-	ASR10_PANEL_BUTTON(0x00100000, "BTN_14", 0x14)
-	// BTN_15: KEYCODE_Q ("Sequence"), added 2026-08-24. Measured: $15
-	// reliably lands on a genuine sequence-file listing ("FILE 9
-	// TUT0RIAL 5EQ") when a sequence exists on the loaded disk -- the
-	// Seq*Song category button. Only assigned a mnemonic because the
-	// function is measured, not guessed at.
+	// Track 4
+	PORT_BIT(0x00100000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("Track 4") PORT_CODE(KEYCODE_4) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x14)
 	PORT_BIT(0x00200000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_15") PORT_CODE(KEYCODE_Q) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x15)
-	ASR10_PANEL_BUTTON(0x00400000, "BTN_16", 0x16)
-	// STOP/CONTINUE is raw $17 during active playback. It remains a physical
-	// pressed-state button rather than a MAME transport action.
+	// Track 8
+	PORT_BIT(0x00400000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("Track 8") PORT_CODE(KEYCODE_8) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x16)
 	PORT_BIT(0x00800000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("STOP / CONTINUE") PORT_CODE(KEYCODE_SPACE) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x17)
 	ASR10_PANEL_BUTTON(0x01000000, "BTN_18", 0x18)
 	ASR10_PANEL_BUTTON(0x02000000, "BTN_19", 0x19)
-	// LOAD is verified as raw $1A by returning from a selected instrument to
-	// the firmware's file browser.
+	// LOAD -> Tangent 'L'
 	PORT_BIT(0x04000000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("LOAD") PORT_CODE(KEYCODE_L) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x1a)
-	ASR10_PANEL_BUTTON(0x08000000, "BTN_1B", 0x1b)
-	ASR10_PANEL_BUTTON(0x10000000, "BTN_1C", 0x1c)
-	// PLAY is verified as raw $1D with a playable sequence loaded. MAME's
-	// default pause binding is F5, so KEYCODE_P has no default UI collision.
+	// ASR10_PANEL_BUTTON(0x08000000, "BTN_1B", 0x1b)
+	// SYSTEM / MIDI -> Tangent 'M'
+    PORT_BIT(0x08000000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("SYSTEM / MIDI") PORT_CODE(KEYCODE_M) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x1b)
+	// Track 7
+	PORT_BIT(0x10000000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("Track 7") PORT_CODE(KEYCODE_7) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x1c)
 	PORT_BIT(0x20000000, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("PLAY") PORT_CODE(KEYCODE_P) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x1d)
 	ASR10_PANEL_BUTTON(0x40000000, "BTN_1E", 0x1e)
 	ASR10_PANEL_BUTTON(0x80000000, "BTN_1F", 0x1f)
 
 	PORT_START("buttons_32")
-	// BTN_20: KEYCODE_S ("Sample"), added 2026-08-24. Measured (prior
-	// task): $20 is Sample*Source Select. Note: KEYCODE_S collides with
-	// KEY_Cs (C-sharp) on the note-typing keyboard below -- pressing 'S'
-	// fires both. Documented rather than silently avoided, since the
-	// mnemonic scheme is keyed to measured function, not collision-free
-	// key layout; a future task can pick a different key if this proves
-	// disruptive in practice.
 	PORT_BIT(0x00000001, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_20") PORT_CODE(KEYCODE_S) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x20)
 	ASR10_PANEL_BUTTON(0x00000002, "BTN_21", 0x21)
-	ASR10_PANEL_BUTTON(0x00000004, "BTN_22", 0x22)
-	// BTN_23: Enter*Yes, verified dynamically.
+	// Track 6 (ligger i buttons_32-porten)
+	PORT_BIT(0x00000004, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("Track 6") PORT_CODE(KEYCODE_6) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x22)
 	PORT_BIT(0x00000008, IP_ACTIVE_HIGH, IPT_KEYPAD) PORT_NAME("BTN_23") PORT_CODE(KEYCODE_ENTER) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(asr10panel_device::button_change), 0x23)
 	ASR10_PANEL_BUTTON(0x00000010, "BTN_24", 0x24)
 	ASR10_PANEL_BUTTON(0x00000020, "BTN_25", 0x25)
@@ -1277,8 +1317,8 @@ INPUT_CHANGED_MEMBER(asr10panel_device::analog_value_change)
 asr10panel_device::asr10panel_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :
 	esqpanel_device(mconfig, ASR10PANEL, tag, owner, clock),
 	m_vfd(*this, "vfd"),
-	m_annunciator_regs(*this, "asr10_annreg%u", 0U),
 	m_instrument_lamps(*this, "asr10_instlamp%u", 0U),
+	m_loaded_lamps(*this, "asr10_loadedlamp%u", 0U),
 	m_annunciator_bits(*this, "asr10_annbit%u", 0U)
 {
 	m_eps_mode = true;

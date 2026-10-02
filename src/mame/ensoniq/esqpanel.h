@@ -124,20 +124,21 @@ protected:
 	virtual void send_to_display(uint8_t data) override;
 
 	required_device<esq1x22_device> m_vfd;
-	output_finder<5> m_annunciator_regs;
 	output_finder<8> m_instrument_lamps;
-	// Bit-level view of the 5 annunciator registers (5*8=40 candidate
-	// lamps -- "about thirty" per the project's own count of populated
-	// bits). Only bit 0 of $77 has a confirmed meaning so far (mirrored
-	// into m_instrument_lamps[0] below, verified against a known-lit
-	// state: BTN_02 from idle FILE LOADED); the rest are wired raw and
-	// unlabeled until correlated against more known states --
-	// docs/asr10/investigations/annunciator-bit-probe.md.
+	output_finder<8> m_loaded_lamps;
 	output_finder<40> m_annunciator_bits;
 
 private:
-	std::array<uint8_t, 5> m_annunciator_state{};
+	std::array<uint8_t, 16> m_ann_left{};
+	std::array<uint8_t, 16> m_ann_right{};
 	std::array<uint8_t, 8> m_instrument_lamp_state{};
+	std::array<uint8_t, 8> m_loaded_lamp_state{};
+	bool m_blink_state = false;
+	emu_timer *m_ann_blink_timer = nullptr;
+
+	void update_annunciator_outputs();
+	void update_indicator_outputs();
+	TIMER_CALLBACK_MEMBER(update_annunciator_blink);
 	// Authoritative ASR display-protocol state. Character/attribute cells stay
 	// in the generic renderer and are updated at explicit logical columns.
 	// Level 2: Multi-byte Panel & Annunciator Controls
